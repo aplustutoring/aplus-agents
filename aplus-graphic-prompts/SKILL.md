@@ -69,6 +69,29 @@ Use these exact hex codes in all specs:
 
 ### Photography style
 
+CRITICAL CONTEXT - A+ DELIVERY MODEL:
+A+ Tutoring is a virtual tutoring company serving California charter homeschool families. Visual depictions of A+ tutoring sessions MUST show students learning at home, NOT in traditional classroom settings. This is non-negotiable for brand accuracy.
+
+ACCEPTABLE student settings:
+- Home offices with desks
+- Student bedrooms with desks
+- Kitchen tables with school supplies
+- Family room work areas with laptops
+- Library nooks (home library or public library quiet rooms)
+- Backyard shaded spaces with portable desks
+- Parent-organized homeschool co-op spaces (occasional)
+
+UNACCEPTABLE settings (NEVER generate these):
+- Traditional school classrooms with rows of desks
+- School cafeterias
+- Bulletin-board-heavy classroom walls
+- School lockers
+- Gym settings
+- Chalkboards or whiteboards used as primary visual element
+- Any setting suggesting a traditional public school
+
+When generating photographic prompts, default to home-based learning environments. Specify the exact home setting (e.g., "kitchen table" or "bedroom desk") rather than leaving it ambiguous.
+
 **ALWAYS:**
 - Real students in real learning environments (not models)
 - Real teachers/tutors interacting authentically
@@ -329,6 +352,8 @@ Save to: `aplus-content/[YYYY-MM-DD-weekly]/graphics-package.md`
 - Future: `aplus-canva-publisher` . v2 skill that uses Canva MCP to produce designs
 
 ## Version
+
+v1.1 . Updated 2026-05-14 . Added critical context about A+ delivery model (virtual homeschool, not traditional classroom). Removed assumption that A+ visuals could show students in traditional classroom settings. Foundation: Roman's audit caught that v1.0 prompts produced classroom imagery that misrepresented A+'s actual home-based delivery model.
 
 v1.0 . Created May 14, 2026
 Foundation: Roman's observation that the blog pipeline produces text without visuals. Built to close the gap between text content production and visual content ready for publication.
