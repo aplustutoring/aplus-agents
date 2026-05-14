@@ -103,25 +103,24 @@ For any quoted statement:
 
 For any claim about A+ outcomes, partnerships, or methods:
 
-1. **Verify A+ outcome data against the correct source for each cut.** There are multiple legitimate slices of the iLEAD AV Tier 3 program data and they MUST be cited correctly. The fact-check skill caught a real failure mode on May 11, 2026 where 81% was cited against the wrong source.
+1. **Verify A+ outcome data against the correct source for each cut.** The fact-check skill caught a real failure mode on May 11, 2026 where 81% was being cited as a real figure. Investigation revealed 81% was based on incorrect headcount (one student was improperly labeled). The verified figures are below.
 
-**iLEAD AV Tier 3 data . correct attributions:**
+**iLEAD AV Tier 3 data . 2024-25 school year . correct attributions:**
 
-| Stat | Sample | Source / when to use |
-|---|---|---|
-| **75% improvement (9 of 12)** | iLEAD Math Tier 3 ONLY | Published case study at wetutorathome.com/case-study-ilead-math-tier3. Use ONLY when citing the public URL. Other figures: +20.8 percentile gain, +18.7 RIT, 17 hours/student |
-| **81% improvement (17 of 21)** | iLEAD AV Tier 3 COMBINED Math + ELA, 24-25 school year | Internal pitch deck data. Use when describing the full program scope, +18.4 avg RIT gain, 4-5x expected growth |
-| **86% improvement (36 of 42)** | iLEAD AV broader Level Up cohort, 51 enrolled / 42 with complete data | Internal data, larger sample, +12.5 avg RIT gain |
-| **77% improvement (10 of 13)** | iLEAD AV Math portion only | Math-specific subset of the 21-student combined, +17.4 avg RIT gain |
-| **87.5% improvement (7 of 8)** | iLEAD AV ELA portion only | ELA-specific subset of the 21-student combined, +20.1 avg RIT gain |
+| Program | Students | Improved | Rate | Avg RIT | Avg %ile | Source |
+|---|---|---|---|---|---|---|
+| Math Tier 3 (PUBLISHED) | 12 | 9 | 75% | +18.7 | +20.8 | https://wetutorathome.com/case-study-ilead-math-tier3 |
+| ELA Tier 3 (PUBLISHED) | 8 | 7 | 87.5% | +20.1 | +17.8 | https://wetutorathome.com/results/ilead-tier-3-english |
+| Combined (both programs together) | 20 | 16 | 80% | ~+19.4 | ~+19.5 | Sum of both published case studies |
 
-**Standout individual cases (anonymize when published externally):**
-- Tyree Collins Jr. (Grade 8): +78 RIT, 9th to 99th percentile (Math)
-- Lorenzo Abonce (Grade 4): +75 RIT, 1st to 34th percentile
-- Maritza Phillips (Grade 6): +55 RIT, 16th to 96th percentile
-- Evelyn Aguilar (Grade 2): +43 RIT, 11th to 82nd percentile
+All three figures are valid. Use the one that matches your context:
+- Citing the published Math case study URL → use 75%, 12 students
+- Citing the published ELA case study URL → use 87.5%, 8 students
+- Making a general claim about the full Tier 3 program → use 80%, 20 students
 
-**Rule of thumb:** If the content cites a public URL (the published case study), use the 75% / 12 students figure. If the content cites internal pitch data, use the 81% / 21 students figure. Mixing them is the failure mode.
+**Retired figure:** 81% / 21 students. This was based on incorrect headcount. Do NOT use this figure in any content. If found in existing content, flag for revision.
+
+**Dosage details (both programs):** 17 hours per student, one-to-one synchronous delivery, same tutor across the cycle.
 2. **Verify against other A+ published case studies** for other cohort claims
 3. **Flag any claim that doesn't appear in published or internally documented sources** . A+ should not invent outcome data
 4. **Verify partner relationships** against target-schools.md before claiming a school as a partner
@@ -303,6 +302,7 @@ ACTION TAKEN: [Returned for revision / Skill updated / Pattern flagged]
 
 ## Version
 
+v1.2 . Updated May 13, 2026 . Corrected iLEAD AV figure from 81%/21 students (incorrect headcount) to 80%/20 students (verified). Added ELA case study URL and attribution. Retired 81% figure permanently.
 v1.1 . Updated May 11, 2026 (added correct attribution table for iLEAD AV data after first real run flagged 81% misattribution against published case study URL)
 v1.0 . Created May 11, 2026
 Foundation: SB 414 incident on May 11, 2026 surfaced the factual accuracy gap that brand-check cannot catch. Built specifically to prevent shipping content with wrong bill statuses, fabricated statistics, or invented A+ outcome data. iLEAD AV data correction added same day after first real run validated the skill.

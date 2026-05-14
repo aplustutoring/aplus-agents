@@ -139,7 +139,7 @@ When generating a Roman op-ed for a company post that ALSO has a Danielle op-ed 
    - Use the same opening claim or framing as Danielle's draft
    - End on the same closing line or share parallel sentence structure with Danielle's closing
    - Use Danielle's signature phrases ("the funding is there," "passed along year after year," "the structure isn't there," "listening to understand"). Those are Danielle's lane. Roman has his own.
-   - Duplicate any specific data point Danielle is citing. If she's quoting iLEAD AV combined Tier 3 81% (17 of 21 students), Roman uses different evidence or none. If she's quoting the published case study 75% (9 of 12 Math students), Roman uses different evidence or none.
+   - Duplicate any specific data point Danielle is citing. If Danielle is citing iLEAD AV combined Tier 3 80% (16 of 20 students), Roman uses different evidence or none. If she's citing the published Math case study 75% (9 of 12) or the published ELA case study 87.5% (7 of 8), Roman uses different evidence or none.
 
 3. **Required differentiation.** Roman's draft MUST:
    - Open with a statement that picks an argument, not a story
@@ -169,6 +169,7 @@ All Roman-voice content must be reviewed by Danielle (B2B content owner) before 
 
 ## Version
 
+v1.3 . Updated May 13, 2026 . Replaced retired 81% figure with verified 80% (combined), 75% (Math only), 87.5% (ELA only).
 v1.2 . Updated May 11, 2026 (clarified iLEAD AV data: 81% is the combined 21-student program, 75% is the published Math-only case study, both valid for different contexts)
 v1.1 . Updated May 8, 2026 (added hard differentiation rule + fixed em dash in example phrasings)
 v1.0 . Created May 6, 2026

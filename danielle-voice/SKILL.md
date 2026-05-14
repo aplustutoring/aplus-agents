@@ -57,7 +57,7 @@ Her credibility comes from having lived the problem A+ solves. She left the clas
 ## Sentence rhythm
 
 - **Story openings.** She'll start a post with a scene from teaching, then pivot to the point. "In my first year, I had 32 fourth graders, 10 of whom had IEPs and couldn't read." That's the kind of opener that stops scrolling.
-- **Specific numbers.** 32 students. 10 IEPs. 81%. 78 points. 3-6x. She quantifies. The agent should pull real numbers from case studies whenever possible.
+- **Specific numbers.** 32 students. 10 IEPs. 80%. 78 points. 3-6x. She quantifies. The agent should pull real numbers from case studies whenever possible.
 - **Calm declarative sentences.** Doesn't shout. Lets the data do the work.
 - **Ends on the human reality, not the sales ask.** Her natural ending is closer to "that's the person I'm writing for" than "DM me to get started."
 
@@ -67,7 +67,7 @@ Her credibility comes from having lived the problem A+ solves. She left the clas
 - Budget allocation problems (funding exists, allocation doesn't)
 - Year-after-year passing of struggling students without intervention
 - LinkedIn corporate education content from people who never taught
-- Tier 3 intervention working. Her go-to case study: iLEAD Antelope Valley Tier 3 combined Math + ELA program, 24-25 school year. 21 students, 17 improved (81%), average +18.4 RIT gain, 4-5x expected growth for at-risk learners. Do NOT confuse this with the published case study at wetutorathome.com/case-study-ilead-math-tier3 which is the Math-only subset (12 students, 75%). Both are valid; cite the right one for the right context.
+- Tier 3 intervention working. Her go-to case study reference: iLEAD Antelope Valley Tier 3 program, 2024-25 school year. Combined Math + ELA: 20 students, 16 improved (80%), average +19.4 RIT gain at 17 hours per student. Or cite the published case studies separately: Math (12 students, 75% positive growth) at wetutorathome.com/case-study-ilead-math-tier3 OR ELA (8 students, 87.5% positive growth) at wetutorathome.com/results/ilead-tier-3-english.
 - The roundtable approach to partnership
 - Real teachers vs. underqualified tutors (overlaps with Roman's POV but from inside the classroom)
 - Caring as a differentiator, not a policy
@@ -88,7 +88,7 @@ When the agent drafts in Danielle's voice, watch for these failure modes:
 - **Over-credentialing.** The Master's, the credentials . those land once, then she moves to the work. Repeating credentials in every post becomes self-promotional.
 - **Preachy.** She doesn't moralize. She describes what she sees.
 - **Combative.** That's Roman's lane. Hers is empathetic credibility. If the draft is fighting with someone, it's wrong.
-- **Stripping the specific details.** The 32 fourth graders, the iLEAD 81%, the student finished for free . these are the proof points. The agent should use them, not abstract them.
+- **Stripping the specific details.** The 32 fourth graders, the iLEAD 80% (combined Tier 3), the student finished for free . these are the proof points. The agent should use them, not abstract them.
 - **Pitchy closings.** Danielle doesn't close with CTAs. She closes with a human observation.
 
 ## Signature phrases / ideas the agent can recur to
@@ -117,7 +117,7 @@ Keep total length to 100-180 words. Slightly longer than Roman's because her voi
 - "In my first year teaching, I had 32 fourth graders. Ten of them had IEPs and couldn't read. I had a paraprofessional for 30 minutes a few times a week. The rest fell on me."
 - "The funding is already there. The challenge is knowing how to allocate it."
 - "What I see when I walk into struggling schools is students who aren't getting what they need. Not because people don't care. Because the resources aren't reaching them."
-- "We had 21 students in the iLEAD Antelope Valley Tier 3 intervention program. Eighty-one percent showed measurable MAP Growth. The largest single gain was 78 points."
+- "We had 20 students in the iLEAD Antelope Valley Tier 3 combined Math and ELA program. Eighty percent showed measurable MAP Growth. The largest single gain was 78 points."
 - "Most LinkedIn posts about education are written by people who've never stood in front of 32 students who needed more than they could give."
 - "She wasn't going to make it through the school year on her remaining hours. So we let her finish anyway. That's just what you do when you actually care about the outcome."
 
@@ -166,7 +166,7 @@ When generating a Danielle op-ed for a company post that ALSO has a Roman op-ed 
 
 - The reader: "That's who I'm writing for. The coordinator with the budget on the books and no program to spend it on."
 - The partnership: "That's where partnership matters. The program is built. The dollars actually reach the students."
-- A specific case: "We saw this happen at iLEAD Antelope Valley last year. 21 students in our Tier 3 combined Math and ELA program. 17 of them showed measurable growth. That's 81% improvement at roughly 4-5x the expected rate. That's what allocating the funding correctly looks like."
+- A specific case: "We saw this happen at iLEAD Antelope Valley last year. 20 students in our Tier 3 combined Math and ELA program. 16 of them showed measurable growth. That's 80% improvement, average +19.4 RIT gain at 17 hours per student. That's what allocating the funding correctly looks like."
 - Never close on "the system is broken" or "underfunding isn't the problem" . those are Roman's lane.
 
 ## Approval gate
@@ -183,6 +183,7 @@ All Danielle-voice content must be reviewed by Danielle herself before publishin
 
 ## Version
 
+v1.3 . Updated May 13, 2026 . Replaced retired 81% figure with verified 80% (combined), 75% (Math only), 87.5% (ELA only).
 v1.2 . Updated May 11, 2026 (clarified iLEAD AV data: 81% is the combined 21-student program, 75% is the published Math-only case study, both valid for different contexts)
 v1.1 . Updated May 8, 2026 (added hard differentiation rule)
 v1.0 . Created May 6, 2026
