@@ -1,2 +1,7 @@
 .claude/
 .DS_Store
+
+# Environment variables - never commit secrets
+.env
+.env.local
+*.env
