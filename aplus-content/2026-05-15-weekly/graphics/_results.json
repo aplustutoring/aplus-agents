@@ -1,0 +1,123 @@
+[
+  {
+    "name": "hero",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "hero.png",
+    "bytes": 820414,
+    "elapsed_s": 57.3,
+    "usage": {
+      "promptTokenCount": 229,
+      "candidatesTokenCount": 1569,
+      "totalTokenCount": 1798,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 229
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  {
+    "name": "social_card",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1536x1024",
+    "quality": "medium",
+    "file": "social-card.png",
+    "bytes": 1261004,
+    "elapsed_s": 33.1,
+    "usage": {
+      "input_tokens": 167,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 167
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1539
+    }
+  },
+  {
+    "name": "carousel_slide_1",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "carousel-slide-1.png",
+    "bytes": 1259236,
+    "elapsed_s": 33.0,
+    "usage": {
+      "input_tokens": 151,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 151
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1523
+    }
+  },
+  {
+    "name": "pull_quote",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1024",
+    "quality": "medium",
+    "file": "pull-quote.png",
+    "bytes": 1767645,
+    "elapsed_s": 51.0,
+    "usage": {
+      "input_tokens": 147,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 147
+      },
+      "output_tokens": 1756,
+      "output_tokens_details": {
+        "image_tokens": 1756,
+        "text_tokens": 0
+      },
+      "total_tokens": 1903
+    }
+  },
+  {
+    "name": "facebook",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "facebook.png",
+    "bytes": 830047,
+    "elapsed_s": 20.9,
+    "usage": {
+      "promptTokenCount": 194,
+      "candidatesTokenCount": 1591,
+      "totalTokenCount": 1785,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 194
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  }
+]
