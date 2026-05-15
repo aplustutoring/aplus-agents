@@ -5,6 +5,15 @@ description: Apply A+ Tutoring B2B brand guidelines (colors, typography, voice c
 
 # A+ Tutoring B2B Brand Kit
 
+## Logo assets
+
+Two logo variants live in this directory:
+
+- `logo.png` . two-color version (orange wordmark, navy book and calculator icon). Use on white, cream, or other light backgrounds.
+- `logo-white.png` . all-white version. Use on orange, navy, or other dark or saturated backgrounds where the two-color logo's orange wordmark would blend in.
+
+**Auto-selection rule:** use `logo-white.png` when the background is orange, navy, or otherwise dark or low-contrast. Use `logo.png` for everything else.
+
 ## When to apply
 
 Apply this brand kit whenever creating:
