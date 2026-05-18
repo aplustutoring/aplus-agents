@@ -44,13 +44,17 @@ content_gaps_addressed: Charter-LEA specific operational framing, what's-safe vs
 internal_links_recommended:
   - /case-study-ilead-math-tier3
   - /results/ilead-tier-3-english
+  - /ilead-exploration
+  - /heartwood-charter-school
   - /services
-  - /consultation
+
+cta_url: https://meetings.hubspot.com/successful/danielle-meetings-for-partnerships-programs
 
 external_links_cited:
   - https://www.edweek.org/policy-politics/trump-holds-back-2-billion-for-education-grants-what-will-happen-next/2026/05
   - https://nssa.stanford.edu/news/early-findings-show-evidence-high-impact-tutoring-increases-student-attendance-dc-schools
   - https://www.k12dive.com/news/1-in-3-schools-recovered-in-math-or-reading-post-pandemic-nwea-reports/813284/
+  - https://meetings.hubspot.com/successful/danielle-meetings-for-partnerships-programs
 
 schema_type: Article
 schema_author: A+ Tutoring Team

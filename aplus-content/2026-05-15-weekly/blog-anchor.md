@@ -51,11 +51,11 @@ The Learning Policy Institute, founded by Linda Darling-Hammond who currently se
 
 The intervention models that survive a withholding cycle share three features. They are funded primarily through formula grants (Title I, IDEA) and state-funded layers (LCFF supplemental and concentration, state intervention blocks) rather than competitive or program-specific federal grants. They are sized to the formula-grant floor so that even if categorical layers are delayed, the program continues on schedule. They are documented under MTSS so that the supplemental-not-supplant requirement holds up regardless of which funding source contributed in a given quarter.
 
-The charter LEAs that protect their intervention layer best in 2026-27 will be the ones that audit their funding mix this spring, identify which intervention dollars are non-volatile, and size their vendor commitments to that floor. Categorical grants that arrive can fund additional capacity. Categorical grants that are delayed do not collapse the program.
+The charter LEAs that protect their intervention layer best in 2026-27 will be the ones that audit their funding mix this spring, identify which intervention dollars are non-volatile, and [size their vendor commitments to that floor](https://wetutorathome.com/heartwood-charter-school). Categorical grants that arrive can fund additional capacity. Categorical grants that are delayed do not collapse the program.
 
 ## What A+ sees inside Tier 3 intervention at scale
 
-A+ Tutoring, a California K-12 virtual intervention provider working with charter schools, operates Tier 3 programs across several partner schools. The 2024-25 outcomes at iLEAD, a Southern California charter network, illustrate the funding-mix point.
+A+ Tutoring, a California K-12 virtual intervention provider working with charter schools, operates Tier 3 programs across several partner schools. The 2024-25 outcomes at [iLEAD](https://wetutorathome.com/ilead-exploration), a Southern California charter network, illustrate the funding-mix point.
 
 The Math Tier 3 program served 12 students with 17 hours of one-to-one synchronous tutoring per student. Nine of the twelve students improved on their NWEA MAP Growth scores, a 75 percent improvement rate. The 12-student cohort averaged a 20.8 percentile point gain ([published case study](https://wetutorathome.com/case-study-ilead-math-tier3)).
 
@@ -75,6 +75,6 @@ Execute vendor contracts now, with payment terms that match the formula-grant di
 
 ## About A+ Tutoring
 
-A+ Tutoring is a California K-12 virtual tutoring company serving charter schools and intervention programs. The company specializes in synchronous online Tier 2 and Tier 3 small-group instruction in ELA and math, delivered during the school day with a consistent tutor across the cycle. A+ works inside formula-grant and state-funded layers and produces the documentation charter LEAs need for monitoring under MTSS.
+A+ Tutoring is a California K-12 virtual tutoring company serving charter schools and intervention programs. The company specializes in synchronous online [Tier 2 and Tier 3 small-group instruction](https://wetutorathome.com/services) in ELA and math, delivered during the school day with a consistent tutor across the cycle. A+ works inside formula-grant and state-funded layers and produces the documentation charter LEAs need for monitoring under MTSS.
 
-To discuss your 2026-27 funding mix and how a Tier 3 intervention program fits the non-volatile base, [request a consultation](https://wetutorathome.com).
+To discuss your 2026-27 funding mix and how a Tier 3 intervention program fits the non-volatile base, [book a 30-minute conversation with Danielle](https://meetings.hubspot.com/successful/danielle-meetings-for-partnerships-programs).
