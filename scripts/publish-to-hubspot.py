@@ -126,24 +126,58 @@ def markdown_to_html(md_path):
 def check_existing_file(filename):
     """Exact-name lookup against HubSpot Files. Returns the file record or None.
 
-    HubSpot's name field stores the basename without extension, so we match
-    on both the bare name (no extension) and the full filename for safety.
+    HubSpot's name field stores the basename without extension. We compare on
+    both the bare stem and the full filename.
+
+    Tries the v3 listing endpoint first; if it returns a non-200 (HubSpot's
+    v3 `GET /files/v3/files` has intermittently returned 405 starting 2026-05-19),
+    falls back to the v2 filemanager endpoint which is the older API still
+    serving valid responses. Both endpoints accept Bearer auth with the
+    Private App token.
     """
     bare = Path(filename).stem
+
+    # v3 attempt
     r = requests.get(
         f"{HUBSPOT_BASE}/files/v3/files",
         headers=auth_headers(),
         params={"name": bare, "limit": 20},
         timeout=30,
     )
-    log("check_existing_file", r.status_code, f"filename={filename}")
-    if r.status_code != 200:
+    log("check_existing_file_v3", r.status_code, f"filename={filename}")
+    if r.status_code == 200:
+        try:
+            for record in r.json().get("results", []):
+                record_name = record.get("name", "")
+                if record_name == bare or record_name == filename:
+                    return record
+            return None
+        except ValueError:
+            pass  # fall through to v2
+
+    # v2 fallback (older filemanager endpoint)
+    r2 = requests.get(
+        f"{HUBSPOT_BASE}/filemanager/api/v2/files",
+        headers=auth_headers(),
+        params={"name": bare, "limit": 20},
+        timeout=30,
+    )
+    log("check_existing_file_v2", r2.status_code, f"filename={filename}")
+    if r2.status_code != 200:
+        # Both endpoints failed; let upload proceed without dedup
         return None
-    for record in r.json().get("results", []):
-        record_name = record.get("name", "")
-        # HubSpot may store name with or without extension; compare both
-        if record_name == bare or record_name == filename:
-            return record
+    try:
+        for obj in r2.json().get("objects", []):
+            if obj.get("name") == bare:
+                # v2 returns a `url` field that's the canonical public URL —
+                # identical to what the v3 upload endpoint returns.
+                return {
+                    "id": obj.get("id"),
+                    "name": obj.get("name"),
+                    "url": obj.get("url"),
+                }
+    except ValueError:
+        return None
     return None
 
 

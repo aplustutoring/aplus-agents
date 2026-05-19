@@ -128,21 +128,53 @@ def auth_headers():
 
 
 def check_existing_file(filename):
-    """Exact-name lookup against HubSpot Files."""
+    """Exact-name lookup against HubSpot Files with v3 -> v2 fallback.
+
+    HubSpot's v3 `GET /files/v3/files` started returning 405 intermittently
+    around 2026-05-19. When the v3 lookup fails, we fall back to the older
+    v2 filemanager endpoint which still serves valid responses.
+    """
     bare = Path(filename).stem
+
+    # v3 attempt
     r = requests.get(
         f"{HUBSPOT_BASE}/files/v3/files",
         headers=auth_headers(),
         params={"name": bare, "limit": 20},
         timeout=30,
     )
-    log("check_existing_file", r.status_code, f"filename={filename}")
-    if r.status_code != 200:
+    log("check_existing_file_v3", r.status_code, f"filename={filename}")
+    if r.status_code == 200:
+        try:
+            for record in r.json().get("results", []):
+                record_name = record.get("name", "")
+                if record_name == bare or record_name == filename:
+                    return record
+            return None
+        except ValueError:
+            pass
+
+    # v2 fallback
+    r2 = requests.get(
+        f"{HUBSPOT_BASE}/filemanager/api/v2/files",
+        headers=auth_headers(),
+        params={"name": bare, "limit": 20},
+        timeout=30,
+    )
+    log("check_existing_file_v2", r2.status_code, f"filename={filename}")
+    if r2.status_code != 200:
         return None
-    for record in r.json().get("results", []):
-        record_name = record.get("name", "")
-        if record_name == bare or record_name == filename:
-            return record
+    try:
+        for obj in r2.json().get("objects", []):
+            if obj.get("name") == bare:
+                # v2 returns a `url` field that's the canonical public URL.
+                return {
+                    "id": obj.get("id"),
+                    "name": obj.get("name"),
+                    "url": obj.get("url"),
+                }
+    except ValueError:
+        return None
     return None
 
 
