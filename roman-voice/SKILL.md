@@ -97,12 +97,55 @@ When the agent drafts in Roman's voice, watch for these failure modes:
 
 When Roman shares an A+ company LinkedIn post with personal commentary, the op-ed should:
 
-1. **Hook (1-2 sentences):** A statement that picks an argument with the topic, not a summary of it
-2. **Why this matters (2-3 sentences):** Roman's specific take, often pointing at the failure mode the post is addressing
+1. **Hook (1-2 sentences):** A statement that picks an argument with the topic, not a summary of it. Opens with a personal observation or specific scene from A+ operations, NOT an abstract thesis. The reader should feel like Roman is talking to them directly from the first sentence, not delivering a press release. (Updated v1.4.)
+2. **Why this matters (2-3 sentences):** Roman's specific take, often pointing at the failure mode the post is addressing. Include a personal experience signal where it lands naturally ("I've watched this play out at...", "After 16 years of building...", "Here's what I see when I sit down with charter directors..."). (Updated v1.4.)
 3. **The A+ angle (1-2 sentences):** Connect to what A+ does differently . but earn it, don't pitch
-4. **Close (1 sentence):** A flat statement or uncomfortable question. No CTA.
+4. **Close (1 sentence):** An invitation to action that feels like a peer talking, not a brand selling. Can be a flat statement, an uncomfortable question, or a direct line to the reader ("If you're sitting on a Tier 3 cohort right now, you already know what I'm saying."). NO formal CTA. NO "click here." Just a peer-to-peer close that creates connection rather than just arguing a point. (Updated v1.4.)
 
 Keep total length to 80-150 words. LinkedIn op-eds that overstay their welcome bury the conviction.
+
+## Sound like Roman, not like a corporate brand (new in v1.4)
+
+A failure mode the v1.3 voice did not catch hard enough: op-eds that read like a "branded Roman" instead of like Roman. The fix is enforced in v1.4:
+
+### Required signals of personal voice
+
+- **First-person "I" statements.** Every Roman op-ed includes at least one "I" statement that grounds the take in his actual experience. "I've watched this..." "I've sat in rooms where..." "I keep getting the same call from charter directors who..." Op-eds with zero "I" statements fail this check.
+- **Personal anecdote or observation in the opening.** Roman opens by describing something he saw, heard, or experienced, not with a thesis. The thesis lands AFTER the anecdote.
+- **Less polished prose.** Roman's voice has rough edges. Smoothing them out makes it generic. Allow short fragments. Allow a sentence that ends on a flat fact. Allow occasional rhythm break.
+- **Founder perspective.** What Roman sees that the charter director or special programs coordinator does NOT see, because Roman runs the operation that serves their interventions. Use that asymmetry: "Charter directors see this from the outside. I see it from the inside, where the kids actually show up."
+- **Roman's quirks intact:** directness, occasional rough language sanitized for B2B (e.g., "shitty education" becomes "broken education" in published text), peer-to-peer not consultant-to-client tone.
+
+### Bot-like phrases to avoid
+
+The following openers and connectives are corporate-brand fingerprints and must NOT appear in Roman's op-eds:
+
+- "As we navigate..."
+- "It's important to note that..."
+- "Furthermore..."
+- "In today's [landscape / world / environment]..."
+- "Let's dive into..."
+- "Moving forward..."
+- "At the end of the day..."
+- "We need to have a conversation about..."
+- "Let me unpack..."
+- "Here's the thing..." (sometimes OK if it's a setup for a hard claim, but defaults to fail)
+
+When any of these appear in a draft, rewrite the sentence to lead with the substantive observation instead.
+
+### Connect with the audience from the FIRST sentence
+
+The first sentence does NOT open with an abstract statement. It opens with something the reader recognizes immediately as their own situation OR with a specific observation Roman has made. Examples of passing first sentences:
+
+- "I've had three charter directors call me this week with the same problem."
+- "Watched a fifth-grader read aloud yesterday who tested at second-grade level."
+- "The Title III money was sitting there. Nobody touched it."
+
+Examples of failing first sentences (rewrite required):
+
+- "In today's evolving education landscape, charter schools face new challenges."
+- "As we approach the end of the fiscal year, intervention funding is top of mind."
+- "It's important to understand the role of Title III in addressing LTEL outcomes."
 
 ## Example phrasings Roman would use
 
@@ -168,6 +211,8 @@ All Roman-voice content must be reviewed by Danielle (B2B content owner) before 
 - `aplus-case-study` . Roman op-eds often cite case study evidence
 
 ## Version
+
+v1.4 . Updated 2026-05-19 . Applied Danielle's feedback to make Roman sound like Roman, not like a corporate brand. Required: first-person "I" statements grounded in actual experience, personal anecdote or observation in the opening (not thesis-first), less polished prose with rough edges intact, founder perspective signals ("After 16 years of...", "I've watched..."), peer-to-peer close that creates connection rather than just arguing a point. Banned bot-like phrases: "As we navigate...", "It's important to note that...", "Furthermore...", "In today's landscape...", "Let's dive into...", "Moving forward...", "At the end of the day...". First sentence must connect with the audience immediately, not open with abstract statement.
 
 v1.3 . Updated May 13, 2026 . Replaced retired 81% figure with verified 80% (combined), 75% (Math only), 87.5% (ELA only).
 v1.2 . Updated May 11, 2026 (clarified iLEAD AV data: 81% is the combined 21-student program, 75% is the published Math-only case study, both valid for different contexts)

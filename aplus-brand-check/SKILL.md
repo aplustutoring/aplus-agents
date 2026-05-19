@@ -165,6 +165,46 @@ When content is tagged as a blog post (output from `aplus-blog-longform`), two a
 
 Both checks correspond to the GEO Optimization Pass that `aplus-blog-longform` v1.1 runs at draft time. Brand-check is the enforcement layer that catches drift if the GEO pass was skipped or its output was diluted during revision.
 
+### Blog post checks (added in v1.2)
+
+These checks correspond to the v1.5 rules in `aplus-blog-longform`. When the content is tagged as a blog post, ALL of the following must pass:
+
+9. **No trailing colons on titles.** `h1_title`, `meta_title`, and any `og:title` tag must NOT end in `:`. Mid-title colons are OK. If a title ends in a colon, fail with the note: "Title ends in a colon. Either drop the trailing colon or rewrite so the colon falls in the middle of the title."
+
+10. **Headlines capitalized.** Every H1, H2, and H3 in the blog body uses Title Case minimum. All-lowercase headings fail. ALL CAPS is acceptable only for H1 hero treatments, not body headings.
+
+11. **Quotation marks present when text is quoted from a source.** Every direct quote attributed to a named expert (Linda Darling-Hammond, Susanna Loeb, NWEA, CDE, etc.) is wrapped in proper quotation marks. Bare quoted text without quotation marks fails this check.
+
+12. **Image alt text is descriptive natural English.** Every image alt attribute is descriptive, properly spelled, and over 8 characters. Failures: missing alt, "image", "hero", broken English like "Mother en kid", garbled text from a paste error.
+
+13. **CTA wording is audience-specific.** The blog's closing CTA mentions the article topic, the audience role (school admin / charter director / parent), OR a specific operational concern (intervention, Title III, Dashboard, child's reading, etc.). Generic "Book My Free Consultation", "Request a Consultation", "Get Started", "Contact Us" all fail.
+
+14. **Proof points present before CTA in B2B blogs.** Section 8 includes a proof-points line citing verified iLEAD outcomes (75% Math Tier 3, 87.5% ELA Tier 3, 80% Combined Tier 3) IMMEDIATELY before the button CTA. If the proof points are absent or appear elsewhere, fail.
+
+15. **81% never appears.** The retired 81% figure is permanently banned. If the body, metadata, schema, pull-quotes, or any graphic text contains "81%" or "81 percent" or "21 students" (the retired combined sample size), fail. Replace with 75% / 87.5% / 80% as appropriate.
+
+### Graphic checks (added in v1.2)
+
+When content includes graphics (hero, social card, pull-quote graphics, data viz, carousel slides, IG post/story, Facebook), ALL of the following must pass:
+
+16. **No date on graphics.** "May 20, 2026" or any date watermark on the graphic fails. Dates render at publication via HubSpot, not on the asset itself.
+
+17. **No "A+ Tutoring blog" subtitle.** Redundant with the logo. Fail.
+
+18. **Heavy A+ brand colors visible.** At least two of A+ Navy / A+ Orange / A+ Gold visible in the composition. Single-color generic graphics fail.
+
+19. **Typography is Playfair Display + DM Sans.** Any other font on text overlays fails.
+
+20. **Dimensions match channel.** Hero is landscape (1536x1024 or similar 3:2). Social card is 1200x630. Square 1080x1080 is reserved for Instagram and the preset stat graphic. A blog hero shipped as 1080x1080 fails.
+
+21. **Logo placement clean on every slide.** A+ logo does not overlap text, another logo, or a key visual element. Run a visual logo-overlap check on every LinkedIn carousel slide before delivery.
+
+22. **Swipe indicator only on multi-slide carousels.** A single graphic with a swipe / chevron indicator fails.
+
+23. **Pull-quote graphic cap.** Maximum 1-2 pull-quote graphics per blog bundle. 3+ fails (move the extra graphic's content into a data viz instead).
+
+24. **Hero is photographic and homeschool-set.** A hero rendered as a text-on-color treatment fails. A hero showing a traditional classroom (rows of desks, chalkboard, lockers) fails. Homeschool settings only: kitchen, home office, dining table, bedroom desk.
+
 ### Image / visual failures (when content includes visuals)
 
 - Stock photos that obviously look like stock photos
@@ -274,6 +314,9 @@ If the same writer agent fails brand-check 3 times in a row on similar issues, l
 - `aplus-case-study` . case study drafts run through brand-check before review
 
 ## Version
+
+v1.2. Updated 2026-05-19
+Applied Danielle's feedback. Added blog post checks: no trailing colons on titles or meta titles, headlines capitalized (Title Case minimum), quotation marks required when text is quoted from a source, image alt text must be descriptive natural English (catches "Mother en kid" type errors), CTA wording must be audience-specific (mentions topic / role / operational concern), proof-points line citing verified iLEAD outcomes required immediately before CTA in B2B blogs, retired 81% figure permanently banned everywhere (body, metadata, schema, pull-quotes, graphics). Added graphic checks: no date on graphics, no "A+ Tutoring blog" subtitle, heavy A+ brand colors required (at least two of Navy / Orange / Gold visible), Playfair Display + DM Sans typography required, dimensions must match channel (blog-body-width landscape NOT square), clean logo placement on every carousel slide with overlap check, swipe indicator only on multi-slide carousels, pull-quote graphic cap 1-2 per bundle, hero must be photographic and homeschool-set (never classroom).
 
 v1.1. Updated May 13, 2026
 Expanded AI fingerprint detection. Added 13 new banned words to the AI-detection vocabulary list (additionally, landscape, testament, pivotal, crucial, myriad, navigating, robust, underscore, noteworthy, moreover, furthermore). Added two new failure categories: Sentence pattern detection (catches "It's important to note that...", "In conclusion...", "Let's dive into...", and similar AI opener patterns) and Adverb-adjective inflation (catches "absolutely critical," "extremely important," and the general intensifier-adverb-plus-adjective pattern). Added two new blog-post-specific checks (primary keyword presence in first 100 words, standalone-summary test for the opening). Sources: ivankuznetsov/claude-seo humanize work and Wikipedia AI Cleanup guidelines.

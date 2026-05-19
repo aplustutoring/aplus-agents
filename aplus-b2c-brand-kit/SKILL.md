@@ -55,26 +55,27 @@ Do NOT apply this brand kit for:
 - **Charcoal:** `#2E2E2E` — primary body text
 - **Light Gray:** `#E8E8E8` — dividers, borders, subtle backgrounds
 
-## Typography
+## Typography (updated in v1.1)
 
 ### Headlines
-- **Font:** Inter (Google Font, free)
+- **Font:** Playfair Display (Google Font, free)
 - **Weight:** Bold (700) for H1, Semibold (600) for H2/H3
+- **Case:** Title Case minimum on every headline. Lowercase headings fail.
 - **Size guide:**
   - H1: 32-40pt
   - H2: 24-28pt
   - H3: 18-22pt
 
 ### Body
-- **Font:** Inter (Google Font, free)
-- **Weight:** Regular (400)
+- **Font:** DM Sans (Google Font, free)
+- **Weight:** Regular (400), Medium (500) for emphasis
 - **Size guide:**
   - Body: 16pt
   - Small: 14pt
   - Caption: 12pt
 
-### Why one font?
-Inter handles both headline and body well. Reduces decision-making, ensures consistency, works across all platforms (Canva, HubSpot, LinkedIn, Instagram).
+### Why two fonts?
+Playfair Display (serif) for headings and DM Sans (sans-serif) for body creates the visual hierarchy that mobile-first reading needs. Headings must be visibly distinct from body. Same-font heading/body pairings fail. Inter is retired from the A+ system as of v1.1.
 
 ## Color combinations (do this)
 
@@ -91,13 +92,36 @@ Inter handles both headline and body well. Reduces decision-making, ensures cons
 ❌ Charcoal on charcoal variations (no hierarchy)
 ❌ More than 3 colors in one composition (visual chaos)
 
-## Image style
+## Image style (updated in v1.1)
+
+### Branded population imagery (new in v1.1)
+
+B2C images must look BRANDED to the A+ population, not generic AI. The audience is California charter homeschool families. Generic stock or generic AI families that could be advertising any tutoring service fail this check.
+
+Required signals of branded imagery:
+- Family scenes that match California charter homeschool demographics (mixed ethnicity, mixed income, mixed family structures)
+- Children at home (kitchen, dining table, living room, backyard, bedroom desk), NOT in traditional classrooms
+- Diverse, real-looking children, NOT stock-photo "model" aesthetics
+- Warm color palette overlay tied to A+ Orange
+- A+ logo placed cleanly in the composition (not floated over a face)
+
+### Avoid uncanny valley AI face artifacts
+
+Every AI-generated B2C image with a face must be visually verified before shipping. Watch for:
+- Asymmetric eyes, fingers, or teeth
+- Hair that blurs into the background
+- Hands with the wrong number of fingers
+- Faces that look subtly waxy or plastic
+- Background objects that warp behind the subject
+
+If any artifact is visible, regenerate. A bad AI face on a parent-facing post erodes trust faster than no image.
 
 ### Use
 - Real photos of students with tutors (when available, with consent)
 - Warm, naturally-lit photography
 - Diverse families and students reflecting actual A+ client base
 - Bright, hopeful imagery — kids engaged in learning, not stressed
+- Specific moments (a kid reading aloud, a parent helping with math at the kitchen counter) over generic group shots
 
 ### Avoid
 - Stock photos of overly happy generic families that don't match A+ demographics
@@ -106,6 +130,7 @@ Inter handles both headline and body well. Reduces decision-making, ensures cons
 - Comic Sans or any decorative fonts
 - Gradients with more than 2 colors
 - Stock photos that obviously look like stock photos
+- AI-generated faces with uncanny-valley artifacts (asymmetric eyes, warped hands, plastic skin)
 
 ## Voice cues for B2C content
 
@@ -116,6 +141,17 @@ When this skill is active, content should:
 - Avoid educational jargon (LTEL, MTSS, Title III) — that's B2B language
 - Include specific testimonial-style language when possible
 - Speak to the parent's hopes, not just the student's needs
+
+## Facebook-specific rules (new in v1.1)
+
+Facebook native posts are SHORT. The platform rewards posts that the parent reads in 5-8 seconds.
+
+- **Text length cap:** 80-150 words. Long-form essays bury the CTA.
+- **Reading level:** 8th grade max. Busy parents skim during pickup, between meetings, while making dinner. If the post requires more than one read to understand, the reading level is too high. Use plain words.
+- **Strong CTA in every post.** Each Facebook post ends with one clear next step: "Reply YES if you want to know more," "Click to read the full article," "Tag a parent who needs to see this." Posts without a CTA fail this check.
+- **Hashtags optional, not required.** Facebook hashtags do not function the way Instagram hashtags do. They add visual noise and rarely drive discovery on Facebook. Use 0-2 hashtags only if they meaningfully add context. NEVER use 5+ hashtags on a Facebook post.
+- **Image required.** Facebook native posts without an image have ~50% lower reach than posts with one. Every Facebook post in a weekly bundle ships with a paired image.
+- **Specific over abstract.** "Your child has been struggling with reading since October" outperforms "Many students face reading challenges." Specific scenes break through the scroll.
 
 ## Tone descriptors
 
@@ -154,5 +190,7 @@ All B2C content drafted using this brand kit must be reviewed by Paola (B2C cont
 
 ## Version
 
-v1.0 — Created May 6, 2026
+v1.1 . Updated 2026-05-19 . Applied Danielle's feedback: typography switched from single Inter to Playfair Display headings + DM Sans body to match blog v1.5. Title Case minimum on all headlines. Branded population imagery rules (California charter homeschool families, diverse and real-looking, not stock-photo aesthetic, warm color overlay tied to A+ Orange). Uncanny valley AI face artifact rules (visually verify every AI-generated face before shipping). Facebook-specific rules: 80-150 word cap, 8th-grade reading level max, strong CTA required in every post, hashtags optional (0-2 max), image required, specific scenes over abstractions.
+
+v1.0 . Created May 6, 2026
 Foundation: HubSpot brand color (#ef5829) + custom palette designed for B2C/B2B distinction

@@ -78,8 +78,29 @@ The agent records all four findings in a "SEO Research Notes" section at the top
 
 ### Document 1: Published blog version (SEO-ready)
 
+#### Typography rules (v1.5)
+
+The blog post must specify these fonts in the metadata block so the HubSpot CMS template applies them. They are NOT optional and they are NOT the same font for headings and body.
+
+- **Headings (H1, H2, H3):** Playfair Display (serif, expressive, weight 700 for H1 and H2, weight 600 for H3)
+- **Body copy:** DM Sans (sans-serif, weight 400 for body, weight 500 for inline emphasis)
+- **All headings are capitalized in Title Case minimum.** H1 may be SET IN ALL CAPS if it improves visual weight; H2 and H3 stay Title Case. Lowercase headings are a failure mode and must be flagged.
+- **Headings and body must be visually distinct fonts.** A serif heading paired with a sans-serif body is the required pairing. Same-font heading/body or two-serif/two-sans pairings fail this check.
+- **Mobile-first layout.** The blog must read cleanly on a phone first, desktop second. That means short paragraphs (3-4 lines on mobile, not 8), pull-quote graphics that scale, no wide tables that force horizontal scroll, and CTAs that hit a usable tap-target on mobile.
+
+The HubSpot draft body must include the Google Font import line at the top of the published HTML (handled by the publish script) so the fonts render in the CMS preview:
+```
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+```
+
+#### Title rules (v1.5)
+
+- **NO trailing colons.** The H1, `meta_title`, and `og:title` must NOT end in `:`. Lines like `Title III LTEL Funding:` fail this check. Either drop the colon entirely (`Title III LTEL Funding`) or rewrite the title so the colon falls in the middle (`Title III LTEL Funding: What 2026 Charter Directors Need to Know`).
+- A colon mid-title is fine. A colon at the end is never fine.
+- This applies in three places: `h1_title`, `meta_title`, and any social-card title text rendered into graphics.
+
 #### Word count
-1,200 to 1,500 words. Not shorter (insufficient SEO authority). Not longer (reader drop-off).
+1,200 to 1,500 words. Not shorter (insufficient SEO authority). Not longer (reader drop-off). Sparse articles (under 1,200 words, or 1,200+ words with only transitional content between sections) fail this check. Every section must carry its own weight in actionable information, data, or specifics. Generalizations that could appear in any blog post are filler.
 
 #### Audience and voice
 - **Audience:** charter directors, special programs coordinators, district leaders, intervention coordinators
@@ -108,23 +129,55 @@ Deeper into the data. Pull from authoritative sources (NWEA, Stanford, Brookings
 Evidence-based interventions, models, or approaches that address the problem. **This is where A+ earns the right to mention itself, but don't pitch yet.** Describe the broader category of solutions that work, citing research where possible (high-impact tutoring, MTSS frameworks, MAP-aligned interventions, etc.).
 
 **6. What A+ Sees in the Field (~200 words)**
-**This is where A+ leverages its institutional knowledge.** What do A+'s partner schools experience? What does iLEAD Math Tier 3 show (12 students, 9 of 12 with positive growth, +20.8 percentile gain, 17 hours/student)? What does the iLEAD AV combined Tier 3 show (21 students, 17 improved, 81% improvement rate)? Use concrete data with proper attribution. Do NOT make claims A+ can't back up.
+**This is where A+ shares its institutional knowledge.** What do A+'s partner schools experience? Use the verified iLEAD outcomes: Math Tier 3 shows 75% (9 of 12 students) reaching growth benchmarks; ELA Tier 3 shows 87.5% (7 of 8 students); Combined Tier 3 shows 80% (16 of 20 students) at 3-6x national MAP Growth benchmarks. **NEVER cite the retired 81% figure.** Use concrete data with proper attribution. Do NOT make claims A+ can't back up.
 
 **7. What School Leaders Can Do Next (~150 words)**
-Practical, actionable steps. Not "contact us." Steps the reader can take regardless of whether they ever talk to A+: review their Title III allocation, audit their LTEL caseload, examine MAP data by subgroup, request specific reports from their authorizer. Make this useful even to readers who never become A+ customers.
+Practical, actionable steps. Not "contact us." Steps the reader can take regardless of whether they ever talk to A+: review their Title III allocation, audit their LTEL caseload, examine MAP data by subgroup, request specific reports from their authorizer. Make this useful even to readers who never become A+ customers. **Required for school audiences (v1.5):** include a 5th action step specifically for administrators and federal program coordinators (e.g., "If you sit on the federal programs side of the budget, here is the one report to pull this month..."). This 5th step makes the article useful to the busy program coordinator who skims to the action list.
 
-**8. About A+ Tutoring (~100 words)**
-A short, factual closer about who A+ is and what they do. Not a sales pitch. Tone: "If you'd like to learn more about how A+ approaches this work, here's where to start." Link to the consultation page. ONE call to action, not three.
+**Reflection questions (new in v1.5)**
+At one or two strategic points in the body (typically after Section 3 and Section 5), embed a short reflection question that engages the reader's thinking rather than just delivering information. Examples:
+- "When was the last time you audited your school's reclassification trajectory by subgroup?"
+- "If your Tier 3 cohort were named individually, would the same students appear next year?"
+
+These questions are formatted as a styled callout (italic, indented, or a colored box in the CMS template), not as a body paragraph. They force the reader out of skim mode for a moment.
+
+**8. About A+ Tutoring + Proof Points + CTA (~100 words)**
+A short, factual closer about who A+ is and what they do. **Required before the CTA (v1.5):** include a proof-points line citing the verified iLEAD outcomes. Example phrasing: "A+ partner schools have shown 75% of Math Tier 3 students reaching growth benchmarks, 87.5% in ELA Tier 3, and 80% in the combined Tier 3 cohort, at 3-6x national MAP Growth benchmarks." Do NOT use the retired 81% figure. Do NOT invent figures. Use only the published case-study numbers (75% / 87.5% / 80%).
+
+Then a button CTA (see CTA rules below). ONE call to action, not three.
 
 #### Required components in every blog post
 
 - At least 3 inline data points with sources (linked when possible)
-- At least 1 specific A+ outcome citation (iLEAD program data with proper attribution)
-- At least 1 quote or named expert reference (Linda Darling-Hammond, Susanna Loeb, NWEA leadership, etc.) properly attributed
+- At least 1 specific A+ outcome citation (iLEAD program data with proper attribution: 75% Math Tier 3, 87.5% ELA Tier 3, 80% Combined; never 81%)
+- At least 1 quote or named expert reference (Linda Darling-Hammond, Susanna Loeb, NWEA leadership, etc.) **wrapped in proper quotation marks** ("..." for direct quotes; missing quotation marks on direct quotes fails brand-check in v1.2)
 - 2-3 inline links to authoritative sources (CDE, NWEA, EdSource, Brookings, etc.)
 - 1-2 internal links to other A+ pages (case studies, services, related blog posts)
-- ONE clear CTA at the end, not throughout
-- Subheadings for skimmability (H2 for major sections, H3 for sub-points)
+- **Documentation links (v1.5):** when discussing compliance topics (supplement-not-supplant, Title III allowable uses, ESSA evidence tiers, CSI/ATSI procedures, etc.) link directly to the authoritative federal or state documentation. The reader should be able to verify the compliance claim in one click.
+- **Clickable links to further research (v1.5):** every external study, bill, or report cited must be hyperlinked. Bare citations without links fail this check.
+- 1-2 reader reflection questions at strategic points (see Section 7 + reflection callout rules)
+- ONE clear CTA at the end (button format, audience-specific wording, see CTA rules below), not throughout
+- Highlighted important information for busy readers: bold key terms, callout boxes for proof points and reflection questions, pull-quote graphics for the 1-2 strongest sentences
+- Subheadings for skimmability (H2 for major sections, H3 for sub-points), all in Title Case minimum
+
+#### Image alt text rules (v1.5)
+
+Every image in the blog (hero, inline pull-quote graphics, infographics) must have alt text that is:
+- **Descriptive of what is visually shown**, not just a label. "Mother and child studying together at a kitchen table" passes. "Mother en kid" or "hero image" fails.
+- **Natural English**, no shorthand or typos. Brand-check v1.2 will flag broken alt text.
+- **Includes the primary keyword naturally where relevant**, but not stuffed.
+- **Under ~125 characters** so screen readers don't truncate.
+
+#### Nationally-applicable language (v1.5)
+
+A+ Tutoring serves California first, but the blog is a permanent SEO asset that will be found by school admins in other states. Use nationally-applicable language wherever possible:
+
+- "state English proficiency assessment" instead of "ELPAC prep"
+- "state academic standards" instead of "CA CCSS" (unless the post is specifically about CA standards)
+- "annual federal Title III allocation" instead of "your Title III allocation per LEA via CDE"
+- Spell out the state-specific acronym in parentheses when first used: "California's School Dashboard (the state's annual school accountability rating system)"
+
+This rule applies UNLESS the topic itself is California-specific (e.g., a post about the CA Dashboard or AB 2774). For topics with national reach, default to language a Texas or Florida charter director would also recognize.
 
 #### Voice rules (inherited from aplus-b2b-brand-kit)
 
@@ -187,12 +240,26 @@ The final output bundle includes:
 
 ```
 ---
-SEO METADATA. HUBSPOT PUBLICATION READY (v1.1)
+SEO METADATA. HUBSPOT PUBLICATION READY (v1.5)
 
 url_slug: /[topic-keyword-phrase-hyphenated]
-h1_title: [Compelling H1 with primary keyword + specific outcome or finding]
-meta_title: [primary variant from meta-tags-optimizer]
+h1_title: [Compelling H1 with primary keyword + specific outcome or finding. NO TRAILING COLON.]
+meta_title: [primary variant from meta-tags-optimizer. NO TRAILING COLON.]
 meta_description: [primary variant from meta-tags-optimizer]
+
+typography:
+  heading_font: Playfair Display
+  heading_weights: [600, 700]
+  body_font: DM Sans
+  body_weights: [400, 500]
+  heading_case: Title Case
+
+cta:
+  text: [audience-specific button wording, e.g. "Let's Talk About Your School's Intervention Plan"]
+  url: https://meetings.hubspot.com/successful/danielle-meetings-for-partnerships-programs
+  style: button-orange
+
+proof_points_before_cta: [iLEAD verified outcomes line. e.g. "75% of Math Tier 3 students, 87.5% in ELA Tier 3, 80% combined Tier 3."]
 
 primary_keyword: [from keyword-research output]
 keyword_search_volume: [from keyword-research output]
@@ -301,19 +368,36 @@ Every A+ blog post must include the following links where contextually relevant.
 - https://wetutorathome.com/services (use when describing A+ operational model or Tier 2 / Tier 3 instruction)
 - https://wetutorathome.com/home-school-tutoring (use when discussing homeschool families)
 
-### Required CTA
+### Required CTA (updated in v1.5)
 
-Every B2B blog post must close with a CTA linking to Danielle's booking page:
+Every B2B blog post must close with a **BUTTON CTA** (not a plain text link) linking to Danielle's booking page:
 
 `https://meetings.hubspot.com/successful/danielle-meetings-for-partnerships-programs`
 
-CTA language options (choose based on blog tone):
+**Button format requirements:**
+- Rendered as an HTML button or styled `<a>` with button styling (A+ Orange background, white text, Playfair Display or DM Sans semibold, generous padding, mobile tap-target ≥ 44px height)
+- Centered or left-aligned in its own paragraph, not inline with body text
+- Appears AFTER the proof-points line (see Section 8) and ONLY at the end of the post
 
-- "Book a 30-minute conversation with Danielle"
-- "Schedule time with Danielle to discuss your school's intervention strategy"
-- "Talk to Danielle about how A+ partners with charter schools like yours"
+**Audience-specific wording (required in v1.5):**
 
-DO NOT use generic CTAs like "request a consultation" or "contact us" that point to the homepage. Always use Danielle's specific booking link.
+The CTA wording must be specific to the article topic AND the audience. Generic CTAs like "Book My Free Consultation" or "Request a Consultation" fail this check.
+
+For **school admin / charter director** audiences, choose wording that names the audience's actual problem:
+- "Let's Talk About Your School's Intervention Plan"
+- "Map Your Title III Allocation With Danielle"
+- "Walk Your Dashboard Data With Our Team"
+- "Build Your CSI Intervention Layer With A+"
+- "See How A+ Partners With Charter LEAs Like Yours"
+
+For **parent / family** audiences (B2C blog variants):
+- "Get Your Child the Support They Need"
+- "Find Out If A+ Is Right For Your Family"
+- "Talk to A+ About Your Child's Reading Plan"
+
+The wording must reference the article's topic OR the reader's audience role. CTAs that could be pasted unchanged onto any post on the site fail this check.
+
+DO NOT use generic CTAs that point to the homepage. Always use Danielle's specific booking link.
 
 ### Minimum link requirements per blog
 
@@ -340,6 +424,15 @@ Before output is delivered for approval, the agent runs these self-checks:
 10. **SEO research check (new in v1.1).** Confirms `keyword-research`, `serp-analysis`, and `content-gap-analysis` outputs were captured at the Pre-Draft SEO Research Phase and that the topic angle was informed by their findings. If any of the three step outputs is missing, the gate fails.
 11. **GEO optimization check (new in v1.1).** Confirms the GEO Optimization Pass was completed: first 100 words directly answer the primary search query, at least 2 question-format subheadings exist, named entities are disambiguated on first mention, and at least 1 extractable structured comparison or list is present.
 12. **On-page audit check (new in v1.1).** Confirms `on-page-seo-auditor` was run on the final draft and the score is 80 or higher. If the score is below 80, the gate fails.
+13. **Typography check (new in v1.5).** Confirms the metadata block specifies Playfair Display headings and DM Sans body. Heading-font equals body-font fails. All-lowercase headings fail.
+14. **Title colon check (new in v1.5).** Confirms `h1_title` and `meta_title` do NOT end in `:`. Mid-title colons are OK.
+15. **CTA specificity check (new in v1.5).** Confirms the CTA wording is audience-specific (mentions school, intervention, Title III, Dashboard, parent, child, family, etc.) and is rendered as a button. Generic "Book My Free Consultation" or "Request a Consultation" fails.
+16. **Proof-points check (new in v1.5).** Confirms the proof-points line appears immediately before the CTA and cites verified iLEAD outcomes (75% / 87.5% / 80%). Use of 81% fails.
+17. **Retired figure check (new in v1.5).** Confirms 81% does not appear anywhere in the body. "21 students" (the retired combined sample) also fails.
+18. **Quotation marks check (new in v1.5).** Every direct quote from a named expert is wrapped in proper quotation marks. Bare quoted text fails.
+19. **Alt-text check (new in v1.5).** Every image has descriptive natural-English alt text. Broken alt text ("Mother en kid"), missing alt text, or label-only alt text ("hero image") fails.
+20. **Reflection-question check (new in v1.5).** At least 1 reflection question for the reader appears in the body, formatted as a styled callout.
+21. **5th-action-step check (new in v1.5).** For school-audience posts, Section 7 includes a 5th action step specifically for administrators or federal program coordinators.
 
 If any self-check fails, the agent revises before submitting.
 
@@ -404,6 +497,8 @@ Each published blog post becomes:
 - Future: `aplus-blog-promotion` . skill to chop approved blog post into LinkedIn carousel, parent newsletter snippet, etc.
 
 ## Version
+
+v1.5 . Updated 2026-05-19 . Applied Danielle's feedback: typography rules (Playfair Display headings, DM Sans body, capitalized headings, visually distinct fonts for headers vs body), no trailing colons on titles/meta titles/og:titles, button CTAs with audience-specific wording (not generic), proof points before the CTA citing verified iLEAD outcomes (never 81%), quotation marks required when quoting people, nationally-applicable language (state English proficiency assessment vs ELPAC prep), documentation/resource links for compliance topics, clickable links to all external research, reflection questions for the reader at strategic points, 5th action step specifically for administrators/federal program coordinators in school audiences, descriptive natural-English image alt text (no "Mother en kid" type errors), content-density requirement (no sparse articles), mobile-first responsive layout, expanded meta schema with typography + cta + proof_points_before_cta fields.
 
 v1.4 . Updated 2026-05-19 . Replaced the single `creative-graphic` slot with a two-graphic system: a `preset-stat-graphic` (verbatim copy of `aplus-b2b-brand-kit/ilead-outcomes-graphic.png`, the deterministic matplotlib-built iLEAD outcomes data viz, refreshed only when underlying data changes) plus a `topic-graphic` (AI-generated, topic-specific data viz or infographic for that week's blog). The preset is brand-canonical, the topic graphic is bundle-specific. Both ship in every weekly bundle and both appear in the Slack delivery's Blog assets gallery. Added requirement that every bundle ends with auto-generation of `qa-checklist.md` via `scripts/build-qa-checklist.py`. The checklist is a markdown file that Roman and Danielle walk through before publishing, covering blog gates, graphic gates, voice gates, and human sign-off lines. Bundle is NOT marked ready-to-publish until every box in qa-checklist.md is checked.
 

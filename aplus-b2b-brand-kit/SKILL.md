@@ -56,28 +56,33 @@ Do NOT apply this brand kit for:
 - **Charcoal:** `#2E2E2E` — primary body text
 - **Light Gray:** `#E8E8E8` — dividers, borders, table cells
 
-## Typography
+## Typography (updated 2026-05-19)
 
 ### Headlines
-- **Font:** Inter (Google Font, free)
+- **Font:** Playfair Display (Google Font, free)
 - **Weight:** Bold (700) for H1, Semibold (600) for H2/H3
+- **Case:** Title Case minimum on every headline. Lowercase headings fail brand-check v1.2.
+- **CMS font-family specification:** when shipping to HubSpot or any CMS, the heading rule MUST specify `font-family: 'Playfair Display', serif;` so the rendered post matches the brand system.
 - **Size guide:**
   - H1: 32-40pt
   - H2: 24-28pt
   - H3: 18-22pt
 
 ### Body
-- **Font:** Inter (Google Font, free)
-- **Weight:** Regular (400)
+- **Font:** DM Sans (Google Font, free)
+- **Weight:** Regular (400), Medium (500) for inline emphasis
+- **CMS font-family specification:** `font-family: 'DM Sans', sans-serif;`
 - **Size guide:**
   - Body: 16pt
   - Small: 14pt
   - Caption: 12pt
 
 ### Data / Statistics
-- **Font:** Inter
-- **Weight:** Bold (700)
-- **Treatment:** Larger size (typically 32-48pt) for hero stats, with descriptor text below in regular weight
+- **Font:** DM Sans Bold (700) OR Playfair Display Bold (700), depending on graphic treatment
+- **Treatment:** Larger size (typically 32-48pt) for hero stats, with descriptor text below in DM Sans Regular
+
+### Why two fonts?
+Playfair Display (serif) for headings and DM Sans (sans-serif) for body creates the visual hierarchy that mobile-first reading needs. Headings must be VISUALLY DISTINCT from body. Same-font heading/body pairings fail. Inter is retired from the A+ system as of 2026-05-19.
 
 ## Color combinations (do this)
 
@@ -181,5 +186,7 @@ Charter directors and special programs coordinators are bombarded with vendor pi
 
 ## Version
 
-v1.0 — Created May 6, 2026
+v1.1 . Updated 2026-05-19 . Typography switched from single Inter to Playfair Display headings + DM Sans body. Title Case minimum on all headlines required. CMS font-family specification required on every HubSpot publish. Heading and body must be visually distinct fonts (serif heading + sans-serif body). Inter retired from the A+ system.
+
+v1.0 . Created May 6, 2026
 Foundation: HubSpot brand color (#ef5829) inverted to accent role + custom institutional palette
