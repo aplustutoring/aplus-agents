@@ -27,6 +27,16 @@ from datetime import datetime
 import requests
 from dotenv import load_dotenv
 
+
+def dated_filename(local_path, bundle_path):
+    """Return {stem}-{YYYY-MM-DD}.{ext} derived from the bundle directory name."""
+    p = Path(local_path)
+    stem, ext = p.stem, p.suffix
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", str(bundle_path))
+    if not m:
+        return p.name
+    return f"{stem}-{m.group(1)}{ext}"
+
 load_dotenv()
 
 TOKEN = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
@@ -118,33 +128,35 @@ def auth_headers():
 
 
 def check_existing_file(filename):
-    """Find existing file by exact filename match in HubSpot Files."""
+    """Exact-name lookup against HubSpot Files."""
+    bare = Path(filename).stem
     r = requests.get(
         f"{HUBSPOT_BASE}/files/v3/files",
         headers=auth_headers(),
-        params={"name": filename, "limit": 20},
+        params={"name": bare, "limit": 20},
         timeout=30,
     )
     log("check_existing_file", r.status_code, f"filename={filename}")
     if r.status_code != 200:
         return None
-    # The HubSpot Files API returns a list; pick the exact-name match
-    for result in r.json().get("results", []):
-        if result.get("name") == filename.split(".")[0]:
-            return result
-        # fallback: check filename field if 'name' doesn't match
-    # if no exact match, return first result (best-effort)
-    results = r.json().get("results", [])
-    return results[0] if results else None
+    for record in r.json().get("results", []):
+        record_name = record.get("name", "")
+        if record_name == bare or record_name == filename:
+            return record
+    return None
 
 
-def upload_file(image_path):
-    """Upload to HubSpot Files. Idempotent by exact filename."""
-    filename = Path(image_path).name
+def upload_file(image_path, upload_name=None):
+    """Upload to HubSpot Files. Idempotent by exact filename.
+
+    image_path is the local path; upload_name (if given) is the dated name
+    the file should have inside HubSpot Files.
+    """
+    filename = upload_name or Path(image_path).name
     existing = check_existing_file(filename)
     if existing:
         url = existing.get("url")
-        print(f"  Reusing existing: {filename} -> {url}")
+        print(f"  Existing in HubSpot: {filename} -> reusing {url}")
         log("upload_skipped", 200, f"existing url={url}")
         return url
 
@@ -229,6 +241,16 @@ def patch_post(post_id, post_body):
     return True
 
 
+def strip_existing_figures(html):
+    """Remove any <figure>...</figure> blocks from the HTML.
+
+    Used with --reset-figures when re-embedding pull-quotes on a draft that
+    already has them, so we don't accumulate duplicate figures.
+    """
+    new_html, count = re.subn(r"\n?<figure[^>]*>.*?</figure>\n?", "", html, flags=re.DOTALL)
+    return new_html, count
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Embed pull-quote graphics into an existing HubSpot blog draft"
@@ -236,6 +258,11 @@ def main():
     parser.add_argument("--bundle", required=True, help="Weekly bundle dir")
     parser.add_argument("--post-id", required=True, help="HubSpot post ID to PATCH")
     parser.add_argument("--dry-run", action="store_true", help="No HubSpot writes")
+    parser.add_argument(
+        "--reset-figures",
+        action="store_true",
+        help="Strip any existing <figure> tags from postBody before inserting fresh ones. Use when re-running embed on a draft that already has pull-quotes.",
+    )
     args = parser.parse_args()
 
     if not TOKEN:
@@ -280,6 +307,10 @@ def main():
     print(f"  State: {current_state}")
     print(f"  postBody length: {len(current_body):,} chars")
 
+    if args.reset_figures:
+        current_body, n_stripped = strip_existing_figures(current_body)
+        print(f"  Stripped {n_stripped} existing <figure> tag(s) ({len(current_body):,} chars after strip)")
+
     # Phase 2: upload images (idempotent) or get existing URLs
     print("\nUploading / locating pull-quote images...")
     if args.dry_run:
@@ -289,7 +320,8 @@ def main():
         image_urls = {}
         for pq in pull_quotes:
             local_path = bundle / "graphics" / pq["file"]
-            url = upload_file(local_path)
+            upload_name = dated_filename(local_path, bundle)
+            url = upload_file(local_path, upload_name=upload_name)
             if not url:
                 print(f"ERROR: upload returned no URL for {pq['file']}", file=sys.stderr)
                 return 1

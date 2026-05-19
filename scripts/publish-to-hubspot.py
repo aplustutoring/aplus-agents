@@ -22,6 +22,22 @@ import requests
 from dotenv import load_dotenv
 import markdown
 
+
+def dated_filename(local_path, bundle_path):
+    """Return {stem}-{YYYY-MM-DD}.{ext} derived from the bundle directory name.
+
+    Example:
+        dated_filename("graphics/hero.png", "aplus-content/2026-05-18-weekly/")
+        -> "hero-2026-05-18.png"
+    """
+    p = Path(local_path)
+    stem, ext = p.stem, p.suffix
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", str(bundle_path))
+    if not m:
+        # No date found in bundle path; fall back to undated original name
+        return p.name
+    return f"{stem}-{m.group(1)}{ext}"
+
 load_dotenv()
 
 TOKEN = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
@@ -108,31 +124,43 @@ def markdown_to_html(md_path):
 
 
 def check_existing_file(filename):
-    """Look for a file with this name already in the HubSpot Files account."""
+    """Exact-name lookup against HubSpot Files. Returns the file record or None.
+
+    HubSpot's name field stores the basename without extension, so we match
+    on both the bare name (no extension) and the full filename for safety.
+    """
+    bare = Path(filename).stem
     r = requests.get(
         f"{HUBSPOT_BASE}/files/v3/files",
         headers=auth_headers(),
-        params={"name": filename, "limit": 5},
+        params={"name": bare, "limit": 20},
         timeout=30,
     )
     log("check_existing_file", r.status_code, f"filename={filename}")
     if r.status_code != 200:
         return None
-    results = r.json().get("results", [])
-    return results[0] if results else None
+    for record in r.json().get("results", []):
+        record_name = record.get("name", "")
+        # HubSpot may store name with or without extension; compare both
+        if record_name == bare or record_name == filename:
+            return record
+    return None
 
 
-def upload_file(image_path):
+def upload_file(image_path, upload_name=None):
     """Upload to /files/v3/files. Returns the file's CDN URL.
 
-    Idempotent: if a file with the same name is already present, returns
-    that URL instead of re-uploading.
+    Idempotent: if a file with the same dated name is already present in
+    HubSpot Files, returns that URL instead of re-uploading.
+
+    image_path is the local path; upload_name (if given) is what HubSpot
+    sees. Used to apply the dated-filename convention on upload.
     """
-    filename = Path(image_path).name
+    filename = upload_name or Path(image_path).name
     existing = check_existing_file(filename)
     if existing:
         url = existing.get("url")
-        print(f"Hero image already uploaded — reusing: {url}")
+        print(f"  Existing file in HubSpot: {filename} -> reusing {url}")
         log("upload_file_skipped", 200, f"existing url={url}")
         return url
 
@@ -155,7 +183,9 @@ def upload_file(image_path):
         print(f"ERROR: file upload failed (HTTP {r.status_code}):", file=sys.stderr)
         print(r.text, file=sys.stderr)
         sys.exit(1)
-    return r.json().get("url")
+    url = r.json().get("url")
+    print(f"  Uploaded: {filename} -> {url}")
+    return url
 
 
 def create_draft(name, slug, html, meta_description, featured_image_url):
@@ -274,8 +304,9 @@ def main():
         return 1
     print("Token OK.")
 
-    print(f"\nUploading hero image: {hero_png.name}")
-    hero_url = upload_file(hero_png)
+    hero_upload_name = dated_filename(hero_png, bundle)
+    print(f"\nUploading hero image as: {hero_upload_name}")
+    hero_url = upload_file(hero_png, upload_name=hero_upload_name)
     print(f"Hero image URL: {hero_url}")
 
     print("\nCreating draft post...")

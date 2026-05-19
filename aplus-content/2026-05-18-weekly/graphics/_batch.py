@@ -132,11 +132,10 @@ main_pq_prompt = """A square social media pull quote graphic. Solid background
 A+ Orange hex #EF5829. Subtle paper-grain texture at about 5 percent
 opacity. Large white Inter Bold sans-serif text, centered vertically,
 reading exactly: "A charter LEA with documented outcomes already has a
-CSI plan. They just need to submit it." Below the quote, in smaller
-white Inter Regular text at about 70 percent opacity, centered:
-"A+ Tutoring blog · May 21, 2026". A small white A+ Tutoring wordmark
-in the bottom-right corner. Generous whitespace. No additional
-decorative elements. No em dashes. Aspect 1:1 square."""
+CSI plan. They just need to submit it." A small white A+ Tutoring
+wordmark in the bottom-right corner. Generous whitespace. No additional
+decorative elements. No date line, no blog name, no attribution text.
+No em dashes. Aspect 1:1 square."""
 results.append(gpt_image_2("pull_quote", main_pq_prompt, "1024x1024", "medium", "pull-quote.png"))
 print("pull_quote:", results[-1].get("ok"), results[-1].get("error", ""))
 
@@ -163,10 +162,9 @@ s2_pq_prompt = """A square social media pull quote graphic. Solid background A+
 Orange hex #EF5829. Subtle paper-grain texture at 5 percent opacity.
 Large white Inter Bold sans-serif text, centered vertically, reading
 exactly: "A charter executive director cannot look at the 2025 Dashboard
-alone and conclude the school is safe." Below, smaller white Inter
-Regular at 70 percent opacity, centered: "A+ Tutoring blog · May 21,
-2026". A small white A+ Tutoring wordmark in the bottom-right corner.
-Generous whitespace. No em dashes. Aspect 1:1 square."""
+alone and conclude the school is safe." A small white A+ Tutoring
+wordmark in the bottom-right corner. Generous whitespace. No date line,
+no blog name, no attribution text. No em dashes. Aspect 1:1 square."""
 results.append(gpt_image_2("pull_quote_s2", s2_pq_prompt, "1024x1024", "medium", "pull-quote-s2.png"))
 print("pull_quote_s2:", results[-1].get("ok"), results[-1].get("error", ""))
 
@@ -175,10 +173,9 @@ Orange hex #EF5829. Subtle paper-grain texture at 5 percent opacity.
 Large white Inter Bold sans-serif text, centered vertically, reading
 exactly: "A charter director who waits for the designation letter to
 begin the procurement process is already a month behind the calendar."
-Below, smaller white Inter Regular at 70 percent opacity, centered:
-"A+ Tutoring blog · May 21, 2026". A small white A+ Tutoring wordmark
-in the bottom-right corner. Generous whitespace. No em dashes. Aspect
-1:1 square."""
+A small white A+ Tutoring wordmark in the bottom-right corner. Generous
+whitespace. No date line, no blog name, no attribution text. No em
+dashes. Aspect 1:1 square."""
 results.append(gpt_image_2("pull_quote_s3", s3_pq_prompt, "1024x1024", "medium", "pull-quote-s3.png"))
 print("pull_quote_s3:", results[-1].get("ok"), results[-1].get("error", ""))
 

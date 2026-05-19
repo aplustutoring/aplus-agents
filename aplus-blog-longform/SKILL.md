@@ -218,13 +218,31 @@ schema_publisher: A+ Tutoring
 schema_date_published: [today's date in ISO format]
 
 hero_image_alt_text: [topic-specific descriptive text]
-pull_quotes: [2-3 lines flagged for graphic treatment]
+pull_quotes:
+  - "Verbatim quote 1 from the blog body (15-25 words)"
+  - "Verbatim quote 2 from the blog body"
+  - "Verbatim quote 3 from the blog body"
+inline_pull_quote_images:
+  - pull-quote-s1-with-logo.png
+  - pull-quote-s2-with-logo.png
+  - pull-quote-s3-with-logo.png
+carousel_slides:
+  - "Slide 2 body text: an insight or data point distilled from the blog (1-2 sentences)"
+  - "Slide 3 body text: a second insight or data point"
+  - "Slide 4 body text: a third insight or data point"
+  - "Slide 5 body text: the CTA line that drives readers to the blog or to Danielle's booking"
 reading_time: [estimated minutes]
 target_publish_date: [date]
 target_promotion: [channels]
 on_page_audit_score: [from On-Page Audit phase below]
 ---
 ```
+
+The `pull_quotes` list and `inline_pull_quote_images` list MUST be the
+same length and ordered to pair (entry N of pull_quotes maps to entry N
+of inline_pull_quote_images). The `carousel_slides` list MUST contain
+exactly 4 entries. These populate LinkedIn carousel slides 2 through
+5 (slide 1 is auto-generated from the blog's hook).
 
 2. **A/B variants block** with the two non-primary `meta_title` and `meta_description` candidates from `meta-tags-optimizer`, for future A/B testing.
 
@@ -386,6 +404,8 @@ Each published blog post becomes:
 - Future: `aplus-blog-promotion` . skill to chop approved blog post into LinkedIn carousel, parent newsletter snippet, etc.
 
 ## Version
+
+v1.3 . Updated 2026-05-19 . Expanded meta schema with three new lists: `inline_pull_quote_images` (parallel to `pull_quotes`, pairs each verbatim quote with its image filename), `carousel_slides` (4 entries for LinkedIn carousel slides 2-5), and an implicit `instagram_post` derivative now produced alongside the 4 existing derivatives. Pull-quote graphic conventions updated to drop date / blog-name / attribution subtitle. Only verbatim quote + A+ logo remain. Graphics pipeline expanded from 8 to 14 graphics per bundle (adds 5 LinkedIn carousel slides, 1 Instagram post, 1 Instagram story, 1 data-visualization creative graphic). HubSpot uploads now use a `{type}-{YYYY-MM-DD}.png` filename convention for idempotent re-runs and clean file-manager history.
 
 v1.2 . Updated 2026-05-15 . Added required internal links library and Danielle booking CTA requirement. Previous versions allowed generic CTAs and incomplete internal linking which weakened both SEO and conversion.
 

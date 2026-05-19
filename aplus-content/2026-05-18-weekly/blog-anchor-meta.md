@@ -65,9 +65,15 @@ pull_quotes:
   - "A charter LEA that built this profile into its operations before any 2026 Dashboard designation is in a position to submit a CSI plan that already has documented outcomes, not just a proposed protocol."
 
 inline_pull_quote_images:
+  - pull-quote-s1-with-logo.png
   - pull-quote-s2-with-logo.png
   - pull-quote-s3-with-logo.png
-  - pull-quote-s6-with-logo.png
+
+carousel_slides:
+  - "The 2026 California School Dashboard determines CSI and ATSI designations for the next three-year cycle. Charter LEAs face a unique two-Dashboard-year rule."
+  - "Designation letters arrive within weeks of the Dashboard release. The intervention plan must be implemented by the second semester."
+  - "iLEAD Tier 3 outcomes: 75% Math improvement (12 students), 87.5% ELA improvement (8 students), 80% combined (20 students)."
+  - "Lock your spring intervention plan before the November designation letter arrives."
 
 reading_time: 7 minutes
 target_publish_date: 2026-05-21 (Thursday AM)

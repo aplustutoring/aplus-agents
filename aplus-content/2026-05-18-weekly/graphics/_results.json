@@ -4,16 +4,16 @@
     "ok": true,
     "provider": "gemini-3.1-flash-image",
     "file": "hero.png",
-    "bytes": 830175,
-    "elapsed_s": 18.0,
+    "bytes": 839646,
+    "elapsed_s": 18.5,
     "usage": {
-      "promptTokenCount": 223,
-      "candidatesTokenCount": 1605,
-      "totalTokenCount": 1828,
+      "promptTokenCount": 159,
+      "candidatesTokenCount": 1617,
+      "totalTokenCount": 1776,
       "promptTokensDetails": [
         {
           "modality": "TEXT",
-          "tokenCount": 223
+          "tokenCount": 159
         }
       ],
       "candidatesTokensDetails": [
@@ -32,20 +32,89 @@
     "size": "1536x1024",
     "quality": "medium",
     "file": "social-card.png",
-    "bytes": 1251668,
-    "elapsed_s": 41.6,
+    "bytes": 1221194,
+    "elapsed_s": 35.2,
     "usage": {
-      "input_tokens": 150,
+      "input_tokens": 155,
       "input_tokens_details": {
         "image_tokens": 0,
-        "text_tokens": 150
+        "text_tokens": 155
       },
       "output_tokens": 1372,
       "output_tokens_details": {
         "image_tokens": 1372,
         "text_tokens": 0
       },
-      "total_tokens": 1522
+      "total_tokens": 1527
+    }
+  },
+  {
+    "name": "pull_quote_s1",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1024",
+    "quality": "medium",
+    "file": "pull-quote-s1.png",
+    "bytes": 1795570,
+    "elapsed_s": 54.8,
+    "usage": {
+      "input_tokens": 115,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 115
+      },
+      "output_tokens": 1756,
+      "output_tokens_details": {
+        "image_tokens": 1756,
+        "text_tokens": 0
+      },
+      "total_tokens": 1871
+    }
+  },
+  {
+    "name": "pull_quote_s2",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1024",
+    "quality": "medium",
+    "file": "pull-quote-s2.png",
+    "bytes": 1658752,
+    "elapsed_s": 52.6,
+    "usage": {
+      "input_tokens": 117,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 117
+      },
+      "output_tokens": 1756,
+      "output_tokens_details": {
+        "image_tokens": 1756,
+        "text_tokens": 0
+      },
+      "total_tokens": 1873
+    }
+  },
+  {
+    "name": "pull_quote_s3",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1024",
+    "quality": "medium",
+    "file": "pull-quote-s3.png",
+    "bytes": 1578169,
+    "elapsed_s": 48.5,
+    "usage": {
+      "input_tokens": 115,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 115
+      },
+      "output_tokens": 1756,
+      "output_tokens_details": {
+        "image_tokens": 1756,
+        "text_tokens": 0
+      },
+      "total_tokens": 1871
     }
   },
   {
@@ -54,61 +123,130 @@
     "provider": "gpt-image-2",
     "size": "1024x1536",
     "quality": "medium",
-    "file": "carousel-slide-1.png",
-    "bytes": 1352922,
-    "elapsed_s": 49.2,
+    "file": "linkedin-carousel-slide-1.png",
+    "bytes": 1311968,
+    "elapsed_s": 34.8,
     "usage": {
-      "input_tokens": 154,
+      "input_tokens": 125,
       "input_tokens_details": {
         "image_tokens": 0,
-        "text_tokens": 154
+        "text_tokens": 125
       },
       "output_tokens": 1372,
       "output_tokens_details": {
         "image_tokens": 1372,
         "text_tokens": 0
       },
-      "total_tokens": 1526
+      "total_tokens": 1497
     }
   },
   {
-    "name": "pull_quote",
+    "name": "carousel_slide_2",
     "ok": true,
     "provider": "gpt-image-2",
-    "size": "1024x1024",
+    "size": "1024x1536",
     "quality": "medium",
-    "file": "pull-quote.png",
-    "bytes": 1505360,
-    "elapsed_s": 59.5,
+    "file": "linkedin-carousel-slide-2.png",
+    "bytes": 1176951,
+    "elapsed_s": 40.6,
+    "usage": {
+      "input_tokens": 158,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 158
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1530
+    }
+  },
+  {
+    "name": "carousel_slide_3",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-3.png",
+    "bytes": 1188936,
+    "elapsed_s": 37.7,
+    "usage": {
+      "input_tokens": 146,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 146
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1518
+    }
+  },
+  {
+    "name": "carousel_slide_4",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-4.png",
+    "bytes": 1134103,
+    "elapsed_s": 39.7,
+    "usage": {
+      "input_tokens": 162,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 162
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1534
+    }
+  },
+  {
+    "name": "carousel_slide_5",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-5.png",
+    "bytes": 1266519,
+    "elapsed_s": 56.2,
     "usage": {
       "input_tokens": 149,
       "input_tokens_details": {
         "image_tokens": 0,
         "text_tokens": 149
       },
-      "output_tokens": 1756,
+      "output_tokens": 1372,
       "output_tokens_details": {
-        "image_tokens": 1756,
+        "image_tokens": 1372,
         "text_tokens": 0
       },
-      "total_tokens": 1905
+      "total_tokens": 1521
     }
   },
   {
-    "name": "facebook",
+    "name": "instagram_post",
     "ok": true,
     "provider": "gemini-3.1-flash-image",
-    "file": "facebook.png",
-    "bytes": 794693,
-    "elapsed_s": 13.2,
+    "file": "instagram-post.png",
+    "bytes": 812062,
+    "elapsed_s": 13.7,
     "usage": {
-      "promptTokenCount": 179,
-      "candidatesTokenCount": 1618,
-      "totalTokenCount": 1797,
+      "promptTokenCount": 165,
+      "candidatesTokenCount": 1506,
+      "totalTokenCount": 1671,
       "promptTokensDetails": [
         {
           "modality": "TEXT",
-          "tokenCount": 179
+          "tokenCount": 165
         }
       ],
       "candidatesTokensDetails": [
@@ -121,49 +259,78 @@
     }
   },
   {
-    "name": "pull_quote_s2",
+    "name": "instagram_story",
     "ok": true,
-    "provider": "gpt-image-2",
-    "size": "1024x1024",
-    "quality": "medium",
-    "file": "pull-quote-s2.png",
-    "bytes": 1702214,
-    "elapsed_s": 62.8,
+    "provider": "gemini-3.1-flash-image",
+    "file": "instagram-story.png",
+    "bytes": 880700,
+    "elapsed_s": 26.3,
     "usage": {
-      "input_tokens": 135,
-      "input_tokens_details": {
-        "image_tokens": 0,
-        "text_tokens": 135
-      },
-      "output_tokens": 1756,
-      "output_tokens_details": {
-        "image_tokens": 1756,
-        "text_tokens": 0
-      },
-      "total_tokens": 1891
+      "promptTokenCount": 152,
+      "candidatesTokenCount": 1582,
+      "totalTokenCount": 1734,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 152
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
     }
   },
   {
-    "name": "pull_quote_s3",
+    "name": "facebook",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "facebook.png",
+    "bytes": 800067,
+    "elapsed_s": 24.0,
+    "usage": {
+      "promptTokenCount": 177,
+      "candidatesTokenCount": 1503,
+      "totalTokenCount": 1680,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 177
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  {
+    "name": "creative_graphic",
     "ok": true,
     "provider": "gpt-image-2",
     "size": "1024x1024",
     "quality": "medium",
-    "file": "pull-quote-s3.png",
-    "bytes": 1707269,
-    "elapsed_s": 55.6,
+    "file": "creative-graphic.png",
+    "bytes": 995978,
+    "elapsed_s": 60.0,
     "usage": {
-      "input_tokens": 137,
+      "input_tokens": 312,
       "input_tokens_details": {
         "image_tokens": 0,
-        "text_tokens": 137
+        "text_tokens": 312
       },
       "output_tokens": 1756,
       "output_tokens_details": {
         "image_tokens": 1756,
         "text_tokens": 0
       },
-      "total_tokens": 1893
+      "total_tokens": 2068
     }
   }
 ]
