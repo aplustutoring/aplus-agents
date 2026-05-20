@@ -1,0 +1,80 @@
+<@U05NMABF3B2> heads up — topic approval needed for the May 20 weekly bundle.
+
+A+ WEEKLY CONTENT . MAY 20, 2026 . TOPIC APPROVAL
+
+Five candidate topics. Distinct from May 15 (Title III LTEL), May 18 (2026 Dashboard / CSI), and May 19 (Summer Tier 3 Runway). Brief: aplus-content/2026-05-20-weekly/research-brief.md
+
+This is the 2nd run on the v1.5 / v2.0 / v1.4 / v1.2 / v1.1 skill stack
+(locked yesterday). Same pipeline pattern as May 19.
+
+================================================================
+THE FIVE CANDIDATES
+================================================================
+
+A. ESSA's FOUR EVIDENCE TIERS, AND THE QUESTION EVERY CHARTER DIRECTOR SHOULD ASK THEIR TUTORING VENDOR  [RECOMMENDED]
+   Why: 2026-27 contract procurement is open RIGHT NOW. Most charter
+        directors do not know the four evidence tiers exist and select
+        vendors on price + presentation. The blog walks the four tiers
+        and gives the exact procurement question to ask.
+   Roman: stops vendor bullshit at the first conversation
+   Danielle: walks the four tiers with iLEAD honestly positioned at Tier 3
+   Sources: USDE ESSA evidence guidance, IES regional lab, Annenberg,
+            Stanford NSSA, USDE OSS technical assistance
+   iLEAD fit: DIRECT (positions A+ honestly as Tier 3 evidence)
+   National: STRONG (federal ESSA, applies in every state)
+
+B. READING THE SPRING MAP REPORT . A DIRECTOR'S ONE-AFTERNOON PROTOCOL
+   Why: Operational deep-dive on the data work yesterday's blog called for.
+        How to pull the report, filter, cross-reference IEP + EL, build
+        the cohort document.
+   Roman: report is on the desk, action separates outcomes from excuses
+   Danielle: step-by-step protocol with cohort document template
+   Sources: NWEA State of the American Student, NWEA spring norms
+   iLEAD fit: STRONG
+   Risk: reads as direct extension of May 19 piece, audience fatigue
+
+C. DYSLEXIA SCREENING LAWS HIT IMPLEMENTATION DEADLINES THIS FALL . WHAT CHARTER LEAs NEED TO BUILD BEFORE AUGUST
+   Why: CA (SB 114), TX (HB 3928), FL (SB 250), MI, CT and 12+ other
+        states have 2025-26 or 2026-27 deadlines. Most charters have
+        not built the intervention pathway for a positive screen.
+   Roman: screening without a pathway is paperwork
+   Danielle: pathway from screen-positive to structured-literacy Tier 2
+   Sources: IDA state law tracker, CDE dyslexia guidelines, NCIL
+   iLEAD fit: INDIRECT (adjacent population)
+
+D. THE IEP ANNUAL REVIEW WINDOW . WHY CHARTER LEAs SHOULD USE MAY-JUNE MEETINGS AS AN INTERVENTION AUDIT, NOT A COMPLIANCE BOX
+   Why: May/June is when most CA charter LEAs run year-end IEP annual
+        reviews. Most are treated as compliance check-boxes. The blog
+        argues for using the cycle as an intervention audit.
+   Roman: IEPs signed without outcome data are paperwork
+   Danielle: pairing IEP meetings with Tier 3 cohort design
+   Sources: USDE OSEP, CA IEP process, Annenberg dosage evidence
+   iLEAD fit: STRONG (many Tier 3 students have active IEPs)
+
+E. THE COUNTY OFFICE OF EDUCATION PARTNERSHIP . THE RELATIONSHIP CHARTER DIRECTORS SHOULD BUILD BEFORE A CSI DESIGNATION LETTER ARRIVES
+   Why: Carryover from May 18. Under CA ESSA, CSI-designated charter
+        LEAs must collaborate with their county COE continuous
+        improvement coach. Most charters have no relationship going in.
+   Roman: county office is treated as oversight, also a resource
+   Danielle: how A+ has worked alongside county COE coaches in CSI plan dev
+   Sources: CDE CSI page, CCSESA
+   iLEAD fit: ADJACENT
+   Risk: reads as continuation of May 18 anchor
+
+================================================================
+HOW TO APPROVE
+================================================================
+
+Reply in this thread (NOT the channel . the poller listens to the thread):
+  - "A"   to approve Topic A (ESSA evidence tiers . RECOMMENDED)
+  - "B"   for Topic B (Spring MAP protocol)
+  - "C"   for Topic C (Dyslexia screening)
+  - "D"   for Topic D (IEP annual review)
+  - "E"   for Topic E (County office partnership)
+  - "PASS" to defer all five and wait for a stronger week
+  - Custom direction if you want a different angle
+
+The engine will stop here until approval. After approval it runs the full
+pipeline on the v1.5 / v2.0 / v1.4 / v1.2 / v1.1 skill stack:
+blog -> graphics -> 4 derivatives -> bundle -> HubSpot draft ->
+pull-quote embed -> Slack delivery -> QA checklist.
