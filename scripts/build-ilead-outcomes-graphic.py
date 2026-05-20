@@ -25,7 +25,26 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 from matplotlib.patches import Wedge
+
+# Register A+ brand fonts (Playfair Display + DM Sans) per aplus-graphic-prompts v2.0
+BRAND_FONTS_DIR = Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/aplus-b2b-brand-kit/fonts")
+for _ttf in BRAND_FONTS_DIR.glob("*.ttf"):
+    try:
+        fm.fontManager.addfont(str(_ttf))
+    except Exception:
+        pass
+
+def _find_font(*candidates):
+    for c in candidates:
+        for f in fm.fontManager.ttflist:
+            if c.lower() in f.name.lower():
+                return f.name
+    return None
+
+HEADING_FONT = _find_font("Playfair Display", "Playfair", "Georgia") or "serif"
+BODY_FONT = _find_font("DM Sans", "Helvetica", "Arial") or "sans-serif"
 
 # A+ brand palette
 NAVY = "#1A3A52"
@@ -69,13 +88,13 @@ def build_ring(ax, percentage, label_primary, label_sub):
     orange = Wedge((cx, cy), r, theta1, theta2, width=w, color=ORANGE)
     ax.add_patch(orange)
     ax.text(cx, cy, format_pct(percentage),
-            ha="center", va="center",
+            ha="center", va="center", fontfamily=HEADING_FONT,
             fontsize=44, fontweight="bold", color=WHITE)
     ax.text(cx, 0.20, label_primary,
-            ha="center", va="center",
+            ha="center", va="center", fontfamily=BODY_FONT,
             fontsize=15, fontweight="bold", color=WHITE)
     ax.text(cx, 0.11, label_sub,
-            ha="center", va="center",
+            ha="center", va="center", fontfamily=BODY_FONT,
             fontsize=11, color=SUBLABEL_GRAY)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -87,7 +106,7 @@ def build_ring(ax, percentage, label_primary, label_sub):
 def build_graphic(out_path):
     fig = plt.figure(figsize=(10.8, 10.8), dpi=100, facecolor=NAVY)
     fig.text(0.5, 0.92, HEADLINE,
-             ha="center", va="center",
+             ha="center", va="center", fontfamily=HEADING_FONT,
              fontsize=30, fontweight="bold", color=WHITE)
     n = len(DATA)
     for i, row in enumerate(DATA):
@@ -95,7 +114,7 @@ def build_graphic(out_path):
         build_ring(ax, row["pct"], row["primary"], row["sub"])
     plt.subplots_adjust(left=0.04, right=0.96, top=0.85, bottom=0.10)
     fig.text(0.04, 0.04, FOOTER,
-             ha="left", va="bottom",
+             ha="left", va="bottom", fontfamily=BODY_FONT,
              fontsize=11, color=SUBLABEL_GRAY)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_path, dpi=100, facecolor=NAVY, edgecolor="none")

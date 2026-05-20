@@ -1,0 +1,85 @@
+<@U05NMABF3B2> heads up — topic approval needed for the May 19 weekly bundle.
+
+A+ WEEKLY CONTENT . MAY 19, 2026 . TOPIC APPROVAL
+
+Five candidate topics. Distinct from May 15 (Title III LTEL funding) and May 18 (2026 Dashboard / CSI cycle). Brief is in: aplus-content/2026-05-19-weekly/research-brief.md
+
+This is the first run on the new skill stack:
+- aplus-blog-longform v1.5 (typography, button CTAs, proof points, reflection questions)
+- aplus-graphic-prompts v2.0 (blog-body-width, Playfair + DM Sans, 1-2 pull-quotes max, 2+ data viz)
+- roman-voice v1.4 (more personal, less corporate)
+- aplus-b2c-brand-kit v1.1 (branded population imagery, Facebook 80-150 words)
+- aplus-brand-check v1.2 (24 checks total)
+- aplus-b2b-brand-kit v1.1 (Playfair Display + DM Sans, Title Case headings)
+
+================================================================
+THE FIVE CANDIDATES
+================================================================
+
+A. SUMMER AS A TIER 3 RUNWAY, NOT SUMMER SCHOOL  [RECOMMENDED]
+   Why: Charter LEAs are making summer decisions in the next 21 days.
+        Decision window closes early June. iLEAD data fits perfectly.
+        Distinct from May 15 + May 18. National applicability.
+        Direct sales asset for Danielle.
+   Roman: summer school is a planning failure, not a budget failure
+   Danielle: implementation playbook with iLEAD outcomes as proof
+   Sources: Linda Darling-Hammond (LPI), Susanna Loeb (NSSA Stanford),
+            Brookings, AIR
+   iLEAD fit: DIRECT . 75/87.5/80% map to 6-8 week summer block
+
+B. READING SPRING MAP DATA TO BUILD NEXT YEAR'S TIER 3 COHORT BEFORE SEPTEMBER
+   Why: Spring NWEA windows closed this week. Charter LEAs have fresh data
+        sitting on their desks. Most will re-open it in September. Reading
+        it now locks the cohort and lets summer programming target the
+        right students.
+   Roman: data is on the desk now, action separates outcomes from excuses
+   Danielle: protocol for reading spring MAP and naming next-year cohort
+   Sources: NWEA State of the American Student 2024, NWEA spring norms,
+            EdSource
+   iLEAD fit: STRONG
+
+C. ESSA's FOUR EVIDENCE TIERS . HOW CHARTER LEAs SHOULD EVALUATE TUTORING VENDORS
+   Why: Spring 2026-27 procurement window opens late May. Most charter
+        directors do not know the four evidence tiers and pick vendors
+        without asking which tier the vendor meets. Evergreen.
+   Roman: stops vendor bullshit at the first conversation
+   Danielle: walks the four tiers with examples, iLEAD = Tier 3
+   Sources: USDE ESSA evidence guidance, IES regional lab, Annenberg
+   iLEAD fit: DIRECT (positions A+ honestly as Tier 3 evidence)
+   Note: Was #1 carryover seed from May 18
+
+D. DYSLEXIA SCREENING LAWS HIT IMPLEMENTATION DEADLINES THIS FALL . WHAT CHARTER LEAs NEED TO BUILD BEFORE AUGUST
+   Why: CA (SB 114), TX (HB 3928), FL (SB 250), MI, CT and 12+ other states
+        have 2025-26 or 2026-27 deadlines. Most charters have not built
+        the intervention pathway for a positive screen.
+   Roman: screening without a pathway is paperwork
+   Danielle: pathway from screen-positive to Tier 2 structured literacy
+   Sources: IDA state law tracker, CDE dyslexia guidelines, NCIL
+   iLEAD fit: INDIRECT (adjacent, not central)
+
+E. CHRONIC ABSENTEEISM IS THE TIER 0 PROBLEM . WHY INTERVENTION DOESN'T WORK IF STUDENTS AREN'T THERE
+   Why: 2024-25 chronic absenteeism rates ~26-30% nationally. CA Dashboard
+        indicator. Counterintuitive frame from a tutoring company.
+   Roman: tutoring is necessary but not sufficient
+   Danielle: pairing attendance intervention with academic intervention
+   Sources: Attendance Works, EdSource, AIR
+   iLEAD fit: USEFUL supporting data, not central
+   Note: harder to anchor a sales asset around because it argues
+   against pure tutoring
+
+================================================================
+HOW TO APPROVE
+================================================================
+
+Reply in this thread with one of:
+  - "A"   to approve Topic A (Summer as Tier 3 runway . RECOMMENDED)
+  - "B"   for Topic B (Reading spring MAP)
+  - "C"   for Topic C (ESSA evidence tiers)
+  - "D"   for Topic D (Dyslexia screening)
+  - "E"   for Topic E (Chronic absenteeism)
+  - "PASS" to defer all five and wait for a stronger week
+  - Custom direction if you want a different angle
+
+The engine will stop here until approval. After approval it will
+run the full pipeline: blog, graphics, derivatives, bundle, HubSpot
+draft, pull-quote embed, Slack delivery, QA checklist.

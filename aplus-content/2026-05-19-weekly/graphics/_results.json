@@ -1,0 +1,290 @@
+[
+  {
+    "name": "hero",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "hero.png",
+    "bytes": 789666,
+    "elapsed_s": 14.7,
+    "usage": {
+      "promptTokenCount": 190,
+      "candidatesTokenCount": 1559,
+      "totalTokenCount": 1749,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 190
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  {
+    "name": "social_card",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1536x1024",
+    "quality": "medium",
+    "file": "social-card.png",
+    "bytes": 1271001,
+    "elapsed_s": 32.9,
+    "usage": {
+      "input_tokens": 203,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 203
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1575
+    }
+  },
+  {
+    "name": "pull_quote_s1",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1536x1024",
+    "quality": "medium",
+    "file": "pull-quote-s1.png",
+    "bytes": 2764819,
+    "elapsed_s": 46.2,
+    "usage": {
+      "input_tokens": 175,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 175
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1547
+    }
+  },
+  {
+    "name": "pull_quote_s2",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1536x1024",
+    "quality": "medium",
+    "file": "pull-quote-s2.png",
+    "bytes": 2595960,
+    "elapsed_s": 35.6,
+    "usage": {
+      "input_tokens": 195,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 195
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1567
+    }
+  },
+  {
+    "name": "carousel_slide_1",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-1.png",
+    "bytes": 1347927,
+    "elapsed_s": 35.7,
+    "usage": {
+      "input_tokens": 194,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 194
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1566
+    }
+  },
+  {
+    "name": "carousel_slide_2",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-2.png",
+    "bytes": 1211335,
+    "elapsed_s": 36.3,
+    "usage": {
+      "input_tokens": 205,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 205
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1577
+    }
+  },
+  {
+    "name": "carousel_slide_3",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-3.png",
+    "bytes": 1407968,
+    "elapsed_s": 36.1,
+    "usage": {
+      "input_tokens": 203,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 203
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1575
+    }
+  },
+  {
+    "name": "carousel_slide_4",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-4.png",
+    "bytes": 1180201,
+    "elapsed_s": 34.0,
+    "usage": {
+      "input_tokens": 209,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 209
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1581
+    }
+  },
+  {
+    "name": "carousel_slide_5",
+    "ok": true,
+    "provider": "gpt-image-2",
+    "size": "1024x1536",
+    "quality": "medium",
+    "file": "linkedin-carousel-slide-5.png",
+    "bytes": 1370425,
+    "elapsed_s": 36.1,
+    "usage": {
+      "input_tokens": 236,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 236
+      },
+      "output_tokens": 1372,
+      "output_tokens_details": {
+        "image_tokens": 1372,
+        "text_tokens": 0
+      },
+      "total_tokens": 1608
+    }
+  },
+  {
+    "name": "instagram_post",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "instagram-post.png",
+    "bytes": 817678,
+    "elapsed_s": 19.7,
+    "usage": {
+      "promptTokenCount": 176,
+      "candidatesTokenCount": 1583,
+      "totalTokenCount": 1759,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 176
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  {
+    "name": "instagram_story",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "instagram-story.png",
+    "bytes": 838471,
+    "elapsed_s": 21.3,
+    "usage": {
+      "promptTokenCount": 172,
+      "candidatesTokenCount": 1607,
+      "totalTokenCount": 1779,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 172
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  },
+  {
+    "name": "facebook",
+    "ok": true,
+    "provider": "gemini-3.1-flash-image",
+    "file": "facebook.png",
+    "bytes": 795141,
+    "elapsed_s": 11.4,
+    "usage": {
+      "promptTokenCount": 207,
+      "candidatesTokenCount": 1595,
+      "totalTokenCount": 1802,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 207
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "IMAGE",
+          "tokenCount": 1120
+        }
+      ],
+      "serviceTier": "standard"
+    }
+  }
+]

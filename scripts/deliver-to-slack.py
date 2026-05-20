@@ -65,8 +65,8 @@ PIECES = [
         "destination": "blog.wetutorathome.com",
         "body_text": (
             ":clipboard: *Blog assets* — hero, social card, preset stat graphic "
-            "(iLEAD outcomes), topic graphic (this week's data viz), 3 inline "
-            "pull-quotes. All 7 below."
+            "(iLEAD outcomes), topic graphic (this week's data viz), 2 inline "
+            "pull-quotes (v2.0 cap). All 6 below."
         ),
         "image_files": [
             "graphics/hero.png",
@@ -75,7 +75,6 @@ PIECES = [
             "graphics/topic-graphic-with-logo.png",
             "graphics/pull-quote-s1-with-logo.png",
             "graphics/pull-quote-s2-with-logo.png",
-            "graphics/pull-quote-s3-with-logo.png",
         ],
     },
     {
@@ -106,14 +105,14 @@ PIECES = [
         "publish_window": "Friday AM",
         "destination": "linkedin.com/in/romanslavinsky",
         "body_file": "roman-oped.md",
-        "image_files": ["graphics/pull-quote-s2-with-logo.png"],
+        "image_files": ["graphics/pull-quote-s1-with-logo.png"],
     },
     {
         "name": "Danielle op-ed",
-        "publish_window": "Monday AM (post-Memorial Day)",
+        "publish_window": "Tuesday AM (post-Memorial Day)",
         "destination": "Danielle's personal LinkedIn",
         "body_file": "danielle-oped.md",
-        "image_files": ["graphics/pull-quote-s3-with-logo.png"],
+        "image_files": ["graphics/pull-quote-s2-with-logo.png"],
     },
     {
         "name": "Instagram post",
