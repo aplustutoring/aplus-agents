@@ -288,11 +288,19 @@ hero_image_alt_text: [topic-specific descriptive text]
 pull_quotes:
   - "Verbatim quote 1 from the blog body (15-25 words)"
   - "Verbatim quote 2 from the blog body"
-  - "Verbatim quote 3 from the blog body"
 inline_pull_quote_images:
   - pull-quote-s1-with-logo.png
   - pull-quote-s2-with-logo.png
-  - pull-quote-s3-with-logo.png
+
+# Data viz figures that ship inline in the blog body (added v1.6)
+inline_data_viz_images:
+  - topic-graphic-with-logo.png
+  - preset-stat-graphic-with-logo.png
+inline_data_viz_anchors:
+  - "exact substring from the prose where the topic graphic should appear after"
+  - "exact substring from the prose where the preset stat graphic should appear after"
+inline_data_viz_alt_topic-graphic-with-logo: Descriptive alt text for the topic-specific data viz.
+inline_data_viz_alt_preset-stat-graphic-with-logo: A+ Tutoring iLEAD 2024-25 Tier 3 outcomes. 75 percent Math (12 students, 9 improved), 87.5 percent ELA (8 students, 7 improved), 80 percent Combined (20 students, 16 improved).
 carousel_slides:
   - "Slide 2 body text: an insight or data point distilled from the blog (1-2 sentences)"
   - "Slide 3 body text: a second insight or data point"
@@ -497,6 +505,19 @@ Each published blog post becomes:
 - Future: `aplus-blog-promotion` . skill to chop approved blog post into LinkedIn carousel, parent newsletter snippet, etc.
 
 ## Version
+
+v1.6 . Updated 2026-05-20 . Two changes after the first two runs:
+
+1. **Preset stat graphic AND topic graphic now ship inline in every blog body**, not only in the Slack delivery gallery. The meta schema gains two new parallel lists:
+   - `inline_data_viz_images:` filenames (preset-stat-graphic-with-logo.png and topic-graphic-with-logo.png at minimum)
+   - `inline_data_viz_anchors:` parallel list of anchor text snippets from the blog prose (the figure inserts after the paragraph containing the anchor)
+   Plus optional `inline_data_viz_alt_{stem}:` one-liner alt text per figure.
+   
+   Standard placement: preset stat graphic anchors on the paragraph that introduces the iLEAD 75/87.5/80 outcomes in Section 6 (What A+ Sees in the Field). Topic graphic anchors on the paragraph that most directly supports the visualization (state-listing paragraph, timeline-introduction paragraph, etc.).
+   
+   Enforced by `scripts/embed-pull-quotes.py` which now processes both pull-quote and data-viz figures from the meta.
+
+2. **HubSpot edit URL format corrected.** All scripts that compose an edit URL (publish-to-hubspot.py, deliver-to-slack.py, embed-pull-quotes.py) now use the format `https://app.hubspot.com/blog/{PORTAL_ID}/editor/{post_id}/content`. The earlier `/edit/{post_id}` form pointed to a non-functional page.
 
 v1.5 . Updated 2026-05-19 . Applied Danielle's feedback: typography rules (Playfair Display headings, DM Sans body, capitalized headings, visually distinct fonts for headers vs body), no trailing colons on titles/meta titles/og:titles, button CTAs with audience-specific wording (not generic), proof points before the CTA citing verified iLEAD outcomes (never 81%), quotation marks required when quoting people, nationally-applicable language (state English proficiency assessment vs ELPAC prep), documentation/resource links for compliance topics, clickable links to all external research, reflection questions for the reader at strategic points, 5th action step specifically for administrators/federal program coordinators in school audiences, descriptive natural-English image alt text (no "Mother en kid" type errors), content-density requirement (no sparse articles), mobile-first responsive layout, expanded meta schema with typography + cta + proof_points_before_cta fields.
 

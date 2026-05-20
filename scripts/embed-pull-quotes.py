@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 """
-Embed pull-quote graphics inline in an existing HubSpot blog draft.
+Embed inline figures (pull-quotes + data-viz graphics) in an existing
+HubSpot blog draft.
 
-Uploads pull-quote images (idempotent), fetches the draft's current postBody,
-inserts <figure><img></figure> tags after each paragraph containing the anchor
-quote text, then PATCHes the draft.
+Uploads inline images (idempotent), fetches the draft's current postBody,
+inserts <figure><img></figure> tags after each paragraph that contains
+the corresponding anchor text, then PATCHes the draft.
+
+Two figure families are processed:
+  1. Pull-quote graphics, sourced from the meta fields:
+       pull_quotes:               (list of verbatim quotes)
+       inline_pull_quote_images:  (parallel list of image filenames)
+  2. Data-viz graphics (added 2026-05-20), sourced from:
+       inline_data_viz_images:    (list of image filenames)
+       inline_data_viz_anchors:   (parallel list of anchor text snippets)
+     This is where preset-stat-graphic and topic-graphic ship inline
+     into the blog body per aplus-graphic-prompts v2.1.
 
 Never publishes. State stays DRAFT regardless of source state.
 
@@ -108,6 +119,83 @@ def parse_pull_quotes_from_meta(meta_path):
             "anchor": anchor,
             "file": image,
             "alt": f"Pull quote: {quote}",
+            "kind": "pull-quote",
+        })
+    return pieces
+
+
+def parse_data_viz_from_meta(meta_path):
+    """Parse blog-anchor-meta.md for two parallel lists that ship data-viz
+    graphics inline in the blog body (added 2026-05-20 per
+    aplus-graphic-prompts v2.1):
+    - inline_data_viz_images:  filenames (relative to graphics/)
+    - inline_data_viz_anchors: anchor text snippets from the blog body
+
+    Each anchor is an exact (case-insensitive) substring from the prose
+    that identifies the paragraph the figure should appear AFTER. The
+    preset stat graphic typically anchors on the iLEAD outcomes
+    paragraph; the topic graphic typically anchors on the section
+    most directly tied to that week's data viz.
+
+    Returns a list of dicts with the same shape pull-quotes return:
+    [{"anchor": ..., "file": ..., "alt": ..., "kind": "data-viz"}, ...]
+
+    Returns an empty list if neither field is present (backward
+    compatible with bundles created before the v2.1 schema).
+    """
+    text = Path(meta_path).read_text()
+
+    def extract_list(field_name):
+        m = re.search(rf"^{re.escape(field_name)}:\s*$", text, re.MULTILINE)
+        if not m:
+            return []
+        items = []
+        for line in text[m.end():].split("\n")[1:]:
+            s = line.strip()
+            if not s or not s.startswith("-"):
+                break
+            item = s[1:].strip()
+            if item.startswith('"') and item.endswith('"'):
+                item = item[1:-1]
+            items.append(item)
+        return items
+
+    images = extract_list("inline_data_viz_images")
+    anchors = extract_list("inline_data_viz_anchors")
+
+    if not images and not anchors:
+        return []  # backward compatible: pre-v2.1 bundles
+
+    if len(images) != len(anchors):
+        raise ValueError(
+            f"inline_data_viz_images ({len(images)}) and "
+            f"inline_data_viz_anchors ({len(anchors)}) lists must be the "
+            f"same length in {meta_path}"
+        )
+
+    # Optional human-readable alt text per figure (one-liner mapping)
+    alt_map = {}
+    for line in text.split("\n"):
+        m = re.match(r"^inline_data_viz_alt_(\S+):\s*(.+)$", line.strip())
+        if m:
+            alt_map[m.group(1)] = m.group(2).strip()
+
+    pieces = []
+    for image, anchor in zip(images, anchors):
+        # Anchor is used verbatim; trim outer quotes
+        anchor_clean = anchor.strip().strip('"').strip("'")
+        # Trim to a unique substring length without losing the punctuation
+        # that might disambiguate the match
+        if len(anchor_clean) > 80:
+            anchor_clean = anchor_clean[:80]
+        # Pick alt text: explicit override OR a sensible default
+        stem = Path(image).stem
+        alt = alt_map.get(stem, f"A+ Tutoring data visualization: {stem.replace('-', ' ')}")
+        pieces.append({
+            "anchor": anchor_clean,
+            "file": image,
+            "alt": alt,
+            "kind": "data-viz",
         })
     return pieces
 
@@ -311,23 +399,32 @@ def main():
         print(f"ERROR: meta file not found: {meta_path}", file=sys.stderr)
         return 1
 
-    # Parse the pull-quote definitions from the meta file
+    # Parse the figure definitions from the meta file
     try:
         pull_quotes = parse_pull_quotes_from_meta(meta_path)
     except ValueError as e:
-        print(f"ERROR parsing meta: {e}", file=sys.stderr)
+        print(f"ERROR parsing meta pull_quotes: {e}", file=sys.stderr)
         return 1
-    print(f"Loaded {len(pull_quotes)} pull-quote definitions from meta:")
-    for pq in pull_quotes:
-        print(f"  - file={pq['file']}  anchor='{pq['anchor'][:50]}...'")
+    try:
+        data_viz = parse_data_viz_from_meta(meta_path)
+    except ValueError as e:
+        print(f"ERROR parsing meta data viz: {e}", file=sys.stderr)
+        return 1
 
-    # Verify the pull-quote image files exist locally
-    for pq in pull_quotes:
-        p = bundle / "graphics" / pq["file"]
+    # Combine into a single list of figures to process
+    figures = pull_quotes + data_viz
+    print(f"Loaded {len(pull_quotes)} pull-quote(s) + {len(data_viz)} data-viz figure(s) from meta:")
+    for fig in figures:
+        kind = fig.get("kind", "?")
+        print(f"  [{kind}] file={fig['file']}  anchor='{fig['anchor'][:60]}...'")
+
+    # Verify all source files exist locally
+    for fig in figures:
+        p = bundle / "graphics" / fig["file"]
         if not p.exists():
-            print(f"ERROR: missing pull-quote image: {p}", file=sys.stderr)
+            print(f"ERROR: missing image: {p}", file=sys.stderr)
             return 1
-    print("All pull-quote source files present.")
+    print("All inline-figure source files present.")
 
     # Phase 1: fetch the existing draft so we know its current postBody
     print(f"\nFetching post {args.post_id}...")
@@ -344,36 +441,36 @@ def main():
         print(f"  Stripped {n_stripped} existing <figure> tag(s) ({len(current_body):,} chars after strip)")
 
     # Phase 2: upload images (idempotent) or get existing URLs
-    print("\nUploading / locating pull-quote images...")
+    print("\nUploading / locating inline figure images...")
     if args.dry_run:
         print("  DRY RUN — skipping uploads. Using placeholder URLs.")
-        image_urls = {pq["file"]: f"https://example.com/{pq['file']}" for pq in pull_quotes}
+        image_urls = {fig["file"]: f"https://example.com/{fig['file']}" for fig in figures}
     else:
         image_urls = {}
-        for pq in pull_quotes:
-            local_path = bundle / "graphics" / pq["file"]
+        for fig in figures:
+            local_path = bundle / "graphics" / fig["file"]
             upload_name = dated_filename(local_path, bundle)
             url = upload_file(local_path, upload_name=upload_name)
             if not url:
-                print(f"ERROR: upload returned no URL for {pq['file']}", file=sys.stderr)
+                print(f"ERROR: upload returned no URL for {fig['file']}", file=sys.stderr)
                 return 1
-            image_urls[pq["file"]] = url
+            image_urls[fig["file"]] = url
 
     # Phase 3: insert figure tags into the current postBody
     print("\nInserting <figure> tags...")
     new_body = current_body
     inserted = []
-    for pq in pull_quotes:
-        url = image_urls[pq["file"]]
-        new_body, ok = insert_figure_after_paragraph(new_body, pq["anchor"], url, pq["alt"])
+    for fig in figures:
+        url = image_urls[fig["file"]]
+        new_body, ok = insert_figure_after_paragraph(new_body, fig["anchor"], url, fig["alt"])
         if ok:
-            print(f"  ✓ inserted after anchor: '{pq['anchor'][:60]}...'")
-            inserted.append(pq["file"])
+            print(f"  ✓ [{fig.get('kind','?')}] inserted after anchor: '{fig['anchor'][:60]}...'")
+            inserted.append(fig["file"])
         else:
-            print(f"  ✗ NOT FOUND anchor: '{pq['anchor'][:60]}...'", file=sys.stderr)
+            print(f"  ✗ [{fig.get('kind','?')}] NOT FOUND anchor: '{fig['anchor'][:60]}...'", file=sys.stderr)
 
-    if len(inserted) != len(pull_quotes):
-        print(f"\nERROR: expected {len(pull_quotes)} insertions, got {len(inserted)}", file=sys.stderr)
+    if len(inserted) != len(figures):
+        print(f"\nERROR: expected {len(figures)} insertions, got {len(inserted)}", file=sys.stderr)
         print("Aborting before PATCH to avoid a partial state.", file=sys.stderr)
         return 1
 
@@ -388,7 +485,7 @@ def main():
     if not patch_post(args.post_id, new_body):
         return 1
 
-    edit_url = f"https://app.hubspot.com/blog/{PORTAL_ID}/edit/{args.post_id}"
+    edit_url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{args.post_id}/content"
     print(f"\nDraft updated. Edit URL: {edit_url}")
     log("embed_complete", 200, f"post_id={args.post_id}, inserted={len(inserted)}")
     return 0

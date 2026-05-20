@@ -346,7 +346,7 @@ def main():
     print("\nCreating draft post...")
     post = create_draft(title, slug, html, description, hero_url)
     post_id = post.get("id")
-    edit_url = f"https://app.hubspot.com/blog/{PORTAL_ID}/edit/{post_id}"
+    edit_url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{post_id}/content"
 
     print(f"\nDraft created. Post ID: {post_id}")
     print(f"Edit URL: {edit_url}")

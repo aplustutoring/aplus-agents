@@ -348,7 +348,7 @@ def main():
     # Header
     header_lines = [f":package: *Weekly content bundle ready  -  {date_str}*"]
     if args.post_id:
-        url = f"https://app.hubspot.com/blog/{PORTAL_ID}/edit/{args.post_id}"
+        url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{args.post_id}/content"
         header_lines.append(f":memo: HubSpot blog draft: <{url}|Review and publish>")
     else:
         header_lines.append(":memo: HubSpot blog draft: (no --post-id provided)")

@@ -79,6 +79,15 @@ inline_pull_quote_images:
   - pull-quote-s1-with-logo.png
   - pull-quote-s2-with-logo.png
 
+inline_data_viz_images:
+  - topic-graphic-with-logo.png
+  - preset-stat-graphic-with-logo.png
+inline_data_viz_anchors:
+  - "The decision window closes around the first week of June. After that, summer staffing is locked"
+  - "9 of 12 students (75%) reached growth benchmarks under a same-tutor"
+inline_data_viz_alt_topic-graphic-with-logo: The 21-day decision window for charter LEAs to build a Tier 3 summer runway. Six milestones from May 19 (spring MAP reports land) through July 8 (Tier 3 runway starts), plus a constraint band showing cohort size, block length, total dosage, and iLEAD Tier 3 outcomes.
+inline_data_viz_alt_preset-stat-graphic-with-logo: A+ Tutoring iLEAD 2024-25 Tier 3 outcomes. 75 percent Math Tier 3 (12 students, 9 improved), 87.5 percent ELA Tier 3 (8 students, 7 improved), 80 percent Combined Tier 3 (20 students, 16 improved).
+
 carousel_slides:
   - "The 10-15% of students who fell behind during the year are identifiable from data on your desk today. The cohort exists. The question is whether someone names it before staffing locks in early June."
   - "iLEAD partner outcomes: 75% Math Tier 3, 87.5% ELA Tier 3, 80% Combined. Same-tutor, MAP-aligned, 18-24 hour dosage block. 3-6x national MAP Growth benchmarks for the lowest-quartile cohort."

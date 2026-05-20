@@ -109,7 +109,7 @@ When a pull quote is rendered on a graphic:
 
 The space freed up by reducing pull-quotes must be filled by data viz, not by extra photos.
 
-## Data-viz emphasis (new in v2.0)
+## Data-viz emphasis (new in v2.0, expanded in v2.1)
 
 Each bundle must ship at least 2 data visualization graphics:
 
@@ -117,6 +117,25 @@ Each bundle must ship at least 2 data visualization graphics:
 2. **Topic-specific data-viz graphic** (matplotlib-built for numerical accuracy, generated fresh each week, visualizes the SPECIFIC data the blog cites: a comparison bar chart, a timeline, a ring-fill, a sankey, etc.)
 
 Data viz beats pull-quote graphics for engagement and for AI-engine extraction (charts get cited in AI Overviews because they map to structured answer fragments). Bias the bundle toward more data viz, fewer text-on-color pull quotes.
+
+### Inline placement in blog body (new in v2.1)
+
+Both the preset stat graphic AND the topic graphic must be embedded inline in the published blog body (not only in the Slack delivery gallery or social variants). The rationale: the blog is the asset that compounds in SEO value over time, and readers who land on the blog from search should see the same visual proof points that LinkedIn carousels and Facebook viewers see.
+
+Standard placement:
+- **Preset stat graphic** anchors after the paragraph that introduces the iLEAD 75/87.5/80 outcomes (typically in the "What A+ Sees in the Field" section)
+- **Topic graphic** anchors after the paragraph that most directly supports its visualization (state-listing paragraph for a state-deadline graphic, hook paragraph for a timeline graphic, etc.)
+
+Mechanism: the bundle's `blog-anchor-meta.md` includes two parallel lists:
+```
+inline_data_viz_images:
+  - topic-graphic-with-logo.png
+  - preset-stat-graphic-with-logo.png
+inline_data_viz_anchors:
+  - "exact substring from the blog prose where topic graphic should appear after"
+  - "exact substring from the blog prose where preset graphic should appear after"
+```
+`scripts/embed-pull-quotes.py` processes both `inline_pull_quote_images` and `inline_data_viz_images` and inserts `<figure>` tags after the paragraph containing each anchor. The script is idempotent (call with `--reset-figures` to strip existing figures and re-insert).
 
 ## Hero image rules
 
@@ -186,6 +205,8 @@ If any of those eight points fails, the graphic must be revised before publicati
 - QA against: `aplus-content/{date}-weekly/qa-checklist.md` (human walkthrough)
 
 ## Version
+
+v2.1 . Updated 2026-05-20 . Added inline-blog-body placement rule for the preset stat graphic AND the topic graphic. Both must be embedded as `<figure>` tags in the published blog body (not only delivered as Slack assets or used in carousel slides). The meta schema gains `inline_data_viz_images` + `inline_data_viz_anchors` parallel lists; `scripts/embed-pull-quotes.py` processes them alongside pull-quote figures. Backward compatible with v2.0 bundles that didn't have the fields; retro-fit applied to the May 19 and May 20 bundles.
 
 v2.0 . Updated 2026-05-19 . Major overhaul applying Danielle's feedback. New rules: blog-body-width dimensions (1536x1024 hero, 1200x630 social, NOT square unless Instagram); Playfair Display headings + DM Sans body across all graphics; no date on graphics; no "A+ Tutoring blog" subtitle; heavy A+ brand color use throughout (not just accent); maximum 1-2 pull-quote graphics per bundle (was 3, which is too many); 2+ data-viz graphics required per bundle; hero is photographic and homeschool-set, never classroom; LinkedIn carousel logo-overlap check required; swipe indicator only on multi-slide carousels; proper curly quotation marks when rendering quotes; verified iLEAD figures only (no 81%, no 21 students); descriptive natural-English alt text for accessibility; visual logo placement checks added to every slide pre-delivery. Replaces all v1.x conventions which lived implicitly in the brand kits.
 

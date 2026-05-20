@@ -78,6 +78,15 @@ inline_pull_quote_images:
   - pull-quote-s1-with-logo.png
   - pull-quote-s2-with-logo.png
 
+inline_data_viz_images:
+  - topic-graphic-with-logo.png
+  - preset-stat-graphic-with-logo.png
+inline_data_viz_anchors:
+  - "California's SB 114 (signed 2023, implementation 2025-26)"
+  - "7 of 8 students (87.5%) reaching MAP growth benchmarks"
+inline_data_viz_alt_topic-graphic-with-logo: K-2 dyslexia screening law implementation by state. Three columns: states already in implementation (CA, TX, FL, MI, CT, CO, MA), states with fall 2026 deadline (OH, NJ, PA, TN, VA, NC, GA), and states with later deadlines (IL, WA, OR, MD, NY, IN, WI).
+inline_data_viz_alt_preset-stat-graphic-with-logo: A+ Tutoring iLEAD 2024-25 Tier 3 outcomes. 75 percent Math Tier 3 (12 students, 9 improved), 87.5 percent ELA Tier 3 (8 students, 7 improved), 80 percent Combined Tier 3 (20 students, 16 improved).
+
 carousel_slides:
   - "18+ states now require universal K-2 dyslexia screening. California SB 114, Texas HB 3928, Florida SB 250, Michigan, Connecticut, and more. The fall 2026 deadlines are firm."
   - "Schools that screen without a Tier 2 intervention pathway face a compliance liability under IDEA child-find AND an educational malpractice problem. Identification without intervention is paperwork."
