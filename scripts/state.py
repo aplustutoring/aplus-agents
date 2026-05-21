@@ -94,16 +94,25 @@ def _read_json(path: Path, default: Any) -> Any:
 class TopicQueue:
     current_week: Optional[str] = None
     topics: list = field(default_factory=list)
+    slack: Optional[dict] = None
+    approval: Optional[dict] = None
 
     @classmethod
     def from_dict(cls, d: dict) -> "TopicQueue":
         return cls(
             current_week=d.get("current_week"),
             topics=list(d.get("topics", [])),
+            slack=d.get("slack"),
+            approval=d.get("approval"),
         )
 
     def to_dict(self) -> dict:
-        return {"current_week": self.current_week, "topics": list(self.topics)}
+        out: dict = {"current_week": self.current_week, "topics": list(self.topics)}
+        if self.slack is not None:
+            out["slack"] = self.slack
+        if self.approval is not None:
+            out["approval"] = self.approval
+        return out
 
 
 def read_topic_queue() -> TopicQueue:
