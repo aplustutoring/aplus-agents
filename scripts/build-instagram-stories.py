@@ -205,26 +205,15 @@ def render_frame_2(headline, subhead, out_path):
 
 def render_frame_3(headline, subhead, out_path):
     fig, ax = _frame_canvas(NAVY)
-    # Reserved cleanspace top-center for the link sticker
-    # (we visualize it as a faint dashed outline so Roman/Danielle remember
-    # where the link sticker lands when posting from Instagram)
-    sticker_box = mpatches.FancyBboxPatch(
-        (28, 84), 44, 10,
-        boxstyle="round,pad=0.5",
-        linewidth=2,
-        edgecolor=GOLD,
-        facecolor="none",
-        linestyle="--",
-        alpha=0.5,
-    )
-    ax.add_patch(sticker_box)
-    ax.text(50, 89, "[ link sticker goes here ]", ha="center", va="center",
-            fontfamily=BODY_FONT, fontsize=18, color=GOLD,
-            alpha=0.8, fontstyle="italic")
+    # v2.3 rule (2026-05-20): NO literal placeholder box or text at the top.
+    # Top portion of frame is intentionally minimal. The bottom-of-frame
+    # arrow + instruction "↑ Tap the link sticker above" directs Roman /
+    # Danielle to drop the Instagram link sticker in the upper third
+    # before posting. No artifact, no placeholder.
 
-    # Big CTA headline center
+    # Big CTA headline, raised slightly now that the top region is clean
     lines = _wrap(headline, max_chars=20)
-    y = 55
+    y = 62
     line_step = 7
     if len(lines) > 3:
         line_step = 6
@@ -236,62 +225,88 @@ def render_frame_3(headline, subhead, out_path):
 
     if subhead:
         sub_lines = _wrap(subhead, max_chars=42)
-        ys = 32
+        ys = 36
         for line in sub_lines:
             ax.text(50, ys, line, ha="center", va="center",
                     fontfamily=BODY_FONT, fontsize=24, fontweight="normal",
                     color=GOLD, alpha=0.95)
             ys -= 4
 
-    # Instruction band, placed ABOVE the logo zone (logo lives in the bottom
-    # ~17% of the canvas after PIL composite). Keep this around y=22 so it
-    # never overlaps the logo.
+    # Bottom instruction (placed safely above the logo zone)
     ax.text(50, 22, "↑  Tap the link sticker above", ha="center", va="center",
             fontfamily=BODY_FONT, fontsize=22, fontweight="bold",
             color=ORANGE, alpha=0.95)
 
-    # NO swipe indicator on frame 3
+    # NO swipe indicator on frame 3 (final frame)
     fig.savefig(out_path, dpi=100, facecolor=NAVY, edgecolor="none",
                 bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
 
 # ----- Logo composite -----
+ALPHA_THRESHOLD = 128  # v2.3: anti-halo. Any pixel with alpha < this becomes
+                       # fully transparent; any pixel with alpha >= this becomes
+                       # fully opaque. Eliminates soft anti-aliased edges that
+                       # showed up as faint rectangular halos on dark backgrounds.
+
+
+def _hardclamp_alpha(rgba_img):
+    """Hard-clamp the alpha channel to binary (0 or 255).
+
+    This eliminates soft anti-aliased edges that bleed light into a dark
+    background and render as a faint halo around the logo. After this
+    pass, every pixel is either fully transparent or fully opaque — no
+    in-between semi-transparency.
+    """
+    px = rgba_img.load()
+    for y in range(rgba_img.height):
+        for x in range(rgba_img.width):
+            r, g, b, a = px[x, y]
+            if a < ALPHA_THRESHOLD:
+                px[x, y] = (r, g, b, 0)
+            else:
+                px[x, y] = (r, g, b, 255)
+    return rgba_img
+
+
 def _white_logo():
-    """Return a white-variant of the A+ logo (RGBA, chroma-keyed)."""
+    """Return a white-variant of the A+ logo (RGBA, chroma-keyed, hard-alpha)."""
     raw = Image.open(LOGO_PATH).convert("RGBA")
-    # chroma-key whites to alpha 0
-    corners = [
-        raw.getpixel((0, 0)),
-        raw.getpixel((raw.width - 1, 0)),
-        raw.getpixel((0, raw.height - 1)),
-        raw.getpixel((raw.width - 1, raw.height - 1)),
-    ]
-    if max(p[3] for p in corners) > 0:
-        px = raw.load()
-        for y in range(raw.height):
-            for x in range(raw.width):
-                r, g, b, a = px[x, y]
-                if r >= 240 and g >= 240 and b >= 240:
-                    px[x, y] = (r, g, b, 0)
-    # White variant
-    out = raw.copy()
-    px = out.load()
-    for y in range(out.height):
-        for x in range(out.width):
+    # 1. Chroma-key whites to alpha 0 (covers the case where the source PNG
+    #    has opaque white corners instead of transparent corners).
+    px = raw.load()
+    for y in range(raw.height):
+        for x in range(raw.width):
+            r, g, b, a = px[x, y]
+            if r >= 240 and g >= 240 and b >= 240:
+                px[x, y] = (r, g, b, 0)
+    # 2. White color variant (every still-visible pixel becomes pure white,
+    #    keeping its alpha — we'll hard-clamp alpha next).
+    px = raw.load()
+    for y in range(raw.height):
+        for x in range(raw.width):
             r, g, b, a = px[x, y]
             if a > 0:
                 px[x, y] = (255, 255, 255, a)
-    return out
+    # 3. Hard alpha threshold (v2.3) — eliminates soft edges.
+    _hardclamp_alpha(raw)
+    return raw
 
 
 def composite_logo_bottom_center(png_path, logo_rgba, logo_width=220, bottom_margin=120):
-    """Composite the white logo at bottom-center of the rendered frame."""
+    """Composite the (already chroma-keyed, hard-alpha) logo at bottom-center.
+
+    NO erase-rectangle step (removed v2.3). The Frame prompts reserve clean
+    space, and the hard-alpha logo composites onto whatever pixels are
+    underneath without leaving a halo.
+    """
     base = Image.open(png_path).convert("RGBA")
-    # Resize logo (preserve aspect ratio)
+    # Preserve aspect ratio
     aspect = logo_rgba.height / logo_rgba.width
     target_h = int(logo_width * aspect)
     logo_resized = logo_rgba.resize((logo_width, target_h), Image.LANCZOS)
+    # LANCZOS re-introduces soft edges; clamp again after resize
+    _hardclamp_alpha(logo_resized)
     layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
     x = (base.width - logo_width) // 2
     y = base.height - target_h - bottom_margin

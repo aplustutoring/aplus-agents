@@ -11,6 +11,7 @@
 ```
 url_slug: /dyslexia-screening-charter-school-2026-implementation
 canonical_url: https://blog.wetutorathome.com/dyslexia-screening-charter-school-2026-implementation
+predicted_blog_url: https://blog.wetutorathome.com/dyslexia-screening-charter-school-2026-implementation
 
 h1_title: Dyslexia Screening Laws Hit Implementation Deadlines This Fall
 html_title: 2026 Dyslexia Screening Compliance for Charter Schools | A+ Tutoring

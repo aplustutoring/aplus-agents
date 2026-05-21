@@ -11,6 +11,7 @@
 ```
 url_slug: /charter-summer-tier-3-runway-intervention
 canonical_url: https://blog.wetutorathome.com/charter-summer-tier-3-runway-intervention
+predicted_blog_url: https://blog.wetutorathome.com/charter-summer-tier-3-runway-intervention
 
 h1_title: Summer as a Tier 3 Runway, Not Summer School
 html_title: Tier 3 Summer Intervention for Charter Schools | A+ Tutoring

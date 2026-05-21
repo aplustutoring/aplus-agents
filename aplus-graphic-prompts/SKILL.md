@@ -213,10 +213,10 @@ Every weekly bundle's Instagram Story sequence has exactly 3 frames in this orde
 
 **Frame 3 — CTA WITH LINK STICKER PLACEMENT**
 - Background: A+ Navy
-- Top-center: reserved 220px-tall cleanspace marked with a dashed gold outline labeled `[ link sticker goes here ]`. Roman or Danielle adds the actual Instagram link sticker pointing to the blog URL when posting. The dashed outline is a placement guide, not a final visual.
+- **Top portion of frame: intentionally minimal (v2.3 rule, 2026-05-20).** NO literal placeholder box. NO text saying "link sticker goes here" or similar artifact. The empty top region IS the cleanspace; Roman or Danielle drops the Instagram link sticker into the upper third before posting. The bottom-of-frame arrow + instruction does the cognitive work.
 - Center: bold Playfair Display CTA copy ("Read the full article", "Build the pathway", etc.)
 - Optional DM Sans subhead in gold
-- Below the CTA: an orange "↑ Tap the link sticker above" instruction in DM Sans bold
+- Below the CTA: an orange "↑ Tap the link sticker above" instruction in DM Sans bold — this is the visual cue that directs the eye upward to where the sticker lands.
 - Logo bottom-center
 - NO swipe indicator (this is the final frame)
 - NO people
@@ -271,6 +271,82 @@ A graphic passes this rulebook when:
 
 If any of those eight points fails, the graphic must be revised before publication.
 
+## Logo composite rules (new in v2.3)
+
+The PIL composite logic in `_composite_logo_v2.py` (per-bundle) and
+`scripts/build-instagram-stories.py` (shared) must follow these three
+rules to avoid the visible rectangular halo that appeared on textured
+backgrounds (most visible on the orange carousel slide 3 before v2.3).
+
+### 1. NO erase-rectangle step
+
+Earlier versions painted a sample-color rectangle onto the base image
+where the logo would land, intended as a clean stamp surface. The
+sampled pixel often did not match the surrounding textured background
+(especially on AI-generated graphics with subtle paper-grain noise),
+producing a visible rectangular artifact. v2.3 removes this step.
+
+### 2. Hard alpha threshold (binary alpha)
+
+Every logo pixel is either fully transparent or fully opaque — no
+in-between semi-transparency. Pseudocode:
+
+```
+if pixel.alpha < 128:
+    pixel.alpha = 0
+else:
+    pixel.alpha = 255
+```
+
+This is applied:
+- After the initial chroma-key (white pixels -> transparent)
+- After the white-color recolor pass (for the white-variant logo)
+- After any LANCZOS resize (which re-introduces soft edges)
+
+The result: clean crisp edges with no anti-aliased halo bleeding into
+dark backgrounds.
+
+### 3. Preserve logo aspect ratio when resizing
+
+Earlier versions resized to `(width, width)` — a square — even though
+the source logo file has its own aspect ratio. v2.3 computes
+`target_h = int(width * source.height / source.width)` and resizes to
+`(width, target_h)`. Source logo at `~/Desktop/logo.png` is currently
+512x512 (aspect 1.0) so the visible change is zero on the current
+asset, but the code is now correct for any future logo replacement.
+
+### Logo color selection rule (unchanged from v2.0)
+
+- **White-variant logo** on orange / navy / dark / saturated backgrounds
+- **Two-color logo** on white / cream / light backgrounds
+
+If background is orange or navy, the logo MUST be white. Two-color logo
+on those backgrounds is incorrect (the orange wordmark disappears into
+orange bg; the navy book icon disappears into navy bg).
+
+## Predicted blog URL (new in v2.3, used by IG Story Frame 3 + Slack delivery)
+
+The published blog URL is constructed deterministically from the slug
+in `blog-anchor-meta.md` BEFORE the HubSpot publish step:
+
+```
+predicted_blog_url = "https://blog.wetutorathome.com/" + url_slug.lstrip("/")
+```
+
+This URL is:
+- Recorded in the meta file as `predicted_blog_url:`
+- Logged by `scripts/publish-to-hubspot.py` for traceability
+- Included in the Slack delivery header (next to the HubSpot edit URL)
+- Substituted into the IG Story (3 frames) piece body via the
+  `{predicted_blog_url}` placeholder in `scripts/deliver-to-slack.py`
+- Pasted by Roman / Danielle into the Instagram link sticker when
+  posting Frame 3
+
+Because it is computed from the slug (not the eventual HubSpot post ID
+or URL response), it is available BEFORE the publish call — so the
+Slack thread can show the URL up front and the IG Story instructions
+can reference it specifically.
+
 ## Coordination with other skills
 
 - Reads from: `aplus-b2b-brand-kit` and `aplus-b2c-brand-kit` (color and logo authority)
@@ -280,6 +356,8 @@ If any of those eight points fails, the graphic must be revised before publicati
 - QA against: `aplus-content/{date}-weekly/qa-checklist.md` (human walkthrough)
 
 ## Version
+
+v2.3 . Updated 2026-05-20 . Three fixes after Danielle's first review of the v2.2 bundle: (1) Instagram Story Frame 3 no longer renders a literal placeholder box or "[ link sticker goes here ]" text — the top region is intentionally empty and the bottom arrow + instruction does the visual work; (2) Logo composite pipeline rewrites to eliminate the rectangular halo: removed the erase-rectangle step, added hard alpha threshold (binary alpha: <128 -> 0, >=128 -> 255) after chroma-key and after every LANCZOS resize, preserved logo aspect ratio when resizing; (3) Predicted blog URL is now constructed deterministically from `url_slug:` BEFORE the HubSpot publish call so it is available to the Slack delivery header and the IG Story Frame 3 piece body via the `{predicted_blog_url}` placeholder.
 
 v2.2 . Updated 2026-05-20 . Removed Instagram feed posts from the weekly bundle. Added 3-frame Instagram Story sequence (Hook / Key Insight / CTA-with-link-sticker-placement) with hard rules: NO AI-generated people, Playfair Display + DM Sans, heavy A+ brand colors, logo bottom-center on every frame, 1080x1920 vertical each, Swipe → indicator on frames 1 and 2 only, Frame 3 reserves top-center cleanspace for the user-added link sticker. New `instagram_story_frames:` + optional `instagram_story_subheads:` meta schema fields. Builder script: `scripts/build-instagram-stories.py`. Slack delivery ships the 3 frames as a single labeled gallery piece.
 

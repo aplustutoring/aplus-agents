@@ -119,10 +119,10 @@ PIECES = [
         "publish_window": "Same day as blog publish — story is 24hr",
         "destination": "instagram.com/aplustutoring (story)",
         "body_text": (
-            ":clipboard: *Instagram Story — 3-frame sequence* (v2.2). Post all 3 "
-            "in order. Frame 3 needs the link sticker pointing to the blog URL "
-            "(see HubSpot edit link in the header above). Per-frame copy is in "
-            "instagram-story-1.md / -2.md / -3.md for verification."
+            ":clipboard: *Instagram Story — 3-frame sequence* (v2.3). Post all 3 "
+            "in order. Frame 3 needs the Instagram link sticker pointing to:\n"
+            "{predicted_blog_url}\n"
+            "Per-frame copy is in instagram-story-1.md / -2.md / -3.md for verification."
         ),
         "image_files": [
             "graphics/instagram-story-1.png",
@@ -344,6 +344,24 @@ def main():
     date_str = extract_date_human(bundle) or "?"
     print(f"=== Bundle: {bundle} ({date_str}) ===")
 
+    # Construct predicted blog URL deterministically from the slug in meta.
+    # Available BEFORE HubSpot publish so Roman/Danielle can use it for the
+    # Instagram link sticker and for any pre-publish references.
+    predicted_blog_url = None
+    meta_path = bundle / "blog-anchor-meta.md"
+    if meta_path.exists():
+        m = re.search(r"^\s*url_slug:\s*(.+)$", meta_path.read_text(), re.MULTILINE)
+        if m:
+            slug = m.group(1).strip().lstrip("/")
+            predicted_blog_url = f"https://blog.wetutorathome.com/{slug}"
+
+    # Substitute {predicted_blog_url} placeholders in piece body_text strings
+    # so the IG Story piece can reference the URL directly.
+    if predicted_blog_url:
+        for p in effective_pieces:
+            if "body_text" in p:
+                p["body_text"] = p["body_text"].replace("{predicted_blog_url}", predicted_blog_url)
+
     # Header
     header_lines = [f":package: *Weekly content bundle ready  -  {date_str}*"]
     if args.post_id:
@@ -351,6 +369,9 @@ def main():
         header_lines.append(f":memo: HubSpot blog draft: <{url}|Review and publish>")
     else:
         header_lines.append(":memo: HubSpot blog draft: (no --post-id provided)")
+    if predicted_blog_url:
+        header_lines.append(f":link: Blog URL when published: <{predicted_blog_url}|{predicted_blog_url}>")
+        header_lines.append(":arrow_right: Use this URL for the Instagram link sticker on Story Frame 3.")
     header_lines.append("")
     header_lines.append(
         f":pushpin: {len(effective_pieces)} deliveries below — copy each block into the destination platform at the suggested time."

@@ -503,11 +503,16 @@ def main():
         # Prepend so it lands at the top of headHtml
         head_html = kw_tag + ("\n" + head_html if head_html else "")
 
+    # Predicted blog URL (deterministic from slug). Available BEFORE publish
+    # so downstream steps (Slack delivery, IG link sticker) can reference it.
+    predicted_blog_url = f"https://blog.wetutorathome.com/{slug.lstrip('/')}" if slug else None
+
     print("=== PARSED INPUTS ===")
     print(f"Display title:    {title}")
     print(f"HTML title:       {html_title}")
     print(f"Slug:             {slug}")
     print(f"Canonical URL:    {canonical_url}")
+    print(f"Predicted URL:    {predicted_blog_url}")
     print(f"Meta description: {description}  ({len(description)} chars)")
     print(f"Hero alt text:    {hero_alt[:80]}...  ({len(hero_alt)} chars)")
     print(f"Keywords:         {meta_keywords_string!r}  ({len(keywords_list)} terms)")
