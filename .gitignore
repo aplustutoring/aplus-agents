@@ -20,3 +20,6 @@ aplus-content/
 
 # State lock sidecars (transient — fcntl.flock anchors)
 state/*.lock
+
+# Embedding cache (rebuilt cheaply each CI run; would bloat repo)
+state/blog-embeddings.json
