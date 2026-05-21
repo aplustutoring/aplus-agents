@@ -8,8 +8,8 @@ Run this whenever the iLEAD data changes (typically once per school year)
 to refresh the brand asset in both brand kits.
 
 Output:
-  aplus-b2b-brand-kit/ilead-outcomes-graphic.png
-  aplus-b2c-brand-kit/ilead-outcomes-graphic.png
+  skills/aplus-b2b-brand-kit/ilead-outcomes-graphic.png
+  skills/aplus-b2c-brand-kit/ilead-outcomes-graphic.png
 
 Numbers are hardcoded in this script (not parameterized) on purpose so the
 canonical brand asset cannot accidentally drift. Update the constants
@@ -29,7 +29,7 @@ import matplotlib.font_manager as fm
 from matplotlib.patches import Wedge
 
 # Register A+ brand fonts (Playfair Display + DM Sans) per aplus-graphic-prompts v2.0
-BRAND_FONTS_DIR = Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/aplus-b2b-brand-kit/fonts")
+BRAND_FONTS_DIR = Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/skills/aplus-b2b-brand-kit/fonts")
 for _ttf in BRAND_FONTS_DIR.glob("*.ttf"):
     try:
         fm.fontManager.addfont(str(_ttf))
@@ -69,8 +69,8 @@ HEADLINE = "iLEAD 2024-25 Tier 3 Outcomes"
 FOOTER = "Source: A+ Tutoring published case studies"
 
 OUTPUTS = [
-    Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/aplus-b2b-brand-kit/ilead-outcomes-graphic.png"),
-    Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/aplus-b2c-brand-kit/ilead-outcomes-graphic.png"),
+    Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/skills/aplus-b2b-brand-kit/ilead-outcomes-graphic.png"),
+    Path("/Users/romanslavinsky/Desktop/aplus-marketing-skills/skills/aplus-b2c-brand-kit/ilead-outcomes-graphic.png"),
 ]
 
 

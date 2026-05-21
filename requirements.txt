@@ -1,0 +1,11 @@
+# Currently imported by scripts/
+Pillow>=11.3.0
+matplotlib>=3.9.4
+markdown>=3.9
+python-dotenv>=1.2.1
+requests>=2.32.5
+
+# Pre-staged for Phase 2+ (LLM calls from GitHub Actions, embeddings for redundancy check)
+anthropic>=0.40.0
+openai>=1.50.0
+google-generativeai>=0.8.0

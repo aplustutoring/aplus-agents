@@ -6,7 +6,14 @@
 .env.local
 *.env
 
+# Python build artifacts
+__pycache__/
+*.pyc
+
 # Runtime usage logs (machine state, grow over time)
 scripts/hubspot-usage.log
 scripts/dall-e-usage.log
 scripts/slack-usage.log
+
+# Bundle outputs (too large for git; produced by weekly content engine)
+aplus-content/

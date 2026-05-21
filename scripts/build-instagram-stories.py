@@ -72,7 +72,7 @@ OFF_WHITE = "#FAF7F2"
 
 
 # ----- Font registration (Playfair Display + DM Sans) -----
-BRAND_FONTS_DIR = Path(__file__).resolve().parent.parent / "aplus-b2b-brand-kit" / "fonts"
+BRAND_FONTS_DIR = Path(__file__).resolve().parent.parent / "skills" / "aplus-b2b-brand-kit" / "fonts"
 for _ttf in BRAND_FONTS_DIR.glob("*.ttf"):
     try:
         fm.fontManager.addfont(str(_ttf))

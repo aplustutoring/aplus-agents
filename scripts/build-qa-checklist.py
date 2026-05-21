@@ -49,7 +49,7 @@ CHECKLIST_TEMPLATE = """# Content QA Checklist: {date}
 
 ## Preset stat graphic (canonical iLEAD outcomes)
 
-- [ ] File is a verbatim copy of `aplus-b2b-brand-kit/ilead-outcomes-graphic.png`
+- [ ] File is a verbatim copy of `skills/aplus-b2b-brand-kit/ilead-outcomes-graphic.png`
 - [ ] Numbers verified (75 percent, 87.5 percent, 80 percent)
 - [ ] Student counts verified (12, 8, 20)
 - [ ] Ring fills proportional to percentages (75 percent ring is visibly 3/4 filled, 87.5 percent ring nearly full, 80 percent ring 4/5 filled)
