@@ -104,11 +104,12 @@ def build_slack_message(
     approval_deadline: datetime,
 ) -> str:
     header = (
-        f":newspaper: *A+ Weekly Topic Candidates — {current_week}*\n"
-        f"Approve a topic by reacting :one: / :two: / :three: on this message.\n"
-        f"To swap or edit, reply in thread starting with `EDIT:` and your replacement.\n"
-        f"Auto-approve at *{approval_deadline.strftime('%a %b %d, %I:%M %p %Z')}* "
-        f"if no action."
+        f":newspaper: *A+ Weekly Topic Slate — {current_week}*\n"
+        f"Three topics → publishes Mon (slot 1), Wed (slot 2), Fri (slot 3) at 8 AM PT.\n"
+        f"*Approve the slate:* react :white_check_mark: (Roman or Danielle, whoever sees first).\n"
+        f"*Edit a slot:* reply in thread `EDIT 1: replacement headline` (also works for 2 or 3).\n"
+        f"*Skip a slot:* reply in thread `SKIP 2` (slot 2 won't publish that day).\n"
+        f"Auto-approve the slate at *{approval_deadline.strftime('%a %b %d, %I:%M %p %Z')}* if no action."
     )
     if refresh_mode:
         header += "\n:recycle: *Refresh mode ON* — redundancy check bypassed for this run."
