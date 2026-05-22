@@ -51,8 +51,11 @@ jobs:
           APLUS_REFRESH_MODE: ${{ inputs.refresh }}
         run: |
           ARGS=""
+          if [ "${{ inputs.refresh }}" = "true" ]; then
+            ARGS="$ARGS --refresh"
+          fi
           if [ "${{ inputs.dry_run }}" = "true" ]; then
-            ARGS="--dry-run"
+            ARGS="$ARGS --dry-run"
           fi
           python3 scripts/topic_gen.py $ARGS
 

@@ -265,7 +265,9 @@ def main() -> int:
     args = p.parse_args()
 
     try:
-        result = run(channel=args.channel, refresh=args.refresh, dry_run=args.dry_run)
+        # --refresh CLI flag forces True; absence falls through to APLUS_REFRESH_MODE env var
+        refresh_arg = True if args.refresh else None
+        result = run(channel=args.channel, refresh=refresh_arg, dry_run=args.dry_run)
     except Exception as e:
         logger.exception("topic_gen_failed: %s", e)
         return 1
