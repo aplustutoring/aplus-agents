@@ -42,7 +42,18 @@ load_dotenv()
 
 TOKEN = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
 PORTAL_ID = "6312752"          # HubSpot account ID (used only for edit URLs)
-BLOG_ID = "12422338726"        # content_group_id of the wetutorathome.com blog
+# Per-blog content_group_ids and URL bases. Selected at runtime by --blog
+# flag or by the bundle metadata `hubspot_blog:` field.
+BLOG_IDS = {
+    "blog": "12422338726",        # A+ Tutoring Blog (English) — B2B
+    "case-study": "81499394054",  # A+ Tutoring Case study (English) — B2C
+}
+BLOG_URL_BASES = {
+    "blog": "https://blog.wetutorathome.com",
+    "case-study": "https://blog.wetutorathome.com/case-study",
+}
+# Kept for any legacy import of BLOG_ID.
+BLOG_ID = BLOG_IDS["blog"]
 HUBSPOT_BASE = "https://api.hubapi.com"
 LOG_PATH = Path(__file__).parent / "hubspot-usage.log"
 
@@ -63,12 +74,12 @@ def auth_headers():
     return {"Authorization": f"Bearer {TOKEN}"}
 
 
-def validate_token():
+def validate_token(blog_id=None):
     """Cheap GET to confirm the token + private app permissions work."""
     r = requests.get(
         f"{HUBSPOT_BASE}/cms/v3/blogs/posts",
         headers=auth_headers(),
-        params={"limit": 1, "contentGroupId": BLOG_ID},
+        params={"limit": 1, "contentGroupId": blog_id or BLOG_ID},
         timeout=30,
     )
     log("validate_token", r.status_code, "OK" if r.status_code == 200 else r.text[:400])
@@ -316,6 +327,7 @@ def create_draft(
     meta_description,
     featured_image_url,
     *,
+    blog_id=None,
     html_title=None,
     canonical_url=None,
     featured_image_alt_text=None,
@@ -338,13 +350,13 @@ def create_draft(
     slug_clean = slug.lstrip("/")
 
     payload = {
-        "contentGroupId": BLOG_ID,
+        "contentGroupId": blog_id or BLOG_ID,
         "name": name,
         "slug": slug_clean,
         "metaDescription": meta_description,
         "postBody": html,
-        "featuredImage": featured_image_url,
-        "useFeaturedImage": True,
+        "featuredImage": featured_image_url or "",
+        "useFeaturedImage": bool(featured_image_url),
         "authorName": "A+ Tutoring",
         "state": "DRAFT",
     }
@@ -405,6 +417,16 @@ def main():
         help="Path to weekly bundle directory (e.g., aplus-content/2026-05-15-weekly/)",
     )
     parser.add_argument(
+        "--blog",
+        choices=list(BLOG_IDS.keys()),
+        default=None,
+        help=(
+            "Which HubSpot blog to publish to. If omitted, reads `hubspot_blog:` "
+            "from the bundle's meta file. Falls back to 'blog' (B2B). "
+            "Options: " + ", ".join(BLOG_IDS.keys())
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Validate inputs, parse meta, convert markdown — no HubSpot write calls",
@@ -416,14 +438,37 @@ def main():
         print(f"ERROR: bundle dir not found: {bundle}", file=sys.stderr)
         return 1
 
-    blog_md = bundle / "blog-anchor.md"
-    meta_md = bundle / "blog-anchor-meta.md"
-    hero_png = bundle / "graphics" / "hero.png"
-
-    for p in (blog_md, meta_md, hero_png):
-        if not p.exists():
-            print(f"ERROR: missing required file: {p}", file=sys.stderr)
+    # Detect bundle layout. B2B uses blog-anchor.md + blog-anchor-meta.md.
+    # Case-study uses case-study-*.md + metadata.md.
+    if (bundle / "blog-anchor.md").exists():
+        blog_md = bundle / "blog-anchor.md"
+        meta_md = bundle / "blog-anchor-meta.md"
+    else:
+        candidates = sorted(bundle.glob("case-study-*.md"))
+        if not candidates:
+            print(
+                f"ERROR: no body markdown found in {bundle}. "
+                f"Expected blog-anchor.md (B2B) or case-study-*.md.",
+                file=sys.stderr,
+            )
             return 1
+        blog_md = candidates[0]
+        meta_md = bundle / "metadata.md"
+
+    hero_png = bundle / "graphics" / "hero.png"
+    # Hero optional for early case-study runs (no graphics pipeline yet).
+    # B2B requires hero.
+    hero_required = (blog_md.name == "blog-anchor.md")
+    for p_check in (blog_md, meta_md):
+        if not p_check.exists():
+            print(f"ERROR: missing required file: {p_check}", file=sys.stderr)
+            return 1
+    if hero_required and not hero_png.exists():
+        print(f"ERROR: missing required file: {hero_png}", file=sys.stderr)
+        return 1
+    if not hero_png.exists():
+        print(f"NOTE: no hero image at {hero_png} — publishing without featured image.")
+        hero_png = None
 
     if not TOKEN:
         print("ERROR: HUBSPOT_PRIVATE_APP_TOKEN not set in .env", file=sys.stderr)
@@ -446,9 +491,7 @@ def main():
 
     # v1.7 extended SEO fields with sensible fallbacks
     html_title = meta.get("html_title") or meta.get("meta_title") or title
-    canonical_url = meta.get("canonical_url") or (
-        f"https://blog.wetutorathome.com/{slug.lstrip('/')}" if slug else None
-    )
+    canonical_url = meta.get("canonical_url")  # filled in after blog_choice resolves
 
     # featuredImageAltText is REQUIRED. Accept either new (hero_alt_text)
     # or legacy (hero_image_alt_text) field name.
@@ -457,10 +500,11 @@ def main():
         or meta.get("hero_image_alt_text")
         or ""
     )
-    if not hero_alt or len(hero_alt) < 10:
+    if hero_png is not None and (not hero_alt or len(hero_alt) < 10):
         print(
-            "ERROR: hero_alt_text is REQUIRED and must be a descriptive sentence "
-            "(>=10 chars). Looked for hero_alt_text or hero_image_alt_text in meta.",
+            "ERROR: hero_alt_text is REQUIRED when a hero image is present and "
+            "must be a descriptive sentence (>=10 chars). Looked for hero_alt_text "
+            "or hero_image_alt_text in meta.",
             file=sys.stderr,
         )
         return 1
@@ -503,9 +547,22 @@ def main():
         # Prepend so it lands at the top of headHtml
         head_html = kw_tag + ("\n" + head_html if head_html else "")
 
+    # Resolve blog choice. Precedence: --blog flag > meta hubspot_blog > "blog".
+    blog_choice = args.blog or meta.get("hubspot_blog") or "blog"
+    if blog_choice not in BLOG_IDS:
+        print(f"ERROR: unknown blog choice {blog_choice!r}. Valid: {', '.join(BLOG_IDS.keys())}", file=sys.stderr)
+        return 1
+    blog_id = BLOG_IDS[blog_choice]
+    blog_url_base = BLOG_URL_BASES[blog_choice]
+    print(f"Publishing to blog: {blog_choice} (id={blog_id})")
+
+    # Now that blog_url_base is known, fill in canonical_url default
+    if not canonical_url and slug:
+        canonical_url = f"{blog_url_base}/{slug.lstrip('/')}"
+
     # Predicted blog URL (deterministic from slug). Available BEFORE publish
     # so downstream steps (Slack delivery, IG link sticker) can reference it.
-    predicted_blog_url = f"https://blog.wetutorathome.com/{slug.lstrip('/')}" if slug else None
+    predicted_blog_url = f"{blog_url_base}/{slug.lstrip('/')}" if slug else None
 
     print("=== PARSED INPUTS ===")
     print(f"Display title:    {title}")
@@ -522,7 +579,7 @@ def main():
     print(f"Category ID:      {category_id}")
     print(f"Schema markup:    {len(head_html):,} chars of headHtml")
     print(f"CTA URL (meta):   {cta_url}")
-    print(f"Hero image:       {hero_png}  ({hero_png.stat().st_size:,} bytes)")
+    print(f"Hero image:       {hero_png}" + (f"  ({hero_png.stat().st_size:,} bytes)" if hero_png else " (none — case study mode)"))
 
     # Convert markdown
     html = markdown_to_html(blog_md)
@@ -532,15 +589,18 @@ def main():
         print("\n=== DRY RUN — no HubSpot API calls will be made ===\n")
         print(
             f"Would validate token: GET {HUBSPOT_BASE}/cms/v3/blogs/posts"
-            f"?contentGroupId={BLOG_ID}&limit=1"
+            f"?contentGroupId={blog_id}&limit=1"
         )
         print(
             f"Would check existing files: GET {HUBSPOT_BASE}/files/v3/files"
-            f"?name={hero_png.name}"
+            f"?name={hero_png.name if hero_png else '(no hero)'}"
         )
-        print(f"Would upload {hero_png.name} if not already present")
+        if hero_png:
+            print(f"Would upload {hero_png.name} if not already present")
+        else:
+            print("Would skip hero upload (no hero image)")
         print(f"Would POST {HUBSPOT_BASE}/cms/v3/blogs/posts with state=DRAFT")
-        print(f"contentGroupId={BLOG_ID}, authorName='A+ Tutoring'")
+        print(f"contentGroupId={blog_id}, authorName='A+ Tutoring'")
         print("\n--- v1.7 SEO payload preview ---")
         preview = {
             "name": title,
@@ -567,14 +627,18 @@ def main():
 
     print("\n=== EXECUTING ===")
     print("\nValidating HubSpot token...")
-    if not validate_token():
+    if not validate_token(blog_id):
         return 1
     print("Token OK.")
 
-    hero_upload_name = dated_filename(hero_png, bundle)
-    print(f"\nUploading hero image as: {hero_upload_name}")
-    hero_url = upload_file(hero_png, upload_name=hero_upload_name)
-    print(f"Hero image URL: {hero_url}")
+    if hero_png is not None:
+        hero_upload_name = dated_filename(hero_png, bundle)
+        print(f"\nUploading hero image as: {hero_upload_name}")
+        hero_url = upload_file(hero_png, upload_name=hero_upload_name)
+        print(f"Hero image URL: {hero_url}")
+    else:
+        hero_url = None
+        print("\nNo hero image — publishing without featured image.")
 
     print("\nCreating draft post...")
     post = create_draft(
@@ -583,6 +647,7 @@ def main():
         html,
         description,
         hero_url,
+        blog_id=blog_id,
         html_title=html_title,
         canonical_url=canonical_url,
         featured_image_alt_text=hero_alt,
