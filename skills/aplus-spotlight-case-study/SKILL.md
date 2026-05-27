@@ -248,3 +248,55 @@ These are NOT part of v1 and should not be confused with the agent's current sco
 
 v1.0 . Created May 8, 2026
 Foundation: Single-responsibility scope locked with Roman May 8, 2026. Hero's Journey structure adapted from 2026 B2B/B2C case study best practices research. Word count target (1,200-1,500) sourced from Brixon Group 2026 research showing comprehensive base case studies in this range derive best variants. SEO metadata structure aligned with AI summary optimization patterns (Google AI Overviews, Perplexity extraction).
+
+## Pull-quote grammar gate (MANDATORY, v2.1 patch)
+
+Before ANY quote is rendered on a graphic, it MUST pass this check:
+
+### 1. Does the quote read as a complete, grammatical sentence in isolation?
+
+Remove the surrounding context. Just the quote on its own. If a reader who has not seen the case study could read this quote on a billboard or social card and understand it as a complete thought, it passes.
+
+If the quote contains a sentence fragment, dangling clause, missing preposition ("struggles" without "with"), or an unfinished thought, it FAILS.
+
+### 2. Two acceptable fixes for a failing quote
+
+**Option A — Bracketed editorial insertion:** add `[bracketed]` words to complete the grammar. Example: "She started talking like math was a subject that she just struggles [with]." The brackets signal honest editing. Industry standard. Magazines and newspapers do this routinely.
+
+**Option B — Choose a different quote from the same speaker:** transcripts contain many sentences. Pick a grammatical one. Stronger move than bracketed edits when a clean alternative exists.
+
+### 3. Hard rule
+
+A tutoring company NEVER ships a pull-quote graphic with broken grammar. A+ Tutoring is in the business of language and learning. A pull-quote graphic that reads as a sentence fragment is brand damage. Catch this BEFORE the AI image generator runs.
+
+### 4. Where this check lives
+
+- **In the case study drafting agent:** when selecting `pull_quotes` for metadata.md, run this check on each candidate.
+- **In the human review (Gate 2):** if a quote on a generated graphic reads broken, regenerate with a fixed version before publication.
+- **In the build script (future enhancement):** automated grammar check via LLM API call could be added. For now the rule is enforced at the drafting stage.
+
+### 5. Examples
+
+| Quote | Pass/Fail | Why |
+|---|---|---|
+| "She started talking like math was a subject that she just struggles" | FAIL | Missing "with" — incomplete thought |
+| "She started talking like math was a subject that she just struggles [with]." | PASS | Bracketed editorial insertion fixes grammar |
+| "I saw her joy kick in." | PASS | Complete sentence on its own |
+| "Whatever she's questioning in the math, we get those addressed." | PASS | Complete sentence, captures parent's stance |
+| "And the thing that happened was, you know" | FAIL | Trails off, no complete thought |
+| "He's a good kid and" | FAIL | Cuts off mid-conjunction |
+| "He's a good kid." | PASS | Complete sentence |
+
+### 6. Attribution requirements (case-study-specific, v2.1)
+
+Every B2C case-study pull-quote graphic includes:
+- **Curly opening quotation mark** (decorative, large, upper-left)
+- **Verbatim quote** (in white Playfair Display 700)
+- **Gold divider line** (~80px wide)
+- **Attribution** in DM Sans 500 (e.g., "Camila, Gabriela's mother")
+
+This is a deviation from the B2B blog rule which says "NO attribution." For B2C case studies, attribution IS the credibility play — a parent's name and relationship to the student is what makes the quote land. Update `aplus-graphic-prompts/SKILL.md` to reflect this case-study variant.
+
+### Version
+
+v2.1 patch (2026-05-27). Added grammar gate + B2C attribution rule. Surfaced during Gabriela case study Session 2 build when an early quote shipped with broken grammar ("struggles" missing "with"). Caught at human review. Rule baked in so it never happens again.
