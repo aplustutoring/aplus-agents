@@ -1,0 +1,306 @@
+{
+  "_doc": "Topic registry for the A+ weekly content engine. Updated by scripts/topic-registry.py whenever a research brief is generated (candidates_proposed) and whenever an anchor is approved (anchors). The aplus-research skill MUST read this registry before proposing new candidates. Rules: (1) no candidate may match a slug or normalized title of any anchored entry; (2) at most 2 carryover candidates per brief, and each carryover must include a `why_now_changed` note in the brief; (3) candidates rejected 3+ times are auto-retired unless explicitly resurrected with a fresh news hook.",
+  "schema_version": 1,
+  "anchors": [
+    {
+      "date": "2026-05-15",
+      "title": "Title III LTEL Allocation Under Federal Funding Volatility",
+      "slug": "title-iii-ltel-allocation-federal-funding-volatility",
+      "topic_axis": "federal-funding",
+      "post_id": "213128099969"
+    },
+    {
+      "date": "2026-05-18",
+      "title": "2026 California School Dashboard and CSI/ATSI Designation Cycle",
+      "slug": "california-school-dashboard-2026-csi-charter-intervention",
+      "topic_axis": "state-accountability",
+      "post_id": "213195220825"
+    },
+    {
+      "date": "2026-05-19",
+      "title": "Summer as a Tier 3 Runway, Not Summer School",
+      "slug": "charter-summer-tier-3-runway-intervention",
+      "topic_axis": "intervention-programming",
+      "post_id": "213288270674"
+    },
+    {
+      "date": "2026-05-20",
+      "title": "Dyslexia Screening Laws Hit Implementation Deadlines This Fall",
+      "slug": "dyslexia-screening-charter-school-2026-implementation",
+      "topic_axis": "k2-compliance-pathway",
+      "post_id": "213274067310"
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Reading the Spring MAP Report. A Charter Director's Protocol",
+      "slug": "spring-map-report-charter-director-tier-3-cohort-protocol",
+      "topic_axis": "data-interpretation",
+      "post_id": "213358800401"
+    },
+    {
+      "date": "2026-05-25",
+      "slug": "end-of-year-letter-tier-3-parents-charter-september",
+      "title": "The End-of-Year Letter to Tier 3 Parents That Sets Up September",
+      "topic_axis": "end-of-year-communications",
+      "post_id": "213665871522"
+    }
+  ],
+  "candidates_proposed": [
+    {
+      "date": "2026-05-18",
+      "slot": "A",
+      "title": "2026 California School Dashboard and CSI/ATSI Designation Cycle",
+      "anchored": true
+    },
+    {
+      "date": "2026-05-18",
+      "slot": "B",
+      "title": "AB 2555 Stuck in Appropriations: English Learner Reclassification Delay",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-18",
+      "slot": "C",
+      "title": "Charter Authorizer Renewal Evaluation Season Approaches",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-18",
+      "slot": "D",
+      "title": "Post-ESSER Charter Tutoring Procurement for 2026-27",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-18",
+      "slot": "E",
+      "title": "NWEA Rebounder Profile as Operational Template",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-19",
+      "slot": "A",
+      "title": "Summer as a Tier 3 Runway, Not Summer School",
+      "anchored": true
+    },
+    {
+      "date": "2026-05-19",
+      "slot": "B",
+      "title": "Reading Spring MAP Data to Build Next Year's Tier 3 Cohort",
+      "anchored": false,
+      "note": "later anchored as May 21 with sharper framing"
+    },
+    {
+      "date": "2026-05-19",
+      "slot": "C",
+      "title": "ESSA Four Evidence Tiers for Charter Tutoring Vendor Selection",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-19",
+      "slot": "D",
+      "title": "Dyslexia Screening Laws Hit Implementation Deadlines This Fall",
+      "anchored": false,
+      "note": "later anchored as May 20"
+    },
+    {
+      "date": "2026-05-19",
+      "slot": "E",
+      "title": "Chronic Absenteeism Is the Tier 0 Problem",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-20",
+      "slot": "A",
+      "title": "Summer as a Tier 3 Runway, Not Summer School",
+      "anchored": false,
+      "note": "carryover of May 19 anchor, not re-proposed"
+    },
+    {
+      "date": "2026-05-20",
+      "slot": "B",
+      "title": "Reading Spring MAP Data to Build Next Year's Tier 3 Cohort",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-20",
+      "slot": "C",
+      "title": "Dyslexia Screening Laws Hit Implementation Deadlines This Fall",
+      "anchored": true
+    },
+    {
+      "date": "2026-05-20",
+      "slot": "D",
+      "title": "ESSA Four Evidence Tiers for Charter Tutoring Vendor Selection",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-20",
+      "slot": "E",
+      "title": "Chronic Absenteeism Is the Tier 0 Problem",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-21",
+      "slot": "A",
+      "title": "Reading the Spring MAP Report. A Charter Director's Protocol",
+      "anchored": true
+    },
+    {
+      "date": "2026-05-21",
+      "slot": "B",
+      "title": "ESSA Four Evidence Tiers for Charter Tutoring Vendor Selection",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-21",
+      "slot": "C",
+      "title": "County Office of Education Partnership for Charter CSI Plans",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-21",
+      "slot": "D",
+      "title": "IEP Annual Review as Intervention Audit",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-21",
+      "slot": "E",
+      "title": "Annenberg Tutoring Meta-Analysis Conditions",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "A",
+      "title": "ESSA Four Evidence Tiers for Charter Tutoring Vendor Selection",
+      "anchored": false,
+      "note": "CANCELLED poll. 3rd time proposed without anchoring. Auto-retire candidate."
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "B",
+      "title": "Presenting Tier 3 Cohort to Your Board in June",
+      "anchored": false,
+      "note": "CANCELLED poll. First proposal. Eligible to resurface."
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "C",
+      "title": "Annenberg Tutoring Meta-Analysis Conditions",
+      "anchored": false,
+      "note": "CANCELLED poll. Carryover from May 21."
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "D",
+      "title": "IEP Annual Review as Intervention Audit",
+      "anchored": false,
+      "note": "CANCELLED poll. Carryover from May 21."
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "E",
+      "title": "County Office of Education Partnership for Charter CSI Plans",
+      "anchored": false,
+      "note": "CANCELLED poll. Carryover from May 21."
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "A",
+      "title": "The 4-Criterion English Learner Reclassification Rubric for Charter LEAs",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "B",
+      "title": "State Special Education Funding Formulas Charter LEAs Often Leave on the Table",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "C",
+      "title": "Math Facts Fluency as a Middle School Tier 2 Indicator",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "D",
+      "title": "Federal Title I Part A Carryover Rules for 2026-27 Charter Allocations",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "E",
+      "title": "The Charter Authorizer Annual Performance Report. What to Push Back On",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "A",
+      "title": "The Cost-Per-Outcome Math Charter Boards Should Be Asking About Intervention Spending",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "B",
+      "title": "The Parent Consent Conversation for Tier 3 Tutoring. How to Run It Without Triggering Defensiveness",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "C",
+      "title": "The Tutor-Pipeline Crisis. How to Vet a Vendor's Hiring Pipeline Before Signing for 2026-27",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "D",
+      "title": "Using Tier 3 Outcomes as Charter Renewal Evidence. A 2-Year Strategy",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-22",
+      "slot": "E",
+      "title": "When Restorative Practices Solve It vs When Academic Tier 3 Does. The Diagnostic Charter LEAs Often Get Wrong",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-25",
+      "slot": "A",
+      "title": "The Summer Reading Curriculum Audit. Which K-2 Materials Pass the Science-of-Reading Test",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-25",
+      "slot": "B",
+      "title": "The End-of-Year Letter to Tier 3 Parents That Sets Up September",
+      "anchored": true
+    },
+    {
+      "date": "2026-05-25",
+      "slot": "C",
+      "title": "Reading Disproportionality Data. What Charter LEAs Should Audit Before September",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-25",
+      "slot": "D",
+      "title": "Should Your Charter LEA Run Its Own Intervention Department or Contract It Out. A Decision Framework",
+      "anchored": false
+    },
+    {
+      "date": "2026-05-25",
+      "slot": "E",
+      "title": "Layering Community-Based Tutoring Partnerships With Vendor Tier 3",
+      "anchored": false
+    }
+  ],
+  "retired_candidates": [
+    {
+      "title": "ESSA Four Evidence Tiers for Charter Tutoring Vendor Selection",
+      "proposed_count": 4,
+      "retired_on": "2026-05-22",
+      "reason": "Proposed 4 weeks running without anchoring. Resurrect only with a fresh news hook (e.g., USDE updated guidance, IES new brief)."
+    }
+  ]
+}
