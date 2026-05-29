@@ -43,14 +43,14 @@ Design rules enforced:
      if the source is missing.
 
 Usage:
-    python3 scripts/composite-logo.py --bundle aplus-content/2026-05-20-weekly/
-    python3 scripts/composite-logo.py --bundle aplus-content/2026-05-20-weekly/ --dry-run
-    python3 scripts/composite-logo.py --bundle aplus-content/2026-05-20-weekly/ --force
+    python3 scripts/shared/composite-logo.py --bundle aplus-content/2026-05-20-weekly/
+    python3 scripts/shared/composite-logo.py --bundle aplus-content/2026-05-20-weekly/ --dry-run
+    python3 scripts/shared/composite-logo.py --bundle aplus-content/2026-05-20-weekly/ --force
 
 This script does NOT process the photographic files (hero, facebook,
 instagram-post, instagram-story-single) which intentionally ship with
 no logo. The 3-frame IG story sequence is built+composited separately by
-scripts/build-instagram-stories.py.
+scripts/b2c/build-instagram-stories.py.
 """
 import argparse
 import sys

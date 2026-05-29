@@ -3,11 +3,11 @@
 Generalized hero + OG social card builder for any A+ case study.
 
 Takes --bundle, reads subject/grade/gender/ethnicity + title/subhead from
-metadata.md, builds the hero prompt via scripts/hero_scene.py (subject- and
+metadata.md, builds the hero prompt via scripts/b2c/hero_scene.py (subject- and
 demographic-aware), generates hero (Gemini) + social card (GPT Image 2).
 
 Usage:
-    python3 scripts/build-case-study-hero-card.py --bundle aplus-content/{bundle}/
+    python3 scripts/b2c/build-case-study-hero-card.py --bundle aplus-content/{bundle}/
 """
 import argparse
 import base64

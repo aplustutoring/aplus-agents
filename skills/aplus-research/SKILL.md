@@ -199,9 +199,9 @@ The research brief generator MUST consult `state/topic-registry.json` before pro
 
 Every research brief must satisfy these rules at generation time:
 
-1. **No anchored duplicates.** A candidate title must not normalize-match any entry in `anchors`. The slug check via `scripts/topic-registry.py is-anchored <slug>` is the strict version (exact slug). The title check via `... check <title>` catches near-duplicates with different slug phrasing. Hard fail: a brief with an anchored-duplicate candidate is invalid.
+1. **No anchored duplicates.** A candidate title must not normalize-match any entry in `anchors`. The slug check via `scripts/b2b/topic-registry.py is-anchored <slug>` is the strict version (exact slug). The title check via `... check <title>` catches near-duplicates with different slug phrasing. Hard fail: a brief with an anchored-duplicate candidate is invalid.
 
-2. **At least 3 of 5 candidates must be NEW.** "NEW" = never appeared in any prior `candidates_proposed` entry. Check via `scripts/topic-registry.py novelty-check <candidates-file>` which exits non-zero if fewer than 3 are new.
+2. **At least 3 of 5 candidates must be NEW.** "NEW" = never appeared in any prior `candidates_proposed` entry. Check via `scripts/b2b/topic-registry.py novelty-check <candidates-file>` which exits non-zero if fewer than 3 are new.
 
 3. **At most 2 carryover candidates per brief.** Carryovers (topics proposed in a prior brief but never anchored) may occupy at most 2 of the 5 slots. Each carryover must include a `why_now_changed` note in the brief body — what news hook, deadline, or data point has materially changed since the last proposal.
 
@@ -213,26 +213,26 @@ Step-by-step what the engine runs each weekly research phase:
 
 1. Generate ~10 candidate titles fresh from current scan (federal/state news, partner-school news, education research, competitor moves, K-12 problem stories).
 2. Write the 10 titles to a temp file (one per line).
-3. Run `python3 scripts/topic-registry.py novelty-check tmp.txt`. The command returns one of NEW / CARRYOVER-N / RETIRED / ANCHORED-DUPLICATE per title and a summary line. Anchored-duplicates and retired titles are dropped from the pool.
+3. Run `python3 scripts/b2b/topic-registry.py novelty-check tmp.txt`. The command returns one of NEW / CARRYOVER-N / RETIRED / ANCHORED-DUPLICATE per title and a summary line. Anchored-duplicates and retired titles are dropped from the pool.
 4. From the remaining pool, pick 5 candidates such that at least 3 are NEW. If fewer than 3 NEW are available, run the scan again with broader keywords until 3+ NEW emerge.
 5. Write the brief with the 5 candidates. For each carryover, the brief must include a `why_now_changed:` note.
-6. After approval, call `python3 scripts/topic-registry.py record-candidate <date> <slot> <title>` for each candidate.
-7. After the anchor is chosen and published, call `python3 scripts/topic-registry.py record-anchor <date> <slug> <title> <axis> <post_id>` — this flips the chosen candidate's `anchored` flag and adds the entry to `anchors`.
+6. After approval, call `python3 scripts/b2b/topic-registry.py record-candidate <date> <slot> <title>` for each candidate.
+7. After the anchor is chosen and published, call `python3 scripts/b2b/topic-registry.py record-anchor <date> <slug> <title> <axis> <post_id>` — this flips the chosen candidate's `anchored` flag and adds the entry to `anchors`.
 
 ### CLI reference
 
-- `python3 scripts/topic-registry.py list-anchors`
-- `python3 scripts/topic-registry.py list-candidates`
-- `python3 scripts/topic-registry.py list-retired`
-- `python3 scripts/topic-registry.py check "title"`
-- `python3 scripts/topic-registry.py is-anchored slug-name`
-- `python3 scripts/topic-registry.py novelty-check candidates.txt`
-- `python3 scripts/topic-registry.py record-candidate 2026-05-22 A "title"`
-- `python3 scripts/topic-registry.py record-anchor 2026-05-22 slug "title" topic-axis 213400000000`
+- `python3 scripts/b2b/topic-registry.py list-anchors`
+- `python3 scripts/b2b/topic-registry.py list-candidates`
+- `python3 scripts/b2b/topic-registry.py list-retired`
+- `python3 scripts/b2b/topic-registry.py check "title"`
+- `python3 scripts/b2b/topic-registry.py is-anchored slug-name`
+- `python3 scripts/b2b/topic-registry.py novelty-check candidates.txt`
+- `python3 scripts/b2b/topic-registry.py record-candidate 2026-05-22 A "title"`
+- `python3 scripts/b2b/topic-registry.py record-anchor 2026-05-22 slug "title" topic-axis 213400000000`
 
 ## Version
 
-v1.1 . Updated 2026-05-22 . Added topic registry rules (`state/topic-registry.json` + `scripts/topic-registry.py`) to prevent candidate repeats. Every research brief now must consult the registry before proposing. Hard rules: no anchored duplicates; at least 3 of 5 candidates must be NEW; at most 2 carryovers per brief, each with a `why_now_changed` note; candidates rejected 3+ times are auto-retired. Initial registry populated with the 5 anchors (May 15, 18, 19, 20, 21) and the candidates proposed across those 5 briefs. ESSA Evidence Tiers was the first auto-retired candidate (proposed 4 weeks without anchoring).
+v1.1 . Updated 2026-05-22 . Added topic registry rules (`state/topic-registry.json` + `scripts/b2b/topic-registry.py`) to prevent candidate repeats. Every research brief now must consult the registry before proposing. Hard rules: no anchored duplicates; at least 3 of 5 candidates must be NEW; at most 2 carryovers per brief, each with a `why_now_changed` note; candidates rejected 3+ times are auto-retired. Initial registry populated with the 5 anchors (May 15, 18, 19, 20, 21) and the candidates proposed across those 5 briefs. ESSA Evidence Tiers was the first auto-retired candidate (proposed 4 weeks without anchoring).
 
 v1.0 . Created May 8, 2026
 Foundation: Topic categories A-E and keyword set defined in conversation with Roman May 8, 2026

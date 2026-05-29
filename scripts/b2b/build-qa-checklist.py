@@ -6,7 +6,7 @@ Outputs aplus-content/{bundle}/qa-checklist.md — a markdown file with all
 the gates Danielle and Roman should walk through before publishing.
 
 Usage:
-    python3 scripts/build-qa-checklist.py --bundle aplus-content/2026-05-18-weekly/
+    python3 scripts/b2b/build-qa-checklist.py --bundle aplus-content/2026-05-18-weekly/
 
 Per the v1.4 master weekly run prompt, this runs at the end of every
 bundle generation so the team has a single canonical checklist to work

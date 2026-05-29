@@ -15,7 +15,7 @@ metadata.md:
       - "Slide 5 CTA"
 
 Usage:
-    python3 scripts/build-case-study-ig-carousel.py --bundle aplus-content/{bundle}/
+    python3 scripts/b2c/build-case-study-ig-carousel.py --bundle aplus-content/{bundle}/
 """
 import argparse
 import base64

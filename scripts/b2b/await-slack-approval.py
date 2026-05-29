@@ -20,7 +20,7 @@ Exit codes:
   3 — error
 
 Usage:
-    python3 scripts/await-slack-approval.py \\
+    python3 scripts/b2b/await-slack-approval.py \\
         --channel C0B4K9K0162 \\
         --title "Topic approval needed - May 18 weekly bundle" \\
         --options-file aplus-content/2026-05-18-weekly/approval-options.txt \\

@@ -99,7 +99,7 @@ path editing. Run from repo root, replacing {bundle} with the new bundle dir:
    python3 scripts/shared/composite-logo.py --bundle aplus-content/{bundle}/
 
 Notes:
-- Hero auto-varies by subject/grade/gender/ethnicity via scripts/hero_scene.py. No manual prompt editing.
+- Hero auto-varies by subject/grade/gender/ethnicity via scripts/b2c/hero_scene.py. No manual prompt editing.
 - The topic graphic reads its milestones list from metadata.md. Phase 2 must write that list (month | topic | verbatim_phrase per line) from the student's actual lesson-note progression.
 - After generation, visually spot-check the hero and pull quotes. Grammar gate + ethnicity + face-partial rules must hold.
 

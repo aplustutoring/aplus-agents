@@ -20,8 +20,8 @@ Mapping-table semantics:
   | iLEAD Exploration | iLEAD Exploration  ← Real == Published, allowed inline
 
 Usage:
-    python3 scripts/check-anonymization.py --bundle aplus-content/2026-05-21-case-study-gabriela/
-    python3 scripts/check-anonymization.py --bundle <bundle> --verbose
+    python3 scripts/b2c/check-anonymization.py --bundle aplus-content/2026-05-21-case-study-gabriela/
+    python3 scripts/b2c/check-anonymization.py --bundle <bundle> --verbose
 
 Referenced by `aplus-content/{date}-case-study-{name}/bundle-summary.md`
 as the automated anonymization gate before Document 1 is approved.

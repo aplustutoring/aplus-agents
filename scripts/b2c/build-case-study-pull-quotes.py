@@ -13,7 +13,7 @@ metadata.md:
     pull_quote_attribution: "Camila, Gabriela's mother"   # optional; one line applied to both
 
 Usage:
-    python3 scripts/build-case-study-pull-quotes.py --bundle aplus-content/{bundle}/
+    python3 scripts/b2c/build-case-study-pull-quotes.py --bundle aplus-content/{bundle}/
 """
 import argparse
 import base64

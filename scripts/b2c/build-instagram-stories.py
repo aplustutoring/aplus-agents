@@ -48,7 +48,7 @@ Optional (each frame can have a subhead):
     - "frame 3 subhead"
 
 Usage:
-  python3 scripts/build-instagram-stories.py --bundle aplus-content/2026-05-19-weekly/
+  python3 scripts/b2c/build-instagram-stories.py --bundle aplus-content/2026-05-19-weekly/
 """
 import argparse
 import re

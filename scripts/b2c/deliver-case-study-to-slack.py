@@ -13,11 +13,11 @@ case studies. Text-only delivery — no graphics until Phase 4 ships the
 case-study graphics pipeline.
 
 Usage:
-    python3 scripts/deliver-case-study-to-slack.py \\
+    python3 scripts/b2c/deliver-case-study-to-slack.py \\
         --bundle aplus-content/2026-05-21-case-study-gabriela/ \\
         --post-id 213647971614
 
-    python3 scripts/deliver-case-study-to-slack.py \\
+    python3 scripts/b2c/deliver-case-study-to-slack.py \\
         --bundle aplus-content/2026-05-21-case-study-gabriela/ \\
         --post-id 213647971614 \\
         --dry-run

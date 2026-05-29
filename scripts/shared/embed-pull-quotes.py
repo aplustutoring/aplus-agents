@@ -20,10 +20,10 @@ Two figure families are processed:
 Never publishes. State stays DRAFT regardless of source state.
 
 Usage:
-    python3 scripts/embed-pull-quotes.py \\
+    python3 scripts/shared/embed-pull-quotes.py \\
         --bundle aplus-content/2026-05-15-weekly/ \\
         --post-id 213128099969
-    python3 scripts/embed-pull-quotes.py \\
+    python3 scripts/shared/embed-pull-quotes.py \\
         --bundle aplus-content/2026-05-15-weekly/ \\
         --post-id 213128099969 --dry-run
 """

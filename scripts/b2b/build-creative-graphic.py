@@ -8,14 +8,14 @@ AI-generated infographic would risk visual inaccuracy on the ring fills.
 
 Usage examples:
     # iLEAD outcomes (the default A+ use case):
-    python3 scripts/build-creative-graphic.py \\
+    python3 scripts/b2b/build-creative-graphic.py \\
         --output graphics/creative-graphic.png \\
         --circles "75:Math Tier 3:12 students" \\
                   "87.5:ELA Tier 3:8 students" \\
                   "80:Combined:20 students"
 
     # Custom headline / footer:
-    python3 scripts/build-creative-graphic.py \\
+    python3 scripts/b2b/build-creative-graphic.py \\
         --output out.png \\
         --headline "Spring 2026 outcomes" \\
         --footer  "Source: internal A+ dashboard" \\

@@ -4,7 +4,7 @@ A+ Tutoring case study GRAPHICS + captions Slack delivery (B2C).
 
 Posts the full B2C social pack to #student-spotlight-ready for Paola, using
 the SAME piece structure and formatting as the B2B weekly delivery
-(deliver-to-slack.py). Both scripts import scripts/slack_delivery_common.py
+(deliver-to-slack.py). Both scripts import scripts/shared/slack_delivery_common.py
 so the two channels look identical.
 
 Pieces:
@@ -18,7 +18,7 @@ feedback / bundle file list. Run that first, then this for the graphics.
 
 Usage:
     cd ~/Desktop/aplus-marketing-skills
-    python3 scripts/deliver-case-study-graphics-to-slack.py \\
+    python3 scripts/b2c/deliver-case-study-graphics-to-slack.py \\
         --bundle aplus-content/2026-05-21-case-study-gabriela/ \\
         [--dry-run]
 """

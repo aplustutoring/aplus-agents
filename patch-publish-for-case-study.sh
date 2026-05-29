@@ -1,19 +1,19 @@
 #!/bin/bash
 # patch-publish-for-case-study.sh
 #
-# Applies case-study blog support to scripts/publish-to-hubspot.py.
+# Applies case-study blog support to scripts/shared/publish-to-hubspot.py.
 # All-or-nothing: either all 10 patches succeed and the file is updated,
 # or no changes are made and the original file is preserved.
 #
 # Run ONCE from your repo root:
 #     bash patch-publish-for-case-study.sh
 #
-# Safety: creates a backup at scripts/publish-to-hubspot.py.bak
-# Restore with: mv scripts/publish-to-hubspot.py.bak scripts/publish-to-hubspot.py
+# Safety: creates a backup at scripts/shared/publish-to-hubspot.py.bak
+# Restore with: mv scripts/shared/publish-to-hubspot.py.bak scripts/shared/publish-to-hubspot.py
 
 set -e
 
-SCRIPT_PATH="scripts/publish-to-hubspot.py"
+SCRIPT_PATH="scripts/shared/publish-to-hubspot.py"
 
 if [ ! -f "$SCRIPT_PATH" ]; then
   echo "ERROR: $SCRIPT_PATH not found. Run this from your repo root."
@@ -29,7 +29,7 @@ python3 << 'PYEOF'
 import sys
 from pathlib import Path
 
-p = Path("scripts/publish-to-hubspot.py")
+p = Path("scripts/shared/publish-to-hubspot.py")
 text = p.read_text()
 original = text
 
@@ -295,7 +295,7 @@ if python3 -c "import ast; ast.parse(open('$SCRIPT_PATH').read())" 2>/dev/null; 
   echo "Syntax check: OK"
   echo ""
   echo "Patched file is ready. Test with:"
-  echo "    python3 scripts/publish-to-hubspot.py --bundle aplus-content/2026-05-21-case-study-gabriela/ --dry-run"
+  echo "    python3 scripts/shared/publish-to-hubspot.py --bundle aplus-content/2026-05-21-case-study-gabriela/ --dry-run"
 else
   echo "ERROR: patched file has syntax errors. Restoring backup."
   mv "${SCRIPT_PATH}.bak" "$SCRIPT_PATH"

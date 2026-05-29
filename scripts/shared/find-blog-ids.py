@@ -13,7 +13,7 @@ Usage
 -----
 Requires HUBSPOT_PRIVATE_APP_TOKEN in environment (same token publish-to-hubspot.py uses).
 
-    python3 scripts/find-blog-ids.py
+    python3 scripts/shared/find-blog-ids.py
 
 Output:
     HubSpot blogs on portal NNNNNNN:

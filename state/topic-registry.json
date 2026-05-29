@@ -1,5 +1,5 @@
 {
-  "_doc": "Topic registry for the A+ weekly content engine. Updated by scripts/topic-registry.py whenever a research brief is generated (candidates_proposed) and whenever an anchor is approved (anchors). The aplus-research skill MUST read this registry before proposing new candidates. Rules: (1) no candidate may match a slug or normalized title of any anchored entry; (2) at most 2 carryover candidates per brief, and each carryover must include a `why_now_changed` note in the brief; (3) candidates rejected 3+ times are auto-retired unless explicitly resurrected with a fresh news hook.",
+  "_doc": "Topic registry for the A+ weekly content engine. Updated by scripts/b2b/topic-registry.py whenever a research brief is generated (candidates_proposed) and whenever an anchor is approved (anchors). The aplus-research skill MUST read this registry before proposing new candidates. Rules: (1) no candidate may match a slug or normalized title of any anchored entry; (2) at most 2 carryover candidates per brief, and each carryover must include a `why_now_changed` note in the brief; (3) candidates rejected 3+ times are auto-retired unless explicitly resurrected with a fresh news hook.",
   "schema_version": 1,
   "anchors": [
     {

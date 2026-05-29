@@ -24,7 +24,7 @@ Also reads (optional):
     milestone_footer_sub: italic orange sub-footer
 
 Usage:
-    python3 scripts/build-case-study-topic-graphic.py --bundle aplus-content/{bundle}/
+    python3 scripts/b2c/build-case-study-topic-graphic.py --bundle aplus-content/{bundle}/
 """
 import argparse
 import re

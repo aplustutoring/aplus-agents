@@ -7,8 +7,8 @@ HubSpot CMS Blog Post as a DRAFT. Never publishes. Idempotent on hero image
 upload (checks by filename before re-uploading).
 
 Usage:
-    python3 scripts/publish-to-hubspot.py --bundle aplus-content/2026-05-15-weekly/
-    python3 scripts/publish-to-hubspot.py --bundle aplus-content/2026-05-15-weekly/ --dry-run
+    python3 scripts/shared/publish-to-hubspot.py --bundle aplus-content/2026-05-15-weekly/
+    python3 scripts/shared/publish-to-hubspot.py --bundle aplus-content/2026-05-15-weekly/ --dry-run
 """
 import os
 import sys

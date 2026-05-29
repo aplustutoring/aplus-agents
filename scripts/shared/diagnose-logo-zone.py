@@ -12,7 +12,7 @@ scripts/composite-logo.py):
     (1360, 850), width 150 -> sampled box ~(1360, 850, 1510, 1000)
 
 Usage:
-    python3 scripts/diagnose-logo-zone.py PATH1.png [PATH2.png ...]
+    python3 scripts/shared/diagnose-logo-zone.py PATH1.png [PATH2.png ...]
 
 Reports per file:
   - logo zone RGB mean (background color)

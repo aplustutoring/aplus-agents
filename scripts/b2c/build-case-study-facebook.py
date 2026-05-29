@@ -6,7 +6,7 @@ Takes --bundle, reads facebook_headline + facebook_subhead from metadata.md.
 Generates a 1200x630 landscape FB share graphic via GPT Image 2.
 
 Usage:
-    python3 scripts/build-case-study-facebook.py --bundle aplus-content/{bundle}/
+    python3 scripts/b2c/build-case-study-facebook.py --bundle aplus-content/{bundle}/
 """
 import argparse
 import base64

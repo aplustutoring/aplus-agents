@@ -506,7 +506,7 @@ Each published blog post becomes:
 
 ## HubSpot SEO Properties (new in v1.7)
 
-`scripts/publish-to-hubspot.py` now sets these HubSpot blog post properties on every draft via the `POST /cms/v3/blogs/posts` API. Each property has a meta-file source field and a sensible default; the `featuredImageAltText` property is REQUIRED (the publisher fails if missing).
+`scripts/shared/publish-to-hubspot.py` now sets these HubSpot blog post properties on every draft via the `POST /cms/v3/blogs/posts` API. Each property has a meta-file source field and a sensible default; the `featuredImageAltText` property is REQUIRED (the publisher fails if missing).
 
 | HubSpot property | Meta source field | Default | Notes |
 |---|---|---|---|
