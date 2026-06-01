@@ -36,6 +36,7 @@ schools:
     status: ACTIVE
     has_landing_page: true
     landing_page_url: "/ilead-exploration"
+    dominant_demographics: "Latina (Hispanic), reflecting iLEAD Exploration demographics"
     notes: "Primary case-study production partner. Tier 3 program live. 5.2x NWEA growth norms documented."
 
   - name: "Elite Academic Academy"

@@ -24,6 +24,9 @@ state/*.lock
 # Embedding cache (rebuilt cheaply each CI run; would bloat repo)
 state/blog-embeddings.json
 
+# Spotlight orchestrator local run history — accumulates per-machine
+state/spotlight-runs.json
+
 # Case study Phase 1 — local-only files
 scripts/*.bak
 scripts/slack-case-study-usage.log
