@@ -1156,10 +1156,31 @@ two-column markdown table:
 
 Every distinct real-name token that appears in the sources MUST appear
 in this table — student first/last name, parent name(s), tutor name(s),
-TOR name(s), school name. For tokens that are kept verbatim in Doc 1
-(e.g. tutor first names, schools when permission is granted), set
-Published = Real. For tokens that were dropped entirely (e.g. nicknames
-or last-name tokens not surfaced in Doc 1), use "(dropped)".>
+TOR name(s), school name.
+
+ANONYMIZATION RULES — apply these strictly when writing Doc 1 and when
+populating the mapping table:
+
+- Parent first names: MUST be pseudonymized. Choose a single-token
+  culturally-matched pseudonym (Renata -> Adriana, Linda -> Susan,
+  Aisha -> Amina). The mapping row reads `| Renata | Adriana |`. The
+  real parent's first name never appears in Doc 1.
+- Parent last names: dropped from Doc 1 entirely. Mapping row uses
+  `(dropped)`.
+- Student last name: dropped from Doc 1 entirely. Mapping row uses
+  `(dropped)`.
+- Tutor first name + last initial: KEEP verbatim (tutors are part of
+  the brand promise). Mapping row sets Real == Published.
+- TOR (teacher-of-record) names: pseudonymize if quoted in Doc 1,
+  otherwise refer to as "his teacher" / "her teacher" without naming.
+- School name: anonymize in Doc 1 to "a charter school in [region]"
+  unless the school is on the explicit-permission list. Mapping row
+  shows the real name on the left and the anonymized phrase on the
+  right.
+- Email addresses, phone numbers, exact addresses: dropped, mapping
+  row uses `(dropped)`.
+- For tokens that are kept verbatim in Doc 1 (tutor first names,
+  permission-granted schools), set Real == Published.>
 
 SOURCE DOCUMENTS:
 
@@ -1444,6 +1465,17 @@ Required fields (in this order, no commentary):
 10. `## Milestone timeline` then `milestones:` list of 3-6 entries in the
     format "Month | Topic | Verbatim phrase from lesson notes", plus
     `milestone_footer:` and `milestone_footer_sub:` scalars.
+
+    HARD CONSTRAINTS on milestone entries (the topic graphic is a
+    matplotlib timeline; long labels overlap and render unreadable):
+      - Topic: 1-3 words, max 14 characters. Examples: "Integer review",
+        "Sign errors", "MAP retest", "Two-step eqs". Never a sentence.
+      - Verbatim phrase: max 8 words, no quotation marks around it.
+        Just the lift from the lesson note. Examples: "Caught his own
+        sign error on #9", "Tried first on every problem".
+      - Month / Week label: max 8 chars. "Feb", "Early Mar", "Week 6".
+      - Prefer 4 milestones over 6 when the case study only has a few
+        strong inflection points — fewer milestones space cleanly.
 
 RULES:
 - No em dashes anywhere.
@@ -1756,6 +1788,214 @@ def stage_support(args: argparse.Namespace, run: dict) -> dict:
     return run
 
 
+# ---------------------------------------------------------------------------
+# Stage 10: graphics (shell out to the six builders + composite-logo)
+# ---------------------------------------------------------------------------
+
+class GraphicsFailure(OrchestratorError):
+    pass
+
+
+# Order matters: composite-logo runs LAST because it reads the PNGs the
+# builders emit. The first six are image-generators (Gemini / OpenAI /
+# matplotlib); composite is local-only PIL work.
+GRAPHICS_BUILDERS: list[tuple[str, str]] = [
+    ("hero+social-card",       "scripts/b2c/build-case-study-hero-card.py"),
+    ("topic-graphic",          "scripts/b2c/build-case-study-topic-graphic.py"),
+    ("pull-quotes",            "scripts/b2c/build-case-study-pull-quotes.py"),
+    ("ig-carousel",            "scripts/b2c/build-case-study-ig-carousel.py"),
+    ("ig-stories",             "scripts/b2c/build-instagram-stories.py"),
+    ("facebook",               "scripts/b2c/build-case-study-facebook.py"),
+    ("composite-logo",         "scripts/shared/composite-logo.py"),
+]
+
+
+def _run_builder_with_retry(name: str, script: str, bundle: Path) -> bool:
+    """Shell out to a builder with one retry on non-zero exit.
+
+    Returns True on success; False if both attempts fail. On failure,
+    flushes the last attempt's stdout and stderr so the orchestrator's
+    GraphicsFailure has the full error context.
+    """
+    script_path = REPO_ROOT / script
+    if not script_path.exists():
+        print(f"  [{name}] script missing: {script_path}", file=sys.stderr)
+        return False
+    cmd = ["python3", str(script_path), "--bundle", str(bundle)]
+    last_result = None
+    for attempt in range(2):
+        print(f"  [{name}] attempt {attempt + 1}...")
+        last_result = subprocess.run(cmd, capture_output=True, text=True)
+        if last_result.returncode == 0:
+            # Echo a one-line summary of stdout so the run log shows what
+            # the builder produced (useful for debugging "did Gemini ship
+            # a real image or a 200-byte error blob").
+            tail = (last_result.stdout or "").strip().splitlines()[-1:]
+            if tail:
+                print(f"    {tail[0]}")
+            return True
+        print(
+            f"  [{name}] returncode={last_result.returncode} on attempt {attempt + 1}",
+            file=sys.stderr,
+        )
+    if last_result is not None:
+        sys.stderr.write("---- stdout ----\n")
+        sys.stderr.write(last_result.stdout or "")
+        sys.stderr.write("\n---- stderr ----\n")
+        sys.stderr.write(last_result.stderr or "")
+        sys.stderr.write("\n")
+    return False
+
+
+def stage_graphics(args: argparse.Namespace, run: dict) -> dict:
+    bundle = Path(run["bundle_path"])
+    meta_path = bundle / "metadata.md"
+    if not meta_path.exists():
+        raise GraphicsFailure(
+            f"metadata.md missing in {bundle}. Stage 7 must run before graphics."
+        )
+    results: dict[str, str] = {}
+    for name, script in GRAPHICS_BUILDERS:
+        ok = _run_builder_with_retry(name, script, bundle)
+        results[name] = "ok" if ok else "failed"
+        if not ok:
+            run.update({"stage": "graphics", "graphics_results": results})
+            update_run(run["run_id"], run)
+            raise GraphicsFailure(
+                f"Graphics builder {name!r} ({script}) failed twice. "
+                "See the stdout/stderr dump above. No further builders run."
+            )
+
+    # Verify the composite step produced the -with-logo variants the
+    # Slack delivery pack expects. These are the assets paola receives.
+    gfx = bundle / "graphics"
+    expected = [
+        "hero.png",  # ships without a composited logo by design
+        "social-card-with-logo.png",
+        "topic-graphic-with-logo.png",
+        "pull-quote-s1-with-logo.png",
+        "pull-quote-s2-with-logo.png",
+        "facebook-with-logo.png",
+        "instagram-carousel-slide-1-with-logo.png",
+        "instagram-carousel-slide-2-with-logo.png",
+        "instagram-carousel-slide-3-with-logo.png",
+        "instagram-carousel-slide-4-with-logo.png",
+        "instagram-carousel-slide-5-with-logo.png",
+        "instagram-story-1.png",  # composited in build-instagram-stories.py
+        "instagram-story-2.png",
+        "instagram-story-3.png",
+    ]
+    missing = [name for name in expected if not (gfx / name).exists()]
+    if missing:
+        run.update({"stage": "graphics", "graphics_results": results, "graphics_missing": missing})
+        update_run(run["run_id"], run)
+        raise GraphicsFailure(
+            f"Graphics builders ran but expected files are missing: {missing}"
+        )
+
+    run.update({"stage": "graphics", "graphics_results": results})
+    update_run(run["run_id"], run)
+    return run
+
+
+# ---------------------------------------------------------------------------
+# Stage 11: hashtags + captions (aplus-b2c-hashtag-analyst skill)
+# ---------------------------------------------------------------------------
+
+def _build_hashtag_user_prompt(*, pseudonym: str, school: str, doc1: str, meta_text: str) -> str:
+    return (
+        f"Pseudonym: {pseudonym}\n"
+        f"School: {school}\n\n"
+        "Case study draft (Doc 1):\n\n" + doc1 +
+        "\n\nExisting metadata.md (already produced — for context, do NOT "
+        "rewrite this content; only produce the four new sections below):\n\n"
+        + meta_text +
+        "\n\nProduce ONLY the four sections to append to metadata.md, in this "
+        "exact format and order. Use YAML block scalars (`field: |`) with "
+        "two-space indented content so downstream parsers pick them up. "
+        "No em dashes anywhere. Use curly quotation marks if quoting. The "
+        "pseudonym in the body and CTA must match the case study; never use "
+        "real names.\n\n"
+        "## Instagram caption (from aplus-b2c-hashtag-analyst)\n\n"
+        "instagram_caption: |\n"
+        "  <HOOK line>\n"
+        "  \n"
+        "  <40-60 word BODY paragraph>\n"
+        "  \n"
+        f"  Read {pseudonym.capitalize()}'s full story. Link in bio.\n"
+        "  \n"
+        "  #hashtag1\n"
+        "  #hashtag2\n"
+        "  #hashtag3\n"
+        "  #hashtag4\n"
+        "  #hashtag5\n\n"
+        "## Instagram Story captions (one per frame, from aplus-b2c-hashtag-analyst)\n\n"
+        "instagram_story_captions:\n"
+        "  - \"\"\n"
+        "  - \"\"\n"
+        f"  - \"Tap to read {pseudonym.capitalize()}'s story \\u2192\"\n\n"
+        "## Facebook caption (from aplus-b2c-hashtag-analyst)\n\n"
+        "facebook_caption: |\n"
+        "  <2-sentence HOOK paragraph>\n"
+        "  \n"
+        "  <80-120 word BODY paragraph>\n"
+        "  \n"
+        "  Read the full case study at blog.wetutorathome.com/case-study/<slug>\n\n"
+        "## Hashtag research log (transparency for Roman)\n\n"
+        "hashtag_research_notes:\n"
+        "  - \"#hashtag1 (trending) — <rationale, audience match, approx post volume>\"\n"
+        "  - \"#hashtag2 (trending) — <rationale>\"\n"
+        "  - \"#hashtag3 (trending) — <rationale>\"\n"
+        "  - \"#hashtag4 (brand voice) — <why this brand hashtag matches this case>\"\n"
+        "  - \"#hashtag5 (Roman voice) — <why this Roman hashtag matches this case>\"\n\n"
+        "Output the four sections above and NOTHING ELSE."
+    )
+
+
+def stage_hashtags(args: argparse.Namespace, run: dict) -> dict:
+    bundle = Path(run["bundle_path"])
+    meta_path = bundle / "metadata.md"
+    if not meta_path.exists():
+        raise OrchestratorError(
+            f"metadata.md missing in {bundle}; Stage 7 must run before hashtags."
+        )
+    meta_text = meta_path.read_text()
+    doc1 = Path(run["doc1_path"]).read_text()
+    pseudonym = run["pseudonym"]
+    school = run.get("school") or "(unknown school)"
+
+    skill = load_skill("aplus-b2c-hashtag-analyst")
+    system = (
+        "You are the aplus-b2c-hashtag-analyst skill. Apply the SKILL "
+        "spec below verbatim. You don't have live web access in this "
+        "context, so reason about trending hashtags from your training "
+        "knowledge (Anthropic knowledge cutoff January 2026) for the "
+        "case study's topic area: K-12 math / reading tutoring, parent "
+        "audience, especially homeschool / charter families. Pick three "
+        "currently-active topic hashtags per the SKILL schema, plus one "
+        "brand-voice hashtag and one Roman-voice hashtag from the "
+        "libraries the SKILL lists. Every quote, hook, and caption must "
+        "read as a complete grammatical sentence (grammar gate). No em "
+        "dashes anywhere. No straight ASCII quotation marks inside "
+        "quoted speech — use curly quotation marks.\n\n"
+        "===== aplus-b2c-hashtag-analyst SKILL.md =====\n\n" + skill
+    )
+    user = _build_hashtag_user_prompt(
+        pseudonym=pseudonym, school=school, doc1=doc1, meta_text=meta_text
+    )
+    print(f"  Generating hashtags + captions for {pseudonym}...")
+    text = claude_complete(system, user, max_tokens=4000)
+
+    # Append the new sections to metadata.md.
+    appended = meta_text.rstrip() + "\n\n" + text.strip() + "\n"
+    meta_path.write_text(appended)
+    print(f"    appended {len(text):,} chars of hashtag + caption content")
+
+    run.update({"stage": "hashtags"})
+    update_run(run["run_id"], run)
+    return run
+
+
 def stage_complete(args: argparse.Namespace, run: dict) -> dict:
     run.update({"stage": "complete"})
     update_run(run["run_id"], run)
@@ -1773,6 +2013,8 @@ STAGE_DISPATCH = {
     "metadata": stage_metadata,
     "grammar": stage_grammar,
     "support": stage_support,
+    "graphics": stage_graphics,
+    "hashtags": stage_hashtags,
     "complete": stage_complete,
 }
 
