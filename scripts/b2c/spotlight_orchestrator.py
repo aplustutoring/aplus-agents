@@ -415,38 +415,40 @@ def claude_complete(
 # ---------------------------------------------------------------------------
 
 # Categories are coarse on purpose: they exist to ensure the published
-# pseudonym does not Anglicize a non-Anglo name. The pools are intentionally
-# generic, common first names so the pseudonym reads as "a real kid" without
-# pointing at a specific identifiable person. Pools are hand-curated; never
-# expand via Claude generation (we want a fixed, auditable list).
-PSEUDONYM_POOLS: dict[str, list[str]] = {
-    "latino_hispanic": [
-        "Diego", "Camila", "Mateo", "Sofia", "Lucia", "Gabriel",
-        "Valeria", "Daniel", "Isabella", "Marco", "Adriana", "Javier",
-    ],
-    "african_american": [
-        "Marcus", "Aaliyah", "Jayden", "Imani", "Malik", "Zaria",
-        "Andre", "Maya", "Justice", "Nia", "Terrell", "Amara",
-    ],
-    "asian_east": [
-        "Kai", "Aiko", "Jin", "Mei", "Ren", "Yuna",
-        "Hiro", "Sora", "Daiki", "Lin", "Akira", "Hana",
-    ],
-    "asian_south": [
-        "Arjun", "Priya", "Aarav", "Anika", "Rohan", "Diya",
-        "Vikram", "Saanvi", "Kabir", "Ishaan", "Aanya", "Reyansh",
-    ],
-    "middle_eastern": [
-        "Omar", "Layla", "Yusuf", "Amira", "Karim", "Zara",
-        "Tariq", "Noor", "Hamza", "Sara", "Ali", "Yasmin",
-    ],
-    "white_american": [
-        "Liam", "Emma", "Noah", "Olivia", "Ethan", "Ava",
-        "Owen", "Charlotte", "Henry", "Sophia", "Caleb", "Hannah",
-    ],
+# pseudonym does not Anglicize a non-Anglo name. Pools are hand-curated,
+# split by gender so the pseudonym matches the real student's gender
+# (pronouns in source quotes carry through to the published doc, so a
+# gender mismatch produces a visible "he"/"she" inconsistency). Never
+# expand via Claude generation — we want a fixed, auditable list.
+PSEUDONYM_POOLS: dict[str, dict[str, list[str]]] = {
+    "latino_hispanic": {
+        "girl": ["Camila", "Sofia", "Lucia", "Valeria", "Isabella", "Adriana"],
+        "boy":  ["Diego", "Mateo", "Gabriel", "Daniel", "Marco", "Javier"],
+    },
+    "african_american": {
+        "girl": ["Aaliyah", "Imani", "Zaria", "Maya", "Nia", "Amara"],
+        "boy":  ["Marcus", "Jayden", "Malik", "Andre", "Justice", "Terrell"],
+    },
+    "asian_east": {
+        "girl": ["Aiko", "Mei", "Yuna", "Sora", "Lin", "Hana"],
+        "boy":  ["Kai", "Jin", "Ren", "Hiro", "Daiki", "Akira"],
+    },
+    "asian_south": {
+        "girl": ["Priya", "Anika", "Diya", "Saanvi", "Aanya", "Ishani"],
+        "boy":  ["Arjun", "Aarav", "Rohan", "Vikram", "Kabir", "Ishaan"],
+    },
+    "middle_eastern": {
+        "girl": ["Layla", "Amira", "Zara", "Noor", "Sara", "Yasmin"],
+        "boy":  ["Omar", "Yusuf", "Karim", "Tariq", "Hamza", "Ali"],
+    },
+    "white_american": {
+        "girl": ["Emma", "Olivia", "Ava", "Charlotte", "Sophia", "Hannah"],
+        "boy":  ["Liam", "Noah", "Ethan", "Owen", "Henry", "Caleb"],
+    },
 }
 
 PSEUDONYM_CATEGORIES = list(PSEUDONYM_POOLS.keys())
+PSEUDONYM_GENDERS = ("girl", "boy")
 
 
 def classify_cultural_background(real_first_name: str) -> str:
@@ -483,20 +485,56 @@ def classify_cultural_background(real_first_name: str) -> str:
     return "latino_hispanic"
 
 
-def pseudonym_for_name(real_name: str) -> str:
-    """Cultural-classify the real first name, SHA-256-pick from that pool.
-
-    The returned token is a single clean first name (lowercase, no SHA digest
-    suffix). If the SHA-chosen name happens to match the real first name,
-    we walk forward in the pool to the next entry.
+def classify_gender(source_texts: dict[str, str], brief_fields: dict | None = None) -> str:
+    """Return 'girl' or 'boy'. Reads the source texts (parent quotes are the
+    strongest signal: she/her/daughter vs he/him/son) plus Paola's parsed
+    brief. Defaults to 'girl' with a warning if Claude returns garbage.
     """
+    if brief_fields:
+        # If the brief explicitly has a Gender: field, trust it.
+        explicit = (brief_fields.get("gender") or "").strip().lower()
+        if explicit in PSEUDONYM_GENDERS:
+            return explicit
+    sources_block = "\n\n".join(
+        f"--- {name} ---\n{text}" for name, text in source_texts.items()
+    )
+    system = (
+        "You are a gender classifier for K-12 case-study anonymization. "
+        "Read the source documents and infer the student's gender from "
+        "pronouns, parent references (daughter/son), and any explicit "
+        "gender fields. Output exactly one of: girl, boy. No punctuation, "
+        "no explanation, no surrounding whitespace."
+    )
+    user = sources_block + "\n\nOutput one word: girl or boy."
+    raw = claude_complete(system, user, max_tokens=10).strip().lower()
+    raw = re.sub(r"[^a-z]", "", raw)
+    if raw in PSEUDONYM_GENDERS:
+        return raw
+    print(
+        f"  WARN: gender classifier returned {raw!r}; defaulting to girl.",
+        file=sys.stderr,
+    )
+    return "girl"
+
+
+def pseudonym_for_name(real_name: str, gender: str) -> str:
+    """Cultural-classify the real first name, SHA-256-pick from the
+    gender-matched pool. Returns a clean single-token lowercase name.
+
+    The pool is filtered by gender first so the pseudonym matches the real
+    student's gender — otherwise pronouns in source quotes carry through
+    with a visible inconsistency.
+    """
+    if gender not in PSEUDONYM_GENDERS:
+        raise OrchestratorError(
+            f"pseudonym_for_name needs gender in {PSEUDONYM_GENDERS}, got {gender!r}."
+        )
     real_first = (real_name.split() or ["student"])[0]
     category = classify_cultural_background(real_first)
-    pool = PSEUDONYM_POOLS[category]
+    pool = PSEUDONYM_POOLS[category][gender]
     digest_int = int(hashlib.sha256(real_name.encode("utf-8")).hexdigest()[:12], 16)
     idx = digest_int % len(pool)
     candidate = pool[idx]
-    # Avoid picking the real name back as the pseudonym.
     if candidate.lower() == real_first.lower():
         candidate = pool[(idx + 1) % len(pool)]
     return candidate.lower()
@@ -1008,7 +1046,16 @@ def _resolve_student_identity(args: argparse.Namespace, run: dict) -> tuple[str,
 
 def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
     real_firstname, real_lastname, school = _resolve_student_identity(args, run)
-    pseudonym = pseudonym_for_name(real_firstname)
+
+    # Gender from source texts (parent pronouns carry through to published
+    # quotes, so the pseudonym must match — otherwise the body keeps "he/his"
+    # while the pull-quote graphic gets bracket-edited to "[she]/[her]").
+    run_source_root = Path(run["extracted_texts_path"]).parent
+    source_texts = json.loads((run_source_root / "source_texts.json").read_text())
+    gender = classify_gender(source_texts, run.get("brief_fields"))
+    print(f"  Inferred gender: {gender}")
+
+    pseudonym = pseudonym_for_name(real_firstname, gender)
     print(f"  Real first name: {real_firstname}  ->  pseudonym: {pseudonym}")
 
     date_str = datetime.utcnow().strftime("%Y-%m-%d")
@@ -1019,8 +1066,6 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
             "Delete it or pick a different date to re-run."
         )
 
-    run_source_root = Path(run["extracted_texts_path"]).parent
-    source_texts = json.loads((run_source_root / "source_texts.json").read_text())
     copy_source_files(bundle_dir, [Path(p) for p in run["source_files"]])
     save_extracted_texts(bundle_dir, source_texts)
 
@@ -1029,6 +1074,7 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
         "real_firstname": real_firstname,
         "real_lastname": real_lastname,
         "pseudonym": pseudonym,
+        "gender": gender,
         "school": school,
         "created_at": datetime.utcnow().isoformat() + "Z",
         "source_folder": str(Path(args.source).resolve()),
@@ -1043,6 +1089,7 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
             "real_firstname": real_firstname,
             "real_lastname": real_lastname,
             "pseudonym": pseudonym,
+            "gender": gender,
             "school": school,
         }
     )
@@ -1139,6 +1186,75 @@ def _word_count(markdown_text: str) -> int:
     return len(re.findall(r"\b[\w']+\b", stripped))
 
 
+class BrandCheckFailure(OrchestratorError):
+    pass
+
+
+def brand_check_and_clean(doc1_text: str) -> tuple[str, list[str]]:
+    """Run aplus-brand-check on Doc 1 and return (cleaned_text, violations).
+
+    Single Claude call: the brand-check SKILL is loaded as the system
+    prompt, and Claude is asked to both list violations AND rewrite the
+    document to clear them. If the document already passes, `cleaned_text`
+    is the input verbatim and `violations` is empty.
+
+    The cleaned text preserves the document's structure: SEO metadata
+    header, H1, H2 sections, [PULL QUOTE] markers, attributions, and CTA.
+    Only the offending tokens are rewritten.
+    """
+    skill = load_skill("aplus-brand-check")
+    system = (
+        "You are the A+ Tutoring brand-check enforcement layer. The SKILL "
+        "below lists every rule. Apply the CRITICAL FAILURES section "
+        "(em dashes, banned phrases, AI-detection vocabulary, profanity, "
+        "corporate fluff, rule-of-three, AI opener patterns, "
+        "adverb-adjective inflation) and any B2C brand-kit rules that "
+        "apply to a parent-facing case-study blog post. Skip B2B-only "
+        "rules and rules tagged 'blog post' that don't apply to a "
+        "case-study channel.\n\n"
+        "Output strict JSON with NO surrounding markdown fence and NO "
+        "commentary, exactly this shape:\n\n"
+        '{\n'
+        '  "violations": [\n'
+        '    {"rule": "em dash", "location": "<short quote>", "fix": "<replacement>"}\n'
+        '  ],\n'
+        '  "cleaned": "<the full document text after applying every fix>"\n'
+        '}\n\n'
+        "If the document already passes every rule, return violations=[] "
+        "and cleaned set to the input verbatim. NEVER drop sections, NEVER "
+        "rename pseudonyms, NEVER remove or paraphrase any [PULL QUOTE] "
+        "marker, NEVER change a verbatim source quote (the rule about "
+        "verbatim quotes overrides em-dash and banned-word checks WITHIN "
+        "the quoted text). Em dashes OUTSIDE quoted text must be replaced "
+        "with periods, colons, or rephrased.\n\n"
+        "===== aplus-brand-check SKILL.md =====\n\n" + skill
+    )
+    raw = claude_complete(system, doc1_text, max_tokens=12000)
+    try:
+        payload = json.loads(_strip_json_fence(raw))
+    except json.JSONDecodeError as e:
+        raise BrandCheckFailure(
+            f"Brand-check returned invalid JSON: {e}. "
+            f"First 300 chars: {raw[:300]!r}"
+        )
+    violations = payload.get("violations", []) or []
+    cleaned = payload.get("cleaned", "").strip()
+    if not cleaned:
+        raise BrandCheckFailure("Brand-check returned empty `cleaned` field.")
+    # Sanity guard: the cleaned doc should not have shrunk by more than 25%
+    # — if it did, Claude probably dropped sections we'd lose.
+    if len(cleaned) < int(len(doc1_text) * 0.75):
+        raise BrandCheckFailure(
+            f"Brand-check cleaned doc is suspiciously short "
+            f"({len(cleaned)} chars vs {len(doc1_text)} input). Aborting "
+            "rather than overwriting Doc 1 with a truncated version."
+        )
+    return cleaned, [
+        f"{v.get('rule', '?')}: {v.get('location', '')} -> {v.get('fix', '')}"
+        for v in violations
+    ]
+
+
 def stage_draft(args: argparse.Namespace, run: dict) -> dict:
     bundle = Path(run["bundle_path"])
     source_texts = json.loads((bundle / "source_texts.json").read_text())
@@ -1164,7 +1280,15 @@ def stage_draft(args: argparse.Namespace, run: dict) -> dict:
         wc = _word_count(doc1)
         print(f"    attempt {attempt + 1}: Doc 1 word count = {wc}")
         if 1100 <= wc <= 1600:
-            doc1_path.write_text(doc1 + "\n")
+            print(f"  Running brand-check on Doc 1...")
+            doc1_clean, violations = brand_check_and_clean(doc1)
+            if violations:
+                print(f"    cleared {len(violations)} violation(s):")
+                for v in violations:
+                    print(f"      - {v}")
+            else:
+                print(f"    Doc 1 already brand-clean.")
+            doc1_path.write_text(doc1_clean + "\n")
             doc2_path.write_text(doc2 + "\n")
             run.update(
                 {
@@ -1172,6 +1296,7 @@ def stage_draft(args: argparse.Namespace, run: dict) -> dict:
                     "doc1_path": str(doc1_path.resolve()),
                     "doc2_path": str(doc2_path.resolve()),
                     "doc1_word_count": wc,
+                    "brand_check_violations": violations,
                 }
             )
             update_run(run["run_id"], run)
