@@ -165,6 +165,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Run stages without HubSpot publish or Slack delivery")
     parser.add_argument("--stop-after", choices=STAGE_ORDER, default="bundle", help="Stop the pipeline after the named stage")
     parser.add_argument("--skip-hubspot", action="store_true", help="Skip HubSpot contact lookup and proceed with local input only")
+    parser.add_argument("--slack-channel", default=None, help="Override the Slack delivery channel (default: #student-spotlight-ready)")
     parser.add_argument("--verbose", action="store_true", help="Print extra diagnostic details")
     return parser.parse_args()
 
@@ -1996,9 +1997,243 @@ def stage_hashtags(args: argparse.Namespace, run: dict) -> dict:
     return run
 
 
-def stage_complete(args: argparse.Namespace, run: dict) -> dict:
-    run.update({"stage": "complete"})
+# ---------------------------------------------------------------------------
+# Stage 12: HubSpot DRAFT publish (idempotent on slug)
+# ---------------------------------------------------------------------------
+
+class HubSpotPublishFailure(OrchestratorError):
+    pass
+
+
+PUBLISH_SCRIPT = REPO_ROOT / "scripts" / "shared" / "publish-to-hubspot.py"
+HUBSPOT_PORTAL_ID = "6312752"
+CASE_STUDY_BLOG_ID = "81499394054"
+
+
+def _search_hubspot_draft_by_slug(slug: str) -> dict | None:
+    """Look for an existing DRAFT post in the case-study blog matching this slug.
+
+    HubSpot's v3 blog-posts list endpoint silently ignores the `slug` query
+    parameter, so we fetch DRAFT posts and filter client-side. Stored slugs
+    include the blog's URL prefix (e.g. `case-study/caleb-ilead`) rather
+    than the bare slug we send when publishing, so we accept either form.
+
+    Auth failures bubble up as HubSpotPublishFailure so the operator sees
+    the real problem rather than the orchestrator silently re-creating
+    duplicate drafts.
+    """
+    token = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
+    if not token:
+        raise HubSpotPublishFailure(
+            "HUBSPOT_PRIVATE_APP_TOKEN is not set; cannot pre-check for "
+            "an existing draft."
+        )
+    import requests
+    slug_clean = slug.lstrip("/")
+    url = "https://api.hubapi.com/cms/v3/blogs/posts"
+    params = {
+        "contentGroupId": CASE_STUDY_BLOG_ID,
+        "state": "DRAFT",
+        "limit": 100,
+    }
+    r = requests.get(
+        url,
+        headers={"Authorization": f"Bearer {token}"},
+        params=params,
+        timeout=30,
+    )
+    if r.status_code == 401:
+        raise HubSpotPublishFailure(
+            "HubSpot returned 401 on the slug pre-check. The Private App "
+            "token may need re-authorization. Per Roman's note, do NOT "
+            "silently bypass this — flag and stop."
+        )
+    if r.status_code != 200:
+        raise HubSpotPublishFailure(
+            f"HubSpot pre-check failed: HTTP {r.status_code} {r.text[:300]}"
+        )
+    results = r.json().get("results", []) or []
+    for post in results:
+        stored = (post.get("slug") or "").lstrip("/")
+        if stored == slug_clean or stored.endswith("/" + slug_clean):
+            return post
+    return None
+
+
+def _extract_url_slug(meta_text: str) -> str | None:
+    block = re.search(r"```\n(.*?)\n```", meta_text, re.DOTALL)
+    if block:
+        for line in block.group(1).split("\n"):
+            if line.strip().startswith("url_slug:"):
+                return line.split(":", 1)[1].strip()
+    m = re.search(r"^url_slug:\s*(.+)$", meta_text, re.MULTILINE)
+    return m.group(1).strip() if m else None
+
+
+_POST_ID_RE = re.compile(r"Post ID:\s*(\d+)")
+
+
+def stage_publish(args: argparse.Namespace, run: dict) -> dict:
+    bundle = Path(run["bundle_path"])
+    meta_text = (bundle / "metadata.md").read_text()
+    slug = _extract_url_slug(meta_text)
+    if not slug:
+        raise HubSpotPublishFailure(
+            f"metadata.md has no url_slug; cannot publish or pre-check."
+        )
+
+    # Idempotency pre-check.
+    existing = _search_hubspot_draft_by_slug(slug)
+    if existing:
+        post_id = str(existing.get("id"))
+        print(f"  Existing draft for slug {slug!r}: post_id={post_id}; reusing.")
+        edit_url = (
+            f"https://app.hubspot.com/blog/{HUBSPOT_PORTAL_ID}/editor/"
+            f"{post_id}/content"
+        )
+        run.update(
+            {
+                "stage": "publish",
+                "hubspot_post_id": post_id,
+                "hubspot_edit_url": edit_url,
+                "hubspot_reused_existing": True,
+            }
+        )
+        update_run(run["run_id"], run)
+        return run
+
+    # Fresh draft.
+    cmd = ["python3", str(PUBLISH_SCRIPT), "--bundle", str(bundle)]
+    print(f"  Creating new HubSpot DRAFT for slug {slug!r}...")
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout or "")
+        sys.stderr.write(result.stderr or "")
+        raise HubSpotPublishFailure(
+            "publish-to-hubspot.py exited non-zero. See stdout/stderr above."
+        )
+    # The publish script prints "Draft created. Post ID: <id>".
+    m = _POST_ID_RE.search(result.stdout or "")
+    if not m:
+        sys.stderr.write(result.stdout or "")
+        raise HubSpotPublishFailure(
+            "publish-to-hubspot.py succeeded but the post_id was not in "
+            "its stdout. Cannot record it in run state."
+        )
+    post_id = m.group(1)
+    edit_url = (
+        f"https://app.hubspot.com/blog/{HUBSPOT_PORTAL_ID}/editor/"
+        f"{post_id}/content"
+    )
+    print(f"  HubSpot DRAFT created: post_id={post_id}")
+    print(f"  Edit URL: {edit_url}")
+    run.update(
+        {
+            "stage": "publish",
+            "hubspot_post_id": post_id,
+            "hubspot_edit_url": edit_url,
+            "hubspot_reused_existing": False,
+        }
+    )
     update_run(run["run_id"], run)
+    return run
+
+
+# ---------------------------------------------------------------------------
+# Stage 13: Slack delivery (text bundle, then graphics + captions)
+# ---------------------------------------------------------------------------
+
+class SlackDeliveryFailure(OrchestratorError):
+    pass
+
+
+SLACK_TEXT_SCRIPT = REPO_ROOT / "scripts" / "b2c" / "deliver-case-study-to-slack.py"
+SLACK_GRAPHICS_SCRIPT = REPO_ROOT / "scripts" / "b2c" / "deliver-case-study-graphics-to-slack.py"
+
+
+def stage_slack(args: argparse.Namespace, run: dict) -> dict:
+    bundle = Path(run["bundle_path"])
+    post_id = run.get("hubspot_post_id")
+    if not post_id:
+        raise SlackDeliveryFailure(
+            "No hubspot_post_id in run state; Stage 12 must run before Slack delivery."
+        )
+
+    common_args = ["--bundle", str(bundle)]
+    if args.slack_channel:
+        common_args.extend(["--channel", args.slack_channel])
+
+    # 1. Text bundle (header + Paola feedback + file list).
+    cmd1 = ["python3", str(SLACK_TEXT_SCRIPT), *common_args, "--post-id", post_id]
+    print(f"  Posting Slack header + Paola feedback...")
+    result = subprocess.run(cmd1, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout or "")
+        sys.stderr.write(result.stderr or "")
+        raise SlackDeliveryFailure("deliver-case-study-to-slack.py exited non-zero.")
+    tail = (result.stdout or "").strip().splitlines()[-1:]
+    if tail:
+        print(f"    {tail[0]}")
+
+    # 2. Graphics + captions pack (mentions Paola).
+    cmd2 = ["python3", str(SLACK_GRAPHICS_SCRIPT), *common_args]
+    print(f"  Posting Slack graphics + captions pack...")
+    result = subprocess.run(cmd2, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout or "")
+        sys.stderr.write(result.stderr or "")
+        raise SlackDeliveryFailure(
+            "deliver-case-study-graphics-to-slack.py exited non-zero."
+        )
+    tail = (result.stdout or "").strip().splitlines()[-1:]
+    if tail:
+        print(f"    {tail[0]}")
+
+    run.update(
+        {
+            "stage": "slack",
+            "slack_channel": args.slack_channel or "#student-spotlight-ready",
+        }
+    )
+    update_run(run["run_id"], run)
+    return run
+
+
+def stage_complete(args: argparse.Namespace, run: dict) -> dict:
+    """Final state finalization + stdout summary.
+
+    Stage timings are populated in the main loop; here we mark the run
+    completed and print a comprehensive summary so the operator sees
+    bundle path, HubSpot URL, Slack channel, and any Gate 2 items in one
+    place at the end of the orchestration log.
+    """
+    run.update({"stage": "complete", "status": "completed"})
+    update_run(run["run_id"], run)
+
+    print("")
+    print("=" * 68)
+    print(f"SPOTLIGHT ORCHESTRATION COMPLETE — run_id={run['run_id']}")
+    print("=" * 68)
+    print(f"Bundle:         {run['bundle_path']}")
+    print(f"Real student:   {run['real_firstname']} {run.get('real_lastname') or ''}".rstrip())
+    print(f"Pseudonym:      {run['pseudonym']}  ({run.get('gender', '?')})")
+    print(f"School:         {run.get('school') or '(unknown)'}")
+    if run.get("hubspot_post_id"):
+        reused = " (reused existing)" if run.get("hubspot_reused_existing") else ""
+        print(f"HubSpot draft:  {run['hubspot_post_id']}{reused}")
+        print(f"  Edit URL:     {run['hubspot_edit_url']}")
+    if run.get("slack_channel"):
+        print(f"Slack channel:  {run['slack_channel']}")
+    if run.get("brand_check_violations"):
+        n = len(run["brand_check_violations"])
+        print(f"Brand-check:    {n} violations cleaned from Doc 1")
+    timings = run.get("stage_timings", {})
+    if timings:
+        print("Stage timings:")
+        for name, ts in timings.items():
+            dur = ts.get("duration_s")
+            print(f"  {name:18s} {dur:6.1f}s" if dur is not None else f"  {name:18s} (no duration)")
+    print("=" * 68)
     return run
 
 
@@ -2015,6 +2250,8 @@ STAGE_DISPATCH = {
     "support": stage_support,
     "graphics": stage_graphics,
     "hashtags": stage_hashtags,
+    "publish": stage_publish,
+    "slack": stage_slack,
     "complete": stage_complete,
 }
 
@@ -2038,22 +2275,32 @@ def main() -> int:
         update_run(run["run_id"], {"status": "stopped", "stage": "init"})
         return 0
 
+    import time
+    stage_timings = run.setdefault("stage_timings", {})
     for stage in STAGE_ORDER[1:]:
         if args.dry_run and stage in DRY_RUN_SKIP_STAGES:
             print(f"=== Stage: {stage} (skipped — --dry-run) ===")
             continue
         print(f"=== Stage: {stage} ===")
+        t0 = time.monotonic()
         try:
             run = run_stage(stage, args, run)
         except OrchestratorError as exc:
-            update_run(run["run_id"], {"status": "failed", "stage": stage, "error": str(exc)})
+            stage_timings[stage] = {"duration_s": round(time.monotonic() - t0, 2), "status": "failed"}
+            update_run(
+                run["run_id"],
+                {"status": "failed", "stage": stage, "error": str(exc), "stage_timings": stage_timings},
+            )
             print(f"ERROR at stage {stage}: {exc}", file=sys.stderr)
             return 1
+        stage_timings[stage] = {"duration_s": round(time.monotonic() - t0, 2), "status": "ok"}
+        run["stage_timings"] = stage_timings
+        update_run(run["run_id"], run)
         if stage == args.stop_after:
             print(f"Stopping after stage: {stage}")
-            update_run(run["run_id"], {"status": "stopped", "stage": stage})
+            update_run(run["run_id"], {"status": "stopped", "stage": stage, "stage_timings": stage_timings})
             return 0
-    update_run(run["run_id"], {"status": "completed", "stage": args.stop_after})
+    update_run(run["run_id"], {"status": "completed", "stage": args.stop_after, "stage_timings": stage_timings})
     print(f"Orchestration completed through stage: {args.stop_after}")
     return 0
 
