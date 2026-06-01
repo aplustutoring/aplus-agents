@@ -208,10 +208,30 @@ def _extract_schema_markup(text):
     return ""
 
 
+_LEADING_FRONTMATTER_RE = re.compile(r"\A---\s*\n.*?\n---\s*\n", re.DOTALL)
+
+
 def markdown_to_html(md_path):
-    """Convert blog markdown to HTML. Drop the leading H1 since HubSpot
-    renders the post title separately."""
+    """Convert blog markdown to HTML.
+
+    Two leading strips before handing off to the markdown renderer:
+
+    1. A leading `---...---` YAML/SEO frontmatter block. The B2C case
+       study SKILL.md tells the drafting agent to emit a `--- SEO
+       METADATA ... ---` block at the top of Doc 1 for human-handoff
+       workflows. The orchestrator's source of SEO truth is the
+       separate `metadata.md` file (parsed by parse_meta), so if the
+       drafter still emits a frontmatter block, we drop it here rather
+       than letting it render as visible body text. Without this strip,
+       the entire frontmatter shows up in the HubSpot post body as a
+       `<pre><code>` block.
+
+    2. The leading `# H1` line. HubSpot renders the post title via the
+       `name` field, so the markdown H1 would be a duplicate title at
+       the top of the body.
+    """
     text = Path(md_path).read_text()
+    text = _LEADING_FRONTMATTER_RE.sub("", text, count=1)
     lines = text.split("\n")
     if lines and lines[0].startswith("# "):
         lines = lines[1:]

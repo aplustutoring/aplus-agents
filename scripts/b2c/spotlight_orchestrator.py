@@ -83,6 +83,7 @@ STAGE_ORDER = [
     "graphics",
     "hashtags",
     "publish",
+    "embed_graphics",
     "slack",
     "complete",
 ]
@@ -1143,7 +1144,17 @@ Output format — two documents separated by the exact delimiters below.
 <Document 1 here — anonymized, 1,200-1,500 words, the 8 Hero's Journey
 sections from the SKILL spec, parent-facing voice, pull quotes marked
 inline with [PULL QUOTE]. Start with a markdown H1 title using the
-pseudonym. Do NOT include real names anywhere in Document 1.>
+pseudonym. Do NOT include real names anywhere in Document 1.
+
+DO NOT include the SEO metadata frontmatter block at the top of
+Document 1. The SKILL spec describes a "--- SEO METADATA ... ---"
+header block for human-handoff workflows. In this orchestrated
+pipeline the SEO source-of-truth is the separate metadata.md file
+produced by Stage 7; including a frontmatter block in Document 1
+makes the HubSpot publisher render the entire block as visible body
+text. Document 1 MUST start with the markdown H1 title and nothing
+above it. No "---", no "SEO METADATA" label, no url_slug or meta_title
+or meta_description lines at the top of the file.>
 
 {DRAFT_DOC2_DELIM}
 <Document 2 here — same structure as Doc 1 but with real names restored.
@@ -1454,6 +1465,32 @@ Required fields (in this order, no commentary):
    complete grammatical sentence in isolation. Add bracketed editorial
    insertions if needed. Then a scalar `pull_quote_attribution: "<Parent
    first name>, <Pseudonym>'s mother"` (or father — match the source).
+
+   Also produce two PARALLEL list fields used by the inline-embed step
+   that drops pull-quote graphics into the HubSpot body after the
+   paragraphs that contain each quote:
+
+       inline_pull_quote_images:
+         - "pull-quote-s1-with-logo.png"
+         - "pull-quote-s2-with-logo.png"
+
+   The image filenames are fixed by the graphics builders; emit them
+   exactly as shown above.
+
+   And a data-viz pair for the milestone timeline graphic:
+
+       inline_data_viz_images:
+         - "topic-graphic-with-logo.png"
+       inline_data_viz_anchors:
+         - "<a short verbatim phrase from Doc 1 prose that appears in the
+            paragraph the timeline graphic should follow>"
+
+   The anchor must be a unique substring of a Doc 1 paragraph the case
+   study uses to introduce the "weeks of work" narrative. Pick a phrase
+   that does NOT appear in any other paragraph (so the embedder anchors
+   exactly once). Strip surrounding quotation marks. Keep it under 80
+   characters. The graphic appears AFTER that paragraph, so anchor on
+   prose near the end of "The Work" or just before "The Outcome".
 5. `## Keywords` heading then keywords: list of 5 and secondary_keywords:
    list of 5, plus `tag_ids: []`.
 6. `## JSON-LD schema` heading then 3 fenced ```json blocks: Article, FAQ
@@ -2140,6 +2177,65 @@ def stage_publish(args: argparse.Namespace, run: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Stage 12.5: embed in-body graphics into the HubSpot post body
+# ---------------------------------------------------------------------------
+
+class EmbedGraphicsFailure(OrchestratorError):
+    pass
+
+
+EMBED_SCRIPT = REPO_ROOT / "scripts" / "shared" / "embed-pull-quotes.py"
+
+
+def stage_embed_graphics(args: argparse.Namespace, run: dict) -> dict:
+    """Insert pull-quote and topic-graphic figures into the HubSpot draft body.
+
+    publish-to-hubspot.py creates the post with featured-image set to the hero
+    but the body itself has no in-line images — just the article prose. This
+    stage shells out to scripts/shared/embed-pull-quotes.py, which uploads
+    the pull-quote and data-viz PNGs to HubSpot Files (idempotent), fetches
+    the current postBody, inserts a `<figure><img></figure>` block after each
+    paragraph whose text contains the configured anchor, and PATCHes the
+    body back. State stays DRAFT throughout.
+
+    If we reused an existing draft in stage_publish, pass --reset-figures so
+    we don't accumulate duplicate figure tags across re-runs.
+    """
+    bundle = Path(run["bundle_path"])
+    post_id = run.get("hubspot_post_id")
+    if not post_id:
+        raise EmbedGraphicsFailure(
+            "No hubspot_post_id in run state; Stage 12 (publish) must run first."
+        )
+
+    cmd = [
+        "python3", str(EMBED_SCRIPT),
+        "--bundle", str(bundle),
+        "--post-id", str(post_id),
+    ]
+    if run.get("hubspot_reused_existing"):
+        cmd.append("--reset-figures")
+
+    print(f"  Embedding in-body figures into post {post_id}...")
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout or "")
+        sys.stderr.write(result.stderr or "")
+        raise EmbedGraphicsFailure(
+            "embed-pull-quotes.py exited non-zero. See stdout/stderr above. "
+            "Common cause: an anchor in metadata.md (inline_data_viz_anchors "
+            "or one of the pull_quotes) is not a verbatim substring of any "
+            "paragraph in Doc 1."
+        )
+    # Echo a short tail so the orchestrator log shows what got inserted.
+    for line in (result.stdout or "").strip().splitlines()[-4:]:
+        print(f"    {line}")
+    run.update({"stage": "embed_graphics"})
+    update_run(run["run_id"], run)
+    return run
+
+
+# ---------------------------------------------------------------------------
 # Stage 13: Slack delivery (text bundle, then graphics + captions)
 # ---------------------------------------------------------------------------
 
@@ -2251,6 +2347,7 @@ STAGE_DISPATCH = {
     "graphics": stage_graphics,
     "hashtags": stage_hashtags,
     "publish": stage_publish,
+    "embed_graphics": stage_embed_graphics,
     "slack": stage_slack,
     "complete": stage_complete,
 }

@@ -404,9 +404,21 @@ def main():
         print(f"ERROR: bundle dir not found: {bundle}", file=sys.stderr)
         return 1
 
-    meta_path = bundle / "blog-anchor-meta.md"
-    if not meta_path.exists():
-        print(f"ERROR: meta file not found: {meta_path}", file=sys.stderr)
+    # Bundle layout: B2B weekly uses blog-anchor-meta.md, B2C case-study
+    # uses metadata.md. Pick whichever exists; let the parser fail with a
+    # specific error if neither does.
+    b2b_meta = bundle / "blog-anchor-meta.md"
+    b2c_meta = bundle / "metadata.md"
+    if b2b_meta.exists():
+        meta_path = b2b_meta
+    elif b2c_meta.exists():
+        meta_path = b2c_meta
+    else:
+        print(
+            f"ERROR: no meta file in {bundle}. "
+            f"Expected blog-anchor-meta.md (B2B) or metadata.md (B2C).",
+            file=sys.stderr,
+        )
         return 1
 
     # Parse the figure definitions from the meta file
