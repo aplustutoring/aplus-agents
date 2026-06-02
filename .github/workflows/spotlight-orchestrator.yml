@@ -1,0 +1,169 @@
+name: Spotlight Orchestrator
+
+# Fires when Paola drops a folder into the Drive intake area. The Apps
+# Script watcher (scripts/watcher/apps-script.gs) calls GitHub's
+# repository_dispatch API with the folder ID. workflow_dispatch is the
+# same path for manual reruns from the Actions UI.
+on:
+  repository_dispatch:
+    types: [spotlight-folder-dropped]
+  workflow_dispatch:
+    inputs:
+      drive_folder_id:
+        description: 'Google Drive folder ID with the raw source files'
+        required: true
+        type: string
+      folder_name:
+        description: 'Folder name (for run log + Slack)'
+        required: false
+        type: string
+        default: '(manual run)'
+
+concurrency:
+  # Serialize per source folder so two near-simultaneous Apps Script
+  # dispatches of the same folder don't double-publish to HubSpot.
+  group: spotlight-${{ github.event.client_payload.drive_folder_id || github.event.inputs.drive_folder_id }}
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write  # needed by google-github-actions/auth for OIDC fallback
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      # Resolve the folder ID from whichever trigger fired this run.
+      DRIVE_FOLDER_ID: ${{ github.event.client_payload.drive_folder_id || github.event.inputs.drive_folder_id }}
+      FOLDER_NAME: ${{ github.event.client_payload.folder_name || github.event.inputs.folder_name || '(unnamed)' }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Drive client only needed inside the workflow; not in the
+          # orchestrator's runtime requirements.txt.
+          pip install google-api-python-client google-auth
+
+      - name: Install system fonts for matplotlib graphics
+        run: |
+          # matplotlib reads .ttf fonts from the repo's brand-kit dir, but
+          # also needs system fontconfig + DejaVu Sans as a fallback for
+          # any glyph not in the brand kit. ubuntu-latest ships these.
+          sudo apt-get update
+          sudo apt-get install -y fontconfig fonts-dejavu-core
+
+      - name: Auth to Google Drive
+        id: gauth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON }}
+
+      - name: Download Drive folder
+        run: |
+          python3 scripts/watcher/download-drive-folder.py \
+              --folder-id "${DRIVE_FOLDER_ID}" \
+              --dest /tmp/spotlight-source \
+              --verbose
+
+      - name: Download A+ logo for composite-logo.py
+        env:
+          APLUS_LOGO_DRIVE_FILE_ID: ${{ vars.APLUS_LOGO_DRIVE_FILE_ID }}
+        run: |
+          # composite-logo.py expects ~/Desktop/logo.png. Pull it from the
+          # Drive assets folder via the same service account.
+          if [ -z "$APLUS_LOGO_DRIVE_FILE_ID" ]; then
+            echo "ERROR: APLUS_LOGO_DRIVE_FILE_ID repo variable is not set."
+            echo "Set it in Settings > Secrets and variables > Actions > Variables."
+            exit 1
+          fi
+          python3 scripts/watcher/download-drive-file.py \
+              --file-id "$APLUS_LOGO_DRIVE_FILE_ID" \
+              --dest "$HOME/Desktop/logo.png"
+
+      - name: Run orchestrator (full pipeline)
+        id: orchestrate
+        run: |
+          python3 scripts/b2c/spotlight_orchestrator.py \
+              --source /tmp/spotlight-source \
+              --verbose 2>&1 | tee /tmp/orchestrator.log
+          # tee returns the orchestrator's exit code via PIPESTATUS[0]
+          exit "${PIPESTATUS[0]}"
+
+      - name: Capture bundle path
+        if: always()
+        id: bundle
+        run: |
+          # The orchestrator writes one bundle per run under aplus-content/.
+          # Find the freshest case-study-* dir for artifact upload.
+          BUNDLE_DIR=$(ls -td aplus-content/*-case-study-* 2>/dev/null | head -1 || echo "")
+          if [ -n "$BUNDLE_DIR" ]; then
+            echo "bundle_dir=$BUNDLE_DIR" >> "$GITHUB_OUTPUT"
+            echo "bundle_name=$(basename "$BUNDLE_DIR")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload bundle artifact
+        if: always() && steps.bundle.outputs.bundle_dir != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.bundle.outputs.bundle_name }}
+          path: ${{ steps.bundle.outputs.bundle_dir }}
+          retention-days: 30
+
+      - name: Upload orchestrator log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: orchestrator-log-${{ github.run_id }}
+          path: /tmp/orchestrator.log
+          retention-days: 30
+
+      - name: Post failure ping to Slack
+        if: failure()
+        env:
+          SLACK_FAILURE_CHANNEL: ${{ vars.SLACK_FAILURE_CHANNEL || '#student-spotlight-ready' }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          token = os.environ["SLACK_BOT_TOKEN"]
+          channel = os.environ["SLACK_FAILURE_CHANNEL"]
+          run_url = (
+              f"https://github.com/${{ github.repository }}/actions/"
+              f"runs/${{ github.run_id }}"
+          )
+          text = (
+              f":rotating_light: *Spotlight orchestrator failed* — folder "
+              f"`${{ env.FOLDER_NAME }}` (drive id `${{ env.DRIVE_FOLDER_ID }}`).\n"
+              f"<{run_url}|See the Actions run log>. Bundle artifact (if any) "
+              f"is attached to that run. No HubSpot or Slack delivery happened "
+              f"for this run; safe to fix and re-dispatch."
+          )
+          req = urllib.request.Request(
+              "https://slack.com/api/chat.postMessage",
+              data=json.dumps({"channel": channel, "text": text}).encode(),
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Content-Type": "application/json; charset=utf-8",
+              },
+          )
+          try:
+              resp = urllib.request.urlopen(req, timeout=15)
+              print("Slack failure ping:", resp.read().decode()[:200])
+          except Exception as exc:
+              print(f"Slack failure ping failed: {exc}")
+          PY
