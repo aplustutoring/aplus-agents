@@ -38,9 +38,11 @@ Design rules enforced:
    - Composite via PIL.Image.alpha_composite for clean blending.
 
 5. LOGO SOURCE FILES
-   - Always reads from ~/Desktop/logo.png (two-color source) and produces
-     the white variant in-process via color replacement. Fails clearly
-     if the source is missing.
+   - Prefers the repo-tracked source at <repo>/assets/logo.png (works in
+     CI without extra steps). Falls back to ~/Desktop/logo.png for
+     existing local dev habits. The two-color source is read; the white
+     variant is produced in-process via color replacement. Fails clearly
+     if neither source is present.
 
 Usage:
     python3 scripts/shared/composite-logo.py --bundle aplus-content/2026-05-20-weekly/
@@ -60,7 +62,13 @@ from PIL import Image, ImageStat
 
 
 # ----- Constants -----
-LOGO_PATH = Path.home() / "Desktop" / "logo.png"
+# Logo source. Prefer the repo-tracked asset (works in CI without any
+# extra workflow steps and removes the need for a per-machine ~/Desktop
+# convention). Fall back to ~/Desktop/logo.png so existing local dev
+# habits keep working.
+_REPO_LOGO = Path(__file__).resolve().parents[2] / "assets" / "logo.png"
+_DESKTOP_LOGO = Path.home() / "Desktop" / "logo.png"
+LOGO_PATH = _REPO_LOGO if _REPO_LOGO.exists() else _DESKTOP_LOGO
 ALPHA_THRESHOLD = 100  # v2.4: pixels with alpha < 100 -> 0, >=100 -> 255.
 
 # Variance threshold for pre-existing logo detection in the bottom-right

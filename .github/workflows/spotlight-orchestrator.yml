@@ -81,21 +81,6 @@ jobs:
               --dest /tmp/spotlight-source \
               --verbose
 
-      - name: Download A+ logo for composite-logo.py
-        env:
-          APLUS_LOGO_DRIVE_FILE_ID: ${{ vars.APLUS_LOGO_DRIVE_FILE_ID }}
-        run: |
-          # composite-logo.py expects ~/Desktop/logo.png. Pull it from the
-          # Drive assets folder via the same service account.
-          if [ -z "$APLUS_LOGO_DRIVE_FILE_ID" ]; then
-            echo "ERROR: APLUS_LOGO_DRIVE_FILE_ID repo variable is not set."
-            echo "Set it in Settings > Secrets and variables > Actions > Variables."
-            exit 1
-          fi
-          python3 scripts/watcher/download-drive-file.py \
-              --file-id "$APLUS_LOGO_DRIVE_FILE_ID" \
-              --dest "$HOME/Desktop/logo.png"
-
       - name: Run orchestrator (full pipeline)
         id: orchestrate
         run: |

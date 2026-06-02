@@ -91,7 +91,11 @@ def _find_font(*candidates):
 HEADING_FONT = _find_font("Playfair Display", "Playfair", "Georgia") or "serif"
 BODY_FONT = _find_font("DM Sans", "Helvetica", "Arial") or "sans-serif"
 
-LOGO_PATH = Path("/Users/romanslavinsky/Desktop/logo.png")
+# Prefer the repo-tracked asset (works in CI); fall back to the local
+# ~/Desktop/logo.png that existing local dev habits use.
+_REPO_LOGO = Path(__file__).resolve().parents[2] / "assets" / "logo.png"
+_DESKTOP_LOGO = Path.home() / "Desktop" / "logo.png"
+LOGO_PATH = _REPO_LOGO if _REPO_LOGO.exists() else _DESKTOP_LOGO
 
 
 # ----- Meta parsing -----
