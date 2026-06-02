@@ -210,11 +210,17 @@ def _extract_schema_markup(text):
 
 _LEADING_FRONTMATTER_RE = re.compile(r"\A---\s*\n.*?\n---\s*\n", re.DOTALL)
 
+# Drafter convention markers that are useful inline during human review
+# but must NEVER reach the published post body. Stripped before rendering.
+# Patterns are case-insensitive and consume one optional trailing space so
+# `[PULL QUOTE] "He said..."` becomes `"He said..."` rather than `  "He said..."`.
+_DRAFTER_MARKER_RE = re.compile(r"\[\s*PULL\s*QUOTE\s*\]\s?", re.IGNORECASE)
+
 
 def markdown_to_html(md_path):
     """Convert blog markdown to HTML.
 
-    Two leading strips before handing off to the markdown renderer:
+    Three strips before handing off to the markdown renderer:
 
     1. A leading `---...---` YAML/SEO frontmatter block. The B2C case
        study SKILL.md tells the drafting agent to emit a `--- SEO
@@ -229,9 +235,18 @@ def markdown_to_html(md_path):
     2. The leading `# H1` line. HubSpot renders the post title via the
        `name` field, so the markdown H1 would be a duplicate title at
        the top of the body.
+
+    3. `[PULL QUOTE]` inline markers. The case-study SKILL tells the
+       drafting agent to flag pull-quote candidates with `[PULL QUOTE]`
+       so a designer can pick which lines become graphic call-outs.
+       In the orchestrated flow, embed-pull-quotes.py uses the quote
+       text itself (NOT the marker) as the figure anchor, so the
+       marker has no role in the published body — leaving it in
+       publishes the literal text "[PULL QUOTE]" next to every quote.
     """
     text = Path(md_path).read_text()
     text = _LEADING_FRONTMATTER_RE.sub("", text, count=1)
+    text = _DRAFTER_MARKER_RE.sub("", text)
     lines = text.split("\n")
     if lines and lines[0].startswith("# "):
         lines = lines[1:]
