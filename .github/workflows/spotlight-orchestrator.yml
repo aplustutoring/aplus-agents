@@ -119,9 +119,9 @@ jobs:
           retention-days: 30
 
       - name: Post failure ping to Slack
-        if: failure()
+        if: failure() && env.SLACK_FAILURE_CHANNEL != ''
         env:
-          SLACK_FAILURE_CHANNEL: ${{ vars.SLACK_FAILURE_CHANNEL || '#student-spotlight-ready' }}
+          SLACK_FAILURE_CHANNEL: ${{ vars.SLACK_FAILURE_CHANNEL || '' }}
         run: |
           python3 - <<'PY'
           import os, json, urllib.request

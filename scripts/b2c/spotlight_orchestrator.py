@@ -780,28 +780,24 @@ def parse_paola_brief(text: str) -> dict:
 def parse_folder_identity(source_dir: Path) -> dict[str, str | None]:
     """Parse parent/student/school from the source folder name.
 
-    Expected convention: "{Parent} - {Student} - {School}" (3 segments minimum).
-    Rejects ambiguous 2-segment inputs (could be {Parent}-{Student} or {Parent}-{School}).
+    Expected convention: "{Parent} - {Student} - {School}".
+    If there are only 2 segments, assume the first segment is the student
+    name and the second segment is the school.
     """
     name = source_dir.name.strip()
     parts = [part.strip() for part in name.split(" - ") if part.strip()]
-    if len(parts) < 3:
-        # Ambiguous: could be {Parent} - {Student} or {Parent} - {School}.
-        # Student name is REQUIRED, so reject.
-        if len(parts) == 1:
-            return {"parent_full_name": None, "student_name": None, "school": None}
-        # 2 segments: can't tell which is which. Don't guess.
-        print(
-            f"  WARN: folder name {name!r} has only 2 segments. "
-            f"Expected format: {{Parent}} - {{Student}} - {{School}}. "
-            f"Returning empty identity.",
-            file=sys.stderr,
-        )
+    if len(parts) == 1:
         return {"parent_full_name": None, "student_name": None, "school": None}
-    
+    if len(parts) == 2:
+        return {
+            "parent_full_name": None,
+            "student_name": parts[0] or None,
+            "school": parts[1] or None,
+        }
+
     parent_full_name = parts[0]
-    school = parts[-1]  # Last segment is always the school
-    student_name = " - ".join(parts[1:-1])  # Middle segment(s) are the student name
+    school = parts[-1]
+    student_name = " - ".join(parts[1:-1])
     return {
         "parent_full_name": parent_full_name or None,
         "student_name": student_name or None,
@@ -1104,6 +1100,7 @@ def _resolve_student_identity(args: argparse.Namespace, run: dict) -> tuple[str,
     contact = run.get("hubspot_contact") or {}
 
     folder_student = folder_identity.get("student_name")
+    folder_parent = folder_identity.get("parent_full_name")
     folder_school = folder_identity.get("school")
 
     # Student firstname: brief → folder → args (never HubSpot contact, which is the parent)
