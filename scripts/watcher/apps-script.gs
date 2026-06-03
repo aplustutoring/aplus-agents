@@ -18,13 +18,11 @@
  * against a different intake folder, GitHub repo, or PAT without code
  * edits:
  *
- *   INTAKE_FOLDER_ID         — the Drive folder Paola drops into
- *   GITHUB_OWNER             — e.g. "aplustutoring"
- *   GITHUB_REPO              — e.g. "aplus-marketing-skills"
- *   GITHUB_PAT               — a fine-grained PAT with "Actions: write"
- *                              permission on that repo
- *   ERROR_NOTIFY_EMAIL       — (optional) email that receives a digest
- *                              if a poll cycle errored
+ *   PIPELINE_ROOT_ID         — the Drive folder ID Paola drops into
+ *   GITHUB_REPO              — full "owner/repo" string, e.g. "aplustutoring/aplus-marketing-skills"
+ *   GITHUB_TOKEN             — fine-grained PAT with "Actions: write" permission
+ *   SLACK_WEBHOOK_URL        — Slack incoming webhook for notifications (optional)
+ *   PAOLA_SLACK_USER_ID      — Paola's Slack user ID for mentions (optional)
  *
  * Deployment: see scripts/watcher/README.md.
  */
@@ -90,7 +88,7 @@ function processFolder_(folder, config) {
     dropSentinel_(folder, /*payload=*/ {
       dispatched_at: new Date().toISOString(),
       folder_name: name,
-      github_repo: `${config.githubOwner}/${config.githubRepo}`,
+      github_repo: config.githubRepo,
     });
     return { status: 'dispatched', name };
   } catch (exc) {
@@ -140,9 +138,7 @@ function missingRequiredFiles_(folder) {
 
 
 function dispatchWorkflow_(folderId, folderName, config) {
-  const url =
-    `https://api.github.com/repos/${config.githubOwner}/` +
-    `${config.githubRepo}/dispatches`;
+  const url = `https://api.github.com/repos/${config.githubRepo}/dispatches`;
   const payload = {
     event_type: DISPATCH_EVENT_TYPE,
     client_payload: {
@@ -155,7 +151,7 @@ function dispatchWorkflow_(folderId, folderName, config) {
     method: 'post',
     contentType: 'application/json',
     headers: {
-      Authorization: `Bearer ${config.githubPat}`,
+      Authorization: `Bearer ${config.githubToken}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
     },
@@ -173,10 +169,9 @@ function dispatchWorkflow_(folderId, folderName, config) {
 
 function readConfig_(props) {
   const required = [
-    'INTAKE_FOLDER_ID',
-    'GITHUB_OWNER',
+    'PIPELINE_ROOT_ID',
     'GITHUB_REPO',
-    'GITHUB_PAT',
+    'GITHUB_TOKEN',
   ];
   const missing = required.filter((k) => !props.getProperty(k));
   if (missing.length) {
@@ -187,28 +182,12 @@ function readConfig_(props) {
     return null;
   }
   return {
-    intakeFolderId: props.getProperty('INTAKE_FOLDER_ID'),
-    githubOwner: props.getProperty('GITHUB_OWNER'),
+    intakeFolderId: props.getProperty('PIPELINE_ROOT_ID'),
     githubRepo: props.getProperty('GITHUB_REPO'),
-    githubPat: props.getProperty('GITHUB_PAT'),
-    errorNotifyEmail: props.getProperty('ERROR_NOTIFY_EMAIL') || '',
+    githubToken: props.getProperty('GITHUB_TOKEN'),
+    slackWebhookUrl: props.getProperty('SLACK_WEBHOOK_URL') || '',
+    paolaSlackUserId: props.getProperty('PAOLA_SLACK_USER_ID') || '',
   };
-}
-
-
-function notifyErrors_(email, errors) {
-  const body = errors
-    .map((e) => `- ${e.name}: ${e.error}`)
-    .join('\n');
-  MailApp.sendEmail({
-    to: email,
-    subject: 'Spotlight watcher errors',
-    body:
-      'The Spotlight watcher hit one or more errors dispatching folders ' +
-      'to GitHub Actions:\n\n' + body + '\n\n' +
-      'Check the Apps Script execution log for details: ' +
-      'https://script.google.com',
-  });
 }
 
 
@@ -218,8 +197,8 @@ function notifyErrors_(email, errors) {
 
 /** Print whether every Script Property is set. Run after deploying. */
 function checkConfig() {
-  const required = ['INTAKE_FOLDER_ID', 'GITHUB_OWNER', 'GITHUB_REPO', 'GITHUB_PAT'];
-  const optional = ['ERROR_NOTIFY_EMAIL'];
+  const required = ['PIPELINE_ROOT_ID', 'GITHUB_REPO', 'GITHUB_TOKEN'];
+  const optional = ['SLACK_WEBHOOK_URL', 'PAOLA_SLACK_USER_ID'];
   const props = PropertiesService.getScriptProperties();
   required.forEach((k) => {
     const v = props.getProperty(k);
