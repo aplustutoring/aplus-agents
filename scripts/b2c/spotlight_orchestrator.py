@@ -189,13 +189,16 @@ def find_source_files(source_dir: Path) -> list[Path]:
 
 def categorize_source_files(files: list[Path]) -> dict[str, list[Path]]:
     categories = {"parent_call": [], "lesson_report": [], "paola_brief": [], "others": []}
+    transcript_re = re.compile(r"\b(transcription|transcript|call)\b", re.IGNORECASE)
+    lesson_re = re.compile(r"\blesson\b", re.IGNORECASE)
+    brief_re = re.compile(r"\b(survey|brief|handoff|spotlight)\b", re.IGNORECASE)
     for path in files:
         name = path.name.lower()
-        if re.match(r"^parent[-_ ]?call", name):
+        if transcript_re.search(name):
             categories["parent_call"].append(path)
-        elif re.match(r"^(lesson[-_ ]?notes|lesson[-_ ]?report|tutor[-_ ]?notes|tutor[-_ ]?report)", name):
+        elif lesson_re.search(name):
             categories["lesson_report"].append(path)
-        elif re.match(r"^paola[-_ ]?brief", name):
+        elif brief_re.search(name):
             categories["paola_brief"].append(path)
         else:
             categories["others"].append(path)
@@ -710,14 +713,11 @@ def load_skill(skill_name: str) -> str:
 
 
 def ensure_source_files(source_dir: Path, categories: dict[str, list[Path]]) -> None:
-    missing = []
-    for key in ["parent_call", "lesson_report", "paola_brief"]:
-        if not categories.get(key):
-            missing.append(key.replace("_", " ").title())
-    if missing:
-        raise MissingRequiredFiles(
-            f"Missing required source file categories: {', '.join(missing)}. "
-            f"Ensure the source folder contains parent call, lesson report, and Paola brief files."
+    if not any(categories.values()):
+        print(
+            "Warning: no source file categories could be guessed for this folder. "
+            "The pipeline will continue by reading all supported document files.",
+            file=sys.stderr,
         )
 
 
@@ -901,30 +901,61 @@ def stage_read_sources(args: argparse.Namespace, run: dict) -> dict:
     categories = categorize_source_files(all_files)
     ensure_source_files(source_dir, categories)
 
+    supported_files = [path for path in all_files if path.suffix.lower() in SUPPORTED_EXTENSIONS]
+    if not supported_files:
+        raise OrchestratorError(
+            "No supported document files were found in the source folder. "
+            "The folder must contain at least one readable .txt, .pdf, or .docx file."
+        )
+
     source_texts: dict[str, str] = {}
-    for path in all_files:
-        if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
-            print(f"  Skipping unsupported file: {path.name}", file=sys.stderr)
+    for path in supported_files:
+        try:
+            text = extract_text(path)
+        except OrchestratorError as exc:
+            print(f"  Warning: failed to extract text from {path.name}: {exc}", file=sys.stderr)
             continue
-        text = extract_text(path)
+
         if not text.strip():
-            raise OrchestratorError(f"Extracted empty text from {path.name}")
+            print(
+                f"  Warning: extracted empty text from {path.name}; "
+                "the pipeline will continue if other readable files exist.",
+                file=sys.stderr,
+            )
+            continue
+
         source_texts[path.name] = text
         if args.verbose:
             print(f"Extracted {len(text)} chars from {path.name}")
+
+    if not source_texts:
+        raise OrchestratorError(
+            "No readable documents were found in the source folder. "
+            "At least one readable .txt, .pdf, or .docx file is required."
+        )
 
     run_dir = BUNDLE_ROOT / "_pending"
     run_dir.mkdir(parents=True, exist_ok=True)
     save_extracted_texts(run_dir, source_texts)
 
+    category_names = {k: [p.name for p in v] for k, v in categories.items()}
+    (run_dir / "source_categories.json").write_text(
+        json.dumps(category_names, indent=2, ensure_ascii=False)
+    )
+
     run.update(
         {
             "stage": "read_sources",
             "source_files": [str(p.resolve()) for p in all_files],
-            "source_categories": {k: [p.name for p in v] for k, v in categories.items()},
+            "source_categories": category_names,
+            "source_categories_path": str((run_dir / "source_categories.json").resolve()),
             "extracted_texts_path": str((run_dir / "source_texts.json").resolve()),
         }
     )
+    if args.verbose:
+        print("Detected source categories:")
+        for category, paths in category_names.items():
+            print(f"  {category}: {paths}")
     update_run(run["run_id"], run)
     return run
 
@@ -934,10 +965,12 @@ def _load_brief_fields(run: dict) -> dict:
     cache = Path(run["extracted_texts_path"]).read_text()
     source_texts = json.loads(cache)
     brief_text = ""
+    brief_candidates = []
     for name, text in source_texts.items():
-        if name.lower().startswith("paola"):
-            brief_text = text
-            break
+        if re.search(r"\b(brief|survey|handoff|spotlight)\b", name.lower()):
+            brief_candidates.append((name, text))
+    if brief_candidates:
+        brief_text = brief_candidates[0][1]
     if not brief_text:
         return {}
     return parse_paola_brief(brief_text)
