@@ -1082,42 +1082,45 @@ def stage_hubspot(args: argparse.Namespace, run: dict) -> dict:
 
 
 def _resolve_student_identity(args: argparse.Namespace, run: dict) -> tuple[str, str | None, str | None]:
-    """Return (firstname, lastname, school) using HubSpot contact when present,
-    else Paola's parsed brief, folder-name fallback, or --student-name / --school args."""
-    contact = run.get("hubspot_contact") or {}
+    """Return (firstname, lastname, school) using Paola's parsed brief first,
+    then folder-name convention, then --student-name / --school args.
+    HubSpot returns the parent's contact (used to verify school context only),
+    so firstname/lastname must come from brief/folder/args, never from HubSpot."""
     brief = run.get("brief_fields") or {}
     folder_identity = run.get("folder_identity") or parse_folder_identity(Path(run["source"]))
+    contact = run.get("hubspot_contact") or {}
 
     folder_student = folder_identity.get("student_name")
-    folder_parent = folder_identity.get("parent_full_name")
     folder_school = folder_identity.get("school")
 
+    # Student firstname: brief → folder → args (never HubSpot contact, which is the parent)
     firstname = (
-        (contact.get("firstname") if contact else None)
-        or brief.get("student_firstname")
-        or args.student_name
+        brief.get("student_firstname")
         or (folder_student.split()[0] if folder_student else None)
+        or args.student_name
     )
+    # Student lastname: brief → folder → args (never HubSpot contact, which is the parent)
     lastname = (
-        (contact.get("lastname") if contact else None)
-        or brief.get("student_lastname")
+        brief.get("student_lastname")
         or (
             " ".join(folder_student.split()[1:])
             if folder_student and len(folder_student.split()) > 1
             else None
         )
     )
+    # School: args → contact.student_school → brief → folder
+    # (HubSpot provides school_grade context for the parent's enrollment)
     school = (
         args.school
-        or (contact.get("school") if contact else None)
+        or (contact.get("student_school") if contact else None)
         or brief.get("school")
         or folder_school
     )
 
     if not firstname:
         raise OrchestratorError(
-            "Could not determine the student's real first name from HubSpot, "
-            "Paola's brief, the folder name, or --student-name. Stop."
+            "Could not determine the student's real first name from Paola's brief, "
+            "the folder name, or --student-name. Stop."
         )
 
     if folder_parent and not run.get("parent_full_name"):
