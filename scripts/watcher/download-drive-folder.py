@@ -3,7 +3,8 @@
 
 Reads the service-account credentials from $GOOGLE_APPLICATION_CREDENTIALS
 (set by google-github-actions/auth in the workflow) and downloads every
-file in the named folder into a local destination directory.
+file in the named folder into a local destination directory. Google Docs
+are exported as plain text (.txt) using the Drive API export endpoint.
 
 The orchestrator then runs against that directory with `--source <dest>`
 and the existing Stage 1 (read_sources) picks up the files exactly as
@@ -18,10 +19,10 @@ Behavior:
 - Skips files whose name starts with `.spotlight` (sentinels the Apps
   Script drops after dispatching, so a re-run of the workflow against
   the same folder doesn't re-ingest them).
-- Skips Google-native files (Docs, Sheets, Slides). The orchestrator's
-  supported extensions are .txt / .md / .pdf / .docx; if Paola needs to
-  ship a Google Doc, she should "File > Download > Microsoft Word
-  (.docx)" before dropping it into the intake folder.
+- Google Docs are exported as plain text (.txt) using the Drive API
+  files.export_media() endpoint, reusing the same service-account
+  credentials. Other Google-native types (Sheets, Slides) are still
+  skipped since the orchestrator cannot ingest them.
 - Errors loudly on auth failure or missing folder so the workflow fails
   fast and the operator sees the real cause in the Actions log.
 """
@@ -49,10 +50,13 @@ def _lazy_imports():
     return service_account, build, MediaIoBaseDownload
 
 
-# Mime types we explicitly do not ingest. Google-native formats need to be
-# exported (drive.files.export_media), and the orchestrator can't read them
-# anyway — Paola should download as .docx and re-upload.
-GOOGLE_NATIVE_MIME_PREFIXES = ("application/vnd.google-apps.",)
+# Mime types we explicitly do not ingest. Google Sheets and Slides cannot be
+# meaningfully exported to text; Docs are handled via files.export_media.
+GOOGLE_NATIVE_MIME_TO_SKIP = (
+    "application/vnd.google-apps.spreadsheet",
+    "application/vnd.google-apps.presentation",
+)
+GOOGLE_DOC_MIME = "application/vnd.google-apps.document"
 
 # File-name prefixes we always skip (sentinels left behind by the Apps
 # Script watcher to mark a folder as already dispatched).
@@ -87,6 +91,30 @@ def _credentials():
         creds_path,
         scopes=["https://www.googleapis.com/auth/drive.readonly"],
     )
+
+
+def export_google_doc(drive, file_id: str, name: str, dest: Path, verbose: bool = False) -> tuple[bool, str]:
+    """Export a Google Doc as plain text.
+    
+    Returns (success, message) where success is True if the export completed.
+    """
+    try:
+        _, _, MediaIoBaseDownload = _lazy_imports()
+        # Export the Doc as plain text. The Drive API will generate a text version.
+        request = drive.files().export_media(fileId=file_id, mimeType="text/plain")
+        out_path = dest / f"{name}.txt"
+        with open(out_path, "wb") as fp:
+            downloader = MediaIoBaseDownload(fp, request)
+            done = False
+            while not done:
+                _, done = downloader.next_chunk()
+        size = out_path.stat().st_size
+        msg = f"{name}.txt ({size:,} bytes)"
+        if verbose:
+            print(f"  OK (exported) {name} -> {out_path} ({size:,} bytes)")
+        return True, msg
+    except Exception as exc:  # noqa: BLE001
+        return False, f"{name} (Google Doc export failed: {exc})"
 
 
 def main() -> int:
@@ -142,11 +170,20 @@ def main() -> int:
 
         for f in resp.get("files", []):
             name = f["name"]
+            mime_type = f.get("mimeType", "")
             if any(name.startswith(p) for p in SKIP_NAME_PREFIXES):
                 skipped.append(f"{name} (sentinel)")
                 continue
-            if any(f.get("mimeType", "").startswith(p) for p in GOOGLE_NATIVE_MIME_PREFIXES):
-                skipped.append(f"{name} (Google-native — re-export as .docx)")
+            # Export Google Docs as plain text; skip other Google-native types.
+            if mime_type == GOOGLE_DOC_MIME:
+                success, msg = export_google_doc(drive, f["id"], name, dest, args.verbose)
+                if success:
+                    downloaded.append(msg)
+                else:
+                    skipped.append(msg)
+                continue
+            if any(mime_type == skip_type for skip_type in GOOGLE_NATIVE_MIME_TO_SKIP):
+                skipped.append(f"{name} (Google {mime_type.split('.')[-1]} — not supported)")
                 continue
 
             out_path = dest / name
