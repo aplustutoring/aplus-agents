@@ -28,6 +28,7 @@
  */
 
 const SENTINEL_NAME = '.spotlight-dispatched';
+const INCOMPLETE_SENTINEL_NAME = '.spotlight-incomplete';
 const DISPATCH_EVENT_TYPE = 'spotlight-folder-dropped';
 
 /** Required-file matchers, mirrored from the orchestrator's source classifier.
@@ -78,13 +79,20 @@ function processFolder_(folder, config) {
 
   const missing = missingRequiredFiles_(folder);
   if (missing.length > 0) {
-    Logger.log(`SKIP: ${name} — missing ${missing.join(', ')}`);
+    if (!hasIncompleteSentinel_(folder)) {
+      Logger.log(`INCOMPLETE: ${name} — missing ${missing.join(', ')}`);
+      notifyIncompleteFolder_(folder, missing, config);
+      dropIncompleteSentinel_(folder, missing);
+    } else {
+      Logger.log(`SKIP: ${name} — still missing ${missing.join(', ')}`);
+    }
     return { status: 'skipped', reason: 'incomplete', name, missing };
   }
 
   Logger.log(`DISPATCH: ${name} (id=${folder.getId()})`);
   try {
     dispatchWorkflow_(folder.getId(), name, config);
+    removeIncompleteSentinel_(folder);
     dropSentinel_(folder, /*payload=*/ {
       dispatched_at: new Date().toISOString(),
       folder_name: name,
@@ -112,6 +120,32 @@ function dropSentinel_(folder, payload) {
     JSON.stringify(payload, null, 2),
     MimeType.PLAIN_TEXT,
   );
+}
+
+function hasIncompleteSentinel_(folder) {
+  return folder.getFilesByName(INCOMPLETE_SENTINEL_NAME).hasNext();
+}
+
+function dropIncompleteSentinel_(folder, missing) {
+  folder.createFile(
+    INCOMPLETE_SENTINEL_NAME,
+    JSON.stringify(
+      {
+        created_at: new Date().toISOString(),
+        missing_required_files: missing,
+      },
+      null,
+      2,
+    ),
+    MimeType.PLAIN_TEXT,
+  );
+}
+
+function removeIncompleteSentinel_(folder) {
+  const sentinels = folder.getFilesByName(INCOMPLETE_SENTINEL_NAME);
+  while (sentinels.hasNext()) {
+    sentinels.next().setTrashed(true);
+  }
 }
 
 
@@ -185,6 +219,7 @@ function readConfig_(props) {
     intakeFolderId: props.getProperty('PIPELINE_ROOT_ID'),
     githubRepo: props.getProperty('GITHUB_REPO'),
     githubToken: props.getProperty('GITHUB_TOKEN'),
+    errorNotifyEmail: props.getProperty('ERROR_NOTIFY_EMAIL') || '',
     slackWebhookUrl: props.getProperty('SLACK_WEBHOOK_URL') || '',
     paolaSlackUserId: props.getProperty('PAOLA_SLACK_USER_ID') || '',
   };
@@ -198,7 +233,7 @@ function readConfig_(props) {
 /** Print whether every Script Property is set. Run after deploying. */
 function checkConfig() {
   const required = ['PIPELINE_ROOT_ID', 'GITHUB_REPO', 'GITHUB_TOKEN'];
-  const optional = ['SLACK_WEBHOOK_URL', 'PAOLA_SLACK_USER_ID'];
+  const optional = ['ERROR_NOTIFY_EMAIL', 'SLACK_WEBHOOK_URL', 'PAOLA_SLACK_USER_ID'];
   const props = PropertiesService.getScriptProperties();
   required.forEach((k) => {
     const v = props.getProperty(k);
@@ -237,6 +272,23 @@ function listIntakeFolders() {
  *
  *  Usage: edit FOLDER_NAME below, save, and run resetSentinel from
  *  the Apps Script editor. */
+function notifyErrors_(email, errors) {
+  const subject = `Spotlight watcher failure: ${errors.length} folder(s) could not be dispatched`;
+  const body = errors
+    .map((error) => `- ${error.name}: ${error.error}`)
+    .join('\n');
+  MailApp.sendEmail(email, subject, body);
+}
+
+function notifyIncompleteFolder_(folder, missing, config) {
+  const name = folder.getName();
+  const subject = `Spotlight watcher: folder ${name} missing required files`;
+  const body = `Folder ${name} is missing required files: ${missing.join(', ')}.`;
+  if (config.errorNotifyEmail) {
+    MailApp.sendEmail(config.errorNotifyEmail, subject, body);
+  }
+}
+
 function resetSentinel() {
   const FOLDER_NAME = '__PASTE_FOLDER_NAME_HERE__';
   const props = PropertiesService.getScriptProperties();
