@@ -780,15 +780,28 @@ def parse_paola_brief(text: str) -> dict:
 def parse_folder_identity(source_dir: Path) -> dict[str, str | None]:
     """Parse parent/student/school from the source folder name.
 
-    Expected convention: "{Parent} - {Student} - {School}".
+    Expected convention: "{Parent} - {Student} - {School}" (3 segments minimum).
+    Rejects ambiguous 2-segment inputs (could be {Parent}-{Student} or {Parent}-{School}).
     """
     name = source_dir.name.strip()
     parts = [part.strip() for part in name.split(" - ") if part.strip()]
-    if len(parts) < 2:
+    if len(parts) < 3:
+        # Ambiguous: could be {Parent} - {Student} or {Parent} - {School}.
+        # Student name is REQUIRED, so reject.
+        if len(parts) == 1:
+            return {"parent_full_name": None, "student_name": None, "school": None}
+        # 2 segments: can't tell which is which. Don't guess.
+        print(
+            f"  WARN: folder name {name!r} has only 2 segments. "
+            f"Expected format: {{Parent}} - {{Student}} - {{School}}. "
+            f"Returning empty identity.",
+            file=sys.stderr,
+        )
         return {"parent_full_name": None, "student_name": None, "school": None}
+    
     parent_full_name = parts[0]
-    school = parts[-1] if len(parts) >= 3 else None
-    student_name = " - ".join(parts[1:-1]) if len(parts) > 2 else parts[1]
+    school = parts[-1]  # Last segment is always the school
+    student_name = " - ".join(parts[1:-1])  # Middle segment(s) are the student name
     return {
         "parent_full_name": parent_full_name or None,
         "student_name": student_name or None,
