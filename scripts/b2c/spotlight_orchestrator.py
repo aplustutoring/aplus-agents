@@ -773,7 +773,37 @@ def parse_paola_brief(text: str) -> dict:
     m = _BRIEF_PARENT_RE.search(text)
     if m:
         out["parent_full_name"] = m.group(1).strip()
+    out["email"] = extract_email(text)
     return out
+
+
+def parse_folder_identity(source_dir: Path) -> dict[str, str | None]:
+    """Parse parent/student/school from the source folder name.
+
+    Expected convention: "{Parent} - {Student} - {School}".
+    """
+    name = source_dir.name.strip()
+    parts = [part.strip() for part in name.split(" - ") if part.strip()]
+    if len(parts) < 2:
+        return {"parent_full_name": None, "student_name": None, "school": None}
+    parent_full_name = parts[0]
+    school = parts[-1] if len(parts) >= 3 else None
+    student_name = " - ".join(parts[1:-1]) if len(parts) > 2 else parts[1]
+    return {
+        "parent_full_name": parent_full_name or None,
+        "student_name": student_name or None,
+        "school": school or None,
+    }
+
+
+def scan_transcript_email(source_texts: dict[str, str]) -> str | None:
+    """Prefer an email address extracted from a parent call transcript file."""
+    for name, text in source_texts.items():
+        if re.search(r"\b(transcription|transcript|call)\b", name.lower()):
+            email = extract_email(text)
+            if email:
+                return email
+    return None
 
 
 HUBSPOT_CONTACT_PROPERTIES = [
@@ -980,72 +1010,71 @@ def stage_hubspot(args: argparse.Namespace, run: dict) -> dict:
     """Identify the family in HubSpot.
 
     Strategy:
-      1. Pull a candidate parent email from the source texts (regex).
-      2. POST contacts/search by email. Exactly-1 -> Found. 0 -> name fallback. >1 -> Ambiguous.
-      3. Name fallback: take student first+last name from Paola's brief and search.
-      4. Still 0 -> HubSpotNotFound. >1 -> HubSpotAmbiguous.
+      1. Pull a candidate parent email from Paola's brief or from parent call transcripts.
+      2. If an email is present, try HubSpot lookup by that email.
+      3. If the email is missing or doesn't match any contact, continue without hard failure.
+      4. Record any fallback identity information from the folder name so downstream
+         drafting and anonymization can proceed.
     """
     brief = _load_brief_fields(run)
+    source_dir = Path(run["source"])
+    folder_identity = parse_folder_identity(source_dir)
     if args.skip_hubspot:
         print("Skipping HubSpot lookup by request.")
-        # Even when skipping HubSpot, we surface brief-parsed fields so
-        # downstream stages have school/grade/name without a CRM call.
         run.update(
             {
                 "stage": "hubspot",
                 "hubspot_contact": None,
                 "brief_fields": brief,
+                "folder_identity": folder_identity,
             }
         )
         update_run(run["run_id"], run)
         return run
 
     source_texts = json.loads(Path(run["extracted_texts_path"]).read_text())
-    email = None
-    for text in source_texts.values():
-        candidate = extract_email(text)
-        if candidate:
-            email = candidate
-            break
+    email = brief.get("email") or scan_transcript_email(source_texts)
+    if email:
+        print(f"  Searching HubSpot by email: {email}")
+    else:
+        print("  No parent email found in Paola's brief or call transcripts; HubSpot lookup will be skipped.")
 
     contact = None
     lookup_kind = None
+    hubspot_lookup_error = None
     if email:
-        print(f"  Searching HubSpot by email: {email}")
         try:
             contact = call_hubspot_lookup(email)
             lookup_kind = "email"
         except HubSpotNotFound:
-            print(f"  Email lookup returned 0 results; falling back to name search.")
-        # HubSpotAmbiguous bubbles up directly — multiple matches on an email
-        # is a data-quality issue the operator must resolve.
+            hubspot_lookup_error = f"Email lookup for {email} returned no results."
+            print(f"  {hubspot_lookup_error}")
+        except HubSpotAmbiguous as exc:
+            hubspot_lookup_error = str(exc)
+            print(f"  HubSpot email lookup is ambiguous: {hubspot_lookup_error}")
 
-    if contact is None:
-        firstname = brief.get("student_firstname")
-        lastname = brief.get("student_lastname")
-        if not firstname:
-            raise HubSpotNotFound(
-                "No email matched in HubSpot and Paola's brief has no "
-                "'Real first name:' field for the name-fallback search."
-            )
-        print(f"  Searching HubSpot by name: {firstname} {lastname or ''}".rstrip())
-        contact = call_hubspot_lookup_by_name(firstname, lastname)
-        lookup_kind = "name"
+    if contact is None and email:
+        print(
+            "  HubSpot lookup did not return a single contact. "
+            "Proceeding with folder-name / source fallback instead of failing."
+        )
 
-    props = contact.get("properties", {})
     run.update(
         {
             "stage": "hubspot",
-            "hubspot_contact": {
+            "hubspot_contact": None if contact is None else {
                 "contact_id": contact.get("id"),
-                "email": props.get("email") or email,
-                "firstname": props.get("firstname"),
-                "lastname": props.get("lastname"),
-                "company": props.get("company"),
-                "school": props.get("student_school"),
+                "email": contact.get("properties", {}).get("email") or email,
+                "firstname": contact.get("properties", {}).get("firstname"),
+                "lastname": contact.get("properties", {}).get("lastname"),
+                "company": contact.get("properties", {}).get("company"),
+                "school": contact.get("properties", {}).get("student_school"),
                 "lookup_kind": lookup_kind,
             },
+            "hubspot_email_candidate": email,
+            "hubspot_lookup_error": hubspot_lookup_error,
             "brief_fields": brief,
+            "folder_identity": folder_identity,
         }
     )
     update_run(run["run_id"], run)
@@ -1054,28 +1083,46 @@ def stage_hubspot(args: argparse.Namespace, run: dict) -> dict:
 
 def _resolve_student_identity(args: argparse.Namespace, run: dict) -> tuple[str, str | None, str | None]:
     """Return (firstname, lastname, school) using HubSpot contact when present,
-    else Paola's parsed brief, else --student-name / --school args."""
+    else Paola's parsed brief, folder-name fallback, or --student-name / --school args."""
     contact = run.get("hubspot_contact") or {}
     brief = run.get("brief_fields") or {}
+    folder_identity = run.get("folder_identity") or parse_folder_identity(Path(run["source"]))
+
+    folder_student = folder_identity.get("student_name")
+    folder_parent = folder_identity.get("parent_full_name")
+    folder_school = folder_identity.get("school")
+
     firstname = (
         (contact.get("firstname") if contact else None)
         or brief.get("student_firstname")
         or args.student_name
+        or (folder_student.split()[0] if folder_student else None)
     )
     lastname = (
         (contact.get("lastname") if contact else None)
         or brief.get("student_lastname")
+        or (
+            " ".join(folder_student.split()[1:])
+            if folder_student and len(folder_student.split()) > 1
+            else None
+        )
     )
     school = (
         args.school
         or (contact.get("school") if contact else None)
         or brief.get("school")
+        or folder_school
     )
+
     if not firstname:
         raise OrchestratorError(
             "Could not determine the student's real first name from HubSpot, "
-            "Paola's brief, or --student-name. Stop."
+            "Paola's brief, the folder name, or --student-name. Stop."
         )
+
+    if folder_parent and not run.get("parent_full_name"):
+        run["parent_full_name"] = folder_parent
+
     return firstname, lastname, school
 
 
