@@ -84,8 +84,16 @@ jobs:
       - name: Run orchestrator (full pipeline)
         id: orchestrate
         run: |
+          # --stop-after complete overrides the orchestrator's "bundle"
+          # default so the cloud run goes through draft, anonymization,
+          # metadata, grammar gate, graphics, hashtags, HubSpot publish,
+          # in-body embed, and Slack delivery — the whole engine end to
+          # end. Without this override every cloud run terminates at the
+          # bundle stage (no draft, no HubSpot draft, no Slack ping to
+          # Paola).
           python3 scripts/b2c/spotlight_orchestrator.py \
               --source /tmp/spotlight-source \
+              --stop-after complete \
               --verbose 2>&1 | tee /tmp/orchestrator.log
           # tee returns the orchestrator's exit code via PIPESTATUS[0]
           exit "${PIPESTATUS[0]}"
