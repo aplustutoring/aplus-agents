@@ -32,14 +32,12 @@
 const SENTINEL_NAME = '.spotlight-dispatched';
 const DISPATCH_EVENT_TYPE = 'spotlight-folder-dropped';
 
-/** Required-file prefix matchers, mirrored from the orchestrator's
- *  scripts/b2c/spotlight_orchestrator.py:REQUIRED_SOURCE_PATTERNS so
- *  the watcher never fires a workflow that would fail Stage 1. */
-const REQUIRED_PATTERNS = [
-  /^parent[-_ ]?call/i,
-  /^(lesson[-_ ]?notes|lesson[-_ ]?report|tutor[-_ ]?notes|tutor[-_ ]?report)/i,
-  /^paola[-_ ]?brief/i,
-];
+/** Required-file matchers, mirrored from the orchestrator's source classifier.
+ *  The watcher should fire only when a transcript/call and a lesson file are present.
+ *  A Paola brief is preferred but optional for dispatch. */
+const TRANSCRIPT_PATTERN = /\b(transcription|transcript|call)\b/i;
+const LESSON_PATTERN = /\blesson\b/i;
+const BRIEF_PATTERN = /\b(survey|brief|handoff|spotlight)\b/i;
 
 
 /** Main entry point. Wire a 5-minute time trigger to this function. */
@@ -120,16 +118,24 @@ function dropSentinel_(folder, payload) {
 
 
 function missingRequiredFiles_(folder) {
-  const present = REQUIRED_PATTERNS.map(() => false);
+  let hasTranscript = false;
+  let hasLesson = false;
+  let hasBrief = false;
   const files = folder.getFiles();
   while (files.hasNext()) {
     const name = files.next().getName();
-    REQUIRED_PATTERNS.forEach((re, i) => {
-      if (re.test(name)) present[i] = true;
-    });
+    if (TRANSCRIPT_PATTERN.test(name)) hasTranscript = true;
+    if (LESSON_PATTERN.test(name)) hasLesson = true;
+    if (BRIEF_PATTERN.test(name)) hasBrief = true;
   }
-  const labels = ['parent-call*', 'lesson-notes/report*', 'paola-brief*'];
-  return labels.filter((_, i) => !present[i]);
+
+  const missing = [];
+  if (!hasTranscript) missing.push('transcript/call file');
+  if (!hasLesson) missing.push('lesson file');
+  if (!hasBrief) Logger.log(
+    `NOTE: ${folder.getName()} has no brief-like source file; proceeding because briefs are optional.`
+  );
+  return missing;
 }
 
 
