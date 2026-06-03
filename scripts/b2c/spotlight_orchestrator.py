@@ -777,14 +777,39 @@ def parse_paola_brief(text: str) -> dict:
     return out
 
 
-def parse_folder_identity(source_dir: Path) -> dict[str, str | None]:
-    """Parse parent/student/school from the source folder name.
+_FOLDER_NAME_PLACEHOLDERS = {"", "(unnamed)", "(manual run)"}
+
+
+def _resolve_folder_name(source_dir: Path | None) -> str:
+    """Return the authoritative Drive folder name.
+
+    The FOLDER_NAME env var (set by the workflow from
+    client_payload.folder_name) is authoritative — that is the actual Drive
+    folder name Paola dropped, not the cloud runner's `/tmp/spotlight-source`
+    download path. We fall back to the source dir name only for local
+    development, where the operator names the --source folder after the
+    Drive folder so the same parser works without the env var.
+    """
+    env_name = (os.environ.get("FOLDER_NAME") or "").strip()
+    if env_name and env_name not in _FOLDER_NAME_PLACEHOLDERS:
+        return env_name
+    if source_dir is None:
+        return ""
+    return source_dir.name.strip()
+
+
+def parse_folder_identity(source_dir: Path | None = None) -> dict[str, str | None]:
+    """Parse parent/student/school from the Drive folder name.
+
+    Prefers the FOLDER_NAME env var (set by the GitHub Actions workflow
+    from the Apps Script dispatch payload). Falls back to source_dir.name
+    when the env var is absent so local dev keeps working.
 
     Expected convention: "{Parent} - {Student} - {School}".
     If there are only 2 segments, assume the first segment is the student
     name and the second segment is the school.
     """
-    name = source_dir.name.strip()
+    name = _resolve_folder_name(source_dir)
     parts = [part.strip() for part in name.split(" - ") if part.strip()]
     if len(parts) == 1:
         return {"parent_full_name": None, "student_name": None, "school": None}
@@ -1103,28 +1128,31 @@ def _resolve_student_identity(args: argparse.Namespace, run: dict) -> tuple[str,
     folder_parent = folder_identity.get("parent_full_name")
     folder_school = folder_identity.get("school")
 
-    # Student firstname: brief → folder → args (never HubSpot contact, which is the parent)
+    # Student firstname: folder → brief → args (folder is authoritative —
+    # it is the literal Drive folder name Paola typed, propagated to the
+    # runner via the FOLDER_NAME env var).
     firstname = (
-        brief.get("student_firstname")
-        or (folder_student.split()[0] if folder_student else None)
+        (folder_student.split()[0] if folder_student else None)
+        or brief.get("student_firstname")
         or args.student_name
     )
-    # Student lastname: brief → folder → args (never HubSpot contact, which is the parent)
+    # Student lastname: folder → brief → args (same priority as firstname).
     lastname = (
-        brief.get("student_lastname")
-        or (
+        (
             " ".join(folder_student.split()[1:])
             if folder_student and len(folder_student.split()) > 1
             else None
         )
+        or brief.get("student_lastname")
     )
-    # School: args → contact.student_school → brief → folder
-    # (HubSpot provides school_grade context for the parent's enrollment)
+    # School: folder → args → contact.student_school → brief.
+    # Paola's folder names carry the school explicitly; the workflow's
+    # FOLDER_NAME makes that authoritative on the runner too.
     school = (
-        args.school
+        folder_school
+        or args.school
         or (contact.get("student_school") if contact else None)
         or brief.get("school")
-        or folder_school
     )
 
     if not firstname:
