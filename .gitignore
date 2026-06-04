@@ -10,10 +10,9 @@
 __pycache__/
 *.pyc
 
-# Runtime usage logs (machine state, grow over time)
-scripts/hubspot-usage.log
-scripts/dall-e-usage.log
-scripts/slack-usage.log
+# Runtime usage logs (machine state, grow over time). Scripts live in subdirs
+# (b2b/ b2c/ shared/) after the restructure, so match usage logs at any depth.
+scripts/**/*-usage.log
 
 # Bundle outputs (too large for git; produced by weekly content engine)
 aplus-content/
@@ -28,6 +27,7 @@ state/blog-embeddings.json
 state/spotlight-runs.json
 
 # Case study Phase 1 — local-only files
-scripts/*.bak
-scripts/slack-case-study-usage.log
-scripts/hubspot-usage.log
+scripts/**/*.bak
+
+# Orphaned state dir from the pre-fix path bug (real state lives at repo-root state/)
+scripts/state/
