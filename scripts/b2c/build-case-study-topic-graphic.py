@@ -29,6 +29,7 @@ Usage:
 import argparse
 import re
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -147,6 +148,12 @@ def main():
     ax.text(50, 85, subtitle, ha="center", va="center",
             fontfamily=BODY_FONT, fontsize=14, color=GOLD)
 
+    # Cap milestones so the timeline never crowds past legibility.
+    if len(milestones) > 6:
+        print(f"NOTE: {len(milestones)} milestones; capping to 6 for legibility.",
+              file=sys.stderr)
+        milestones = milestones[:6]
+
     # Evenly space milestones across x=15..85
     n = len(milestones)
     if n == 1:
@@ -157,17 +164,34 @@ def main():
 
     ax.plot([xs[0], xs[-1]], [50, 50], color=WHITE, linewidth=2, alpha=0.4, zorder=1)
 
+    # Density-aware wrapping + font sizing: a single-line label spills into its
+    # neighbor's column when milestones are close, so wrap each label to a width
+    # that fits its column and shrink the font as the timeline gets denser.
+    phrase_width = {1: 26, 2: 24, 3: 20, 4: 16, 5: 13, 6: 11}.get(n, 10)
+    topic_width = {1: 22, 2: 20, 3: 18, 4: 15, 5: 13, 6: 12}.get(n, 11)
+    phrase_fs = 10 if n <= 4 else (9 if n == 5 else 8)
+    topic_fs = 13 if n <= 4 else 12
+    month_fs = 11 if n <= 4 else 10
+
+    def _wrap(s, w):
+        return "\n".join(textwrap.wrap(str(s).strip(), width=w)) or str(s).strip()
+
     for i, ((month, topic, phrase), x) in enumerate(zip(milestones, xs)):
         color = ORANGE if i % 2 == 0 else GOLD
         ax.scatter([x], [50], s=380, color=color, edgecolors=WHITE,
                    linewidths=2.5, zorder=3)
-        ax.text(x, 42, month, ha="center", va="center",
-                fontfamily=BODY_FONT, fontsize=11, fontweight="bold",
-                color=WHITE, alpha=0.85)
-        ax.text(x, 62, topic, ha="center", va="center",
-                fontfamily=HEADING_FONT, fontsize=13, fontweight="bold", color=WHITE)
-        ax.text(x, 70, f'"{phrase}"', ha="center", va="center",
-                fontfamily=BODY_FONT, fontsize=10, color=GOLD, style="italic")
+        # month below the dot (grows down)
+        ax.text(x, 44, _wrap(month, 12), ha="center", va="top",
+                fontfamily=BODY_FONT, fontsize=month_fs, fontweight="bold",
+                color=WHITE, alpha=0.85, multialignment="center")
+        # topic above the dot (grows up)
+        ax.text(x, 57, _wrap(topic, topic_width), ha="center", va="bottom",
+                fontfamily=HEADING_FONT, fontsize=topic_fs, fontweight="bold",
+                color=WHITE, multialignment="center")
+        # verbatim phrase above the topic (grows up)
+        ax.text(x, 64, f'"{_wrap(phrase, phrase_width)}"', ha="center", va="bottom",
+                fontfamily=BODY_FONT, fontsize=phrase_fs, color=GOLD,
+                style="italic", multialignment="center")
 
     ax.text(50, 28, subtitle if False else
             "Source: weekly lesson notes from the A+ Tutoring tutor",
