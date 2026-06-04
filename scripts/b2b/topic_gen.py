@@ -24,7 +24,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 import sys as _sys
-_REPO_ROOT = Path(__file__).resolve().parent.parent
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _sys.path.insert(0, str(_REPO_ROOT / "scripts" / "shared"))
 _sys.path.insert(0, str(_REPO_ROOT / "scripts" / "b2b"))
 
@@ -41,7 +41,7 @@ load_dotenv(override=True)
 
 logger = logging.getLogger(__name__)
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 TARGET_SCHOOLS_PATH = REPO_ROOT / "skills" / "aplus-research" / "target-schools.md"
 
 SLACK_BASE = "https://slack.com/api"

@@ -38,7 +38,7 @@ from typing import Optional
 
 # Ensure shared helpers are importable after restructuring
 import sys as _sys
-_REPO_ROOT = Path(__file__).resolve().parent.parent
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _sys.path.insert(0, str(_REPO_ROOT / "scripts" / "shared"))
 _sys.path.insert(0, str(_REPO_ROOT / "scripts" / "b2b"))
 
@@ -56,7 +56,7 @@ load_dotenv(override=True)
 
 logger = logging.getLogger(__name__)
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 CONTENT_DIR = REPO_ROOT / "aplus-content"
 PLACEHOLDER_HERO = REPO_ROOT / "skills" / "aplus-b2b-brand-kit" / "ilead-outcomes-graphic.png"
 

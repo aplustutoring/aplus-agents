@@ -30,7 +30,7 @@ from typing import Optional
 from pathlib import Path
 
 import sys as _sys
-_REPO_ROOT = Path(__file__).resolve().parent.parent
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _sys.path.insert(0, str(_REPO_ROOT / "scripts" / "shared"))
 _sys.path.insert(0, str(_REPO_ROOT / "scripts" / "b2b"))
 
