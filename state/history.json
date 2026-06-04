@@ -260,6 +260,72 @@
         "seo: [fail] og_description='41 bills across 19 states are codifying ...' (len=184): og_description must be 120-160 chars",
         "seo: [fail] meta_description='41 bills across 19 states are codifying ...' (len=121): meta_description must be 130-150 chars (target 140)"
       ]
+    },
+    {
+      "ts": "2026-06-04T21:36:30.542599+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 1,
+      "post_date": "2026-06-08",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-lcap",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214363657790",
+      "action": "updated",
+      "fact_pass": true,
+      "brand_pass": false,
+      "seo_issues": 3,
+      "flags": [
+        "BRAND-CHECK \u2014 ### Issues found\n\n**1. Critical \u2014 Em dashes (multiple instances).**\nEm dashes are an automatic reject. Five instances found:\n- \"Proposition 98 guarantee \u2014 the constitutional floor that routes\u2026\"\n- \"Multi-Tiered System of Supports (MTSS) \u2014 Tier 2 and Tier 3 capacity\u2026\"\n- \"evidence-based, sustained interventions \u2014 particularly high-dosage tutoring\u2026\"\n- \"tightly aligned to a diagnostic cycle \u2014 typically NWEA MAP Growth\u2026\"\n- \"2024-25 outcome data from our iLEAD partnership \u2014 a homeschool charter LEA\u2026\"\n\n**Fix:** Replace every em dash with a period, colon, comma, or parenthetical. Example: \"Proposition 98 guarantee, the constitutional floor that routes roughly 40% of the state general fund to TK-12\u2026\"\n\n**2. Critical \u2014 Banned AI vocabulary: \"leverage.\"**\nQuote: *\"the single highest-**leverage** discipline you can apply.\"*\n\"Leverage\" is on the AI-fingerprint banned-word list in any form. Even as a co",
+        "SEO \u2014 [fail] html_title='California $5B Block Grant \u2014 Charter LCA...' (len=47): html_title must be 50-60 chars",
+        "SEO \u2014 [fail] featured_image_alt_text='Charter intervention coordinator reviewi...' (len=138): featured_image_alt_text must be 100-125 chars",
+        "SEO \u2014 [fail] og_description=\"Newsom's May Revise puts $5B in flexible...\" (len=168): og_description must be 120-160 chars"
+      ]
+    },
+    {
+      "ts": "2026-06-04T21:41:33.178116+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 2,
+      "post_date": "2026-06-10",
+      "headline": "The May 31 ELPAC reclassification deadline just passed \u2014 and most charters left RFEPs on the table",
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-after-may-31",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214359139851",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 2,
+      "flags": [
+        "FACT-CHECK \u2014 ### Issues found\n\n**1. Named official \u2014 CRITICAL**\n- **CLAIM IN CONTENT:** \"Linda Darling-Hammond, president of the Learning Policy Institute and **chair** of the California State Board of Education\"\n- **ACTUAL FACT:** Darling-Hammond is **President** (not Chair) of the California State Board of Education. In her February 2026 testimony to the Assembly Budget Committee, she identified herself as \"President of the State Board of Education\" and \"Founding President and Chief Knowledge Officer of the Learning Policy Institute\". Stanford GSE also confirms she is currently President of the California State Board of Education. Her LPI title is more precisely \"Founding President and Chief Knowledge Officer,\" though \"president\" is loosely defensible.\n- **SOURCE:** https://abgt.assembly.ca.gov/system/files/2026-02/linda-hammond-testimony.pdf ; https://ed.stanford.edu/faculty/ldh\n- **SEVERITY:** Cr",
+        "SEO \u2014 [fail] featured_image_alt_text='Charter director reviewing a CALPADS ext...' (len=128): featured_image_alt_text must be 100-125 chars",
+        "SEO \u2014 [fail] twitter_description='May 31, 2026 closed the window for using...' (len=201): twitter_description must be 120-200 chars"
+      ]
+    },
+    {
+      "ts": "2026-06-04T21:44:49.607137+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 3,
+      "post_date": "2026-06-12",
+      "headline": "The ESSER-to-State \"Market Reset\" \u2014 and why NSSA-style quality screens favor embedded providers like A+",
+      "bundle_dir": "aplus-content/2026-06-12-nssa-tutoring-quality-screens",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214362595991",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": false,
+      "seo_issues": 3,
+      "flags": [
+        "FACT-CHECK \u2014 I'll fact-check the verifiable claims in this blog post systematically. Starting with the A+ internal data (which I can verify against the skill's source-of-truth table), then external claims.\n\n**A+ internal data check (against skill's verified table):**\n- Math Tier 3: 75%, 9 of 12 \u2713 matches\n- ELA Tier 3: 87.5%, 7 of 8 \u2713 matches  \n- Combined: 80%, 16 of 20 \u2713 matches\n- Dosage: 30 min, 3x/week, same tutor \u2713 matches\n- Case study URLs \u2713 match\n\nNow external claims that need verification:Strong verifications so far. Let me check the remaining external claims: Loeb's 0.37 SD effect size, NSSA at Stanford, Brookings $33M review, and TN ALL Corps.Fact-check complete. I have enough verified information to issue the verdict.\n\n---\n\n# \u2705/\u274c FACT CHECK REPORT\n\n**Content:** \"The K-12 Tutoring Market Just Split In Two...\"\n**Claims verified:** 12\n**Sources checked:** NCES School Pulse Panel, EdWeek Market",
+        "BRAND-CHECK \u2014 \u274c BRAND CHECK FAILED \u2014 MULTIPLE ISSUES\n\n**Content:** \"The K-12 Tutoring Market Just Split In Two...\"\n**Channel:** Blog post (B2B / company)\n**Voice:** Company / A+ institutional\n**Word count:** ~1,300\n\n---\n\n**Issues found:**\n\n**1. Critical \u2014 Em dashes (multiple, auto-reject):**\nEm dashes are banned in all A+ content. At least seven instances:\n- \"the funding compliance pull \u2014 not just the vendor's\"\n- \"exceeding $33 million \u2014 went to app-based products\"\n- \"NSSA-style badging \u2014 independently verified, applied uniformly across providers \u2014 should be\"\n- \"What is working, in short, is the design itself \u2014 not the technology layer, not the curriculum brand, not the marketing.\"\n- \"Our small-group model \u2014 three to four students, same tutor, three sessions per week, 30 minutes minimum \u2014 was built\"\n- \"Our model \u2014 four-or-fewer student groups, three sessions per week, same tutor, 30 minutes minimum, d",
+        "SEO \u2014 [fail] html_title='K-12 Tutoring Market Split | NSSA Qualit...' (len=49): html_title must be 50-60 chars",
+        "SEO \u2014 [fail] featured_image_alt_text='A charter school administrator reviews s...' (len=134): featured_image_alt_text must be 100-125 chars",
+        "SEO \u2014 [fail] twitter_title='The Post-ESSER K-12 Tutoring Market Just...' (len=53): twitter_title must be 60-70 chars"
+      ]
     }
   ]
 }
