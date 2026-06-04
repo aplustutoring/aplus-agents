@@ -46,6 +46,9 @@ TARGET_SCHOOLS_PATH = REPO_ROOT / "skills" / "aplus-research" / "target-schools.
 
 SLACK_BASE = "https://slack.com/api"
 DEFAULT_CHANNEL = os.environ.get("TOPIC_REVIEW_CHANNEL", "#weekly-content-ready")
+# Danielle (Director of School Partnerships) — @-mentioned on each slate so she
+# gets a ping to review. Member IDs are not secret (same convention as PAOLA_USER_ID).
+DANIELLE_USER_ID = "U05NMABF3B2"
 
 # Pacific Time hardcoded — A+ runs on PT (Roman + Danielle both in CA).
 # datetime.timezone has no DST awareness; use offsets matching the operating period.
@@ -185,7 +188,7 @@ def build_slack_message(
     approval_deadline: datetime,
 ) -> tuple[str, list[str]]:
     header = (
-        f":newspaper: *A+ Weekly Topic Slate — {current_week}*\n"
+        f":newspaper: <@{DANIELLE_USER_ID}> *A+ Weekly Topic Slate — {current_week}*\n"
         f"Three topics → one blog each for Mon (slot 1), Wed (slot 2), Fri (slot 3).\n\n"
         f"*To approve all 3:* reply in thread `APPROVE` (or react :white_check_mark:)\n"
         f"*To edit a slot:* reply in thread `EDIT 1: replacement headline` (also works for 2 or 3)\n"
