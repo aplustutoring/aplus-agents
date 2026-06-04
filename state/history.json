@@ -189,6 +189,77 @@
         "seo: [fail] og_description='41 bills across 19 states are codifying ...' (len=196): og_description must be 120-160 chars",
         "seo: [fail] twitter_title='The K-12 Tutoring Market Just Split In T...' (len=54): twitter_title must be 60-70 chars"
       ]
+    },
+    {
+      "ts": "2026-06-04T21:00:09.176954+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 1,
+      "post_date": "2026-06-08",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-charter-lcap",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214363657790",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 3,
+      "flags": [
+        "fact-check FAIL \u2014 verify claims before posting",
+        "seo: [fail] featured_image_alt_text='Charter intervention coordinator reviewi...' (len=128): featured_image_alt_text must be 100-125 chars",
+        "seo: [fail] twitter_title=\"California's $5B Block Grant and What Ch...\" (len=72): twitter_title must be 60-70 chars",
+        "seo: [fail] slug='/california-5b-block-grant-charter-lcap' (len=6): slug must be 3-5 hyphenated words (got 6)"
+      ]
+    },
+    {
+      "ts": "2026-06-04T21:03:03.005397+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 2,
+      "post_date": "2026-06-10",
+      "headline": "The May 31 ELPAC reclassification deadline just passed \u2014 and most charters left RFEPs on the table",
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-charter-checklist",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214359139851",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": false,
+      "seo_issues": 6,
+      "flags": [
+        "fact-check FAIL \u2014 verify claims before posting",
+        "brand-check FAIL \u2014 fix voice / banned-word issues before posting",
+        "seo: [fail] html_title='ELPAC Reclassification Deadline | A+ Tut...' (len=45): html_title must be 50-60 chars",
+        "seo: [fail] featured_image_alt_text='Charter school administrator reviewing a...' (len=135): featured_image_alt_text must be 100-125 chars",
+        "seo: [fail] og_title='The May 31 ELPAC Reclassification Deadli...' (len=92): og_title must be 60-90 chars",
+        "seo: [fail] og_description='May 31 closed the window to reclassify E...' (len=175): og_description must be 120-160 chars",
+        "seo: [fail] twitter_title=\"ELPAC Deadline Just Passed. Here's the C...\" (len=72): twitter_title must be 60-70 chars",
+        "seo: [fail] meta_description='May 31 ELPAC reclassification deadline p...' (len=126): meta_description must be 130-150 chars (target 140)"
+      ]
+    },
+    {
+      "ts": "2026-06-04T21:06:21.498161+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 3,
+      "post_date": "2026-06-12",
+      "headline": "The ESSER-to-State \"Market Reset\" \u2014 and why NSSA-style quality screens favor embedded providers like A+",
+      "bundle_dir": "aplus-content/2026-06-12-state-tutoring-quality-screens",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214362595991",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": false,
+      "seo_issues": 3,
+      "flags": [
+        "fact-check FAIL \u2014 verify claims before posting",
+        "brand-check FAIL \u2014 fix voice / banned-word issues before posting",
+        "seo: [fail] featured_image_alt_text='Charter school administrator reviewing t...' (len=129): featured_image_alt_text must be 100-125 chars",
+        "seo: [fail] og_description='41 bills across 19 states are codifying ...' (len=184): og_description must be 120-160 chars",
+        "seo: [fail] meta_description='41 bills across 19 states are codifying ...' (len=121): meta_description must be 130-150 chars (target 140)"
+      ]
     }
   ]
 }
