@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SLACK_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 MAX_IMAGE_BYTES = 5_000_000
 LOG_PATH = Path(__file__).parent / "slack-usage.log"
 
@@ -59,7 +59,7 @@ def log(action, status, detail=""):
 def slack_call(method, endpoint, **kwargs):
     url = f"https://slack.com/api/{endpoint}"
     headers = kwargs.pop("headers", {})
-    headers["Authorization"] = f"Bearer {SLACK_TOKEN}"
+    headers["Authorization"] = f"Bearer {SLACK_BOT_TOKEN}"
     r = requests.request(method, url, headers=headers, timeout=60, **kwargs)
     try:
         body = r.json()

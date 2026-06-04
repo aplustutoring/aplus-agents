@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SLACK_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 HUBSPOT_TOKEN = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
 CHANNEL = "#weekly-content-ready"
 PORTAL_ID = "6312752"
@@ -211,7 +211,7 @@ def extract_date_human(bundle_path):
 def slack_call(method, endpoint, **kwargs):
     url = f"https://slack.com/api/{endpoint}"
     headers = kwargs.pop("headers", {})
-    headers["Authorization"] = f"Bearer {SLACK_TOKEN}"
+    headers["Authorization"] = f"Bearer {SLACK_BOT_TOKEN}"
     r = requests.request(method, url, headers=headers, timeout=60, **kwargs)
     try:
         body = r.json()
@@ -345,7 +345,7 @@ def main():
         print("ERROR: nothing deliverable in this bundle.", file=sys.stderr)
         return 1
 
-    if not SLACK_TOKEN and not args.dry_run:
+    if not SLACK_BOT_TOKEN and not args.dry_run:
         print("ERROR: SLACK_BOT_TOKEN not set in .env. Run /mcp or add the token first.", file=sys.stderr)
         return 1
 

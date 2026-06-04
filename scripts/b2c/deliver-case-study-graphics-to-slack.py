@@ -171,7 +171,7 @@ def main():
                 print(f"  [OK] {img.name}")
         return 0
 
-    if not sd.SLACK_TOKEN:
+    if not sd.SLACK_BOT_TOKEN:
         print("ERROR: SLACK_BOT_TOKEN not set in .env", file=sys.stderr)
         return 1
 

@@ -35,7 +35,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SLACK_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 CHANNEL = "#student-spotlight-ready"
 PORTAL_ID = "6312752"
 LOG_PATH = Path(__file__).parent / "slack-case-study-usage.log"
@@ -54,7 +54,7 @@ def log(action, status, detail=""):
 
 
 def auth_headers():
-    return {"Authorization": f"Bearer {SLACK_TOKEN}"}
+    return {"Authorization": f"Bearer {SLACK_BOT_TOKEN}"}
 
 
 def auth_test():
@@ -237,7 +237,7 @@ def main():
         print(f"ERROR: bundle dir not found: {bundle}", file=sys.stderr)
         return 1
 
-    if not SLACK_TOKEN and not args.dry_run:
+    if not SLACK_BOT_TOKEN and not args.dry_run:
         print("ERROR: SLACK_BOT_TOKEN not set in .env", file=sys.stderr)
         return 1
 
