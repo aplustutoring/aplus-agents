@@ -210,18 +210,28 @@ def _check_skill_verdict(skill_result: SkillResult, skill_name: str) -> bool:
     aplus-fact-check and aplus-brand-check emit reports — look for explicit FAIL signals.
     """
     text = skill_result.text.upper()
-    # Treat presence of strong-FAIL signal as failure
-    if "VERDICT: FAIL" in text or "OVERALL: FAIL" in text:
-        logger.error("%s returned FAIL verdict", skill_name)
-        return False
-    if "VERDICT: PASS" in text or "OVERALL: PASS" in text:
-        return True
-    # Heuristic fallback: more "FAIL" than "PASS" mentions
+    # Explicit overall-verdict phrases, in priority order. The skills emit their
+    # native format ("❌ FACT CHECK FAILED" / "✅ FACT CHECK PASSED",
+    # "BRAND CHECK FAILED/PASSED"); the run_* prompts also request "VERDICT: PASS/FAIL".
+    # Match these BEFORE any heuristic — a report naturally says "fail" many times
+    # while describing checks, which used to cause false negatives.
+    fail_markers = ("VERDICT: FAIL", "OVERALL: FAIL", "FACT CHECK FAILED", "BRAND CHECK FAILED")
+    pass_markers = ("VERDICT: PASS", "OVERALL: PASS", "FACT CHECK PASSED", "BRAND CHECK PASSED")
+    for m in fail_markers:
+        if m in text:
+            logger.error("%s returned FAIL verdict (marker=%r)", skill_name, m)
+            return False
+    for m in pass_markers:
+        if m in text:
+            logger.info("%s returned PASS verdict (marker=%r)", skill_name, m)
+            return True
+    # Heuristic fallback only when no explicit verdict phrase is present
     fails = text.count("FAIL")
     passes = text.count("PASS")
     if fails > passes:
-        logger.warning("%s: %d FAIL vs %d PASS mentions — treating as FAIL", skill_name, fails, passes)
+        logger.warning("%s: no explicit verdict; %d FAIL vs %d PASS mentions — treating as FAIL", skill_name, fails, passes)
         return False
+    logger.warning("%s: no explicit verdict; defaulting to PASS (%d FAIL/%d PASS)", skill_name, fails, passes)
     return True
 
 
