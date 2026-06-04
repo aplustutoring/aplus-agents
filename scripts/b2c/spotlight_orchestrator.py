@@ -1381,6 +1381,48 @@ def firstname_variants_in_sources(real_firstname: str, source_texts: dict[str, s
     return sorted(counts, key=lambda t: (-counts[t], -len(t), t.lower()))
 
 
+def _doubled_letter_variant_pattern(token: str) -> str:
+    """Regex source matching `token` with any letter allowed to repeat, so
+    doubled-consonant spellings (Johny <-> Johnny) are covered. Mirrors the
+    gate's matcher in check-anonymization.py so this sweep replaces everything
+    the gate would flag."""
+    return "".join(
+        (re.escape(ch) + "+") if ch.isalpha() else re.escape(ch) for ch in token
+    )
+
+
+def anonymize_firstname_variants(
+    text: str, real_firstname: str, source_texts: dict[str, str], pseudonym: str
+) -> tuple[str, int]:
+    """Deterministically replace every spelling variant of the student's real
+    first name (and doubled-consonant forms) with the pseudonym in Doc 1, as a
+    safety net for occurrences the drafting LLM failed to anonymize. Word-
+    boundary, case-insensitive. Returns (new_text, replacement_count).
+
+    Scope is the STUDENT first name only — the highest-frequency leak. The
+    anonymization gate remains the hard backstop for every other token; this
+    only makes the replacement catch more, it does not relax the check.
+
+    Caveat: a first name that is also a common word (Faith, Grace, Hope) would
+    be over-replaced. Such drafts are reviewed at Gate 2 before publish.
+    """
+    variants = firstname_variants_in_sources(real_firstname, source_texts)
+    if not variants:
+        return text, 0
+    replacement = (pseudonym or "").capitalize()
+    if not replacement:
+        return text, 0
+    total = 0
+    # Longest variant first so a shorter spelling can't partially consume it.
+    for v in sorted(set(variants), key=len, reverse=True):
+        pattern = re.compile(
+            rf"\b{_doubled_letter_variant_pattern(v)}\b", re.IGNORECASE
+        )
+        text, n = pattern.subn(replacement, text)
+        total += n
+    return text, total
+
+
 def _build_draft_user_prompt(
     *,
     real_firstname: str,
@@ -1593,6 +1635,18 @@ def stage_draft(args: argparse.Namespace, run: dict) -> dict:
                     print(f"      - {v}")
             else:
                 print(f"    Doc 1 already brand-clean.")
+            # Deterministic name sweep: replace any real-first-name variant the
+            # drafting LLM left behind (incl. doubled-consonant spellings) with
+            # the pseudonym, so the anonymization gate is not the only line of
+            # defense. Runs AFTER brand-check so a rewrite can't reintroduce it.
+            doc1_clean, n_swept = anonymize_firstname_variants(
+                doc1_clean, run["real_firstname"], source_texts, pseudonym
+            )
+            if n_swept:
+                print(
+                    f"    Name sweep: replaced {n_swept} leaked real-first-name "
+                    f"token(s) with pseudonym {pseudonym!r}."
+                )
             doc1_path.write_text(doc1_clean + "\n")
             doc2_path.write_text(doc2 + "\n")
             run.update(
