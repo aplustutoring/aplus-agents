@@ -148,17 +148,26 @@ Then a button CTA (see CTA rules below). ONE call to action, not three.
 
 #### Required components in every blog post
 
-- At least 3 inline data points with sources (linked when possible)
+- At least 5 inline data points, **each with a hyperlinked source** (v1.6: raised from 3 — thin sourcing is the #1 reader-trust failure. If you cannot source a data point, cut it or reframe it as A+ opinion per the Evidence-vs-Opinion rule below)
 - At least 1 specific A+ outcome citation (iLEAD program data with proper attribution: 75% Math Tier 3, 87.5% ELA Tier 3, 80% Combined; never 81%)
 - At least 1 quote or named expert reference (Linda Darling-Hammond, Susanna Loeb, NWEA leadership, etc.) **wrapped in proper quotation marks** ("..." for direct quotes; missing quotation marks on direct quotes fails brand-check in v1.2)
-- 2-3 inline links to authoritative sources (CDE, NWEA, EdSource, Brookings, etc.)
-- 1-2 internal links to other A+ pages (case studies, services, related blog posts)
+- At least 4 inline links to authoritative sources (v1.6: raised from 2-3 — CDE, NWEA, EdSource, Brookings, primary federal/state docs)
+- **At least 1 internal link to a relevant A+ case study (v1.6 — REQUIRED, not "when possible"):** whenever the topic touches a school or outcome A+ has a case study for, you MUST link it inline from the approved link library below. These case studies are A+'s primary proof. A post about iLEAD, EL/ELPAC reclassification, charter Tier 3, or intervention outcomes that does not link the iLEAD case-study/results pages has failed this check. Add 1-2 other internal links (services, partner, related pages) where natural.
 - **Documentation links (v1.5):** when discussing compliance topics (supplement-not-supplant, Title III allowable uses, ESSA evidence tiers, CSI/ATSI procedures, etc.) link directly to the authoritative federal or state documentation. The reader should be able to verify the compliance claim in one click.
 - **Clickable links to further research (v1.5):** every external study, bill, or report cited must be hyperlinked. Bare citations without links fail this check.
 - 1-2 reader reflection questions at strategic points (see Section 7 + reflection callout rules)
 - ONE clear CTA at the end (button format, audience-specific wording, see CTA rules below), not throughout
 - Highlighted important information for busy readers: bold key terms, callout boxes for proof points and reflection questions, pull-quote graphics for the 1-2 strongest sentences
 - Subheadings for skimmability (H2 for major sections, H3 for sub-points), all in Title Case minimum
+
+#### Evidence vs. opinion (v1.6 — keeps the post credible AND fact-check-clean)
+
+Every substantive claim must be ONE of two clearly distinguishable types:
+
+1. **Evidence-backed** — a verifiable fact (legislation, statistic, study finding, date, official action, A+'s published outcome data). State it plainly and **cite a hyperlinked source inline**. If you cannot cite it, you may not state it as fact.
+2. **A+'s perspective** — an interpretation, prediction, recommendation, or judgment NOT directly proven by a cited source. These are welcome and valuable, but must be **explicitly framed as A+'s opinion**: "In our experience working with charter intervention programs…", "We believe…", "A+'s view is…", "From where we sit…".
+
+NEVER present an unverified interpretation, forecast, or characterization as established fact. This is the single most important rule for passing fact-check — the fact-checker fails opinions dressed up as facts. When in doubt, attribute it to A+ as opinion rather than asserting it. This also makes the writing more honest and more persuasive: readers trust a brand that distinguishes what it knows from what it believes.
 
 #### Image alt text rules (v1.5)
 
@@ -361,7 +370,7 @@ Every A+ blog post must include the following links where contextually relevant.
 
 ### A+ Tutoring approved link library
 
-**Case studies** (cite both when discussing iLEAD outcomes):
+**Case studies** (v1.6 — a REQUIRED inline link whenever the topic touches iLEAD, EL/ELPAC reclassification, charter Tier 3, intervention outcomes, or funding tied to these; cite both when discussing iLEAD outcomes):
 
 - https://wetutorathome.com/case-study-ilead-math-tier3 (75%, 12 students, Math Tier 3)
 - https://wetutorathome.com/results/ilead-tier-3-english (87.5%, 8 students, ELA Tier 3)
