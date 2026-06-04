@@ -52,22 +52,15 @@ except ImportError:  # pragma: no cover
     docx = None
 
 try:
-    import fitz  # PyMuPDF
-except ImportError:  # pragma: no cover
-    fitz = None
-
-try:
     import anthropic
 except ImportError:  # pragma: no cover
     anthropic = None
 
-# OCR fallback configuration. Image-only PDFs (scanned lesson reports) yield
-# no text from pypdf, so we rasterize each page with PyMuPDF and have Claude
-# vision transcribe them. No poppler, no tesseract — pure Python + API.
-OCR_MIN_TEXT_LEN = 120
-OCR_RENDER_DPI = 200
-OCR_VISION_MODEL = "claude-opus-4-7"
-OCR_MAX_PAGES = 30
+# A PDF must yield at least this much embedded text to count as text-based.
+# Below it the PDF is treated as scanned/image-only. OCR is intentionally
+# DISABLED (cost control): such a file must be supplied as a text export
+# (.txt/.docx) or a text-based PDF instead of being vision-transcribed.
+PDF_MIN_TEXT_LEN = 120
 
 STAGE_ORDER = [
     "init",
@@ -194,8 +187,14 @@ def is_orchestrator_output(name: str) -> bool:
     return name in _OUTPUT_FILENAMES or bool(_OUTPUT_NAME_RE.match(name))
 
 
+# When the same document is dropped in multiple formats (e.g. a scanned
+# Report.pdf AND a Report.txt export), prefer the most text-native one so we
+# never read a scanned PDF that's also present as text. Lower rank wins.
+_EXT_PREFERENCE = {".txt": 0, ".md": 1, ".docx": 2, ".pdf": 3}
+
+
 def find_source_files(source_dir: Path) -> list[Path]:
-    files = []
+    candidates = []
     for item in sorted(source_dir.iterdir()):
         if not item.is_file() or item.name.startswith("."):
             continue
@@ -205,8 +204,34 @@ def find_source_files(source_dir: Path) -> list[Path]:
                 file=sys.stderr,
             )
             continue
-        files.append(item)
-    return files
+        candidates.append(item)
+
+    # De-dupe by stem (case-insensitive): if one document is present in several
+    # formats, keep the most text-native (.txt > .md > .docx > .pdf) and drop
+    # the rest. A .txt twin therefore replaces a scanned .pdf — no OCR, no
+    # duplicated content fed downstream.
+    def rank(p: Path) -> int:
+        return _EXT_PREFERENCE.get(p.suffix.lower(), 99)
+
+    best: dict[str, Path] = {}
+    for item in candidates:
+        key = item.stem.lower()
+        cur = best.get(key)
+        if cur is None or rank(item) < rank(cur):
+            if cur is not None:
+                print(
+                    f"  Multiple formats for {item.stem!r}: preferring "
+                    f"{item.name} over {cur.name}.",
+                    file=sys.stderr,
+                )
+            best[key] = item
+        elif cur is not None:
+            print(
+                f"  Multiple formats for {item.stem!r}: keeping {cur.name}, "
+                f"skipping {item.name}.",
+                file=sys.stderr,
+            )
+    return sorted(best.values(), key=lambda p: p.name)
 
 
 def pending_dir_for_run(run_id: str) -> Path:
@@ -253,13 +278,13 @@ def extract_text_from_docx(path: Path) -> str:
 
 
 def extract_text_from_pdf(path: Path) -> str:
-    """Extract text from a PDF. Fall back to vision-OCR if the PDF is image-only.
+    """Extract embedded text from a text-based PDF via pypdf.
 
-    Fast path: pypdf's text extractor for text-bearing PDFs.
-    Slow path: rasterize each page with PyMuPDF, transcribe with Claude vision.
-    The decision is empirical — if the fast path returns less than
-    OCR_MIN_TEXT_LEN characters or fewer than 3 newlines, the PDF is treated
-    as image-only and routed through the OCR path.
+    OCR is intentionally DISABLED. If the PDF is scanned / image-only (pypdf
+    yields almost no text), raise a clear error so the operator supplies a text
+    export instead of incurring vision-OCR cost. If a same-named text file was
+    dropped alongside it, find_source_files already preferred that text twin and
+    this PDF was never read.
     """
     if PdfReader is None:
         raise OrchestratorError("pypdf is required to read PDF files. Install it in requirements.txt.")
@@ -272,119 +297,14 @@ def extract_text_from_pdf(path: Path) -> str:
             text = ""
         pages.append(text)
     extracted = "\n\n".join(pages).strip()
-    if len(extracted) >= OCR_MIN_TEXT_LEN and extracted.count("\n") >= 3:
+    if len(extracted) >= PDF_MIN_TEXT_LEN and extracted.count("\n") >= 3:
         return extracted
-    print(
-        f"  pypdf yielded only {len(extracted)} chars from {path.name}; "
-        f"routing through Claude-vision OCR.",
-        file=sys.stderr,
+    raise OrchestratorError(
+        f"PDF '{path.name}' has no embedded text — it looks scanned/image-only "
+        f"({len(extracted)} chars extracted). OCR is disabled to control cost. "
+        "Provide a text export (.txt or .docx) or a text-based PDF for this "
+        "document (a .txt with the same name will be used automatically)."
     )
-    return ocr_pdf(path)
-
-
-def ocr_pdf(path: Path) -> str:
-    """Rasterize each PDF page with PyMuPDF and transcribe with Claude vision.
-
-    No poppler, no tesseract. PyMuPDF renders pages to PNG bytes in-process;
-    the Anthropic SDK accepts base64-encoded image blocks directly. Each page
-    is sent in a single user turn so the model produces clean per-page text;
-    pages are joined with two newlines so the orchestrator's downstream stages
-    see one continuous transcript.
-    """
-    if fitz is None:
-        raise OrchestratorError(
-            "PyMuPDF (`pymupdf`) is required for PDF OCR fallback. "
-            "Install it from requirements.txt."
-        )
-    if anthropic is None:
-        raise OrchestratorError(
-            "anthropic SDK is required for Claude-vision OCR. "
-            "Install it from requirements.txt."
-        )
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise OrchestratorError(
-            "ANTHROPIC_API_KEY is not set. Required for Claude-vision OCR."
-        )
-
-    import base64
-
-    client = anthropic.Anthropic(api_key=api_key)
-    doc = fitz.open(path)
-    if doc.page_count == 0:
-        doc.close()
-        raise OrchestratorError(f"PDF has zero pages: {path.name}")
-    if doc.page_count > OCR_MAX_PAGES:
-        doc.close()
-        raise OrchestratorError(
-            f"PDF has {doc.page_count} pages, exceeds OCR_MAX_PAGES={OCR_MAX_PAGES}. "
-            f"Split the source or raise the cap."
-        )
-
-    zoom = OCR_RENDER_DPI / 72.0
-    matrix = fitz.Matrix(zoom, zoom)
-    pages_text: list[str] = []
-    for page_index in range(doc.page_count):
-        page = doc.load_page(page_index)
-        pix = page.get_pixmap(matrix=matrix, alpha=False)
-        png_bytes = pix.tobytes("png")
-        b64 = base64.standard_b64encode(png_bytes).decode("ascii")
-        print(
-            f"    page {page_index + 1}/{doc.page_count}: "
-            f"rasterized {len(png_bytes):,} bytes, transcribing...",
-            file=sys.stderr,
-        )
-        message = client.messages.create(
-            model=OCR_VISION_MODEL,
-            max_tokens=4096,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "image",
-                            "source": {
-                                "type": "base64",
-                                "media_type": "image/png",
-                                "data": b64,
-                            },
-                        },
-                        {
-                            "type": "text",
-                            "text": (
-                                "Transcribe this page of a K-12 tutoring source "
-                                "document (a parent-call transcript, lesson "
-                                "report, or intake brief) to plain text. "
-                                "Preserve paragraph breaks, headings, and "
-                                "bullet structure. Preserve any numeric data "
-                                "(RIT scores, percentiles, grade-level "
-                                "benchmarks, dates) exactly as written. Do "
-                                "not summarize. Do not add commentary. Output "
-                                "only the transcribed text."
-                            ),
-                        },
-                    ],
-                }
-            ],
-        )
-        page_text = "".join(
-            block.text for block in message.content if getattr(block, "type", "") == "text"
-        ).strip()
-        if not page_text:
-            print(
-                f"    page {page_index + 1}: vision returned empty text",
-                file=sys.stderr,
-            )
-        pages_text.append(page_text)
-    doc.close()
-    joined = "\n\n".join(pages_text).strip()
-    if not joined:
-        raise OrchestratorError(
-            f"Claude vision returned empty text for every page of {path.name}."
-        )
-    return joined
-
-
 SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
 
 
