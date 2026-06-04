@@ -100,6 +100,8 @@ class SkillsRunner:
         max_tokens: Optional[int] = None,
         effort: Optional[str] = None,
         thinking: Optional[bool] = None,
+        web_search: bool = False,
+        web_search_max_uses: int = 5,
     ) -> SkillResult:
         """Execute a skill end-to-end and return the parsed result."""
         skill_md = load_skill(skill_name)
@@ -123,6 +125,19 @@ class SkillsRunner:
         }
         if use_thinking:
             params["thinking"] = {"type": "adaptive", "display": "summarized"}
+
+        # Server-side web search tool (executed API-side; results stream back in the
+        # same response). Enabled for research lenses / fact-check so the model can
+        # actually fulfill the skill's "search the web for the last 7 days" mandate
+        # instead of self-pausing or improvising unverified facts.
+        if web_search:
+            params["tools"] = [
+                {
+                    "type": "web_search_20250305",
+                    "name": "web_search",
+                    "max_uses": web_search_max_uses,
+                }
+            ]
 
         try:
             with self.client.messages.stream(**params) as stream:

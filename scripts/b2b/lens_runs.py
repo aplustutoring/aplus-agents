@@ -154,7 +154,7 @@ def run_lens(lens: Lens, runner: SkillsRunner, context: str) -> LensRunResult:
     """Execute aplus-research with one lens. Returns the parsed Topic 1 or None."""
     prompt = _build_user_prompt(lens, context)
     logger.info("lens_start name=%s window=%dd", lens.name, lens.time_window_days)
-    skill_result = runner.run_skill("aplus-research", prompt)
+    skill_result = runner.run_skill("aplus-research", prompt, web_search=True)
     topic = parse_topic_1(skill_result.text, source_lens=lens.name)
     if topic is None:
         # Dump the start of the skill output so future failures are debuggable
