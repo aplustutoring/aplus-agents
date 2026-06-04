@@ -119,7 +119,13 @@ og_description: ...
 twitter_title: ...
 twitter_description: ...
 featured_image_alt_text: ...
+pull_quotes:
+  - "First verbatim sentence lifted from the body — one of the 1-2 strongest, most quotable lines (15-25 words)"
+  - "Second verbatim strong sentence from the body (15-25 words)"
 ```
+
+`pull_quotes` MUST be two VERBATIM sentences copied exactly from the blog body
+(they become pull-quote graphics). Do not paraphrase; quote real sentences.
 
 Length rules for the meta block (will be machine-validated and the run will FAIL if violated):
   html_title 50-60 chars
@@ -217,7 +223,7 @@ def format_meta_for_hubspot_script(meta: dict[str, object], topic: dict) -> str:
     if "h1_title" not in meta and "html_title" in meta:
         lines.append(f"h1_title: {meta['html_title']}")
     lines.append("```")
-    for list_key in ("secondary_keywords", "keywords", "tag_ids"):
+    for list_key in ("secondary_keywords", "keywords", "tag_ids", "pull_quotes"):
         if list_key in meta and isinstance(meta[list_key], list):
             lines.append("")
             lines.append(f"{list_key}:")
