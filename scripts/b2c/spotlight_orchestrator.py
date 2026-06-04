@@ -1450,8 +1450,17 @@ NAME_EXTRACTION_SYSTEM = (
     "teacher; 'sibling'; 'other' = anyone else named.\n"
     "- gender from pronouns/context; 'unknown' if unclear.\n"
     "- is_quoted = true only if the person is directly quoted.\n"
-    "- Include EVERY named real person. Never invent names."
+    "- Do NOT include A+ Tutoring internal staff — the intake coordinator who "
+    "wrote the brief (e.g. Paola) or any A+ marketing/admin team member. Only "
+    "people in the student's actual story: the student, their family, their A+ "
+    "tutor, and school teachers (TOR).\n"
+    "- Include every other named real person. Never invent names."
 )
+
+# A+ Tutoring internal staff who appear in intake briefs but are NOT case-study
+# subjects. Dropped from the registry (unless the same first name is genuinely a
+# family member) so they don't consume a pseudonym slot or land in the table.
+A_PLUS_STAFF_FIRST_NAMES = {"paola", "danielle", "roman"}
 
 
 def _extract_people(source_texts: dict[str, str]) -> list[dict]:
@@ -1504,6 +1513,8 @@ def build_name_registry(run: dict, source_texts: dict[str, str]) -> dict:
             continue  # already covered by the student variants above
         if fl in assigned:
             continue  # same person seen twice
+        if fl in A_PLUS_STAFF_FIRST_NAMES and role not in ("parent", "guardian", "sibling"):
+            continue  # A+ internal staff (intake coordinator etc.), not a subject
         if role == "tutor":
             entries.append({"real": first, "role": "tutor", "action": "keep", "pseudonym": first})
             assigned[fl] = first
