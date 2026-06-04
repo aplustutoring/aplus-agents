@@ -4,40 +4,83 @@
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
-      "headline": "California May Revision FY26-27 \u2014 what changed for EL services and LCFF supplemental/concentration",
-      "category": "A (federal/state funding) \u2014 primary lens hit",
+      "lens_status": "ok",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "category": "A (state K-12 funding) \u2014 strongest candidate from the policy_funding_hawk lens",
       "sources": [],
-      "why_matters": "Every California partner \u2014 all 23 Tier A schools \u2014 builds their intervention budget around LCFF supplemental/concentration plus whatever EL-specific lines the state holds steady or cuts. The May Revise is the single most consequential state funding document of the spring. If the Governor protected EL services while cutting elsewhere, that's a story A+ can tell partners. If EL took a haircut, that's a different (and more urgent) story for the LTEL pitch. Either way, Danielle's partner calls next week will reference this document; A+ should be the firm that already framed it on LinkedIn.",
-      "angle": "\"What the May Revise actually changed for charter intervention budgets \u2014 three line items every program director should re-check this week.\" Lead with the EL line, then LCFF, then any intervention-adjacent grant. Practical, not partisan.",
-      "roman_take": "Conviction angle on why categorical EL funding still matters even when the easier political move is to fold it into LCFF \u2014 the LTEL data shows that broad funding without targeted accountability has produced 20+ years of unreclassified students.",
-      "danielle_take": "Implementation angle on the specific worksheet/budget revision step a charter business officer needs to take in the next 30 days to reflect the May Revise before LCAP adoption season \u2014 concrete, calendar-anchored, operator-to-operator.",
-      "redundancy_max_similarity": 0.4606790558279824
+      "why_matters": "This is the largest discretionary intervention-eligible block grant California has put forward in a generation, and it lands at exactly the moment charters are setting 2026-27 LCAPs. The revised funding estimate for Proposition 98, the 40% of the state general fund that must go to TK-12 and community colleges, would be a record $127.1 billion in 2026-27, with per student funding increasing to a record $21,013 per pupil. Two specific signals matter for A+'s partner base: The Governor's revised budget sets a record-high level of education spending. The Governor's proposal includes new significant funding through a $5 billion Student Support and Professional Development Discretionary Block Grant. And separately, the May Revise proposes new requirements for charter schools to address verified data, fraud, and Assistance Center oversight \u2014 a compliance signal worth flagging early to NCB partners.",
+      "angle": "Translate the $5B block grant into plain language for charter intervention coordinators \u2014 \"Here's what this means for your 2026-27 LCAP, your MTSS budget, and your intervention RFPs.\"",
+      "roman_take": "Conviction angle \u2014 discretionary block grants are only as good as the evidence schools use to spend them; absent ESSA Tier 1/2 evidence requirements at the state level, the $5B becomes another round of \"buy a thing, hope it works.\" Push the audience to spend like Title I auditors are watching.",
+      "danielle_take": "Implementation angle \u2014 walk a charter director through the three-meeting sequence (May Revise \u2192 June 15 Legislature deadline \u2192 July 1 final) and what to put in the LCAP draft *now* so the block grant funds intervention rather than line-item drift. ---",
+      "redundancy_max_similarity": 0.39109097659969927,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
+      "lens": "target_school_radar",
+      "lens_status": "ok",
+      "headline": "The May 31 ELPAC reclassification deadline just passed \u2014 and most charters left RFEPs on the table",
+      "category": "B (acute K-12 problem story) with direct C overlay (hits every Tier A partner with ELs)",
+      "sources": [
+        "https://www.cde.ca.gov/ds/sp/cl/calpadsupdflash322.asp",
+        "https://edsource.org/2026/california-english-learners-bill/753660",
+        "https://edpolicyinca.org/sites/default/files/2026-03/r_mercado-garcia_mar2026.pdf"
+      ],
+      "why_matters": "English learner students not reclassified by May 31, 2026 can no longer be reclassified based on 2024\u221225 Summative ELPAC/Alternate ELPAC scores, and must be reclassified based on 2025\u221226 scores. That window closed four days ago. Simultaneously, researchers from Stanford University worked with nine districts and found that 39% of students in those districts who scored 4 on the ELPAC were not reclassified the next year, and in 2021-22 and 2022-23, about 18,500 students statewide annually had the highest possible score on the English Language Proficiency Assessment for California but remained classified as English learners. This is A+'s LTEL reclassification proof point as a state-level emergency \u2014 and it hit every partner with an EL roster this week. Assessing less than 95 percent of current EL students negatively impacts LEAs' ELPI on the Dashboard.",
+      "angle": "\"May 31 just passed. Here's what every charter director needs to check in their CALPADS extract this week \u2014 and the LTEL reclassification gap A+ has closed for partners like Ocean Grove.\"",
+      "roman_take": "A blunt take on why \"compliance deadline\" framing buries the real story \u2014 schools aren't failing the deadline because of paperwork, they're failing it because the reclassification system itself was designed to keep kids in the EL category.",
+      "danielle_take": "The implementation playbook \u2014 what a charter's intervention coordinator should be doing in the next 30 days to ensure 2025\u201326 ELPAC results get acted on instead of sitting until next May. ---",
+      "redundancy_max_similarity": 0.480394981929078,
+      "redundancy_bypassed": false
+    },
+    {
+      "slot": 3,
       "lens": "competitive_intel",
-      "headline": "Nerdy Q1 2026 earnings confirm the platform-tutoring B2B retreat \u2014 districts are quietly walking away from on-demand contracts",
-      "category": "D (Industry/competitor moves) \u2014 **strongest competitive intel candidate this cycle**",
-      "sources": [],
-      "why_matters": "This is the third consecutive quarter where the largest publicly-traded competitor in the K-12 tutoring space has reported B2B/Institutional revenue contraction while leadership pivots messaging toward AI products. The pattern \u2014 Paper (2023 layoffs), Tutor.com (district book shrinking through 2024), now Nerdy \u2014 is the same story: on-demand, platform-scale tutoring doesn't produce the measurable intervention outcomes districts need to defend Title I and Title III spending. A+'s exact opposite model (scheduled, relationship-based, ESSA-aligned, California-LTEL specialized) is the story districts are arriving at the hard way. A+ has earned the right to comment because A+ has been doing this model the whole time, not pivoting to it after a failed exit.",
-      "angle": "\"The platform-tutoring thesis is failing in public. Here's what California charter leaders are choosing instead \u2014 and the three things they're insisting on in 2026-27 contracts.\"",
-      "roman_take": "Conviction post on why \"scale\" was always the wrong KPI for intervention \u2014 districts don't buy hours, they buy reclassification rates and EL outcomes, and no platform can sell those because no platform can be accountable for them.",
-      "danielle_take": "Implementation post on what she's actually hearing in May 2026 conversations with charter directors who are exiting platform contracts \u2014 the specific operational gaps (scheduling, progress monitoring, EL specificity) that surface when the platform tries to deliver Tier 2/3 intervention.",
-      "redundancy_max_similarity": 0.3976898532213472
+      "lens_status": "ok",
+      "headline": "The ESSER-to-State \"Market Reset\" \u2014 and why NSSA-style quality screens favor embedded providers like A+",
+      "category": "D (industry/competitor moves) + A (state funding)",
+      "sources": [
+        "https://marketbrief.edweek.org/education-market/from-esser-boom-to-market-reset-states-bolster-high-dosage-tutorings-next-phase/2026/05",
+        "https://www.future-ed.org/legislative-tracker-2026-state-tutoring-bills/",
+        "https://nssa.stanford.edu/nssa-2026-conference"
+      ],
+      "why_matters": "The number of public schools providing high-dosage tutoring grew by 5% between 2024 and 2025 according to NCES, and many districts are holding onto tutoring as a core academic intervention, particularly those that saw it as more than a short-term fix during the pandemic. The story is no longer \"will tutoring survive ESSER?\" \u2014 it's \"which providers survive the state-level quality screen?\" States doing state-level contracting haven't always gone with providers that have the strongest evidence base, and the National Student Support Accelerator's badging system for tutoring providers is being positioned as a quick way for states to prioritize providers whose practices match effectiveness \u2014 though most states currently rely on vendors self-reporting attributes. Meanwhile, FutureEd is tracking 41 bills across 19 states in the 2026 session aimed at sustaining tutoring, with most focused on programs with four or fewer students working with the same tutor for at least 30 minutes per session, three times a week, over several months. A+'s LTEL small-group model already meets that statutory definition \u2014 most national vendors don't.",
+      "angle": "\"The K-12 tutoring market just split in two \u2014 and the quality screen states are adopting was written for providers who already operate like us.\"",
+      "roman_take": "Self-reported vendor attributes are how you end up with $33M state contracts going to apps. Conviction angle: stop letting vendors grade their own homework \u2014 make NSSA badging the floor, not the ceiling.",
+      "danielle_take": "Walk charter directors through what a state-level preferred-provider list will actually look like for them in 2026-27, and what intake/scheduling documentation they need on file *now* to qualify when CARS or state-tutoring grants come down. ---",
+      "redundancy_max_similarity": 0.42210099137323037,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1780590345.093389",
-    "posted_at": "2026-06-04T09:21:25.351110-07:00",
-    "approval_deadline": "2026-06-08T07:00:00-07:00",
-    "refresh_mode": false
+    "message_ts": "1780598670.598269",
+    "posted_at": "2026-06-04T11:38:46.558709-07:00",
+    "approval_deadline": "2026-06-05T17:00:00-07:00",
+    "refresh_mode": false,
+    "thread_replies": [
+      {
+        "slot": 1,
+        "ts": "1780598670.701169"
+      },
+      {
+        "slot": 2,
+        "ts": "1780598670.823019"
+      },
+      {
+        "slot": 3,
+        "ts": "1780598670.941599"
+      }
+    ],
+    "processed_reply_ts": []
   },
   "approval": {
     "status": "pending",
     "approved_slot": null,
     "approved_by": null,
     "approved_at": null,
+    "denied_by": null,
+    "denied_at": null,
     "edit_note": null
   }
 }
