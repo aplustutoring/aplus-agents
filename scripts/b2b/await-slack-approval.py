@@ -178,7 +178,8 @@ def summarize_changes(changes: dict[str, Any]) -> str:
         )
     elif changes.get("approved"):
         lines.append(
-            f":white_check_mark: Slate approved by {changes['approved_by']}. Blogs publish Mon/Wed/Fri at 8am."
+            f":white_check_mark: Slate approved by {changes['approved_by']}. "
+            f"Blogs will be built into HubSpot drafts over the weekend, ready to post Mon/Wed/Fri."
         )
     return "\n".join(lines)
 

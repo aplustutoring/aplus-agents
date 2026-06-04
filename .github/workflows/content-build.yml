@@ -1,0 +1,72 @@
+name: Content build (Saturday — approved slate → HubSpot drafts)
+
+# Sat 08:00 PT — PDT = 15:00 UTC, PST = 16:00 UTC. Runs after Friday's 5 PM
+# approval deadline. Generates all 3 approved blogs into HubSpot DRAFTS (never
+# publishes live); a human posts them Mon/Wed/Fri. Bundles are ephemeral
+# (aplus-content/ is gitignored); only state (staged flags) is committed.
+on:
+  schedule:
+    - cron: "0 15 * * 6"  # 08:00 PDT Saturday
+    - cron: "0 16 * * 6"  # 08:00 PST Saturday
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Build a single slot (1/2/3); leave blank for all 3"
+        required: false
+        type: string
+        default: ""
+      dry_run:
+        description: "Dry run (generate + write bundles, skip HubSpot/Slack/state)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    concurrency:
+      group: aplus-state-write
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Build approved slate into drafts
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.slot }}" ]; then
+            ARGS="$ARGS --slot ${{ inputs.slot }}"
+          fi
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          python3 scripts/b2b/content-build.py $ARGS
+
+      - name: Commit state changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/topic-queue.json state/history.json
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "content-build: stage approved slate into drafts"
+            git push
+          fi
