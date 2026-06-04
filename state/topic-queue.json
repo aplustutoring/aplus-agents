@@ -72,13 +72,14 @@
         "ts": "1780598670.941599"
       }
     ],
-    "processed_reply_ts": []
+    "processed_reply_ts": [
+      "1780602123.225349"
+    ]
   },
   "approval": {
-    "status": "pending",
-    "approved_slot": null,
-    "approved_by": null,
-    "approved_at": null,
+    "status": "approved",
+    "approved_by": "U05NA7UMSSV",
+    "approved_at": "2026-06-04T19:43:27.240024+00:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null

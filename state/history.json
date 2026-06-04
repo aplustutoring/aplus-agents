@@ -111,6 +111,21 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1780598670.598269"
+    },
+    {
+      "ts": "2026-06-04T19:43:27.242630+00:00",
+      "kind": "await_slack_approval",
+      "week": "2026-06-04",
+      "changes": {
+        "approved": true,
+        "approved_by": "U05NA7UMSSV",
+        "denied": false,
+        "denied_by": null,
+        "edits": {},
+        "skips": [],
+        "picks": [],
+        "redos": []
+      }
     }
   ]
 }
