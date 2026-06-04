@@ -305,9 +305,14 @@ def run(*, slot_override: Optional[int] = None, dry_run: bool = False) -> dict:
         )
 
     if not queue.topics or slot > len(queue.topics):
-        raise RuntimeError(f"no topic at slot {slot} (have {len(queue.topics)} topics)")
+        return {"status": "skipped", "reason": f"slot {slot} missing from queue"}
 
     topic = queue.topics[slot - 1]
+    if topic.get("lens_status") != "ok":
+        return {
+            "status": "skipped",
+            "reason": f"slot {slot} has lens_status={topic.get('lens_status')}"
+        }
     if topic.get("skipped"):
         return {"status": "skipped", "reason": f"slot {slot} flagged as skipped"}
     if topic.get("published"):

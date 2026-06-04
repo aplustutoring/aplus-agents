@@ -1,196 +1,312 @@
 #!/usr/bin/env python3
-"""
-Post an approval question to a Slack channel, poll the thread for the first
-human reply, and return the decision via stdout + exit code.
+"""Poll the current Slack topic approval thread and update topic queue state."""
 
-Used as a gate inside the weekly content pipeline. Replaces a "stop and wait
-for chat input" stop gate with a "stop and wait for Slack thread reply" gate.
+from __future__ import annotations
 
-Recognized reply patterns (case-insensitive, first reply wins):
-  - "approve" / "yes" / "✅" / "go" / single letter "a" — use the default/
-    recommended option
-  - single letter "b" through "z" — pick that lettered option
-  - "kill" / "stop" / "no" — abort the run
-  - anything else — keep polling
-
-Exit codes:
-  0 — approved (decision printed on stdout)
-  1 — killed by reviewer (decision printed: "KILL")
-  2 — timeout
-  3 — error
-
-Usage:
-    python3 scripts/b2b/await-slack-approval.py \\
-        --channel C0B4K9K0162 \\
-        --title "Topic approval needed - May 18 weekly bundle" \\
-        --options-file aplus-content/2026-05-18-weekly/approval-options.txt \\
-        --default A \\
-        --timeout-min 30
-"""
-import os
-import sys
-import json
-import time
 import argparse
-from pathlib import Path
+import json
+import os
+import re
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
-TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+load_dotenv(override=True)
+
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
+sys.path.insert(0, str(REPO_ROOT / "scripts" / "b2b"))
+
+from state import append_history_run, read_topic_queue, topic_queue_transaction
+
+SLACK_BASE = "https://slack.com/api"
+APPROVE_EMOJIS = {"white_check_mark", "white_check_mark_v1", "white_check_mark_v2", "heavy_check_mark"}
+
+EDIT_PATTERN = re.compile(r"^EDIT\s*([1-3])\s*:\s*(.+)$", re.IGNORECASE)
+SKIP_PATTERN = re.compile(r"^SKIP\s*([1-3])\s*$", re.IGNORECASE)
+APPROVE_PATTERN = re.compile(r"^APPROVE\s*$", re.IGNORECASE)
+DENY_PATTERN = re.compile(r"^DENY\s*$", re.IGNORECASE)
 
 
-def auth_headers():
-    return {"Authorization": f"Bearer {TOKEN}"}
+def _slack_token() -> str:
+    tok = os.environ.get("SLACK_BOT_TOKEN")
+    if not tok:
+        raise RuntimeError("SLACK_BOT_TOKEN not set")
+    return tok
 
 
-def post_message(channel, text):
-    r = requests.post(
-        "https://slack.com/api/chat.postMessage",
-        headers={**auth_headers(), "Content-Type": "application/json; charset=utf-8"},
-        json={"channel": channel, "text": text, "mrkdwn": True},
-        timeout=30,
+def _slack(method: str, endpoint: str, **kwargs: Any) -> dict:
+    headers = kwargs.pop("headers", {})
+    headers["Authorization"] = f"Bearer {_slack_token()}"
+    r = requests.request(method, f"{SLACK_BASE}/{endpoint}", headers=headers, timeout=30, **kwargs)
+    r.raise_for_status()
+    body = r.json()
+    if not body.get("ok"):
+        raise RuntimeError(f"Slack API error on {endpoint}: {body.get('error', body)}")
+    return body
+
+
+def fetch_reactions(channel: str, ts: str) -> dict[str, list[str]]:
+    body = _slack("GET", "reactions.get", params={"channel": channel, "timestamp": ts})
+    message = body.get("message") or {}
+    reactions = message.get("reactions") or []
+    return {r["name"]: list(r.get("users", [])) for r in reactions}
+
+
+def fetch_thread_replies(channel: str, ts: str) -> list[dict]:
+    body = _slack(
+        "GET",
+        "conversations.replies",
+        params={"channel": channel, "ts": ts, "limit": 200},
     )
-    d = r.json()
-    return d
+    messages = body.get("messages") or []
+    return [m for m in messages if m.get("ts") != ts]
 
 
-def get_replies(channel, parent_ts):
-    r = requests.get(
-        "https://slack.com/api/conversations.replies",
-        headers=auth_headers(),
-        params={"channel": channel, "ts": parent_ts, "limit": 50},
-        timeout=30,
-    )
-    return r.json()
-
-
-def post_thread_reply(channel, parent_ts, text):
-    requests.post(
-        "https://slack.com/api/chat.postMessage",
-        headers={**auth_headers(), "Content-Type": "application/json; charset=utf-8"},
+def post_thread_reply(channel: str, parent_ts: str, text: str) -> None:
+    _slack(
+        "POST",
+        "chat.postMessage",
         json={"channel": channel, "text": text, "thread_ts": parent_ts, "mrkdwn": True},
-        timeout=30,
     )
 
 
-def parse_decision(text, default_letter):
-    """Map a free-form reply to a decision.
+def parse_reply_commands(text: str) -> list[dict[str, Any]]:
+    commands: list[dict[str, Any]] = []
+    for line in text.splitlines():
+        raw = line.strip()
+        if not raw:
+            continue
+        if DENY_PATTERN.match(raw):
+            commands.append({"type": "deny"})
+            continue
+        if APPROVE_PATTERN.match(raw):
+            commands.append({"type": "approve"})
+            continue
+        skip_match = SKIP_PATTERN.match(raw)
+        if skip_match:
+            commands.append({"type": "skip", "slot": int(skip_match.group(1))})
+            continue
+        edit_match = EDIT_PATTERN.match(raw)
+        if edit_match:
+            commands.append(
+                {
+                    "type": "edit",
+                    "slot": int(edit_match.group(1)),
+                    "headline": edit_match.group(2).strip(),
+                }
+            )
+    return commands
 
-    Returns one of:
-      ("approve", letter)  — use this letter for downstream
-      ("kill", None)
-      None — unrecognized; keep waiting
-    """
-    t = text.strip().lower()
-    # Strip surrounding markdown/punctuation
-    t = t.strip(".,!?:;'\"`*_ ")
 
-    if t in ("approve", "yes", "y", "go", "ship", "ok", "okay", ":white_check_mark:", "✅"):
-        return ("approve", default_letter)
-    if t in ("kill", "stop", "no", "abort", ":x:", "❌"):
-        return ("kill", None)
-    # Single-letter answer (any letter from a-z)
-    if len(t) == 1 and "a" <= t <= "z":
-        return ("approve", t.upper())
-    # Pattern like "topic b" or "go with b"
-    for token in t.split():
-        if len(token) == 1 and "a" <= token <= "z":
-            return ("approve", token.upper())
+def collect_new_commands(replies: list[dict], processed_reply_ts: set[str]) -> tuple[list[dict[str, Any]], list[str]]:
+    commands: list[dict[str, Any]] = []
+    new_ts: list[str] = []
+    for msg in sorted(replies, key=lambda m: m.get("ts", "")):
+        ts = msg.get("ts")
+        if not ts or ts in processed_reply_ts:
+            continue
+        if msg.get("bot_id"):
+            continue
+        text = msg.get("text", "")
+        user = msg.get("user") or msg.get("username") or "unknown"
+        parsed = parse_reply_commands(text)
+        if parsed:
+            for command in parsed:
+                command["ts"] = ts
+                command["user"] = user
+                commands.append(command)
+            new_ts.append(ts)
+    return commands, new_ts
+
+
+def find_reaction_approver(reactions: dict[str, list[str]]) -> str | None:
+    for name in APPROVE_EMOJIS:
+        users = reactions.get(name, [])
+        if users:
+            return users[0]
     return None
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Post a Slack approval question and await reply")
-    parser.add_argument("--channel", required=True, help="Slack channel ID or name")
-    parser.add_argument("--title", required=True, help="Headline of the approval message")
-    parser.add_argument("--options-file", help="File containing the options block (markdown)")
-    parser.add_argument("--default", default="A", help="Default letter if reply is 'approve'")
-    parser.add_argument("--timeout-min", type=int, default=30, help="Poll timeout in minutes")
-    parser.add_argument("--poll-seconds", type=int, default=15, help="Poll interval")
+def summarize_changes(changes: dict[str, Any]) -> str:
+    lines: list[str] = []
+    for slot, edit in changes.get("edits", {}).items():
+        lines.append(
+            f":pencil2: Slot {slot} headline updated by {edit['user']}. Type `APPROVE` to confirm the slate."
+        )
+    for skip in changes.get("skips", []):
+        lines.append(
+            f":no_entry_sign: Slot {skip['slot']} skipped by {skip['user']}. No blog will publish that day. Type `APPROVE` to confirm the slate."
+        )
+    if changes.get("denied"):
+        lines.append(
+            f":x: Slate denied by {changes['denied_by']}. No blogs publish this week. Topic-gen will retry next Thursday."
+        )
+    elif changes.get("approved"):
+        lines.append(
+            f":white_check_mark: Slate approved by {changes['approved_by']}. Blogs publish Mon/Wed/Fri at 8am."
+        )
+    return "\n".join(lines)
+
+
+def ensure_topic_slots(topics: list[dict], slot: int) -> None:
+    while len(topics) < slot:
+        topics.append(
+            {
+                "slot": len(topics) + 1,
+                "lens": "unknown",
+                "lens_status": "failed",
+                "headline": "",
+                "category": "",
+                "sources": [],
+                "why_matters": "",
+                "angle": "",
+                "roman_take": "",
+                "danielle_take": "",
+                "skipped": False,
+            }
+        )
+
+
+def apply_commands_to_queue(queue: Any, commands: list[dict[str, Any]], reaction_approver: str | None) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "approved": False,
+        "approved_by": None,
+        "denied": False,
+        "denied_by": None,
+        "edits": {},
+        "skips": [],
+    }
+
+    if queue.topics is None:
+        queue.topics = []
+
+    for command in commands:
+        if command["type"] == "deny":
+            result["denied"] = True
+            result["denied_by"] = command["user"]
+            result["approved"] = False
+            result["approved_by"] = None
+        elif command["type"] == "approve" and not result["denied"]:
+            result["approved"] = True
+            result["approved_by"] = command["user"]
+        elif command["type"] == "edit":
+            slot = command["slot"]
+            headline = command["headline"]
+            ensure_topic_slots(queue.topics, slot)
+            topic = dict(queue.topics[slot - 1])
+            topic["headline"] = headline
+            topic["edited_by"] = command["user"]
+            topic["edited_note"] = headline
+            topic["lens_status"] = "ok"
+            queue.topics[slot - 1] = topic
+            result["edits"][slot] = {"user": command["user"], "headline": headline}
+        elif command["type"] == "skip":
+            slot = command["slot"]
+            ensure_topic_slots(queue.topics, slot)
+            topic = dict(queue.topics[slot - 1])
+            topic["skipped"] = True
+            queue.topics[slot - 1] = topic
+            result["skips"].append({"slot": slot, "user": command["user"]})
+
+    if reaction_approver and not result["denied"]:
+        result["approved"] = True
+        result["approved_by"] = reaction_approver
+
+    if result["approved"] and not result["denied"]:
+        queue.approval = {
+            "status": "approved",
+            "approved_by": result["approved_by"],
+            "approved_at": datetime.now().astimezone().isoformat(),
+            "denied_by": None,
+            "denied_at": None,
+            "edit_note": None,
+        }
+    elif result["denied"]:
+        queue.approval = {
+            "status": "denied",
+            "approved_by": None,
+            "approved_at": None,
+            "denied_by": result["denied_by"],
+            "denied_at": datetime.now().astimezone().isoformat(),
+            "edit_note": "DENY",
+        }
+
+    return result
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Poll Slack approval thread and update topic queue state")
+    parser.add_argument("--dry-run", action="store_true", help="report what would change without writing state or posting confirmations")
     args = parser.parse_args()
 
-    if not TOKEN:
-        print("ERROR: SLACK_BOT_TOKEN not set in .env", file=sys.stderr)
+    if not os.environ.get("SLACK_BOT_TOKEN"):
+        print("ERROR: SLACK_BOT_TOKEN not set", file=sys.stderr)
         return 3
 
-    # Build the message body
-    options_block = ""
-    if args.options_file:
-        p = Path(args.options_file)
-        if not p.exists():
-            print(f"ERROR: options file not found: {p}", file=sys.stderr)
-            return 3
-        options_block = p.read_text().strip()
+    queue = read_topic_queue()
+    if not queue.slack or not queue.approval:
+        print("no pending topic approval state found", file=sys.stderr)
+        return 0
 
-    instruction = (
-        f"\n*To approve:* reply in this thread.\n"
-        f"  • `approve` (or `{args.default.lower()}`) -> use recommended option *{args.default}*\n"
-        f"  • single letter (e.g., `b`) -> pick that option\n"
-        f"  • `kill` -> abort the run"
-    )
+    if queue.approval.get("status") != "pending":
+        print(f"approval status is terminal ({queue.approval.get('status')}); nothing to do", file=sys.stderr)
+        return 0
 
-    body = f"*{args.title}*\n\n{options_block}\n{instruction}"
-    print(f"Posting approval message to {args.channel}...", file=sys.stderr)
-
-    resp = post_message(args.channel, body)
-    if not resp.get("ok"):
-        print(f"ERROR posting: {resp}", file=sys.stderr)
+    channel = queue.slack.get("channel_id")
+    parent_ts = queue.slack.get("message_ts")
+    if not channel or not parent_ts:
+        print("missing slack channel/message ts in state", file=sys.stderr)
         return 3
-    parent_ts = resp["ts"]
-    channel_id_resolved = resp.get("channel", args.channel)
-    print(f"  parent_ts: {parent_ts}", file=sys.stderr)
-    print(f"  channel_id: {channel_id_resolved}", file=sys.stderr)
 
-    deadline = time.time() + (args.timeout_min * 60)
-    last_count = 0
-    print(f"Polling for thread reply (timeout {args.timeout_min} min, every {args.poll_seconds}s)...", file=sys.stderr)
+    processed_reply_ts = set(queue.slack.get("processed_reply_ts") or [])
+    reactions = fetch_reactions(channel, parent_ts)
+    replies = fetch_thread_replies(channel, parent_ts)
+    commands, new_reply_ts = collect_new_commands(replies, processed_reply_ts)
+    reaction_approver = find_reaction_approver(reactions)
 
-    while time.time() < deadline:
-        d = get_replies(channel_id_resolved, parent_ts)
-        if not d.get("ok"):
-            print(f"WARN replies fetch failed: {d.get('error')}", file=sys.stderr)
-        else:
-            msgs = [m for m in d.get("messages", []) if m.get("ts") != parent_ts]
-            # Skip bot's own messages (replies posted by us as confirmation)
-            human_msgs = [m for m in msgs if not m.get("bot_id")]
-            if len(human_msgs) > last_count:
-                last_count = len(human_msgs)
-                # Look at the most recent human reply
-                latest = human_msgs[-1]
-                text = latest.get("text", "")
-                user = latest.get("user", "?")
-                print(f"  reply from {user}: {text!r}", file=sys.stderr)
-                decision = parse_decision(text, args.default)
-                if decision is None:
-                    # Confirm we didn't understand; keep polling
-                    post_thread_reply(
-                        channel_id_resolved, parent_ts,
-                        f":thinking_face: Didn't understand `{text}`. Reply `approve`, a letter, or `kill`."
-                    )
-                    continue
-                action, letter = decision
-                if action == "kill":
-                    post_thread_reply(channel_id_resolved, parent_ts, ":octagonal_sign: Run aborted by reviewer.")
-                    print("KILL", flush=True)
-                    return 1
-                if action == "approve":
-                    post_thread_reply(
-                        channel_id_resolved, parent_ts,
-                        f":white_check_mark: Approved. Continuing with topic *{letter}*."
-                    )
-                    print(letter, flush=True)  # this is the decision returned to caller
-                    return 0
-        time.sleep(args.poll_seconds)
+    if not commands and not reaction_approver:
+        print("no new approval commands or reactions found", file=sys.stderr)
+        return 0
 
-    post_thread_reply(
-        channel_id_resolved, parent_ts,
-        f":clock1: Timed out after {args.timeout_min} minutes with no approval. Run not started."
-    )
-    print("TIMEOUT", flush=True)
-    return 2
+    changes = apply_commands_to_queue(queue, commands, reaction_approver)
+    if not changes["edits"] and not changes["skips"] and not changes["approved"] and not changes["denied"]:
+        print("no actionable changes found in new replies", file=sys.stderr)
+        return 0
+
+    summary = summarize_changes(changes)
+    if args.dry_run:
+        print(json.dumps({"dry_run": True, "commands": commands, "summary": summary}, indent=2))
+        return 0
+
+    with topic_queue_transaction() as transaction_queue:
+        transaction_queue.topics = queue.topics
+        transaction_queue.slack = dict(queue.slack)
+        transaction_queue.slack["processed_reply_ts"] = sorted(set(processed_reply_ts).union(new_reply_ts))
+        transaction_queue.approval = queue.approval
+
+    append_history_run({
+        "ts": datetime.now().astimezone().isoformat(),
+        "kind": "await_slack_approval",
+        "week": queue.current_week,
+        "changes": {
+            "approved": changes["approved"],
+            "approved_by": changes.get("approved_by"),
+            "denied": changes["denied"],
+            "denied_by": changes.get("denied_by"),
+            "edits": changes["edits"],
+            "skips": [s["slot"] for s in changes["skips"]],
+        },
+    })
+
+    if summary:
+        post_thread_reply(channel, parent_ts, summary)
+    print(json.dumps({"status": "updated", "summary": summary}, indent=2))
+    return 0
 
 
 if __name__ == "__main__":
