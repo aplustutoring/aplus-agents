@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterator, Optional
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 STATE_DIR = REPO_ROOT / "state"
 TOPIC_QUEUE_FILE = STATE_DIR / "topic-queue.json"
 HISTORY_FILE = STATE_DIR / "history.json"
