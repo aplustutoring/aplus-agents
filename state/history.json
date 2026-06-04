@@ -389,6 +389,63 @@
         "SEO \u2014 [fail] featured_image_alt_text='' (len=0): featured_image_alt_text is missing",
         "SEO \u2014 [fail] slug='/k12-tutoring-market-reset-2026' (len=31): slug parts must be alphanumeric (lowercase, hyphen-separated)"
       ]
+    },
+    {
+      "ts": "2026-06-04T23:30:56.587779+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 1,
+      "post_date": "2026-06-08",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-lcap",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214363657790",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "FACT-CHECK \u2014 ## Issues found\n\n### \u26a0\ufe0f ISSUE 1 \u2014 IMPORTANT \u2014 Misattributed effect-size range\n\n**Claim in content:** \"research from the Annenberg Institute at Brown University on pandemic recovery has consistently shown that high-dosage tutoring... produces some of the strongest measured academic gains of any intervention category, **on the order of three to fifteen additional months of learning**.\"\n\n**Actual fact:** The \"3 to 15 months\" range is sourced from a 2024 Center for American Progress synthesis (\"It increases students' learning by an additional three to 15 months across grade levels\"), not directly from Annenberg/Brown. The Annenberg Institute's own publication on tutoring at scale cites a narrower range: \"an analysis of fifteen larger-scale tutoring programs found that initiatives increased student learning by an average of 2-10 additional months (Nickow et al., 2020).\"\n\n**Severity:** Importa"
+      ]
+    },
+    {
+      "ts": "2026-06-04T23:41:43.373547+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 2,
+      "post_date": "2026-06-10",
+      "headline": "The May 31 ELPAC reclassification deadline just passed \u2014 and most charters left RFEPs on the table",
+      "bundle_dir": "aplus-content/2026-06-10-may-31-elpac-reclassification-deadline",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214359139851",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "FACT-CHECK \u2014 I'll fact-check this blog content systematically. Let me verify the key claims that aren't internal A+ data.Let me verify the remaining specific claims: the Stanford 39% figure, the LTEL definition, and the high-dosage tutoring research.# A+ FACT-CHECK REPORT\n\n**Content:** \"When the May 31 ELPAC Reclassification Window Closes, Most Charters Leave RFEPs...\"\n**Claims verified:** 9 categories\n**Sources checked:** CDE, CALPADS Flash #322, CALPADS Flash #300, EdSource, PACE/edpolicyinca.org, Stanford NSSA, EC \u00a7313.1, California Education Code, A+ verified outcome table (skill v1.2)\n\n---\n\n## \u2705 CLAIMS VERIFIED\n\n**1. May 31, 2026 deadline \u2014 CONFIRMED**\nEnglish learner students not reclassified by May 31, 2026, can no longer be reclassified based on 2024\u221225 Summative ELPAC/Alternate ELPAC scores, and must be reclassified based on 2025\u221226 scores. Source: CALPADS Update Flash #322.\n\n**2. Four recla"
+      ]
+    },
+    {
+      "ts": "2026-06-04T23:50:50.970634+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 3,
+      "post_date": "2026-06-12",
+      "headline": "The ESSER-to-State \"Market Reset\" \u2014 and why NSSA-style quality screens favor embedded providers like A+",
+      "bundle_dir": "aplus-content/2026-06-12-post-esser-tutoring-quality-screen",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214362595991",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "FACT-CHECK \u2014 I'll fact-check this content systematically, starting with the external claims that need verification against authoritative sources.# A+ FACT-CHECK REPORT\n\n**Content:** \"The K-12 Tutoring Market Just Split In Two...\"\n**Claims evaluated:** 8 categories (1 NCES stat, 1 FutureEd stat, 1 statutory definition, 1 list of states, 1 NSSA claim, 1 Annenberg study citation, 1 Stanford on-demand claim, 3 A+ outcome figures)\n\n---\n\n## Claim-by-claim findings\n\n### \u2705 Claim 1: NCES School Pulse Panel \u2014 37% (fall 2022) \u2192 42% (spring 2025)\n**VERIFIED.** The share of public schools offering high-dosage tutoring has risen from 37% in 2022 to 42% by spring 2025, according to NCES data. The original 37% figure traces back to NCES SPP, where thirty-seven percent of public schools reported providing high-dosage tutoring, with fifty-nine percent providing standard tutoring and 21 percent providing self-paced tut"
+      ]
     }
   ]
 }
