@@ -106,15 +106,8 @@ _FIELD_RE = re.compile(
 _URL_RE = re.compile(r"https?://[^\s\)\]>,]+")
 
 
-def parse_topic_1(markdown: str, source_lens: str) -> Optional[Topic]:
-    """Extract Topic 1 from an aplus-research markdown brief."""
-    block_match = _TOPIC_1_BLOCK.search(markdown)
-    if not block_match:
-        return None
-
-    headline = block_match.group("headline").strip()
-    body = block_match.group("body")
-
+def _build_topic(headline: str, body: str, source_lens: str, raw: str) -> Topic:
+    """Build a Topic from a parsed block's headline + body markdown."""
     fields_raw = {
         m.group("key").strip().lower(): m.group("value").strip()
         for m in _FIELD_RE.finditer(body)
@@ -130,7 +123,7 @@ def parse_topic_1(markdown: str, source_lens: str) -> Optional[Topic]:
     sources = _URL_RE.findall(sources_field) if sources_field else []
 
     return Topic(
-        headline=headline,
+        headline=headline.strip(),
         category=f("category"),
         sources=sources,
         why_matters=f("why this matters for a+", "why this matters"),
@@ -138,8 +131,39 @@ def parse_topic_1(markdown: str, source_lens: str) -> Optional[Topic]:
         roman_take=f("roman take suggestion", "roman take"),
         danielle_take=f("danielle take suggestion", "danielle take"),
         source_lens=source_lens,
-        raw_markdown_excerpt=block_match.group(0).strip(),
+        raw_markdown_excerpt=raw.strip(),
     )
+
+
+def parse_topic_1(markdown: str, source_lens: str) -> Optional[Topic]:
+    """Extract Topic 1 from an aplus-research markdown brief."""
+    block_match = _TOPIC_1_BLOCK.search(markdown)
+    if not block_match:
+        return None
+    return _build_topic(
+        block_match.group("headline"), block_match.group("body"), source_lens, block_match.group(0)
+    )
+
+
+# Tolerant capture of ANY numbered topic block (1-9). Used to pull the full
+# 3-candidate slate from a single lens call for the REDO flow.
+_TOPIC_ANY_BLOCK = re.compile(
+    r"###\s+\*{0,2}\s*(?:Topic\s*#?\s*)?(?P<num>[1-9])\s*\*{0,2}\s*[:.—\-]+\s*\*{0,2}\s*(?P<headline>[^\n]+?)\*{0,2}\s*\n(?P<body>.*?)(?=\n###\s|\n##\s|\Z)",
+    re.DOTALL | re.IGNORECASE,
+)
+
+
+def parse_topics(markdown: str, source_lens: str, max_n: int = 3) -> list[Topic]:
+    """Extract up to max_n numbered topics (1..max_n) from a research brief."""
+    out: list[Topic] = []
+    seen: set[int] = set()
+    for m in _TOPIC_ANY_BLOCK.finditer(markdown):
+        num = int(m.group("num"))
+        if num in seen or num > max_n:
+            continue
+        seen.add(num)
+        out.append(_build_topic(m.group("headline"), m.group("body"), source_lens, m.group(0)))
+    return out[:max_n]
 
 
 @dataclass
@@ -171,6 +195,32 @@ def run_lens(lens: Lens, runner: SkillsRunner, context: str) -> LensRunResult:
 def run_all_lenses(runner: SkillsRunner, context: str) -> list[LensRunResult]:
     """Run all 3 lenses sequentially. Returns 3 LensRunResults in LENSES order."""
     return [run_lens(lens, runner, context) for lens in LENSES]
+
+
+LENS_BY_NAME: dict[str, Lens] = {lens.name: lens for lens in LENSES}
+
+
+def lens_for_slot(slot: int, lens_name: Optional[str] = None) -> Lens:
+    """Resolve the Lens for a 1-based slot, preferring an explicit lens name."""
+    if lens_name and lens_name in LENS_BY_NAME:
+        return LENS_BY_NAME[lens_name]
+    return LENSES[(slot - 1) % len(LENSES)]
+
+
+def generate_slot_candidates(
+    lens: Lens, runner: SkillsRunner, context: str, n: int = 3
+) -> list[Topic]:
+    """Re-run one lens and return up to n candidate topics (for the REDO flow).
+
+    The aplus-research skill already emits a Top-3, so a single web-searched call
+    yields all n candidates — no need for n separate API calls.
+    """
+    prompt = _build_user_prompt(lens, context)
+    logger.info("slot_candidates_start lens=%s n=%d", lens.name, n)
+    skill_result = runner.run_skill("aplus-research", prompt, web_search=True)
+    topics = parse_topics(skill_result.text, source_lens=lens.name, max_n=n)
+    logger.info("slot_candidates_done lens=%s got=%d", lens.name, len(topics))
+    return topics
 
 
 if __name__ == "__main__":

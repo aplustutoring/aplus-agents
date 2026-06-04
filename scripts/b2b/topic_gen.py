@@ -189,6 +189,7 @@ def build_slack_message(
         f"Three topics → one blog each for Mon (slot 1), Wed (slot 2), Fri (slot 3).\n\n"
         f"*To approve all 3:* reply in thread `APPROVE` (or react :white_check_mark:)\n"
         f"*To edit a slot:* reply in thread `EDIT 1: replacement headline` (also works for 2 or 3)\n"
+        f"*To get new options for a slot:* reply `REDO 2` → 3 fresh choices, then `PICK 2: A`\n"
         f"*To skip a slot:* reply in thread `SKIP 2`\n"
         f"*To deny the whole slate:* reply in thread `DENY` (no blog publishes that week)\n\n"
         f"Auto-approve at *{approval_deadline.strftime('%a %b %d, %I:%M %p %Z')}* if no action.\n"

@@ -34,6 +34,8 @@ jobs:
       - name: Poll Slack approval thread
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          # REDO N regenerates candidates via a web-searched lens call.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           ARGS=""
           if [ "${{ inputs.dry_run }}" = "true" ]; then

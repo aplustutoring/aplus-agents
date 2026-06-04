@@ -10,7 +10,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import requests
 from dotenv import load_dotenv
@@ -22,14 +22,26 @@ sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "b2b"))
 
 from state import append_history_run, read_topic_queue, topic_queue_transaction
+from lens_runs import Topic, generate_slot_candidates, lens_for_slot
+from skills_runner import SkillsRunner
 
 SLACK_BASE = "https://slack.com/api"
 APPROVE_EMOJIS = {"white_check_mark", "white_check_mark_v1", "white_check_mark_v2", "heavy_check_mark"}
+TARGET_SCHOOLS_PATH = REPO_ROOT / "skills" / "aplus-research" / "target-schools.md"
+CANDIDATE_LABELS = ["A", "B", "C"]
 
 EDIT_PATTERN = re.compile(r"^EDIT\s*([1-3])\s*:\s*(.+)$", re.IGNORECASE)
 SKIP_PATTERN = re.compile(r"^SKIP\s*([1-3])\s*$", re.IGNORECASE)
 APPROVE_PATTERN = re.compile(r"^APPROVE\s*$", re.IGNORECASE)
 DENY_PATTERN = re.compile(r"^DENY\s*$", re.IGNORECASE)
+REDO_PATTERN = re.compile(r"^REDO\s*([1-3])\s*$", re.IGNORECASE)
+PICK_PATTERN = re.compile(r"^PICK\s*([1-3])\s*:\s*([ABC])\s*$", re.IGNORECASE)
+
+
+def _load_context() -> str:
+    if TARGET_SCHOOLS_PATH.is_file():
+        return TARGET_SCHOOLS_PATH.read_text(encoding="utf-8")
+    return "(No target-schools.md present; HOT 13 list unavailable for this run.)"
 
 
 def _slack_token() -> str:
@@ -91,6 +103,16 @@ def parse_reply_commands(text: str) -> list[dict[str, Any]]:
         if skip_match:
             commands.append({"type": "skip", "slot": int(skip_match.group(1))})
             continue
+        redo_match = REDO_PATTERN.match(raw)
+        if redo_match:
+            commands.append({"type": "redo", "slot": int(redo_match.group(1))})
+            continue
+        pick_match = PICK_PATTERN.match(raw)
+        if pick_match:
+            commands.append(
+                {"type": "pick", "slot": int(pick_match.group(1)), "label": pick_match.group(2).upper()}
+            )
+            continue
         edit_match = EDIT_PATTERN.match(raw)
         if edit_match:
             commands.append(
@@ -142,6 +164,14 @@ def summarize_changes(changes: dict[str, Any]) -> str:
         lines.append(
             f":no_entry_sign: Slot {skip['slot']} skipped by {skip['user']}. No blog will publish that day. Type `APPROVE` to confirm the slate."
         )
+    for pick in changes.get("picks", []):
+        lines.append(
+            f":point_right: Slot {pick['slot']} set to option {pick['label']} by {pick['user']}: {pick['headline']}. Type `APPROVE` to confirm the slate."
+        )
+    for err in changes.get("pick_errors", []):
+        lines.append(
+            f":warning: No candidates to pick for slot {err['slot']} — run `REDO {err['slot']}` first, then `PICK {err['slot']}: A`."
+        )
     if changes.get("denied"):
         lines.append(
             f":x: Slate denied by {changes['denied_by']}. No blogs publish this week. Topic-gen will retry next Thursday."
@@ -172,6 +202,77 @@ def ensure_topic_slots(topics: list[dict], slot: int) -> None:
         )
 
 
+def format_candidates_reply(slot: int, candidates: list[dict]) -> str:
+    lines = [f":arrows_counterclockwise: *Slot {slot} regenerated — pick one:*"]
+    for c in candidates:
+        cat = f"  _({c['category']})_" if c.get("category") else ""
+        lines.append(f"*{c['label']})* {c['headline']}{cat}")
+    lines.append(f"Reply `PICK {slot}: A` (or B/C) to choose — or `EDIT {slot}: your own headline`.")
+    return "\n".join(lines)
+
+
+def _topic_to_candidate(label: str, t: Topic) -> dict:
+    return {
+        "label": label,
+        "headline": t.headline,
+        "category": t.category,
+        "sources": list(t.sources),
+        "why_matters": t.why_matters,
+        "angle": t.angle,
+        "roman_take": t.roman_take,
+        "danielle_take": t.danielle_take,
+    }
+
+
+def process_redos(queue: Any, redo_cmds: list[dict[str, Any]], channel: str, parent_ts: str, *, dry_run: bool) -> list[dict]:
+    """Regenerate 3 candidates for each REDO'd slot, store them on the slot, and
+    post the choices to the thread. Needs ANTHROPIC_API_KEY (the lens uses web search)."""
+    if not redo_cmds:
+        return []
+    if queue.topics is None:
+        queue.topics = []
+
+    redone: list[dict] = []
+    runner: Optional[SkillsRunner] = None
+    context: Optional[str] = None
+
+    for cmd in redo_cmds:
+        slot = cmd["slot"]
+        user = cmd.get("user", "unknown")
+        ensure_topic_slots(queue.topics, slot)
+        existing_lens = (queue.topics[slot - 1] or {}).get("lens")
+        lens = lens_for_slot(slot, existing_lens)
+
+        if dry_run:
+            redone.append({"slot": slot, "user": user, "count": 0, "dry_run": True})
+            continue
+
+        if runner is None:
+            runner = SkillsRunner()
+            context = _load_context()
+        topics = generate_slot_candidates(lens, runner, context, n=len(CANDIDATE_LABELS))
+        if not topics:
+            post_thread_reply(
+                channel, parent_ts,
+                f":warning: Slot {slot} regeneration produced no candidates — try `REDO {slot}` again "
+                f"or `EDIT {slot}: your own headline`.",
+            )
+            redone.append({"slot": slot, "user": user, "count": 0})
+            continue
+
+        candidates = [_topic_to_candidate(CANDIDATE_LABELS[i], t) for i, t in enumerate(topics[: len(CANDIDATE_LABELS)])]
+        topic = dict(queue.topics[slot - 1])
+        topic["lens"] = lens.name
+        topic["candidates"] = candidates
+        topic["lens_status"] = "awaiting_pick"
+        topic["redo_by"] = user
+        queue.topics[slot - 1] = topic
+        post_thread_reply(channel, parent_ts, format_candidates_reply(slot, candidates))
+        redone.append({"slot": slot, "user": user, "count": len(candidates)})
+
+    return redone
+
+
 def apply_commands_to_queue(queue: Any, commands: list[dict[str, Any]], reaction_approver: str | None) -> dict[str, Any]:
     result: dict[str, Any] = {
         "approved": False,
@@ -180,6 +281,8 @@ def apply_commands_to_queue(queue: Any, commands: list[dict[str, Any]], reaction
         "denied_by": None,
         "edits": {},
         "skips": [],
+        "picks": [],
+        "pick_errors": [],
     }
 
     if queue.topics is None:
@@ -212,6 +315,26 @@ def apply_commands_to_queue(queue: Any, commands: list[dict[str, Any]], reaction
             topic["skipped"] = True
             queue.topics[slot - 1] = topic
             result["skips"].append({"slot": slot, "user": command["user"]})
+        elif command["type"] == "pick":
+            slot = command["slot"]
+            label = command["label"]
+            ensure_topic_slots(queue.topics, slot)
+            topic = dict(queue.topics[slot - 1])
+            chosen = next((c for c in (topic.get("candidates") or []) if (c.get("label") or "").upper() == label), None)
+            if chosen is None:
+                result["pick_errors"].append({"slot": slot, "label": label, "user": command["user"]})
+            else:
+                for k in ("headline", "category", "sources", "why_matters", "angle", "roman_take", "danielle_take"):
+                    if k in chosen:
+                        topic[k] = chosen[k]
+                topic["lens_status"] = "ok"
+                topic["skipped"] = False
+                topic["picked_label"] = label
+                topic["picked_by"] = command["user"]
+                topic.pop("candidates", None)
+                topic.pop("redo_by", None)
+                queue.topics[slot - 1] = topic
+                result["picks"].append({"slot": slot, "label": label, "headline": chosen.get("headline", ""), "user": command["user"]})
 
     if reaction_approver and not result["denied"]:
         result["approved"] = True
@@ -273,14 +396,23 @@ def main() -> int:
         print("no new approval commands or reactions found", file=sys.stderr)
         return 0
 
-    changes = apply_commands_to_queue(queue, commands, reaction_approver)
-    if not changes["edits"] and not changes["skips"] and not changes["approved"] and not changes["denied"]:
+    redo_cmds = [c for c in commands if c["type"] == "redo"]
+    other_cmds = [c for c in commands if c["type"] != "redo"]
+
+    # REDO regenerates candidates (web-searched lens call) + posts choices; must run
+    # before any same-cycle PICK so the candidates exist on the slot.
+    redone = process_redos(queue, redo_cmds, channel, parent_ts, dry_run=args.dry_run)
+    changes = apply_commands_to_queue(queue, other_cmds, reaction_approver)
+    changes["redos"] = redone
+
+    if not (changes["edits"] or changes["skips"] or changes["picks"] or changes["pick_errors"]
+            or changes["approved"] or changes["denied"] or redone):
         print("no actionable changes found in new replies", file=sys.stderr)
         return 0
 
     summary = summarize_changes(changes)
     if args.dry_run:
-        print(json.dumps({"dry_run": True, "commands": commands, "summary": summary}, indent=2))
+        print(json.dumps({"dry_run": True, "commands": commands, "summary": summary, "redos": redone}, indent=2))
         return 0
 
     with topic_queue_transaction() as transaction_queue:
@@ -300,6 +432,8 @@ def main() -> int:
             "denied_by": changes.get("denied_by"),
             "edits": changes["edits"],
             "skips": [s["slot"] for s in changes["skips"]],
+            "picks": [{"slot": p["slot"], "label": p["label"]} for p in changes["picks"]],
+            "redos": [{"slot": r["slot"], "count": r["count"]} for r in redone],
         },
     })
 
