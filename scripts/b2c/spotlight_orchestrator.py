@@ -1690,7 +1690,7 @@ Required fields (in this order, no commentary):
       school_named: <full canonical school name>
       reading_time: 6 minutes
       target_publish_date: <YYYY-MM-DD, 7 days from today>
-3. Outside the fence: `cta_url: https://wetutorathome.com/consultation`
+3. Outside the fence: `cta_url: https://meetings.hubspot.com/successful/consultation`
 4. `## Pull quotes` heading then a list named pull_quotes with EXACTLY 2
    verbatim quotes from the source documents. Each must read as a
    complete grammatical sentence in isolation. Add bracketed editorial

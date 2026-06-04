@@ -121,13 +121,49 @@ Every case study must include:
 - One before/after concrete contrast
 - One specific tutor moment (a scene, not "the tutor was patient")
 - TOR endorsement quote if available in brief
-- A clear non-pushy CTA at the end
+- A REQUIRED closing consultation CTA, rendered as a button (not a plain text link)
+- At least 1 parent-relevant internal link from A+'s canonical approved link library (see below)
 
-#### Closing CTA pattern (use this, not generic)
+#### Closing consultation CTA (REQUIRED, button format)
 
-"If your child is below grade level in [subject], our team can talk through what's actually going on. Free consultation: [link]"
+Every case study MUST close with a button CTA — same mechanism as the B2B blog
+(`aplus-blog-longform` → "Required CTA"), but with parent-facing wording and the
+B2C booking destination.
+
+- Render as an HTML button or styled `<a>` (A+ Orange background, white text,
+  mobile tap-target ≥ 44px), in its own paragraph, ONLY at the end of the post.
+- B2C booking URL (required): `https://meetings.hubspot.com/successful/consultation`
+  This is the B2C / parent meetings link. Do NOT use Danielle's B2B partnerships
+  link (`https://meetings.hubspot.com/successful/danielle-meetings-for-partnerships-programs`),
+  which is for school / charter intake.
+- Wording must name the child's situation — parent voice, non-pushy. Use the
+  parent / family CTA options from `aplus-blog-longform`, e.g.:
+  - "Get Your Child the Support They Need"
+  - "Talk to A+ About Your Child's Reading Plan"
+  - "Find Out If A+ Is Right For Your Family"
+- Lead-in pattern: "If your child is below grade level in [subject], our team
+  can talk through what's actually going on."
 
 NOT: "Don't miss out!" / "Book today!" / "Schedule now and save!"
+
+#### Internal links (parent-facing, from the canonical library)
+
+Pull internal links ONLY from A+'s canonical approved link library — the single
+source of truth in `aplus-blog-longform` → "A+ Tutoring approved link library".
+Copy the mechanism (canonical list + ≥1 internal link + required button CTA);
+the SELECTION must be parent-appropriate. Include at least one of:
+
+- `https://wetutorathome.com/services` — the A+ tutoring model
+- `https://wetutorathome.com/home-school-tutoring` — homeschool families
+- `https://wetutorathome.com/case-study-ilead-math-tier3` — related case study / proof
+- `https://wetutorathome.com/results/ilead-tier-3-english` — related case study / proof
+
+NEVER link the school-only canonical pages in a parent-facing case study:
+`/ilead-exploration`, `/heartwood-charter-school` (charter / partnership pages).
+
+PENDING canonical additions — do NOT link until they exist in the canonical
+library with real URLs (flag to Roman, do not guess): the small-learning-pods
+page and the subject-specific tutoring pages (math / reading).
 
 #### Voice and tone
 
@@ -152,9 +188,16 @@ meta_description: [150-160 chars, includes pseudonym, outcome, A+ Tutoring]
 primary_keyword: [one high-intent keyword from this list: "below grade level tutoring" / "MAP Growth tutoring" / "reading intervention tutoring" / "math intervention tutoring" / "Tier 3 intervention" / "LTEL reclassification" / "elementary tutoring case study" / "middle school tutoring case study" / "high school tutoring case study" . pick the best fit for this kid's situation]
 secondary_keywords: [2-3 related terms used naturally in the body]
 internal_links_recommended:
-  - /services/online-tutoring [or relevant service page]
-  - /about-us
-  - /consultation
+  # Parent-facing selection from the canonical approved link library
+  # (source of truth: aplus-blog-longform). Use 1-2; never charter/partner pages.
+  - https://wetutorathome.com/services
+  - https://wetutorathome.com/home-school-tutoring
+  # Optional proof links when relevant:
+  #   - https://wetutorathome.com/case-study-ilead-math-tier3
+  #   - https://wetutorathome.com/results/ilead-tier-3-english
+  # PENDING (not yet in canonical library — do not link until added):
+  #   small-learning-pods, subject tutoring pages (math / reading)
+cta_url: https://meetings.hubspot.com/successful/consultation
 external_links_cited:
   - [Any source cited for benchmarks, e.g., NWEA, ESSA tier evidence, etc.]
 schema_type: Article
