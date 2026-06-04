@@ -17,7 +17,8 @@
       "staged": true,
       "staged_at": "2026-06-04T20:09:03.613523+00:00",
       "post_date": "2026-06-08",
-      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-charter-lcap"
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-charter-lcap",
+      "hubspot_post_id": "214363657790"
     },
     {
       "slot": 2,
@@ -39,7 +40,8 @@
       "staged": true,
       "staged_at": "2026-06-04T20:13:45.587639+00:00",
       "post_date": "2026-06-10",
-      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-2026"
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-2026",
+      "hubspot_post_id": "214359139851"
     },
     {
       "slot": 3,
@@ -61,7 +63,8 @@
       "staged": true,
       "staged_at": "2026-06-04T20:17:27.309935+00:00",
       "post_date": "2026-06-12",
-      "bundle_dir": "aplus-content/2026-06-12-nssa-quality-screens-state-tutoring"
+      "bundle_dir": "aplus-content/2026-06-12-nssa-quality-screens-state-tutoring",
+      "hubspot_post_id": "214362595991"
     }
   ],
   "slack": {

@@ -20,6 +20,11 @@ on:
         required: false
         type: boolean
         default: false
+      rebuild:
+        description: "Rebuild already-staged slots, updating their existing HubSpot drafts in place"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -55,6 +60,9 @@ jobs:
           fi
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ inputs.rebuild }}" = "true" ]; then
+            ARGS="$ARGS --rebuild"
           fi
           python3 scripts/b2b/content-build.py $ARGS
 

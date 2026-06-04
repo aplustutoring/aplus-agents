@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import logging
 import re
+import subprocess
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -66,7 +67,25 @@ def _slugify(value: str, fallback: str) -> str:
     return slug or fallback
 
 
-def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_run: bool) -> dict:
+def _publish_draft(bundle_dir: Path, update_post_id: "str | None" = None) -> "tuple[int, str | None]":
+    """Run publish-to-hubspot.py, capturing the HubSpot post id it prints.
+
+    If update_post_id is given, PATCHes that existing draft (no duplicate);
+    otherwise creates a new draft. Returns (return_code, post_id).
+    """
+    cmd = ["python3", str(bp.REPO_ROOT / "scripts" / "shared" / "publish-to-hubspot.py"), "--bundle", str(bundle_dir)]
+    if update_post_id:
+        cmd += ["--update-existing", str(update_post_id)]
+    logger.info("invoking: %s", " ".join(cmd))
+    r = subprocess.run(cmd, cwd=str(bp.REPO_ROOT), capture_output=True, text=True)
+    sys.stdout.write(r.stdout)
+    if r.stderr:
+        sys.stderr.write(r.stderr)
+    m = re.search(r"Post ID:\s*(\S+)", r.stdout)
+    return r.returncode, (m.group(1) if m else update_post_id)
+
+
+def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_run: bool, existing_post_id: "str | None" = None) -> dict:
     post_date = post_date_for_slot(week, slot)
     logger.info(
         "build_slot start slot=%s post_date=%s headline=%r",
@@ -123,9 +142,11 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
                 "post_date": str(post_date), "fact_pass": fact_pass, "brand_pass": brand_pass,
                 "seo_issues": len(seo_issues), "flags": len(flags), "dry_run": True}
 
-    publish_rc = bp.shell_out_to_publish(bundle_dir, dry_run=False)
+    publish_rc, post_id = _publish_draft(bundle_dir, update_post_id=existing_post_id)
     if publish_rc != 0:
         raise RuntimeError(f"slot {slot}: publish-to-hubspot.py exited {publish_rc}")
+    action = "updated" if existing_post_id else "created"
+    logger.info("hubspot_draft_%s slot=%s post_id=%s", action, slot, post_id)
 
     slack_rc = bp.shell_out_to_slack(bundle_dir, dry_run=False)
     if slack_rc != 0:
@@ -139,6 +160,8 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         t["staged_at"] = datetime.now().astimezone().isoformat()
         t["post_date"] = str(post_date)
         t["bundle_dir"] = str(bundle_dir.relative_to(bp.REPO_ROOT))
+        if post_id:
+            t["hubspot_post_id"] = post_id
         q.topics[slot - 1] = t
         write_topic_queue(q)
 
@@ -152,18 +175,21 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         "bundle_dir": str(bundle_dir.relative_to(bp.REPO_ROOT)),
         "publish_rc": publish_rc,
         "slack_rc": slack_rc,
+        "hubspot_post_id": post_id,
+        "action": action,
         "fact_pass": fact_pass,
         "brand_pass": brand_pass,
         "seo_issues": len(seo_issues),
         "flags": flags,
     })
-    return {"slot": slot, "status": "staged", "bundle_dir": str(bundle_dir),
-            "post_date": str(post_date), "fact_pass": fact_pass, "brand_pass": brand_pass,
+    return {"slot": slot, "status": "staged", "action": action, "bundle_dir": str(bundle_dir),
+            "post_date": str(post_date), "hubspot_post_id": post_id,
+            "fact_pass": fact_pass, "brand_pass": brand_pass,
             "seo_issues": len(seo_issues), "flags": len(flags),
             "publish_rc": publish_rc, "slack_rc": slack_rc}
 
 
-def build(*, dry_run: bool = False, only_slot: int | None = None) -> list[dict]:
+def build(*, dry_run: bool = False, only_slot: int | None = None, rebuild: bool = False) -> list[dict]:
     queue = read_topic_queue()
     if not queue.approval or queue.approval.get("status") not in APPROVED_STATUSES:
         raise RuntimeError(
@@ -185,10 +211,13 @@ def build(*, dry_run: bool = False, only_slot: int | None = None) -> list[dict]:
         if topic.get("lens_status") != "ok":
             results.append({"slot": slot, "status": "skipped", "reason": f"lens_status={topic.get('lens_status')}"})
             continue
-        if topic.get("staged"):
+        if topic.get("staged") and not rebuild:
             results.append({"slot": slot, "status": "skipped", "reason": f"already staged at {topic.get('staged_at')}"})
             continue
-        results.append(build_slot(slot, topic, week, runner, dry_run=dry_run))
+        results.append(build_slot(
+            slot, topic, week, runner,
+            dry_run=dry_run, existing_post_id=topic.get("hubspot_post_id"),
+        ))
     return results
 
 
@@ -197,9 +226,10 @@ def main() -> int:
     p = argparse.ArgumentParser(description="Weekend batch build: 3 approved blogs -> HubSpot drafts")
     p.add_argument("--slot", type=int, choices=[1, 2, 3], help="build a single slot (testing)")
     p.add_argument("--dry-run", action="store_true", help="generate + write bundles, skip HubSpot/Slack/state")
+    p.add_argument("--rebuild", action="store_true", help="rebuild already-staged slots, updating their existing HubSpot drafts in place")
     args = p.parse_args()
     try:
-        results = build(dry_run=args.dry_run, only_slot=args.slot)
+        results = build(dry_run=args.dry_run, only_slot=args.slot, rebuild=args.rebuild)
     except Exception as e:
         logger.exception("content_build_failed: %s", e)
         return 1
