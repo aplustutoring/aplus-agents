@@ -165,6 +165,23 @@ def _strip_process_notes(body: str) -> str:
     return "\n".join(lines).strip()
 
 
+def strip_em_dashes(text: str) -> str:
+    """Em/en dashes are auto-reject in A+ brand. Deterministic backstop after the
+    corrector: em dash -> comma; en dash between digits -> hyphen; other en -> comma."""
+    text = re.sub(r"\s*—\s*", ", ", text)
+    text = re.sub(r"(?<=\d)\s*–\s*(?=\d)", "-", text)
+    text = re.sub(r"\s*–\s*", ", ", text)
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+    text = re.sub(r",\s*,", ", ", text)
+    return text
+
+
+def normalize_slug(slug: str) -> str:
+    """Lowercase, drop a leading slash, alphanumeric+hyphen only, max 5 words."""
+    s = re.sub(r"[^a-z0-9]+", "-", (slug or "").strip().lstrip("/").lower()).strip("-")
+    return "-".join([p for p in s.split("-") if p][:5])
+
+
 def parse_blog_output(text: str) -> tuple[Optional[str], dict[str, object]]:
     """Extract the ```blog-body``` and ```blog-meta``` fences."""
     body: Optional[str] = None
@@ -297,6 +314,31 @@ def run_brand_check(runner: SkillsRunner, body: str) -> tuple[bool, SkillResult]
     )
     result = runner.run_skill("aplus-brand-check", prompt)
     return _check_skill_verdict(result, "brand-check"), result
+
+
+def run_corrections(runner: SkillsRunner, body: str, meta_text: str,
+                    fact_report: str = "", brand_report: str = "", seo_issues=None):
+    """One automatic correction pass: feed the blog + the QA findings to the
+    aplus-content-corrector skill and return the revised (body, meta_dict).
+
+    Returns (None, None) if the corrected output can't be parsed (caller keeps the
+    original)."""
+    parts = []
+    if fact_report:
+        parts.append("FACT-CHECK FINDINGS:\n" + fact_report[:4000])
+    if brand_report:
+        parts.append("BRAND-CHECK FINDINGS:\n" + brand_report[:3000])
+    if seo_issues:
+        parts.append("SEO ISSUES:\n" + "\n".join(str(i) for i in seo_issues))
+    if not parts:
+        return None, None
+    user_input = (
+        "=== CURRENT BLOG-BODY ===\n" + body
+        + "\n\n=== CURRENT BLOG-META ===\n" + meta_text
+        + "\n\n=== ISSUES TO FIX ===\n" + "\n\n".join(parts)
+    )
+    result = runner.run_skill("aplus-content-corrector", user_input, max_tokens=24000, web_search=True)
+    return parse_blog_output(result.text)
 
 
 # ---------- bundle assembly ----------

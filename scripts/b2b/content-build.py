@@ -161,6 +161,25 @@ def _build_graphics(bundle_dir: Path) -> None:
             logger.warning("%s error: %s", script.name, e)
 
 
+def _apply_mechanical_fixes(body: str, meta: dict) -> "tuple[str, dict]":
+    """Deterministic backstops the LLM keeps missing: strip em/en dashes (brand
+    auto-reject) and normalize the slug. Guaranteed, not best-effort."""
+    body = bp.strip_em_dashes(body)
+    if isinstance(meta.get("url_slug"), str):
+        meta["url_slug"] = bp.normalize_slug(meta["url_slug"])
+    return body, meta
+
+
+def _run_checks(runner: SkillsRunner, body: str, meta: dict):
+    """Run SEO + fact + brand. Returns (seo_issues, fact_pass, fact_result, brand_pass, brand_result)."""
+    seo_fields = {k: v for k, v in meta.items() if isinstance(v, str)}
+    seo_fields.setdefault("slug", str(meta.get("url_slug", "")))  # validator keys on `slug`
+    seo_issues = bp.validate_seo_fields(seo_fields)
+    fact_pass, fact_result = bp.run_fact_check(runner, body)
+    brand_pass, brand_result = bp.run_brand_check(runner, body)
+    return seo_issues, fact_pass, fact_result, brand_pass, brand_result
+
+
 def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_run: bool, existing_post_id: "str | None" = None) -> dict:
     post_date = post_date_for_slot(week, slot)
     logger.info(
@@ -175,20 +194,34 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     if body is None or not meta:
         raise RuntimeError(f"slot {slot}: failed to parse blog-body/blog-meta fences")
 
-    # SEO validation is ADVISORY for drafts — a human fixes nits in HubSpot before
-    # posting, so issues are flagged (and written into the bundle), never fatal.
-    # The validator keys on `slug`, but the skill emits `url_slug`; map it across.
-    seo_fields = {k: v for k, v in meta.items() if isinstance(v, str)}
-    seo_fields.setdefault("slug", str(meta.get("url_slug", "")))
-    seo_issues = bp.validate_seo_fields(seo_fields)
+    body, meta = _apply_mechanical_fixes(body, meta)
+    seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
+
+    # --- automatic correction pass: feed the QA findings to aplus-content-corrector,
+    # which rewrites the post to fix them, then re-check ONCE. The draft you review is
+    # the corrected version, not the first draft.
+    if not (fact_pass and brand_pass and not seo_issues):
+        logger.info("slot=%s pre-correction fact=%s brand=%s seo=%d — running corrector",
+                    slot, fact_pass, brand_pass, len(seo_issues))
+        new_body, new_meta = bp.run_corrections(
+            runner, body, bp.format_meta_for_hubspot_script(meta, topic),
+            fact_report=("" if fact_pass else fact_result.text),
+            brand_report=("" if brand_pass else brand_result.text),
+            seo_issues=seo_issues,
+        )
+        if new_body and new_meta:
+            body, meta = _apply_mechanical_fixes(new_body, new_meta)
+            seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
+            logger.info("slot=%s post-correction fact=%s brand=%s seo=%d",
+                        slot, fact_pass, brand_pass, len(seo_issues))
+        else:
+            logger.warning("slot=%s corrector output unparseable; keeping original draft", slot)
+
     for issue in seo_issues:
         logger.warning("seo_issue slot=%s %s", slot, issue)
 
-    fact_pass, fact_result = bp.run_fact_check(runner, body)
-    brand_pass, brand_result = bp.run_brand_check(runner, body)
-
-    # All QA gates are ADVISORY for drafts — a human reviews every draft in HubSpot
-    # before posting. Failures are flagged on the bundle; they never block the draft.
+    # Remaining gates after the correction pass are ADVISORY — a human reviews every
+    # draft in HubSpot before posting. Failures are flagged on the bundle, never block.
     flags: list[str] = []
     if not fact_pass:
         flags.append("FACT-CHECK — " + (_extract_issues(fact_result.text) or "see fact-check-report.md"))
