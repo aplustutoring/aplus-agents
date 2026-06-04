@@ -80,11 +80,14 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     if body is None or not meta:
         raise RuntimeError(f"slot {slot}: failed to parse blog-body/blog-meta fences")
 
-    seo_issues = bp.validate_seo_fields({k: v for k, v in meta.items() if isinstance(v, str)})
-    if seo_issues:
-        for issue in seo_issues:
-            logger.error("seo_validation slot=%s %s", slot, issue)
-        raise RuntimeError(f"slot {slot}: SEO validation failed ({len(seo_issues)} issue(s))")
+    # SEO validation is ADVISORY for drafts — a human fixes nits in HubSpot before
+    # posting, so issues are flagged (and written into the bundle), never fatal.
+    # The validator keys on `slug`, but the skill emits `url_slug`; map it across.
+    seo_fields = {k: v for k, v in meta.items() if isinstance(v, str)}
+    seo_fields.setdefault("slug", str(meta.get("url_slug", "")))
+    seo_issues = bp.validate_seo_fields(seo_fields)
+    for issue in seo_issues:
+        logger.warning("seo_issue slot=%s %s", slot, issue)
 
     fact_pass, fact_result = bp.run_fact_check(runner, body)
     brand_pass, brand_result = bp.run_brand_check(runner, body)
@@ -95,7 +98,13 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         bundle_dir, body, bp.format_meta_for_hubspot_script(meta, topic),
         {"fact-check": fact_result, "brand-check": brand_result},
     )
-    logger.info("bundle_written slot=%s path=%s", slot, bundle_dir)
+    if seo_issues:
+        (bundle_dir / "seo-review.md").write_text(
+            "# SEO review — fix in HubSpot before posting\n\n"
+            + "\n".join(f"- {issue}" for issue in seo_issues) + "\n",
+            encoding="utf-8",
+        )
+    logger.info("bundle_written slot=%s path=%s seo_issues=%d", slot, bundle_dir, len(seo_issues))
 
     if not (fact_pass and brand_pass):
         logger.warning(
@@ -103,11 +112,12 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
             slot, fact_pass, brand_pass,
         )
         return {"slot": slot, "status": "gated", "bundle_dir": str(bundle_dir),
-                "fact_pass": fact_pass, "brand_pass": brand_pass, "post_date": str(post_date)}
+                "fact_pass": fact_pass, "brand_pass": brand_pass,
+                "seo_issues": len(seo_issues), "post_date": str(post_date)}
 
     if dry_run:
         return {"slot": slot, "status": "generated", "bundle_dir": str(bundle_dir),
-                "post_date": str(post_date), "dry_run": True}
+                "post_date": str(post_date), "seo_issues": len(seo_issues), "dry_run": True}
 
     publish_rc = bp.shell_out_to_publish(bundle_dir, dry_run=False)
     if publish_rc != 0:
@@ -138,9 +148,11 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         "bundle_dir": str(bundle_dir.relative_to(bp.REPO_ROOT)),
         "publish_rc": publish_rc,
         "slack_rc": slack_rc,
+        "seo_issues": len(seo_issues),
     })
     return {"slot": slot, "status": "staged", "bundle_dir": str(bundle_dir),
-            "post_date": str(post_date), "publish_rc": publish_rc, "slack_rc": slack_rc}
+            "post_date": str(post_date), "seo_issues": len(seo_issues),
+            "publish_rc": publish_rc, "slack_rc": slack_rc}
 
 
 def build(*, dry_run: bool = False, only_slot: int | None = None) -> list[dict]:
