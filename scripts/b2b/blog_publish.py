@@ -229,6 +229,14 @@ def format_meta_for_hubspot_script(meta: dict[str, object], topic: dict) -> str:
             lines.append(f"{list_key}:")
             for item in meta[list_key]:
                 lines.append(f"  - {item}")
+    # Pair each pull-quote to its logo-composited graphic so embed-pull-quotes.py
+    # can insert the figure inline after the paragraph containing that quote.
+    pqs = meta.get("pull_quotes")
+    if isinstance(pqs, list) and pqs and "inline_pull_quote_images" not in meta:
+        lines.append("")
+        lines.append("inline_pull_quote_images:")
+        for i in range(len(pqs)):
+            lines.append(f"  - pull-quote-s{i + 1}-with-logo.png")
     return "\n".join(lines) + "\n"
 
 
