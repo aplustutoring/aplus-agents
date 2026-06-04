@@ -74,6 +74,7 @@ STAGE_ORDER = [
     "read_sources",
     "hubspot",
     "bundle",
+    "names",
     "draft",
     "anonymization",
     "archive",
@@ -459,35 +460,87 @@ def claude_complete(
 # (pronouns in source quotes carry through to the published doc, so a
 # gender mismatch produces a visible "he"/"she" inconsistency). Never
 # expand via Claude generation — we want a fixed, auditable list.
-PSEUDONYM_POOLS: dict[str, dict[str, list[str]]] = {
+# Pools are keyed culture -> cohort -> gender. The cohort axis makes a
+# pseudonym read as the right *generation*: students draw from names popular
+# for ~2010-2020 births, parents/guardians/other adults from names popular for
+# ~1980-early-2000s births. (Otherwise a mom ends up named like a 6th-grader.)
+# Hand-curated, fixed, and auditable — never expanded via Claude generation.
+PSEUDONYM_POOLS: dict[str, dict[str, dict[str, list[str]]]] = {
     "latino_hispanic": {
-        "girl": ["Camila", "Sofia", "Lucia", "Valeria", "Isabella", "Adriana"],
-        "boy":  ["Diego", "Mateo", "Gabriel", "Daniel", "Marco", "Javier"],
+        "student": {
+            "girl": ["Camila", "Sofia", "Valentina", "Isabella", "Mia", "Gabriela"],
+            "boy":  ["Mateo", "Santiago", "Diego", "Sebastian", "Gabriel", "Daniel"],
+        },
+        "adult": {
+            "girl": ["Adriana", "Maria", "Carolina", "Veronica", "Diana", "Patricia"],
+            "boy":  ["Javier", "Carlos", "Jose", "Luis", "Marco", "Eduardo"],
+        },
     },
     "african_american": {
-        "girl": ["Aaliyah", "Imani", "Zaria", "Maya", "Nia", "Amara"],
-        "boy":  ["Marcus", "Jayden", "Malik", "Andre", "Justice", "Terrell"],
+        "student": {
+            "girl": ["Aaliyah", "Imani", "Zaria", "Nia", "Amara", "Layla"],
+            "boy":  ["Jayden", "Elijah", "Josiah", "Malik", "Xavier", "Isaiah"],
+        },
+        "adult": {
+            "girl": ["Jasmine", "Brianna", "Tiffany", "Danielle", "Crystal", "Monique"],
+            "boy":  ["Marcus", "Andre", "Brandon", "Darius", "Maurice", "Terrence"],
+        },
     },
     "asian_east": {
-        "girl": ["Aiko", "Mei", "Yuna", "Sora", "Lin", "Hana"],
-        "boy":  ["Kai", "Jin", "Ren", "Hiro", "Daiki", "Akira"],
+        "student": {
+            "girl": ["Aiko", "Mei", "Yuna", "Sora", "Hana", "Mina"],
+            "boy":  ["Kai", "Jin", "Ren", "Hiro", "Daiki", "Akira"],
+        },
+        "adult": {
+            "girl": ["Lin", "Yuki", "Jia", "Min", "Hyun", "Wen"],
+            "boy":  ["Wei", "Jun", "Hiroshi", "Kenji", "Tao", "Sung"],
+        },
     },
     "asian_south": {
-        "girl": ["Priya", "Anika", "Diya", "Saanvi", "Aanya", "Ishani"],
-        "boy":  ["Arjun", "Aarav", "Rohan", "Vikram", "Kabir", "Ishaan"],
+        "student": {
+            "girl": ["Anika", "Diya", "Saanvi", "Aanya", "Ishani", "Priya"],
+            "boy":  ["Arjun", "Aarav", "Rohan", "Vihaan", "Kabir", "Ishaan"],
+        },
+        "adult": {
+            "girl": ["Anita", "Deepa", "Sunita", "Meena", "Kavita", "Neha"],
+            "boy":  ["Raj", "Sanjay", "Amit", "Vijay", "Anil", "Deepak"],
+        },
     },
     "middle_eastern": {
-        "girl": ["Layla", "Amira", "Zara", "Noor", "Sara", "Yasmin"],
-        "boy":  ["Omar", "Yusuf", "Karim", "Tariq", "Hamza", "Ali"],
+        "student": {
+            "girl": ["Layla", "Amira", "Zara", "Noor", "Sara", "Yasmin"],
+            "boy":  ["Omar", "Yusuf", "Karim", "Adam", "Hamza", "Zayd"],
+        },
+        "adult": {
+            "girl": ["Fatima", "Leila", "Mona", "Rania", "Hala", "Dalia"],
+            "boy":  ["Khalid", "Sami", "Tariq", "Hassan", "Nabil", "Bassam"],
+        },
     },
     "white_american": {
-        "girl": ["Emma", "Olivia", "Ava", "Charlotte", "Sophia", "Hannah"],
-        "boy":  ["Liam", "Noah", "Ethan", "Owen", "Henry", "Caleb"],
+        "student": {
+            "girl": ["Emma", "Olivia", "Ava", "Charlotte", "Sophia", "Harper"],
+            "boy":  ["Liam", "Noah", "Ethan", "Owen", "Henry", "Caleb"],
+        },
+        "adult": {
+            "girl": ["Jennifer", "Jessica", "Ashley", "Amanda", "Sarah", "Melissa"],
+            "boy":  ["Michael", "Christopher", "Matthew", "Joshua", "David", "Brian"],
+        },
     },
 }
 
 PSEUDONYM_CATEGORIES = list(PSEUDONYM_POOLS.keys())
 PSEUDONYM_GENDERS = ("girl", "boy")
+PSEUDONYM_COHORTS = ("student", "adult")
+
+# Which cohort each role draws from. Tutors are kept verbatim (not pooled).
+ROLE_COHORT = {
+    "student": "student",
+    "sibling": "student",
+    "parent": "adult",
+    "guardian": "adult",
+    "tor": "adult",
+    "other": "adult",
+}
 
 
 def classify_cultural_background(real_first_name: str) -> str:
@@ -556,27 +609,49 @@ def classify_gender(source_texts: dict[str, str], brief_fields: dict | None = No
     return "girl"
 
 
-def pseudonym_for_name(real_name: str, gender: str) -> str:
-    """Cultural-classify the real first name, SHA-256-pick from the
-    gender-matched pool. Returns a clean single-token lowercase name.
-
-    The pool is filtered by gender first so the pseudonym matches the real
-    student's gender — otherwise pronouns in source quotes carry through
-    with a visible inconsistency.
-    """
+def pick_pseudonym(
+    real_name: str,
+    gender: str,
+    category: str,
+    cohort: str,
+    used: set[str] | None = None,
+) -> str:
+    """Deterministically SHA-256-pick a pseudonym from the
+    culture x cohort x gender pool, skipping the real first name and any name
+    already taken (`used`, lowercased) so two people in one case study never
+    collide. Returns the chosen name with its pool capitalization."""
     if gender not in PSEUDONYM_GENDERS:
         raise OrchestratorError(
-            f"pseudonym_for_name needs gender in {PSEUDONYM_GENDERS}, got {gender!r}."
+            f"pick_pseudonym needs gender in {PSEUDONYM_GENDERS}, got {gender!r}."
         )
+    if cohort not in PSEUDONYM_COHORTS:
+        raise OrchestratorError(
+            f"pick_pseudonym needs cohort in {PSEUDONYM_COHORTS}, got {cohort!r}."
+        )
+    used = used or set()
+    pool = PSEUDONYM_POOLS[category][cohort][gender]
+    real_first = (real_name.split() or ["x"])[0].lower()
+    # Cohort in the hash seed so a parent and a same-named-hashing student
+    # don't land on parallel indices.
+    digest_int = int(
+        hashlib.sha256(f"{cohort}:{real_name}".encode("utf-8")).hexdigest()[:12], 16
+    )
+    n = len(pool)
+    for k in range(n):
+        cand = pool[(digest_int + k) % n]
+        if cand.lower() == real_first or cand.lower() in used:
+            continue
+        return cand
+    return pool[digest_int % n]  # pool exhausted by collisions — accept a repeat
+
+
+def pseudonym_for_name(real_name: str, gender: str) -> str:
+    """Student pseudonym: classify culture, pick from the STUDENT cohort.
+    Returns a clean single-token lowercase name (kept lowercase for slugs/
+    bundle paths, as before)."""
     real_first = (real_name.split() or ["student"])[0]
     category = classify_cultural_background(real_first)
-    pool = PSEUDONYM_POOLS[category][gender]
-    digest_int = int(hashlib.sha256(real_name.encode("utf-8")).hexdigest()[:12], 16)
-    idx = digest_int % len(pool)
-    candidate = pool[idx]
-    if candidate.lower() == real_first.lower():
-        candidate = pool[(idx + 1) % len(pool)]
-    return candidate.lower()
+    return pick_pseudonym(real_name, gender, category, "student").lower()
 
 
 def normalize_name(name: str) -> str:
@@ -1332,6 +1407,129 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Stage 3.5: name registry — extract every real person once, assign ONE
+# canonical pseudonym each, so every downstream stage reads the same map
+# (no more a parent showing up as "Susan" on one card and "Adriana" on another).
+# ---------------------------------------------------------------------------
+
+NAME_EXTRACTION_SYSTEM = (
+    "You extract the real people named in K-12 case-study source documents so "
+    "they can be consistently anonymized. Output STRICT JSON, no markdown "
+    "fence, exactly:\n"
+    '{"people": [{"name": "<as written in the sources>", '
+    '"role": "<student|parent|guardian|sibling|tutor|tor|other>", '
+    '"gender": "<girl|boy|unknown>", "is_quoted": <true|false>}]}\n'
+    "Rules:\n"
+    "- One entry per DISTINCT person; use the fullest form of the name seen.\n"
+    "- role 'student' = the child the case study is about; 'parent'/'guardian' "
+    "= a caregiver; 'tutor' = the A+ tutor; 'tor' = teacher of record / school "
+    "teacher; 'sibling'; 'other' = anyone else named.\n"
+    "- gender from pronouns/context; 'unknown' if unclear.\n"
+    "- is_quoted = true only if the person is directly quoted.\n"
+    "- Include EVERY named real person. Never invent names."
+)
+
+
+def _extract_people(source_texts: dict[str, str]) -> list[dict]:
+    blob = "\n\n".join(f"--- {n} ---\n{t}" for n, t in source_texts.items())
+    raw = claude_complete(
+        NAME_EXTRACTION_SYSTEM,
+        blob + "\n\nReturn strict JSON only.",
+        max_tokens=2000,
+        temperature=0,
+    )
+    try:
+        data = json.loads(_strip_json_fence(raw))
+    except json.JSONDecodeError as e:
+        raise OrchestratorError(
+            f"Name extraction returned invalid JSON: {e}. First 300 chars: {raw[:300]!r}"
+        )
+    return data.get("people", []) or []
+
+
+def build_name_registry(run: dict, source_texts: dict[str, str]) -> dict:
+    """Return {category, entries:[{real, role, action, pseudonym}]} pinning ONE
+    canonical replacement per real name. action ∈ replace|keep. Family members
+    inherit the student's cultural category so a Latino student's mom gets a
+    Latino adult name; tutors are kept verbatim (brand rule)."""
+    student_first = run["real_firstname"]
+    student_pseud = (run["pseudonym"] or "").capitalize()
+    student_gender = run.get("gender") if run.get("gender") in PSEUDONYM_GENDERS else "girl"
+    category = classify_cultural_background((student_first.split() or ["student"])[0])
+
+    entries: list[dict] = []
+    used = {student_pseud.lower()}
+    # Student first-name spelling variants -> the student pseudonym.
+    student_variants = firstname_variants_in_sources(student_first, source_texts)
+    student_real_lowers = {v.lower() for v in student_variants}
+    for v in student_variants:
+        entries.append({"real": v, "role": "student", "action": "replace", "pseudonym": student_pseud})
+
+    assigned: dict[str, str] = {}  # real-first-lower -> pseudonym (dedupe same person)
+    for p in _extract_people(source_texts):
+        name = (p.get("name") or "").strip()
+        if not name:
+            continue
+        first = name.split()[0]
+        fl = first.lower()
+        role = (p.get("role") or "other").lower()
+        if role == "student" or fl in student_real_lowers:
+            continue  # already covered by the student variants above
+        if fl in assigned:
+            continue  # same person seen twice
+        if role == "tutor":
+            entries.append({"real": first, "role": "tutor", "action": "keep", "pseudonym": first})
+            assigned[fl] = first
+            continue
+        if role not in ROLE_COHORT:
+            role = "other"
+        gender = (p.get("gender") or "").lower()
+        if gender not in PSEUDONYM_GENDERS:
+            gender = "girl" if role in ("parent", "guardian") else student_gender
+        pseud = pick_pseudonym(name, gender, category, ROLE_COHORT[role], used)
+        used.add(pseud.lower())
+        assigned[fl] = pseud
+        entries.append({"real": first, "role": role, "action": "replace", "pseudonym": pseud})
+
+    return {"category": category, "entries": entries}
+
+
+def registry_replacements(registry: dict) -> list[tuple[str, str]]:
+    """(real, pseudonym) pairs to swap in Doc 1, longest real first so a short
+    name can't partially consume a longer one."""
+    pairs = [
+        (e["real"], e["pseudonym"])
+        for e in (registry or {}).get("entries", [])
+        if e.get("action") == "replace" and e.get("real") and e.get("pseudonym")
+    ]
+    return sorted(pairs, key=lambda p: len(p[0]), reverse=True)
+
+
+def stage_names(args: argparse.Namespace, run: dict) -> dict:
+    bundle = Path(run["bundle_path"])
+    source_texts = json.loads((bundle / "source_texts.json").read_text())
+    registry = build_name_registry(run, source_texts)
+    (bundle / "name-map.json").write_text(
+        json.dumps(registry, indent=2, ensure_ascii=False)
+    )
+    print(
+        f"  Name registry ({registry['category']}): {len(registry['entries'])} entr(ies):"
+    )
+    for e in registry["entries"]:
+        verb = "KEEP" if e["action"] == "keep" else "->"
+        print(f"    {e['real']!r} [{e['role']}] {verb} {e['pseudonym']!r}")
+    run.update(
+        {
+            "stage": "names",
+            "name_map_path": str((bundle / "name-map.json").resolve()),
+            "name_registry": registry,
+        }
+    )
+    update_run(run["run_id"], run)
+    return run
+
+
+# ---------------------------------------------------------------------------
 # Stage 4: draft — Doc 1 (anonymized) + Doc 2 (archive with name-mapping table)
 # ---------------------------------------------------------------------------
 
@@ -1423,6 +1621,35 @@ def anonymize_firstname_variants(
     return text, total
 
 
+def anonymize_all_names(
+    text: str,
+    registry: dict | None,
+    real_firstname: str,
+    source_texts: dict[str, str],
+    pseudonym: str,
+) -> tuple[str, int]:
+    """Deterministically replace EVERY real first name in the canonical registry
+    (student variants + parents/guardians/siblings/etc.) with its pinned
+    pseudonym in Doc 1, after brand-check. Word-boundary, case-insensitive,
+    doubled-consonant tolerant. Tutors (action=keep) are left verbatim. Falls
+    back to the student-first-name-only sweep when no registry is present.
+
+    Same common-word caveat as the firstname sweep: a name that is also an
+    English word can be over-replaced; drafts are reviewed at Gate 2.
+    """
+    pairs = registry_replacements(registry) if registry else []
+    if not pairs:
+        return anonymize_firstname_variants(text, real_firstname, source_texts, pseudonym)
+    total = 0
+    for real, pseud in pairs:  # registry_replacements is already longest-first
+        pattern = re.compile(
+            rf"\b{_doubled_letter_variant_pattern(real)}\b", re.IGNORECASE
+        )
+        text, n = pattern.subn(pseud, text)
+        total += n
+    return text, total
+
+
 def _build_draft_user_prompt(
     *,
     real_firstname: str,
@@ -1430,17 +1657,24 @@ def _build_draft_user_prompt(
     pseudonym: str,
     school: str | None,
     source_texts: dict[str, str],
+    registry: dict | None = None,
 ) -> str:
     sources_block = "\n\n".join(
         f"--- {name} ---\n{text}" for name, text in source_texts.items()
     )
     real_full = f"{real_firstname} {real_lastname}" if real_lastname else real_firstname
-    # Seed EVERY spelling variant of the real first name found in the sources
-    # (e.g. folder says "Johny", sources say "Johnny") so the swap catches all.
-    name_variants = firstname_variants_in_sources(real_firstname, source_texts)
-    variant_rows = "\n".join(
-        f"| {v} | {pseudonym.capitalize()} |" for v in name_variants
-    ) or f"| {real_firstname} | {pseudonym.capitalize()} |"
+    # Mapping table is seeded from the canonical name registry so every person
+    # has ONE pinned pseudonym. Fall back to student spelling variants only if
+    # the registry is unavailable (older runs / resume).
+    if registry and registry.get("entries"):
+        mapping_rows = "\n".join(
+            f"| {e['real']} | {e['pseudonym']} |" for e in registry["entries"]
+        )
+    else:
+        name_variants = firstname_variants_in_sources(real_firstname, source_texts)
+        mapping_rows = "\n".join(
+            f"| {v} | {pseudonym.capitalize()} |" for v in name_variants
+        ) or f"| {real_firstname} | {pseudonym.capitalize()} |"
     return f"""Draft the master case study for this student.
 
 REAL NAME (use only in Doc 2): {real_full}
@@ -1472,13 +1706,16 @@ two-column markdown table:
 
 | Real | Published |
 |------|-----------|
-{variant_rows}
-| (other real-name tokens) | (their published replacements) |
+{mapping_rows}
+| (any other real-name token) | (its published replacement) |
 
-The rows above are ALL spelling variants of the student's real first name
-found in the sources (e.g. "Johny" and "Johnny"). Every one of them maps to
-the pseudonym: replace each in Doc 1 and keep its row here. Do not merge or
-drop a variant.
+CRITICAL — the rows above are the CANONICAL name map for this case study.
+Each real name has ONE pinned replacement. Use EXACTLY that replacement for
+that person EVERYWHERE in Doc 1 — body prose, pull quotes, and the
+attribution line. Never invent a different pseudonym, never vary it, never
+use two different names for the same person. (Rows where Real == Published
+are kept verbatim, e.g. the tutor.) Spelling variants of the student's name
+all map to the same student pseudonym.
 
 Every distinct real-name token that appears in the sources MUST appear
 in this table — student first/last name, parent name(s), tutor name(s),
@@ -1487,10 +1724,9 @@ TOR name(s), school name.
 ANONYMIZATION RULES — apply these strictly when writing Doc 1 and when
 populating the mapping table:
 
-- Parent first names: MUST be pseudonymized. Choose a single-token
-  culturally-matched pseudonym (Renata -> Adriana, Linda -> Susan,
-  Aisha -> Amina). The mapping row reads `| Renata | Adriana |`. The
-  real parent's first name never appears in Doc 1.
+- Parent / guardian / sibling / other first names: use the EXACT pinned
+  replacement from the canonical map above — do not choose your own. The
+  real first name never appears in Doc 1.
 - Parent last names: dropped from Doc 1 entirely. Mapping row uses
   `(dropped)`.
 - Student last name: dropped from Doc 1 entirely. Mapping row uses
@@ -1612,6 +1848,7 @@ def stage_draft(args: argparse.Namespace, run: dict) -> dict:
         pseudonym=run["pseudonym"],
         school=run.get("school"),
         source_texts=source_texts,
+        registry=run.get("name_registry"),
     )
 
     pseudonym = run["pseudonym"]
@@ -1639,13 +1876,14 @@ def stage_draft(args: argparse.Namespace, run: dict) -> dict:
             # drafting LLM left behind (incl. doubled-consonant spellings) with
             # the pseudonym, so the anonymization gate is not the only line of
             # defense. Runs AFTER brand-check so a rewrite can't reintroduce it.
-            doc1_clean, n_swept = anonymize_firstname_variants(
-                doc1_clean, run["real_firstname"], source_texts, pseudonym
+            doc1_clean, n_swept = anonymize_all_names(
+                doc1_clean, run.get("name_registry"), run["real_firstname"],
+                source_texts, pseudonym,
             )
             if n_swept:
                 print(
-                    f"    Name sweep: replaced {n_swept} leaked real-first-name "
-                    f"token(s) with pseudonym {pseudonym!r}."
+                    f"    Name sweep: replaced {n_swept} leaked real-name "
+                    "token(s) with canonical pseudonyms."
                 )
             doc1_path.write_text(doc1_clean + "\n")
             doc2_path.write_text(doc2 + "\n")
@@ -1884,6 +2122,21 @@ def stage_metadata(args: argparse.Namespace, run: dict) -> dict:
     today = datetime.utcnow().date()
     target_publish = today + timedelta(days=7)
 
+    # Canonical name map so pull_quote_attribution + any names inside the
+    # pull quotes use the SAME pseudonyms as Doc 1 (no Susan-vs-Adriana split).
+    registry = run.get("name_registry") or {}
+    name_map_lines = "\n".join(
+        f"  - {e['real']} ({e['role']}) -> {e['pseudonym']}"
+        for e in registry.get("entries", [])
+    )
+    name_map_block = (
+        "CANONICAL NAME MAP (use these EXACT names — the parent attribution and "
+        "any name inside a pull quote must match Doc 1; never introduce a "
+        "different pseudonym for the same person):\n" + name_map_lines + "\n\n"
+        if name_map_lines
+        else ""
+    )
+
     user = (
         f"Pseudonym: {pseudonym}\n"
         f"School (canonical name): {school}\n"
@@ -1891,6 +2144,7 @@ def stage_metadata(args: argparse.Namespace, run: dict) -> dict:
         f"Today's date: {today.isoformat()}\n"
         f"Target publish date: {target_publish.isoformat()}\n"
         f"student_ethnicity prose: {demographics}\n\n"
+        + name_map_block +
         "DRAFT CASE STUDY (Doc 1):\n\n" + doc1 +
         "\n\nSOURCE LESSON / TUTOR TEXT (for milestone extraction):\n\n" +
         milestone_seed +
@@ -2871,6 +3125,7 @@ STAGE_DISPATCH = {
     "read_sources": stage_read_sources,
     "hubspot": stage_hubspot,
     "bundle": stage_bundle,
+    "names": stage_names,
     "draft": stage_draft,
     "anonymization": stage_anonymization,
     "archive": stage_archive,
