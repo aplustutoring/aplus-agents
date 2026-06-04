@@ -24,11 +24,14 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import re
 import subprocess
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
+import requests
 
 import sys as _sys
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -65,6 +68,58 @@ def post_date_for_slot(week: str, slot: int) -> "datetime.date":
 def _slugify(value: str, fallback: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", (value or "").lower()).strip("-")
     return slug or fallback
+
+
+SUMMARY_CHANNEL = os.environ.get("TOPIC_REVIEW_CHANNEL", "#weekly-content-ready")
+HUBSPOT_EDIT_URL = "https://app.hubspot.com/blog/6312752/editor/{post_id}/content"
+
+
+def _extract_issues(report_text: str, limit: int = 900) -> str:
+    """Pull the 'Issues Found' section from a fact/brand-check report (the
+    specific, actionable findings) so the reviewer sees exactly what to fix."""
+    m = re.search(r"#+\s*Issues?\s+Found.*", report_text or "", re.IGNORECASE | re.DOTALL)
+    snippet = (m.group(0) if m else (report_text or "")).strip()
+    return snippet[:limit].rstrip()
+
+
+def _slack_post(text: str) -> None:
+    token = os.environ.get("SLACK_BOT_TOKEN")
+    if not token:
+        logger.warning("SLACK_BOT_TOKEN not set; skipping draft-summary post")
+        return
+    try:
+        r = requests.post(
+            "https://slack.com/api/chat.postMessage",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"channel": SUMMARY_CHANNEL, "text": text, "mrkdwn": True, "unfurl_links": False},
+            timeout=30,
+        )
+        if not r.json().get("ok"):
+            logger.warning("slack summary post failed: %s", r.json().get("error"))
+    except Exception as e:  # non-fatal — the drafts still exist in HubSpot
+        logger.warning("slack summary post error: %s", e)
+
+
+def _post_summary(results: list[dict]) -> None:
+    """One Slack message: each ready draft + HubSpot link + its specific flags."""
+    staged = [r for r in results if r.get("status") == "staged"]
+    if not staged:
+        return
+    lines = [":memo: *This week's blog drafts are ready in HubSpot* — review, fix any flags, then post Mon/Wed/Fri.\n"]
+    for r in staged:
+        pid = r.get("hubspot_post_id")
+        url = HUBSPOT_EDIT_URL.format(post_id=pid) if pid else ""
+        head = (r.get("headline") or "")[:90]
+        lines.append(f"*Slot {r['slot']} — {r.get('post_date','')}:* <{url}|{head}>")
+        qa = ["fact :white_check_mark:" if r.get("fact_pass") else "fact :x:",
+              "brand :white_check_mark:" if r.get("brand_pass") else "brand :x:"]
+        if r.get("seo_issues"):
+            qa.append(f"seo:{r['seo_issues']}")
+        lines.append("  " + " · ".join(qa))
+        for fd in r.get("flag_details", []):
+            lines.append(f"  :warning: {' '.join(fd.split())[:300]}")
+        lines.append("")
+    _slack_post("\n".join(lines).rstrip())
 
 
 def _publish_draft(bundle_dir: Path, update_post_id: "str | None" = None) -> "tuple[int, str | None]":
@@ -115,10 +170,10 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     # before posting. Failures are flagged on the bundle; they never block the draft.
     flags: list[str] = []
     if not fact_pass:
-        flags.append("fact-check FAIL — verify claims before posting")
+        flags.append("FACT-CHECK — " + (_extract_issues(fact_result.text) or "see fact-check-report.md"))
     if not brand_pass:
-        flags.append("brand-check FAIL — fix voice / banned-word issues before posting")
-    flags += [f"seo: {issue}" for issue in seo_issues]
+        flags.append("BRAND-CHECK — " + (_extract_issues(brand_result.text) or "see brand-check-report.md"))
+    flags += [f"SEO — {issue}" for issue in seo_issues]
 
     slug = _slugify(str(meta.get("url_slug", "")), f"slot-{slot}")
     bundle_dir = bp.CONTENT_DIR / f"{post_date}-{slug}"
@@ -138,9 +193,10 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     )
 
     if dry_run:
-        return {"slot": slot, "status": "generated", "bundle_dir": str(bundle_dir),
-                "post_date": str(post_date), "fact_pass": fact_pass, "brand_pass": brand_pass,
-                "seo_issues": len(seo_issues), "flags": len(flags), "dry_run": True}
+        return {"slot": slot, "status": "generated", "headline": topic.get("headline"),
+                "bundle_dir": str(bundle_dir), "post_date": str(post_date),
+                "fact_pass": fact_pass, "brand_pass": brand_pass,
+                "seo_issues": len(seo_issues), "flags": len(flags), "flag_details": flags, "dry_run": True}
 
     publish_rc, post_id = _publish_draft(bundle_dir, update_post_id=existing_post_id)
     if publish_rc != 0:
@@ -182,10 +238,10 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         "seo_issues": len(seo_issues),
         "flags": flags,
     })
-    return {"slot": slot, "status": "staged", "action": action, "bundle_dir": str(bundle_dir),
-            "post_date": str(post_date), "hubspot_post_id": post_id,
+    return {"slot": slot, "status": "staged", "action": action, "headline": topic.get("headline"),
+            "bundle_dir": str(bundle_dir), "post_date": str(post_date), "hubspot_post_id": post_id,
             "fact_pass": fact_pass, "brand_pass": brand_pass,
-            "seo_issues": len(seo_issues), "flags": len(flags),
+            "seo_issues": len(seo_issues), "flags": len(flags), "flag_details": flags,
             "publish_rc": publish_rc, "slack_rc": slack_rc}
 
 
@@ -218,6 +274,10 @@ def build(*, dry_run: bool = False, only_slot: int | None = None, rebuild: bool 
             slot, topic, week, runner,
             dry_run=dry_run, existing_post_id=topic.get("hubspot_post_id"),
         ))
+    # One consolidated Slack message: the 3 drafts + links + their specific flags,
+    # so Danielle sees exactly what to fix (only on a full real build).
+    if not dry_run and not only_slot:
+        _post_summary(results)
     return results
 
 

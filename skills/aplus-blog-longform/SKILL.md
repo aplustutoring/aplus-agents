@@ -169,6 +169,15 @@ Every substantive claim must be ONE of two clearly distinguishable types:
 
 NEVER present an unverified interpretation, forecast, or characterization as established fact. This is the single most important rule for passing fact-check — the fact-checker fails opinions dressed up as facts. When in doubt, attribute it to A+ as opinion rather than asserting it. This also makes the writing more honest and more persuasive: readers trust a brand that distinguishes what it knows from what it believes.
 
+#### Source attribution discipline (v1.7 — prevents the #1 fact-check failure)
+
+Attribute **every statistic to its exact source.** Do NOT chain numbers from two different studies, agencies, or reports into one sentence in a way that implies they share a source. When two findings appear together, name each source separately.
+
+- WRONG: "Stanford research found 39% of students who scored 4 were not reclassified, and roughly 18,500 students statewide remained classified as English learners." *(The 39% is Stanford; the 18,500 is University of Oregon — this conflation is an auto-fail.)*
+- RIGHT: "Stanford researchers found 39% of students who scored 4 were not reclassified the following year. Separately, University of Oregon research found roughly 18,500 students statewide remained classified as English learners despite scoring 4."
+
+Every number gets a named source and, where possible, a hyperlink. If you are not certain which source a number comes from, do not present it as fact — cut it or flag it.
+
 #### Image alt text rules (v1.5)
 
 Every image in the blog (hero, inline pull-quote graphics, infographics) must have alt text that is:
