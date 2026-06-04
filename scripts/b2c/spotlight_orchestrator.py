@@ -52,14 +52,20 @@ except ImportError:  # pragma: no cover
     docx = None
 
 try:
+    import fitz  # PyMuPDF — used for TEXT extraction (not OCR/vision)
+except ImportError:  # pragma: no cover
+    fitz = None
+
+try:
     import anthropic
 except ImportError:  # pragma: no cover
     anthropic = None
 
-# A PDF must yield at least this much embedded text to count as text-based.
-# Below it the PDF is treated as scanned/image-only. OCR is intentionally
-# DISABLED (cost control): such a file must be supplied as a text export
-# (.txt/.docx) or a text-based PDF instead of being vision-transcribed.
+# A PDF must yield at least this much extractable text to count as readable.
+# A+ source PDFs are always platform exports (never scans), so the text layer
+# exists — but some exports trip pypdf's decoder. We try pypdf then PyMuPDF
+# (which handles those font/encoding quirks). OCR/vision is intentionally
+# DISABLED; if both text extractors fail, ask for a .txt/.docx re-export.
 PDF_MIN_TEXT_LEN = 120
 
 STAGE_ORDER = [
@@ -277,33 +283,53 @@ def extract_text_from_docx(path: Path) -> str:
     return "\n\n".join(paragraphs)
 
 
-def extract_text_from_pdf(path: Path) -> str:
-    """Extract embedded text from a text-based PDF via pypdf.
-
-    OCR is intentionally DISABLED. If the PDF is scanned / image-only (pypdf
-    yields almost no text), raise a clear error so the operator supplies a text
-    export instead of incurring vision-OCR cost. If a same-named text file was
-    dropped alongside it, find_source_files already preferred that text twin and
-    this PDF was never read.
-    """
+def _pdf_text_pypdf(path: Path) -> str:
     if PdfReader is None:
-        raise OrchestratorError("pypdf is required to read PDF files. Install it in requirements.txt.")
-    reader = PdfReader(path)
+        return ""
+    try:
+        reader = PdfReader(path)
+    except Exception:
+        return ""
     pages = []
     for page in reader.pages:
         try:
-            text = page.extract_text() or ""
+            pages.append(page.extract_text() or "")
         except Exception:
-            text = ""
-        pages.append(text)
-    extracted = "\n\n".join(pages).strip()
-    if len(extracted) >= PDF_MIN_TEXT_LEN and extracted.count("\n") >= 3:
-        return extracted
+            pages.append("")
+    return "\n\n".join(pages).strip()
+
+
+def _pdf_text_pymupdf(path: Path) -> str:
+    """PyMuPDF text extraction — handles font/encoding quirks in exported PDFs
+    that make pypdf return little or nothing. Plain text, no OCR/vision."""
+    if fitz is None:
+        return ""
+    try:
+        doc = fitz.open(str(path))
+        try:
+            return "\n\n".join(page.get_text() for page in doc).strip()
+        finally:
+            doc.close()
+    except Exception:
+        return ""
+
+
+def extract_text_from_pdf(path: Path) -> str:
+    """Extract embedded text from a digitally-generated PDF — no OCR.
+
+    A+ source PDFs are platform exports (never scans), so the text layer exists.
+    Try pypdf first, then PyMuPDF (stronger on the font/encoding quirks that make
+    some exports yield 0 chars in pypdf). If BOTH text extractors come up empty,
+    the file has no usable text layer: raise a clear error asking for a .txt/
+    .docx re-export (a same-named .txt is picked up automatically)."""
+    best = max((_pdf_text_pypdf(path), _pdf_text_pymupdf(path)), key=len)
+    if len(best) >= PDF_MIN_TEXT_LEN and best.count("\n") >= 3:
+        return best
     raise OrchestratorError(
-        f"PDF '{path.name}' has no embedded text — it looks scanned/image-only "
-        f"({len(extracted)} chars extracted). OCR is disabled to control cost. "
-        "Provide a text export (.txt or .docx) or a text-based PDF for this "
-        "document (a .txt with the same name will be used automatically)."
+        f"PDF '{path.name}' has no extractable text layer "
+        f"({len(best)} chars via pypdf + PyMuPDF). OCR is disabled. Re-export it "
+        "as text (.txt or .docx) or a text-based PDF — a .txt with the same name "
+        "is used automatically."
     )
 SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
 
