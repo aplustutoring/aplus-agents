@@ -232,7 +232,8 @@ def run_fact_check(runner: SkillsRunner, body: str) -> tuple[bool, SkillResult]:
         "Conclude with a clear `VERDICT: PASS` or `VERDICT: FAIL` line.\n\n"
         f"---\n{body}\n---"
     )
-    result = runner.run_skill("aplus-fact-check", prompt)
+    # web search lets fact-check actually verify claims against live sources
+    result = runner.run_skill("aplus-fact-check", prompt, web_search=True)
     return _check_skill_verdict(result, "fact-check"), result
 
 
