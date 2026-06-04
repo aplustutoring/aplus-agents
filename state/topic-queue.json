@@ -1,36 +1,36 @@
 {
-  "current_week": "2026-05-28",
+  "current_week": "2026-06-04",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
-      "headline": "California May Revise \u2014 what the 2026-27 budget signals for charter intervention funding",
-      "category": "A (federal/state K-12 funding) \u2014 **lead topic from this lens**",
+      "headline": "California May Revision FY26-27 \u2014 what changed for EL services and LCFF supplemental/concentration",
+      "category": "A (federal/state funding) \u2014 primary lens hit",
       "sources": [],
-      "why_matters": "Every Tier A partner runs on a Prop 98 / LCFF base plus categorical layers (Title I, Title III, ELO-P, Learning Recovery Emergency Block Grant residuals). The May Revise is the single document that tells charter business managers and EDs whether their intervention budget for next year holds, grows, or shrinks. A+ sits in exactly the spend category that gets cut first when categoricals tighten and protected hardest when CDE flags intervention as priority. Danielle's pitch ROI changes depending on which categorical column the money lives in.",
-      "angle": "Translate the May Revise into one sentence per category that matters to charter intervention budgets \u2014 LCFF, Title I carryover, Title III, ELO-P, Learning Recovery. No politics, just \"here's what changed, here's what to ask your business manager Monday.\"",
-      "roman_take": "The conviction angle \u2014 *funded intervention works; underfunded intervention is theater.* Use the May Revise to argue that the schools who spend their categorical dollars on evidence-based, high-dosage tutoring outperform the ones who spread it thin across compliance line items.",
-      "danielle_take": "The implementation angle \u2014 a tactical checklist of \"if your May Revise allocation moved X direction, here are the three categorical lines you should re-examine before June board.\" Practical, dated, school-business-manager language.",
-      "redundancy_max_similarity": 0.3883030810356195
+      "why_matters": "Every California partner \u2014 all 23 Tier A schools \u2014 builds their intervention budget around LCFF supplemental/concentration plus whatever EL-specific lines the state holds steady or cuts. The May Revise is the single most consequential state funding document of the spring. If the Governor protected EL services while cutting elsewhere, that's a story A+ can tell partners. If EL took a haircut, that's a different (and more urgent) story for the LTEL pitch. Either way, Danielle's partner calls next week will reference this document; A+ should be the firm that already framed it on LinkedIn.",
+      "angle": "\"What the May Revise actually changed for charter intervention budgets \u2014 three line items every program director should re-check this week.\" Lead with the EL line, then LCFF, then any intervention-adjacent grant. Practical, not partisan.",
+      "roman_take": "Conviction angle on why categorical EL funding still matters even when the easier political move is to fold it into LCFF \u2014 the LTEL data shows that broad funding without targeted accountability has produced 20+ years of unreclassified students.",
+      "danielle_take": "Implementation angle on the specific worksheet/budget revision step a charter business officer needs to take in the next 30 days to reflect the May Revise before LCAP adoption season \u2014 concrete, calendar-anchored, operator-to-operator.",
+      "redundancy_max_similarity": 0.4606790558279824
     },
     {
       "slot": 2,
       "lens": "competitive_intel",
-      "headline": "The post-ESSER intervention vendor collapse \u2014 and what districts losing their tutoring partner overnight should do next",
-      "category": "D (Industry/competitor moves), with strong overlap to B (K-12 problem stories) and A (funding)",
+      "headline": "Nerdy Q1 2026 earnings confirm the platform-tutoring B2B retreat \u2014 districts are quietly walking away from on-demand contracts",
+      "category": "D (Industry/competitor moves) \u2014 **strongest competitive intel candidate this cycle**",
       "sources": [],
-      "why_matters": "Every venture-backed tutoring vendor that scaled on ESSER dollars is now contracting, pulling contracts, or pivoting to B2C. A+ never took that money, never built a burn-rate-dependent model, and is funded through stable Title I / Title III / LCFF supplemental dollars routed through charter partners. This is the cleanest differentiation moment A+ has had since the company was founded \u2014 \"the vendors built for the sugar high are leaving the room; the vendors built for the work are still here.\" It also gives Danielle a direct outreach hook to any school whose previous tutoring vendor just walked.",
-      "angle": "Frame the shakeout factually (here's what's happening across the intervention vendor market), then position A+'s funding model and partner-embedded approach as the structural reason A+ is still standing. End with a soft call: if your previous tutoring partner just pulled out, here's what a Title-funded intervention partnership looks like.",
-      "roman_take": "\"We watched everyone chase ESSER. We chose Title I and Title III. Here's why that choice looks different in May 2026 than it did in May 2022.\" Conviction angle: the funding source you build on determines whether you're still operating when the music stops.",
-      "danielle_take": "\"When your previous tutoring vendor leaves, the first thing your kids lose isn't the sessions \u2014 it's the data continuity. Here's the implementation question every special programs coordinator should be asking the next vendor in the door.\" Implementation angle: vendor transition isn't a procurement problem, it's a student-progress problem.",
-      "redundancy_max_similarity": 0.4641259646920591
+      "why_matters": "This is the third consecutive quarter where the largest publicly-traded competitor in the K-12 tutoring space has reported B2B/Institutional revenue contraction while leadership pivots messaging toward AI products. The pattern \u2014 Paper (2023 layoffs), Tutor.com (district book shrinking through 2024), now Nerdy \u2014 is the same story: on-demand, platform-scale tutoring doesn't produce the measurable intervention outcomes districts need to defend Title I and Title III spending. A+'s exact opposite model (scheduled, relationship-based, ESSA-aligned, California-LTEL specialized) is the story districts are arriving at the hard way. A+ has earned the right to comment because A+ has been doing this model the whole time, not pivoting to it after a failed exit.",
+      "angle": "\"The platform-tutoring thesis is failing in public. Here's what California charter leaders are choosing instead \u2014 and the three things they're insisting on in 2026-27 contracts.\"",
+      "roman_take": "Conviction post on why \"scale\" was always the wrong KPI for intervention \u2014 districts don't buy hours, they buy reclassification rates and EL outcomes, and no platform can sell those because no platform can be accountable for them.",
+      "danielle_take": "Implementation post on what she's actually hearing in May 2026 conversations with charter directors who are exiting platform contracts \u2014 the specific operational gaps (scheduling, progress monitoring, EL specificity) that surface when the platform tries to deliver Tier 2/3 intervention.",
+      "redundancy_max_similarity": 0.3976898532213472
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1780032042.283879",
-    "posted_at": "2026-05-28T22:17:21.203549-07:00",
-    "approval_deadline": "2026-06-01T07:00:00-07:00",
+    "message_ts": "1780590345.093389",
+    "posted_at": "2026-06-04T09:21:25.351110-07:00",
+    "approval_deadline": "2026-06-08T07:00:00-07:00",
     "refresh_mode": false
   },
   "approval": {
