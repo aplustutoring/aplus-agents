@@ -725,6 +725,30 @@ def read_partner_school_demographics(school_name: str) -> str | None:
     return m.group(1) if m else None
 
 
+# Map a school's prose dominant_demographics to a pseudonym pool category so a
+# case study's family names reflect the SCHOOL population (per-school culture).
+# Order matters: more specific phrases first ("south asian" before "asian").
+_DEMOGRAPHIC_CATEGORY_KEYWORDS = [
+    ("latino_hispanic", ("latin", "hispanic", "mexican", "chicano")),
+    ("african_american", ("black", "african american", "african-american")),
+    ("asian_south", ("south asian", "indian", "pakistani", "desi", "bangladesh")),
+    ("middle_eastern", ("middle eastern", "arab", "persian", "muslim")),
+    ("asian_east", ("asian", "chinese", "japanese", "korean", "vietnamese", "filipino", "hmong")),
+    ("white_american", ("white", "caucasian", "anglo")),
+]
+
+
+def school_culture_category(school: str | None) -> str:
+    """Per-school culture: map the school's dominant_demographics to a
+    PSEUDONYM_CATEGORY. Falls back to the most-represented A+ family
+    demographic when the school has no recorded demographic."""
+    demo = (read_partner_school_demographics(school) or "").lower() if school else ""
+    for cat, words in _DEMOGRAPHIC_CATEGORY_KEYWORDS:
+        if any(w in demo for w in words):
+            return cat
+    return "latino_hispanic"
+
+
 def write_partner_school_demographics(school_name: str, demographics: str) -> bool:
     """Insert/update `dominant_demographics:` for a school entry. Returns True
     if the file was modified, False if the school wasn't found or the value
@@ -1455,7 +1479,10 @@ def build_name_registry(run: dict, source_texts: dict[str, str]) -> dict:
     student_first = run["real_firstname"]
     student_pseud = (run["pseudonym"] or "").capitalize()
     student_gender = run.get("gender") if run.get("gender") in PSEUDONYM_GENDERS else "girl"
-    category = classify_cultural_background((student_first.split() or ["student"])[0])
+    # Per-school culture: family pseudonyms reflect the school's demographic
+    # (your choice), so a parent at a Latino-demographic school gets a Latino
+    # adult name regardless of the student's first name.
+    category = school_culture_category(run.get("school"))
 
     entries: list[dict] = []
     used = {student_pseud.lower()}
