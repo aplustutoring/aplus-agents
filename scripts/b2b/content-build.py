@@ -140,6 +140,27 @@ def _publish_draft(bundle_dir: Path, update_post_id: "str | None" = None) -> "tu
     return r.returncode, (m.group(1) if m else update_post_id)
 
 
+def _build_graphics(bundle_dir: Path) -> None:
+    """Generate the blog graphics (distinct hero + pull-quotes + social card) and
+    composite logos. Best-effort: image-gen failures log and leave the placeholder
+    hero in place — they never crash the content build."""
+    steps = [
+        (bp.REPO_ROOT / "scripts" / "b2b" / "build-graphics.py", ["--bundle", str(bundle_dir)]),
+        (bp.REPO_ROOT / "scripts" / "shared" / "composite-logo.py", ["--bundle", str(bundle_dir)]),
+    ]
+    for script, extra in steps:
+        try:
+            r = subprocess.run(
+                ["python3", str(script), *extra], cwd=str(bp.REPO_ROOT),
+                capture_output=True, text=True, timeout=900,
+            )
+            sys.stdout.write(r.stdout)
+            if r.returncode != 0:
+                logger.warning("%s rc=%s: %s", script.name, r.returncode, (r.stderr or "")[:300])
+        except Exception as e:
+            logger.warning("%s error: %s", script.name, e)
+
+
 def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_run: bool, existing_post_id: "str | None" = None) -> dict:
     post_date = post_date_for_slot(week, slot)
     logger.info(
@@ -191,6 +212,9 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         "bundle_written slot=%s path=%s flags=%d (fact=%s brand=%s seo=%d)",
         slot, bundle_dir, len(flags), fact_pass, brand_pass, len(seo_issues),
     )
+
+    # Distinct hero + pull-quotes + social card (best-effort) before the draft.
+    _build_graphics(bundle_dir)
 
     if dry_run:
         return {"slot": slot, "status": "generated", "headline": topic.get("headline"),
