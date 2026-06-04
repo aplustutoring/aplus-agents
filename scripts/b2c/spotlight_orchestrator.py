@@ -179,12 +179,45 @@ def is_matching_source_file(name: str) -> bool:
     return False
 
 
+# Files the orchestrator itself emits into a bundle. If one is ever left
+# behind in (or copied into) a source folder, it must NEVER be ingested as
+# input — a stale case-study/archive/source-texts file would feed a prior
+# student's names and pseudonyms back into a new run.
+_OUTPUT_FILENAMES = {"source_texts.json", "source_categories.json", "bundle-manifest.json"}
+_OUTPUT_NAME_RE = re.compile(r"^(?:case-study|archive)-.*\.md$", re.IGNORECASE)
+
+
+def is_orchestrator_output(name: str) -> bool:
+    """True if `name` is a file this pipeline produces (not a real source)."""
+    return name in _OUTPUT_FILENAMES or bool(_OUTPUT_NAME_RE.match(name))
+
+
 def find_source_files(source_dir: Path) -> list[Path]:
     files = []
     for item in sorted(source_dir.iterdir()):
-        if item.is_file() and not item.name.startswith("."):
-            files.append(item)
+        if not item.is_file() or item.name.startswith("."):
+            continue
+        if is_orchestrator_output(item.name):
+            print(
+                f"  Skipping orchestrator output file found in source folder: {item.name}",
+                file=sys.stderr,
+            )
+            continue
+        files.append(item)
     return files
+
+
+def pending_dir_for_run(run_id: str) -> Path:
+    """Per-run staging dir for extracted source text, keyed by run_id.
+
+    No two runs ever share a source-text path. The old shared
+    `aplus-content/_pending/` singleton let a concurrent or interleaved run
+    overwrite the file another run later read at `bundle` time, bleeding one
+    student's source text (and therefore pseudonym) into another's draft.
+    """
+    if not run_id:
+        raise OrchestratorError("pending_dir_for_run requires a run_id.")
+    return BUNDLE_ROOT / "_pending" / run_id
 
 
 def categorize_source_files(files: list[Path]) -> dict[str, list[Path]]:
@@ -998,7 +1031,12 @@ def stage_read_sources(args: argparse.Namespace, run: dict) -> dict:
             "At least one readable .txt, .pdf, or .docx file is required."
         )
 
-    run_dir = BUNDLE_ROOT / "_pending"
+    # Per-run staging dir keyed by run_id — never a shared path another run
+    # can write. Cleared at the start of this run so a recycled run_id or a
+    # half-written prior attempt can't surface stale source text.
+    run_dir = pending_dir_for_run(run["run_id"])
+    if run_dir.exists():
+        shutil.rmtree(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
     save_extracted_texts(run_dir, source_texts)
 
@@ -1167,6 +1205,75 @@ def _resolve_student_identity(args: argparse.Namespace, run: dict) -> tuple[str,
     return firstname, lastname, school
 
 
+def _normalize_identity_token(s: str | None) -> str:
+    """Lowercase, strip non-letters, collapse doubled letters so spelling
+    variants (Johny/Johnny, Hanna/Hannah) compare equal. Used only by the
+    cross-run identity guard below — never by the anonymization gate."""
+    s = re.sub(r"[^a-z]", "", (s or "").lower())
+    return re.sub(r"(.)\1+", r"\1", s)
+
+
+def _identity_consistent(a: str | None, b: str | None) -> bool:
+    """Whether two first-name tokens plausibly name the same student.
+    Tolerates spelling variants and nickname/formal-name prefixes
+    (Alex/Alexander, Sam/Samuel) so the guard does not false-fail."""
+    na, nb = _normalize_identity_token(a), _normalize_identity_token(b)
+    if not na or not nb:
+        return True
+    if na == nb:
+        return True
+    if len(na) >= 3 and len(nb) >= 3 and (na.startswith(nb) or nb.startswith(na)):
+        return True
+    return False
+
+
+def _assert_source_matches_folder(run: dict, source_texts: dict[str, str]) -> None:
+    """Hard-stop if this run's cached source text does not belong to the
+    student named by the folder. The staging cache is now run-scoped, but
+    this is the last safe point before the draft prompt is built from
+    `source_texts`, so we verify identity here too (defense in depth).
+
+    Fires only when the folder names a student (the authoritative production
+    identity from FOLDER_NAME); local runs without a 3-segment folder name
+    have nothing external to compare against and are left to the run-scoping
+    fix alone.
+    """
+    folder_identity = run.get("folder_identity") or parse_folder_identity(Path(run["source"]))
+    folder_student = (folder_identity or {}).get("student_name")
+    folder_first = folder_student.split()[0] if folder_student else None
+    if not folder_first:
+        return
+
+    # (a) Folder first name vs the first name parsed from the cached brief —
+    #     two independent identity sources that must agree.
+    brief_first = (run.get("brief_fields") or {}).get("student_firstname")
+    if brief_first and not _identity_consistent(folder_first, brief_first):
+        raise OrchestratorError(
+            "Cross-run identity mismatch before draft: folder names student "
+            f"{folder_first!r} but the cached source brief names {brief_first!r}. "
+            "The extracted source text does not belong to this run (stale or "
+            "bled source cache). Refusing to draft."
+        )
+
+    # (b) The folder's student first name must actually appear in the cached
+    #     source documents (Paola's brief always carries the real first name,
+    #     so a correct cache always satisfies this). If it does not, the cache
+    #     belongs to a different student.
+    target = _normalize_identity_token(folder_first)
+    tokens = {
+        _normalize_identity_token(t)
+        for t in re.findall(r"[A-Za-z]+", "\n".join(source_texts.values()))
+    }
+    if target and target not in tokens:
+        raise OrchestratorError(
+            f"Cross-run identity guard: the student first name {folder_first!r} "
+            "from the folder does not appear anywhere in the extracted source "
+            "text for this run. The source cache does not match the student — "
+            "refusing to draft (prevents a prior run's text/pseudonym from "
+            "bleeding into this case study)."
+        )
+
+
 def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
     real_firstname, real_lastname, school = _resolve_student_identity(args, run)
 
@@ -1175,6 +1282,9 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
     # while the pull-quote graphic gets bracket-edited to "[she]/[her]").
     run_source_root = Path(run["extracted_texts_path"]).parent
     source_texts = json.loads((run_source_root / "source_texts.json").read_text())
+    # Last safe point before the draft consumes source_texts: confirm the
+    # cache actually belongs to this run's student.
+    _assert_source_matches_folder(run, source_texts)
     gender = classify_gender(source_texts, run.get("brief_fields"))
     print(f"  Inferred gender: {gender}")
 
