@@ -6,7 +6,7 @@ Run flow:
   3. Post the surviving candidates to Slack as a single message in the
      weekly-content-ready channel, with instructions for approval/edit
   4. Save state/topic-queue.json with message ts + approval deadline
-  5. approval_deadline.py (run Mon 7 AM) polls the message and resolves approval
+  5. approval_deadline.py (run Fri 5 PM) resolves approval at the deadline
 
 The Slack message format follows the polling pattern already used by
 await-slack-approval.py — no webhook endpoint needed.
@@ -186,7 +186,7 @@ def build_slack_message(
 ) -> tuple[str, list[str]]:
     header = (
         f":newspaper: *A+ Weekly Topic Slate — {current_week}*\n"
-        f"Three topics → publishes Mon (slot 1), Wed (slot 2), Fri (slot 3) at 8 AM PT.\n\n"
+        f"Three topics → one blog each for Mon (slot 1), Wed (slot 2), Fri (slot 3).\n\n"
         f"*To approve all 3:* reply in thread `APPROVE` (or react :white_check_mark:)\n"
         f"*To edit a slot:* reply in thread `EDIT 1: replacement headline` (also works for 2 or 3)\n"
         f"*To skip a slot:* reply in thread `SKIP 2`\n"
@@ -213,15 +213,18 @@ def run(
     now = datetime.now(PT)
     current_week = now.strftime("%Y-%m-%d")
 
-    # Approval deadline = next Monday 7 AM PT
-    days_until_mon = (7 - now.weekday()) % 7 or 7
-    monday = (now + timedelta(days=days_until_mon)).replace(
-        hour=7, minute=0, second=0, microsecond=0
+    # Approval deadline = upcoming Friday 5 PM PT (topics post Thursday;
+    # no action by the deadline => approval_deadline.py auto-approves all 3).
+    days_until_fri = (4 - now.weekday()) % 7
+    friday = (now + timedelta(days=days_until_fri)).replace(
+        hour=17, minute=0, second=0, microsecond=0
     )
+    if friday <= now:
+        friday = friday + timedelta(days=7)
 
     logger.info(
         "topic_gen_start week=%s refresh=%s channel=%s deadline=%s",
-        current_week, refresh_active, channel, monday.isoformat(),
+        current_week, refresh_active, channel, friday.isoformat(),
     )
 
     context = _load_target_schools_context()
@@ -291,7 +294,7 @@ def run(
             "enable refresh mode (APLUS_REFRESH_MODE=1) if you want to re-cover an old topic"
         )
 
-    parent_text, thread_replies = build_slack_message(current_week, slots, refresh_active, monday)
+    parent_text, thread_replies = build_slack_message(current_week, slots, refresh_active, friday)
 
     if dry_run:
         print("=== DRY RUN: would post to", channel, "===")
@@ -335,7 +338,7 @@ def run(
             "channel_id": channel_id,
             "message_ts": message_ts,
             "posted_at": now.isoformat(),
-            "approval_deadline": monday.isoformat(),
+            "approval_deadline": friday.isoformat(),
             "refresh_mode": refresh_active,
             "thread_replies": thread_replies_ts,
             "processed_reply_ts": [],
@@ -369,7 +372,7 @@ def run(
         "topics_posted": ok_slots,
         "topics_rejected_redundant": len(rejected),
         "refresh_mode": refresh_active,
-        "approval_deadline": monday.isoformat(),
+        "approval_deadline": friday.isoformat(),
     }
 
 

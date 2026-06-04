@@ -1,11 +1,9 @@
-name: Approval poll (Thu 6 PM PT → Mon 7 AM PT)
+name: Approval poll (Thu 5 PM PT → Fri 5 PM PT)
 
 on:
   schedule:
-    - cron: "*/15 * * * 5"  # every 15 min UTC Friday (covers Thu evening PT)
-    - cron: "*/15 * * * 6"  # every 15 min UTC Saturday (covers Fri PT)
-    - cron: "*/15 * * * 0"  # every 15 min UTC Sunday (covers Sat PT)
-    - cron: "*/15 0-14 * * 1"  # every 15 min UTC Mon 00:00-14:59 (covers Mon early PT)
+    - cron: "*/15 * * * 5"  # every 15 min UTC Friday (covers Thu 5 PM PT → Fri ~5 PM PT)
+    - cron: "*/15 0-2 * * 6"  # every 15 min UTC Sat 00:00-02:59 (reaches the Fri 5 PM PT deadline)
   workflow_dispatch:
     inputs:
       dry_run:

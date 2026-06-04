@@ -1,11 +1,12 @@
-name: Approval deadline check (Monday 7 AM PT)
+name: Approval deadline check (Friday 5 PM PT)
 
-# Mon 07:00 PT — during PDT = 14:00 UTC Mon; during PST = 15:00 UTC Mon.
-# Idempotent: terminal approval statuses skip the API calls.
+# Fri 17:00 PT — during PDT = 00:00 UTC Sat; during PST = 01:00 UTC Sat.
+# No action by this deadline => auto-approve all 3 topics.
+# Idempotent: terminal approval statuses (approved/auto_approved/denied) skip the API calls.
 on:
   schedule:
-    - cron: "0 14 * * 1"  # 07:00 PDT Monday
-    - cron: "0 15 * * 1"  # 07:00 PST Monday
+    - cron: "0 0 * * 6"  # 17:00 PDT Friday
+    - cron: "0 1 * * 6"  # 17:00 PST Friday
   workflow_dispatch:
     inputs:
       dry_run:

@@ -1,4 +1,4 @@
-"""Monday 7 AM PT approval-deadline check (decision #5).
+"""Friday 5 PM PT approval-deadline check (decision #5).
 
 Reads state/topic-queue.json for the pending approval, polls the Slack message
 for reactions and thread replies, and resolves the slate-level approval. The
@@ -49,7 +49,9 @@ logger = logging.getLogger(__name__)
 
 SLACK_BASE = "https://slack.com/api"
 APPROVE_EMOJI = "white_check_mark"
-TERMINAL_STATUSES = {"approved", "auto_approved"}
+# "denied" is terminal too: if the slate was DENY'd via the poller during the
+# Thu->Fri window, the deadline job must NOT override it and auto-approve.
+TERMINAL_STATUSES = {"approved", "auto_approved", "denied"}
 
 import re
 EDIT_PATTERN = re.compile(r"^EDIT\s*(\d):\s*(.+)$", re.IGNORECASE | re.DOTALL)
@@ -220,9 +222,9 @@ def resolve_approval(dry_run: bool = False) -> dict:
             for i in range(min(3, len(topics)))
         )
         dm_roman_if_configured(
-            f":robot_face: Monday 7 AM auto-approve fired — slate going to publish.\n"
+            f":robot_face: Friday 5 PM auto-approve fired — all 3 topics locked for the week.\n"
             f"{slate}\n"
-            f"Reply in the original thread to override before Mon 8 AM publish."
+            f"Blogs will be built into HubSpot drafts over the weekend, ready Monday."
         )
 
     if dry_run:
@@ -244,7 +246,7 @@ def resolve_approval(dry_run: bool = False) -> dict:
 
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-    p = argparse.ArgumentParser(description="Monday 7 AM approval-deadline check")
+    p = argparse.ArgumentParser(description="Friday 5 PM approval-deadline check")
     p.add_argument("--dry-run", action="store_true", help="don't write state or DM Roman")
     args = p.parse_args()
     try:
