@@ -124,11 +124,27 @@ def should_check(real_tok, published_tok):
     return real_tok.strip().lower() != published_tok.strip().lower()
 
 
+def _doubled_letter_variant(token):
+    """Regex source matching `token` with any letter allowed to repeat, so a
+    doubled-consonant spelling variant (Johny <-> Johnny) is still caught.
+    Non-letters are escaped literally. This only ADDS matches alongside the
+    exact token — it never removes a match, so the gate cannot get weaker."""
+    return "".join(
+        (re.escape(ch) + "+") if ch.isalpha() else re.escape(ch)
+        for ch in token
+    )
+
+
 def find_leaks(text, real_token, line_offsets):
-    """Find case-insensitive word-boundary matches of real_token in text.
+    """Find case-insensitive word-boundary matches of real_token in text,
+    including doubled-consonant spelling variants.
     Returns list of (line_no, line_text_snippet) tuples."""
-    # Word-boundary regex; escape token in case it contains regex metachars
-    pattern = re.compile(rf"\b{re.escape(real_token)}\b", re.IGNORECASE)
+    # Match the exact token OR any doubled-letter variant, both at word
+    # boundaries. Escape the literal token in case it has regex metachars.
+    pattern = re.compile(
+        rf"\b(?:{re.escape(real_token)}|{_doubled_letter_variant(real_token)})\b",
+        re.IGNORECASE,
+    )
     leaks = []
     for line_no, line in enumerate(text.split("\n"), start=1):
         if pattern.search(line):

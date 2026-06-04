@@ -1351,6 +1351,35 @@ def _build_draft_system_prompt() -> str:
     )
 
 
+def _collapse_doubles(s: str) -> str:
+    """Lowercase and collapse any run of a repeated letter to one, so
+    doubled-consonant spelling variants compare equal
+    ('Johnny' -> 'johny', 'Johny' -> 'johny', 'Aaron' -> 'aron')."""
+    return re.sub(r"(.)\1+", r"\1", (s or "").lower())
+
+
+def firstname_variants_in_sources(real_firstname: str, source_texts: dict[str, str]) -> list[str]:
+    """Distinct surface spellings of the student's first name that appear in
+    the source docs, by doubled-consonant-collapse equivalence (Johny/Johnny),
+    ordered by frequency (canonical/most-common first). The resolved spelling
+    is always included even if it never appears verbatim in the sources.
+
+    This feeds the real->pseudonym mapping so the replacement step catches a
+    source spelling that differs from the folder/brief spelling. The pseudonym
+    hash stays on the resolved name — variants only widen what gets replaced."""
+    target = _collapse_doubles(re.sub(r"[^A-Za-z]", "", real_firstname or ""))
+    counts: dict[str, int] = {}
+    if target:
+        blob = "\n".join(source_texts.values())
+        for tok in re.findall(r"\b[A-Za-z][A-Za-z'’-]*\b", blob):
+            core = re.sub(r"[^A-Za-z]", "", tok)
+            if core and _collapse_doubles(core) == target:
+                counts[tok] = counts.get(tok, 0) + 1
+    if real_firstname:
+        counts.setdefault(real_firstname, counts.get(real_firstname, 0))
+    return sorted(counts, key=lambda t: (-counts[t], -len(t), t.lower()))
+
+
 def _build_draft_user_prompt(
     *,
     real_firstname: str,
@@ -1363,6 +1392,12 @@ def _build_draft_user_prompt(
         f"--- {name} ---\n{text}" for name, text in source_texts.items()
     )
     real_full = f"{real_firstname} {real_lastname}" if real_lastname else real_firstname
+    # Seed EVERY spelling variant of the real first name found in the sources
+    # (e.g. folder says "Johny", sources say "Johnny") so the swap catches all.
+    name_variants = firstname_variants_in_sources(real_firstname, source_texts)
+    variant_rows = "\n".join(
+        f"| {v} | {pseudonym.capitalize()} |" for v in name_variants
+    ) or f"| {real_firstname} | {pseudonym.capitalize()} |"
     return f"""Draft the master case study for this student.
 
 REAL NAME (use only in Doc 2): {real_full}
@@ -1394,8 +1429,13 @@ two-column markdown table:
 
 | Real | Published |
 |------|-----------|
-| {real_firstname} | {pseudonym.capitalize()} |
+{variant_rows}
 | (other real-name tokens) | (their published replacements) |
+
+The rows above are ALL spelling variants of the student's real first name
+found in the sources (e.g. "Johny" and "Johnny"). Every one of them maps to
+the pseudonym: replace each in Doc 1 and keep its row here. Do not merge or
+drop a variant.
 
 Every distinct real-name token that appears in the sources MUST appear
 in this table — student first/last name, parent name(s), tutor name(s),
@@ -1904,6 +1944,167 @@ def _replace_pull_quotes(meta_text: str, new_quotes: list[str]) -> str:
     ).rstrip() + "\n"
 
 
+def _parse_meta_list(meta_text: str, field: str) -> list[str]:
+    """Parse a simple `field:` / `  - "item"` YAML-ish list from metadata.md."""
+    m = re.search(rf"^{re.escape(field)}:\s*$", meta_text, re.MULTILINE)
+    if not m:
+        return []
+    items = []
+    for line in meta_text[m.end():].split("\n")[1:]:
+        s = line.strip()
+        if not s or not s.startswith("-"):
+            break
+        item = s[1:].strip()
+        if item.startswith('"') and item.endswith('"'):
+            item = item[1:-1]
+        items.append(item)
+    return items
+
+
+def _replace_meta_list(meta_text: str, field: str, new_items: list[str]) -> str:
+    m = re.search(rf"^{re.escape(field)}:\s*$", meta_text, re.MULTILINE)
+    if not m:
+        raise OrchestratorError(f"metadata.md is missing `{field}:` list.")
+    end_offset = m.end()
+    for line in meta_text[m.end():].split("\n")[1:]:
+        if not line.strip() or not line.strip().startswith("-"):
+            break
+        end_offset += len(line) + 1
+    rebuilt = "\n".join(f'  - "{q}"' for q in new_items)
+    return (
+        meta_text[: m.end()] + "\n" + rebuilt + "\n" + meta_text[end_offset:]
+    ).rstrip() + "\n"
+
+
+def _embed_pull_quote_anchor(quote: str) -> str:
+    """Mirror embed-pull-quotes.py's pull-quote anchor derivation exactly."""
+    a = quote.strip().strip('"').strip("'").rstrip(".,;:")
+    return a[:60]
+
+
+def _embed_data_viz_anchor(anchor: str) -> str:
+    """Mirror embed-pull-quotes.py's data-viz anchor derivation exactly."""
+    a = anchor.strip().strip('"').strip("'")
+    return a[:80]
+
+
+ANCHOR_REPICK_SYSTEM = (
+    "You re-align embed anchors to the FINAL published case-study body. You are "
+    "given the final Doc 1 text and stale pull quotes and/or stale data-viz "
+    "anchor phrases that no longer appear verbatim in it (the body was lightly "
+    "rewritten by the brand-check / grammar passes after they were captured). "
+    "For each stale item, return the closest VERBATIM replacement copied EXACTLY "
+    "from the Doc 1 text provided — do not paraphrase, do not add or drop words, "
+    "copy character for character including punctuation and casing.\n"
+    "- Pull quote: return the full verbatim quote/sentence as it appears in Doc 1 "
+    "(so its first 60 characters are an exact substring of Doc 1).\n"
+    "- Data-viz anchor: return a unique verbatim phrase (<= 80 chars) from the "
+    "SAME paragraph the timeline graphic should follow.\n"
+    "Output strict JSON with NO markdown fence, exactly:\n"
+    '{"pull_quotes": {"<stale quote>": "<verbatim replacement>"}, '
+    '"data_viz_anchors": {"<stale anchor>": "<verbatim replacement>"}}\n'
+    "Include only the stale items you were given. If an item has no verbatim "
+    "equivalent in Doc 1, map it to an empty string."
+)
+
+
+def _llm_repick_embed_anchors(doc1: str, bad_quotes: list[str], bad_anchors: list[str]) -> dict:
+    user = (
+        "FINAL Doc 1 body:\n\n" + doc1
+        + "\n\nStale items to re-pick (return verbatim replacements lifted from "
+        "the body above):\n"
+        + json.dumps(
+            {"stale_pull_quotes": bad_quotes, "stale_data_viz_anchors": bad_anchors},
+            ensure_ascii=False,
+        )
+        + "\n\nReturn strict JSON only."
+    )
+    raw = claude_complete(ANCHOR_REPICK_SYSTEM, user, max_tokens=2000, temperature=0)
+    try:
+        data = json.loads(_strip_json_fence(raw))
+    except json.JSONDecodeError as e:
+        raise OrchestratorError(
+            f"Embed-anchor repair returned invalid JSON: {e}. "
+            f"First 300 chars: {raw[:300]!r}"
+        )
+    return {
+        "pull_quotes": data.get("pull_quotes", {}) or {},
+        "data_viz_anchors": data.get("data_viz_anchors", {}) or {},
+    }
+
+
+def _verify_and_fix_embed_anchors(run: dict) -> None:
+    """Ensure every embed anchor is a verbatim, case-insensitive substring of
+    the FINAL cleaned Doc 1 body — the same text embed-pull-quotes.py matches
+    against at insert time.
+
+    Pull-quote anchors and inline_data_viz_anchors are captured before the
+    brand-check / grammar passes finish mutating the body, so a rewritten
+    sentence can break an anchor ('expected 3 insertions, got 2'). Re-pick any
+    anchor that no longer matches, verify the replacement is verbatim in Doc 1,
+    and hard-fail if it cannot be recovered rather than ship a broken embed.
+    """
+    bundle = Path(run["bundle_path"])
+    doc1 = Path(run["doc1_path"]).read_text()
+    doc1_l = doc1.lower()
+    meta_path = bundle / "metadata.md"
+    meta_text = meta_path.read_text()
+
+    quotes = _parse_pull_quotes(meta_text)
+    dv_anchors = _parse_meta_list(meta_text, "inline_data_viz_anchors")
+
+    bad_q = [q for q in quotes if _embed_pull_quote_anchor(q).lower() not in doc1_l]
+    bad_a = [a for a in dv_anchors if _embed_data_viz_anchor(a).lower() not in doc1_l]
+
+    if not bad_q and not bad_a:
+        print(
+            f"  Embed-anchor check: {len(quotes)} quote + {len(dv_anchors)} "
+            "data-viz anchor(s) all verbatim in final Doc 1."
+        )
+        return
+
+    print(
+        f"  Embed-anchor check: re-picking {len(bad_q)} quote + {len(bad_a)} "
+        "data-viz anchor(s) that no longer match the cleaned Doc 1..."
+    )
+    repick = _llm_repick_embed_anchors(doc1, bad_q, bad_a)
+
+    if bad_q:
+        qmap = repick["pull_quotes"]
+        new_quotes = []
+        for q in quotes:
+            if q in bad_q:
+                fixed = (qmap.get(q) or "").strip()
+                if not fixed or _embed_pull_quote_anchor(fixed).lower() not in doc1_l:
+                    raise OrchestratorError(
+                        "Embed-anchor repair could not find a verbatim Doc 1 "
+                        f"replacement for pull quote: {q!r}. Fix metadata.md by hand."
+                    )
+                new_quotes.append(fixed)
+            else:
+                new_quotes.append(q)
+        meta_text = _replace_pull_quotes(meta_text, new_quotes)
+
+    if bad_a:
+        amap = repick["data_viz_anchors"]
+        new_anchors = []
+        for a in dv_anchors:
+            if a in bad_a:
+                fixed = (amap.get(a) or "").strip()
+                if not fixed or _embed_data_viz_anchor(fixed).lower() not in doc1_l:
+                    raise OrchestratorError(
+                        "Embed-anchor repair could not find a verbatim Doc 1 "
+                        f"replacement for data-viz anchor: {a!r}. Fix metadata.md by hand."
+                    )
+                new_anchors.append(fixed)
+            else:
+                new_anchors.append(a)
+        meta_text = _replace_meta_list(meta_text, "inline_data_viz_anchors", new_anchors)
+
+    meta_path.write_text(meta_text)
+    print("    metadata.md anchors re-synced to the final Doc 1 body.")
+
+
 def stage_grammar(args: argparse.Namespace, run: dict) -> dict:
     bundle = Path(run["bundle_path"])
     meta_path = bundle / "metadata.md"
@@ -1942,6 +2143,10 @@ def stage_grammar(args: argparse.Namespace, run: dict) -> dict:
         all_pass = all(r.get("passes") for r in results)
         if all_pass:
             print(f"    all {len(quotes)} quotes pass.")
+            # Anchors are now final (pull_quotes won't change again). Verify
+            # every embed anchor is verbatim in the cleaned Doc 1 and re-pick
+            # any the brand-check/grammar rewrites desynced. (BUG 1)
+            _verify_and_fix_embed_anchors(run)
             run.update({"stage": "grammar"})
             update_run(run["run_id"], run)
             return run
