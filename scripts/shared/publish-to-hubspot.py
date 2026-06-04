@@ -24,19 +24,22 @@ import markdown
 
 
 def dated_filename(local_path, bundle_path):
-    """Return {stem}-{YYYY-MM-DD}.{ext} derived from the bundle directory name.
+    """Return {stem}-{bundle-dir-name}.{ext}, unique per case study / weekly
+    bundle.
+
+    Using only {stem}-{YYYY-MM-DD} made multiple case studies published on the
+    SAME day collide on identical upload names (hero-DATE.png, ...). HubSpot
+    dedupes uploaded files by name, so studies 2..N reused study 1's images and
+    every draft showed the first study's graphics. The bundle directory name
+    carries the date AND the pseudonym/slug, so it is unique per run.
 
     Example:
-        dated_filename("graphics/hero.png", "aplus-content/2026-05-18-weekly/")
-        -> "hero-2026-05-18.png"
+        dated_filename("graphics/hero.png", "aplus-content/2026-06-04-case-study-valentina/")
+        -> "hero-2026-06-04-case-study-valentina.png"
     """
     p = Path(local_path)
-    stem, ext = p.stem, p.suffix
-    m = re.search(r"(\d{4}-\d{2}-\d{2})", str(bundle_path))
-    if not m:
-        # No date found in bundle path; fall back to undated original name
-        return p.name
-    return f"{stem}-{m.group(1)}{ext}"
+    bundle_name = Path(bundle_path).name or "bundle"
+    return f"{p.stem}-{bundle_name}{p.suffix}"
 
 load_dotenv()
 
