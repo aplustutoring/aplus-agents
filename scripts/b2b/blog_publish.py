@@ -244,7 +244,10 @@ def run_fact_check(runner: SkillsRunner, body: str) -> tuple[bool, SkillResult]:
     )
     # web search lets fact-check actually verify claims against live sources
     result = runner.run_skill("aplus-fact-check", prompt, web_search=True)
-    return _check_skill_verdict(result, "fact-check"), result
+    passed = _check_skill_verdict(result, "fact-check")
+    if not passed:
+        logger.warning("fact-check findings (first 3500 chars):\n%s", result.text[:3500])
+    return passed, result
 
 
 def run_brand_check(runner: SkillsRunner, body: str) -> tuple[bool, SkillResult]:
