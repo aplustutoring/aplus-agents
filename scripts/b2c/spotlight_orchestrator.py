@@ -62,11 +62,16 @@ except ImportError:  # pragma: no cover
     anthropic = None
 
 # A PDF must yield at least this much extractable text to count as readable.
-# A+ source PDFs are always platform exports (never scans), so the text layer
-# exists — but some exports trip pypdf's decoder. We try pypdf then PyMuPDF
-# (which handles those font/encoding quirks). OCR/vision is intentionally
-# DISABLED; if both text extractors fail, ask for a .txt/.docx re-export.
+# Order: pypdf -> PyMuPDF (handles font/encoding quirks) -> OCR as LAST RESORT.
+# Most exports read for free via the two text extractors; OCR fires only for
+# image-only exports with no text layer at all (some rasterized lesson reports).
 PDF_MIN_TEXT_LEN = 120
+
+# Last-resort OCR config. Only runs when BOTH text extractors come up empty.
+# Kept on a high-quality vision model so scores/percentiles transcribe exactly.
+OCR_RENDER_DPI = 200
+OCR_VISION_MODEL = "claude-opus-4-7"
+OCR_MAX_PAGES = 30
 
 STAGE_ORDER = [
     "init",
@@ -315,22 +320,94 @@ def _pdf_text_pymupdf(path: Path) -> str:
 
 
 def extract_text_from_pdf(path: Path) -> str:
-    """Extract embedded text from a digitally-generated PDF — no OCR.
+    """Extract text from a PDF: pypdf -> PyMuPDF -> OCR (last resort).
 
-    A+ source PDFs are platform exports (never scans), so the text layer exists.
-    Try pypdf first, then PyMuPDF (stronger on the font/encoding quirks that make
-    some exports yield 0 chars in pypdf). If BOTH text extractors come up empty,
-    the file has no usable text layer: raise a clear error asking for a .txt/
-    .docx re-export (a same-named .txt is picked up automatically)."""
+    pypdf and PyMuPDF cover digitally-generated PDFs for free (PyMuPDF handles
+    font/encoding quirks that make some exports yield 0 chars in pypdf). Only if
+    BOTH come up empty — an image-only export with no text layer — do we fall
+    back to vision OCR, so cost is incurred solely for those files. A same-named
+    .txt export avoids OCR entirely (prefer-text dedupe uses it)."""
     best = max((_pdf_text_pypdf(path), _pdf_text_pymupdf(path)), key=len)
     if len(best) >= PDF_MIN_TEXT_LEN and best.count("\n") >= 3:
         return best
-    raise OrchestratorError(
-        f"PDF '{path.name}' has no extractable text layer "
-        f"({len(best)} chars via pypdf + PyMuPDF). OCR is disabled. Re-export it "
-        "as text (.txt or .docx) or a text-based PDF — a .txt with the same name "
-        "is used automatically."
+    print(
+        f"  No text layer in {path.name} ({len(best)} chars via pypdf+PyMuPDF); "
+        "falling back to vision OCR (drop a .txt export to skip this).",
+        file=sys.stderr,
     )
+    return ocr_pdf(path)
+
+
+def ocr_pdf(path: Path) -> str:
+    """Last-resort: rasterize each page with PyMuPDF and transcribe with Claude
+    vision. Only reached when a PDF has no extractable text layer."""
+    if fitz is None:
+        raise OrchestratorError(
+            f"PDF '{path.name}' has no text layer and PyMuPDF is unavailable for "
+            "OCR. Provide a .txt/.docx export."
+        )
+    if anthropic is None:
+        raise OrchestratorError(
+            f"PDF '{path.name}' has no text layer and the anthropic SDK is "
+            "unavailable for OCR. Provide a .txt/.docx export."
+        )
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise OrchestratorError(
+            f"PDF '{path.name}' needs OCR but ANTHROPIC_API_KEY is not set."
+        )
+
+    import base64
+
+    client = anthropic.Anthropic(api_key=api_key)
+    doc = fitz.open(str(path))
+    try:
+        if doc.page_count == 0:
+            raise OrchestratorError(f"PDF has zero pages: {path.name}")
+        if doc.page_count > OCR_MAX_PAGES:
+            raise OrchestratorError(
+                f"PDF '{path.name}' has {doc.page_count} pages, exceeds "
+                f"OCR_MAX_PAGES={OCR_MAX_PAGES}. Split it or supply a text export."
+            )
+        zoom = OCR_RENDER_DPI / 72.0
+        matrix = fitz.Matrix(zoom, zoom)
+        pages_text: list[str] = []
+        for i in range(doc.page_count):
+            pix = doc.load_page(i).get_pixmap(matrix=matrix, alpha=False)
+            b64 = base64.standard_b64encode(pix.tobytes("png")).decode("ascii")
+            print(
+                f"    OCR page {i + 1}/{doc.page_count}...", file=sys.stderr
+            )
+            message = client.messages.create(
+                model=OCR_VISION_MODEL,
+                max_tokens=4096,
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "source": {"type": "base64",
+                            "media_type": "image/png", "data": b64}},
+                        {"type": "text", "text": (
+                            "Transcribe this page of a K-12 tutoring source "
+                            "document to plain text. Preserve paragraph breaks, "
+                            "headings, and bullets. Preserve ALL numeric data "
+                            "(RIT scores, percentiles, benchmarks, dates) exactly "
+                            "as written. Do not summarize or comment. Output only "
+                            "the transcribed text."
+                        )},
+                    ],
+                }],
+            )
+            pages_text.append("".join(
+                b.text for b in message.content if getattr(b, "type", "") == "text"
+            ).strip())
+    finally:
+        doc.close()
+    joined = "\n\n".join(pages_text).strip()
+    if not joined:
+        raise OrchestratorError(
+            f"OCR returned no text for {path.name}. Supply a .txt/.docx export."
+        )
+    return joined
 SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
 
 
@@ -1053,20 +1130,23 @@ def stage_read_sources(args: argparse.Namespace, run: dict) -> dict:
 
     source_texts: dict[str, str] = {}
     for path in supported_files:
+        # HARD-FAIL on an unreadable source: never silently drop a file and ship
+        # a case study missing (e.g.) its lesson report. Stop and tell the
+        # operator to supply a text export instead.
         try:
             text = extract_text(path)
         except OrchestratorError as exc:
-            print(f"  Warning: failed to extract text from {path.name}: {exc}", file=sys.stderr)
-            continue
-
-        if not text.strip():
-            print(
-                f"  Warning: extracted empty text from {path.name}; "
-                "the pipeline will continue if other readable files exist.",
-                file=sys.stderr,
+            raise OrchestratorError(
+                f"Could not read source file {path.name}: {exc} "
+                "Aborting rather than drafting a case study with a missing "
+                "source. Fix or re-export this file and re-run."
             )
-            continue
-
+        if not text.strip():
+            raise OrchestratorError(
+                f"Source file {path.name} extracted to empty text. Aborting "
+                "rather than drafting with a missing source — re-export it as "
+                "readable text (.txt/.docx) and re-run."
+            )
         source_texts[path.name] = text
         if args.verbose:
             print(f"Extracted {len(text)} chars from {path.name}")
