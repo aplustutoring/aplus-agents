@@ -326,6 +326,69 @@
         "SEO \u2014 [fail] featured_image_alt_text='A charter school administrator reviews s...' (len=134): featured_image_alt_text must be 100-125 chars",
         "SEO \u2014 [fail] twitter_title='The Post-ESSER K-12 Tutoring Market Just...' (len=53): twitter_title must be 60-70 chars"
       ]
+    },
+    {
+      "ts": "2026-06-04T22:56:25.781655+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 1,
+      "post_date": "2026-06-08",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-charter-intervention",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214363657790",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": false,
+      "seo_issues": 2,
+      "flags": [
+        "FACT-CHECK \u2014 ## Issues found:\n\n**1. CRITICAL \u2014 Partner name mismatch: \"iLEAD Exploration\" vs. verified partner**\n\nCLAIM IN CONTENT: \"A+ Tutoring \u2026 has been running this model with iLEAD Exploration and other charter partners.\"\nACTUAL FACT: The skill's verified attribution table identifies the partner for the 2024-25 Math and ELA Tier 3 case studies as **iLEAD AV** (Antelope Valley), not iLEAD Exploration. iLEAD operates multiple distinct schools; misnaming the partner attached to the cited case study URLs is a factual attribution error.\nSOURCE: aplus-fact-check skill v1.2 verified attribution table; published case study URLs cited in the post.\nSEVERITY: Critical (named partner / outcome data attribution)\nFIX: Replace \"iLEAD Exploration\" with \"iLEAD AV\" \u2014 or verify with Danielle which iLEAD entity the case studies actually reference before publication.\n\n**2. CRITICAL \u2014 \"Charter School Assistance Cente",
+        "BRAND-CHECK \u2014 ## Issues Found\n\n### 1. CRITICAL \u2014 Em dashes (7 instances)\n\nEm dashes are auto-reject across all A+ content. Every instance must be replaced with a period, colon, comma, or rephrased.\n\n| # | Location | Offending text |\n|---|---|---|\n| 1 | \u00b61 (lead) | \"offered in a generation **\u2014** and the rules of engagement just changed\" |\n| 2 | \"What's Actually in the May Revise\" \u00a7, \u00b61 | \"Discretionary Block Grant** **\u2014** a one-time, flexible allocation\" |\n| 3 | \"Why It Matters\" \u00a7, \u00b61 | \"MTSS capacity for 2026-27 **\u2014** and the single largest opportunity\" |\n| 4 | \"What the Research Actually Says\" \u00a7, \u00b61 | \"concentrate relief dollars on **high-dosage tutoring** **\u2014** defined as three or more sessions\" |\n| 5 | \"What the Research Actually Says\" \u00a7, \u00b64 | \"The federal ESSA evidence tiers **\u2014** Tier 1 (strong evidence)\u2026 **\u2014** are the framework\" (two em dashes in one sentence) |\n| 6 | \"What's Working in Charter",
+        "SEO \u2014 [fail] featured_image_alt_text='Charter school intervention coordinator ...' (len=127): featured_image_alt_text must be 100-125 chars",
+        "SEO \u2014 [fail] slug='/california-5b-block-grant-charter-inter...' (len=6): slug must be 3-5 hyphenated words (got 6)"
+      ]
+    },
+    {
+      "ts": "2026-06-04T23:02:43.037206+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 2,
+      "post_date": "2026-06-10",
+      "headline": "The May 31 ELPAC reclassification deadline just passed \u2014 and most charters left RFEPs on the table",
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-charters",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214359139851",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "FACT-CHECK \u2014 I'll fact-check the major verifiable claims in this blog. Let me work through them systematically.# Fact-Check Report\n\n**Content:** \"The ELPAC Reclassification Deadline Just Passed...\"\n\n---\n\n## \u2705 Claims Verified\n\n**May 31, 2026 deadline:** English learner students not reclassified by May 31, 2026, can no longer be reclassified based on 2024\u221225 Summative ELPAC/Alternate ELPAC scores, and must be reclassified based on 2025\u221226 scores. Confirmed via CALPADS Update Flash #322.\n\n**Four reclassification criteria & Education Code \u00a7313:** The reclassification date should reflect the date that the LEA determines the student has met all four criteria required for reclassification (California Education Code Section 313[f]), which includes: Overall Performance Level of 4 on the Summative English Language Proficiency Assessments for California (ELPAC). Four-criteria framing in the blog matches CDE.\n\n*"
+      ]
+    },
+    {
+      "ts": "2026-06-04T23:08:55.672717+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 3,
+      "post_date": "2026-06-12",
+      "headline": "The ESSER-to-State \"Market Reset\" \u2014 and why NSSA-style quality screens favor embedded providers like A+",
+      "bundle_dir": "aplus-content/2026-06-12-k12-tutoring-market-reset-2026",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214362595991",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 3,
+      "flags": [
+        "FACT-CHECK \u2014 I'll fact-check this content systematically. Let me verify the key claims.# FACT CHECK RESULTS\n\nContent: \"The K-12 Tutoring Market Just Split In Two\"\n\n## \u2705 Verified Claims\n\n1. **FutureEd tracking 41 bills across 19 states in 2026** \u2014 VERIFIED. FutureEd's tracker confirms 41 bills across 19 states in the 2026 legislative session, focused on high-impact/high-dosage tutoring defined as four or fewer students with the same tutor for at least 30 minutes per session, three times per week, over several months.\n\n2. **NSSA at Stanford, led by Susanna Loeb** \u2014 VERIFIED. Susanna Loeb is Faculty Director of the SCALE Initiative at Stanford and Founder and Executive Director of the National Student Support Accelerator. Minor note: NSSA is technically \"a program of the SCALE Initiative at Stanford\" rather than direct Stanford center, but the shorthand is acceptable.\n\n3. **NSSA badging system / quality",
+        "SEO \u2014 [fail] html_title='K-12 Tutoring Market Split | A+ Tutoring...' (len=45): html_title must be 50-60 chars",
+        "SEO \u2014 [fail] featured_image_alt_text='' (len=0): featured_image_alt_text is missing",
+        "SEO \u2014 [fail] slug='/k12-tutoring-market-reset-2026' (len=31): slug parts must be alphanumeric (lowercase, hyphen-separated)"
+      ]
     }
   ]
 }
