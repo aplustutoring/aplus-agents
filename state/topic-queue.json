@@ -13,7 +13,11 @@
       "roman_take": "Conviction angle \u2014 discretionary block grants are only as good as the evidence schools use to spend them; absent ESSA Tier 1/2 evidence requirements at the state level, the $5B becomes another round of \"buy a thing, hope it works.\" Push the audience to spend like Title I auditors are watching.",
       "danielle_take": "Implementation angle \u2014 walk a charter director through the three-meeting sequence (May Revise \u2192 June 15 Legislature deadline \u2192 July 1 final) and what to put in the LCAP draft *now* so the block grant funds intervention rather than line-item drift. ---",
       "redundancy_max_similarity": 0.39109097659969927,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-04T20:09:03.613523+00:00",
+      "post_date": "2026-06-08",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-charter-lcap"
     },
     {
       "slot": 2,
@@ -31,7 +35,11 @@
       "roman_take": "A blunt take on why \"compliance deadline\" framing buries the real story \u2014 schools aren't failing the deadline because of paperwork, they're failing it because the reclassification system itself was designed to keep kids in the EL category.",
       "danielle_take": "The implementation playbook \u2014 what a charter's intervention coordinator should be doing in the next 30 days to ensure 2025\u201326 ELPAC results get acted on instead of sitting until next May. ---",
       "redundancy_max_similarity": 0.480394981929078,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-04T20:13:45.587639+00:00",
+      "post_date": "2026-06-10",
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-2026"
     },
     {
       "slot": 3,
@@ -49,7 +57,11 @@
       "roman_take": "Self-reported vendor attributes are how you end up with $33M state contracts going to apps. Conviction angle: stop letting vendors grade their own homework \u2014 make NSSA badging the floor, not the ceiling.",
       "danielle_take": "Walk charter directors through what a state-level preferred-provider list will actually look like for them in 2026-27, and what intake/scheduling documentation they need on file *now* to qualify when CARS or state-tutoring grants come down. ---",
       "redundancy_max_similarity": 0.42210099137323037,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-04T20:17:27.309935+00:00",
+      "post_date": "2026-06-12",
+      "bundle_dir": "aplus-content/2026-06-12-nssa-quality-screens-state-tutoring"
     }
   ],
   "slack": {
