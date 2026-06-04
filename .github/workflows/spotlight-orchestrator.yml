@@ -91,9 +91,15 @@ jobs:
           # end. Without this override every cloud run terminates at the
           # bundle stage (no draft, no HubSpot draft, no Slack ping to
           # Paola).
+          # --force-update: if a HubSpot draft already exists for this slug
+          # (a re-dispatch of the same folder), refresh its body with this
+          # run's Doc 1 instead of reusing a stale draft. Without it, embed
+          # matches the new anchors against an old published body and fails
+          # ("expected N insertions, got N-1").
           python3 scripts/b2c/spotlight_orchestrator.py \
               --source /tmp/spotlight-source \
               --stop-after complete \
+              --force-update \
               --verbose 2>&1 | tee /tmp/orchestrator.log
           # tee returns the orchestrator's exit code via PIPESTATUS[0]
           exit "${PIPESTATUS[0]}"

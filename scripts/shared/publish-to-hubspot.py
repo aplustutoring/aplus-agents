@@ -372,8 +372,10 @@ def create_draft(
     meta_keywords=None,
     language="en",
     category_id=None,
+    update_post_id=None,
 ):
-    """POST /cms/v3/blogs/posts. State is hardcoded to DRAFT.
+    """POST /cms/v3/blogs/posts, or PATCH an existing post when
+    `update_post_id` is given. State is hardcoded to DRAFT.
 
     v1.7 (2026-05-20): added 9 HubSpot SEO properties:
       htmlTitle, linkRelCanonicalUrl, featuredImageAltText, tagIds,
@@ -428,6 +430,23 @@ def create_draft(
         except (TypeError, ValueError):
             payload["categoryId"] = category_id
 
+    if update_post_id:
+        # Reuse path: PATCH the existing draft's body+fields instead of POSTing
+        # a duplicate. The slug already matches and state stays DRAFT, so this
+        # just refreshes a stale draft with the current run's content.
+        r = requests.patch(
+            f"{HUBSPOT_BASE}/cms/v3/blogs/posts/{update_post_id}",
+            headers={**auth_headers(), "Content-Type": "application/json"},
+            json=payload,
+            timeout=60,
+        )
+        log("update_draft", r.status_code, r.text[:1000])
+        if r.status_code not in (200, 201):
+            print(f"ERROR: draft update failed (HTTP {r.status_code}):", file=sys.stderr)
+            print(r.text, file=sys.stderr)
+            sys.exit(1)
+        return r.json()
+
     r = requests.post(
         f"{HUBSPOT_BASE}/cms/v3/blogs/posts",
         headers={**auth_headers(), "Content-Type": "application/json"},
@@ -465,6 +484,16 @@ def main():
         "--dry-run",
         action="store_true",
         help="Validate inputs, parse meta, convert markdown — no HubSpot write calls",
+    )
+    parser.add_argument(
+        "--update-existing",
+        default=None,
+        metavar="POST_ID",
+        help=(
+            "PATCH this existing HubSpot post id (refresh its body + fields with "
+            "this bundle's content) instead of creating a new draft. Used by "
+            "re-runs so embed matches the current Doc 1, not a stale body."
+        ),
     )
     args = parser.parse_args()
 
@@ -675,7 +704,7 @@ def main():
         hero_url = None
         print("\nNo hero image — publishing without featured image.")
 
-    print("\nCreating draft post...")
+    print("\nUpdating existing draft..." if args.update_existing else "\nCreating draft post...")
     post = create_draft(
         title,
         slug,
@@ -692,11 +721,12 @@ def main():
         meta_keywords=meta_keywords_string,
         language=language,
         category_id=category_id,
+        update_post_id=args.update_existing,
     )
-    post_id = post.get("id")
+    post_id = post.get("id") or args.update_existing
     edit_url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{post_id}/content"
 
-    print(f"\nDraft created. Post ID: {post_id}")
+    print(f"\nDraft {'updated' if args.update_existing else 'created'}. Post ID: {post_id}")
     print(f"Edit URL: {edit_url}")
     log("publish_complete", 200, f"post_id={post_id}")
 

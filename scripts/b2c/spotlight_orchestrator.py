@@ -166,6 +166,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Run stages without HubSpot publish or Slack delivery")
     parser.add_argument("--stop-after", choices=STAGE_ORDER, default="bundle", help="Stop the pipeline after the named stage")
     parser.add_argument("--skip-hubspot", action="store_true", help="Skip HubSpot contact lookup and proceed with local input only")
+    parser.add_argument("--force-update", action="store_true", help="When a HubSpot draft already exists for the slug, refresh its body with this run's Doc 1 (PATCH) instead of reusing the stale draft. Re-runs should pass this so embed matches the current document.")
     parser.add_argument("--slack-channel", default=None, help="Override the Slack delivery channel (default: #student-spotlight-ready)")
     parser.add_argument("--verbose", action="store_true", help="Print extra diagnostic details")
     return parser.parse_args()
@@ -2559,17 +2560,59 @@ def stage_publish(args: argparse.Namespace, run: dict) -> dict:
     existing = _search_hubspot_draft_by_slug(slug)
     if existing:
         post_id = str(existing.get("id"))
-        print(f"  Existing draft for slug {slug!r}: post_id={post_id}; reusing.")
         edit_url = (
             f"https://app.hubspot.com/blog/{HUBSPOT_PORTAL_ID}/editor/"
             f"{post_id}/content"
         )
+        if not args.force_update:
+            # Reuse as-is. WARNING: the published body is whatever a prior run
+            # left there — it is NOT refreshed with this run's Doc 1, so embed
+            # will match this run's anchors against a possibly-stale body. Pass
+            # --force-update on a re-run to overwrite it.
+            print(
+                f"  Existing draft for slug {slug!r}: post_id={post_id}; reusing "
+                "as-is (body NOT refreshed — pass --force-update to overwrite)."
+            )
+            run.update(
+                {
+                    "stage": "publish",
+                    "hubspot_post_id": post_id,
+                    "hubspot_edit_url": edit_url,
+                    "hubspot_reused_existing": True,
+                    "hubspot_body_refreshed": False,
+                }
+            )
+            update_run(run["run_id"], run)
+            return run
+
+        # --force-update: refresh the existing draft's body with this run's
+        # Doc 1 so embed matches the current document, not a stale one.
+        print(
+            f"  Existing draft for slug {slug!r}: post_id={post_id}; refreshing "
+            "body with this run's Doc 1 (--force-update)."
+        )
+        cmd = [
+            "python3", str(PUBLISH_SCRIPT),
+            "--bundle", str(bundle),
+            "--update-existing", post_id,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            sys.stderr.write(result.stdout or "")
+            sys.stderr.write(result.stderr or "")
+            raise HubSpotPublishFailure(
+                "publish-to-hubspot.py --update-existing exited non-zero. "
+                "See stdout/stderr above."
+            )
+        m = _POST_ID_RE.search(result.stdout or "")
+        refreshed_id = m.group(1) if m else post_id
         run.update(
             {
                 "stage": "publish",
-                "hubspot_post_id": post_id,
+                "hubspot_post_id": refreshed_id,
                 "hubspot_edit_url": edit_url,
                 "hubspot_reused_existing": True,
+                "hubspot_body_refreshed": True,
             }
         )
         update_run(run["run_id"], run)
