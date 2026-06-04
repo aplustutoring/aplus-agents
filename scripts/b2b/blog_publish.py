@@ -73,10 +73,12 @@ def build_blog_prompt(topic: dict, week: str) -> str:
 This call runs from a non-interactive API context — the orchestration sub-skills
 referenced in your instructions (`keyword-research`, `serp-analysis`,
 `content-gap-analysis`, `geo-content-optimizer`, `meta-tags-optimizer`,
-`schema-markup-generator`, `on-page-seo-auditor`) are NOT available in this
-environment. Produce your best blog post + SEO metadata block using your training
-and judgment, and label any section that would have been informed by a sub-skill
-with `[API-mode: sub-skill unavailable — best-effort defaults]`.
+`schema-markup-generator`, `on-page-seo-auditor`) are NOT available here. Silently
+use your best SEO judgment in their place. Do NOT mention these sub-skills, and do
+NOT add any process notes, status labels, or bracketed markers (e.g.
+"[API-mode...]", "[best-effort]", "[SEO Research Notes]") anywhere in the output.
+The blog-body must contain ONLY the finished, publish-ready article starting with
+the H1 — no preamble, no notes, nothing before the H1.
 
 APPROVED TOPIC for week {week}, slot {topic.get('slot')}:
   Headline: {topic.get('headline')}
@@ -136,6 +138,27 @@ Output ONLY the two fenced sections. No commentary before or after.
 _FENCE_RE = re.compile(r"```(?P<tag>[a-zA-Z0-9_-]+)\n(?P<body>.*?)\n```", re.DOTALL)
 
 
+_PROCESS_NOTE_RE = re.compile(
+    r"^\s*\[?\s*(?:API-mode|best-effort|sub-skill unavailable|SEO Research Notes)[^\n]*\]?\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _strip_process_notes(body: str) -> str:
+    """Remove any process/status notes the model leaked (e.g. '[API-mode: ...]')
+    so the published body starts cleanly at the H1."""
+    body = _PROCESS_NOTE_RE.sub("", body)
+    lines = body.splitlines()
+    # Drop blank lines / stray bracketed notes that precede the first H1.
+    while lines and not lines[0].lstrip().startswith("#"):
+        first = lines[0].strip()
+        if first == "" or (first.startswith("[") and first.endswith("]")):
+            lines.pop(0)
+        else:
+            break
+    return "\n".join(lines).strip()
+
+
 def parse_blog_output(text: str) -> tuple[Optional[str], dict[str, object]]:
     """Extract the ```blog-body``` and ```blog-meta``` fences."""
     body: Optional[str] = None
@@ -144,7 +167,7 @@ def parse_blog_output(text: str) -> tuple[Optional[str], dict[str, object]]:
         tag = m.group("tag")
         content = m.group("body")
         if tag == "blog-body":
-            body = content.strip()
+            body = _strip_process_notes(content.strip())
         elif tag == "blog-meta":
             meta = _parse_meta_block(content)
     return body, meta
