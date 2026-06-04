@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SKILLS_DIR = REPO_ROOT / "skills"
 
 DEFAULT_MODEL = "claude-opus-4-7"

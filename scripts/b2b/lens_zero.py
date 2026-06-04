@@ -30,7 +30,7 @@ from openai import OpenAI
 
 load_dotenv(override=True)
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 STATE_DIR = REPO_ROOT / "state"
 EMBEDDINGS_CACHE = STATE_DIR / "blog-embeddings.json"
 

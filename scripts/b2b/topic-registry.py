@@ -68,7 +68,7 @@ import re
 import sys
 from pathlib import Path
 
-REGISTRY_PATH = Path(__file__).resolve().parent.parent / "state" / "topic-registry.json"
+REGISTRY_PATH = Path(__file__).resolve().parent.parent.parent / "state" / "topic-registry.json"
 RETIRE_THRESHOLD = 3  # candidate proposed 3+ times without anchoring = retired
 
 

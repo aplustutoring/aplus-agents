@@ -29,7 +29,7 @@ import matplotlib.font_manager as fm
 from matplotlib.patches import Wedge
 
 # Register A+ brand fonts (Playfair Display + DM Sans) per aplus-graphic-prompts v2.0
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 BRAND_FONTS_DIR = REPO_ROOT / "skills" / "aplus-b2b-brand-kit" / "fonts"
 for _ttf in BRAND_FONTS_DIR.glob("*.ttf"):
     try:
