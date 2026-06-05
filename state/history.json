@@ -446,6 +446,59 @@
       "flags": [
         "FACT-CHECK \u2014 I'll fact-check this content systematically, starting with the external claims that need verification against authoritative sources.# A+ FACT-CHECK REPORT\n\n**Content:** \"The K-12 Tutoring Market Just Split In Two...\"\n**Claims evaluated:** 8 categories (1 NCES stat, 1 FutureEd stat, 1 statutory definition, 1 list of states, 1 NSSA claim, 1 Annenberg study citation, 1 Stanford on-demand claim, 3 A+ outcome figures)\n\n---\n\n## Claim-by-claim findings\n\n### \u2705 Claim 1: NCES School Pulse Panel \u2014 37% (fall 2022) \u2192 42% (spring 2025)\n**VERIFIED.** The share of public schools offering high-dosage tutoring has risen from 37% in 2022 to 42% by spring 2025, according to NCES data. The original 37% figure traces back to NCES SPP, where thirty-seven percent of public schools reported providing high-dosage tutoring, with fifty-nine percent providing standard tutoring and 21 percent providing self-paced tut"
       ]
+    },
+    {
+      "ts": "2026-06-05T00:24:04.858754+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 1,
+      "post_date": "2026-06-08",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-student-support-block",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214363657790",
+      "action": "updated",
+      "fact_pass": false,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": [
+        "FACT-CHECK \u2014 ## ISSUES FOUND\n\n**Issue 1 \u2014 IMPORTANT (Unable to Verify)**\n- CLAIM IN CONTENT: \"Third, and less covered in the press releases, the May Revise proposes new accountability requirements for charter schools, including verified enrollment data and fraud detection.\"\n- WHAT I FOUND: Charter accountability reforms (verified ADA, fraud detection) are the substance of **AB 84 (2025-26 session)**, not the May Revise. This bill would require each chartering authority to verify specified data relating to the reporting of average daily attendance by nonclassroom-based charter schools and would require the chartering authority to notify the certified public accountant or accountant performing the audit of the charter school if the charter school does not provide the required documentation needed to verify the specified data. AB 84 was Ordered to inactive file at the request of Senator Grayson in Septe"
+      ]
+    },
+    {
+      "ts": "2026-06-05T00:41:15.016029+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 2,
+      "post_date": "2026-06-10",
+      "headline": "The May 31 ELPAC reclassification deadline just passed \u2014 and most charters left RFEPs on the table",
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-charters",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214359139851",
+      "action": "updated",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-05T00:51:08.712276+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 3,
+      "post_date": "2026-06-12",
+      "headline": "The ESSER-to-State \"Market Reset\" \u2014 and why NSSA-style quality screens favor embedded providers like A+",
+      "bundle_dir": "aplus-content/2026-06-12-k12-tutoring-quality-screens-nssa",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214362595991",
+      "action": "updated",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

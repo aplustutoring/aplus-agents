@@ -15,9 +15,9 @@
       "redundancy_max_similarity": 0.39109097659969927,
       "redundancy_bypassed": false,
       "staged": true,
-      "staged_at": "2026-06-04T23:30:56.586499+00:00",
+      "staged_at": "2026-06-05T00:24:04.857285+00:00",
       "post_date": "2026-06-08",
-      "bundle_dir": "aplus-content/2026-06-08-california-5b-block-grant-lcap",
+      "bundle_dir": "aplus-content/2026-06-08-california-5b-student-support-block",
       "hubspot_post_id": "214363657790"
     },
     {
@@ -38,9 +38,9 @@
       "redundancy_max_similarity": 0.480394981929078,
       "redundancy_bypassed": false,
       "staged": true,
-      "staged_at": "2026-06-04T23:41:43.372492+00:00",
+      "staged_at": "2026-06-05T00:41:15.014675+00:00",
       "post_date": "2026-06-10",
-      "bundle_dir": "aplus-content/2026-06-10-may-31-elpac-reclassification-deadline",
+      "bundle_dir": "aplus-content/2026-06-10-elpac-reclassification-deadline-charters",
       "hubspot_post_id": "214359139851"
     },
     {
@@ -61,9 +61,9 @@
       "redundancy_max_similarity": 0.42210099137323037,
       "redundancy_bypassed": false,
       "staged": true,
-      "staged_at": "2026-06-04T23:50:50.969434+00:00",
+      "staged_at": "2026-06-05T00:51:08.710791+00:00",
       "post_date": "2026-06-12",
-      "bundle_dir": "aplus-content/2026-06-12-post-esser-tutoring-quality-screen",
+      "bundle_dir": "aplus-content/2026-06-12-k12-tutoring-quality-screens-nssa",
       "hubspot_post_id": "214362595991"
     }
   ],
