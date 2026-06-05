@@ -161,6 +161,53 @@ def _build_graphics(bundle_dir: Path) -> None:
             logger.warning("%s error: %s", script.name, e)
 
 
+def _generate_oped_assets(runner: SkillsRunner, bundle_dir: Path, topic: dict, body: str) -> None:
+    """Generate the LinkedIn assets that ride alongside the blog: a Roman op-ed, a
+    Danielle op-ed, and an A+ company-page post. Best-effort; em dashes stripped."""
+    headline = topic.get("headline", "")
+    excerpt = body[:1500]
+    jobs = [
+        ("roman-voice", "roman-oped.md",
+         f"Write a LinkedIn op-ed in Roman's founder voice reacting to this week's A+ blog.\n"
+         f"Topic: {headline}\nAngle: {topic.get('angle','')}\nRoman's take: {topic.get('roman_take','')}\n"
+         f"180-260 words, first person, personal conviction. Do NOT use em dashes. "
+         f"Output ONLY the op-ed text.\n\nBlog excerpt:\n{excerpt}"),
+        ("danielle-voice", "danielle-oped.md",
+         f"Write a LinkedIn op-ed in Danielle's voice (Director of School Partnerships) on this week's A+ blog.\n"
+         f"Topic: {headline}\nAngle: {topic.get('angle','')}\nDanielle's take: {topic.get('danielle_take','')}\n"
+         f"180-260 words, practical implementation lens. Do NOT use em dashes. "
+         f"Output ONLY the op-ed text.\n\nBlog excerpt:\n{excerpt}"),
+        ("aplus-b2b-brand-kit", "linkedin-company.md",
+         f"Write a LinkedIn COMPANY post for the A+ Tutoring company page promoting this week's blog.\n"
+         f"Topic: {headline}\n120-180 words: a hook, 2-3 insight lines, and a soft CTA to read the blog. "
+         f"B2B brand voice. Do NOT use em dashes. Output ONLY the post text."),
+    ]
+    for skill, fname, prompt in jobs:
+        try:
+            res = runner.run_skill(skill, prompt, max_tokens=2000)
+            (bundle_dir / fname).write_text(bp.strip_em_dashes(res.text.strip()) + "\n", encoding="utf-8")
+            logger.info("oped_asset written: %s", fname)
+        except Exception as e:
+            logger.warning("oped asset %s failed: %s", fname, e)
+
+
+def _deliver_to_slack(bundle_dir: Path, post_id: "str | None") -> int:
+    """Deliver the bundle to Slack, passing the HubSpot post id so the header carries
+    a WORKING draft link (the editor URL; the live URL 404s until published)."""
+    cmd = ["python3", str(bp.REPO_ROOT / "scripts" / "b2b" / "deliver-to-slack.py"), "--bundle", str(bundle_dir)]
+    if post_id:
+        cmd += ["--post-id", str(post_id)]
+    try:
+        r = subprocess.run(cmd, cwd=str(bp.REPO_ROOT), capture_output=True, text=True, timeout=600)
+        sys.stdout.write(r.stdout)
+        if r.returncode != 0:
+            logger.warning("deliver-to-slack rc=%s: %s", r.returncode, (r.stderr or "")[:300])
+        return r.returncode
+    except Exception as e:
+        logger.warning("deliver-to-slack error: %s", e)
+        return 1
+
+
 def _apply_mechanical_fixes(body: str, meta: dict) -> "tuple[str, dict]":
     """Deterministic backstops the LLM keeps missing: strip em/en dashes (brand
     auto-reject) and normalize the slug. Guaranteed, not best-effort."""
@@ -270,6 +317,8 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
 
     # Distinct hero + pull-quotes + social card (best-effort) before the draft.
     _build_graphics(bundle_dir)
+    # Roman + Danielle LinkedIn op-eds + company post (best-effort).
+    _generate_oped_assets(runner, bundle_dir, topic, body)
 
     if dry_run:
         return {"slot": slot, "status": "generated", "headline": topic.get("headline"),
@@ -298,9 +347,9 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         except Exception as e:
             logger.warning("embed-pull-quotes slot=%s error: %s", slot, e)
 
-    slack_rc = bp.shell_out_to_slack(bundle_dir, dry_run=False)
+    slack_rc = _deliver_to_slack(bundle_dir, post_id)
     if slack_rc != 0:
-        logger.warning("slot %s deliver-to-slack.py rc=%s (continuing)", slot, slack_rc)
+        logger.warning("slot %s deliver-to-slack rc=%s (continuing)", slot, slack_rc)
 
     # --- mark staged (re-read to avoid clobbering concurrent writes) ---
     q = read_topic_queue()

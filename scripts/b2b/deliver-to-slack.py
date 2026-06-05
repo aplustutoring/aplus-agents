@@ -122,30 +122,8 @@ PIECES = [
         "body_file": "danielle-oped.md",
         "image_files": ["graphics/pull-quote-s2-with-logo.png"],
     },
-    {
-        "name": "Instagram Story (3 frames)",
-        "publish_window": "Same day as blog publish — story is 24hr",
-        "destination": "instagram.com/aplustutoring (story)",
-        "body_text": (
-            ":clipboard: *Instagram Story — 3-frame sequence* (v2.3). Post all 3 "
-            "in order. Frame 3 needs the Instagram link sticker pointing to:\n"
-            "{predicted_blog_url}\n"
-            "Per-frame copy is in instagram-story-1.md / -2.md / -3.md for verification."
-        ),
-        "image_files": [
-            "graphics/instagram-story-1.png",
-            "graphics/instagram-story-2.png",
-            "graphics/instagram-story-3.png",
-        ],
-    },
-    {
-        "name": "Facebook post (B2C, parents)",
-        "publish_window": "Monday PM",
-        "destination": "facebook.com/WeTutorAtHome",
-        "body_file": "facebook.md",
-        "image_files": ["graphics/facebook.png"],
-    },
 ]
+# B2B lives on LinkedIn — Instagram Story and Facebook (B2C/parents) pieces removed.
 
 
 # ---------- Logging ----------
@@ -378,8 +356,7 @@ def main():
     else:
         header_lines.append(":memo: HubSpot blog draft: (no --post-id provided)")
     if predicted_blog_url:
-        header_lines.append(f":link: Blog URL when published: <{predicted_blog_url}|{predicted_blog_url}>")
-        header_lines.append(":arrow_right: Use this URL for the Instagram link sticker on Story Frame 3.")
+        header_lines.append(f":link: Live URL once published (currently 404s — it's still a draft): {predicted_blog_url}")
     header_lines.append("")
     header_lines.append(
         f":pushpin: {len(effective_pieces)} deliveries below — copy each block into the destination platform at the suggested time."
