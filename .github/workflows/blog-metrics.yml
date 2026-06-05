@@ -1,0 +1,45 @@
+name: Blog metrics scorecard (Monday 9 AM PT)
+
+# Weekly performance scorecard for the content engine's posts -> Slack.
+# Read-only (no state commit). Page analytics need the HubSpot analytics
+# (business-intelligence) read scope; without it the scorecard still posts.
+on:
+  schedule:
+    - cron: "0 16 * * 1"  # 09:00 PDT Monday
+    - cron: "0 17 * * 1"  # 09:00 PST Monday
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Rolling window in days"
+        required: false
+        type: string
+        default: "30"
+      dry_run:
+        description: "Print the scorecard, do not post to Slack"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Post blog metrics scorecard
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          ARGS="--days ${{ inputs.days || '30' }}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          python3 scripts/b2b/blog-metrics.py $ARGS
