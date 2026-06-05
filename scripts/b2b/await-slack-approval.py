@@ -177,9 +177,12 @@ def summarize_changes(changes: dict[str, Any]) -> str:
             f":x: Slate denied by {changes['denied_by']}. No blogs publish this week. Topic-gen will retry next Thursday."
         )
     elif changes.get("approved"):
+        by = changes.get("approved_by")
+        who = f"<@{by}>" if by and by != "auto" else "the slate"
         lines.append(
-            f":white_check_mark: Slate approved by {changes['approved_by']}. "
-            f"Blogs will be built into HubSpot drafts over the weekend, ready to post Mon/Wed/Fri."
+            f":white_check_mark: *Got it, {who} — approval received and locked.* "
+            f"All 3 topics are confirmed. I'll build the blogs into HubSpot drafts this weekend and "
+            f"post a summary with the draft links right here on Monday. Nothing else needed from you. :rocket:"
         )
     return "\n".join(lines)
 

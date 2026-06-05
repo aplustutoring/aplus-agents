@@ -2,8 +2,8 @@ name: Approval poll (Thu 5 PM PT → Fri 5 PM PT)
 
 on:
   schedule:
-    - cron: "*/15 * * * 5"  # every 15 min UTC Friday (covers Thu 5 PM PT → Fri ~5 PM PT)
-    - cron: "*/15 0-2 * * 6"  # every 15 min UTC Sat 00:00-02:59 (reaches the Fri 5 PM PT deadline)
+    - cron: "*/5 * * * 5"  # every 5 min UTC Friday (covers Thu 5 PM PT → Fri ~5 PM PT) — fast approval ack
+    - cron: "*/5 0-2 * * 6"  # every 5 min UTC Sat 00:00-02:59 (reaches the Fri 5 PM PT deadline)
   workflow_dispatch:
     inputs:
       dry_run:
