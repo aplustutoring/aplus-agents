@@ -499,6 +499,23 @@
       "brand_pass": true,
       "seo_issues": 0,
       "flags": []
+    },
+    {
+      "ts": "2026-06-05T01:07:59.611321+00:00",
+      "kind": "content_build",
+      "week": "2026-06-04",
+      "slot": 1,
+      "post_date": "2026-06-08",
+      "headline": "Newsom's May Revise puts $5B on the table for \"Student Support and Professional Development\" \u2014 and the rules of engagement for charters just changed",
+      "bundle_dir": "aplus-content/2026-06-08-newsom-5b-block-grant-charters",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214363657790",
+      "action": "updated",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
