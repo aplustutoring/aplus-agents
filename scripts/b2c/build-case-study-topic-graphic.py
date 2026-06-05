@@ -174,7 +174,14 @@ def main():
     month_fs = 11 if n <= 4 else 10
 
     def _wrap(s, w):
-        return "\n".join(textwrap.wrap(str(s).strip(), width=w)) or str(s).strip()
+        # break_long_words=False so a long token (e.g. "multiplication") never
+        # splits mid-word ("m / ultiplication"); it just slightly overflows its
+        # line instead, which reads far cleaner.
+        wrapped = textwrap.wrap(
+            str(s).strip(), width=w,
+            break_long_words=False, break_on_hyphens=False,
+        )
+        return "\n".join(wrapped) or str(s).strip()
 
     for i, ((month, topic, phrase), x) in enumerate(zip(milestones, xs)):
         color = ORANGE if i % 2 == 0 else GOLD
