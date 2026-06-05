@@ -35,7 +35,7 @@ from lens_runs import LENSES, LensRunResult, Topic, run_all_lenses, run_lens
 from lens_zero import check_many, RedundancyVerdict
 from refresh_mode import is_refresh_mode
 from skills_runner import SkillsRunner
-from state import topic_queue_transaction, append_history_run
+from state import topic_queue_transaction, append_history_run, read_topic_queue
 
 load_dotenv(override=True)
 
@@ -216,6 +216,21 @@ def run(
     refresh_active = is_refresh_mode() if refresh is None else refresh
     now = datetime.now(PT)
     current_week = now.strftime("%Y-%m-%d")
+
+    # Guard: never regenerate/overwrite a slate already posted for THIS week (a
+    # duplicate PDT/PST cron, or any out-of-band run, would otherwise clobber an
+    # approved+staged slate already built into HubSpot drafts — which is exactly
+    # what happened on 2026-06-04). A genuinely new week (different current_week)
+    # proceeds normally; --refresh forces regeneration.
+    if not refresh_active:
+        existing = read_topic_queue()
+        if existing.current_week == current_week and existing.slack and existing.slack.get("message_ts"):
+            status = (existing.approval or {}).get("status", "pending")
+            logger.warning(
+                "slate for %s already posted (approval=%s) — refusing to regenerate and "
+                "clobber it; use --refresh to force.", current_week, status,
+            )
+            return {"status": "skipped", "reason": f"{current_week} slate already posted (approval={status})"}
 
     # Approval deadline = upcoming Friday 5 PM PT (topics post Thursday;
     # no action by the deadline => approval_deadline.py auto-approves all 3).
