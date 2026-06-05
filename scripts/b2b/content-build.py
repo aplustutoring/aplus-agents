@@ -197,25 +197,31 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     body, meta = _apply_mechanical_fixes(body, meta)
     seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
 
-    # --- automatic correction pass: feed the QA findings to aplus-content-corrector,
-    # which rewrites the post to fix them, then re-check ONCE. The draft you review is
-    # the corrected version, not the first draft.
-    if not (fact_pass and brand_pass and not seo_issues):
-        logger.info("slot=%s pre-correction fact=%s brand=%s seo=%d — running corrector",
-                    slot, fact_pass, brand_pass, len(seo_issues))
+    # --- automatic correction LOOP: feed the QA findings to aplus-content-corrector,
+    # which rewrites the post to fix them; re-check and repeat until everything passes
+    # or MAX_CORRECTION_PASSES is hit. The draft you review is the corrected version.
+    MAX_CORRECTION_PASSES = 3
+    passes = 0
+    while not (fact_pass and brand_pass and not seo_issues) and passes < MAX_CORRECTION_PASSES:
+        passes += 1
+        logger.info("slot=%s correction pass %d/%d (fact=%s brand=%s seo=%d)",
+                    slot, passes, MAX_CORRECTION_PASSES, fact_pass, brand_pass, len(seo_issues))
         new_body, new_meta = bp.run_corrections(
             runner, body, bp.format_meta_for_hubspot_script(meta, topic),
             fact_report=("" if fact_pass else fact_result.text),
             brand_report=("" if brand_pass else brand_result.text),
             seo_issues=seo_issues,
         )
-        if new_body and new_meta:
-            body, meta = _apply_mechanical_fixes(new_body, new_meta)
-            seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
-            logger.info("slot=%s post-correction fact=%s brand=%s seo=%d",
-                        slot, fact_pass, brand_pass, len(seo_issues))
-        else:
-            logger.warning("slot=%s corrector output unparseable; keeping original draft", slot)
+        if not (new_body and new_meta):
+            logger.warning("slot=%s corrector output unparseable on pass %d; stopping", slot, passes)
+            break
+        body, meta = _apply_mechanical_fixes(new_body, new_meta)
+        seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
+        logger.info("slot=%s after pass %d: fact=%s brand=%s seo=%d",
+                    slot, passes, fact_pass, brand_pass, len(seo_issues))
+    if passes:
+        logger.info("slot=%s corrections done after %d pass(es): fact=%s brand=%s seo=%d",
+                    slot, passes, fact_pass, brand_pass, len(seo_issues))
 
     for issue in seo_issues:
         logger.warning("seo_issue slot=%s %s", slot, issue)
