@@ -1604,18 +1604,42 @@ DRAFT_DOC2_DELIM = "===== DOC 2: ARCHIVE (un-anonymized, NEVER published) ====="
 # Fixed anonymization note that opens every published case study. Deterministic
 # (not LLM-generated) so the privacy statement is exact and consistent. It is
 # what lets a story responsibly mention a specific, person-first diagnosis.
+# ONE short privacy note that covers consent + anonymization + the real tutor,
+# so the published doc carries a single statement (not this plus an LLM-written
+# "names have been changed" note).
 ANONYMIZATION_DISCLAIMER = (
-    "_A note on privacy: This is a real A+ Tutoring success story, shared with "
-    "the family's consent. The student's and parents' names and identifying "
-    "details have been changed to protect their privacy. The tutor named here "
-    "is a real A+ Tutoring tutor, named with permission._"
+    "_A note on privacy: this is a real A+ Tutoring student's story, shared with "
+    "their family's consent. Names and identifying details have been changed to "
+    "protect their privacy; the tutor is named with permission._"
 )
 
 
+def _strip_llm_privacy_note(doc1: str) -> str:
+    """Drop any privacy/anonymization disclaimer the drafting model added on its
+    own (e.g. 'Note: To protect privacy, names have been changed.') so it does
+    not duplicate the canonical note injected below. Targets paragraphs that
+    read like a names-changed disclaimer; leaves real body prose alone."""
+    kept = []
+    for para in doc1.split("\n\n"):
+        low = para.lower()
+        is_privacy_note = (
+            "name" in low and "chang" in low
+            and ("privacy" in low or "protect" in low or "identifying" in low)
+            and "note on privacy" not in low  # never strip the canonical one
+            and len(para) < 400
+        )
+        if is_privacy_note:
+            continue
+        kept.append(para)
+    return "\n\n".join(kept)
+
+
 def _insert_disclaimer_after_h1(doc1: str) -> str:
-    """Place the anonymization note as the first thing under the H1 title."""
+    """Strip any model-written privacy note, then place the single canonical
+    anonymization note as the first thing under the H1 title."""
     if ANONYMIZATION_DISCLAIMER.strip() in doc1:
         return doc1  # idempotent (resume/re-run safety)
+    doc1 = _strip_llm_privacy_note(doc1)
     parts = doc1.split("\n", 1)
     if parts and parts[0].lstrip().startswith("#"):
         rest = parts[1].lstrip("\n") if len(parts) > 1 else ""
@@ -1779,6 +1803,10 @@ Output format — two documents separated by the exact delimiters below.
 sections from the SKILL spec, parent-facing voice, pull quotes marked
 inline with [PULL QUOTE]. Start with a markdown H1 title using the
 pseudonym. Do NOT include real names anywhere in Document 1.
+
+Do NOT add any privacy, anonymization, or "names have been changed"
+disclaimer, note, or footer of your own — a single standard privacy
+note is appended automatically. Document 1 must contain no such note.
 
 DO NOT include the SEO metadata frontmatter block at the top of
 Document 1. The SKILL spec describes a "--- SEO METADATA ... ---"

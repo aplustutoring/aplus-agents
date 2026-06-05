@@ -93,6 +93,17 @@ def _credentials():
     )
 
 
+def safe_local_name(name: str) -> str:
+    """Drive filenames can contain '/' (e.g. a date like '(04/27/26) i-Ready
+    Reading.jpg') and other path-hostile characters. Writing them verbatim
+    treats the slashes as directories and crashes. Replace them with '-' so the
+    file lands as a single flat file."""
+    for ch in '/\\:*?"<>|':
+        name = name.replace(ch, "-")
+    name = name.replace("\n", " ").replace("\r", " ").strip()
+    return name or "file"
+
+
 def export_google_doc(drive, file_id: str, name: str, dest: Path, verbose: bool = False) -> tuple[bool, str]:
     """Export a Google Doc as plain text.
     
@@ -102,7 +113,7 @@ def export_google_doc(drive, file_id: str, name: str, dest: Path, verbose: bool 
         _, _, MediaIoBaseDownload = _lazy_imports()
         # Export the Doc as plain text. The Drive API will generate a text version.
         request = drive.files().export_media(fileId=file_id, mimeType="text/plain")
-        out_path = dest / f"{name}.txt"
+        out_path = dest / f"{safe_local_name(name)}.txt"
         with open(out_path, "wb") as fp:
             downloader = MediaIoBaseDownload(fp, request)
             done = False
@@ -186,7 +197,7 @@ def main() -> int:
                 skipped.append(f"{name} (Google {mime_type.split('.')[-1]} — not supported)")
                 continue
 
-            out_path = dest / name
+            out_path = dest / safe_local_name(name)
             request = drive.files().get_media(fileId=f["id"])
             with open(out_path, "wb") as fp:
                 downloader = MediaIoBaseDownload(fp, request)
