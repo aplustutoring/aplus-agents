@@ -122,10 +122,17 @@ featured_image_alt_text: ...
 pull_quotes:
   - "First verbatim sentence lifted from the body — one of the 1-2 strongest, most quotable lines (15-25 words)"
   - "Second verbatim strong sentence from the body (15-25 words)"
+carousel_slides:
+  - "Slide 2 body: an insight or data point distilled from the blog (1-2 sentences)"
+  - "Slide 3 body: a second insight or data point"
+  - "Slide 4 body: a third insight or data point"
+  - "Slide 5 body: the CTA line that drives readers to the blog or to book with Danielle"
 ```
 
 `pull_quotes` MUST be two VERBATIM sentences copied exactly from the blog body
 (they become pull-quote graphics). Do not paraphrase; quote real sentences.
+`carousel_slides` are 4 short lines (slides 2-5) for the LinkedIn carousel; slide 1
+is built from the headline + first pull-quote.
 
 Length rules for the meta block (will be machine-validated and the run will FAIL if violated):
   html_title 50-60 chars
@@ -240,7 +247,7 @@ def format_meta_for_hubspot_script(meta: dict[str, object], topic: dict) -> str:
     if "h1_title" not in meta and "html_title" in meta:
         lines.append(f"h1_title: {meta['html_title']}")
     lines.append("```")
-    for list_key in ("secondary_keywords", "keywords", "tag_ids", "pull_quotes"):
+    for list_key in ("secondary_keywords", "keywords", "tag_ids", "pull_quotes", "carousel_slides"):
         if list_key in meta and isinstance(meta[list_key], list):
             lines.append("")
             lines.append(f"{list_key}:")

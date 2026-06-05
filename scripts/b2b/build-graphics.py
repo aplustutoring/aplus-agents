@@ -153,6 +153,20 @@ def social_card_prompt(headline: str) -> str:
     )
 
 
+def carousel_slide_prompt(headline: str, body: str, slide_num: int, total: int, is_cta: bool) -> str:
+    swipe = (" A small right-pointing swipe indicator in the lower-left (this is slide 1 of the set)."
+             if slide_num == 1 else " NO swipe indicator.")
+    head = (f"a white serif headline (Playfair Display style, weight 700) reading EXACTLY: \"{headline}\", then "
+            if headline else "")
+    cta = " This is the final call-to-action slide." if is_cta else ""
+    return (
+        f"A portrait-orientation flat design slide for a LinkedIn carousel, slide {slide_num} of {total}. "
+        f"Solid background A+ Navy hex {NAVY}. {head}white sans-serif body text (DM Sans style) reading "
+        f"EXACTLY: \"{body}\". A thin A+ Orange {ORANGE} accent line. Generous whitespace, clean and "
+        f"institutional. No photographs, no decorative icons, no 'Source:' footer.{swipe}{cta}" + LOGO_EXCLUSION
+    )
+
+
 def build(bundle: Path) -> dict:
     graphics = bundle / "graphics"
     graphics.mkdir(parents=True, exist_ok=True)
@@ -182,6 +196,22 @@ def build(bundle: Path) -> dict:
         r = _gpt_image(pull_quote_prompt(quote[:240]), "1536x1024", graphics / f"pull-quote-{slot}.png")
         print(f"pull_quote_{slot}:", r.get("ok"), r.get("error", ""))
         results.append(r)
+
+    # LinkedIn carousel (portrait): slide 1 = headline + first quote; slides 2-5 = carousel_slides.
+    carousel = _meta_list(meta_text, "carousel_slides")
+    if quotes or carousel:
+        r = _gpt_image(
+            carousel_slide_prompt(headline[:80], (quotes[0][:160] if quotes else ""), 1, 5, False),
+            "1024x1536", graphics / "linkedin-carousel-slide-1.png")
+        print("carousel_1:", r.get("ok"), r.get("error", ""))
+        results.append(r)
+        for i, text in enumerate(carousel[:4]):
+            n = i + 2
+            r = _gpt_image(
+                carousel_slide_prompt("", text[:200], n, 5, n == 5),
+                "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png")
+            print(f"carousel_{n}:", r.get("ok"), r.get("error", ""))
+            results.append(r)
 
     (graphics / "_results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     ok = sum(1 for r in results if r.get("ok"))
