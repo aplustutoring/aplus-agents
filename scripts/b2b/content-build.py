@@ -200,9 +200,18 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
     # --- automatic correction LOOP: feed the QA findings to aplus-content-corrector,
     # which rewrites the post to fix them; re-check and repeat until everything passes
     # or MAX_CORRECTION_PASSES is hit. The draft you review is the corrected version.
-    MAX_CORRECTION_PASSES = 3
+    MAX_CORRECTION_PASSES = 5
+
+    def _score(seo, fp, bp_):  # fewer failures = better; 0 = fully clean
+        return (0 if fp else 1) + (0 if bp_ else 1) + (1 if seo else 0)
+
+    def _snapshot():
+        return {"score": _score(seo_issues, fact_pass, brand_pass), "body": body, "meta": meta,
+                "seo": seo_issues, "fp": fact_pass, "fr": fact_result, "bp": brand_pass, "br": brand_result}
+
+    best = _snapshot()
     passes = 0
-    while not (fact_pass and brand_pass and not seo_issues) and passes < MAX_CORRECTION_PASSES:
+    while best["score"] > 0 and passes < MAX_CORRECTION_PASSES:
         passes += 1
         logger.info("slot=%s correction pass %d/%d (fact=%s brand=%s seo=%d)",
                     slot, passes, MAX_CORRECTION_PASSES, fact_pass, brand_pass, len(seo_issues))
@@ -217,10 +226,17 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
             break
         body, meta = _apply_mechanical_fixes(new_body, new_meta)
         seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
-        logger.info("slot=%s after pass %d: fact=%s brand=%s seo=%d",
-                    slot, passes, fact_pass, brand_pass, len(seo_issues))
+        sc = _score(seo_issues, fact_pass, brand_pass)
+        logger.info("slot=%s after pass %d: fact=%s brand=%s seo=%d (score=%d, best=%d)",
+                    slot, passes, fact_pass, brand_pass, len(seo_issues), sc, best["score"])
+        if sc < best["score"]:
+            best = _snapshot()
     if passes:
-        logger.info("slot=%s corrections done after %d pass(es): fact=%s brand=%s seo=%d",
+        # Ship the BEST version seen across passes, never a regressed final pass.
+        body, meta = best["body"], best["meta"]
+        seo_issues, fact_pass, fact_result, brand_pass, brand_result = (
+            best["seo"], best["fp"], best["fr"], best["bp"], best["br"])
+        logger.info("slot=%s corrections done after %d pass(es), shipping best: fact=%s brand=%s seo=%d",
                     slot, passes, fact_pass, brand_pass, len(seo_issues))
 
     for issue in seo_issues:
