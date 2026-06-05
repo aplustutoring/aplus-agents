@@ -1605,10 +1605,10 @@ DRAFT_DOC2_DELIM = "===== DOC 2: ARCHIVE (un-anonymized, NEVER published) ====="
 # (not LLM-generated) so the privacy statement is exact and consistent. It is
 # what lets a story responsibly mention a specific, person-first diagnosis.
 ANONYMIZATION_DISCLAIMER = (
-    "_A note on privacy: This is a real A+ Tutoring success story, but the "
-    "student's and family's names and identifying details have been changed to "
-    "protect their privacy. The tutor named here is a real A+ Tutoring tutor, "
-    "named with permission._"
+    "_A note on privacy: This is a real A+ Tutoring success story, shared with "
+    "the family's consent. The student's and parents' names and identifying "
+    "details have been changed to protect their privacy. The tutor named here "
+    "is a real A+ Tutoring tutor, named with permission._"
 )
 
 
