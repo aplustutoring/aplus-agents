@@ -104,4 +104,13 @@ featured_image_alt_text: ...
 pull_quotes:
   - "..."
   - "..."
+carousel_slides:
+  - "..."
+  - "..."
+  - "..."
+  - "..."
 ```
+
+Preserve `pull_quotes` and `carousel_slides` from the input meta (update them only
+if your edits changed the sentence a pull-quote was lifted from). Never drop these
+lists — downstream graphics generation needs them.

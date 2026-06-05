@@ -271,6 +271,9 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         if not (new_body and new_meta):
             logger.warning("slot=%s corrector output unparseable on pass %d; stopping", slot, passes)
             break
+        # Carry carousel_slides forward if the corrector dropped them (graphics need it).
+        if not new_meta.get("carousel_slides") and meta.get("carousel_slides"):
+            new_meta["carousel_slides"] = meta["carousel_slides"]
         body, meta = _apply_mechanical_fixes(new_body, new_meta)
         seo_issues, fact_pass, fact_result, brand_pass, brand_result = _run_checks(runner, body, meta)
         sc = _score(seo_issues, fact_pass, brand_pass)
