@@ -201,7 +201,8 @@ def is_orchestrator_output(name: str) -> bool:
 # When the same document is dropped in multiple formats (e.g. a scanned
 # Report.pdf AND a Report.txt export), prefer the most text-native one so we
 # never read a scanned PDF that's also present as text. Lower rank wins.
-_EXT_PREFERENCE = {".txt": 0, ".md": 1, ".docx": 2, ".pdf": 3}
+_EXT_PREFERENCE = {".txt": 0, ".md": 1, ".docx": 2, ".pdf": 3,
+                   ".png": 4, ".jpg": 5, ".jpeg": 5, ".webp": 6}
 
 
 def find_source_files(source_dir: Path) -> list[Path]:
@@ -408,7 +409,81 @@ def ocr_pdf(path: Path) -> str:
             f"OCR returned no text for {path.name}. Supply a .txt/.docx export."
         )
     return joined
+
+
+def ocr_image(path: Path) -> str:
+    """Vision-transcribe a single image source (e.g. a score-report screenshot
+    or photo of an i-Ready / MAP / STAR report). Only called for images that
+    is_readable_score_image() classified as an assessment."""
+    if anthropic is None:
+        raise OrchestratorError(
+            f"Image '{path.name}' needs vision OCR but the anthropic SDK is "
+            "unavailable."
+        )
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise OrchestratorError(
+            f"Image '{path.name}' needs vision OCR but ANTHROPIC_API_KEY is not set."
+        )
+    import base64
+
+    media = {
+        ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+        ".png": "image/png", ".webp": "image/webp",
+    }.get(path.suffix.lower(), "image/png")
+    b64 = base64.standard_b64encode(path.read_bytes()).decode("ascii")
+    print(f"    Vision-OCR score image {path.name}...", file=sys.stderr)
+    client = anthropic.Anthropic(api_key=api_key)
+    message = client.messages.create(
+        model=OCR_VISION_MODEL,
+        max_tokens=4096,
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "image", "source": {"type": "base64",
+                    "media_type": media, "data": b64}},
+                {"type": "text", "text": (
+                    "Transcribe this K-12 student assessment / score report image "
+                    "to plain text. Preserve ALL numbers exactly: scores, RIT, "
+                    "percentiles, grade-level equivalents, Lexile, benchmark "
+                    "bands, dates, and subtest/domain names. Keep the structure "
+                    "(tables as readable rows). Do not summarize or add "
+                    "commentary. Output only the transcribed report."
+                )},
+            ],
+        }],
+    )
+    text = "".join(
+        b.text for b in message.content if getattr(b, "type", "") == "text"
+    ).strip()
+    if not text:
+        raise OrchestratorError(f"Vision OCR returned no text for image {path.name}.")
+    return text
 SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
+
+# Image sources are read via vision OCR, but ONLY when the filename looks like a
+# student assessment / score report (i-Ready, MAP, STAR, percentiles, ...).
+# Award certificates, photos and headshots are intentionally NOT OCR'd.
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+_SCORE_IMAGE_KEYWORDS = (
+    "i-ready", "iready", "i ready", "map growth", "map-growth", "nwea", "star ",
+    "star360", "star reading", "star math", "dibels", "acadience", "aimsweb",
+    "istation", "renaissance", "lexile", "fountas", "running record", "fast ",
+    "benchmark", "percentile", "rit", "diagnostic", "assessment", "score",
+    "scores", "report card", "progress report", "results", "reading level",
+)
+_NONCONTENT_IMAGE_KEYWORDS = (
+    "certificate", "award", "diploma", "headshot", "selfie", "logo", "photo",
+)
+
+
+def is_readable_score_image(name: str) -> bool:
+    """True if an image filename looks like a student score report/assessment
+    (so we vision-OCR it). Certificates/photos return False (skip OCR)."""
+    low = name.lower()
+    if any(k in low for k in _NONCONTENT_IMAGE_KEYWORDS):
+        return False
+    return any(k in low for k in _SCORE_IMAGE_KEYWORDS)
 
 
 def extract_text(path: Path) -> str:
@@ -419,6 +494,8 @@ def extract_text(path: Path) -> str:
         return extract_text_from_pdf(path)
     if suffix == ".docx":
         return extract_text_from_docx(path)
+    if suffix in IMAGE_EXTENSIONS:
+        return ocr_image(path)
     raise OrchestratorError(f"Unsupported source file type: {path.name}")
 
 
@@ -1121,11 +1198,25 @@ def stage_read_sources(args: argparse.Namespace, run: dict) -> dict:
     categories = categorize_source_files(all_files)
     ensure_source_files(source_dir, categories)
 
-    supported_files = [path for path in all_files if path.suffix.lower() in SUPPORTED_EXTENSIONS]
+    supported_files = [
+        path for path in all_files
+        if path.suffix.lower() in SUPPORTED_EXTENSIONS
+        or (path.suffix.lower() in IMAGE_EXTENSIONS and is_readable_score_image(path.name))
+    ]
+    # Visibility: flag images we are NOT reading (not a score report), so a
+    # misnamed score report can be caught at intake rather than silently lost.
+    for path in all_files:
+        if path.suffix.lower() in IMAGE_EXTENSIONS and not is_readable_score_image(path.name):
+            print(
+                f"  Skipping image (not recognized as a score report): {path.name}. "
+                "Rename to include e.g. 'i-Ready' / 'MAP' / 'score' to read it.",
+                file=sys.stderr,
+            )
     if not supported_files:
         raise OrchestratorError(
             "No supported document files were found in the source folder. "
-            "The folder must contain at least one readable .txt, .pdf, or .docx file."
+            "The folder must contain at least one readable .txt, .pdf, .docx, or "
+            "score-report image file."
         )
 
     source_texts: dict[str, str] = {}
