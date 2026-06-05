@@ -1601,16 +1601,43 @@ DRAFT_DOC1_DELIM = "===== DOC 1: PUBLISHED CASE STUDY (anonymized) ====="
 DRAFT_DOC2_DELIM = "===== DOC 2: ARCHIVE (un-anonymized, NEVER published) ====="
 
 
+# Fixed anonymization note that opens every published case study. Deterministic
+# (not LLM-generated) so the privacy statement is exact and consistent. It is
+# what lets a story responsibly mention a specific, person-first diagnosis.
+ANONYMIZATION_DISCLAIMER = (
+    "_A note on privacy: This is a real A+ Tutoring success story, but the "
+    "student's and family's names and identifying details have been changed to "
+    "protect their privacy. The tutor named here is a real A+ Tutoring tutor, "
+    "named with permission._"
+)
+
+
+def _insert_disclaimer_after_h1(doc1: str) -> str:
+    """Place the anonymization note as the first thing under the H1 title."""
+    if ANONYMIZATION_DISCLAIMER.strip() in doc1:
+        return doc1  # idempotent (resume/re-run safety)
+    parts = doc1.split("\n", 1)
+    if parts and parts[0].lstrip().startswith("#"):
+        rest = parts[1].lstrip("\n") if len(parts) > 1 else ""
+        return f"{parts[0]}\n\n{ANONYMIZATION_DISCLAIMER}\n\n{rest}"
+    return f"{ANONYMIZATION_DISCLAIMER}\n\n{doc1}"
+
+
 def _build_draft_system_prompt() -> str:
     skill = load_skill("aplus-spotlight-case-study")
+    inclusive = load_skill("aplus-inclusive-language")
     return (
         "You are the A+ Tutoring spotlight case-study drafting agent. "
         "Follow the SKILL spec below verbatim — the 8-section Hero's Journey "
         "structure, the 1,200-1,500 word count, the pull-quote grammar gate, "
-        "the anonymization protocol, the parent-facing voice cues. Output "
-        "two documents separated by the literal delimiters provided in the "
-        "user instructions. Do not add commentary outside the documents.\n\n"
-        "===== aplus-spotlight-case-study SKILL.md =====\n\n" + skill
+        "the anonymization protocol, the parent-facing voice cues. ALSO obey "
+        "the inclusive-language rules: person-first disability language ('a "
+        "student who has dyslexia,' never 'a dyslexic student') and accurate, "
+        "non-deficit English-learner terminology. Output two documents "
+        "separated by the literal delimiters provided in the user "
+        "instructions. Do not add commentary outside the documents.\n\n"
+        "===== aplus-spotlight-case-study SKILL.md =====\n\n" + skill +
+        "\n\n===== aplus-inclusive-language SKILL.md =====\n\n" + inclusive
     )
 
 
@@ -1850,15 +1877,22 @@ def brand_check_and_clean(doc1_text: str) -> tuple[str, list[str]]:
     Only the offending tokens are rewritten.
     """
     skill = load_skill("aplus-brand-check")
+    inclusive = load_skill("aplus-inclusive-language")
     system = (
-        "You are the A+ Tutoring brand-check enforcement layer. The SKILL "
-        "below lists every rule. Apply the CRITICAL FAILURES section "
+        "You are the A+ Tutoring brand-check enforcement layer. The SKILLs "
+        "below list every rule. Apply the CRITICAL FAILURES section "
         "(em dashes, banned phrases, AI-detection vocabulary, profanity, "
         "corporate fluff, rule-of-three, AI opener patterns, "
         "adverb-adjective inflation) and any B2C brand-kit rules that "
         "apply to a parent-facing case-study blog post. Skip B2B-only "
         "rules and rules tagged 'blog post' that don't apply to a "
         "case-study channel.\n\n"
+        "ALSO enforce the inclusive-language SKILL: rewrite any non-person-"
+        "first disability phrasing ('a dyslexic student' -> 'a student who has "
+        "dyslexia'), deficit/pity framing, and incorrect or deficit English-"
+        "learner terminology. Follow a family's stated preference if the doc "
+        "records one. Do NOT edit person-first phrasing inside a verbatim "
+        "parent/tutor quote — leave quotes intact.\n\n"
         "Output strict JSON with NO surrounding markdown fence and NO "
         "commentary, exactly this shape:\n\n"
         '{\n'
@@ -1874,7 +1908,8 @@ def brand_check_and_clean(doc1_text: str) -> tuple[str, list[str]]:
         "verbatim quotes overrides em-dash and banned-word checks WITHIN "
         "the quoted text). Em dashes OUTSIDE quoted text must be replaced "
         "with periods, colons, or rephrased.\n\n"
-        "===== aplus-brand-check SKILL.md =====\n\n" + skill
+        "===== aplus-brand-check SKILL.md =====\n\n" + skill +
+        "\n\n===== aplus-inclusive-language SKILL.md =====\n\n" + inclusive
     )
     raw = claude_complete(system, doc1_text, max_tokens=12000)
     try:
@@ -1949,6 +1984,9 @@ def stage_draft(args: argparse.Namespace, run: dict) -> dict:
                     f"    Name sweep: replaced {n_swept} leaked real-name "
                     "token(s) with canonical pseudonyms."
                 )
+            # Open the published doc with the fixed anonymization note so readers
+            # know the student/family are anonymized (only the tutor is real).
+            doc1_clean = _insert_disclaimer_after_h1(doc1_clean)
             doc1_path.write_text(doc1_clean + "\n")
             doc2_path.write_text(doc2 + "\n")
             run.update(
@@ -2215,7 +2253,22 @@ def stage_metadata(args: argparse.Namespace, run: dict) -> dict:
         "\n\nProduce the metadata.md content now. Output the file content only."
     )
     print(f"  Generating metadata.md...")
-    text = claude_complete(METADATA_SYSTEM, user, max_tokens=8000, temperature=0.2)
+    # Inclusive-language rules apply to the social copy this stage produces
+    # (Facebook headline/subhead, IG carousel + stories) — that's where the
+    # "Liam is dyslexic" violation leaked, since the social copy isn't otherwise
+    # language-checked.
+    metadata_system = (
+        METADATA_SYSTEM
+        + "\n\nINCLUSIVE-LANGUAGE RULES (apply to EVERY field you write — "
+        "FB/IG copy, carousel, captions, pull quotes): person-first disability "
+        "language ('a student who has dyslexia,' never 'a dyslexic student'), "
+        "no deficit/pity framing, accurate non-deficit English-learner terms. "
+        "Follow a family's stated preference if recorded. Never edit a verbatim "
+        "parent/tutor quote.\n\n"
+        "===== aplus-inclusive-language SKILL.md =====\n\n"
+        + load_skill("aplus-inclusive-language")
+    )
+    text = claude_complete(metadata_system, user, max_tokens=8000, temperature=0.2)
     meta_path = bundle / "metadata.md"
     meta_path.write_text(text.strip() + "\n")
     print(f"    metadata.md written ({len(text):,} chars)")
@@ -2825,7 +2878,13 @@ def stage_hashtags(args: argparse.Namespace, run: dict) -> dict:
         "read as a complete grammatical sentence (grammar gate). No em "
         "dashes anywhere. No straight ASCII quotation marks inside "
         "quoted speech — use curly quotation marks.\n\n"
-        "===== aplus-b2c-hashtag-analyst SKILL.md =====\n\n" + skill
+        "Every caption/hook must follow the inclusive-language SKILL: person-"
+        "first disability language ('a student who has dyslexia,' never 'a "
+        "dyslexic student'), no deficit framing, accurate English-learner "
+        "terms. Never edit a verbatim parent/tutor quote.\n\n"
+        "===== aplus-b2c-hashtag-analyst SKILL.md =====\n\n" + skill +
+        "\n\n===== aplus-inclusive-language SKILL.md =====\n\n"
+        + load_skill("aplus-inclusive-language")
     )
     user = _build_hashtag_user_prompt(
         pseudonym=pseudonym, school=school, doc1=doc1, meta_text=meta_text
