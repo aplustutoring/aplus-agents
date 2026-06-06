@@ -277,17 +277,22 @@ def stat_badge(im, stat):
     return im
 
 
-def paste_logo(canvas):
-    logo = REPO / "scripts" / "shared" / "assets" / "logo.png"
-    for cand in [logo, REPO / "assets" / "logo.png"]:
+def _load_logo(target_w):
+    for cand in [REPO / "scripts" / "shared" / "assets" / "logo.png",
+                 REPO / "assets" / "logo.png"]:
         if cand.exists():
             lg = Image.open(cand).convert("RGBA")
-            lw = int(canvas.width * 0.11)
-            lh = int(lw * lg.height / lg.width)
-            lg = lg.resize((lw, lh), Image.LANCZOS)
-            canvas.paste(lg, (canvas.width - lw - 30, canvas.height - lh - 24), lg)
-            return canvas
-    print("  (logo not found; skipping logo composite)", file=sys.stderr)
+            return lg.resize((target_w, int(target_w * lg.height / lg.width)), Image.LANCZOS)
+    return None
+
+
+def paste_logo(canvas):
+    """Bottom-right logo for feed graphics."""
+    lg = _load_logo(int(canvas.width * 0.11))
+    if lg is None:
+        print("  (logo not found; skipping logo composite)", file=sys.stderr)
+        return canvas
+    canvas.paste(lg, (canvas.width - lg.width - 30, canvas.height - lg.height - 24), lg)
     return canvas
 
 
@@ -313,6 +318,52 @@ def build_individual_graphics(panel_paths, subject, stat, out_dir):
         canvas.save(outp)
         outputs.append(outp)
         print(f"  graphic {i}/{len(BEATS)} ({beat}): {outp.name} {canvas.size}")
+    return outputs
+
+
+def build_story_graphics(panel_paths, subject, stat, out_dir):
+    """Each beat as a 9:16 Instagram Story frame (1080x1920). Caption band and
+    logo stay inside the safe zones (top ~250px = IG profile bar, bottom ~310px
+    = reply/link-sticker bar) so the platform UI never covers them."""
+    caps = captions(subject)
+    SW, SH = 1080, 1920
+    TOP_SAFE, BOT_SAFE = 250, 310
+    outputs = []
+    for i, beat in enumerate(BEATS, 1):
+        panel = Image.open(panel_paths[beat]).convert("RGB")
+        if beat == "win":
+            panel = stat_badge(panel, stat)
+        canvas = Image.new("RGB", (SW, SH), IVORY)
+        d = ImageDraw.Draw(canvas)
+        # caption band in the top safe area
+        f = font(46)
+        lines = _wrap(d, caps[beat], f, SW - 120)
+        lh = d.textbbox((0, 0), "Ay", font=f)[3] + 12
+        bh = lh * len(lines) + 60
+        by = TOP_SAFE
+        d.rectangle([40, by, SW - 40, by + bh], fill=BANNER[beat])
+        y = by + 30
+        for ln in lines:
+            tw = d.textlength(ln, font=f)
+            d.text(((SW - tw) // 2, y), ln, font=f, fill=IVORY)
+            y += lh
+        # panel centered between the caption band and the bottom safe zone
+        top = by + bh + 40
+        bot = SH - BOT_SAFE - 40
+        ph = bot - top
+        pw = int(panel.width * ph / panel.height)
+        if pw > SW - 80:
+            pw = SW - 80
+            ph = int(panel.height * pw / panel.width)
+        canvas.paste(panel.resize((pw, ph), Image.LANCZOS), ((SW - pw) // 2, top))
+        # logo centered just above the bottom safe zone (room for a link sticker)
+        lg = _load_logo(int(SW * 0.15))
+        if lg is not None:
+            canvas.paste(lg, ((SW - lg.width) // 2, SH - BOT_SAFE + 24), lg)
+        outp = out_dir / f"comic-story-{i}-{beat}.png"
+        canvas.save(outp)
+        outputs.append(outp)
+        print(f"  story {i}/{len(BEATS)} ({beat}): {outp.name} {canvas.size}")
     return outputs
 
 
@@ -348,7 +399,8 @@ def main():
             return 1
         panel_paths = generate_panels(out, subject, grade, gender)
 
-    build_individual_graphics(panel_paths, subject, stat, out)
+    build_individual_graphics(panel_paths, subject, stat, out)   # 5x 4:5 feed
+    build_story_graphics(panel_paths, subject, stat, out)        # 5x 9:16 stories
     print("Done.")
     return 0
 
