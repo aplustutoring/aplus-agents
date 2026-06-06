@@ -39,7 +39,10 @@ from PIL import Image, ImageDraw, ImageFont
 REPO = Path(__file__).resolve().parents[2]  # repo root (scripts/b2c/<file>)
 load_dotenv(dotenv_path=REPO / ".env")
 GEMINI = os.environ.get("GEMINI_API_KEY")
-MODEL = "gemini-3.1-flash-image-preview"
+# Pro image tier at 2K — markedly higher fidelity/resolution (1792x2400) than
+# the flash tier (896x1200). Reference-locking still works for consistency.
+MODEL = "gemini-3-pro-image"
+IMAGE_SIZE = "2K"
 GEM_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent?key={GEMINI}"
 
 # --- brand ---
@@ -48,30 +51,34 @@ ORANGE = (239, 88, 41)   # #EF5829
 IVORY = (248, 244, 237)  # #F8F4ED
 FONTS = REPO / "skills" / "aplus-b2b-brand-kit" / "fonts"
 
-NO_TEXT = (" Absolutely NO text, words, letters, numbers, captions, speech "
-           "bubbles, logos, or watermarks anywhere in the image — text is added "
-           "later by a separate compositor.")
+NO_TEXT = (" CRITICAL: absolutely NO text, letters, words, numbers, writing, "
+           "labels, signs, speech bubbles, logos or watermarks anywhere in the "
+           "image — the scene must be purely visual (captions are composited "
+           "separately). Any rendered text is a generation failure.")
 
-# Subject -> hero power / emblem / struggle prop. Drives the art, not a label.
+# Subject -> hero power / emblem / struggle prop. The 'power' descriptions are
+# deliberately TEXT-FREE (no "words"/"letters"/"equations"/"numbers"): asking
+# for those makes the model render garbled text into the art. Keep it visual:
+# books, light, shapes, sparks.
 SUBJECT_POWER = {
     "math":    ("a glowing orange 'M' chest emblem",
-                "glowing mathematical equations, numbers and geometry swirling around him",
-                "an open math workbook full of problems"),
+                "glowing geometric shapes, golden sparks and swirling energy around him",
+                "an open math workbook"),
     "reading": ("a glowing orange open-book chest emblem",
-                "glowing words, letters and luminous floating open books swirling around him",
-                "an open book and a reading passage"),
+                "glowing open books and streams of warm golden light swirling around him",
+                "an open book"),
     "english": ("a glowing orange open-book chest emblem",
-                "glowing words, letters and luminous floating books swirling around him",
-                "an open reading passage"),
+                "glowing open books and streams of warm golden light swirling around him",
+                "an open book"),
     "writing": ("a glowing orange quill-pen chest emblem",
-                "glowing sentences and a luminous pen trailing light around him",
+                "a luminous pen trailing ribbons of golden light around him",
                 "a writing notebook"),
     "science": ("a glowing orange atom chest emblem",
-                "glowing molecules, beakers and constellations swirling around him",
+                "glowing molecules, beakers and constellations of light swirling around him",
                 "a science worksheet"),
 }
 DEFAULT_POWER = ("a glowing orange star chest emblem",
-                 "glowing knowledge energy swirling around him",
+                 "glowing golden energy and sparks of light swirling around him",
                  "an open workbook")
 
 
@@ -112,7 +119,8 @@ def gemini(prompt, out_path, ref=None, aspect="3:4"):
     parts.append({"text": prompt})
     body = json.dumps({"contents": [{"parts": parts}],
         "generationConfig": {"responseModalities": ["TEXT", "IMAGE"],
-        "imageConfig": {"aspectRatio": aspect}, "temperature": 0.6}}).encode()
+        "imageConfig": {"aspectRatio": aspect, "imageSize": IMAGE_SIZE},
+        "temperature": 0.6}}).encode()
     req = urllib.request.Request(GEM_URL, data=body,
         headers={"Content-Type": "application/json", "User-Agent": "aplus/1.0"})
     try:
