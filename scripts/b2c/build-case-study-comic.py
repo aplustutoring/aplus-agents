@@ -168,25 +168,35 @@ def beat_prompts(subject, grade, gender):
                "and a confident smile, hands on hips, a LARGE BLANK orange "
                "circular badge centered on the chest (leave it empty), bright "
                "triumphant city-skyline background." + NO_TEXT,
+        "cta": LOCK + "New scene: the hero stands warm and welcoming, extending "
+               "an open hand toward the viewer as a friendly invitation, gentle "
+               "optimistic sunrise background." + NO_TEXT,
     }
 
 
 def generate_panels(out_dir, subject, grade, gender):
     prompts = beat_prompts(subject, grade, gender)
     out_dir.mkdir(parents=True, exist_ok=True)
-    # anchor first (no ref), then every beat references the anchor
+    # anchor first (no ref), then every beat references the anchor for a
+    # consistent hero. Existing panels are reused (cheap re-runs / resumable).
     anchor_path = out_dir / "comic-anchor.png"
-    ok, info = gemini(prompts["anchor"], anchor_path)
-    print(f"  anchor: {ok} {info}")
-    if not ok:
-        raise RuntimeError(f"anchor generation failed: {info}")
-    paths = {}
-    for beat in ["struggle", "sidekick", "breakthrough", "win"]:
-        p = out_dir / f"comic-{beat}.png"
-        ok, info = gemini(prompts[beat], p, ref=anchor_path)
-        print(f"  {beat}: {ok} {info}")
+    if anchor_path.exists():
+        print(f"  anchor: reuse {anchor_path.name}")
+    else:
+        ok, info = gemini(prompts["anchor"], anchor_path)
+        print(f"  anchor: {ok} {info}")
         if not ok:
-            raise RuntimeError(f"{beat} generation failed: {info}")
+            raise RuntimeError(f"anchor generation failed: {info}")
+    paths = {}
+    for beat in BEATS:
+        p = out_dir / f"comic-{beat}.png"
+        if p.exists():
+            print(f"  {beat}: reuse {p.name}")
+        else:
+            ok, info = gemini(prompts[beat], p, ref=anchor_path)
+            print(f"  {beat}: {ok} {info}")
+            if not ok:
+                raise RuntimeError(f"{beat} generation failed: {info}")
         paths[beat] = p
     return paths
 
@@ -194,8 +204,10 @@ def generate_panels(out_dir, subject, grade, gender):
 # ---------------------------------------------------------------------------
 # LAYER 2 — text + composite (PIL)
 # ---------------------------------------------------------------------------
-STRIP = ["struggle", "sidekick", "breakthrough", "win"]
-BANNER = {"struggle": NAVY, "sidekick": NAVY, "breakthrough": ORANGE, "win": ORANGE}
+# Five beats, each shipped as its OWN standalone graphic (not a storyboard).
+BEATS = ["struggle", "sidekick", "breakthrough", "win", "cta"]
+BANNER = {"struggle": NAVY, "sidekick": NAVY, "breakthrough": ORANGE,
+          "win": ORANGE, "cta": ORANGE}
 
 
 def captions(subject):
@@ -271,56 +283,29 @@ def paste_logo(canvas):
     return canvas
 
 
-def build_outputs(panel_paths, subject, stat, out_dir):
+def build_individual_graphics(panel_paths, subject, stat, out_dir):
+    """Each beat as its OWN standalone, shareable graphic (not a storyboard):
+    captioned panel centered on an ivory IG-feed canvas with the A+ logo. The
+    win beat also gets the result-stat badge. Returns the list of output paths."""
     caps = captions(subject)
-    # captioned panels (win gets the stat badge first)
-    captioned = {}
-    for beat in STRIP:
+    IW, IH = 1080, 1350  # Instagram feed portrait (4:5)
+    PAD = 48
+    outputs = []
+    for i, beat in enumerate(BEATS, 1):
         im = Image.open(panel_paths[beat]).convert("RGB")
         if beat == "win":
             im = stat_badge(im, stat)
-        captioned[beat] = banner(im, caps[beat], BANNER[beat])
-
-    # ---- wide blog strip ----
-    H = 900
-    strip = [captioned[b].resize((int(captioned[b].width * H / captioned[b].height), H),
-             Image.LANCZOS) for b in STRIP]
-    GUT, MAR, FOOT = 36, 60, 150
-    sw = sum(p.width for p in strip) + GUT * (len(strip) - 1)
-    W = sw + MAR * 2
-    canvas = Image.new("RGB", (W, H + MAR * 2 + FOOT), IVORY)
-    d = ImageDraw.Draw(canvas)
-    x = MAR
-    for p in strip:
-        canvas.paste(p, (x, MAR)); x += p.width + GUT
-    fy = MAR + H + 30
-    d.rectangle([MAR, fy, W - MAR, fy + FOOT - 30], fill=ORANGE)
-    cf = font(max(22, int(W / 52)))
-    lines = _wrap(d, caps["cta"], cf, sw - 80)
-    lh = d.textbbox((0, 0), "Ay", font=cf)[3] + 8
-    ty = fy + ((FOOT - 30) - lh * len(lines)) // 2
-    for ln in lines:
-        tw = d.textlength(ln, font=cf)
-        d.text(((W - tw) // 2, ty), ln, font=cf, fill=IVORY); ty += lh
-    paste_logo(canvas)
-    blog = out_dir / "comic-storyboard.png"
-    canvas.save(blog)
-    print(f"  blog strip: {blog} {canvas.size}")
-
-    # ---- Instagram 9:16 slides (one panel per slide) ----
-    IW, IH = 1080, 1920
-    slide_dir = out_dir
-    for i, beat in enumerate(STRIP, 1):
-        slide = Image.new("RGB", (IW, IH), IVORY)
-        p = captioned[beat]
-        scale = min((IW - 80) / p.width, (IH - 260) / p.height)
-        p2 = p.resize((int(p.width * scale), int(p.height * scale)), Image.LANCZOS)
-        slide.paste(p2, ((IW - p2.width) // 2, (IH - p2.height) // 2))
-        paste_logo(slide)
-        sp = slide_dir / f"comic-ig-slide-{i}.png"
-        slide.save(sp)
-    print(f"  IG slides: {len(STRIP)} x 1080x1920")
-    return blog
+        im = banner(im, caps[beat], BANNER[beat])
+        canvas = Image.new("RGB", (IW, IH), IVORY)
+        scale = min((IW - PAD * 2) / im.width, (IH - PAD * 2) / im.height)
+        p = im.resize((int(im.width * scale), int(im.height * scale)), Image.LANCZOS)
+        canvas.paste(p, ((IW - p.width) // 2, (IH - p.height) // 2))
+        paste_logo(canvas)
+        outp = out_dir / f"comic-{i}-{beat}.png"
+        canvas.save(outp)
+        outputs.append(outp)
+        print(f"  graphic {i}/{len(BEATS)} ({beat}): {outp.name} {canvas.size}")
+    return outputs
 
 
 def main():
@@ -348,14 +333,14 @@ def main():
 
     if args.panels_dir:
         pd = Path(args.panels_dir)
-        panel_paths = {b: pd / f"comic-{b}.png" for b in STRIP}
+        panel_paths = {b: pd / f"comic-{b}.png" for b in BEATS}
     else:
         if not GEMINI:
             print("ERROR: GEMINI_API_KEY not set.", file=sys.stderr)
             return 1
         panel_paths = generate_panels(out, subject, grade, gender)
 
-    build_outputs(panel_paths, subject, stat, out)
+    build_individual_graphics(panel_paths, subject, stat, out)
     print("Done.")
     return 0
 
