@@ -1,11 +1,10 @@
-name: Blog publish (Mon/Wed/Fri 8 AM PT)
+name: Blog publish (DEPRECATED — superseded by content-build)
 
-# Mon/Wed/Fri 08:00 PT — PDT = 15:00 UTC, PST = 16:00 UTC.
-# blog_publish.py derives the slot from the day-of-week (1=Mon, 2=Wed, 3=Fri).
+# RETIRED: the weekend content-build workflow now generates all 3 blogs as HubSpot
+# drafts (drafts-only, post-date named, self-corrected). This old per-day
+# generate+publish flow is no longer scheduled — kept as a manual-only escape hatch.
+# blog_publish.py itself stays as the helper library content-build reuses.
 on:
-  schedule:
-    - cron: "0 15 * * 1,3,5"  # 08:00 PDT
-    - cron: "0 16 * * 1,3,5"  # 08:00 PST
   workflow_dispatch:
     inputs:
       slot:

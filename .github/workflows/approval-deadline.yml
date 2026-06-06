@@ -55,5 +55,9 @@ jobs:
             echo "no state changes to commit"
           else
             git commit -m "approval-deadline: resolve slate for week"
-            git push
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
           fi
