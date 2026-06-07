@@ -121,6 +121,45 @@ def build_pieces(bundle, meta_text):
             ),
             "image_files": ["graphics/facebook-with-logo.png"],
         },
+        {
+            "name": "Comic — 5 feed posts (4:5)",
+            "publish_window": "post this week",
+            "destination": "instagram.com/aplustutoring (feed)",
+            "body_text": (
+                ":comic: *Comic — 5-beat hero story (feed, 4:5).*\n\n"
+                "A fictional hero version of the student's journey (struggle -> "
+                "help -> breakthrough -> win -> CTA). Post as 5 individual posts "
+                "or a carousel, in order.\n"
+                "_Hero is a generic archetype, not the real child._"
+            ),
+            "image_files": [
+                "graphics/comic-1-struggle.png",
+                "graphics/comic-2-sidekick.png",
+                "graphics/comic-3-breakthrough.png",
+                "graphics/comic-4-win.png",
+                "graphics/comic-5-cta.png",
+            ],
+        },
+        {
+            "name": "Comic — 5 Story frames (9:16)",
+            "publish_window": "post same week",
+            "destination": "instagram.com/aplustutoring (story)",
+            "body_text": (
+                ":comic: *Comic — Story version (9:16, 5 frames.)*\n\n"
+                "*How to post:*\n"
+                "1. Open Instagram Stories, upload the 5 frames IN ORDER\n"
+                "2. On Frame 5 (the CTA): add a Link sticker to the consultation "
+                "page, dragged to the upper third\n"
+                "3. Post all 5"
+            ),
+            "image_files": [
+                "graphics/comic-story-1-struggle.png",
+                "graphics/comic-story-2-sidekick.png",
+                "graphics/comic-story-3-breakthrough.png",
+                "graphics/comic-story-4-win.png",
+                "graphics/comic-story-5-cta.png",
+            ],
+        },
     ]
     return pieces
 

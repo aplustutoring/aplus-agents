@@ -2244,6 +2244,11 @@ Required fields (in this order, no commentary):
       school_named: <full canonical school name>
       reading_time: 6 minutes
       target_publish_date: <YYYY-MM-DD, 7 days from today>
+      comic_stat: <SHORT non-sensitive headline result for the comic's win
+                   badge, max ~7 chars, drawn from the case study's numbers,
+                   e.g. "92%ile", "+34 pts", "+2 yrs", "Grade 6". NEVER a
+                   protected classification (no IEP/ELL/disability/income).
+                   Leave blank if there is no clean public stat.>
 3. Outside the fence: `cta_url: https://meetings.hubspot.com/successful/consultation`
 4. `## Pull quotes` heading then a list named pull_quotes with EXACTLY 2
    verbatim quotes from the source documents. Each must read as a
@@ -2826,6 +2831,9 @@ GRAPHICS_BUILDERS: list[tuple[str, str]] = [
     ("ig-stories",             "scripts/b2c/build-instagram-stories.py"),
     ("facebook",               "scripts/b2c/build-case-study-facebook.py"),
     ("composite-logo",         "scripts/shared/composite-logo.py"),
+    # Comic runs last: it's self-contained (own Gemini gen + own logo
+    # compositing) and is the slowest step (~6 pro-image gens).
+    ("comic",                  "scripts/b2c/build-case-study-comic.py"),
 ]
 
 
@@ -2903,6 +2911,11 @@ def stage_graphics(args: argparse.Namespace, run: dict) -> dict:
         "instagram-story-1.png",  # composited in build-instagram-stories.py
         "instagram-story-2.png",
         "instagram-story-3.png",
+        # comic: representative feed + story frames (full set is 5 of each)
+        "comic-1-struggle.png",
+        "comic-5-cta.png",
+        "comic-story-1-struggle.png",
+        "comic-story-5-cta.png",
     ]
     missing = [name for name in expected if not (gfx / name).exists()]
     if missing:
