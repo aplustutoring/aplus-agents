@@ -63,6 +63,7 @@ PIECES = [
         "name": "Blog assets gallery",
         "publish_window": "Thursday AM publish",
         "destination": "blog.wetutorathome.com",
+        "in_channel": True,  # post the hero/pull-quotes in the channel (not the thread) so they're visible at a glance
         "body_text": (
             ":clipboard: *Blog assets* — hero, social card, preset stat graphic "
             "(iLEAD outcomes), topic graphic (this week's data viz), 2 inline "
@@ -397,9 +398,11 @@ def main():
     header_ts = header_resp.get("ts")
     print(f"  Header ts: {header_ts}")
 
-    # Each piece as thread reply
+    # Each piece as a thread reply — EXCEPT pieces flagged in_channel (e.g. the blog
+    # assets gallery), which post to the channel so the visuals are visible at a glance.
     for p in effective_pieces:
         print(f"\nDelivering: {p['name']}")
+        tt = None if p.get("in_channel") else header_ts
         # Build initial_comment
         if "body_file" in p:
             body = md_to_slack_mrkdwn(extract_body(bundle / p["body_file"]))
@@ -416,7 +419,7 @@ def main():
 
         if not p["_present_images"]:
             # No images — just a chat message
-            post_message(channel_id, body, thread_ts=header_ts)
+            post_message(channel_id, body, thread_ts=tt)
             print(f"  Posted text-only ({len(body)} chars)")
             continue
 
@@ -429,7 +432,7 @@ def main():
             print(f"  Uploaded: {upload_name}")
 
         # Complete upload, sharing all files to channel/thread with one comment
-        complete_upload_to_channel(file_ids_titles, channel_id, comment, thread_ts=header_ts)
+        complete_upload_to_channel(file_ids_titles, channel_id, comment, thread_ts=tt)
         print(f"  Posted: {len(file_ids_titles)} image(s) + {len(body)} chars of body")
 
     print("\nDone. Open the channel in Slack to review.")
