@@ -147,6 +147,8 @@ def _build_graphics(bundle_dir: Path) -> None:
     steps = [
         (bp.REPO_ROOT / "scripts" / "b2b" / "build-graphics.py", ["--bundle", str(bundle_dir)]),
         (bp.REPO_ROOT / "scripts" / "shared" / "composite-logo.py", ["--bundle", str(bundle_dir)]),
+        # Stitch the composited carousel slides into one PDF for LinkedIn document posts.
+        (bp.REPO_ROOT / "scripts" / "b2b" / "build-carousel-pdf.py", ["--bundle", str(bundle_dir)]),
     ]
     for script, extra in steps:
         try:

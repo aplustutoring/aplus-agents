@@ -83,15 +83,17 @@ PIECES = [
         "image_files": ["graphics/pull-quote-s2-with-logo.png"],
     },
     {
-        "name": "Reply 4 — LinkedIn carousel (5 slides)",
+        "name": "Reply 4 — LinkedIn carousel (PDF + 5 slides)",
         "publish_window": "attach to the company post (Reply 1)",
         "destination": "linkedin.com/company/a-tutoring-inc-",
         "body_text": (
-            ":clipboard: *Full LinkedIn carousel — 5 slides.* Upload all 5 (as a PDF "
-            "document post or a sequential image carousel) on the company post.\n"
+            ":clipboard: *LinkedIn carousel.* Upload the *PDF* (first file) as a document "
+            "post on the company page — that's how LinkedIn renders a swipeable carousel. "
+            "The 5 PNGs below are the same slides for preview.\n"
             ":bulb: Put the blog link in the *first comment*, not the post body — LinkedIn "
             "gives 2-3x more reach that way (same trick for the op-eds)."
         ),
+        "extra_files": ["graphics/linkedin-carousel.pdf"],
         "image_files": [
             "graphics/linkedin-carousel-slide-1-with-logo.png",
             "graphics/linkedin-carousel-slide-2-with-logo.png",
@@ -157,8 +159,11 @@ def md_to_slack_mrkdwn(md):
 
 
 def ensure_under_size(image_path, max_bytes=MAX_IMAGE_BYTES):
-    """Downsize image to a temp file if over max_bytes."""
+    """Downsize image to a temp file if over max_bytes. Non-image files (e.g. the
+    carousel PDF) pass through untouched."""
     src = Path(image_path)
+    if src.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
+        return str(src)
     if src.stat().st_size <= max_bytes:
         return str(src)
     from PIL import Image
@@ -308,16 +313,17 @@ def main():
     effective_pieces = []
     for p in PIECES:
         present = [bundle / f for f in p["image_files"] if (bundle / f).exists()]
+        extra = [bundle / f for f in p.get("extra_files", []) if (bundle / f).exists()]
         missing = [f for f in p["image_files"] if not (bundle / f).exists()]
         if missing:
             print(f"NOTE: {p['name']} — missing {len(missing)} image(s): {missing}", file=sys.stderr)
         if "body_file" in p and not (bundle / p["body_file"]).exists():
             print(f"NOTE: {p['name']} — missing body file {p['body_file']}; skipping piece", file=sys.stderr)
             continue
-        if not present and "body_text" not in p:
+        if not present and not extra and "body_text" not in p:
             print(f"NOTE: {p['name']} — no images and no body_text; skipping piece", file=sys.stderr)
             continue
-        effective_pieces.append({**p, "_present_images": present})
+        effective_pieces.append({**p, "_present_images": present, "_present_extra": extra})
 
     if not effective_pieces:
         print("ERROR: nothing deliverable in this bundle.", file=sys.stderr)
@@ -428,23 +434,26 @@ def main():
         ]
         comment = "\n".join(intro_lines)
 
-        if not p["_present_images"]:
-            # No images — just a chat message
+        # Non-image extras (e.g. the LinkedIn carousel PDF) upload FIRST so they
+        # sit at the top of the reply — that's the file the user actually uploads.
+        attachments = list(p.get("_present_extra", [])) + p["_present_images"]
+        if not attachments:
+            # No files — just a chat message
             post_message(channel_id, body, thread_ts=tt)
             print(f"  Posted text-only ({len(body)} chars)")
             continue
 
-        # Upload each image first, collect file IDs
+        # Upload each file first, collect file IDs
         file_ids_titles = []
-        for img_path in p["_present_images"]:
-            upload_name = dated_filename(img_path, bundle)
-            file_id = upload_one_file(str(img_path), upload_name)
+        for fpath in attachments:
+            upload_name = dated_filename(fpath, bundle)
+            file_id = upload_one_file(str(fpath), upload_name)
             file_ids_titles.append((file_id, upload_name))
             print(f"  Uploaded: {upload_name}")
 
         # Complete upload, sharing all files to channel/thread with one comment
         complete_upload_to_channel(file_ids_titles, channel_id, comment, thread_ts=tt)
-        print(f"  Posted: {len(file_ids_titles)} image(s) + {len(body)} chars of body")
+        print(f"  Posted: {len(file_ids_titles)} file(s) + {len(body)} chars of body")
 
     print("\nDone. Open the channel in Slack to review.")
     log("delivery_complete", "ok", f"channel={args.channel} bundle={bundle} pieces={len(effective_pieces)}")
