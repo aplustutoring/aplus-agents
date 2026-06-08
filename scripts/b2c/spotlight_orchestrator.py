@@ -201,8 +201,8 @@ def is_orchestrator_output(name: str) -> bool:
 # When the same document is dropped in multiple formats (e.g. a scanned
 # Report.pdf AND a Report.txt export), prefer the most text-native one so we
 # never read a scanned PDF that's also present as text. Lower rank wins.
-_EXT_PREFERENCE = {".txt": 0, ".md": 1, ".docx": 2, ".pdf": 3,
-                   ".png": 4, ".jpg": 5, ".jpeg": 5, ".webp": 6}
+_EXT_PREFERENCE = {".txt": 0, ".md": 1, ".csv": 2, ".docx": 3, ".pdf": 4,
+                   ".png": 5, ".jpg": 6, ".jpeg": 6, ".webp": 7}
 
 
 def find_source_files(source_dir: Path) -> list[Path]:
@@ -216,11 +216,20 @@ def find_source_files(source_dir: Path) -> list[Path]:
                 file=sys.stderr,
             )
             continue
+        # Skip 0-byte files (e.g. a failed/empty Drive export). They have no
+        # content and would crash a reader; the real file is usually present in
+        # another format (e.g. an 82KB .csv next to a 0-byte .pdf).
+        try:
+            if item.stat().st_size == 0:
+                print(f"  Skipping empty (0-byte) source file: {item.name}", file=sys.stderr)
+                continue
+        except OSError:
+            continue
         candidates.append(item)
 
     # De-dupe by stem (case-insensitive): if one document is present in several
-    # formats, keep the most text-native (.txt > .md > .docx > .pdf) and drop
-    # the rest. A .txt twin therefore replaces a scanned .pdf — no OCR, no
+    # formats, keep the most text-native (.txt > .md > .csv > .docx > .pdf) and
+    # drop the rest. A text twin therefore replaces a scanned .pdf — no OCR, no
     # duplicated content fed downstream.
     def rank(p: Path) -> int:
         return _EXT_PREFERENCE.get(p.suffix.lower(), 99)
@@ -361,7 +370,13 @@ def ocr_pdf(path: Path) -> str:
     import base64
 
     client = anthropic.Anthropic(api_key=api_key)
-    doc = fitz.open(str(path))
+    try:
+        doc = fitz.open(str(path))
+    except Exception as exc:
+        raise OrchestratorError(
+            f"PDF '{path.name}' could not be opened ({exc}). It may be empty or "
+            "corrupt — re-export it as a text (.txt/.docx/.csv) or a valid PDF."
+        )
     try:
         if doc.page_count == 0:
             raise OrchestratorError(f"PDF has zero pages: {path.name}")
@@ -459,7 +474,7 @@ def ocr_image(path: Path) -> str:
     if not text:
         raise OrchestratorError(f"Vision OCR returned no text for image {path.name}.")
     return text
-SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
+SUPPORTED_EXTENSIONS = {".txt", ".md", ".csv", ".pdf", ".docx"}
 
 # Image sources are read via vision OCR, but ONLY when the filename looks like a
 # student assessment / score report (i-Ready, MAP, STAR, percentiles, ...).
@@ -488,7 +503,7 @@ def is_readable_score_image(name: str) -> bool:
 
 def extract_text(path: Path) -> str:
     suffix = path.suffix.lower()
-    if suffix in {".txt", ".md"}:
+    if suffix in {".txt", ".md", ".csv"}:
         return read_text_file(path)
     if suffix == ".pdf":
         return extract_text_from_pdf(path)
