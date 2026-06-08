@@ -1,9 +1,11 @@
-name: Approval poll (Thu 5 PM PT → Fri 5 PM PT)
+name: Approval poll (DEPRECATED — approval gate removed)
 
+# RETIRED 2026-06-08: the engine is now single-touchpoint. topic-gen auto-approves
+# the slate on generation and content-build builds the drafts straight away; the
+# human's only gate is publishing each finished HubSpot draft. There is no topic
+# approval thread to poll. Kept as a manual-only escape hatch (REDO/PICK still work
+# if someone dispatches it by hand). await-slack-approval.py stays as the library.
 on:
-  schedule:
-    - cron: "*/5 * * * 5"  # every 5 min UTC Friday (covers Thu 5 PM PT → Fri ~5 PM PT) — fast approval ack
-    - cron: "*/5 0-2 * * 6"  # every 5 min UTC Sat 00:00-02:59 (reaches the Fri 5 PM PT deadline)
   workflow_dispatch:
     inputs:
       dry_run:

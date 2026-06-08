@@ -1,15 +1,17 @@
 """Thursday 5 PM topic generation orchestrator.
 
-Run flow:
+Run flow (single-touchpoint engine — no approval gate as of 2026-06-08):
   1. Run 3 lens variants (lens_runs.run_all_lenses) → 3 candidate topics
   2. Filter each through lens 0 redundancy check (lens_zero), unless refresh mode
-  3. Post the surviving candidates to Slack as a single message in the
-     weekly-content-ready channel, with instructions for approval/edit
-  4. Save state/topic-queue.json with message ts + approval deadline
-  5. approval_deadline.py (run Fri 5 PM) resolves approval at the deadline
+  3. Post the slate to Slack as an FYI (not an approval ask) in the
+     weekly-content-ready channel, with the full pitch per slot in-thread
+  4. Save state/topic-queue.json with the slate AUTO-APPROVED
+     (approval.status="auto_approved")
+  5. content-build (weekend) builds all 3 into HubSpot drafts and posts the
+     finished drafts; the human's only gate is publishing each draft.
 
-The Slack message format follows the polling pattern already used by
-await-slack-approval.py — no webhook endpoint needed.
+The old approval poll + Friday deadline workflows are retired — the human
+reviews and publishes the finished HubSpot drafts instead of approving topics.
 """
 
 from __future__ import annotations
@@ -87,11 +89,11 @@ def _slot_summary_line(slot: int, entry: dict) -> str:
     if entry["lens_status"] == "redundant":
         return (
             f"*Slot {slot}:* ⚠️ Candidate removed by redundancy check — "
-            f"type `EDIT {slot}: <headline>` in thread to add one"
+            f"this slot will be skipped this week"
         )
     return (
         f"*Slot {slot}:* ⚠️ Lens {slot} failed to produce a topic — "
-        f"type `EDIT {slot}: <headline>` in thread to add one"
+        f"this slot will be skipped this week"
     )
 
 
@@ -146,15 +148,13 @@ def _build_slot_entry(
 
 def _format_slot_thread_reply(slot: int, entry: dict) -> str:
     if entry["lens_status"] != "ok":
-        status_text = (
-            f"Lens failed to produce a topic. Danielle can add one with `EDIT {slot}: <headline>`."
-        )
+        status_text = "Lens failed to produce a topic — this slot is skipped this week."
         if entry["lens_status"] == "redundant":
             status_text = (
-                "Candidate removed by redundancy check. Danielle can add a replacement "
-                f"with `EDIT {slot}: <headline>`."
+                "Candidate removed by redundancy check (too close to a recent post) — "
+                "this slot is skipped this week."
             )
-        return f"*Slot {slot} — missing pitch*\n{status_text}"
+        return f"*Slot {slot} — skipped*\n{status_text}"
 
     lines = [
         f"*Slot {slot} — full pitch*",
@@ -185,18 +185,14 @@ def build_slack_message(
     current_week: str,
     slots: list[dict],
     refresh_mode: bool,
-    approval_deadline: datetime,
 ) -> tuple[str, list[str]]:
     header = (
         f":newspaper: <@{DANIELLE_USER_ID}> *A+ Weekly Topic Slate — {current_week}*\n"
-        f"Three topics → one blog each for Mon (slot 1), Wed (slot 2), Fri (slot 3).\n\n"
-        f"*To approve all 3:* reply in thread `APPROVE` (or react :white_check_mark:)\n"
-        f"*To edit a slot:* reply in thread `EDIT 1: replacement headline` (also works for 2 or 3)\n"
-        f"*To get new options for a slot:* reply `REDO 2` → 3 fresh choices, then `PICK 2: A`\n"
-        f"*To skip a slot:* reply in thread `SKIP 2`\n"
-        f"*To deny the whole slate:* reply in thread `DENY` (no blog publishes that week)\n\n"
-        f"Auto-approve at *{approval_deadline.strftime('%a %b %d, %I:%M %p %Z')}* if no action.\n"
-        f"Full pitch for each slot is posted in thread replies below."
+        f"Three topics → one blog each, posting Mon (slot 1) / Wed (slot 2) / Fri (slot 3).\n\n"
+        f":gear: *Building all three into HubSpot drafts now — drafts ready Monday* in this channel.\n"
+        f"No approval step: I'll post the finished drafts with working links; you review each and "
+        f"publish it on its day. Don't like one? Just don't publish it.\n\n"
+        f"Full pitch for each slot is in the thread below 👇"
     )
     if refresh_mode:
         header += "\n:recycle: *Refresh mode ON* — redundancy check bypassed for this run."
@@ -232,18 +228,12 @@ def run(
             )
             return {"status": "skipped", "reason": f"{current_week} slate already posted (approval={status})"}
 
-    # Approval deadline = upcoming Friday 5 PM PT (topics post Thursday;
-    # no action by the deadline => approval_deadline.py auto-approves all 3).
-    days_until_fri = (4 - now.weekday()) % 7
-    friday = (now + timedelta(days=days_until_fri)).replace(
-        hour=17, minute=0, second=0, microsecond=0
-    )
-    if friday <= now:
-        friday = friday + timedelta(days=7)
-
+    # No approval gate (single touchpoint removed 2026-06-08): the slate is
+    # auto-approved on generation and content-build builds all 3 into HubSpot
+    # drafts straight away. The human's only gate is publishing each draft.
     logger.info(
-        "topic_gen_start week=%s refresh=%s channel=%s deadline=%s",
-        current_week, refresh_active, channel, friday.isoformat(),
+        "topic_gen_start week=%s refresh=%s channel=%s (auto-approve, no gate)",
+        current_week, refresh_active, channel,
     )
 
     context = _load_target_schools_context()
@@ -313,7 +303,7 @@ def run(
             "enable refresh mode (APLUS_REFRESH_MODE=1) if you want to re-cover an old topic"
         )
 
-    parent_text, thread_replies = build_slack_message(current_week, slots, refresh_active, friday)
+    parent_text, thread_replies = build_slack_message(current_week, slots, refresh_active)
 
     if dry_run:
         print("=== DRY RUN: would post to", channel, "===")
@@ -357,16 +347,18 @@ def run(
             "channel_id": channel_id,
             "message_ts": message_ts,
             "posted_at": now.isoformat(),
-            "approval_deadline": friday.isoformat(),
+            "approval_deadline": None,
             "refresh_mode": refresh_active,
             "thread_replies": thread_replies_ts,
             "processed_reply_ts": [],
         }
+        # Auto-approved on generation — no approval poll / deadline anymore.
+        # content-build's gate accepts "auto_approved" and proceeds.
         queue.approval = {
-            "status": "pending",
+            "status": "auto_approved",
             "approved_slot": None,
-            "approved_by": None,
-            "approved_at": None,
+            "approved_by": "auto (no approval gate)",
+            "approved_at": now.isoformat(),
             "denied_by": None,
             "denied_at": None,
             "edit_note": None,
@@ -391,7 +383,7 @@ def run(
         "topics_posted": ok_slots,
         "topics_rejected_redundant": len(rejected),
         "refresh_mode": refresh_active,
-        "approval_deadline": friday.isoformat(),
+        "approval": "auto_approved",
     }
 
 

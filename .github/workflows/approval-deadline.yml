@@ -1,12 +1,9 @@
-name: Approval deadline check (Friday 5 PM PT)
+name: Approval deadline check (DEPRECATED — approval gate removed)
 
-# Fri 17:00 PT — during PDT = 00:00 UTC Sat; during PST = 01:00 UTC Sat.
-# No action by this deadline => auto-approve all 3 topics.
-# Idempotent: terminal approval statuses (approved/auto_approved/denied) skip the API calls.
+# RETIRED 2026-06-08: the engine is now single-touchpoint. topic-gen auto-approves
+# the slate on generation, so there is no pending slate to resolve at a Friday
+# deadline. Kept manual-only as an escape hatch. approval_deadline.py stays usable.
 on:
-  schedule:
-    - cron: "0 0 * * 6"  # 17:00 PDT Friday
-    - cron: "0 1 * * 6"  # 17:00 PST Friday
   workflow_dispatch:
     inputs:
       dry_run:
