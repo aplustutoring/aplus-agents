@@ -58,37 +58,37 @@ def dated_filename(local_path, bundle_path):
 # Body sources: explicit text OR a path to a .md file in the bundle root.
 # All graphic image_files paths are relative to {bundle}/graphics/.
 
+# One main message per post (short header, NO images) + one threaded reply per
+# deliverable, IN THIS ORDER. Every image lives in a reply, never the main message.
 PIECES = [
     {
-        "name": "Blog assets",
-        "publish_window": "reference — already embedded in the HubSpot draft",
-        "destination": "blog.wetutorathome.com",
-        "in_channel": True,  # post the hero/pull-quotes in the channel (not the thread) so they're visible at a glance
-        "body_text": (
-            ":clipboard: *Blog assets* — hero, social card, and the 2 inline pull-quotes. "
-            "These are already embedded in the HubSpot draft; shown here for reference."
-        ),
-        "image_files": [
-            "graphics/hero.png",
-            "graphics/social-card-with-logo.png",
-            "graphics/pull-quote-s1-with-logo.png",
-            "graphics/pull-quote-s2-with-logo.png",
-        ],
-    },
-    {
-        "name": "LinkedIn company post",
+        "name": "Reply 1 — LinkedIn company post",
         "publish_window": "company page — after the blog is published",
         "destination": "linkedin.com/company/a-tutoring-inc-",
         "body_file": "linkedin-company.md",
         "image_files": ["graphics/linkedin-carousel-slide-1-with-logo.png"],
     },
     {
-        "name": "LinkedIn carousel (5 slides)",
-        "publish_window": "attach to the company post above",
+        "name": "Reply 2 — Roman op-ed",
+        "publish_window": "Roman's personal LinkedIn",
+        "destination": "linkedin.com/in/romanslavinsky",
+        "body_file": "roman-oped.md",
+        "image_files": ["graphics/pull-quote-s1-with-logo.png"],
+    },
+    {
+        "name": "Reply 3 — Danielle op-ed",
+        "publish_window": "Danielle's personal LinkedIn",
+        "destination": "Danielle's personal LinkedIn",
+        "body_file": "danielle-oped.md",
+        "image_files": ["graphics/pull-quote-s2-with-logo.png"],
+    },
+    {
+        "name": "Reply 4 — LinkedIn carousel (5 slides)",
+        "publish_window": "attach to the company post (Reply 1)",
         "destination": "linkedin.com/company/a-tutoring-inc-",
         "body_text": (
             ":clipboard: *Full LinkedIn carousel — 5 slides.* Upload all 5 (as a PDF "
-            "document post or a sequential image carousel) on the company post above.\n"
+            "document post or a sequential image carousel) on the company post.\n"
             ":bulb: Put the blog link in the *first comment*, not the post body — LinkedIn "
             "gives 2-3x more reach that way (same trick for the op-eds)."
         ),
@@ -101,25 +101,26 @@ PIECES = [
         ],
     },
     {
-        "name": "Roman op-ed",
-        "publish_window": "Roman's personal LinkedIn",
-        "destination": "linkedin.com/in/romanslavinsky",
-        "body_file": "roman-oped.md",
-        "image_files": ["graphics/pull-quote-s1-with-logo.png"],
-    },
-    {
-        "name": "Danielle op-ed",
-        "publish_window": "Danielle's personal LinkedIn",
-        "destination": "Danielle's personal LinkedIn",
-        "body_file": "danielle-oped.md",
-        "image_files": ["graphics/pull-quote-s2-with-logo.png"],
-    },
-    {
-        "name": "Facebook + Instagram post",
+        "name": "Reply 5 — Facebook + Instagram post",
         "publish_window": "post the SAME caption + image to both",
         "destination": "facebook.com/WeTutorAtHome  +  instagram.com/aplustutoring",
         "body_file": "fb-ig-post.md",
         "image_files": ["graphics/fb-ig-card-with-logo.png"],
+    },
+    {
+        "name": "Reply 6 — Blog assets (reference)",
+        "publish_window": "reference — already embedded in the HubSpot draft",
+        "destination": "blog.wetutorathome.com",
+        "body_text": (
+            ":clipboard: *Blog assets* — hero, social card, and the 2 inline pull-quotes. "
+            "Already embedded in the HubSpot draft; here for reference."
+        ),
+        "image_files": [
+            "graphics/hero.png",
+            "graphics/social-card-with-logo.png",
+            "graphics/pull-quote-s1-with-logo.png",
+            "graphics/pull-quote-s2-with-logo.png",
+        ],
     },
 ]
 # B2B lives on LinkedIn — Instagram Story and Facebook (B2C/parents) pieces removed.
@@ -333,12 +334,17 @@ def main():
     # Available BEFORE HubSpot publish so Roman/Danielle can use it for the
     # Instagram link sticker and for any pre-publish references.
     predicted_blog_url = None
+    headline = None
     meta_path = bundle / "blog-anchor-meta.md"
     if meta_path.exists():
-        m = re.search(r"^\s*url_slug:\s*(.+)$", meta_path.read_text(), re.MULTILINE)
+        _meta = meta_path.read_text()
+        m = re.search(r"^\s*url_slug:\s*(.+)$", _meta, re.MULTILINE)
         if m:
-            slug = m.group(1).strip().lstrip("/")
-            predicted_blog_url = f"https://blog.wetutorathome.com/{slug}"
+            predicted_blog_url = f"https://blog.wetutorathome.com/{m.group(1).strip().lstrip('/')}"
+        hm = (re.search(r"^\s*h1_title:\s*(.+)$", _meta, re.MULTILINE)
+              or re.search(r"^\s*html_title:\s*(.+)$", _meta, re.MULTILINE))
+        if hm:
+            headline = hm.group(1).strip().strip('"').strip("'")
 
     # Substitute {predicted_blog_url} placeholders in piece body_text strings
     # so the IG Story piece can reference the URL directly.
@@ -350,29 +356,22 @@ def main():
     # Header — two clearly separated lanes so the reviewer never confuses the
     # blog (published FROM HubSpot, graphics embedded) with the LinkedIn pieces
     # (which need the actual image files DOWNLOADED + copy pasted into LinkedIn).
-    header_lines = [f":package: *This week's content — {date_str}*", ""]
-    header_lines.append(":memo: *BLOG → publish in HubSpot* (hero + pull-quotes already embedded — just review & publish)")
+    # Short main message: title + the draft link + a one-line index of the thread.
+    # NO images and no long copy here — every deliverable (with its images + text)
+    # is a separate threaded reply below.
+    title = headline or f"This week's content — {date_str}"
+    header_lines = [f":newspaper: *{title}*  _({date_str})_", ""]
     if args.post_id:
         url = f"https://app.hubspot.com/pages/{PORTAL_ID}/editor/blog/{args.post_id}"
-        header_lines.append(f"   <{url}|Open the draft>")
-    else:
-        header_lines.append("   (no --post-id provided)")
-    header_lines.append("")
+        header_lines.append(f":memo: <{url}|Review &amp; publish the draft in HubSpot>")
     header_lines.append(
-        ":loudspeaker: *LINKEDIN → download + post* — copy-paste text *and downloadable images* below "
-        "(LinkedIn can't pull from HubSpot, so grab the images here):"
+        f":thread: Everything to post is in the *thread below* — {len(effective_pieces)} replies, "
+        "each with its copy + images:"
     )
-    header_lines.append("   • Company post   • 5-slide carousel   • Roman op-ed   • Danielle op-ed")
-    header_lines.append("   :bulb: put the blog link in the *first comment*, not the post body — LinkedIn gives 2-3x more reach that way.")
-    header_lines.append("")
     header_lines.append(
-        ":camera_with_flash: *FACEBOOK + INSTAGRAM → post the same to both* — one caption + one image "
-        "(10 hashtags already included). Grab them from the last delivery below."
-    )
-    header_lines.append("")
-    header_lines.append(
-        f":pushpin: {len(effective_pieces)} deliveries below — blog assets post in-channel, the rest follow. "
-        "Each block = copy + attached image files."
+        "   " + "   ".join(
+            f"*{i + 1})* {p['name'].split('— ', 1)[-1]}" for i, p in enumerate(effective_pieces)
+        )
     )
     header_text = "\n".join(header_lines)
 
