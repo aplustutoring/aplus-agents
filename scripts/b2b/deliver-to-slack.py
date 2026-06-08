@@ -428,7 +428,7 @@ def main():
 
         intro_lines = [
             f":clipboard: *{p['name']}*  _({p['publish_window']})_",
-            f"_Paste to: `{p['destination']}`_",
+            f"_Paste to:_ `{p['destination']}`",
             "",
             body,
         ]
