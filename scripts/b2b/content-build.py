@@ -71,7 +71,7 @@ def _slugify(value: str, fallback: str) -> str:
 
 
 SUMMARY_CHANNEL = os.environ.get("TOPIC_REVIEW_CHANNEL", "#weekly-content-ready")
-HUBSPOT_EDIT_URL = "https://app.hubspot.com/blog/6312752/editor/{post_id}/content"
+HUBSPOT_EDIT_URL = "https://app.hubspot.com/pages/6312752/editor/blog/{post_id}"
 
 
 def _extract_issues(report_text: str, limit: int = 900) -> str:

@@ -125,7 +125,13 @@ def hero_prompt(subject: str, headline: str) -> str:
         "education features. Natural color grading, warm window light, real-looking "
         "faces with no uncanny-valley artifacts, diverse subjects, NOT stock-photo "
         "styling. Shot at 35mm equivalent, shallow depth of field. 16:9 widescreen "
-        "landscape. No text overlay. No logos." + LOGO_EXCLUSION
+        "landscape. "
+        "CRITICAL: this is a clean editorial PHOTOGRAPH, not an infographic. Any papers, "
+        "binders, documents, notebooks, whiteboards, screens, or charts that appear in "
+        "frame MUST be blank, out-of-focus, or illegible — absolutely NO readable text, "
+        "numbers, statistics, tables, charts, spreadsheets, data, or handwriting anywhere "
+        "in the image (it must never look like it is showing real data). No text overlay. "
+        "No logos." + LOGO_EXCLUSION
     )
 
 

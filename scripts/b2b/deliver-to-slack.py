@@ -355,7 +355,7 @@ def main():
     header_lines = [f":package: *This week's content — {date_str}*", ""]
     header_lines.append(":memo: *BLOG → publish in HubSpot* (hero + pull-quotes already embedded — just review & publish)")
     if args.post_id:
-        url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{args.post_id}/content"
+        url = f"https://app.hubspot.com/pages/{PORTAL_ID}/editor/blog/{args.post_id}"
         header_lines.append(f"   <{url}|Open the draft>")
     else:
         header_lines.append("   (no --post-id provided)")
