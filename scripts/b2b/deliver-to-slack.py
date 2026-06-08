@@ -362,7 +362,7 @@ def main():
     title = headline or f"This week's content — {date_str}"
     header_lines = [f":newspaper: *{title}*  _({date_str})_", ""]
     if args.post_id:
-        url = f"https://app.hubspot.com/pages/{PORTAL_ID}/editor/blog/{args.post_id}"
+        url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{args.post_id}/content"
         header_lines.append(f":memo: <{url}|Review &amp; publish the draft in HubSpot>")
     header_lines.append(
         f":thread: Everything to post is in the *thread below* — {len(effective_pieces)} replies, "
