@@ -583,62 +583,62 @@ def claude_complete(
 PSEUDONYM_POOLS: dict[str, dict[str, dict[str, list[str]]]] = {
     "latino_hispanic": {
         "student": {
-            "girl": ["Camila", "Sofia", "Valentina", "Isabella", "Mia", "Gabriela"],
-            "boy":  ["Mateo", "Santiago", "Diego", "Sebastian", "Gabriel", "Daniel"],
+            "girl": ["Camila", "Sofia", "Valentina", "Isabella", "Mia", "Gabriela", "Luciana", "Ximena", "Renata", "Antonella", "Regina", "Victoria", "Emilia", "Catalina", "Daniela"],
+            "boy":  ["Mateo", "Santiago", "Diego", "Sebastian", "Gabriel", "Emiliano", "Leonardo", "Maximiliano", "Thiago", "Benjamin", "Joaquin", "Tomas", "Andres", "Nicolas", "Lorenzo"],
         },
         "adult": {
-            "girl": ["Adriana", "Maria", "Carolina", "Veronica", "Diana", "Patricia"],
-            "boy":  ["Javier", "Carlos", "Jose", "Luis", "Marco", "Eduardo"],
+            "girl": ["Adriana", "Maria", "Carolina", "Veronica", "Diana", "Patricia", "Claudia", "Sandra", "Rosa", "Gloria", "Marisol", "Lorena", "Yolanda", "Norma", "Alejandra"],
+            "boy":  ["Javier", "Carlos", "Jose", "Luis", "Marco", "Eduardo", "Roberto", "Miguel", "Sergio", "Ricardo", "Fernando", "Hector", "Raul", "Arturo", "Alberto"],
         },
     },
     "african_american": {
         "student": {
-            "girl": ["Aaliyah", "Imani", "Zaria", "Nia", "Amara", "Layla"],
-            "boy":  ["Jayden", "Elijah", "Josiah", "Malik", "Xavier", "Isaiah"],
+            "girl": ["Aaliyah", "Imani", "Zuri", "Nia", "Amara", "Kennedy", "Jade", "Skylar", "Aniyah", "Saniyah", "Journee", "Sariah", "Laila", "Nyla", "Amari"],
+            "boy":  ["Jayden", "Elijah", "Josiah", "Malik", "Xavier", "Isaiah", "Amir", "Jamal", "Khalil", "Zion", "Cameron", "Damari", "Kingston", "Tyrese", "Marquis"],
         },
         "adult": {
-            "girl": ["Jasmine", "Brianna", "Tiffany", "Danielle", "Crystal", "Monique"],
-            "boy":  ["Marcus", "Andre", "Brandon", "Darius", "Maurice", "Terrence"],
+            "girl": ["Jasmine", "Brianna", "Tiffany", "Danielle", "Crystal", "Monique", "Latoya", "Shanice", "Kiara", "Ebony", "Tamara", "Nakia", "Tanisha", "Keisha", "Andrea"],
+            "boy":  ["Marcus", "Andre", "Brandon", "Darius", "Maurice", "Terrence", "Dwayne", "Reginald", "Marlon", "Cedric", "Tyrone", "Lamar", "Demetrius", "Jerome", "Roderick"],
         },
     },
     "asian_east": {
         "student": {
-            "girl": ["Aiko", "Mei", "Yuna", "Sora", "Hana", "Mina"],
-            "boy":  ["Kai", "Jin", "Ren", "Hiro", "Daiki", "Akira"],
+            "girl": ["Aiko", "Mei", "Yuna", "Sora", "Hana", "Mina", "Emi", "Rina", "Saki", "Yui", "Hina", "Aya", "Nana", "Riko", "Sana"],
+            "boy":  ["Kai", "Jin", "Ren", "Hiro", "Daiki", "Akira", "Haru", "Sota", "Yuto", "Riku", "Kenta", "Takumi", "Sho", "Ryo", "Daichi"],
         },
         "adult": {
-            "girl": ["Lin", "Yuki", "Jia", "Min", "Hyun", "Wen"],
-            "boy":  ["Wei", "Jun", "Hiroshi", "Kenji", "Tao", "Sung"],
+            "girl": ["Lin", "Yuki", "Jia", "Min", "Hyun", "Wen", "Ling", "Hua", "Xiu", "Yan", "Fang", "Ai", "Jung", "Soo", "Hye"],
+            "boy":  ["Wei", "Jun", "Hiroshi", "Kenji", "Tao", "Sung", "Ming", "Cheng", "Feng", "Jian", "Hong", "Bo", "Yong", "Jae", "Dong"],
         },
     },
     "asian_south": {
         "student": {
-            "girl": ["Anika", "Diya", "Saanvi", "Aanya", "Ishani", "Priya"],
-            "boy":  ["Arjun", "Aarav", "Rohan", "Vihaan", "Kabir", "Ishaan"],
+            "girl": ["Anika", "Diya", "Saanvi", "Aanya", "Ishani", "Myra", "Anaya", "Avni", "Riya", "Aadhya", "Pari", "Navya", "Kyra", "Siya", "Tara"],
+            "boy":  ["Arjun", "Aarav", "Rohan", "Vihaan", "Kabir", "Ishaan", "Reyansh", "Vivaan", "Aditya", "Krishna", "Ayaan", "Dhruv", "Rudra", "Aryan", "Shaurya"],
         },
         "adult": {
-            "girl": ["Anita", "Deepa", "Sunita", "Meena", "Kavita", "Neha"],
-            "boy":  ["Raj", "Sanjay", "Amit", "Vijay", "Anil", "Deepak"],
+            "girl": ["Anita", "Deepa", "Sunita", "Meena", "Kavita", "Neha", "Pooja", "Anjali", "Shalini", "Rekha", "Sangeeta", "Geeta", "Asha", "Nisha", "Radha"],
+            "boy":  ["Raj", "Sanjay", "Amit", "Vijay", "Anil", "Deepak", "Sunil", "Rajesh", "Manish", "Ashok", "Vikram", "Suresh", "Pradeep", "Naveen", "Ramesh"],
         },
     },
     "middle_eastern": {
         "student": {
-            "girl": ["Layla", "Amira", "Zara", "Noor", "Sara", "Yasmin"],
-            "boy":  ["Omar", "Yusuf", "Karim", "Adam", "Hamza", "Zayd"],
+            "girl": ["Layla", "Amira", "Zara", "Noor", "Sara", "Yasmin", "Maryam", "Aya", "Lina", "Rana", "Salma", "Jana", "Mariam", "Dina", "Hiba"],
+            "boy":  ["Omar", "Yusuf", "Karim", "Adam", "Hamza", "Zayd", "Ali", "Ibrahim", "Khaled", "Bilal", "Ahmad", "Rayan", "Idris", "Faris", "Samir"],
         },
         "adult": {
-            "girl": ["Fatima", "Leila", "Mona", "Rania", "Hala", "Dalia"],
-            "boy":  ["Khalid", "Sami", "Tariq", "Hassan", "Nabil", "Bassam"],
+            "girl": ["Fatima", "Leila", "Mona", "Rania", "Hala", "Dalia", "Nadia", "Samira", "Huda", "Amal", "Lubna", "Reem", "Iman", "Sahar", "Hanan"],
+            "boy":  ["Khalid", "Sami", "Tariq", "Hassan", "Nabil", "Bassam", "Fadi", "Walid", "Rami", "Ziad", "Mahmoud", "Ayman", "Tarek", "Nasser", "Adel"],
         },
     },
     "white_american": {
         "student": {
-            "girl": ["Emma", "Olivia", "Ava", "Charlotte", "Sophia", "Harper"],
-            "boy":  ["Liam", "Noah", "Ethan", "Owen", "Henry", "Caleb"],
+            "girl": ["Emma", "Olivia", "Ava", "Charlotte", "Sophia", "Harper", "Amelia", "Evelyn", "Abigail", "Emily", "Ella", "Scarlett", "Grace", "Chloe", "Lily"],
+            "boy":  ["Liam", "Noah", "Ethan", "Owen", "Henry", "Caleb", "Mason", "Logan", "Lucas", "Jackson", "Jack", "Wyatt", "Carter", "Levi", "Hudson"],
         },
         "adult": {
-            "girl": ["Jennifer", "Jessica", "Ashley", "Amanda", "Sarah", "Melissa"],
-            "boy":  ["Michael", "Christopher", "Matthew", "Joshua", "David", "Brian"],
+            "girl": ["Jennifer", "Jessica", "Ashley", "Amanda", "Sarah", "Melissa", "Nicole", "Stephanie", "Heather", "Rachel", "Lauren", "Megan", "Kelly", "Amber", "Brittany"],
+            "boy":  ["Michael", "Christopher", "Matthew", "Joshua", "David", "Brian", "Ryan", "Justin", "Andrew", "Kevin", "Jason", "Eric", "Aaron", "Nicholas", "Jacob"],
         },
     },
 }
@@ -760,13 +760,57 @@ def pick_pseudonym(
     return pool[digest_int % n]  # pool exhausted by collisions — accept a repeat
 
 
-def pseudonym_for_name(real_name: str, gender: str) -> str:
-    """Student pseudonym: classify culture, pick from the STUDENT cohort.
-    Returns a clean single-token lowercase name (kept lowercase for slugs/
-    bundle paths, as before)."""
+def pseudonym_for_name(real_name: str, gender: str, used: set[str] | None = None) -> str:
+    """Student pseudonym: classify culture, pick from the STUDENT cohort,
+    skipping any name in `used` (pseudonyms already used elsewhere in the
+    library) so the published set has variety. Returns a clean single-token
+    lowercase name (kept lowercase for slugs/bundle paths, as before)."""
     real_first = (real_name.split() or ["student"])[0]
     category = classify_cultural_background(real_first)
-    return pick_pseudonym(real_name, gender, category, "student").lower()
+    return pick_pseudonym(real_name, gender, category, "student", used).lower()
+
+
+def _library_used_pseudonyms(exclude_school_slug: str = "") -> set[str]:
+    """Best-effort set of student pseudonyms already used by case-study posts in
+    HubSpot (DRAFT + published), so a new student gets a fresh name instead of a
+    third "Caleb". Spotlight slugs look like 'case-study/caleb-gorman' -> 'caleb'.
+
+    Slugs ending in '-{exclude_school_slug}' are skipped so RE-RUNNING this
+    student doesn't treat its own already-assigned name as taken (idempotency).
+    Returns an empty set on any error — de-dup is an enhancement, never a
+    blocker."""
+    token = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
+    if not token:
+        return set()
+    import requests
+    used: set[str] = set()
+    after = None
+    try:
+        for _ in range(8):
+            params = {"contentGroupId": CASE_STUDY_BLOG_ID, "limit": 100, "property": "slug"}
+            if after:
+                params["after"] = after
+            r = requests.get(
+                "https://api.hubapi.com/cms/v3/blogs/posts",
+                headers={"Authorization": f"Bearer {token}"}, params=params, timeout=30,
+            )
+            if r.status_code != 200:
+                break
+            data = r.json()
+            for p in data.get("results", []):
+                full = (p.get("slug") or "")
+                if not full.startswith("case-study/"):
+                    continue  # only the B2C spotlight slug format
+                slug = full.split("/", 1)[1]
+                if exclude_school_slug and slug.endswith(f"-{exclude_school_slug}"):
+                    continue
+                used.add(slug.split("-", 1)[0].lower())
+            after = (data.get("paging") or {}).get("next", {}).get("after")
+            if not after:
+                break
+    except Exception:
+        return used
+    return used
 
 
 def normalize_name(name: str) -> str:
@@ -1520,7 +1564,13 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
     gender = classify_gender(source_texts, run.get("brief_fields"))
     print(f"  Inferred gender: {gender}")
 
-    pseudonym = pseudonym_for_name(real_firstname, gender)
+    # De-dup against pseudonyms already used in the library (excluding this
+    # student's own school so a re-run keeps its name) for variety.
+    school_slug = normalize_name(run.get("school") or "")
+    used_pseudonyms = _library_used_pseudonyms(school_slug)
+    pseudonym = pseudonym_for_name(real_firstname, gender, used=used_pseudonyms)
+    if used_pseudonyms:
+        print(f"  ({len(used_pseudonyms)} library names avoided for variety)")
     print(f"  Real first name: {real_firstname}  ->  pseudonym: {pseudonym}")
 
     date_str = datetime.utcnow().strftime("%Y-%m-%d")
