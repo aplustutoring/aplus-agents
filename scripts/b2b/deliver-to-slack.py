@@ -80,7 +80,25 @@ PIECES = [
         "publish_window": "company page — after the blog is published",
         "destination": "linkedin.com/company/a-tutoring-inc-",
         "body_file": "linkedin-company.md",
-        "image_files": ["graphics/social-card-with-logo.png"],
+        "image_files": ["graphics/linkedin-carousel-slide-1-with-logo.png"],
+    },
+    {
+        "name": "LinkedIn carousel (5 slides)",
+        "publish_window": "attach to the company post above",
+        "destination": "linkedin.com/company/a-tutoring-inc-",
+        "body_text": (
+            ":clipboard: *Full LinkedIn carousel — 5 slides.* Upload all 5 (as a PDF "
+            "document post or a sequential image carousel) on the company post above.\n"
+            ":bulb: Put the blog link in the *first comment*, not the post body — LinkedIn "
+            "gives 2-3x more reach that way (same trick for the op-eds)."
+        ),
+        "image_files": [
+            "graphics/linkedin-carousel-slide-1-with-logo.png",
+            "graphics/linkedin-carousel-slide-2-with-logo.png",
+            "graphics/linkedin-carousel-slide-3-with-logo.png",
+            "graphics/linkedin-carousel-slide-4-with-logo.png",
+            "graphics/linkedin-carousel-slide-5-with-logo.png",
+        ],
     },
     {
         "name": "Roman op-ed",
@@ -344,7 +362,7 @@ def main():
         ":loudspeaker: *LINKEDIN → download + post* — copy-paste text *and downloadable images* below "
         "(LinkedIn can't pull from HubSpot, so grab the images here):"
     )
-    header_lines.append("   • Company post   • Roman op-ed   • Danielle op-ed")
+    header_lines.append("   • Company post   • 5-slide carousel   • Roman op-ed   • Danielle op-ed")
     header_lines.append("   :bulb: put the blog link in the *first comment*, not the post body — LinkedIn gives 2-3x more reach that way.")
     header_lines.append("")
     header_lines.append(

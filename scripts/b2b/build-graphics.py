@@ -216,6 +216,22 @@ def build(bundle: Path) -> dict:
         print(f"pull_quote_{slot}:", r.get("ok"), r.get("error", ""))
         results.append(r)
 
+    # LinkedIn carousel (portrait): slide 1 = headline + first quote; slides 2-5 = carousel_slides.
+    carousel = _meta_list(meta_text, "carousel_slides")
+    if quotes or carousel:
+        r = _gpt_image(
+            carousel_slide_prompt(headline[:80], (quotes[0][:160] if quotes else ""), 1, 5, False),
+            "1024x1536", graphics / "linkedin-carousel-slide-1.png")
+        print("carousel_1:", r.get("ok"), r.get("error", ""))
+        results.append(r)
+        for i, text in enumerate(carousel[:4]):
+            n = i + 2
+            r = _gpt_image(
+                carousel_slide_prompt("", text[:200], n, 5, n == 5),
+                "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png")
+            print(f"carousel_{n}:", r.get("ok"), r.get("error", ""))
+            results.append(r)
+
     # Facebook + Instagram share card (square — the SAME graphic posts to both).
     fb_hook = (quotes[0] if quotes else headline)[:100]
     r = _gpt_image(fb_ig_card_prompt(fb_hook), "1024x1024", graphics / "fb-ig-card.png")
