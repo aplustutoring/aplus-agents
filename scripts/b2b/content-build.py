@@ -361,6 +361,23 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         except Exception as e:
             logger.warning("embed-pull-quotes slot=%s error: %s", slot, e)
 
+    # Verify + repair source-article hyperlinks in the published draft body:
+    # HTTP-check every link, web-search a correct live URL for any dead/generic
+    # one, and patch it back (best-effort). Fact-check verifies claims; this
+    # verifies the links actually resolve to the right source.
+    if post_id:
+        try:
+            r = subprocess.run(
+                ["python3", str(bp.REPO_ROOT / "scripts" / "b2b" / "fix-links.py"),
+                 "--post-id", str(post_id), "--apply"],
+                cwd=str(bp.REPO_ROOT), capture_output=True, text=True, timeout=600,
+            )
+            sys.stdout.write(r.stdout)
+            if r.returncode != 0:
+                logger.warning("fix-links slot=%s rc=%s: %s", slot, r.returncode, (r.stderr or "")[:300])
+        except Exception as e:
+            logger.warning("fix-links slot=%s error: %s", slot, e)
+
     slack_rc = _deliver_to_slack(bundle_dir, post_id)
     if slack_rc != 0:
         logger.warning("slot %s deliver-to-slack rc=%s (continuing)", slot, slack_rc)
