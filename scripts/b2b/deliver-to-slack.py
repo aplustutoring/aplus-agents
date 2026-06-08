@@ -64,28 +64,28 @@ PIECES = [
     {
         "name": "Reply 1 — LinkedIn company post",
         "publish_window": "company page — after the blog is published",
-        "destination": "linkedin.com/company/a-tutoring-inc-",
+        "destination": "A+ Tutoring LinkedIn company page",
         "body_file": "linkedin-company.md",
         "image_files": ["graphics/linkedin-carousel-slide-1-with-logo.png"],
     },
     {
         "name": "Reply 2 — Roman op-ed",
         "publish_window": "Roman's personal LinkedIn",
-        "destination": "linkedin.com/in/romanslavinsky",
+        "destination": "Roman's LinkedIn (personal)",
         "body_file": "roman-oped.md",
         "image_files": ["graphics/pull-quote-s1-with-logo.png"],
     },
     {
         "name": "Reply 3 — Danielle op-ed",
         "publish_window": "Danielle's personal LinkedIn",
-        "destination": "Danielle's personal LinkedIn",
+        "destination": "Danielle's LinkedIn (personal)",
         "body_file": "danielle-oped.md",
         "image_files": ["graphics/pull-quote-s2-with-logo.png"],
     },
     {
         "name": "Reply 4 — LinkedIn carousel (PDF + 5 slides)",
         "publish_window": "attach to the company post (Reply 1)",
-        "destination": "linkedin.com/company/a-tutoring-inc-",
+        "destination": "A+ Tutoring LinkedIn company page",
         "body_text": (
             ":clipboard: *LinkedIn carousel.* Upload the *PDF* (first file) as a document "
             "post on the company page — that's how LinkedIn renders a swipeable carousel. "
@@ -105,14 +105,14 @@ PIECES = [
     {
         "name": "Reply 5 — Facebook + Instagram post",
         "publish_window": "post the SAME caption + image to both",
-        "destination": "facebook.com/WeTutorAtHome  +  instagram.com/aplustutoring",
+        "destination": "Facebook page + Instagram",
         "body_file": "fb-ig-post.md",
         "image_files": ["graphics/fb-ig-card-with-logo.png"],
     },
     {
         "name": "Reply 6 — Blog assets (reference)",
         "publish_window": "reference — already embedded in the HubSpot draft",
-        "destination": "blog.wetutorathome.com",
+        "destination": "the HubSpot blog draft (link above)",
         "body_text": (
             ":clipboard: *Blog assets* — hero, social card, and the 2 inline pull-quotes. "
             "Already embedded in the HubSpot draft; here for reference."
