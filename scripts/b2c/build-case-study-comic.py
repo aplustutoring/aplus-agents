@@ -27,6 +27,7 @@ Usage:
 import argparse
 import base64
 import json
+import math
 import os
 import re
 import sys
@@ -173,9 +174,8 @@ def beat_prompts(subject, grade, gender):
                     f"raised, {power}, bright dynamic radiant background, the "
                     f"moment it clicks." + NO_TEXT,
         "win": LOCK + "New scene: the hero stands heroically with cape flowing "
-               "and a confident smile, hands on hips, a LARGE BLANK orange "
-               "circular badge centered on the chest (leave it empty), bright "
-               "triumphant city-skyline background." + NO_TEXT,
+               "and a confident smile, hands on hips, bright triumphant "
+               "city-skyline background." + NO_TEXT,
         "cta": LOCK + "New scene: the hero stands warm and welcoming, extending "
                "an open hand toward the viewer as a friendly invitation, gentle "
                "optimistic sunrise background." + NO_TEXT,
@@ -243,15 +243,16 @@ def _wrap(d, text, fnt, max_w):
 
 
 def banner(im, text, color):
-    """Overlay a caption band across the top of a panel."""
+    """Caption band across the BOTTOM of a panel — keeps the hero's head/face
+    clear (a top band sat on the head)."""
     im = im.copy()
     d = ImageDraw.Draw(im, "RGBA")
-    bh = int(im.height * 0.18)
-    d.rectangle([0, 0, im.width, bh], fill=color + (235,))
     fnt = font(max(20, int(im.width / 16)))
     lines = _wrap(d, text, fnt, im.width - int(im.width * 0.08))
     lh = d.textbbox((0, 0), "Ay", font=fnt)[3] + 8
-    y = (bh - lh * len(lines)) // 2
+    bh = lh * len(lines) + 52
+    d.rectangle([0, im.height - bh, im.width, im.height], fill=color + (238,))
+    y = im.height - bh + 26
     for ln in lines:
         tw = d.textlength(ln, font=fnt)
         d.text(((im.width - tw) // 2, y), ln, font=fnt, fill=IVORY)
@@ -259,18 +260,25 @@ def banner(im, text, color):
     return im
 
 
-def stat_badge(im, stat):
-    """Draw a clean stat badge near the chest of the win panel (text, not gen).
-    Approximate chest position; tune visually if needed."""
+def stat_burst(im, stat):
+    """Comic shout-out starburst carrying the result stat (short, punchy text),
+    placed in the top-right over the background — not over the hero. Text is
+    drawn, never generated."""
     if not stat:
         return im
     im = im.copy()
     d = ImageDraw.Draw(im, "RGBA")
-    r = int(im.width * 0.12)
-    cx, cy = int(im.width * 0.5), int(im.height * 0.46)
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=ORANGE + (255,),
-              outline=IVORY, width=max(3, r // 12))
-    fnt = font(max(18, int(r / max(2, len(stat) * 0.42))))
+    cx, cy = int(im.width * 0.76), int(im.height * 0.19)
+    R = int(im.width * 0.21)
+    r = int(R * 0.70)
+    pts = []
+    for i in range(28):
+        ang = math.pi * i / 14
+        rad = R if i % 2 == 0 else r
+        pts.append((cx + rad * math.cos(ang), cy + rad * math.sin(ang)))
+    d.polygon(pts, fill=ORANGE + (255,), outline=IVORY)
+    # size the text to fit the burst
+    fnt = font(max(22, int(R / (0.9 + 0.34 * len(stat)))))
     tw = d.textlength(stat, font=fnt)
     th = d.textbbox((0, 0), stat, font=fnt)[3]
     d.text((cx - tw / 2, cy - th / 2), stat, font=fnt, fill=IVORY)
@@ -307,7 +315,7 @@ def build_individual_graphics(panel_paths, subject, stat, out_dir):
     for i, beat in enumerate(BEATS, 1):
         im = Image.open(panel_paths[beat]).convert("RGB")
         if beat == "win":
-            im = stat_badge(im, stat)
+            im = stat_burst(im, stat)
         im = banner(im, caps[beat], BANNER[beat])
         canvas = Image.new("RGB", (IW, IH), IVORY)
         scale = min((IW - PAD * 2) / im.width, (IH - PAD * 2) / im.height)
@@ -332,24 +340,13 @@ def build_story_graphics(panel_paths, subject, stat, out_dir):
     for i, beat in enumerate(BEATS, 1):
         panel = Image.open(panel_paths[beat]).convert("RGB")
         if beat == "win":
-            panel = stat_badge(panel, stat)
+            panel = stat_burst(panel, stat)
+        panel = banner(panel, caps[beat], BANNER[beat])  # caption on panel bottom
         canvas = Image.new("RGB", (SW, SH), IVORY)
-        d = ImageDraw.Draw(canvas)
-        # caption band in the top safe area
-        f = font(46)
-        lines = _wrap(d, caps[beat], f, SW - 120)
-        lh = d.textbbox((0, 0), "Ay", font=f)[3] + 12
-        bh = lh * len(lines) + 60
-        by = TOP_SAFE
-        d.rectangle([40, by, SW - 40, by + bh], fill=BANNER[beat])
-        y = by + 30
-        for ln in lines:
-            tw = d.textlength(ln, font=f)
-            d.text(((SW - tw) // 2, y), ln, font=f, fill=IVORY)
-            y += lh
-        # panel centered between the caption band and the bottom safe zone
-        top = by + bh + 40
-        bot = SH - BOT_SAFE - 40
+        # panel centered between the safe zones; caption rides on the panel so it
+        # stays clear of the head and of IG's bottom reply/link-sticker bar.
+        top = TOP_SAFE + 30
+        bot = SH - BOT_SAFE - 30
         ph = bot - top
         pw = int(panel.width * ph / panel.height)
         if pw > SW - 80:
