@@ -110,8 +110,8 @@ PER_CANVAS_CONFIG = {
     "instagram-carousel-slide-5": dict(logo_width=120, anchor=(870, 870)),
     # Facebook share: 1200x630 landscape (case-study, flat text-on-color)
     "facebook": dict(logo_width=140, anchor=(1370, 460)),
-    # Facebook share: 1200x630 landscape (case-study, flat text-on-color)
-    "facebook": dict(logo_width=140, anchor=(1370, 460)),
+    # B2B blog Facebook + Instagram share card: 1024x1024 square
+    "fb-ig-card": dict(logo_width=120, anchor=(870, 870)),
 }
 
 # Files we explicitly do NOT process (photographic, or composed elsewhere)

@@ -181,6 +181,17 @@ def _generate_oped_assets(runner: SkillsRunner, bundle_dir: Path, topic: dict, b
          f"Write a LinkedIn COMPANY post for the A+ Tutoring company page promoting this week's blog.\n"
          f"Topic: {headline}\n120-180 words: a hook, 2-3 insight lines, and a soft CTA to read the blog. "
          f"B2B brand voice. Do NOT use em dashes. Output ONLY the post text."),
+        ("aplus-b2c-brand-kit", "fb-ig-post.md",
+         f"Write ONE social caption for A+ Tutoring to post IDENTICALLY on the Facebook company page "
+         f"AND Instagram, sharing this week's blog.\n"
+         f"Topic: {headline}\n"
+         f"Accessible, community-facing brand voice (warm, for the broader school/parent community — NOT "
+         f"academic). A scroll-stopping first line, 2-3 short lines on why it matters for California students "
+         f"and schools, and a soft CTA to read the blog.\n"
+         f"About 70-110 words. Do NOT use em dashes. "
+         f"Then on a NEW final line output EXACTLY 10 relevant hashtags (a mix of education, tutoring, charter "
+         f"school, and California K-12 tags), space-separated, each starting with #.\n"
+         f"Output ONLY the caption followed by the single hashtags line.\n\nBlog excerpt:\n{excerpt}"),
     ]
     for skill, fname, prompt in jobs:
         try:

@@ -60,68 +60,48 @@ def dated_filename(local_path, bundle_path):
 
 PIECES = [
     {
-        "name": "Blog assets gallery",
-        "publish_window": "Thursday AM publish",
+        "name": "Blog assets",
+        "publish_window": "reference — already embedded in the HubSpot draft",
         "destination": "blog.wetutorathome.com",
         "in_channel": True,  # post the hero/pull-quotes in the channel (not the thread) so they're visible at a glance
         "body_text": (
-            ":clipboard: *Blog assets* — hero, social card, preset stat graphic "
-            "(iLEAD outcomes), topic graphic (this week's data viz), 2 inline "
-            "pull-quotes (v2.0 cap). All 6 below."
+            ":clipboard: *Blog assets* — hero, social card, and the 2 inline pull-quotes. "
+            "These are already embedded in the HubSpot draft; shown here for reference."
         ),
         "image_files": [
             "graphics/hero.png",
             "graphics/social-card-with-logo.png",
-            "graphics/preset-stat-graphic-with-logo.png",
-            "graphics/topic-graphic-with-logo.png",
             "graphics/pull-quote-s1-with-logo.png",
             "graphics/pull-quote-s2-with-logo.png",
         ],
     },
     {
         "name": "LinkedIn company post",
-        "publish_window": "Thursday PM",
+        "publish_window": "company page — after the blog is published",
         "destination": "linkedin.com/company/a-tutoring-inc-",
         "body_file": "linkedin-company.md",
-        "image_files": ["graphics/linkedin-carousel-slide-1-with-logo.png"],
-    },
-    {
-        "name": "LinkedIn carousel (5 slides)",
-        "publish_window": "Thursday PM (attach to company post above)",
-        "destination": "linkedin.com/company/a-tutoring-inc-",
-        "body_text": (
-            ":clipboard: *Full LinkedIn carousel* — 5 slides, upload as a single "
-            "PDF or sequential image carousel in the LinkedIn composer.\n\n"
-            "*LinkedIn posting workflow (v1.10):*\n"
-            "1. Copy SECTION 1 text from `linkedin-company.md` into the LinkedIn post field\n"
-            "2. Upload all 5 carousel slides (as PDF document post or sequential image carousel)\n"
-            "3. Click Post\n"
-            "4. Immediately add SECTION 2 (blog URL) as the first comment on your own post\n"
-            "5. Slide 5 already shows 'Link in comments' so the reader knows where to look\n\n"
-            ":bulb: *Why this matters:* LinkedIn's algorithm de-prioritizes posts with external URLs in the body. "
-            "Links posted as the *first comment* get 2-3x more reach. Same workflow applies to Roman + Danielle op-eds on personal LinkedIn."
-        ),
-        "image_files": [
-            "graphics/linkedin-carousel-slide-1-with-logo.png",
-            "graphics/linkedin-carousel-slide-2-with-logo.png",
-            "graphics/linkedin-carousel-slide-3-with-logo.png",
-            "graphics/linkedin-carousel-slide-4-with-logo.png",
-            "graphics/linkedin-carousel-slide-5-with-logo.png",
-        ],
+        "image_files": ["graphics/social-card-with-logo.png"],
     },
     {
         "name": "Roman op-ed",
-        "publish_window": "Friday AM",
+        "publish_window": "Roman's personal LinkedIn",
         "destination": "linkedin.com/in/romanslavinsky",
         "body_file": "roman-oped.md",
         "image_files": ["graphics/pull-quote-s1-with-logo.png"],
     },
     {
         "name": "Danielle op-ed",
-        "publish_window": "Tuesday AM (post-Memorial Day)",
+        "publish_window": "Danielle's personal LinkedIn",
         "destination": "Danielle's personal LinkedIn",
         "body_file": "danielle-oped.md",
         "image_files": ["graphics/pull-quote-s2-with-logo.png"],
+    },
+    {
+        "name": "Facebook + Instagram post",
+        "publish_window": "post the SAME caption + image to both",
+        "destination": "facebook.com/WeTutorAtHome  +  instagram.com/aplustutoring",
+        "body_file": "fb-ig-post.md",
+        "image_files": ["graphics/fb-ig-card-with-logo.png"],
     },
 ]
 # B2B lives on LinkedIn — Instagram Story and Facebook (B2C/parents) pieces removed.
@@ -361,13 +341,19 @@ def main():
         header_lines.append("   (no --post-id provided)")
     header_lines.append("")
     header_lines.append(
-        ":loudspeaker: *LINKEDIN → download + post* — the pieces below have copy-paste text "
-        "*and downloadable images*. LinkedIn can't pull from HubSpot, so grab the images here:"
+        ":loudspeaker: *LINKEDIN → download + post* — copy-paste text *and downloadable images* below "
+        "(LinkedIn can't pull from HubSpot, so grab the images here):"
     )
-    header_lines.append("   • LinkedIn company post   • 5-slide carousel   • Roman op-ed   • Danielle op-ed")
+    header_lines.append("   • Company post   • Roman op-ed   • Danielle op-ed")
+    header_lines.append("   :bulb: put the blog link in the *first comment*, not the post body — LinkedIn gives 2-3x more reach that way.")
     header_lines.append("")
     header_lines.append(
-        f":pushpin: {len(effective_pieces)} deliveries below — blog assets post in-channel, LinkedIn pieces follow. "
+        ":camera_with_flash: *FACEBOOK + INSTAGRAM → post the same to both* — one caption + one image "
+        "(10 hashtags already included). Grab them from the last delivery below."
+    )
+    header_lines.append("")
+    header_lines.append(
+        f":pushpin: {len(effective_pieces)} deliveries below — blog assets post in-channel, the rest follow. "
         "Each block = copy + attached image files."
     )
     header_text = "\n".join(header_lines)

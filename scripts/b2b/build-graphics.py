@@ -159,6 +159,19 @@ def social_card_prompt(headline: str) -> str:
     )
 
 
+def fb_ig_card_prompt(hook: str) -> str:
+    return (
+        "A warm, approachable SQUARE social media graphic for A+ Tutoring (a California K-12 "
+        "tutoring company), sized for Facebook and Instagram feeds. Solid background A+ Navy "
+        f"hex {NAVY} with a subtle soft gradient. A large, friendly white headline (clean "
+        "rounded sans-serif such as Poppins or DM Sans, weight 600) centered with generous "
+        f"margins, reading EXACTLY: \"{hook}\". A short A+ Orange {ORANGE} accent underline "
+        "beneath it. Lots of whitespace, modern and inviting, community-facing (not corporate "
+        "or academic). No photographs, no clip-art icons, no date. Aspect 1:1 square."
+        + LOGO_EXCLUSION
+    )
+
+
 def carousel_slide_prompt(headline: str, body: str, slide_num: int, total: int, is_cta: bool) -> str:
     swipe = (" A small right-pointing swipe indicator in the lower-left (this is slide 1 of the set)."
              if slide_num == 1 else " NO swipe indicator.")
@@ -203,21 +216,11 @@ def build(bundle: Path) -> dict:
         print(f"pull_quote_{slot}:", r.get("ok"), r.get("error", ""))
         results.append(r)
 
-    # LinkedIn carousel (portrait): slide 1 = headline + first quote; slides 2-5 = carousel_slides.
-    carousel = _meta_list(meta_text, "carousel_slides")
-    if quotes or carousel:
-        r = _gpt_image(
-            carousel_slide_prompt(headline[:80], (quotes[0][:160] if quotes else ""), 1, 5, False),
-            "1024x1536", graphics / "linkedin-carousel-slide-1.png")
-        print("carousel_1:", r.get("ok"), r.get("error", ""))
-        results.append(r)
-        for i, text in enumerate(carousel[:4]):
-            n = i + 2
-            r = _gpt_image(
-                carousel_slide_prompt("", text[:200], n, 5, n == 5),
-                "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png")
-            print(f"carousel_{n}:", r.get("ok"), r.get("error", ""))
-            results.append(r)
+    # Facebook + Instagram share card (square — the SAME graphic posts to both).
+    fb_hook = (quotes[0] if quotes else headline)[:100]
+    r = _gpt_image(fb_ig_card_prompt(fb_hook), "1024x1024", graphics / "fb-ig-card.png")
+    print("fb_ig_card:", r.get("ok"), r.get("error", ""))
+    results.append(r)
 
     (graphics / "_results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     ok = sum(1 for r in results if r.get("ok"))
