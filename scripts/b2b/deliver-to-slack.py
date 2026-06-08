@@ -349,18 +349,26 @@ def main():
             if "body_text" in p:
                 p["body_text"] = p["body_text"].replace("{predicted_blog_url}", predicted_blog_url)
 
-    # Header
-    header_lines = [f":package: *Weekly content bundle ready  -  {date_str}*"]
+    # Header — two clearly separated lanes so the reviewer never confuses the
+    # blog (published FROM HubSpot, graphics embedded) with the LinkedIn pieces
+    # (which need the actual image files DOWNLOADED + copy pasted into LinkedIn).
+    header_lines = [f":package: *This week's content — {date_str}*", ""]
+    header_lines.append(":memo: *BLOG → publish in HubSpot* (hero + pull-quotes already embedded — just review & publish)")
     if args.post_id:
         url = f"https://app.hubspot.com/blog/{PORTAL_ID}/editor/{args.post_id}/content"
-        header_lines.append(f":memo: HubSpot blog draft: <{url}|Review and publish>")
+        header_lines.append(f"   <{url}|Open the draft>")
     else:
-        header_lines.append(":memo: HubSpot blog draft: (no --post-id provided)")
-    if predicted_blog_url:
-        header_lines.append(f":link: Live URL once published (currently 404s — it's still a draft): {predicted_blog_url}")
+        header_lines.append("   (no --post-id provided)")
     header_lines.append("")
     header_lines.append(
-        f":pushpin: {len(effective_pieces)} deliveries below — copy each block into the destination platform at the suggested time."
+        ":loudspeaker: *LINKEDIN → download + post* — the pieces below have copy-paste text "
+        "*and downloadable images*. LinkedIn can't pull from HubSpot, so grab the images here:"
+    )
+    header_lines.append("   • LinkedIn company post   • 5-slide carousel   • Roman op-ed   • Danielle op-ed")
+    header_lines.append("")
+    header_lines.append(
+        f":pushpin: {len(effective_pieces)} deliveries below — blog assets post in-channel, LinkedIn pieces follow. "
+        "Each block = copy + attached image files."
     )
     header_text = "\n".join(header_lines)
 
