@@ -42,6 +42,31 @@ LOGO_EXCLUSION = (
     "No watermarks. No date line."
 )
 
+# Appended to every text-bearing graphic so copy is never cropped off-canvas.
+TEXT_FIT = (
+    " CRITICAL TEXT-FIT RULE: the COMPLETE text must fit comfortably inside the canvas with "
+    "generous margins on all four sides. Automatically reduce the font size and wrap across "
+    "multiple lines as needed so that NO word is ever cropped, cut off at an edge, or running "
+    "outside the frame. Every word must be fully visible — never zoom in on or crop the text."
+)
+
+# Hard maximum characters that go onto each graphic format (word-boundary capped).
+MAX_CHARS = {
+    "pull_quote": 180,      # 3:2 landscape
+    "social_card": 90,      # 16:9 landscape
+    "carousel_headline": 70,
+    "carousel_body": 150,   # portrait 1024x1536
+    "fb_ig": 60,            # 1:1 square — least room, keep it punchy
+}
+
+
+def _cap(text: str, n: int) -> str:
+    """Cap text at a word boundary, at most n chars — the max that goes on a graphic."""
+    text = " ".join((text or "").split())
+    if len(text) <= n:
+        return text
+    return text[:n].rsplit(" ", 1)[0].rstrip(" ,;:-")
+
 # A+ brand
 NAVY = "#1A3A52"
 ORANGE = "#EF5829"
@@ -143,7 +168,7 @@ def pull_quote_prompt(quote: str) -> str:
         "centered vertically with generous left and right margins, reading EXACTLY: "
         f"\"{quote}\". Generous whitespace. NO date line. NO 'A+ Tutoring blog' text. "
         "NO attribution subtitle. NO 'Source:' footer. Just the verbatim quote. "
-        "Aspect 3:2 landscape." + LOGO_EXCLUSION
+        "Aspect 3:2 landscape." + LOGO_EXCLUSION + TEXT_FIT
     )
 
 
@@ -155,7 +180,7 @@ def social_card_prompt(headline: str) -> str:
         f"third, left-aligned with generous margin, reading EXACTLY: \"{headline}\". "
         f"Below it, a thin horizontal A+ Orange {ORANGE} divider line ~200px wide. "
         "Generous whitespace. Clean, institutional. No photographs. No decorative "
-        "icons. No date. Aspect 16:9 landscape." + LOGO_EXCLUSION
+        "icons. No date. Aspect 16:9 landscape." + LOGO_EXCLUSION + TEXT_FIT
     )
 
 
@@ -168,7 +193,7 @@ def fb_ig_card_prompt(hook: str) -> str:
         f"margins, reading EXACTLY: \"{hook}\". A short A+ Orange {ORANGE} accent underline "
         "beneath it. Lots of whitespace, modern and inviting, community-facing (not corporate "
         "or academic). No photographs, no clip-art icons, no date. Aspect 1:1 square."
-        + LOGO_EXCLUSION
+        + LOGO_EXCLUSION + TEXT_FIT
     )
 
 
@@ -182,11 +207,11 @@ def carousel_slide_prompt(headline: str, body: str, slide_num: int, total: int, 
         f"A portrait-orientation flat design slide for a LinkedIn carousel, slide {slide_num} of {total}. "
         f"Solid background A+ Navy hex {NAVY}. {head}white sans-serif body text (DM Sans style) reading "
         f"EXACTLY: \"{body}\". A thin A+ Orange {ORANGE} accent line. Generous whitespace, clean and "
-        f"institutional. No photographs, no decorative icons, no 'Source:' footer.{swipe}{cta}" + LOGO_EXCLUSION
+        f"institutional. No photographs, no decorative icons, no 'Source:' footer.{swipe}{cta}" + LOGO_EXCLUSION + TEXT_FIT
     )
 
 
-def build(bundle: Path) -> dict:
+def build(bundle: Path, with_hero: bool = True) -> dict:
     graphics = bundle / "graphics"
     graphics.mkdir(parents=True, exist_ok=True)
     meta_path = bundle / "blog-anchor-meta.md"
@@ -199,12 +224,13 @@ def build(bundle: Path) -> dict:
     results = []
 
     # Hero — DISTINCT per blog (driven by the topic's hero alt text / headline).
-    r = _gemini(hero_prompt(hero_subject, headline), "16:9", graphics / "hero.png")
-    print("hero:", r.get("ok"), r.get("error", ""))
-    results.append(r)
+    if with_hero:
+        r = _gemini(hero_prompt(hero_subject, headline), "16:9", graphics / "hero.png")
+        print("hero:", r.get("ok"), r.get("error", ""))
+        results.append(r)
 
     # Social card.
-    r = _gpt_image(social_card_prompt(headline[:90]), "1536x1024", graphics / "social-card.png")
+    r = _gpt_image(social_card_prompt(_cap(headline, MAX_CHARS["social_card"])), "1536x1024", graphics / "social-card.png")
     print("social_card:", r.get("ok"), r.get("error", ""))
     results.append(r)
 
@@ -212,7 +238,7 @@ def build(bundle: Path) -> dict:
     for slot, quote in zip(["s1", "s2"], (quotes + ["", ""])[:2]):
         if not quote:
             continue
-        r = _gpt_image(pull_quote_prompt(quote[:240]), "1536x1024", graphics / f"pull-quote-{slot}.png")
+        r = _gpt_image(pull_quote_prompt(_cap(quote, MAX_CHARS["pull_quote"])), "1536x1024", graphics / f"pull-quote-{slot}.png")
         print(f"pull_quote_{slot}:", r.get("ok"), r.get("error", ""))
         results.append(r)
 
@@ -220,20 +246,22 @@ def build(bundle: Path) -> dict:
     carousel = _meta_list(meta_text, "carousel_slides")
     if quotes or carousel:
         r = _gpt_image(
-            carousel_slide_prompt(headline[:80], (quotes[0][:160] if quotes else ""), 1, 5, False),
+            carousel_slide_prompt(
+                _cap(headline, MAX_CHARS["carousel_headline"]),
+                _cap(quotes[0], MAX_CHARS["carousel_body"]) if quotes else "", 1, 5, False),
             "1024x1536", graphics / "linkedin-carousel-slide-1.png")
         print("carousel_1:", r.get("ok"), r.get("error", ""))
         results.append(r)
         for i, text in enumerate(carousel[:4]):
             n = i + 2
             r = _gpt_image(
-                carousel_slide_prompt("", text[:200], n, 5, n == 5),
+                carousel_slide_prompt("", _cap(text, MAX_CHARS["carousel_body"]), n, 5, n == 5),
                 "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png")
             print(f"carousel_{n}:", r.get("ok"), r.get("error", ""))
             results.append(r)
 
     # Facebook + Instagram share card (square — the SAME graphic posts to both).
-    fb_hook = (quotes[0] if quotes else headline)[:100]
+    fb_hook = _cap(quotes[0] if quotes else headline, MAX_CHARS["fb_ig"])
     r = _gpt_image(fb_ig_card_prompt(fb_hook), "1024x1024", graphics / "fb-ig-card.png")
     print("fb_ig_card:", r.get("ok"), r.get("error", ""))
     results.append(r)
@@ -247,12 +275,13 @@ def build(bundle: Path) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Generate B2B blog graphics (hero + pull-quotes + social card)")
     ap.add_argument("--bundle", required=True, help="bundle directory")
+    ap.add_argument("--no-hero", action="store_true", help="skip hero regeneration (keep the existing hero)")
     args = ap.parse_args()
     bundle = Path(args.bundle)
     if not bundle.exists():
         print(f"ERROR: bundle not found: {bundle}", file=sys.stderr)
         return 1
-    build(bundle)
+    build(bundle, with_hero=not args.no_hero)
     return 0
 
 
