@@ -8,9 +8,11 @@ and posts a ranked scorecard to Slack.
 
 Notes:
 - A post still in DRAFT has no traffic yet — it's shown as 'draft (not published)'.
-- Page analytics need the HubSpot private-app token to have the analytics
-  (business-intelligence) read scope. If it doesn't, the scorecard still posts
-  (listing the posts) with a 'add analytics scope' note instead of crashing.
+- Page analytics need the HubSpot private-app token to have a CMS/traffic
+  analytics read scope: `cms-analytics-api-access` or `traffic-analytics-api-access`.
+  (NOT "business-intelligence" — that grouping does not grant this endpoint.)
+  If it's missing, the scorecard still posts (listing the posts) with an
+  'add analytics scope' note instead of crashing.
 
 Usage:
     python3 scripts/b2b/blog-metrics.py                 # post scorecard to Slack
@@ -99,7 +101,8 @@ def fetch_page_analytics(days: int) -> "dict | None":
             timeout=60,
         )
         if r.status_code == 403:
-            logger.warning("analytics 403 — token missing analytics (business-intelligence) scope")
+            logger.warning("analytics 403 — token missing scope: add cms-analytics-api-access "
+                           "or traffic-analytics-api-access to the private app")
             return None
         if r.status_code != 200:
             logger.warning("analytics %s: %s", r.status_code, r.text[:200])
@@ -154,7 +157,7 @@ def build_scorecard(days: int) -> str:
     rows.sort(key=lambda r: r["views"], reverse=True)
     lines = [f":bar_chart: *Blog performance — last {days} days*"]
     if analytics is None:
-        lines.append(":warning: HubSpot analytics scope not enabled — add `business-intelligence` (analytics read) to the private app to populate views. Listing posts for now.")
+        lines.append(":warning: HubSpot analytics scope not enabled — add `cms-analytics-api-access` (or `traffic-analytics-api-access`) to the private app to populate views. Listing posts for now.")
     for i, r in enumerate(rows, 1):
         medal = {1: ":first_place_medal:", 2: ":second_place_medal:", 3: ":third_place_medal:"}.get(i, f"{i}.")
         status = "" if r["published"] else "  _(draft — not published yet)_"
