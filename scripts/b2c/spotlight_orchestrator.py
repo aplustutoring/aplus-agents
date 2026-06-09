@@ -770,20 +770,15 @@ def pseudonym_for_name(real_name: str, gender: str, used: set[str] | None = None
     return pick_pseudonym(real_name, gender, category, "student", used).lower()
 
 
-def _library_used_pseudonyms(exclude_school_slug: str = "") -> set[str]:
-    """Best-effort set of student pseudonyms already used by case-study posts in
-    HubSpot (DRAFT + published), so a new student gets a fresh name instead of a
-    third "Caleb". Spotlight slugs look like 'case-study/caleb-gorman' -> 'caleb'.
-
-    Slugs ending in '-{exclude_school_slug}' are skipped so RE-RUNNING this
-    student doesn't treat its own already-assigned name as taken (idempotency).
-    Returns an empty set on any error — de-dup is an enhancement, never a
-    blocker."""
+def _existing_case_study_slugs() -> list[str]:
+    """Best-effort list of existing B2C spotlight slug tails (e.g.
+    'caleb-sky-mountain'), DRAFT + published. Skips legacy/template slugs.
+    Empty on any error — de-dup is an enhancement, never a blocker."""
     token = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
     if not token:
-        return set()
+        return []
     import requests
-    used: set[str] = set()
+    out: list[str] = []
     after = None
     try:
         for _ in range(8):
@@ -800,17 +795,43 @@ def _library_used_pseudonyms(exclude_school_slug: str = "") -> set[str]:
             for p in data.get("results", []):
                 full = (p.get("slug") or "")
                 if not full.startswith("case-study/"):
-                    continue  # only the B2C spotlight slug format
-                slug = full.split("/", 1)[1]
-                if exclude_school_slug and slug.endswith(f"-{exclude_school_slug}"):
                     continue
-                used.add(slug.split("-", 1)[0].lower())
+                tail = full.split("/", 1)[1].lower()
+                # only '{name}-{school}' slugs; skip legacy/template/test posts
+                if "-" not in tail or tail.startswith(("test-", "case-study-")):
+                    continue
+                out.append(tail)
             after = (data.get("paging") or {}).get("next", {}).get("after")
             if not after:
                 break
     except Exception:
-        return used
-    return used
+        return out
+    return out
+
+
+def assign_student_pseudonym(real_firstname: str, gender: str, school: str | None) -> str:
+    """Pick the student pseudonym with two goals: VARIETY (don't reuse a name
+    another student already has) and IDEMPOTENCY (a re-run of the same student
+    keeps its name, so we never orphan a duplicate draft).
+
+    If exactly one existing case study sits at this student's school, reuse its
+    name (the student already has a draft — keep it). Otherwise de-dup against
+    every name already used elsewhere in the library and pick a fresh one."""
+    school_slug = normalize_name(school or "")
+    existing = _existing_case_study_slugs()
+    mine = [t for t in existing if school_slug and t.endswith(f"-{school_slug}")]
+    if len(mine) == 1:
+        pseudonym = mine[0].split("-", 1)[0]
+        print(f"  Reusing existing pseudonym for this student/school: {pseudonym}")
+        return pseudonym
+    used = {
+        t.split("-", 1)[0] for t in existing
+        if not (school_slug and t.endswith(f"-{school_slug}"))
+    }
+    pseudonym = pseudonym_for_name(real_firstname, gender, used=used)
+    if used:
+        print(f"  ({len(used)} library names avoided for variety)")
+    return pseudonym
 
 
 def normalize_name(name: str) -> str:
@@ -1564,13 +1585,9 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
     gender = classify_gender(source_texts, run.get("brief_fields"))
     print(f"  Inferred gender: {gender}")
 
-    # De-dup against pseudonyms already used in the library (excluding this
-    # student's own school so a re-run keeps its name) for variety.
-    school_slug = normalize_name(run.get("school") or "")
-    used_pseudonyms = _library_used_pseudonyms(school_slug)
-    pseudonym = pseudonym_for_name(real_firstname, gender, used=used_pseudonyms)
-    if used_pseudonyms:
-        print(f"  ({len(used_pseudonyms)} library names avoided for variety)")
+    # Variety + idempotency: reuse this student's existing name if they already
+    # have a draft at their school; otherwise pick a fresh, unused name.
+    pseudonym = assign_student_pseudonym(real_firstname, gender, run.get("school"))
     print(f"  Real first name: {real_firstname}  ->  pseudonym: {pseudonym}")
 
     date_str = datetime.utcnow().strftime("%Y-%m-%d")
