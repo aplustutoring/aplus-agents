@@ -3367,7 +3367,9 @@ class SlackDeliveryFailure(OrchestratorError):
     pass
 
 
-SLACK_TEXT_SCRIPT = REPO_ROOT / "scripts" / "b2c" / "deliver-case-study-to-slack.py"
+# Unified single-thread delivery (B2B-style). The former two-script split
+# (deliver-case-study-to-slack.py for text + this for graphics) is consolidated
+# into this one script, which posts the header + every reply in one thread.
 SLACK_GRAPHICS_SCRIPT = REPO_ROOT / "scripts" / "b2c" / "deliver-case-study-graphics-to-slack.py"
 
 
@@ -3383,22 +3385,11 @@ def stage_slack(args: argparse.Namespace, run: dict) -> dict:
     if args.slack_channel:
         common_args.extend(["--channel", args.slack_channel])
 
-    # 1. Text bundle (header + Paola feedback + file list).
-    cmd1 = ["python3", str(SLACK_TEXT_SCRIPT), *common_args, "--post-id", post_id]
-    print(f"  Posting Slack header + Paola feedback...")
-    result = subprocess.run(cmd1, capture_output=True, text=True)
-    if result.returncode != 0:
-        sys.stderr.write(result.stdout or "")
-        sys.stderr.write(result.stderr or "")
-        raise SlackDeliveryFailure("deliver-case-study-to-slack.py exited non-zero.")
-    tail = (result.stdout or "").strip().splitlines()[-1:]
-    if tail:
-        print(f"    {tail[0]}")
-
-    # 2. Graphics + captions pack (mentions Paola).
-    cmd2 = ["python3", str(SLACK_GRAPHICS_SCRIPT), *common_args]
-    print(f"  Posting Slack graphics + captions pack...")
-    result = subprocess.run(cmd2, capture_output=True, text=True)
+    # Single unified thread (B2B format): header + Paola feedback + every
+    # deliverable as a numbered "Reply N —" threaded reply, all in one thread.
+    cmd = ["python3", str(SLACK_GRAPHICS_SCRIPT), *common_args, "--post-id", post_id]
+    print(f"  Posting Slack spotlight thread (header + replies)...")
+    result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         sys.stderr.write(result.stdout or "")
         sys.stderr.write(result.stderr or "")
