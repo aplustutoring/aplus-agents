@@ -341,6 +341,19 @@ def paste_logo(canvas):
     return canvas
 
 
+def _logo_in_panel(canvas, px0, py0, pw, ph, frac=0.13, margin=22):
+    """Place the logo INSIDE the panel's bottom-right corner (on the caption banner),
+    never over the ivory canvas border, so it always sits on the image — and the
+    variant pick keeps it white on the dark banner."""
+    lg = _load_logo(max(80, int(pw * frac)))
+    if lg is None:
+        print("  (logo not found; skipping logo composite)", file=sys.stderr)
+        return
+    x = px0 + pw - lg.width - margin
+    y = py0 + ph - lg.height - margin
+    _paste_logo_at(canvas, lg, x, y)
+
+
 def build_individual_graphics(panel_paths, subject, stat, out_dir):
     """Each beat as its OWN standalone, shareable graphic (not a storyboard):
     captioned panel centered on an ivory IG-feed canvas with the A+ logo. The
@@ -357,8 +370,9 @@ def build_individual_graphics(panel_paths, subject, stat, out_dir):
         canvas = Image.new("RGB", (IW, IH), IVORY)
         scale = min((IW - PAD * 2) / im.width, (IH - PAD * 2) / im.height)
         p = im.resize((int(im.width * scale), int(im.height * scale)), Image.LANCZOS)
-        canvas.paste(p, ((IW - p.width) // 2, (IH - p.height) // 2))
-        paste_logo(canvas)
+        px0, py0 = (IW - p.width) // 2, (IH - p.height) // 2
+        canvas.paste(p, (px0, py0))
+        _logo_in_panel(canvas, px0, py0, p.width, p.height)
         outp = out_dir / f"comic-{i}-{beat}.png"
         canvas.save(outp)
         outputs.append(outp)
@@ -389,11 +403,10 @@ def build_story_graphics(panel_paths, subject, stat, out_dir):
         if pw > SW - 80:
             pw = SW - 80
             ph = int(panel.height * pw / panel.width)
-        canvas.paste(panel.resize((pw, ph), Image.LANCZOS), ((SW - pw) // 2, top))
-        # logo centered just above the bottom safe zone (room for a link sticker)
-        lg = _load_logo(int(SW * 0.15))
-        if lg is not None:
-            _paste_logo_at(canvas, lg, (SW - lg.width) // 2, SH - BOT_SAFE + 24)
+        x0, y0 = (SW - pw) // 2, top
+        canvas.paste(panel.resize((pw, ph), Image.LANCZOS), (x0, y0))
+        # logo INSIDE the panel's bottom-right (on the image), not the ivory safe zone
+        _logo_in_panel(canvas, x0, y0, pw, ph)
         outp = out_dir / f"comic-story-{i}-{beat}.png"
         canvas.save(outp)
         outputs.append(outp)
