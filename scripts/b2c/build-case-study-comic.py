@@ -243,20 +243,33 @@ def _wrap(d, text, fnt, max_w):
 
 
 def banner(im, text, color):
-    """Caption band across the BOTTOM of a panel — keeps the hero's head/face
-    clear (a top band sat on the head)."""
+    """Caption band across the BOTTOM of a panel. Caption is LEFT-aligned; the A+
+    logo (white, chroma-keyed) sits on the RIGHT of the band with reserved space so
+    the two never overlap. Keeps the hero's head/face clear (a top band sat on it)."""
     im = im.copy()
     d = ImageDraw.Draw(im, "RGBA")
     fnt = font(max(20, int(im.width / 16)))
-    lines = _wrap(d, text, fnt, im.width - int(im.width * 0.08))
+    logo = _keyed_logo_full()
+    lmargin = int(im.width * 0.05)
+    reserve = int(im.width * 0.22) if logo else 0      # right space held for the logo
+    lines = _wrap(d, text, fnt, im.width - lmargin * 2 - reserve)
     lh = d.textbbox((0, 0), "Ay", font=fnt)[3] + 8
     bh = lh * len(lines) + 52
     d.rectangle([0, im.height - bh, im.width, im.height], fill=color + (238,))
     y = im.height - bh + 26
     for ln in lines:
-        tw = d.textlength(ln, font=fnt)
-        d.text(((im.width - tw) // 2, y), ln, font=fnt, fill=IVORY)
+        d.text((lmargin, y), ln, font=fnt, fill=IVORY)   # LEFT-aligned
         y += lh
+    if logo:
+        target_h = int(bh * 0.52)
+        lw = max(1, int(logo.width * target_h / logo.height))
+        if lw > reserve - lmargin:                       # keep it inside the reserve
+            lw = reserve - lmargin
+            target_h = int(logo.height * lw / logo.width)
+        wlg = _white_variant(logo).resize((lw, target_h), Image.LANCZOS)
+        lx = im.width - lw - lmargin
+        ly = im.height - bh + (bh - target_h) // 2
+        im.paste(wlg, (lx, ly), wlg)
     return im
 
 
@@ -319,6 +332,27 @@ def _white_variant(lg):
     return out
 
 
+def _keyed_logo_full():
+    """Chroma-keyed A+ logo cropped to its visible content (full-res RGBA), or None.
+    Cropping to the alpha bbox removes the transparent padding so the logo can be
+    sized tightly inside the caption band."""
+    for cand in [REPO / "scripts" / "shared" / "assets" / "logo.png",
+                 REPO / "assets" / "logo.png"]:
+        if cand.exists():
+            lg = Image.open(cand).convert("RGBA")
+            px = lg.load()
+            for y in range(lg.height):
+                for x in range(lg.width):
+                    r, g, b, a = px[x, y]
+                    if (r >= 240 and g >= 240 and b >= 240) or a < 128:
+                        px[x, y] = (r, g, b, 0)
+                    else:
+                        px[x, y] = (r, g, b, 255)
+            bbox = lg.getchannel("A").getbbox()
+            return lg.crop(bbox) if bbox else lg
+    return None
+
+
 def _paste_logo_at(canvas, lg, x, y):
     """Paste the keyed logo at (x, y), choosing the white variant on dark backgrounds
     and the colored variant on light ones (mirrors composite-logo.py's variant pick),
@@ -371,8 +405,7 @@ def build_individual_graphics(panel_paths, subject, stat, out_dir):
         scale = min((IW - PAD * 2) / im.width, (IH - PAD * 2) / im.height)
         p = im.resize((int(im.width * scale), int(im.height * scale)), Image.LANCZOS)
         px0, py0 = (IW - p.width) // 2, (IH - p.height) // 2
-        canvas.paste(p, (px0, py0))
-        _logo_in_panel(canvas, px0, py0, p.width, p.height)
+        canvas.paste(p, (px0, py0))   # logo is composited into the caption band by banner()
         outp = out_dir / f"comic-{i}-{beat}.png"
         canvas.save(outp)
         outputs.append(outp)
@@ -404,9 +437,7 @@ def build_story_graphics(panel_paths, subject, stat, out_dir):
             pw = SW - 80
             ph = int(panel.height * pw / panel.width)
         x0, y0 = (SW - pw) // 2, top
-        canvas.paste(panel.resize((pw, ph), Image.LANCZOS), (x0, y0))
-        # logo INSIDE the panel's bottom-right (on the image), not the ivory safe zone
-        _logo_in_panel(canvas, x0, y0, pw, ph)
+        canvas.paste(panel.resize((pw, ph), Image.LANCZOS), (x0, y0))   # logo is in the caption band
         outp = out_dir / f"comic-story-{i}-{beat}.png"
         canvas.save(outp)
         outputs.append(outp)
