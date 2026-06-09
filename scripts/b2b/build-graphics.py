@@ -56,8 +56,8 @@ TEXT_FIT = (
 MAX_CHARS = {
     "pull_quote": 130,      # 3:2 landscape
     "social_card": 90,      # 16:9 landscape
-    "carousel_headline": 70,
-    "carousel_body": 120,   # portrait 1024x1536
+    "carousel_headline": 55,
+    "carousel_body": 100,   # portrait 1024x1536 (slide 1 carries headline + body)
     "fb_ig": 60,            # 1:1 square — least room, keep it punchy
 }
 
@@ -110,7 +110,7 @@ def _qa_text_fits(image_path: Path) -> "tuple[bool, str]":
         return True, f"qa-skipped: {e}"
 
 
-def _gen_with_qa(make_prompt, size: str, out_path: Path, label: str, retries: int = 1) -> dict:
+def _gen_with_qa(make_prompt, size: str, out_path: Path, label: str, retries: int = 2) -> dict:
     """Generate a text graphic, then vision-QA it for cut-off text. make_prompt(scale)
     returns the prompt with its text capped to scale*max, so a cut-off result is retried
     at a tighter scale (0.8x). Returns the last _gpt_image result dict."""
