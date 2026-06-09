@@ -307,13 +307,37 @@ def _load_logo(target_w):
     return None
 
 
+def _white_variant(lg):
+    """All-white version of the keyed logo (for dark backgrounds), like the text graphics."""
+    out = lg.copy()
+    px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = px[x, y]
+            if a > 0:
+                px[x, y] = (255, 255, 255, a)
+    return out
+
+
+def _paste_logo_at(canvas, lg, x, y):
+    """Paste the keyed logo at (x, y), choosing the white variant on dark backgrounds
+    and the colored variant on light ones (mirrors composite-logo.py's variant pick),
+    so the logo is always visible and never has a white box."""
+    from PIL import ImageStat
+    box = canvas.convert("RGB").crop((x, y, x + lg.width, y + lg.height))
+    r, g, b = (int(v) for v in ImageStat.Stat(box).mean)
+    lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+    chosen = _white_variant(lg) if lum < 0.5 else lg
+    canvas.paste(chosen, (x, y), chosen)
+
+
 def paste_logo(canvas):
     """Bottom-right logo for feed graphics."""
     lg = _load_logo(int(canvas.width * 0.11))
     if lg is None:
         print("  (logo not found; skipping logo composite)", file=sys.stderr)
         return canvas
-    canvas.paste(lg, (canvas.width - lg.width - 30, canvas.height - lg.height - 24), lg)
+    _paste_logo_at(canvas, lg, canvas.width - lg.width - 30, canvas.height - lg.height - 24)
     return canvas
 
 
@@ -369,7 +393,7 @@ def build_story_graphics(panel_paths, subject, stat, out_dir):
         # logo centered just above the bottom safe zone (room for a link sticker)
         lg = _load_logo(int(SW * 0.15))
         if lg is not None:
-            canvas.paste(lg, ((SW - lg.width) // 2, SH - BOT_SAFE + 24), lg)
+            _paste_logo_at(canvas, lg, (SW - lg.width) // 2, SH - BOT_SAFE + 24)
         outp = out_dir / f"comic-story-{i}-{beat}.png"
         canvas.save(outp)
         outputs.append(outp)
