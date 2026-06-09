@@ -79,6 +79,55 @@ def _cap(text: str, n: int) -> str:
         return window[:idx].strip()
     return window.rsplit(" ", 1)[0].rstrip(" ,;:-")
 
+
+_QA_ENABLED = os.environ.get("APLUS_GRAPHICS_QA", "1") != "0"
+
+
+def _qa_text_fits(image_path: Path) -> "tuple[bool, str]":
+    """Vision check: is any text on the graphic cropped/cut off/outside the frame?
+    Returns (ok, reason). Fail-open (ok=True) on any error so QA never blocks a build."""
+    if not _QA_ENABLED:
+        return True, "qa-disabled"
+    try:
+        import base64
+        import anthropic
+        b64 = base64.standard_b64encode(Path(image_path).read_bytes()).decode()
+        client = anthropic.Anthropic()
+        resp = client.messages.create(
+            model="claude-opus-4-7", max_tokens=80,
+            messages=[{"role": "user", "content": [
+                {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": b64}},
+                {"type": "text", "text": (
+                    "This is a marketing graphic with text. Is ANY text cropped, cut off at an edge, "
+                    "or running outside the frame/margins? Reply ONLY 'OK' if every word is fully "
+                    "visible with comfortable margins, or 'CUTOFF: <short reason>' if any text is "
+                    "clipped, touching an edge, or past the frame.")},
+            ]}],
+        )
+        txt = " ".join(b.text for b in resp.content if getattr(b, "type", "") == "text").strip()
+        return (txt.upper().startswith("OK"), txt)
+    except Exception as e:
+        return True, f"qa-skipped: {e}"
+
+
+def _gen_with_qa(make_prompt, size: str, out_path: Path, label: str, retries: int = 1) -> dict:
+    """Generate a text graphic, then vision-QA it for cut-off text. make_prompt(scale)
+    returns the prompt with its text capped to scale*max, so a cut-off result is retried
+    at a tighter scale (0.8x). Returns the last _gpt_image result dict."""
+    r = {}
+    for attempt in range(retries + 1):
+        scale = 0.8 ** attempt
+        r = _gpt_image(make_prompt(scale), size, out_path)
+        if not r.get("ok"):
+            return r
+        ok, reason = _qa_text_fits(out_path)
+        print(f"  [QA] {label}: {'OK' if ok else reason}")
+        if ok:
+            return r
+        if attempt < retries:
+            print(f"  [QA] {label}: regenerating tighter (attempt {attempt + 2})")
+    return r
+
 # A+ brand
 NAVY = "#1A3A52"
 ORANGE = "#EF5829"
@@ -245,40 +294,41 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
         results.append(r)
 
     # Social card — prefer the dedicated short headline, fall back to the SEO title.
-    r = _gpt_image(social_card_prompt(_cap(social_headline or headline, MAX_CHARS["social_card"])), "1536x1024", graphics / "social-card.png")
-    print("social_card:", r.get("ok"), r.get("error", ""))
+    sc_text = social_headline or headline
+    r = _gen_with_qa(lambda s: social_card_prompt(_cap(sc_text, int(MAX_CHARS["social_card"] * s))),
+                     "1536x1024", graphics / "social-card.png", "social_card")
     results.append(r)
 
     # Up to 2 pull-quote cards.
     for slot, quote in zip(["s1", "s2"], (quotes + ["", ""])[:2]):
         if not quote:
             continue
-        r = _gpt_image(pull_quote_prompt(_cap(quote, MAX_CHARS["pull_quote"])), "1536x1024", graphics / f"pull-quote-{slot}.png")
-        print(f"pull_quote_{slot}:", r.get("ok"), r.get("error", ""))
+        r = _gen_with_qa(lambda s, q=quote: pull_quote_prompt(_cap(q, int(MAX_CHARS["pull_quote"] * s))),
+                         "1536x1024", graphics / f"pull-quote-{slot}.png", f"pull_quote_{slot}")
         results.append(r)
 
     # LinkedIn carousel (portrait): slide 1 = headline + first quote; slides 2-5 = carousel_slides.
     carousel = _meta_list(meta_text, "carousel_slides")
     if quotes or carousel:
-        r = _gpt_image(
-            carousel_slide_prompt(
-                _cap(social_headline or headline, MAX_CHARS["carousel_headline"]),
-                _cap(quotes[0], MAX_CHARS["carousel_body"]) if quotes else "", 1, 5, False),
-            "1024x1536", graphics / "linkedin-carousel-slide-1.png")
-        print("carousel_1:", r.get("ok"), r.get("error", ""))
+        c1_head = social_headline or headline
+        c1_body = quotes[0] if quotes else ""
+        r = _gen_with_qa(
+            lambda s: carousel_slide_prompt(
+                _cap(c1_head, int(MAX_CHARS["carousel_headline"] * s)),
+                _cap(c1_body, int(MAX_CHARS["carousel_body"] * s)) if c1_body else "", 1, 5, False),
+            "1024x1536", graphics / "linkedin-carousel-slide-1.png", "carousel_1")
         results.append(r)
         for i, text in enumerate(carousel[:4]):
             n = i + 2
-            r = _gpt_image(
-                carousel_slide_prompt("", _cap(text, MAX_CHARS["carousel_body"]), n, 5, n == 5),
-                "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png")
-            print(f"carousel_{n}:", r.get("ok"), r.get("error", ""))
+            r = _gen_with_qa(
+                lambda s, t=text, nn=n: carousel_slide_prompt("", _cap(t, int(MAX_CHARS["carousel_body"] * s)), nn, 5, nn == 5),
+                "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png", f"carousel_{n}")
             results.append(r)
 
     # Facebook + Instagram share card (square — the SAME graphic posts to both).
-    fb_hook = _cap(social_headline or (quotes[0] if quotes else headline), MAX_CHARS["fb_ig"])
-    r = _gpt_image(fb_ig_card_prompt(fb_hook), "1024x1024", graphics / "fb-ig-card.png")
-    print("fb_ig_card:", r.get("ok"), r.get("error", ""))
+    fb_text = social_headline or (quotes[0] if quotes else headline)
+    r = _gen_with_qa(lambda s: fb_ig_card_prompt(_cap(fb_text, int(MAX_CHARS["fb_ig"] * s))),
+                     "1024x1024", graphics / "fb-ig-card.png", "fb_ig_card")
     results.append(r)
 
     (graphics / "_results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
