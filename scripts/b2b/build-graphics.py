@@ -220,6 +220,9 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
     headline = _meta_field(meta_text, "h1_title") or _meta_field(meta_text, "html_title") or "A+ Tutoring"
     hero_subject = _meta_field(meta_text, "hero_alt_text") or _meta_field(meta_text, "featured_image_alt_text")
     quotes = _meta_list(meta_text, "pull_quotes")
+    # Short complete-thought card headline (~8 words) the skill writes for social/FB/IG
+    # graphics, so cards read cleanly instead of truncating the long SEO title.
+    social_headline = _meta_field(meta_text, "social_headline")
 
     results = []
 
@@ -229,8 +232,8 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
         print("hero:", r.get("ok"), r.get("error", ""))
         results.append(r)
 
-    # Social card.
-    r = _gpt_image(social_card_prompt(_cap(headline, MAX_CHARS["social_card"])), "1536x1024", graphics / "social-card.png")
+    # Social card — prefer the dedicated short headline, fall back to the SEO title.
+    r = _gpt_image(social_card_prompt(_cap(social_headline or headline, MAX_CHARS["social_card"])), "1536x1024", graphics / "social-card.png")
     print("social_card:", r.get("ok"), r.get("error", ""))
     results.append(r)
 
@@ -261,7 +264,7 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
             results.append(r)
 
     # Facebook + Instagram share card (square — the SAME graphic posts to both).
-    fb_hook = _cap(quotes[0] if quotes else headline, MAX_CHARS["fb_ig"])
+    fb_hook = _cap(social_headline or (quotes[0] if quotes else headline), MAX_CHARS["fb_ig"])
     r = _gpt_image(fb_ig_card_prompt(fb_hook), "1024x1024", graphics / "fb-ig-card.png")
     print("fb_ig_card:", r.get("ok"), r.get("error", ""))
     results.append(r)

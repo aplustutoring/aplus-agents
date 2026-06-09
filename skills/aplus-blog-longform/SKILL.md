@@ -264,6 +264,7 @@ url_slug: /[topic-keyword-phrase-hyphenated]
 h1_title: [Compelling H1 with primary keyword + specific outcome or finding. NO TRAILING COLON.]
 meta_title: [primary variant from meta-tags-optimizer. NO TRAILING COLON.]
 meta_description: [primary variant from meta-tags-optimizer]
+social_headline: [A short, punchy, COMPLETE-THOUGHT headline of AT MOST 8 words / ~55 characters, written to be rendered onto the social + Facebook/Instagram graphic cards. It must stand alone and read as a finished phrase (never a truncated SEO title). No trailing colon, no ellipsis.]
 
 typography:
   heading_font: Playfair Display
@@ -558,6 +559,7 @@ meta_title: A/B variant of htmlTitle picked by meta-tags-optimizer
 url_slug: /blog-url-slug-hyphenated
 canonical_url: https://blog.wetutorathome.com/blog-url-slug-hyphenated
 meta_description: 150-160 char description with primary keyword
+social_headline: Short complete-thought card headline, <=8 words / ~55 chars (for social + FB/IG graphics; NOT a truncated SEO title)
 hero_alt_text: Descriptive natural-English alt text for the hero image (>=10 chars, no "Mother en kid")
 language: en
 campaign_uuid: null
