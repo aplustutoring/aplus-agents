@@ -50,22 +50,34 @@ TEXT_FIT = (
     "outside the frame. Every word must be fully visible — never zoom in on or crop the text."
 )
 
-# Hard maximum characters that go onto each graphic format (word-boundary capped).
+# Hard maximum characters that go onto each graphic format. These are tuned so the
+# text fits the canvas at a readable size (GPT Image does not reliably shrink-to-fit,
+# so the cap — not the prompt — is the real guarantee against overflow).
 MAX_CHARS = {
-    "pull_quote": 180,      # 3:2 landscape
+    "pull_quote": 130,      # 3:2 landscape
     "social_card": 90,      # 16:9 landscape
     "carousel_headline": 70,
-    "carousel_body": 150,   # portrait 1024x1536
+    "carousel_body": 120,   # portrait 1024x1536
     "fb_ig": 60,            # 1:1 square — least room, keep it punchy
 }
 
 
 def _cap(text: str, n: int) -> str:
-    """Cap text at a word boundary, at most n chars — the max that goes on a graphic."""
+    """Cap text to at most n chars, ending as cleanly as possible: prefer a sentence
+    boundary, then a clause (comma) boundary, then a word boundary. Avoids the
+    mid-phrase '...with a' truncations that read as cut off."""
     text = " ".join((text or "").split())
     if len(text) <= n:
         return text
-    return text[:n].rsplit(" ", 1)[0].rstrip(" ,;:-")
+    window = text[:n]
+    for sep in (". ", "! ", "? "):
+        idx = window.rfind(sep)
+        if idx >= n * 0.5:
+            return window[: idx + 1].strip()
+    idx = window.rfind(", ")
+    if idx >= n * 0.55:
+        return window[:idx].strip()
+    return window.rsplit(" ", 1)[0].rstrip(" ,;:-")
 
 # A+ brand
 NAVY = "#1A3A52"
@@ -250,7 +262,7 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
     if quotes or carousel:
         r = _gpt_image(
             carousel_slide_prompt(
-                _cap(headline, MAX_CHARS["carousel_headline"]),
+                _cap(social_headline or headline, MAX_CHARS["carousel_headline"]),
                 _cap(quotes[0], MAX_CHARS["carousel_body"]) if quotes else "", 1, 5, False),
             "1024x1536", graphics / "linkedin-carousel-slide-1.png")
         print("carousel_1:", r.get("ok"), r.get("error", ""))

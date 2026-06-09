@@ -305,8 +305,8 @@ schema_date_published: [today's date in ISO format]
 
 hero_image_alt_text: [topic-specific descriptive text]
 pull_quotes:
-  - "Verbatim quote 1 from the blog body (15-25 words)"
-  - "Verbatim quote 2 from the blog body"
+  - "Verbatim quote 1 from the blog body — SHORT and punchy: 10-16 words, AT MOST ~110 characters, a complete sentence (these are rendered onto a graphic card and longer quotes get cut off)"
+  - "Verbatim quote 2 from the blog body (same length limit)"
 inline_pull_quote_images:
   - pull-quote-s1-with-logo.png
   - pull-quote-s2-with-logo.png
