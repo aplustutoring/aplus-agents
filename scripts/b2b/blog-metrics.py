@@ -8,11 +8,12 @@ and posts a ranked scorecard to Slack.
 
 Notes:
 - A post still in DRAFT has no traffic yet — it's shown as 'draft (not published)'.
-- Page analytics need the HubSpot private-app token to have a CMS/traffic
-  analytics read scope: `cms-analytics-api-access` or `traffic-analytics-api-access`.
-  (NOT "business-intelligence" — that grouping does not grant this endpoint.)
-  If it's missing, the scorecard still posts (listing the posts) with an
-  'add analytics scope' note instead of crashing.
+- Page-view analytics are NOT available to this private app. Confirmed 2026-06-09
+  in the Scopes UI: HubSpot exposes no page/traffic analytics READ scope for private
+  apps on this portal (only analytics.behavioral_events.send, which is write-only),
+  so /analytics/v2/reports/pages/total returns 403 with any token here. The scorecard
+  degrades gracefully (lists the live posts); for real view counts use HubSpot's
+  in-app analytics dashboard or GA4.
 
 Usage:
     python3 scripts/b2b/blog-metrics.py                 # post scorecard to Slack
@@ -101,8 +102,13 @@ def fetch_page_analytics(days: int) -> "dict | None":
             timeout=60,
         )
         if r.status_code == 403:
-            logger.warning("analytics 403 — token missing scope: add cms-analytics-api-access "
-                           "or traffic-analytics-api-access to the private app")
+            # Confirmed 2026-06-09 in the private-app Scopes UI: HubSpot offers NO
+            # page/traffic analytics READ scope for private apps on this portal (only
+            # analytics.behavioral_events.send, which is write). So this endpoint is
+            # permanently unreachable with this token — view counts must come from GA4
+            # or HubSpot's in-app analytics dashboard. Degrade to the post list.
+            logger.warning("analytics 403 — page-analytics read scope is not available for "
+                           "private apps on this portal; listing posts without views")
             return None
         if r.status_code != 200:
             logger.warning("analytics %s: %s", r.status_code, r.text[:200])
@@ -157,7 +163,7 @@ def build_scorecard(days: int) -> str:
     rows.sort(key=lambda r: r["views"], reverse=True)
     lines = [f":bar_chart: *Blog performance — last {days} days*"]
     if analytics is None:
-        lines.append(":warning: HubSpot analytics scope not enabled — add `cms-analytics-api-access` (or `traffic-analytics-api-access`) to the private app to populate views. Listing posts for now.")
+        lines.append(":information_source: View counts aren't shown — HubSpot's page-analytics API isn't available to private apps on this portal (no read scope exists to grant). For traffic, use HubSpot's in-app analytics or GA4. Listing the live posts below.")
     for i, r in enumerate(rows, 1):
         medal = {1: ":first_place_medal:", 2: ":second_place_medal:", 3: ":third_place_medal:"}.get(i, f"{i}.")
         status = "" if r["published"] else "  _(draft — not published yet)_"
