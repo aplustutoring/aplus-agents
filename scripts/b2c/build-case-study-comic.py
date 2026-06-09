@@ -286,10 +286,23 @@ def stat_burst(im, stat):
 
 
 def _load_logo(target_w):
+    """Load the A+ logo and chroma-key its white background to transparent — the
+    SAME method composite-logo.py uses for the text graphics (white pixels r,g,b>=240
+    -> alpha 0, binary alpha otherwise). assets/logo.png ships with an opaque white
+    background, so without this the comic shows a white box behind the logo."""
     for cand in [REPO / "scripts" / "shared" / "assets" / "logo.png",
                  REPO / "assets" / "logo.png"]:
         if cand.exists():
             lg = Image.open(cand).convert("RGBA")
+            px = lg.load()
+            for y in range(lg.height):
+                for x in range(lg.width):
+                    r, g, b, a = px[x, y]
+                    if (r >= 240 and g >= 240 and b >= 240) or a < 128:
+                        px[x, y] = (r, g, b, 0)      # white bg / soft edge -> transparent
+                    else:
+                        px[x, y] = (r, g, b, 255)    # logo mark -> opaque
+            # Resize after keying so LANCZOS anti-aliases the now-transparent edges.
             return lg.resize((target_w, int(target_w * lg.height / lg.width)), Image.LANCZOS)
     return None
 
