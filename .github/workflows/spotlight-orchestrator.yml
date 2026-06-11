@@ -60,13 +60,14 @@ jobs:
           # orchestrator's runtime requirements.txt.
           pip install google-api-python-client google-auth
 
-      - name: Install system fonts for matplotlib graphics
+      - name: Install system fonts + ffmpeg
         run: |
           # matplotlib reads .ttf fonts from the repo's brand-kit dir, but
           # also needs system fontconfig + DejaVu Sans as a fallback for
           # any glyph not in the brand kit. ubuntu-latest ships these.
+          # ffmpeg is required by the spotlight reel stage (assembly/encode).
           sudo apt-get update
-          sudo apt-get install -y fontconfig fonts-dejavu-core
+          sudo apt-get install -y fontconfig fonts-dejavu-core ffmpeg
 
       - name: Auth to Google Drive
         id: gauth

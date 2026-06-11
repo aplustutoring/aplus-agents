@@ -90,6 +90,7 @@ STAGE_ORDER = [
     "publish",
     "embed_graphics",
     "slack",
+    "reel",
     "complete",
 ]
 
@@ -1671,7 +1672,7 @@ def _extract_people(source_texts: dict[str, str]) -> list[dict]:
         temperature=0,
     )
     try:
-        data = json.loads(_strip_json_fence(raw))
+        data = _loads_model_json(raw)
     except json.JSONDecodeError as e:
         raise OrchestratorError(
             f"Name extraction returned invalid JSON: {e}. First 300 chars: {raw[:300]!r}"
@@ -2114,7 +2115,7 @@ def brand_check_and_clean(doc1_text: str) -> tuple[str, list[str]]:
     )
     raw = claude_complete(system, doc1_text, max_tokens=12000)
     try:
-        payload = json.loads(_strip_json_fence(raw))
+        payload = _loads_model_json(raw)
     except json.JSONDecodeError as e:
         raise BrandCheckFailure(
             f"Brand-check returned invalid JSON: {e}. "
@@ -2653,7 +2654,7 @@ def _llm_repick_embed_anchors(doc1: str, bad_quotes: list[str], bad_anchors: lis
     )
     raw = claude_complete(ANCHOR_REPICK_SYSTEM, user, max_tokens=2000, temperature=0)
     try:
-        data = json.loads(_strip_json_fence(raw))
+        data = _loads_model_json(raw)
     except json.JSONDecodeError as e:
         raise OrchestratorError(
             f"Embed-anchor repair returned invalid JSON: {e}. "
@@ -2762,7 +2763,7 @@ def stage_grammar(args: argparse.Namespace, run: dict) -> dict:
         )
         raw = claude_complete(GRAMMAR_SYSTEM, user, max_tokens=2000, temperature=0)
         try:
-            payload = json.loads(_strip_json_fence(raw))
+            payload = _loads_model_json(raw)
         except json.JSONDecodeError as e:
             raise GrammarGateFailure(
                 f"Grammar gate returned invalid JSON: {e}. First 300 chars: {raw[:300]!r}"
@@ -2803,6 +2804,16 @@ def _strip_json_fence(text: str) -> str:
         text = re.sub(r"^```(?:json)?\s*\n?", "", text)
         text = re.sub(r"\n?```\s*$", "", text)
     return text.strip()
+
+
+def _loads_model_json(raw: str):
+    """Parse JSON returned by a model, tolerating unescaped control characters
+    (e.g. a raw newline inside a quoted string value — models emit these when
+    a `location`/`fix` field quotes a multi-line passage). `strict=False` only
+    relaxes control-char handling inside strings; otherwise-valid JSON parses
+    identically. Fixes hard-exits like "Invalid control character at ...".
+    """
+    return json.loads(_strip_json_fence(raw), strict=False)
 
 
 # ---------------------------------------------------------------------------
@@ -3410,6 +3421,58 @@ def stage_slack(args: argparse.Namespace, run: dict) -> dict:
     return run
 
 
+REEL_DIR = REPO_ROOT / "scripts" / "b2c" / "reel"
+
+
+def stage_reel(args: argparse.Namespace, run: dict) -> dict:
+    """Generate + deliver the animated spotlight reel (independent of the comic).
+
+    NON-FATAL by design: the reel is a bonus asset, so any failure (Veo quota,
+    ffmpeg missing, etc.) is logged and the run still completes. Skipped in dry
+    runs and when SPOTLIGHT_REEL=0. Uses the same upstream metadata + case study;
+    delivers into #student-spotlight-ready like the rest of the pack.
+    """
+    run.update({"stage": "reel"})
+    if os.environ.get("SPOTLIGHT_REEL", "1") == "0":
+        print("  reel disabled (SPOTLIGHT_REEL=0) — skipping")
+        update_run(run["run_id"], run)
+        return run
+
+    bundle = str(Path(run["bundle_path"]))
+    steps = [
+        ("script",   ["python3", str(REEL_DIR / "make_script.py"), "--bundle", bundle]),
+        ("stills",   ["python3", str(REEL_DIR / "make_stills.py"), "--bundle", bundle]),
+        ("voice",    ["python3", str(REEL_DIR / "make_vo.py"),     "--bundle", bundle]),
+        ("clips",    ["python3", str(REEL_DIR / "make_clips.py"),  "--bundle", bundle]),
+        ("assemble", ["python3", str(REEL_DIR / "build_reel.py"),  "--bundle", bundle]),
+    ]
+    try:
+        for name, cmd in steps:
+            print(f"  reel:{name} ...")
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            if r.returncode != 0:
+                sys.stderr.write(r.stdout or "")
+                sys.stderr.write(r.stderr or "")
+                raise RuntimeError(f"reel {name} failed (exit {r.returncode})")
+        if not run.get("skip_hubspot"):
+            dcmd = ["python3", str(REEL_DIR / "deliver_reel.py"), "--bundle", bundle]
+            if args.slack_channel:
+                dcmd.extend(["--channel", args.slack_channel])
+            print("  reel:deliver ...")
+            r = subprocess.run(dcmd, capture_output=True, text=True)
+            if r.returncode != 0:
+                sys.stderr.write(r.stdout or "")
+                sys.stderr.write(r.stderr or "")
+                raise RuntimeError("reel delivery failed")
+        run["reel_status"] = "ok"
+        print("  reel: done")
+    except Exception as exc:  # noqa: BLE001 — reel is non-fatal
+        run["reel_status"] = f"skipped: {exc}"
+        print(f"  reel: NON-FATAL failure — {exc}", file=sys.stderr)
+    update_run(run["run_id"], run)
+    return run
+
+
 def stage_complete(args: argparse.Namespace, run: dict) -> dict:
     """Final state finalization + stdout summary.
 
@@ -3465,11 +3528,12 @@ STAGE_DISPATCH = {
     "publish": stage_publish,
     "embed_graphics": stage_embed_graphics,
     "slack": stage_slack,
+    "reel": stage_reel,
     "complete": stage_complete,
 }
 
 # Stages that --dry-run skips (irreversible external writes).
-DRY_RUN_SKIP_STAGES = {"publish", "slack"}
+DRY_RUN_SKIP_STAGES = {"publish", "slack", "reel"}
 
 
 def run_stage(stage_name: str, args: argparse.Namespace, run: dict) -> dict:
