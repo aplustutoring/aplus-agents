@@ -13,6 +13,15 @@ two other skills (drafting, hashtags) and six Python scripts (graphics,
 publish, delivery). Run the phases in order. After each phase, confirm it
 succeeded before moving to the next.
 
+### Spotlight reel (auto, after Slack delivery)
+Full runs (`--stop-after complete`) now also generate and deliver an animated
+9:16 **spotlight reel** via the `reel` stage (`scripts/b2c/reel/`, see the
+`aplus-spotlight-reel` skill). It reads the same `metadata.md` + case study,
+produces its own stills/voice/Veo animation/captions, and posts the video into
+`#student-spotlight-ready`. The stage is **non-fatal** — a Veo quota or ffmpeg
+error is logged and the run still completes. Costs ~$5 (Veo) per run; disable
+with env `SPOTLIGHT_REEL=0`. Requires `ffmpeg` on the runner (CI installs it).
+
 ## Prerequisites check (run first)
 
 Confirm these exist before starting:

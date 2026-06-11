@@ -31,3 +31,8 @@ scripts/**/*.bak
 
 # Orphaned state dir from the pre-fix path bug (real state lives at repo-root state/)
 scripts/state/
+
+# Spotlight reel — standalone prototype scratch (superseded by scripts/b2c/reel/)
+/spotlight-reel/
+/spotlight-reel-*.mp4
+/assets/logo-transparent.png
