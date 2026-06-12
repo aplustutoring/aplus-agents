@@ -10,6 +10,11 @@ anthropic>=0.40.0
 openai>=1.50.0
 google-genai>=1.0.0
 
+# Headless-Chromium renderer for the text-message spotlight (textstory)
+# stage. Frames are captured deterministically and encoded with ffmpeg;
+# no image/video generation APIs are involved.
+playwright>=1.40.0
+
 # Document parsing for B2C spotlight orchestrator.
 # OCR for image-only PDFs goes through PyMuPDF (rasterize) + Claude vision
 # (transcribe). No system-level poppler or tesseract dependency.

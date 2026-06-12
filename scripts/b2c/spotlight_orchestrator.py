@@ -91,6 +91,7 @@ STAGE_ORDER = [
     "embed_graphics",
     "slack",
     "reel",
+    "textstory",
     "complete",
 ]
 
@@ -3473,6 +3474,45 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
     return run
 
 
+TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.py"
+
+
+def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
+    """Generate + deliver the animated text-message spotlight (independent of
+    the comic and the reel; pure programmatic render, no gen APIs).
+
+    OPT-IN for now: skipped unless SPOTLIGHT_TEXTSTORY=1 (mirrors how new
+    bonus stages roll out — flip the default once Paola has reviewed a few).
+    NON-FATAL by design, same contract as stage_reel.
+    """
+    run.update({"stage": "textstory"})
+    if os.environ.get("SPOTLIGHT_TEXTSTORY", "0") != "1":
+        print("  textstory disabled (set SPOTLIGHT_TEXTSTORY=1 to enable) — skipping")
+        update_run(run["run_id"], run)
+        return run
+
+    bundle = str(Path(run["bundle_path"]))
+    cmd = ["python3", str(TEXTSTORY_BUILDER), "--bundle", bundle]
+    if not run.get("skip_hubspot"):
+        cmd.append("--deliver")
+        if args.slack_channel:
+            cmd.extend(["--channel", args.slack_channel])
+    try:
+        print("  textstory: scenes -> render -> deliver ...")
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        if r.returncode != 0:
+            sys.stderr.write(r.stdout or "")
+            sys.stderr.write(r.stderr or "")
+            raise RuntimeError(f"textstory builder failed (exit {r.returncode})")
+        run["textstory_status"] = "ok"
+        print("  textstory: done")
+    except Exception as exc:  # noqa: BLE001 — textstory is non-fatal
+        run["textstory_status"] = f"skipped: {exc}"
+        print(f"  textstory: NON-FATAL failure — {exc}", file=sys.stderr)
+    update_run(run["run_id"], run)
+    return run
+
+
 def stage_complete(args: argparse.Namespace, run: dict) -> dict:
     """Final state finalization + stdout summary.
 
@@ -3529,11 +3569,12 @@ STAGE_DISPATCH = {
     "embed_graphics": stage_embed_graphics,
     "slack": stage_slack,
     "reel": stage_reel,
+    "textstory": stage_textstory,
     "complete": stage_complete,
 }
 
 # Stages that --dry-run skips (irreversible external writes).
-DRY_RUN_SKIP_STAGES = {"publish", "slack", "reel"}
+DRY_RUN_SKIP_STAGES = {"publish", "slack", "reel", "textstory"}
 
 
 def run_stage(stage_name: str, args: argparse.Namespace, run: dict) -> dict:

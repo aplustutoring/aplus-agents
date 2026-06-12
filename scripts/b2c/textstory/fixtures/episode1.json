@@ -1,0 +1,38 @@
+{
+  "episode": "who-is-this-child",
+  "scenes": [
+    {"ts": "Sept 12, 8:47 PM", "msgs": [
+      {"from": "mom", "text": "He shut his door again. Math homework fight #3 this week 😞"},
+      {"from": "dad", "text": "Same as last year. I don't know what else to do"},
+      {"from": "mom", "text": "He said \"I'm just stupid at math\" tonight"},
+      {"from": "mom", "text": "He's NOT. But he believes it"},
+      {"from": "dad", "type": "typing_pause"},
+      {"from": "dad", "text": "That one hurts"}
+    ]},
+    {"ts": "Oct 3, 4:15 PM", "msgs": [
+      {"from": "mom", "text": "Ok so the new tutor started today"},
+      {"from": "dad", "text": "And??"},
+      {"from": "mom", "text": "He didn't slam the door 🤷‍♀️"},
+      {"from": "dad", "text": "I'll take it"}
+    ]},
+    {"ts": "Nov 14, 6:22 PM", "msgs": [
+      {"from": "mom", "text": "You're not going to believe this"},
+      {"from": "dad", "text": "??"},
+      {"from": "mom", "text": "He's doing homework. RIGHT NOW. Nobody asked him."},
+      {"from": "dad", "text": "WHO IS THIS CHILD"},
+      {"from": "mom", "text": "😂😂"}
+    ]},
+    {"ts": "Jan 20, 3:05 PM", "msgs": [
+      {"from": "mom", "type": "screenshot", "alt": "grade portal showing B+ in Algebra"},
+      {"from": "mom", "text": "That's ALGEBRA."},
+      {"from": "dad", "text": "Wait what"},
+      {"from": "dad", "text": "Call me right now"}
+    ]}
+  ],
+  "endcard": {
+    "line": "Every parent deserves this text.",
+    "cta": "Book a free consultation",
+    "cta_url": "https://meetings.hubspot.com/successful/consultation",
+    "disclosure": "Based on real A+ family outcomes"
+  }
+}

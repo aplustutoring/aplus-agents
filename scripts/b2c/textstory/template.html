@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: "Fraunces";
+    src: url("__FRAUNCES_URL__") format("truetype");
+    font-weight: 600;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; width: 1080px; height: 1920px; overflow: hidden;
+    background: #F8F4ED;
+    font-family: -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Noto Sans",
+                 "DejaVu Sans", sans-serif;
+  }
+
+  /* ── header ─────────────────────────────────────────────── */
+  .header {
+    position: absolute; top: 0; left: 0; right: 0; height: 190px; z-index: 5;
+    background: rgba(248,244,237,0.97);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px;
+  }
+  .avatar {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: linear-gradient(135deg, #c8c2b8, #a39c90);
+    color: #fff; font-size: 42px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .contact-name { font-size: 32px; color: #1c1c1e; font-weight: 500; }
+  .back {
+    position: absolute; left: 36px; top: 50%; transform: translateY(-50%);
+    width: 26px; height: 26px; border-left: 5px solid #8a857d; border-bottom: 5px solid #8a857d;
+    rotate: 45deg; border-radius: 3px;
+  }
+
+  /* ── thread ─────────────────────────────────────────────── */
+  .viewport {
+    position: absolute; top: 190px; bottom: 330px; left: 0; right: 0;
+    overflow: hidden;
+  }
+  .thread { position: absolute; top: 0; left: 0; right: 0; will-change: transform; }
+  .item { opacity: 0; }
+  .divider {
+    text-align: center; color: #97907f; font-size: 27px; font-weight: 500;
+    margin: 44px 0 20px;
+  }
+  .row { display: flex; padding: 7px 36px; }
+  .row.left  { justify-content: flex-start; }
+  .row.right { justify-content: flex-end; }
+  .bubble {
+    max-width: 680px; padding: 22px 32px; border-radius: 38px;
+    font-size: 36px; line-height: 1.32; white-space: pre-wrap; word-wrap: break-word;
+  }
+  .left  .bubble { background: #E9E7E1; color: #1c1c1e; border-bottom-left-radius: 12px; }
+  .right .bubble { background: #2F6BE0; color: #ffffff; border-bottom-right-radius: 12px; }
+
+  /* screenshot bubble: generic grade-portal mock */
+  .shot {
+    width: 560px; border-radius: 30px; overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.10); background: #ffffff;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  }
+  .shot .bar { background: #3d4f63; color: #fff; font-size: 26px; padding: 16px 26px; font-weight: 600; }
+  .shot .grow { display: flex; align-items: center; justify-content: space-between; padding: 26px; }
+  .shot .course { font-size: 32px; color: #1c1c1e; font-weight: 600; }
+  .shot .term { font-size: 24px; color: #8a857d; margin-top: 6px; }
+  .shot .grade {
+    width: 110px; height: 110px; border-radius: 50%; background: #2e9e5b; color: #fff;
+    font-size: 52px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .shot .trend { display: flex; gap: 14px; align-items: flex-end; padding: 0 26px 28px; height: 110px; }
+  .shot .trend i { display: block; width: 56px; background: #cfd9e4; border-radius: 8px 8px 0 0; }
+  .shot .trend i.hot { background: #2e9e5b; }
+
+  /* typing indicator (sits in the thread, below the last bubble) */
+  .typing { position: absolute; opacity: 0; z-index: 4; }
+  .typing.left  { left: 36px; }
+  .typing.right { right: 36px; }
+  .typing .tb {
+    background: #E9E7E1; border-radius: 38px; padding: 26px 32px;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .typing.right .tb { background: #2F6BE0; }
+  .typing .dot { width: 18px; height: 18px; border-radius: 50%; background: #98917f; }
+  .typing.right .dot { background: rgba(255,255,255,0.85); }
+
+  /* fake input bar */
+  .inputbar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 170px; z-index: 5;
+    background: rgba(248,244,237,0.97); border-top: 1px solid rgba(0,0,0,0.08);
+    display: flex; align-items: center; padding: 0 36px;
+  }
+  .inputbar .pill {
+    flex: 1; height: 84px; border-radius: 42px; border: 2px solid rgba(0,0,0,0.14);
+    background: #fff; color: #b0a999; font-size: 32px; line-height: 80px; padding: 0 36px;
+  }
+
+  /* ── end card ───────────────────────────────────────────── */
+  .endcard {
+    position: absolute; inset: 0; z-index: 20; background: #EF5829; opacity: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 0 100px;
+  }
+  .endcard img.logo { width: 200px; margin-bottom: 90px; }
+  .endcard .line {
+    font-family: "Fraunces", serif; font-weight: 600; color: #F8F4ED;
+    font-size: 92px; line-height: 1.12;
+  }
+  .endcard .cta {
+    margin-top: 90px; background: #F8F4ED; color: #EF5829;
+    font-size: 42px; font-weight: 700; padding: 32px 64px; border-radius: 999px;
+  }
+  .endcard .url { margin-top: 30px; color: rgba(248,244,237,0.85); font-size: 28px; }
+  .endcard .disclosure {
+    position: absolute; bottom: 80px; left: 0; right: 0;
+    color: rgba(248,244,237,0.75); font-size: 28px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="back"></div>
+    <div class="avatar" id="avatar"></div>
+    <div class="contact-name" id="contact-name"></div>
+  </div>
+  <div class="viewport"><div class="thread" id="thread"></div></div>
+  <div class="typing left"  id="typing-left"><div class="tb"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+  <div class="typing right" id="typing-right"><div class="tb"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+  <div class="inputbar"><div class="pill">Message</div></div>
+  <div class="endcard" id="endcard"></div>
+
+<script>
+const DATA = __DATA__;
+
+// contact label comes from scenes.json (varies per episode, deterministic)
+document.getElementById("avatar").textContent = (DATA.contact && DATA.contact.letter) || "H";
+document.getElementById("contact-name").textContent = (DATA.contact && DATA.contact.name) || "Hubby 💍";
+
+const thread = document.getElementById("thread");
+const els = [];
+
+function buildShot() {
+  const d = document.createElement("div");
+  d.className = "shot";
+  d.innerHTML = `
+    <div class="bar">Grade Portal</div>
+    <div class="grow">
+      <div><div class="course">Algebra 1</div><div class="term">Semester 1</div></div>
+      <div class="grade">B+</div>
+    </div>
+    <div class="trend">
+      <i style="height:34px"></i><i style="height:52px"></i>
+      <i style="height:74px"></i><i class="hot" style="height:104px"></i>
+    </div>`;
+  return d;
+}
+
+for (const item of DATA.items) {
+  let el;
+  if (item.kind === "divider") {
+    el = document.createElement("div");
+    el.className = "item divider";
+    el.textContent = item.text;
+  } else {
+    el = document.createElement("div");
+    el.className = "item row " + item.side;
+    if (item.kind === "screenshot") {
+      el.appendChild(buildShot());
+    } else {
+      const b = document.createElement("div");
+      b.className = "bubble";
+      b.textContent = item.text;
+      el.appendChild(b);
+    }
+  }
+  thread.appendChild(el);
+  els.push(el);
+}
+
+const endcard = document.getElementById("endcard");
+{
+  const ec = DATA.endcard;
+  if (ec.logo) {
+    const img = document.createElement("img");
+    img.className = "logo";
+    img.src = ec.logo;
+    endcard.appendChild(img);
+  }
+  const line = document.createElement("div");
+  line.className = "line";
+  line.textContent = ec.line;
+  endcard.appendChild(line);
+  const cta = document.createElement("div");
+  cta.className = "cta";
+  cta.textContent = ec.cta;
+  endcard.appendChild(cta);
+  const url = document.createElement("div");
+  url.className = "url";
+  url.textContent = ec.url_display;
+  endcard.appendChild(url);
+  const disc = document.createElement("div");
+  disc.className = "disclosure";
+  disc.textContent = ec.disclosure;
+  endcard.appendChild(disc);
+}
+
+const VIEW_H = document.querySelector(".viewport").clientHeight;
+const POP = 0.38;       // bubble pop-in duration
+const PAN = 0.45;       // camera pan duration
+const TYPING_ROOM = 150; // extra camera travel so the dots fit on screen
+let offsets = [];       // raw (unclamped) camera target offset per item
+
+function measure() {
+  offsets = els.map(el => el.offsetTop + el.offsetHeight + 14 - VIEW_H);
+}
+
+function easeOutCubic(p) { return 1 - Math.pow(1 - p, 3); }
+function easeOutBack(p) {
+  const c1 = 1.35, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+}
+const clamp01 = p => Math.max(0, Math.min(1, p));
+
+function typingRoom(t) {
+  // ease extra camera travel in while dots are up, back out after they stop
+  let extra = 0;
+  for (const w of DATA.typing) {
+    const ramp = clamp01((t - w.start) / 0.3) * (1 - clamp01((t - w.end) / 0.35));
+    extra = Math.max(extra, TYPING_ROOM * ramp);
+  }
+  return extra;
+}
+
+function cameraOffset(t) {
+  let cur = -VIEW_H, prev = -VIEW_H, at = -1;
+  for (let i = 0; i < DATA.items.length; i++) {
+    if (DATA.items[i].appear <= t) { prev = cur; cur = offsets[i]; at = DATA.items[i].appear; }
+    else break;
+  }
+  if (at < 0) return 0;
+  const p = clamp01((t - at) / PAN);
+  return Math.max(0, prev + (cur - prev) * easeOutCubic(p) + typingRoom(t));
+}
+
+const tl = document.getElementById("typing-left");
+const tr = document.getElementById("typing-right");
+thread.appendChild(tl);   // live inside the thread so they ride the camera
+thread.appendChild(tr);
+
+function seek(t) {
+  // bubbles + dividers
+  for (let i = 0; i < DATA.items.length; i++) {
+    const item = DATA.items[i], el = els[i];
+    if (t < item.appear) { el.style.opacity = 0; el.style.transform = "none"; continue; }
+    const p = clamp01((t - item.appear) / POP);
+    el.style.opacity = clamp01(p * 2.2);
+    if (item.kind === "divider") {
+      el.style.transform = "none";
+    } else {
+      const s = 0.62 + 0.38 * easeOutBack(p);
+      const y = 26 * (1 - easeOutCubic(p));
+      el.style.transformOrigin = item.side === "left" ? "bottom left" : "bottom right";
+      el.style.transform = `translateY(${y}px) scale(${s})`;
+    }
+  }
+
+  // camera
+  thread.style.transform = `translateY(${-cameraOffset(t)}px)`;
+
+  // typing indicators — pinned just below the last visible bubble
+  let lastBottom = 0;
+  for (let i = 0; i < DATA.items.length; i++) {
+    if (DATA.items[i].appear <= t) lastBottom = els[i].offsetTop + els[i].offsetHeight;
+    else break;
+  }
+  tl.style.opacity = 0; tr.style.opacity = 0;
+  for (const w of DATA.typing) {
+    if (t >= w.start && t < w.end) {
+      const el = w.side === "left" ? tl : tr;
+      el.style.top = (lastBottom + 10) + "px";
+      el.style.opacity = clamp01((t - w.start) / 0.22);
+      const dots = el.querySelectorAll(".dot");
+      for (let j = 0; j < dots.length; j++) {
+        const ph = (t - w.start) * 2.4 - j * 0.28;
+        const y = -10 * Math.max(0, Math.sin(ph * Math.PI));
+        dots[j].style.transform = `translateY(${y}px)`;
+      }
+    }
+  }
+
+  // end card
+  const ec = DATA.endcard;
+  if (t >= ec.start) {
+    const p = clamp01((t - ec.start) / 0.6);
+    endcard.style.opacity = p;
+  } else {
+    endcard.style.opacity = 0;
+  }
+}
+
+window.seek = seek;
+window.__ready = false;
+document.fonts.ready.then(() => {
+  measure();
+  seek(0);
+  window.__ready = true;
+});
+</script>
+</body>
+</html>
