@@ -66,8 +66,23 @@ jobs:
           # also needs system fontconfig + DejaVu Sans as a fallback for
           # any glyph not in the brand kit. ubuntu-latest ships these.
           # ffmpeg is required by the spotlight reel stage (assembly/encode).
+          # fonts-noto-color-emoji: the textstory stage renders emoji-heavy
+          # chat bubbles in headless Chromium.
           sudo apt-get update
-          sudo apt-get install -y fontconfig fonts-dejavu-core ffmpeg
+          sudo apt-get install -y fontconfig fonts-dejavu-core ffmpeg fonts-noto-color-emoji
+
+      - name: Cache Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium (textstory renderer)
+        run: |
+          # Headless browser for the text-message spotlight stage (pure
+          # programmatic chat-UI render; no generation APIs). Cached above;
+          # cold install is ~300MB / ~90s.
+          python3 -m playwright install --with-deps chromium
 
       - name: Auth to Google Drive
         id: gauth

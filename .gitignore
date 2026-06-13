@@ -36,3 +36,7 @@ scripts/state/
 /spotlight-reel/
 /spotlight-reel-*.mp4
 /assets/logo-transparent.png
+
+# Textstory — standalone prototype scratch (superseded by scripts/b2c/textstory/)
+/textstory/
+/textstory-*.mp4
