@@ -667,6 +667,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1781238079.544329"
+    },
+    {
+      "ts": "2026-06-13T16:46:26.450009+00:00",
+      "kind": "content_build",
+      "week": "2026-06-11",
+      "slot": 1,
+      "post_date": "2026-06-15",
+      "headline": "CDE Opens FY 2026\u201327 Title III English Learner + Immigrant RFAs \u2014 Partners Have a Closing Window to Apply",
+      "bundle_dir": "aplus-content/2026-06-15-california-title-iii-rfa-2026",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214976205220",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-13T17:09:24.849056+00:00",
+      "kind": "content_build",
+      "week": "2026-06-11",
+      "slot": 2,
+      "post_date": "2026-06-17",
+      "headline": "Visions In Education is hiring \"many new positions\" for 26/27 \u2014 and just graduated its largest class ever",
+      "bundle_dir": "aplus-content/2026-06-17-charter-growth-intervention-staffing",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214978811776",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-13T17:31:47.523794+00:00",
+      "kind": "content_build",
+      "week": "2026-06-11",
+      "slot": 3,
+      "post_date": "2026-06-19",
+      "headline": "Varsity Tutors' \"Live+AI\" pitch and the \"2X gains over traditional interventions\" claim",
+      "bundle_dir": "aplus-content/2026-06-19-varsity-tutors-live-ai-claims",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "214978812303",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

@@ -16,7 +16,12 @@
       "roman_take": "Conviction angle \u2014 Title III is the most politically vulnerable Title stream and may not exist in this form in 18 months; LEAs that skip this cycle aren't being cautious, they're being passive in a closing window.",
       "danielle_take": "Implementation angle \u2014 walk through what a charter's Title III Immigrant application actually needs (allowable activities, intervention tie-in, documentation), and what intervention partners can pre-build so the LEA doesn't miss the deadline.",
       "redundancy_max_similarity": 0.5871757774039966,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-13T16:46:26.448955+00:00",
+      "post_date": "2026-06-15",
+      "bundle_dir": "aplus-content/2026-06-15-california-title-iii-rfa-2026",
+      "hubspot_post_id": "214976205220"
     },
     {
       "slot": 2,
@@ -30,7 +35,12 @@
       "roman_take": "Why \"growth + intervention staffing\" is the real conviction story \u2014 charter networks that grow without scaling intervention capacity end up on the CSI list two years later.",
       "danielle_take": "A practitioner note on what 26/27 onboarding should look like for special programs coordinators inheriting a bigger roster \u2014 specifically, building reclassification cadence into the August calendar before LCAP work eats the bandwidth. ---",
       "redundancy_max_similarity": 0.3614658306853317,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-13T17:09:24.847894+00:00",
+      "post_date": "2026-06-17",
+      "bundle_dir": "aplus-content/2026-06-17-charter-growth-intervention-staffing",
+      "hubspot_post_id": "214978811776"
     },
     {
       "slot": 3,
@@ -48,7 +58,12 @@
       "roman_take": "The platform-vs-relationship distinction matters \u2014 \"doubling growth\" is a measurement game that depends entirely on what baseline you choose; A+'s case-study evidence is against the right baseline (the kids who weren't reclassifying for years).",
       "danielle_take": "Walk through the operational reality of \"AI for HI\" inside a charter \u2014 what happens when a 10th-grade LTEL student logs into a chat-window tutor for 60 minutes vs. spends that same 60 minutes with a human tutor who knows their ELPAC subscore profile.",
       "redundancy_max_similarity": 0.4638207890017623,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-13T17:31:47.522807+00:00",
+      "post_date": "2026-06-19",
+      "bundle_dir": "aplus-content/2026-06-19-varsity-tutors-live-ai-claims",
+      "hubspot_post_id": "214978812303"
     }
   ],
   "slack": {
