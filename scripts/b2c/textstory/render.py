@@ -49,9 +49,66 @@ def read_dwell(text: str) -> float:
     return min(max(0.32 + 0.011 * len(text), 0.55), 1.0)
 
 
+VOICE_DWELL = 3.0       # on-screen dwell + waveform-sweep time for a voice note
+REACTION_DWELL = 0.6    # quick tapback
+
+
+def _first_letter(label: str) -> str:
+    for ch in label:
+        if ch.isalpha():
+            return ch.upper()
+    return (label.strip()[:1] or "•").upper()
+
+
+def _resolve_header(episode: dict) -> dict:
+    """Header = the person/group being texted. right side is always 'you'."""
+    contacts = episode.get("contacts") or {}
+    if episode.get("dynamic") == "family_group" or contacts.get("group"):
+        name = contacts.get("group") or "The Group Chat"
+        return {"mode": "group", "name": name, "letter": "👨‍👩‍👧‍👦"}
+    # solo: prefer explicit contacts.left; fall back to legacy `contact` field
+    if contacts.get("left"):
+        name = contacts["left"]
+    elif episode.get("contact"):
+        name = episode["contact"].get("name", "Hubby 💍")
+    else:
+        name = "Hubby 💍"
+    return {"mode": "solo", "name": name, "letter": _first_letter(name)}
+
+
+def _resolve_sender(msg: dict, episode: dict, header: dict):
+    """Return (side, sender_label, who_key) for a message.
+
+    right = phone owner ("you"/Mom, blue). In group chats every non-owner
+    sender renders left/grey with their display name labelled above the
+    bubble. Legacy mom/dad keys map mom->right, dad->left.
+    """
+    frm = msg.get("from", "right")
+    if frm in ("right", "me", "you"):
+        return "right", None, "me"
+    if frm == "left":
+        return "left", None, "them"
+    if frm == "mom":
+        return "right", None, "me"
+    if frm == "dad":
+        return "left", None, "dad"
+    # group member key -> look up display name from contacts.members
+    members = (episode.get("contacts") or {}).get("members") or {}
+    if header["mode"] == "group":
+        label = members.get(frm, frm.replace("_", " ").title())
+        return "left", label, frm
+    # unknown solo key -> treat as the contact (left)
+    return "left", None, frm
+
+
 def build_timeline(episode: dict) -> dict:
     """Flatten scenes into DOM items + typing windows + sfx events, all with
-    absolute times. One source of truth for both frames and audio."""
+    absolute times. One source of truth for both frames and audio.
+
+    Supports msg types: text (default), typing_pause, screenshot,
+    voice_message, reaction. Sides come from `from` (left/right or group
+    member keys) resolved against the episode's `contacts`."""
+    header = _resolve_header(episode)
     items, typing, sfx = [], [], []
     t = 0.7  # settle on the empty thread for a beat
 
@@ -61,41 +118,71 @@ def build_timeline(episode: dict) -> dict:
         prev_sender = None
         msgs = scene["msgs"]
         for i, msg in enumerate(msgs):
-            # POV: mom's phone (audience = moms) — her texts right/blue,
-            # dad's replies left/grey, header contact = the husband label
-            side = "right" if msg["from"] == "mom" else "left"
-            if msg.get("type") == "typing_pause":
+            mtype = msg.get("type")
+            side, label, who_key = _resolve_sender(msg, episode, header)
+
+            if mtype == "typing_pause":
                 typing.append({"side": side, "start": t, "end": t + PAUSE_TYPING})
                 sfx.append({"t": t, "name": "keyboard_clicks", "dur": PAUSE_TYPING})
                 t += PAUSE_TYPING + PAUSE_STILLNESS
                 prev_sender = None  # they type again -> dots again
                 continue
 
-            is_shot = msg.get("type") == "screenshot"
+            if mtype == "reaction":
+                # instant tap — no typing indicator, quick beat
+                items.append({"kind": "reaction", "side": side, "appear": t,
+                              "emoji": msg.get("emoji", "❤️"),
+                              "who": label, "who_key": who_key})
+                sfx.append({"t": t, "name": "pop"})
+                t += REACTION_DWELL
+                prev_sender = None
+                continue
+
+            is_shot = mtype == "screenshot"
+            is_voice = mtype == "voice_message"
             text = msg.get("text", "")
-            if msg["from"] != prev_sender:
-                dur = typing_dur(text) if not is_shot else 0.9
+
+            # typing indicator before a fresh sender's turn (recording, for voice)
+            if msg.get("from") != prev_sender:
+                if is_voice:
+                    dur = 1.1
+                elif is_shot:
+                    dur = 0.9
+                else:
+                    dur = typing_dur(text)
                 typing.append({"side": side, "start": t, "end": t + dur})
                 sfx.append({"t": t, "name": "keyboard_clicks", "dur": dur})
                 t += dur
             else:
                 t += SAME_SENDER_GAP
 
-            items.append({
-                "kind": "screenshot" if is_shot else "msg",
-                "side": side, "text": text, "appear": t,
-            })
-            sfx.append({"t": t, "name": "shutter" if is_shot
-                        else ("swoosh" if side == "right" else "pop")})
+            item = {"side": side, "appear": t, "sender_label": label, "who_key": who_key}
+            if is_shot:
+                item.update(kind="screenshot", shot=msg.get("shot") or {})
+            elif is_voice:
+                item.update(kind="voice_message", duration=msg.get("duration", "0:30"),
+                            play=VOICE_DWELL)
+            else:
+                item.update(kind="msg", text=text, caps=bool(msg.get("caps")))
+            items.append(item)
+
+            if is_shot:
+                sfx.append({"t": t, "name": "shutter"})
+            elif is_voice:
+                sfx.append({"t": t, "name": "swoosh"})
+            else:
+                sfx.append({"t": t, "name": "swoosh" if side == "right" else "pop"})
 
             nxt = msgs[i + 1] if i + 1 < len(msgs) else None
             if is_shot:
                 t += SCREENSHOT_DWELL
-            elif nxt and nxt.get("from") == msg["from"] and not nxt.get("type"):
+            elif is_voice:
+                t += VOICE_DWELL
+            elif nxt and nxt.get("from") == msg.get("from") and not nxt.get("type"):
                 t += 0.15  # same-sender gap applied on the next message
             else:
                 t += read_dwell(text)
-            prev_sender = msg["from"]
+            prev_sender = msg.get("from")
         t += 0.3  # breath at scene end
 
     # scale chat timing to budget if it ran long
@@ -119,7 +206,7 @@ def build_timeline(episode: dict) -> dict:
         "items": items,
         "typing": typing,
         "sfx": sfx,
-        "contact": episode.get("contact") or {"name": "Hubby 💍", "letter": "H"},
+        "header": header,
         "endcard": {
             "start": endcard_start,
             "line": ec.get("line") or "Every parent deserves this text.",
@@ -240,13 +327,15 @@ def capture_frames(html: Path, data: dict, video_out: Path) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bundle", help="bundle dir containing textstory/scenes.json")
+    ap.add_argument("--bundle", help="bundle dir containing textstory/scenes-<dynamic>.json")
+    ap.add_argument("--dynamic", choices=tc.DYNAMICS,
+                    help="which dynamic's scenes to render (default: legacy scenes.json)")
     ap.add_argument("--episode-json", help="fixture mode: render this scene JSON directly")
     ap.add_argument("--out", help="output mp4 (fixture mode; default alongside the json)")
     ap.add_argument("--keep-work", action="store_true",
                     help="keep the work/ intermediates (html, mix.wav, silent video) "
                          "for debugging; default removes them so the bundle holds only "
-                         "scenes.json + textstory.mp4")
+                         "the scene JSON + the mp4")
     args = ap.parse_args()
     if not args.bundle and not args.episode_json:
         ap.error("need --bundle or --episode-json")
@@ -256,9 +345,9 @@ def main() -> int:
             sys.exit(f"Missing {tc.SFX_DIR / f} — run scripts/b2c/textstory/make_sfx.py first.")
 
     if args.bundle:
-        episode = tc.load_scenes(args.bundle)
+        episode = tc.load_scenes(args.bundle, args.dynamic)
         work = tc.work_dir(args.bundle)
-        final = tc.output_path(args.bundle)
+        final = tc.output_path(args.bundle, args.dynamic)
     else:
         src = Path(args.episode_json)
         episode = json.loads(src.read_text())

@@ -1,23 +1,29 @@
 #!/usr/bin/env python3
 """
-make_scenes.py — generate {bundle}/textstory/scenes.json from bundle metadata.
+make_scenes.py — generate {bundle}/textstory/scenes-<dynamic>.json from a
+bundle's case study, for ONE relationship dynamic.
 
-One Claude call (ANTHROPIC_API_KEY, same direct-API pattern as the draft
-stage) converts the case study's arc into an INVENTED Mom<->Dad text thread.
-The system prompt encodes the format guardrails; this script then VALIDATES
-the output before it can reach the renderer:
+Each spotlight produces five text-story episodes (see textstory_common.DYNAMICS),
+all from the SAME case arc, each in a different sender pairing / voice:
+  parents · grandma · mom_friend · kid_parent · family_group
 
-  - schema shape (scenes/msgs/froms/types)
-  - no real names, pseudonyms, or school names (from name-map.json + metadata)
-  - no protected classifications (IEP/ELL/disability/income/foster)
-  - no verbatim transcript lifting: any 6-word run shared with the bundle's
-    raw source_texts.json rejects the script (dialogue must be invented —
-    quoting a real parent's words would fabricate a record of a real
-    conversation)
+One Claude call per dynamic (ANTHROPIC_API_KEY, same direct-API pattern as the
+draft stage). Per-dynamic calls — not one combined call — so each gets a focused
+voice-rules prompt + few-shot and validates/retries independently; a malformed
+response for one dynamic never poisons the others. Cost is ~5x one short call
+(~$0.50/spotlight), still zero generation-API spend.
 
-On validation failure the call retries once with the violations fed back.
+Guardrails (encoded in the prompt AND hard-validated here):
+  - invented archetypal dialogue; no 6-word verbatim overlap with raw transcripts
+  - no real names / pseudonyms / school-name tokens; kid by initial only
+  - no protected classifications (IEP/504/ELL/disability/income/foster)
+  - kid_parent: child lines stay sparse (<=7 words) and never salesy
+  - contacts (sender labels) are injected in CODE, not generated, so the POV
+    convention (right = the mom = "you") and name-safety can't drift
+  - end-card disclosure is baked into the renderer template, never generated
 
-Usage:  python3 scripts/b2c/textstory/make_scenes.py --bundle aplus-content/{bundle}/
+Usage:
+  python3 scripts/b2c/textstory/make_scenes.py --bundle <bundle> --dynamic grandma
 """
 from __future__ import annotations
 
@@ -35,67 +41,178 @@ from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(tc.REPO / ".env")
 
-CLAUDE_MODEL = "claude-opus-4-7"   # same tier as the orchestrator's draft stage
+CLAUDE_MODEL = "claude-opus-4-7"
 MAX_MSG_CHARS = 95
+KID_MAX_WORDS = 7
 SENSITIVE_TERMS = [
     "iep", "504", "ell ", " el ", "english learner", "disability", "disabled",
     "special ed", "sped", "foster", "low-income", "low income", "free lunch",
     "reduced lunch", "medicaid", "autis", "adhd", "dyslex",
 ]
+# phrases a real kid would never text — kills the kid_parent illusion
+SALESY_TERMS = [
+    "journey", "unlock", "confidence", "amazing", "incredible", "potential",
+    "grades have", "improved so", "thanks to", "best decision", "highly recommend",
+    "game changer", "game-changer", "passionate", "so grateful", "officially",
+    "couldn't be prouder", "proud of myself for",
+]
 
-SYSTEM_PROMPT = """\
-You write 30-second vertical social videos for A+ Tutoring formatted as a
-text-message thread between two parents (a mom and a dad) about their child's
-tutoring turnaround. You are given the published (anonymized) case study and
-its metadata. Output ONLY a JSON object, no markdown fences, no commentary.
-
-HARD RULES — violating any of these fails the job:
-1. The dialogue is INVENTED. Write it fresh from the story's arc. NEVER copy,
-   quote, or lightly paraphrase sentences from the case study or any parent
-   quote in it. No phrase of 6+ consecutive words may match the source.
-2. NO names of any kind: no student name or pseudonym, no parent names, no
-   school name, no tutor name, no city. The child is only "he" or "she"
-   (match student_gender). The parents are just the two speakers.
-3. NEVER mention or imply protected classifications: IEP, 504, ELL/English
-   learner, disability, diagnosis, income, foster status.
-4. Keep it texty: contractions, lowercase-casual where natural, short bursts,
-   occasional emoji (sparingly, like real parents). Each message under 90
-   characters. It must read like real spouses, not ad copy.
-5. Arc shape across 4 scenes (each scene = one evening, weeks apart, shown by
-   its timestamp divider):
-     scene 1 — the struggle (pain, worry; end on an emotional gut-punch)
-     scene 2 — tutoring starts (small, wry, guarded hope)
-     scene 3 — the turn (something unprompted happens; disbelief, joy)
-     scene 4 — the proof (a concrete win; use type:"screenshot" for a grade
-               or score reveal, then 2-3 stunned texts)
-6. Exactly one message in scene 1 may use {"from":"dad","type":"typing_pause"}
-   — dad starts typing, stops. Place it right after the most painful line.
-   It is an emotional beat; use it.
-7. Scene 4 must contain exactly one {"from":"mom","type":"screenshot",
-   "alt":"<what the screenshot shows, generic>"} message.
-8. 15-19 total messages across all 4 scenes. Timestamps: realistic
-   "Mon D, H:MM PM" style, spanning roughly the case study's time span,
-   in chronological order.
-
-OUTPUT SHAPE (exactly this structure):
+# ── shared schema spec ───────────────────────────────────────────────────────
+SCHEMA_SPEC = """\
+OUTPUT: a single JSON object, no markdown fences, no commentary. Shape:
 {
-  "episode": "<short-kebab-slug-from-the-arc>",
+  "episode": "<short-kebab-slug>",
   "scenes": [
-    {"ts": "Sept 12, 8:47 PM", "msgs": [
-      {"from": "mom", "text": "..."},
-      {"from": "dad", "text": "..."},
-      {"from": "dad", "type": "typing_pause"},
-      {"from": "mom", "type": "screenshot", "alt": "..."}
-    ]}
+    {"ts": "Tue, Sept 9, 7:12 PM", "msgs": [ <message>, ... ]}
   ],
-  "endcard_line": "<one short punchy line for the end card, max 42 chars,
-                   second-person or universal, e.g. 'Every parent deserves
-                   this text.'>"
+  "endcard_line": "<one short punchy end-card line, <=42 chars>"
 }
+
+A <message> is one of:
+  {"from": <sender>, "text": "..."}                       a text bubble
+  {"from": <sender>, "text": "...", "caps": true}         emphatic ALL-CAPS bubble
+  {"from": <sender>, "type": "typing_pause"}              dots appear, then stop (a beat)
+  {"from": <sender>, "type": "voice_message", "duration": "0:47"}  a voice note
+  {"from": <sender>, "type": "screenshot", "alt": "<what it shows>",
+     "shot": {"portal": "Grade Portal", "course": "Algebra 1",
+              "term": "Sem 1", "grade": "B+", "trend": [30,46,70,104]}}
+  {"from": <sender>, "type": "reaction", "emoji": "😭", "target": "previous"}
+
+RULES (all dynamics):
+- 3-4 scenes, each a different evening/day weeks apart, shown by its timestamp.
+- Arc across the scenes: struggle -> change begins -> proof -> joy.
+- EXACTLY ONE screenshot message, in the proof/joy stretch. Put a realistic
+  grade/score/level in its "shot" (a clean PUBLIC stat only — never a
+  classification). The screenshot is the visual payoff.
+- Invent every line fresh. Do NOT copy or paraphrase sentences from the case
+  study; no run of 6+ consecutive words may match it.
+- No names of anyone (no student/parent/tutor/teacher names, no school, no
+  city). Refer to the child only as he/she or "the kid".
+- Never mention IEP/504/ELL/disability/diagnosis/income/foster.
+- Texty and real: contractions, lowercase-casual, short bursts, emoji used
+  the way real people use them. Each text bubble under 90 characters.
 """
 
+PARENTS_FEWSHOT = """\
+EXAMPLE (parents — "who is this child", math arc):
+{"episode":"who-is-this-child","scenes":[
+ {"ts":"Sept 12, 8:47 PM","msgs":[
+   {"from":"right","text":"He shut his door again. Math homework fight #3 this week 😞"},
+   {"from":"left","text":"Same as last year. I don't know what else to do"},
+   {"from":"right","text":"He said \\"I'm just stupid at math\\" tonight"},
+   {"from":"left","type":"typing_pause"},
+   {"from":"left","text":"That one hurts"}]},
+ {"ts":"Nov 14, 6:22 PM","msgs":[
+   {"from":"right","text":"You're not going to believe this"},
+   {"from":"right","text":"He's doing homework. RIGHT NOW. Nobody asked him."},
+   {"from":"left","text":"WHO IS THIS CHILD"}]},
+ {"ts":"Jan 20, 3:05 PM","msgs":[
+   {"from":"right","type":"screenshot","alt":"grade portal B+ in Algebra","shot":{"portal":"Grade Portal","course":"Algebra 1","term":"Sem 1","grade":"B+","trend":[30,48,72,104]}},
+   {"from":"right","text":"That's ALGEBRA."},
+   {"from":"left","text":"Call me right now"}]}],
+ "endcard_line":"Every parent deserves this text."}
+"""
 
-def claude_scenes(meta: dict, doc1: str, feedback: str | None = None) -> dict:
+GRANDMA_FEWSHOT = """\
+EXAMPLE (grandma — reading arc; right=Mom, left=grandma):
+{"episode":"abuela-finds-out","scenes":[
+ {"ts":"Tue, Sept 9, 7:12 PM","msgs":[
+   {"from":"right","text":"Ma he cried over his reading again tonight"},
+   {"from":"left","text":"MI AMOR. He is SO smart. Who said this","caps":true},
+   {"from":"right","text":"He did. He thinks he's the slow one"},
+   {"from":"left","type":"voice_message","duration":"0:48"}]},
+ {"ts":"Thu, Oct 16, 5:40 PM","msgs":[
+   {"from":"right","text":"the tutor has him reading out loud to me now"},
+   {"from":"left","text":"QUE?? put him on the phone put him on","caps":true}]},
+ {"ts":"Fri, Dec 5, 6:30 PM","msgs":[
+   {"from":"right","type":"screenshot","alt":"reading level jumped","shot":{"portal":"Reading Level","course":"Chapter Books","term":"Level M → R","grade":"R","trend":[28,44,68,100]}},
+   {"from":"left","type":"voice_message","duration":"1:02"},
+   {"from":"left","type":"reaction","emoji":"😭","target":"previous"}]}],
+ "endcard_line":"Every grandma deserves this voice note."}
+"""
+
+DYNAMIC_CONFIG = {
+    "parents": {
+        "senders": "Use from \"right\" (the mom, you) and \"left\" (her husband). Equal voices.",
+        "voice": (
+            "The parental war room. Clipped, tag-team worry that turns into shared "
+            "relief. Both carry emotion equally. One typing_pause on the most "
+            "painful line in scene 1. No voice messages, no reactions needed."),
+        "fewshot": PARENTS_FEWSHOT,
+    },
+    "grandma": {
+        "senders": "Use from \"right\" (the mom, you) and \"left\" (the grandma).",
+        "voice": (
+            "Generational and warm. The grandma's love comes first, always. Use "
+            "ALL-CAPS as EMOTION (set \"caps\": true), not anger. Give her at least "
+            "TWO voice_message notes (grandmas leave voice notes). Light tech "
+            "bewilderment is endearing, never mocking. A Spanish term of endearment "
+            "(mi amor, mija, que lindo) is welcome where it fits naturally. Payoff: "
+            "the kid reads/works FOR the grandma. Add a reaction on the final beat."),
+        "fewshot": GRANDMA_FEWSHOT,
+    },
+    "mom_friend": {
+        "senders": "Use from \"right\" (the mom, you) and \"left\" (her mom-friend).",
+        "voice": (
+            "The referral engine. Casual, gossipy-warm, the way two mom-friends "
+            "actually text. The friend watches the turnaround secondhand. END on "
+            "the referral ask + link share: the friend says some version of "
+            "\"ok WHO is this tutor\" and you reply \"I'll send you the link\" / "
+            "\"sending it now\". That last beat models the exact behavior we want a "
+            "viewer to do. No voice messages needed."),
+        "fewshot": PARENTS_FEWSHOT,
+    },
+    "kid_parent": {
+        "senders": "Use from \"right\" (the mom, you) and \"left\" (the KID).",
+        "voice": (
+            "Highest ceiling, highest risk. The MOM (right) carries all the emotion. "
+            "The KID (left) texts like a real kid: 2-6 words, deadpan, lowercase, "
+            "no punctuation flourishes, zero enthusiasm-performance. A real kid "
+            "texts \"k\", \"idk\", \"it was fine\", \"can my tutor keep going over "
+            "summer\". NEVER let the kid sound precocious, grateful-on-cue, or like "
+            "an ad. The kid's peak beat is asking — flat and real — to keep the "
+            "tutor over summer; that lands BECAUSE it's underplayed. If the kid "
+            "sounds like a copywriter the episode is dead. No caps, no voice notes "
+            "from the kid."),
+        "fewshot": PARENTS_FEWSHOT,
+    },
+    "family_group": {
+        "senders": None,  # filled per-bundle (member keys) in build_system_prompt
+        "voice": (
+            "The family group chat. Rapid, overlapping, joyful chaos. You (\"me\") "
+            "drop ONE proof screenshot and the relatives pile on: the grandma in "
+            "ALL-CAPS (caps:true), an excitable uncle, a hyped cousin doing \"W\" / "
+            "\"WWWW\". Use several short reaction messages (emoji tapbacks) to make "
+            "it feel like an avalanche. Keep most messages very short. It should "
+            "feel screenshot-and-share-worthy."),
+        "fewshot": GRANDMA_FEWSHOT,
+    },
+}
+
+
+def build_system_prompt(dynamic: str, contacts: dict) -> str:
+    cfg = DYNAMIC_CONFIG[dynamic]
+    if dynamic == "family_group":
+        keys = contacts.get("member_keys", [])
+        members = contacts.get("members", {})
+        roster = ", ".join(f'"{k}" ({members[k]})' for k in keys)
+        senders = (
+            f'This is a GROUP chat. Use from "me" for the mom (you, the proof-'
+            f'dropper) and these relatives: {roster}. Every message '
+            f'must come from "me" or one of those exact keys.')
+    else:
+        senders = cfg["senders"]
+    return (
+        "You write 30-second vertical social videos for A+ Tutoring as a "
+        "text-message thread about a child's tutoring turnaround.\n\n"
+        f"DYNAMIC: {dynamic}\n{senders}\n\nVOICE: {cfg['voice']}\n\n"
+        f"{SCHEMA_SPEC}\n{cfg['fewshot']}"
+    )
+
+
+# ── Claude call ──────────────────────────────────────────────────────────────
+def claude_scenes(dynamic: str, contacts: dict, meta: dict, doc1: str,
+                  feedback: str | None = None) -> dict:
     import anthropic
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -112,21 +229,42 @@ def claude_scenes(meta: dict, doc1: str, feedback: str | None = None) -> dict:
         f"PUBLISHED CASE STUDY (anonymized; do NOT quote from it):\n\n{doc1}"
     )
     if feedback:
-        user += (
-            "\n\nYOUR PREVIOUS ATTEMPT FAILED VALIDATION. Violations:\n"
-            f"{feedback}\nRegenerate the full JSON fixing every violation."
-        )
+        user += ("\n\nYOUR PREVIOUS ATTEMPT FAILED VALIDATION. Violations:\n"
+                 f"{feedback}\nRegenerate the full JSON fixing every violation.")
     message = client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=4000,
-        system=SYSTEM_PROMPT,
+        model=CLAUDE_MODEL, max_tokens=4000,
+        system=build_system_prompt(dynamic, contacts),
         messages=[{"role": "user", "content": user}],
     )
     text = "".join(b.text for b in message.content if getattr(b, "type", "") == "text")
-    m = re.search(r"\{.*\}", text, re.DOTALL)
-    if not m:
+    return json.loads(_extract_json(text))
+
+
+def _extract_json(text: str) -> str:
+    """Return the first balanced {...} object, ignoring any prose/extra value
+    the model may append after it (json.loads rejects trailing data)."""
+    start = text.find("{")
+    if start < 0:
         raise ValueError("Claude returned no JSON object")
-    return json.loads(m.group(0))
+    depth, in_str, esc = 0, False, False
+    for i in range(start, len(text)):
+        c = text[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif c == "\\":
+                esc = True
+            elif c == '"':
+                in_str = False
+        elif c == '"':
+            in_str = True
+        elif c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:i + 1]
+    raise ValueError("Claude returned an unbalanced JSON object")
 
 
 # ── validation ───────────────────────────────────────────────────────────────
@@ -134,76 +272,115 @@ def _norm_words(text: str) -> list[str]:
     return re.findall(r"[a-z0-9']+", text.lower())
 
 
-def _ngrams(words: list[str], n: int):
-    return {" ".join(words[i : i + n]) for i in range(len(words) - n + 1)}
+def _ngrams(words, n):
+    return {" ".join(words[i:i + n]) for i in range(len(words) - n + 1)}
 
 
-def validate(scenes: dict, banned_names: list[str], school: str,
-             source_texts: dict[str, str]) -> list[str]:
+def _valid_senders(dynamic: str, contacts: dict) -> set:
+    if dynamic == "family_group":
+        return {"me"} | set(contacts.get("member_keys", []))
+    return {"left", "right"}
+
+
+def validate(dynamic, scenes, contacts, banned_names, school, source_texts) -> list[str]:
     errors: list[str] = []
     sc = scenes.get("scenes")
-    if not isinstance(sc, list) or not 3 <= len(sc) <= 5:
-        return [f"need 3-5 scenes, got {sc if not isinstance(sc, list) else len(sc)}"]
+    if not isinstance(sc, list) or not 3 <= len(sc) <= 4:
+        return [f"need 3-4 scenes, got {sc if not isinstance(sc, list) else len(sc)}"]
 
     msgs = [m for s in sc for m in s.get("msgs", [])]
+    valid_from = _valid_senders(dynamic, contacts)
     n_text = sum(1 for m in msgs if m.get("text"))
-    if not 12 <= n_text <= 22:
-        errors.append(f"need 15-19 text messages, got {n_text}")
-    if sum(1 for m in msgs if m.get("type") == "screenshot") != 1:
-        errors.append("need exactly one screenshot message")
-    if sum(1 for m in msgs if m.get("type") == "typing_pause") > 1:
-        errors.append("at most one typing_pause")
+    if not 8 <= n_text <= 24:
+        errors.append(f"need ~10-22 text messages, got {n_text}")
+    n_shot = sum(1 for m in msgs if m.get("type") == "screenshot")
+    if n_shot != 1:
+        errors.append(f"need exactly one screenshot, got {n_shot}")
+
+    for m in msgs:
+        if m.get("from") not in valid_from:
+            errors.append(f"bad from {m.get('from')!r} (allowed: {sorted(valid_from)})")
+        t = m.get("text", "")
+        if len(t) > MAX_MSG_CHARS:
+            errors.append(f"message over {MAX_MSG_CHARS} chars: {t[:40]!r}...")
 
     all_text = " ".join(m.get("text", "") + " " + m.get("alt", "") for m in msgs)
     all_text += " " + scenes.get("endcard_line", "")
     low = " " + all_text.lower() + " "
 
-    for m in msgs:
-        if m.get("from") not in ("mom", "dad"):
-            errors.append(f"bad from: {m.get('from')!r}")
-        t = m.get("text", "")
-        if len(t) > MAX_MSG_CHARS:
-            errors.append(f"message over {MAX_MSG_CHARS} chars: {t[:40]!r}...")
-
     for name in banned_names:
         if re.search(rf"\b{re.escape(name)}\b", all_text, re.IGNORECASE):
-            errors.append(f"banned name appears in dialogue: {name!r}")
+            errors.append(f"banned name in dialogue: {name!r}")
     if school:
         for token in re.findall(r"[A-Za-z]{4,}", school):
             if token.lower() in ("school", "academy", "charter", "elementary",
-                                 "middle", "high", "academies"):
+                                  "middle", "high", "academies", "prep"):
                 continue
             if re.search(rf"\b{re.escape(token)}\b", all_text, re.IGNORECASE):
                 errors.append(f"school name token in dialogue: {token!r}")
     for term in SENSITIVE_TERMS:
         if term in low:
-            errors.append(f"protected-classification term in dialogue: {term.strip()!r}")
+            errors.append(f"protected-classification term: {term.strip()!r}")
 
-    # verbatim-lift check vs raw transcripts: any shared 6-word run fails
     gen_grams = _ngrams(_norm_words(all_text), 6)
     if gen_grams:
         for fname, src in (source_texts or {}).items():
             hit = gen_grams & _ngrams(_norm_words(src), 6)
             if hit:
-                errors.append(
-                    f"verbatim 6-word overlap with source {fname!r}: {sorted(hit)[0]!r}")
+                errors.append(f"verbatim 6-word overlap with {fname!r}: {sorted(hit)[0]!r}")
+
+    errors += _validate_dynamic(dynamic, msgs, contacts)
     return errors
+
+
+def _validate_dynamic(dynamic, msgs, contacts) -> list[str]:
+    e: list[str] = []
+    if dynamic == "grandma":
+        if sum(1 for m in msgs if m.get("type") == "voice_message") < 1:
+            e.append("grandma needs at least one voice_message")
+        if not any(m.get("caps") for m in msgs):
+            e.append("grandma needs at least one ALL-CAPS (caps:true) line")
+    elif dynamic == "kid_parent":
+        for m in msgs:
+            if m.get("from") != "left" or not m.get("text"):
+                continue
+            words = m["text"].split()
+            if len(words) > KID_MAX_WORDS:
+                e.append(f"kid line too long ({len(words)} words): {m['text'][:40]!r}")
+            low = m["text"].lower()
+            for term in SALESY_TERMS:
+                if term in low:
+                    e.append(f"kid line sounds salesy ({term!r}): {m['text'][:40]!r}")
+    elif dynamic == "mom_friend":
+        tail = " ".join(m.get("text", "") for m in msgs[-4:]).lower()
+        if not re.search(r"link|send (you|it)|sending|who is (the )?tutor|what tutor", tail):
+            e.append("mom_friend must end on the referral ask + link share")
+    elif dynamic == "family_group":
+        senders = {m.get("from") for m in msgs}
+        relatives = senders - {"me"}
+        if len(relatives) < 2:
+            e.append(f"family_group needs >=2 relatives reacting, got {sorted(relatives)}")
+        if sum(1 for m in msgs if m.get("type") == "reaction") < 1:
+            e.append("family_group needs at least one reaction")
+    return e
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--bundle", required=True)
-    ap.add_argument("--force", action="store_true", help="regenerate even if scenes.json exists")
+    ap.add_argument("--dynamic", required=True, choices=tc.DYNAMICS)
+    ap.add_argument("--force", action="store_true", help="regenerate even if it exists")
     args = ap.parse_args()
 
-    out = tc.scenes_path(args.bundle)
+    out = tc.scenes_path(args.bundle, args.dynamic)
     if out.exists() and not args.force:
-        print(f"scenes.json already exists: {out} (use --force to regenerate)")
+        print(f"{out.name} exists (use --force to regenerate)")
         return 0
 
     meta = tc.read_metadata(args.bundle)
     doc1 = tc.find_doc1(args.bundle).read_text()
     name_map = tc.load_name_map(args.bundle)
+    contacts = tc.build_contacts(args.dynamic, args.bundle, name_map, meta)
     banned = sorted({
         v.strip() for e in name_map.get("entries", [])
         for v in (e.get("real", ""), e.get("pseudonym", "")) if v.strip()
@@ -211,33 +388,45 @@ def main() -> int:
     st_path = Path(args.bundle) / "source_texts.json"
     source_texts = json.loads(st_path.read_text()) if st_path.exists() else {}
 
-    feedback = None
-    for attempt in (1, 2):
-        print(f"scene generation attempt {attempt} ...")
-        scenes = claude_scenes(meta, doc1, feedback)
-        errors = validate(scenes, banned, meta.get("school_named", ""), source_texts)
+    feedback, errors = None, ["init"]
+    for attempt in (1, 2, 3):
+        print(f"[{args.dynamic}] scene generation attempt {attempt} ...")
+        try:
+            scenes = claude_scenes(args.dynamic, contacts, meta, doc1, feedback)
+        except (ValueError, json.JSONDecodeError) as exc:
+            print(f"  could not parse Claude output: {exc}")
+            feedback = f"- your output was not a single valid JSON object ({exc})"
+            errors = [str(exc)]
+            continue
+        errors = validate(args.dynamic, scenes, contacts,
+                          banned, meta.get("school_named", ""), source_texts)
         if not errors:
             break
         print("  validation failures:\n   - " + "\n   - ".join(errors))
-        feedback = "\n".join(f"- {e}" for e in errors)
-    else:
-        sys.exit("scene validation failed twice — not writing scenes.json")
+        feedback = "\n".join(f"- {x}" for x in errors)
     if errors:
-        sys.exit("scene validation failed twice — not writing scenes.json")
+        sys.exit(f"[{args.dynamic}] scene generation failed after retries — not writing")
 
-    scenes["contact"] = tc.pick_contact(args.bundle, name_map)
-    scenes["endcard"] = {
-        "line": (scenes.pop("endcard_line", "") or "Every parent deserves this text.")[:60],
-        "cta": "Book a free consultation",
-        "cta_url": "https://meetings.hubspot.com/successful/consultation",
-        # disclosure intentionally NOT configurable here: the renderer's
-        # template bakes "Based on real A+ family outcomes" into the end card.
+    # contacts injected here (NOT model-generated) -> POV + name-safety locked.
+    contacts_out = {k: v for k, v in contacts.items() if k != "member_keys"}
+    out_obj = {
+        "episode": scenes.get("episode", args.dynamic),
+        "dynamic": args.dynamic,
+        "contacts": contacts_out,
+        "scenes": scenes["scenes"],
+        "endcard": {
+            "line": (scenes.get("endcard_line") or "Every parent deserves this text.")[:60],
+            "cta": "Book a free consultation",
+            "cta_url": "https://meetings.hubspot.com/successful/consultation",
+            # disclosure intentionally absent — the template bakes it in.
+        },
     }
+    if args.dynamic == "family_group":
+        out_obj["contacts"]["member_keys"] = contacts.get("member_keys", [])
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(scenes, indent=2, ensure_ascii=False))
+    out.write_text(json.dumps(out_obj, indent=2, ensure_ascii=False))
     n = sum(len(s["msgs"]) for s in scenes["scenes"])
-    print(f"wrote {out} ({len(scenes['scenes'])} scenes, {n} messages, "
-          f"contact {scenes['contact']['name']!r})")
+    print(f"wrote {out.name} ({len(scenes['scenes'])} scenes, {n} msgs)")
     return 0
 
 

@@ -3492,6 +3492,8 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
         return run
 
     bundle = str(Path(run["bundle_path"]))
+    # Ships the builder's default dynamics (parents, grandma, mom_friend,
+    # kid_parent). family_group is supported but off by default.
     cmd = ["python3", str(TEXTSTORY_BUILDER), "--bundle", bundle]
     if not run.get("skip_hubspot"):
         cmd.append("--deliver")

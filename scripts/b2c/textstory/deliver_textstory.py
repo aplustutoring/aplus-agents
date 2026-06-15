@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-deliver_textstory.py — post {bundle}/textstory/textstory.mp4 into Slack for
+deliver_textstory.py — post the bundle's text-story episodes into Slack for
 Paola's review, reusing the shared Slack delivery helpers (same channel +
 upload flow as the rest of the case-study pack; video upload mirrors
 scripts/b2c/reel/deliver_reel.py).
+
+Posts one header, then uploads every requested dynamic's mp4 into that thread
+(default: all that exist in the bundle).
 """
 import argparse
 import subprocess
@@ -18,6 +21,13 @@ import requests  # noqa: E402
 import slack_delivery_common as sd  # noqa: E402
 
 CHANNEL = "#student-spotlight-ready"
+DYNAMIC_LABEL = {
+    "parents": "Parents (the war room)",
+    "grandma": "Grandma (the voice notes)",
+    "mom_friend": "Mom-friend (the referral)",
+    "kid_parent": "Kid ↔ Mom (deadpan)",
+    "family_group": "Family group chat (the pile-on)",
+}
 
 
 def dur(path) -> float:
@@ -44,35 +54,37 @@ def upload_video(path, name):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bundle", required=True)
+    ap.add_argument("--dynamics", default=None,
+                    help="comma-separated dynamics to deliver (default: all present)")
     ap.add_argument("--channel", default=CHANNEL)
     ap.add_argument("--thread-ts", default=None,
                     help="post into an existing thread (e.g. the case-study delivery)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    video = tc.output_path(args.bundle)
-    if not video.exists():
-        sys.exit(f"textstory not found: {video} — render it first")
+    if args.dynamics:
+        wanted = [d.strip() for d in args.dynamics.split(",") if d.strip()]
+    else:
+        wanted = list(tc.DYNAMICS)
+    episodes = [(d, tc.output_path(args.bundle, d)) for d in wanted]
+    episodes = [(d, p) for d, p in episodes if p.exists()]
+    if not episodes:
+        sys.exit(f"no textstory mp4s found in {tc.textstory_dir(args.bundle)} — render first")
 
     bundle_name = Path(args.bundle).resolve().name
-    scenes = tc.load_scenes(args.bundle)
-    secs = dur(video)
-    header = ":speech_balloon: *New text-story spotlight — ready for review*"
-    comment = (f"Animated text-message spotlight for *{bundle_name}* "
-               f"({secs:.0f}s, 9:16 vertical, invented archetypal dialogue — "
-               f"no real names, no transcript quotes).\n"
-               f"Contact variant: {scenes.get('contact', {}).get('name', '?')} · "
-               f"End card: \"{scenes.get('endcard', {}).get('line', '')}\" + "
-               f"consultation CTA + outcomes disclosure.\n"
-               f"For Paola's review before posting. :sparkles:")
-    upload_name = f"{bundle_name}-textstory.mp4"
+    header = (":speech_balloon: *New text-story spotlights — ready for review*\n"
+              f"*{bundle_name}* · {len(episodes)} episodes, same case arc in "
+              f"{len(episodes)} relationship dynamics.\n"
+              "9:16 vertical, invented archetypal dialogue — no real names, no "
+              "transcript quotes. Each ends on the consultation CTA + disclosure. "
+              "For Paola's review before posting. :sparkles:")
 
-    print(f"Textstory: {video}\nChannel: {args.channel}")
+    print(f"Channel: {args.channel}")
     if args.dry_run:
         print("[dry-run] would post header + upload:")
         print(" header:", header)
-        print(" comment:", comment)
-        print(" file:", upload_name, f"({video.stat().st_size} bytes)")
+        for d, p in episodes:
+            print(f"  {d}: {p.name} ({p.stat().st_size} bytes, {dur(p):.0f}s)")
         return 0
 
     channel_id = sd.resolve_channel_id(args.channel)
@@ -84,10 +96,16 @@ def main():
         thread_ts = resp.get("ts")
         print(f"  Header posted (ts={thread_ts})")
 
-    file_id = upload_video(str(video), upload_name)
-    sd.complete_upload_to_channel([(file_id, upload_name)], channel_id, comment,
-                                  thread_ts=thread_ts)
-    print(f"  Uploaded {upload_name} -> thread {thread_ts}")
+    for d, video in episodes:
+        scenes = tc.load_scenes(args.bundle, d)
+        label = DYNAMIC_LABEL.get(d, d)
+        comment = (f"*{label}* — {dur(video):.0f}s · "
+                   f"end card: \"{scenes.get('endcard', {}).get('line', '')}\"")
+        upload_name = f"{bundle_name}-textstory-{d}.mp4"
+        file_id = upload_video(str(video), upload_name)
+        sd.complete_upload_to_channel([(file_id, upload_name)], channel_id, comment,
+                                      thread_ts=thread_ts)
+        print(f"  Uploaded {upload_name} -> thread {thread_ts}")
     print("Done. Open #student-spotlight-ready to review.")
     return 0
 

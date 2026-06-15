@@ -46,11 +46,28 @@ IVORY = "#F8F4ED"
 # ── canvas / encode ──────────────────────────────────────────────────────────
 W, H, FPS = 1080, 1920, 30
 
+# ── relationship dynamics ────────────────────────────────────────────────────
+# DYNAMICS = every dynamic the generator/renderer supports.
+# DEFAULT_DYNAMICS = the set a spotlight ships by default. family_group is
+# supported but off by default (request it explicitly with --only family_group).
+DYNAMICS = ["parents", "grandma", "mom_friend", "kid_parent", "family_group"]
+DEFAULT_DYNAMICS = ["parents", "grandma", "mom_friend", "kid_parent"]
+
+
 # ── bundle paths ─────────────────────────────────────────────────────────────
+# A dynamic suffix keeps the five episodes side by side in the bundle:
+#   textstory/scenes-grandma.json  ->  textstory/textstory-grandma.mp4
+# (dynamic=None keeps the legacy single-file names for back-compat.)
 def textstory_dir(bundle): return Path(bundle) / "textstory"
-def scenes_path(bundle):   return textstory_dir(bundle) / "scenes.json"
 def work_dir(bundle):      return textstory_dir(bundle) / "work"
-def output_path(bundle):   return textstory_dir(bundle) / "textstory.mp4"
+
+def scenes_path(bundle, dynamic=None):
+    name = f"scenes-{dynamic}.json" if dynamic else "scenes.json"
+    return textstory_dir(bundle) / name
+
+def output_path(bundle, dynamic=None):
+    name = f"textstory-{dynamic}.mp4" if dynamic else "textstory.mp4"
+    return textstory_dir(bundle) / name
 
 
 # ── contact-name variants ────────────────────────────────────────────────────
@@ -79,23 +96,86 @@ def _name_part(label: str) -> str:
     return re.sub(r"[^A-Za-z]", "", label).lower()
 
 
-def pick_contact(bundle, name_map: dict | None = None) -> dict:
-    """Deterministic contact label for this bundle, skipping any label whose
-    name collides with a real or pseudonym name from the bundle's name map."""
+# Per-dynamic label pools for the "left" (contact) side of a 1:1 thread.
+# right is always the mom ("you"). All labels are generic / role-based —
+# never a real first name lifted from the case.
+GRANDMA_POOL = ["Má ❤️", "Mom ❤️", "Grandma 💕", "Abuela ❤️", "Nana 💕",
+                "Mamá ❤️", "Gigi 💕", "Grams ❤️"]
+FRIEND_POOL = ["Jess 🌸", "Steph ☀️", "Nicole 💛", "Dani 🌷", "Court 💐",
+               "Mel ✨", "Bri 🌼", "Kayla 💗"]
+# family group: a group name + a set of role-based members (no real names)
+GROUP_NAMES = ["Familia 👨‍👩‍👧‍👦", "The Group Chat 💬", "Family 💕", "La Familia ❤️"]
+GROUP_MEMBERS = [("abuela", "Abuela"), ("tio", "Tío"), ("prima", "Prima"),
+                 ("auntie", "Auntie"), ("nana", "Nana"), ("cousin", "Cuz"),
+                 ("tia", "Tía"), ("uncle", "Uncle")]
+
+
+def _seed(bundle, salt: str) -> int:
+    return int.from_bytes(
+        hashlib.sha256((Path(bundle).resolve().name + "|" + salt).encode()).digest()[:4],
+        "big")
+
+
+def _taken_names(name_map: dict | None) -> set:
     taken = set()
     for e in (name_map or {}).get("entries", []):
         for k in ("real", "pseudonym"):
             v = (e.get(k) or "").strip().lower()
             if v:
                 taken.add(v.split()[0])
-    seed = int.from_bytes(
-        hashlib.sha256(Path(bundle).resolve().name.encode()).digest()[:4], "big"
-    )
-    for step in range(len(CONTACT_POOL)):
-        label = CONTACT_POOL[(seed + step) % len(CONTACT_POOL)]
+    return taken
+
+
+def _pick_from(pool, bundle, salt, taken) -> str:
+    seed = _seed(bundle, salt)
+    for step in range(len(pool)):
+        label = pool[(seed + step) % len(pool)]
         if _name_part(label) not in taken:
-            return {"name": label, "letter": label[0].upper()}
-    return {"name": "Hubby 💍", "letter": "H"}
+            return label
+    return pool[seed % len(pool)]
+
+
+def student_initial(name_map: dict | None) -> str:
+    """First initial of the student pseudonym (already non-identifying), for
+    the kid_parent header. Falls back to a neutral letter."""
+    for e in (name_map or {}).get("entries", []):
+        if e.get("role") == "student" and (e.get("pseudonym") or "").strip():
+            return e["pseudonym"].strip()[0].upper()
+    return "D"
+
+
+def pick_contact(bundle, name_map: dict | None = None) -> dict:
+    """Legacy: deterministic husband label (parents dynamic baseline)."""
+    label = _pick_from(CONTACT_POOL, bundle, "parents", _taken_names(name_map))
+    return {"name": label, "letter": label[0].upper()}
+
+
+def build_contacts(dynamic: str, bundle, name_map: dict | None, meta: dict) -> dict:
+    """Return the `contacts` block for a dynamic. right is always 'Mom' (you);
+    deterministic per bundle so re-runs are stable but episodes vary.
+
+    family_group returns {group, members:{key:name}}; the others return
+    {left:<other party label>, right:'Mom'}."""
+    taken = _taken_names(name_map)
+    if dynamic == "parents":
+        return {"left": _pick_from(CONTACT_POOL, bundle, "parents", taken), "right": "Mom"}
+    if dynamic == "grandma":
+        return {"left": _pick_from(GRANDMA_POOL, bundle, "grandma", taken), "right": "Mom"}
+    if dynamic == "mom_friend":
+        return {"left": _pick_from(FRIEND_POOL, bundle, "friend", taken), "right": "Mom"}
+    if dynamic == "kid_parent":
+        return {"left": student_initial(name_map), "right": "Mom"}
+    if dynamic == "family_group":
+        gname = GROUP_NAMES[_seed(bundle, "group") % len(GROUP_NAMES)]
+        seed = _seed(bundle, "members")
+        n = len(GROUP_MEMBERS)
+        chosen, keys = {}, []
+        for k in range(3):  # three relatives + the mom ("me")
+            key, name = GROUP_MEMBERS[(seed + k) % n]
+            chosen[key] = name
+            keys.append(key)
+        return {"group": gname, "members": chosen, "member_keys": keys}
+    raise ValueError(f"unknown dynamic: {dynamic}")
 
 
 def load_name_map(bundle) -> dict:
@@ -103,8 +183,8 @@ def load_name_map(bundle) -> dict:
     return json.loads(p.read_text()) if p.exists() else {}
 
 
-def load_scenes(bundle) -> dict:
-    p = scenes_path(bundle)
+def load_scenes(bundle, dynamic=None) -> dict:
+    p = scenes_path(bundle, dynamic)
     if not p.exists():
         raise SystemExit(f"missing {p} — run make_scenes.py --bundle {bundle} first")
     return json.loads(p.read_text())
