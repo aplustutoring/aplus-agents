@@ -30,6 +30,7 @@
     color: #fff; font-size: 42px; font-weight: 600;
     display: flex; align-items: center; justify-content: center;
   }
+  .avatar.group { font-size: 40px; }
   .contact-name { font-size: 32px; color: #1c1c1e; font-weight: 500; }
   .back {
     position: absolute; left: 36px; top: 50%; transform: translateY(-50%);
@@ -48,15 +49,59 @@
     text-align: center; color: #97907f; font-size: 27px; font-weight: 500;
     margin: 44px 0 20px;
   }
-  .row { display: flex; padding: 7px 36px; }
-  .row.left  { justify-content: flex-start; }
-  .row.right { justify-content: flex-end; }
+  .row { display: flex; padding: 7px 36px; flex-direction: column; }
+  .row.left  { align-items: flex-start; }
+  .row.right { align-items: flex-end; }
+  /* sender name above a group bubble */
+  .senderlabel { font-size: 23px; color: #97907f; margin: 0 0 5px 26px; font-weight: 500; }
   .bubble {
     max-width: 680px; padding: 22px 32px; border-radius: 38px;
     font-size: 36px; line-height: 1.32; white-space: pre-wrap; word-wrap: break-word;
   }
   .left  .bubble { background: #E9E7E1; color: #1c1c1e; border-bottom-left-radius: 12px; }
   .right .bubble { background: #2F6BE0; color: #ffffff; border-bottom-right-radius: 12px; }
+  .bubble.caps { letter-spacing: 0.5px; }
+
+  /* voice message bubble */
+  .voice {
+    display: flex; align-items: center; gap: 22px;
+    padding: 24px 34px; border-radius: 38px; min-width: 380px;
+  }
+  .left  .voice { background: #E9E7E1; border-bottom-left-radius: 12px; }
+  .right .voice { background: #2F6BE0; border-bottom-right-radius: 12px; }
+  .voice .play {
+    width: 56px; height: 56px; border-radius: 50%; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .left  .voice .play { background: #cfcbc2; }
+  .right .voice .play { background: rgba(255,255,255,0.9); }
+  .voice .play .tri {
+    width: 0; height: 0; margin-left: 4px;
+    border-left: 20px solid #6a655c; border-top: 13px solid transparent; border-bottom: 13px solid transparent;
+  }
+  .right .voice .play .tri { border-left-color: #2F6BE0; }
+  .voice .wave { display: flex; align-items: center; gap: 6px; height: 56px; }
+  .voice .wave i { display: block; width: 6px; border-radius: 3px; }
+  .left  .voice .wave i { background: #b3aea4; }
+  .right .voice .wave i { background: rgba(255,255,255,0.55); }
+  .left  .voice .wave i.on { background: #6a655c; }
+  .right .voice .wave i.on { background: #ffffff; }
+  .voice .dur { font-size: 28px; }
+  .left  .voice .dur { color: #6a655c; }
+  .right .voice .dur { color: rgba(255,255,255,0.92); }
+
+  /* reaction tapback chip — tucks against the previous bubble's corner */
+  .reaction-row { margin-top: -22px; z-index: 3; }
+  .reaction {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #F8F4ED; border: 2px solid rgba(0,0,0,0.06);
+    border-radius: 999px; padding: 8px 16px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    font-size: 34px;
+  }
+  .reaction .who {
+    width: 34px; height: 34px; border-radius: 50%; color: #fff;
+    font-size: 19px; font-weight: 600; display: flex; align-items: center; justify-content: center;
+  }
 
   /* screenshot bubble: generic grade-portal mock */
   .shot {
@@ -135,28 +180,75 @@
 
 <script>
 const DATA = __DATA__;
+const HEADER = DATA.header || {mode: "solo", name: "Hubby 💍", letter: "H"};
 
-// contact label comes from scenes.json (varies per episode, deterministic)
-document.getElementById("avatar").textContent = (DATA.contact && DATA.contact.letter) || "H";
-document.getElementById("contact-name").textContent = (DATA.contact && DATA.contact.name) || "Hubby 💍";
+// avatar palette for group senders (and the solo contact)
+const AVATAR_COLORS = ["#a39c90","#c08552","#5b8a72","#7a6f9b","#b5654a","#4f7a99"];
+function colorFor(key) {
+  let h = 0; for (const c of (key || "x")) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
+const avatarEl = document.getElementById("avatar");
+if (HEADER.mode === "group") {
+  avatarEl.classList.add("group");
+  avatarEl.textContent = HEADER.letter || "👨‍👩‍👧‍👦";
+} else {
+  avatarEl.textContent = HEADER.letter || "H";
+}
+document.getElementById("contact-name").textContent = HEADER.name || "Hubby 💍";
 
 const thread = document.getElementById("thread");
 const els = [];
 
-function buildShot() {
+function buildShot(item) {
   const d = document.createElement("div");
   d.className = "shot";
+  const s = item.shot || {};
+  const bars = (s.trend || [34, 52, 74, 104]);
+  const barHtml = bars.map((h, i) =>
+    `<i class="${i === bars.length - 1 ? 'hot' : ''}" style="height:${h}px"></i>`).join("");
   d.innerHTML = `
-    <div class="bar">Grade Portal</div>
+    <div class="bar">${s.portal || "Grade Portal"}</div>
     <div class="grow">
-      <div><div class="course">Algebra 1</div><div class="term">Semester 1</div></div>
-      <div class="grade">B+</div>
+      <div><div class="course">${s.course || "Algebra 1"}</div><div class="term">${s.term || "Semester 1"}</div></div>
+      <div class="grade">${s.grade || "B+"}</div>
     </div>
-    <div class="trend">
-      <i style="height:34px"></i><i style="height:52px"></i>
-      <i style="height:74px"></i><i class="hot" style="height:104px"></i>
-    </div>`;
+    <div class="trend">${barHtml}</div>`;
   return d;
+}
+
+function buildVoice(item) {
+  const v = document.createElement("div");
+  v.className = "voice";
+  // deterministic pseudo-waveform from the duration string
+  const seed = (item.duration || "0:30").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  let bars = "";
+  const N = 26;
+  for (let i = 0; i < N; i++) {
+    const h = 14 + Math.round(34 * Math.abs(Math.sin(seed * 0.7 + i * 1.3)));
+    bars += `<i style="height:${h}px"></i>`;
+  }
+  v.innerHTML = `<div class="play"><span class="tri"></span></div>
+                 <div class="wave">${bars}</div>
+                 <div class="dur">${item.duration || "0:30"}</div>`;
+  return v;
+}
+
+function buildReaction(item) {
+  const r = document.createElement("div");
+  r.className = "reaction";
+  if (item.who) {
+    const w = document.createElement("span");
+    w.className = "who";
+    w.style.background = colorFor(item.who_key || item.who);
+    w.textContent = (item.who[0] || "?").toUpperCase();
+    r.appendChild(w);
+  }
+  const e = document.createElement("span");
+  e.textContent = item.emoji || "❤️";
+  r.appendChild(e);
+  return r;
 }
 
 for (const item of DATA.items) {
@@ -165,17 +257,34 @@ for (const item of DATA.items) {
     el = document.createElement("div");
     el.className = "item divider";
     el.textContent = item.text;
+    thread.appendChild(el);
+    els.push(el);
+    continue;
+  }
+  el = document.createElement("div");
+  el.className = "item row " + item.side;
+  if (item.kind === "reaction") el.classList.add("reaction-row");
+
+  // group sender name label above left bubbles
+  if (item.sender_label) {
+    const lab = document.createElement("div");
+    lab.className = "senderlabel";
+    lab.textContent = item.sender_label;
+    el.appendChild(lab);
+  }
+
+  if (item.kind === "screenshot") {
+    el.appendChild(buildShot(item));
+  } else if (item.kind === "voice_message") {
+    el.appendChild(buildVoice(item));
+  } else if (item.kind === "reaction") {
+    el.appendChild(buildReaction(item));
   } else {
-    el = document.createElement("div");
-    el.className = "item row " + item.side;
-    if (item.kind === "screenshot") {
-      el.appendChild(buildShot());
-    } else {
-      const b = document.createElement("div");
-      b.className = "bubble";
-      b.textContent = item.text;
-      el.appendChild(b);
-    }
+    const b = document.createElement("div");
+    b.className = "bubble";
+    if (item.caps) b.classList.add("caps");
+    b.textContent = item.text;
+    el.appendChild(b);
   }
   thread.appendChild(el);
   els.push(el);
@@ -226,7 +335,6 @@ function easeOutBack(p) {
 const clamp01 = p => Math.max(0, Math.min(1, p));
 
 function typingRoom(t) {
-  // ease extra camera travel in while dots are up, back out after they stop
   let extra = 0;
   for (const w of DATA.typing) {
     const ramp = clamp01((t - w.start) / 0.3) * (1 - clamp01((t - w.end) / 0.35));
@@ -252,7 +360,6 @@ thread.appendChild(tl);   // live inside the thread so they ride the camera
 thread.appendChild(tr);
 
 function seek(t) {
-  // bubbles + dividers
   for (let i = 0; i < DATA.items.length; i++) {
     const item = DATA.items[i], el = els[i];
     if (t < item.appear) { el.style.opacity = 0; el.style.transform = "none"; continue; }
@@ -266,9 +373,15 @@ function seek(t) {
       el.style.transformOrigin = item.side === "left" ? "bottom left" : "bottom right";
       el.style.transform = `translateY(${y}px) scale(${s})`;
     }
+    // voice message: sweep the waveform "played" progress over its dwell
+    if (item.kind === "voice_message") {
+      const prog = clamp01((t - item.appear) / Math.max(item.play || 2.5, 0.1));
+      const bars = el.querySelectorAll(".wave i");
+      const lit = Math.floor(prog * bars.length);
+      for (let b = 0; b < bars.length; b++) bars[b].classList.toggle("on", b < lit);
+    }
   }
 
-  // camera
   thread.style.transform = `translateY(${-cameraOffset(t)}px)`;
 
   // typing indicators — pinned just below the last visible bubble
@@ -292,14 +405,8 @@ function seek(t) {
     }
   }
 
-  // end card
   const ec = DATA.endcard;
-  if (t >= ec.start) {
-    const p = clamp01((t - ec.start) / 0.6);
-    endcard.style.opacity = p;
-  } else {
-    endcard.style.opacity = 0;
-  }
+  endcard.style.opacity = t >= ec.start ? clamp01((t - ec.start) / 0.6) : 0;
 }
 
 window.seek = seek;
