@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-make_sfx.py — synthesize PLACEHOLDER royalty-free SFX into assets/sfx/.
+make_sfx.py — synthesize the royalty-free SFX bed into assets/sfx/.
 
-These are generated from scratch (sine/noise synthesis), so they are ours
-outright — no license questions for the prototype. Before the format ships,
-swap each file for a hand-picked Pixabay SFX (same filenames, drop-in).
+Every sound is generated from scratch here (sine/noise synthesis + light
+filtering, saturation and reverb), so the files are ours outright: no
+attribution, no license tracking, no third-party provenance, and they
+regenerate identically in CI. This satisfies the format guardrail ("SFX
+from our own assets folder, never Apple's"). If you ever want a specific
+hand-picked Pixabay SFX instead, drop it in under the same filename — the
+renderer only cares about the filenames, not how they were made.
 
 Files produced (48 kHz mono 16-bit WAV):
     assets/sfx/keyboard_clicks.wav   ~2.0s soft tick loop (typing dots)
@@ -118,14 +122,48 @@ def make_shutter() -> np.ndarray:
     return out
 
 
+def _onepole_lowpass(x: np.ndarray, cutoff_hz: float) -> np.ndarray:
+    """Cheap one-pole low-pass to round off the synthetic edge."""
+    dt = 1.0 / SR
+    rc = 1.0 / (2 * np.pi * cutoff_hz)
+    a = dt / (rc + dt)
+    out = np.empty_like(x)
+    acc = 0.0
+    for i in range(len(x)):
+        acc += a * (x[i] - acc)
+        out[i] = acc
+    return out
+
+
+def _reverb(x: np.ndarray, decay: float = 1.6, mix: float = 0.28) -> np.ndarray:
+    """Light convolution reverb with an exponentially-decaying noise tail —
+    smears the pad into a warmer, roomier wash."""
+    rng = np.random.default_rng(99)
+    ir_n = int(decay * SR)
+    t = np.arange(ir_n) / SR
+    ir = rng.standard_normal(ir_n) * np.exp(-t / (decay / 4.0))
+    ir[0] = 1.0
+    ir = _onepole_lowpass(ir, 3500)
+    ir /= np.max(np.abs(ir)) or 1.0
+    wet = np.convolve(x, ir)[: len(x)]
+    wet /= np.max(np.abs(wet)) or 1.0
+    return (1 - mix) * x + mix * wet
+
+
 def make_music_bed(duration: float = 40.0) -> np.ndarray:
-    """Gentle warm pad, I–V–vi–IV in C. Quiet by design — it sits under SFX."""
+    """Warm, hopeful pad — I–V–vi–IV in C, the classic uplifting progression.
+    Detuned voices (chorus), soft attacks, harmonic rolloff, gentle saturation
+    and a light reverb wash so it reads as a real instrument, not raw sines.
+    Quiet by design: it sits well under the SFX and ducks further when they hit.
+    A soft bell pluck marks each chord change for subtle forward motion."""
     chords = [
         [130.81, 261.63, 329.63, 392.00],   # C
         [98.00, 246.94, 293.66, 392.00],    # G
         [110.00, 220.00, 261.63, 329.63],   # Am
         [87.31, 261.63, 349.23, 440.00],    # F
     ]
+    # detune cents per stacked voice -> chorus thickness
+    detune = (-7.0, 0.0, 6.0)
     chord_len = 4.0
     n = int(duration * SR)
     out = np.zeros(n)
@@ -134,26 +172,42 @@ def make_music_bed(duration: float = 40.0) -> np.ndarray:
     t0 = 0.0
     while t0 < duration:
         chord = chords[idx % len(chords)]
-        cn = int(min(chord_len + 1.2, duration - t0) * SR)  # 1.2s overlap tail
+        cn = int(min(chord_len + 1.6, duration - t0) * SR)  # 1.6s overlap tail
         seg_t = np.arange(cn) / SR
         seg = np.zeros(cn)
+        # slow vibrato shared across the chord for a hand-played feel
+        vib = 1.0 + 0.0025 * np.sin(2 * np.pi * 4.7 * seg_t)
         for j, f in enumerate(chord):
-            for h, ha in ((1, 1.0), (2, 0.25), (3, 0.08)):  # soft low-passed timbre
-                seg += ha / (j + 1.5) * np.sin(2 * np.pi * f * h * seg_t)
-        attack = np.minimum(seg_t / 0.9, 1.0)
-        release = np.minimum((cn / SR - seg_t) / 1.1, 1.0)
+            voice = np.zeros(cn)
+            for cents in detune:
+                fv = f * (2 ** (cents / 1200.0)) * vib
+                phase = 2 * np.pi * np.cumsum(fv) / SR
+                for h, ha in ((1, 1.0), (2, 0.22), (3, 0.07), (4, 0.03)):
+                    voice += ha * np.sin(h * phase)
+            seg += voice / (j + 1.6)        # upper voices softer than the root
+        # soft pluck of the chord's top note on the change
+        bell_f = chord[-1] * 2
+        bell = np.sin(2 * np.pi * bell_f * seg_t) * np.exp(-seg_t / 0.45)
+        seg += 0.18 * bell
+        attack = np.minimum(seg_t / 1.3, 1.0) ** 1.4   # slow swell-in
+        release = np.minimum((cn / SR - seg_t) / 1.5, 1.0)
         seg *= attack * np.clip(release, 0, 1)
         i0 = int(t0 * SR)
         seg = seg[: n - i0]
         out[i0 : i0 + len(seg)] += seg
         t0 += chord_len
         idx += 1
-    out *= 1.0 + 0.06 * np.sin(2 * np.pi * 0.15 * t_all)  # slow gentle swell
-    return 0.16 * out / (np.max(np.abs(out)) or 1.0)
+
+    out /= np.max(np.abs(out)) or 1.0
+    out = _onepole_lowpass(out, 2600)              # tame the brightness
+    out = np.tanh(1.6 * out)                        # gentle tube-ish warmth
+    out = _reverb(out, decay=1.6, mix=0.26)         # roomy wash
+    out *= 1.0 + 0.05 * np.sin(2 * np.pi * 0.12 * t_all)  # slow gentle swell
+    return 0.17 * out / (np.max(np.abs(out)) or 1.0)
 
 
 def main() -> None:
-    print("Synthesizing placeholder SFX -> assets/sfx/")
+    print("Synthesizing SFX -> assets/sfx/")
     write_wav(OUT / "pop.wav", make_pop())
     write_wav(OUT / "swoosh.wav", make_swoosh())
     write_wav(OUT / "keyboard_clicks.wav", make_keyboard())
