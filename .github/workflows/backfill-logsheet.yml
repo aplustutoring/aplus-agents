@@ -1,0 +1,69 @@
+name: Backfill case-study log sheet
+
+# One-off (re-runnable) backfill: pulls every unexpired case-study bundle
+# artifact, and logs each into the master decode-log sheet. Re-running is safe —
+# sheet_log keys on the bundle folder, so existing rows update in place.
+# Bundles older than the 30-day artifact retention can't be recovered here.
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SPOTLIGHT_LOG_SHEET_ID: ${{ secrets.SPOTLIGHT_LOG_SHEET_ID }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Google client
+        run: pip install google-api-python-client google-auth
+
+      - name: Auth to Google
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON }}
+
+      - name: Download bundle artifacts and log each
+        run: |
+          set -euo pipefail
+          if [ -z "${SPOTLIGHT_LOG_SHEET_ID}" ]; then
+            echo "SPOTLIGHT_LOG_SHEET_ID not set"; exit 1
+          fi
+          # Real case-study bundles are tens of MB; the >1MB filter drops the
+          # small orchestrator-log artifacts. Keep one (newest) run per name.
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts" --paginate \
+            --jq '.artifacts[] | select(.expired==false and (.name|test("case-study")) and .size_in_bytes>1000000) | [.name, (.workflow_run.id|tostring)] | @tsv' \
+            | awk -F'\t' '!seen[$1]++' > arts.tsv
+          echo "candidate bundles:"; cut -f1 arts.tsv
+          logged=0; skipped=0
+          while IFS=$'\t' read -r name runid; do
+            [ -n "$name" ] || continue
+            rm -rf "bf/$name"; mkdir -p "bf/$name"
+            if ! gh run download "$runid" -n "$name" -D "bf/$name" 2>/dev/null; then
+              echo "  $name: download failed, skip"; skipped=$((skipped+1)); continue
+            fi
+            # locate the bundle dir regardless of how the zip nests it; its
+            # folder name is the sheet's dedupe key, so rename to the artifact
+            # name if the files landed at the download root.
+            mapfile=$(find "bf/$name" -name name-map.json | head -1)
+            if [ -z "$mapfile" ]; then
+              echo "  $name: no name-map.json (incomplete run), skip"; skipped=$((skipped+1)); continue
+            fi
+            bdir=$(dirname "$mapfile")
+            # ensure the bundle dir's basename == the bundle name (the sheet key)
+            target="bf/keyed/$name"
+            mkdir -p "bf/keyed"; rm -rf "$target"; mv "$bdir" "$target"
+            python3 scripts/b2c/sheet_log.py --bundle "$target" && logged=$((logged+1)) || skipped=$((skipped+1))
+          done < arts.tsv
+          echo "backfill done: logged=$logged skipped=$skipped"
