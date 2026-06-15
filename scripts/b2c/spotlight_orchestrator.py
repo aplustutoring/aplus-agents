@@ -92,6 +92,7 @@ STAGE_ORDER = [
     "slack",
     "reel",
     "textstory",
+    "logsheet",
     "complete",
 ]
 
@@ -3515,6 +3516,53 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
     return run
 
 
+def stage_logsheet(args: argparse.Namespace, run: dict) -> dict:
+    """Append/update this case study's row in the master decode-log Google Sheet.
+
+    ONE aggregating sheet, one row per case study (keyed on the bundle folder so
+    re-runs update rather than duplicate). It's the team's single pseudonym <->
+    real-student lookup. NON-FATAL: skipped silently when SPOTLIGHT_LOG_SHEET_ID
+    is unset or Google creds/libs are unavailable (e.g. local runs).
+    """
+    run.update({"stage": "logsheet"})
+    sheet_id = os.environ.get("SPOTLIGHT_LOG_SHEET_ID")
+    if not sheet_id:
+        print("  logsheet: SPOTLIGHT_LOG_SHEET_ID not set — skipping")
+        update_run(run["run_id"], run)
+        return run
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import sheet_log  # noqa: E402
+
+        bundle = Path(run["bundle_path"])
+        name = bundle.name
+        dm = re.match(r"(\d{4}-\d{2}-\d{2})", name)
+        study_date = dm.group(1) if dm else ""
+        meta_path = bundle / "metadata.md"
+        meta_text = meta_path.read_text() if meta_path.exists() else ""
+        row = sheet_log.build_row(
+            study_date=study_date,
+            pseudonym=(run.get("pseudonym") or "").capitalize(),
+            real_first=run.get("real_firstname", ""),
+            real_last=run.get("real_lastname") or "",
+            school=run.get("school") or sheet_log._parse_meta(meta_text, "school_named"),
+            grade=sheet_log._parse_meta(meta_text, "grade"),
+            subject=sheet_log._parse_meta(meta_text, "subject"),
+            gender=run.get("gender", ""),
+            link=run.get("hubspot_edit_url") or sheet_log._parse_meta(meta_text, "canonical_url"),
+            bundle_folder=name,
+            run_id=run.get("run_id", ""),
+        )
+        result = sheet_log.append_or_update(sheet_id, row)
+        run["logsheet_status"] = result
+        print(f"  logsheet: {result} row for {name}")
+    except Exception as exc:  # noqa: BLE001 — logsheet is non-fatal
+        run["logsheet_status"] = f"skipped: {exc}"
+        print(f"  logsheet: NON-FATAL failure — {exc}", file=sys.stderr)
+    update_run(run["run_id"], run)
+    return run
+
+
 def stage_complete(args: argparse.Namespace, run: dict) -> dict:
     """Final state finalization + stdout summary.
 
@@ -3572,11 +3620,12 @@ STAGE_DISPATCH = {
     "slack": stage_slack,
     "reel": stage_reel,
     "textstory": stage_textstory,
+    "logsheet": stage_logsheet,
     "complete": stage_complete,
 }
 
 # Stages that --dry-run skips (irreversible external writes).
-DRY_RUN_SKIP_STAGES = {"publish", "slack", "reel", "textstory"}
+DRY_RUN_SKIP_STAGES = {"publish", "slack", "reel", "textstory", "logsheet"}
 
 
 def run_stage(stage_name: str, args: argparse.Namespace, run: dict) -> dict:

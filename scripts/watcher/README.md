@@ -52,6 +52,7 @@ Go to **Settings > Secrets and variables > Actions > Secrets** on the `aplustuto
 | `HUBSPOT_PRIVATE_APP_TOKEN`         | The Private App token (NOT the MCP connector — that's a different path) |
 | `SLACK_BOT_TOKEN`                   | The A+ Tutoring Slack bot token                        |
 | `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON` | Paste the full JSON content of the key from step 1     |
+| `SPOTLIGHT_LOG_SHEET_ID` (optional) | ID of the master case-study decode-log Google Sheet (one row per study: date, pseudonym, real name, school, grade, subject, link, bundle). Share that sheet as **Editor** with the service account and enable the **Google Sheets API** in the project. Unset → the `logsheet` stage skips. |
 
 ### 3. Add GitHub repo variables (optional)
 
