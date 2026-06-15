@@ -1,0 +1,41 @@
+name: Verify case-study log sheet
+
+# Manual health check for the master decode-log Google Sheet. Authenticates
+# exactly like the spotlight orchestrator (same service account), then runs a
+# connectivity check that ensures the header row and reports the row count.
+# Confirms the sheet is shared + the Sheets API is enabled + the secret is set,
+# WITHOUT running the whole pipeline or writing a real case-study row.
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      SPOTLIGHT_LOG_SHEET_ID: ${{ secrets.SPOTLIGHT_LOG_SHEET_ID }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Google client
+        run: pip install google-api-python-client google-auth
+
+      - name: Auth to Google
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON }}
+
+      - name: Connectivity check
+        run: |
+          if [ -z "$SPOTLIGHT_LOG_SHEET_ID" ]; then
+            echo "SPOTLIGHT_LOG_SHEET_ID secret is not set"; exit 1
+          fi
+          python3 scripts/b2c/sheet_log.py --check
