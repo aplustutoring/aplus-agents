@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -242,6 +243,10 @@ def main() -> int:
     ap.add_argument("--bundle", help="bundle dir containing textstory/scenes.json")
     ap.add_argument("--episode-json", help="fixture mode: render this scene JSON directly")
     ap.add_argument("--out", help="output mp4 (fixture mode; default alongside the json)")
+    ap.add_argument("--keep-work", action="store_true",
+                    help="keep the work/ intermediates (html, mix.wav, silent video) "
+                         "for debugging; default removes them so the bundle holds only "
+                         "scenes.json + textstory.mp4")
     args = ap.parse_args()
     if not args.bundle and not args.episode_json:
         ap.error("need --bundle or --episode-json")
@@ -279,6 +284,11 @@ def main() -> int:
         [tc.FFMPEG, "-y", "-i", str(video_only), "-i", str(audio),
          "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", str(final)],
         check=True, capture_output=True)
+
+    if not args.keep_work and work.exists():
+        shutil.rmtree(work, ignore_errors=True)
+        print("Cleaned work/ (use --keep-work to retain intermediates)")
+
     print(f"Done: {final}")
     return 0
 
