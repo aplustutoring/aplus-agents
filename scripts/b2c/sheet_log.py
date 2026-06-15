@@ -124,13 +124,37 @@ def _row_from_bundle(bundle: Path) -> list[str]:
     )
 
 
+def check(sheet_id: str) -> int:
+    """Connectivity check: authenticate, ensure the header row, report the
+    current data-row count. Confirms creds + Sheets API + Editor share + the
+    sheet ID, end to end, without writing a real case-study row."""
+    values = _service().spreadsheets().values()
+    existing = values.get(
+        spreadsheetId=sheet_id, range="A1:Z200000").execute().get("values", [])
+    if not existing or existing[0][:1] != HEADER[:1]:
+        values.update(spreadsheetId=sheet_id, range="A1",
+                      valueInputOption="RAW", body={"values": [HEADER]}).execute()
+        print("wrote header row")
+        existing = [HEADER]
+    else:
+        print("header row present")
+    print(f"OK — sheet reachable + writable, {max(len(existing) - 1, 0)} data row(s)")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bundle", required=True)
+    ap.add_argument("--bundle", help="log/backfill this bundle's row")
+    ap.add_argument("--check", action="store_true",
+                    help="connectivity check (auth + header + row count); no case-study row")
     ap.add_argument("--sheet-id", default=os.environ.get("SPOTLIGHT_LOG_SHEET_ID"))
     args = ap.parse_args()
     if not args.sheet_id:
         sys.exit("no sheet id (pass --sheet-id or set SPOTLIGHT_LOG_SHEET_ID)")
+    if args.check:
+        return check(args.sheet_id)
+    if not args.bundle:
+        sys.exit("pass --bundle <dir> (or --check)")
     row = _row_from_bundle(Path(args.bundle))
     result = append_or_update(args.sheet_id, row)
     print(f"{result} row for {row[HEADER.index(KEY_COL)]}")
