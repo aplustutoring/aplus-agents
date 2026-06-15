@@ -3481,13 +3481,13 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
     """Generate + deliver the animated text-message spotlight (independent of
     the comic and the reel; pure programmatic render, no gen APIs).
 
-    OPT-IN for now: skipped unless SPOTLIGHT_TEXTSTORY=1 (mirrors how new
-    bonus stages roll out — flip the default once Paola has reviewed a few).
-    NON-FATAL by design, same contract as stage_reel.
+    ON by default (same contract as stage_reel): set SPOTLIGHT_TEXTSTORY=0 to
+    skip it for a run. NON-FATAL by design — any failure is logged and the run
+    still completes.
     """
     run.update({"stage": "textstory"})
-    if os.environ.get("SPOTLIGHT_TEXTSTORY", "0") != "1":
-        print("  textstory disabled (set SPOTLIGHT_TEXTSTORY=1 to enable) — skipping")
+    if os.environ.get("SPOTLIGHT_TEXTSTORY", "1") == "0":
+        print("  textstory disabled (SPOTLIGHT_TEXTSTORY=0) — skipping")
         update_run(run["run_id"], run)
         return run
 
