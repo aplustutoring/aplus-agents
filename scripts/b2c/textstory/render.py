@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -222,6 +223,79 @@ def build_timeline(episode: dict) -> dict:
     }
 
 
+SLACK_POST_GAP = 1.1        # beat before each new post
+SLACK_REACT_DELAY = 0.9     # reactions pop this long after their post
+SLACK_REACT_DWELL = 0.7     # extra hold when a post has reactions
+
+
+def _initials(name: str) -> str:
+    parts = [p for p in re.split(r"[\s.]+", name) if p]
+    if not parts:
+        return "?"
+    if len(parts) == 1:
+        return parts[0][:2].upper()
+    return (parts[0][0] + parts[1][0]).upper()
+
+
+def build_timeline_slack(episode: dict) -> dict:
+    """Timeline for the Slack 'team_slack' skin: a #channel thread of posts
+    (avatar + name + timestamp), each able to carry reaction count pills.
+    Members map sender keys -> display names; @channel etc. are rendered as
+    mention pills in the template."""
+    members = episode.get("members") or {}
+    items, sfx = [], []
+    t = 0.7
+    for scene in episode["scenes"]:
+        for msg in scene.get("msgs", []):
+            key = msg.get("from", "")
+            name = members.get(key, key.replace("_", " ").title())
+            text = msg.get("text", "")
+            t += SLACK_POST_GAP
+            reactions = msg.get("reactions") or []
+            react_at = t + SLACK_REACT_DELAY
+            items.append({
+                "kind": "post", "appear": t, "sender_key": key, "sender": name,
+                "initials": _initials(name), "ts": msg.get("ts", ""),
+                "text": text, "reactions": reactions, "react_at": react_at,
+            })
+            # a broadcast ping gets the swoosh; ordinary posts pop
+            sfx.append({"t": t, "name": "swoosh" if re.search(r"@(channel|here|everyone)", text) else "pop"})
+            if reactions:
+                sfx.append({"t": react_at, "name": "pop"})
+            t += read_dwell(text) + (SLACK_REACT_DWELL if reactions else 0.0)
+        t += 0.3
+
+    if t > TARGET_CHAT_SECONDS:
+        k = TARGET_CHAT_SECONDS / t
+        for it in items:
+            it["appear"] *= k
+            it["react_at"] *= k
+        for e in sfx:
+            e["t"] *= k
+        t = TARGET_CHAT_SECONDS
+
+    endcard_start = t + 0.5
+    total = endcard_start + ENDCARD_SECONDS
+    ec = episode.get("endcard", {})
+    return {
+        "items": items,
+        "typing": [],
+        "sfx": sfx,
+        "header": {"mode": "slack", "channel": episode.get("channel", "student-wins")},
+        "endcard": {
+            "start": endcard_start,
+            "line": ec.get("line") or "Behind every win is a team that loses it over your kid.",
+            "cta": ec.get("cta") or "Book a free consultation",
+            "url_display": (ec.get("cta_url")
+                            or "https://meetings.hubspot.com/successful/consultation"
+                            ).replace("https://", ""),
+            # disclosure is baked into template_slack.html ("real A+ team moments")
+            "logo": "",
+        },
+        "total": total,
+    }
+
+
 def make_white_logo(work: Path) -> Path:
     """Tint the orange transparent logo to brand Ivory for the orange endcard
     (same approach as the comic stage's white-variant logo)."""
@@ -240,14 +314,21 @@ def make_white_logo(work: Path) -> Path:
     return out
 
 
-def render_html(data: dict, work: Path) -> Path:
-    tpl = (HERE / "template.html").read_text()
+def render_html(data: dict, work: Path, template: str = "template.html") -> Path:
+    tpl = (HERE / template).read_text()
     tpl = tpl.replace("__FRAUNCES_URL__", (HERE / "fonts" / "Fraunces-SemiBold.ttf").as_uri())
     tpl = tpl.replace("__DATA__", json.dumps(data, ensure_ascii=False))
     out = work / "episode.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(tpl)
     return out
+
+
+def _skin(episode: dict) -> str:
+    """messenger (1:1 / group bubbles) vs slack (team #channel thread)."""
+    if episode.get("skin"):
+        return episode["skin"]
+    return "slack" if episode.get("dynamic") == "team_slack" else "messenger"
 
 
 def build_audio(data: dict, out_path: Path) -> None:
@@ -354,12 +435,17 @@ def main() -> int:
         work = src.parent / "work"
         final = Path(args.out) if args.out else src.with_suffix(".mp4")
 
-    data = build_timeline(episode)
+    if _skin(episode) == "slack":
+        data = build_timeline_slack(episode)
+        template = "template_slack.html"
+    else:
+        data = build_timeline(episode)
+        template = "template.html"
     data["endcard"]["logo"] = make_white_logo(work).as_uri()
-    print(f"Timeline: {len(data['items'])} items, {len(data['typing'])} typing windows, "
+    print(f"Timeline ({_skin(episode)}): {len(data['items'])} items, "
           f"total {data['total']:.1f}s (endcard at {data['endcard']['start']:.1f}s)")
 
-    html = render_html(data, work)
+    html = render_html(data, work, template)
 
     video_only = work / "video_only.mp4"
     print("Capturing frames -> h264 ...")

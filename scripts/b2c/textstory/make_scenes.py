@@ -131,6 +131,46 @@ EXAMPLE (grandma — reading arc; right=Mom, left=grandma):
  "endcard_line":"Every grandma deserves this voice note."}
 """
 
+SLACK_SCHEMA_SPEC = """\
+OUTPUT: a single JSON object, no fences, no commentary. Shape:
+{
+  "episode": "<short-kebab-slug>",
+  "scenes": [ {"msgs": [ <post>, ... ]} ],   // exactly ONE scene (one thread)
+  "endcard_line": "<one short end-card line, <=52 chars>"
+}
+A <post> is: {"from": <role-key>, "ts": "4:47 PM", "text": "...",
+              "reactions": [{"emoji": "🎉", "count": 12}]}   // reactions optional
+
+RULES (team_slack):
+- 6-9 posts, ONE thread, realistic times a minute or two apart.
+- The TUTOR posts first and opens with a SPECIFIC IMAGE (the chapter she read,
+  the unprompted homework) — NEVER a stat. Emotional and concrete.
+- Put @channel (or @here) in the tutor's or a lead's post at the emotional peak.
+- Team replies are short, warm, human. Sneak in ONE credibility data point
+  naturally via the "data" person (e.g. a reclassification %), never forced.
+- The FOUNDER posts LAST and closes on the mission ("this is why we do this").
+- The child is referred to ONLY by a single initial. No student/tutor full
+  names beyond the role display names, no school, no city.
+- Invent every line; no 6+ consecutive words matching the case study.
+- Reactions: use a few emoji+count pills on the big posts; keep counts realistic
+  (single/low-double digits).
+- Slack-native texture is welcome where it feels natural and doesn't bury the
+  story: a /giphy line (e.g. "/giphy happy dance"), "pinned this to the channel",
+  an @mention of a teammate by name. Use at most one or two such touches.
+"""
+
+TEAM_SLACK_FEWSHOT = """\
+EXAMPLE (team_slack — reading arc; keys: tutor, peer, data, founder):
+{"episode":"this-is-why-we-do-this","scenes":[{"msgs":[
+ {"from":"tutor","ts":"4:47 PM","text":"@channel ok I have to share this. D just read a full chapter out loud. unprompted. then asked for ONE more page 😭","reactions":[{"emoji":"🎉","count":12},{"emoji":"❤️","count":8}]},
+ {"from":"peer","ts":"4:48 PM","text":"the SAME kid who hid under the desk during her September assessment??"},
+ {"from":"tutor","ts":"4:48 PM","text":"the exact same kid. she told me \\"books are kind of fun now\\""},
+ {"from":"data","ts":"4:49 PM","text":"this is the reclassification story in real time. 63% of our intervention kids move up a level in a semester and it still gets me","reactions":[{"emoji":"📈","count":7}]},
+ {"from":"peer","ts":"4:50 PM","text":"I'm not crying you're crying 🥹","reactions":[{"emoji":"😭","count":9}]},
+ {"from":"founder","ts":"4:52 PM","text":"This. This is why we do this. Thank you ❤️","reactions":[{"emoji":"❤️","count":15}]}
+]}],"endcard_line":"Behind every win is a team that loses it over your kid."}
+"""
+
 DYNAMIC_CONFIG = {
     "parents": {
         "senders": "Use from \"right\" (the mom, you) and \"left\" (her husband). Equal voices.",
@@ -187,11 +227,36 @@ DYNAMIC_CONFIG = {
             "feel screenshot-and-share-worthy."),
         "fewshot": GRANDMA_FEWSHOT,
     },
+    "team_slack": {
+        "senders": None,  # filled per-bundle (role keys) in build_system_prompt
+        "voice": (
+            "A+'s internal #student-wins Slack channel — the behind-the-scenes that "
+            "sells the CULTURE: a team that loses it over a kid's win. A tutor "
+            "shares the win, the team piles on. Warm, human, real workplace texture. "
+            "This is INVENTED archetype, never a real Slack message anyone actually "
+            "sent."),
+        "fewshot": TEAM_SLACK_FEWSHOT,
+        "schema": SLACK_SCHEMA_SPEC,
+    },
 }
 
 
 def build_system_prompt(dynamic: str, contacts: dict) -> str:
     cfg = DYNAMIC_CONFIG[dynamic]
+    if dynamic == "team_slack":
+        members = contacts.get("members", {})
+        roster = ", ".join(f'"{k}" ({members[k]})' for k in contacts.get("member_keys", []))
+        senders = (
+            f'This is a team Slack channel (#student-wins). Use these exact role '
+            f'keys for "from": {roster}. The "tutor" posts first and opens; the '
+            f'"founder" posts last and closes. Every post must come from one of '
+            f'those keys.')
+        return (
+            "You write 30-second vertical social videos for A+ Tutoring as an "
+            "internal Slack thread about a child's tutoring win.\n\n"
+            f"DYNAMIC: team_slack\n{senders}\n\nVOICE: {cfg['voice']}\n\n"
+            f"{cfg['schema']}\n{cfg['fewshot']}"
+        )
     if dynamic == "family_group":
         keys = contacts.get("member_keys", [])
         members = contacts.get("members", {})
@@ -277,37 +342,24 @@ def _ngrams(words, n):
 
 
 def _valid_senders(dynamic: str, contacts: dict) -> set:
-    if dynamic == "family_group":
-        return {"me"} | set(contacts.get("member_keys", []))
+    if dynamic in ("family_group", "team_slack"):
+        return set(contacts.get("member_keys", [])) | ({"me"} if dynamic == "family_group" else set())
     return {"left", "right"}
 
 
-def validate(dynamic, scenes, contacts, banned_names, school, source_texts) -> list[str]:
+def _shared_text_checks(msgs, scenes, banned_names, school, source_texts,
+                        max_chars) -> list[str]:
+    """Guardrail checks common to every dynamic: no banned/pseudonym/school
+    names, no protected classifications, no verbatim transcript overlap,
+    per-message length cap."""
     errors: list[str] = []
-    sc = scenes.get("scenes")
-    if not isinstance(sc, list) or not 3 <= len(sc) <= 4:
-        return [f"need 3-4 scenes, got {sc if not isinstance(sc, list) else len(sc)}"]
-
-    msgs = [m for s in sc for m in s.get("msgs", [])]
-    valid_from = _valid_senders(dynamic, contacts)
-    n_text = sum(1 for m in msgs if m.get("text"))
-    if not 8 <= n_text <= 24:
-        errors.append(f"need ~10-22 text messages, got {n_text}")
-    n_shot = sum(1 for m in msgs if m.get("type") == "screenshot")
-    if n_shot != 1:
-        errors.append(f"need exactly one screenshot, got {n_shot}")
-
     for m in msgs:
-        if m.get("from") not in valid_from:
-            errors.append(f"bad from {m.get('from')!r} (allowed: {sorted(valid_from)})")
         t = m.get("text", "")
-        if len(t) > MAX_MSG_CHARS:
-            errors.append(f"message over {MAX_MSG_CHARS} chars: {t[:40]!r}...")
-
+        if len(t) > max_chars:
+            errors.append(f"message over {max_chars} chars: {t[:40]!r}...")
     all_text = " ".join(m.get("text", "") + " " + m.get("alt", "") for m in msgs)
     all_text += " " + scenes.get("endcard_line", "")
     low = " " + all_text.lower() + " "
-
     for name in banned_names:
         if re.search(rf"\b{re.escape(name)}\b", all_text, re.IGNORECASE):
             errors.append(f"banned name in dialogue: {name!r}")
@@ -321,15 +373,67 @@ def validate(dynamic, scenes, contacts, banned_names, school, source_texts) -> l
     for term in SENSITIVE_TERMS:
         if term in low:
             errors.append(f"protected-classification term: {term.strip()!r}")
-
     gen_grams = _ngrams(_norm_words(all_text), 6)
     if gen_grams:
         for fname, src in (source_texts or {}).items():
             hit = gen_grams & _ngrams(_norm_words(src), 6)
             if hit:
                 errors.append(f"verbatim 6-word overlap with {fname!r}: {sorted(hit)[0]!r}")
+    return errors
 
+
+def validate(dynamic, scenes, contacts, banned_names, school, source_texts) -> list[str]:
+    if dynamic == "team_slack":
+        return _validate_team_slack(scenes, contacts, banned_names, school, source_texts)
+
+    errors: list[str] = []
+    sc = scenes.get("scenes")
+    if not isinstance(sc, list) or not 3 <= len(sc) <= 4:
+        return [f"need 3-4 scenes, got {sc if not isinstance(sc, list) else len(sc)}"]
+
+    msgs = [m for s in sc for m in s.get("msgs", [])]
+    valid_from = _valid_senders(dynamic, contacts)
+    n_text = sum(1 for m in msgs if m.get("text"))
+    if not 8 <= n_text <= 24:
+        errors.append(f"need ~10-22 text messages, got {n_text}")
+    n_shot = sum(1 for m in msgs if m.get("type") == "screenshot")
+    if n_shot != 1:
+        errors.append(f"need exactly one screenshot, got {n_shot}")
+    for m in msgs:
+        if m.get("from") not in valid_from:
+            errors.append(f"bad from {m.get('from')!r} (allowed: {sorted(valid_from)})")
+
+    errors += _shared_text_checks(msgs, scenes, banned_names, school, source_texts, MAX_MSG_CHARS)
     errors += _validate_dynamic(dynamic, msgs, contacts)
+    return errors
+
+
+def _validate_team_slack(scenes, contacts, banned_names, school, source_texts) -> list[str]:
+    errors: list[str] = []
+    sc = scenes.get("scenes")
+    if not isinstance(sc, list) or not 1 <= len(sc) <= 2:
+        return [f"team_slack needs 1 thread (scene), got {sc if not isinstance(sc, list) else len(sc)}"]
+    msgs = [m for s in sc for m in s.get("msgs", [])]
+    if not 5 <= len(msgs) <= 12:
+        errors.append(f"need 6-9 posts, got {len(msgs)}")
+    valid_from = _valid_senders("team_slack", contacts)
+    for m in msgs:
+        if m.get("from") not in valid_from:
+            errors.append(f"bad from {m.get('from')!r} (allowed: {sorted(valid_from)})")
+    if msgs:
+        if msgs[0].get("from") != "tutor":
+            errors.append("the tutor must post first")
+        if msgs[-1].get("from") != "founder":
+            errors.append("the founder must close the thread")
+    joined = " ".join(m.get("text", "") for m in msgs)
+    if not re.search(r"@(channel|here|everyone)", joined):
+        errors.append("needs an @channel/@here broadcast ping at the peak")
+    if not re.search(r"\d", joined):
+        errors.append("sneak in one credibility data point (a number/percent)")
+    # the tutor's opener must lead with an image, not a bare stat
+    if msgs and re.match(r"^[@\w\s]*\d", (msgs[0].get("text", "") or "").strip()):
+        errors.append("tutor opener should lead with a specific image, not a stat")
+    errors += _shared_text_checks(msgs, scenes, banned_names, school, source_texts, 200)
     return errors
 
 
@@ -407,22 +511,30 @@ def main() -> int:
     if errors:
         sys.exit(f"[{args.dynamic}] scene generation failed after retries — not writing")
 
-    # contacts injected here (NOT model-generated) -> POV + name-safety locked.
-    contacts_out = {k: v for k, v in contacts.items() if k != "member_keys"}
+    # contacts/members injected here (NOT model-generated) -> POV, name-safety,
+    # and the consent flag can't drift from what the model produces.
+    default_line = ("Behind every win is a team that loses it over your kid."
+                    if args.dynamic == "team_slack" else "Every parent deserves this text.")
     out_obj = {
         "episode": scenes.get("episode", args.dynamic),
         "dynamic": args.dynamic,
-        "contacts": contacts_out,
         "scenes": scenes["scenes"],
         "endcard": {
-            "line": (scenes.get("endcard_line") or "Every parent deserves this text.")[:60],
+            "line": (scenes.get("endcard_line") or default_line)[:60],
             "cta": "Book a free consultation",
             "cta_url": "https://meetings.hubspot.com/successful/consultation",
-            # disclosure intentionally absent — the template bakes it in.
+            # disclosure intentionally absent — the renderer template bakes it in
+            # ("real A+ family outcomes" / "real A+ team moments").
         },
     }
-    if args.dynamic == "family_group":
-        out_obj["contacts"]["member_keys"] = contacts.get("member_keys", [])
+    if args.dynamic == "team_slack":
+        out_obj["skin"] = "slack"
+        out_obj["channel"] = contacts.get("channel", "student-wins")
+        out_obj["members"] = contacts.get("members", {})
+    else:
+        out_obj["contacts"] = {k: v for k, v in contacts.items() if k != "member_keys"}
+        if args.dynamic == "family_group":
+            out_obj["contacts"]["member_keys"] = contacts.get("member_keys", [])
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(out_obj, indent=2, ensure_ascii=False))
     n = sum(len(s["msgs"]) for s in scenes["scenes"])
