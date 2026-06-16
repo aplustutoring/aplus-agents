@@ -48,10 +48,29 @@ W, H, FPS = 1080, 1920, 30
 
 # ── relationship dynamics ────────────────────────────────────────────────────
 # DYNAMICS = every dynamic the generator/renderer supports.
-# DEFAULT_DYNAMICS = the set a spotlight ships by default. family_group is
-# supported but off by default (request it explicitly with --only family_group).
-DYNAMICS = ["parents", "grandma", "mom_friend", "kid_parent", "family_group"]
-DEFAULT_DYNAMICS = ["parents", "grandma", "mom_friend", "kid_parent"]
+# DEFAULT_DYNAMICS = the set a spotlight ships by default. family_group and
+# team_slack are supported but off by default (request explicitly with --only).
+# team_slack additionally gates real team names behind a consent flag (below).
+DYNAMICS = ["parents", "grandma", "mom_friend", "kid_parent", "family_group", "team_slack"]
+# team_slack ships as the capstone (sequenced last). family_group stays opt-in.
+DEFAULT_DYNAMICS = ["parents", "grandma", "mom_friend", "kid_parent", "team_slack"]
+
+# team_slack roles (fixed keys the generator writes against). The tutor opens,
+# the founder closes; the rest are team members who pile on. Display names are
+# chosen per the consent flag below.
+TEAM_SLACK_ROLES = ["tutor", "peer", "data", "react", "peer2", "peer3", "founder"]
+# Invented names — used when SPOTLIGHT_TEAM_SLACK_REAL_NAMES=0.
+TEAM_SLACK_INVENTED = {"tutor": "Sloane R.", "peer": "Maya P.", "data": "Dev K.",
+                       "react": "Priya G.", "peer2": "Noah B.", "peer3": "Iris T.",
+                       "founder": "Theo"}
+# Real A+ team first names. Roman approved these specific names on 2026-06-16
+# (roman/paola/danielle/emily/janelle/yolanda). The tutor stays invented (a
+# representative field tutor); everyone else here is a real, consented teammate.
+# Gated by SPOTLIGHT_TEAM_SLACK_REAL_NAMES (default on, below) — flip to 0 to
+# fall back to invented names.
+TEAM_SLACK_REAL = {"tutor": "Sloane R.", "peer": "Paola", "data": "Danielle",
+                   "react": "Emily", "peer2": "Janelle", "peer3": "Yolanda",
+                   "founder": "Roman"}
 
 
 # ── bundle paths ─────────────────────────────────────────────────────────────
@@ -175,6 +194,16 @@ def build_contacts(dynamic: str, bundle, name_map: dict | None, meta: dict) -> d
             chosen[key] = name
             keys.append(key)
         return {"group": gname, "members": chosen, "member_keys": keys}
+    if dynamic == "team_slack":
+        import os
+        # Default ON: Roman authorized the real-name set on 2026-06-16. Set
+        # SPOTLIGHT_TEAM_SLACK_REAL_NAMES=0 to fall back to invented names.
+        real = os.environ.get("SPOTLIGHT_TEAM_SLACK_REAL_NAMES", "1") != "0"
+        names = TEAM_SLACK_REAL if real else TEAM_SLACK_INVENTED
+        members = {k: names[k] for k in TEAM_SLACK_ROLES}
+        return {"skin": "slack", "channel": "student-wins",
+                "members": members, "member_keys": list(TEAM_SLACK_ROLES),
+                "real_names": real}
     raise ValueError(f"unknown dynamic: {dynamic}")
 
 
