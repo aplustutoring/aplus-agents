@@ -118,36 +118,32 @@ def _name_part(label: str) -> str:
 # Per-dynamic label pools for the "left" (contact) side of a 1:1 thread.
 # right is always the mom ("you"). All labels are generic / role-based —
 # never a real first name lifted from the case.
-# Grandma contact labels, keyed to the student's cultural category (from
-# name-map.json) so the grandma reads as that family's grandma. Different
-# students -> different cultures -> natural variety across episodes, without a
-# mismatched grandma landing on a case. GRANDMA_DEFAULT is the diverse mix used
-# when the category is unknown.
+# The thread is the MOM texting her own mother (the kid's grandma), so the label
+# is what a daughter saves her mom as: mostly "Mom / Mommy / My Mom / Mama", with
+# a light, natural cultural term mixed in where it fits. Kept deliberately small
+# and un-caricatured (no "Big Mama"-type labels). Keyed to the student's name-map
+# cultural category; GRANDMA_DEFAULT covers an unknown category.
+_GRANDMA_GENERIC = ["Mom ❤️", "Mommy 💕", "My Mom ❤️", "Mama 💕"]
 GRANDMA_BY_CULTURE = {
-    "latino_hispanic": ["Abuela ❤️", "Abuelita 💕", "Lita ❤️", "Buela 💕", "Welita ❤️"],
-    "african_american": ["Grandma ❤️", "Granny 💕", "Big Mama ❤️", "Nana 💕", "Gigi 💕"],
-    "asian_east":  ["Nai Nai 💕", "Po Po ❤️", "Halmoni 💕", "Obaachan ❤️", "Ah-Ma 💕"],
-    "asian_south": ["Nani ❤️", "Dadi 💕", "Naani ❤️", "Aaji 💕"],
-    "middle_eastern": ["Teta ❤️", "Sitti 💕", "Tete ❤️", "Mama Joon 💕"],
-    "white_american": ["Grandma ❤️", "Granny 💕", "Nana 💕", "Gigi ❤️", "Grams 💕",
-                       "Mémé ❤️", "Oma 💕", "Nonna ❤️", "Babushka 💕", "Yia Yia ❤️"],
+    "latino_hispanic": _GRANDMA_GENERIC + ["Abuelita 💕", "Amá ❤️"],
+    "african_american": _GRANDMA_GENERIC + ["Grandma ❤️", "Nana 💕"],
+    "asian_east":      _GRANDMA_GENERIC + ["Grandma ❤️", "Nana 💕"],
+    "asian_south":     _GRANDMA_GENERIC + ["Nani ❤️"],
+    "middle_eastern":  _GRANDMA_GENERIC + ["Teta ❤️"],
+    "white_american":  _GRANDMA_GENERIC + ["Grandma ❤️", "Nana 💕", "Baba 💕", "Babushka 💕"],
 }
-GRANDMA_DEFAULT = ["Grandma ❤️", "Granny 💕", "Nana 💕", "Abuela ❤️", "Nonna 💕",
-                   "Oma ❤️", "Babushka 💕", "Halmoni ❤️", "Nai Nai 💕", "Teta ❤️",
-                   "Nani 💕", "Yia Yia ❤️", "Big Mama ❤️", "Lola 💕"]
-# Per-culture hint so the grandma's endearments/interjections match her name
-# rather than always defaulting to Spanish. Empty => English only.
+GRANDMA_DEFAULT = _GRANDMA_GENERIC + ["Grandma ❤️", "Nana 💕", "Abuelita 💕",
+                                      "Nani ❤️", "Teta ❤️", "Baba 💕", "Babushka 💕"]
+# Per-culture endearment hint so the voice follows the label rather than always
+# defaulting to Spanish. Mostly English (she's the mom's mom); a light heritage
+# touch where it fits.
 GRANDMA_LANG_BY_CULTURE = {
-    "latino_hispanic": "Spanish terms of endearment (mija, mi amor, mi vida) where natural",
-    "african_american": "warm Southern English (baby, sugar) where natural",
-    "asian_east": "the occasional word in HER language matching her name "
-                  "(Korean for Halmoni, Mandarin for Nai Nai/Po Po, Japanese for "
-                  "Obaachan) — never mix languages",
-    "asian_south": "a Hindi/Urdu term of endearment (beta) where natural",
-    "middle_eastern": "an Arabic/Persian term of endearment (habibi, joonam) where natural",
-    "white_american": "mostly English; an occasional heritage word only if her "
-                      "name implies one (Nonna->Italian, Oma->German, Babushka->"
-                      "Russian, Yia Yia->Greek)",
+    "latino_hispanic": "mostly English with an occasional Spanish endearment (mija, mi amor) where natural",
+    "african_american": "warm everyday English",
+    "asian_east": "everyday English; at most an occasional word in her language, never forced",
+    "asian_south": "everyday English with an occasional Hindi/Urdu endearment (beta) where natural",
+    "middle_eastern": "everyday English with an occasional Arabic endearment (habibi) where natural",
+    "white_american": "everyday English; a heritage word only if her name implies one (Babushka->Russian)",
 }
 
 
