@@ -3530,10 +3530,13 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
             sys.stderr.write(r.stderr or "")
             raise RuntimeError(f"textstory builder failed (exit {r.returncode})")
         run["textstory_status"] = "ok"
-        # exit 0 still allows a partial set (some dynamics failed) — flag it
+        # exit 0 still allows a partial set (some dynamics failed) — flag it,
+        # and surface the builder output so the CI log shows which/why.
         m = re.search(r"FAILED \[([^\]]+)\]", out)
         if m:
             alert = f"delivered a partial set — failed: {m.group(1)}"
+            sys.stderr.write(out)
+            sys.stderr.write(r.stderr or "")
         print("  textstory: done")
     except Exception as exc:  # noqa: BLE001 — textstory is non-fatal
         run["textstory_status"] = f"skipped: {exc}"
