@@ -3478,6 +3478,26 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
 TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.py"
 
 
+def _post_textstory_alert(run: dict, note: str) -> None:
+    """Heads-up to the failure Slack channel when the (non-fatal) textstory
+    stage shipped fewer videos than expected — otherwise the miss is silent.
+    No-ops without SLACK_FAILURE_CHANNEL; never raises."""
+    channel = os.environ.get("SLACK_FAILURE_CHANNEL")
+    if not channel:
+        return
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
+        import slack_delivery_common as sd  # noqa: E402
+        bundle = Path(run["bundle_path"]).name
+        text = (f":warning: *Spotlight text-stories need attention* — `{bundle}`: {note}. "
+                "Blog, graphics, and reel are unaffected. Recover with the "
+                "“Re-render textstories for a bundle” Actions workflow.")
+        sd.post_message(sd.resolve_channel_id(channel), text)
+        print(f"  textstory: posted heads-up to {channel}")
+    except Exception as exc:  # noqa: BLE001 — alerting must never break the run
+        print(f"  textstory: could not post heads-up — {exc}", file=sys.stderr)
+
+
 def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
     """Generate + deliver the animated text-message spotlight (independent of
     the comic and the reel; pure programmatic render, no gen APIs).
@@ -3500,18 +3520,27 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
         cmd.append("--deliver")
         if args.slack_channel:
             cmd.extend(["--channel", args.slack_channel])
+    alert = None
     try:
         print("  textstory: scenes -> render -> deliver ...")
         r = subprocess.run(cmd, capture_output=True, text=True)
+        out = r.stdout or ""
         if r.returncode != 0:
-            sys.stderr.write(r.stdout or "")
+            sys.stderr.write(out)
             sys.stderr.write(r.stderr or "")
             raise RuntimeError(f"textstory builder failed (exit {r.returncode})")
         run["textstory_status"] = "ok"
+        # exit 0 still allows a partial set (some dynamics failed) — flag it
+        m = re.search(r"FAILED \[([^\]]+)\]", out)
+        if m:
+            alert = f"delivered a partial set — failed: {m.group(1)}"
         print("  textstory: done")
     except Exception as exc:  # noqa: BLE001 — textstory is non-fatal
         run["textstory_status"] = f"skipped: {exc}"
+        alert = "delivered ZERO videos — generation/render failed"
         print(f"  textstory: NON-FATAL failure — {exc}", file=sys.stderr)
+    if alert and not run.get("skip_hubspot"):
+        _post_textstory_alert(run, alert)
     update_run(run["run_id"], run)
     return run
 
