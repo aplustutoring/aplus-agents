@@ -42,6 +42,9 @@ jobs:
       # logsheet stage skips. Share the sheet (Editor) with the Drive service
       # account and enable the Sheets API in the project.
       SPOTLIGHT_LOG_SHEET_ID: ${{ secrets.SPOTLIGHT_LOG_SHEET_ID }}
+      # team_slack uses real A+ team names (Roman-authorized 2026-06-16). Set
+      # to 0 to fall back to invented names.
+      SPOTLIGHT_TEAM_SLACK_REAL_NAMES: '1'
       # Resolve the folder ID from whichever trigger fired this run.
       DRIVE_FOLDER_ID: ${{ github.event.client_payload.drive_folder_id || github.event.inputs.drive_folder_id }}
       FOLDER_NAME: ${{ github.event.client_payload.folder_name || github.event.inputs.folder_name || '(unnamed)' }}
