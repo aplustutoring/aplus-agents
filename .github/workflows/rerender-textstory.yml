@@ -1,0 +1,64 @@
+name: Re-render textstories for a bundle
+
+# One-off (re-runnable): pull a past case-study bundle artifact, generate +
+# render its text-story episodes, and deliver them to Slack. Use to recover a
+# run whose textstory stage failed (or predates a fix) without re-running the
+# whole pipeline. The bundle artifact must still be within the 30-day window.
+on:
+  workflow_dispatch:
+    inputs:
+      artifact:
+        description: 'Bundle artifact name, e.g. 2026-06-16-case-study-victoria'
+        required: true
+        type: string
+
+jobs:
+  rerender:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SPOTLIGHT_TEAM_SLACK_REAL_NAMES: '1'
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install ffmpeg + emoji fonts + Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-color-emoji fontconfig fonts-dejavu-core
+          python3 -m playwright install --with-deps chromium
+
+      - name: Download the bundle artifact
+        run: |
+          set -euo pipefail
+          name="${{ github.event.inputs.artifact }}"
+          runid=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts" --paginate \
+            --jq ".artifacts[] | select(.expired==false and .name==\"${name}\") | .workflow_run.id" | head -1)
+          if [ -z "$runid" ]; then echo "no unexpired artifact named $name"; exit 1; fi
+          rm -rf dl; mkdir -p dl
+          gh run download "$runid" -n "$name" -D "dl/$name"
+          mapfile=$(find "dl/$name" -name metadata.md | head -1)
+          if [ -z "$mapfile" ]; then echo "artifact has no metadata.md"; exit 1; fi
+          bdir=$(dirname "$mapfile")
+          mkdir -p "aplus-content"
+          mv "$bdir" "aplus-content/$name"
+          echo "BUNDLE=aplus-content/$name" >> "$GITHUB_ENV"
+
+      - name: Render + deliver text-stories
+        run: |
+          python3 scripts/b2c/build-case-study-textstory.py --bundle "$BUNDLE" --deliver
