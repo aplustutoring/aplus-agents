@@ -430,10 +430,14 @@ def _validate_team_slack(scenes, contacts, banned_names, school, source_texts) -
         errors.append("needs an @channel/@here broadcast ping at the peak")
     if not re.search(r"\d", joined):
         errors.append("sneak in one credibility data point (a number/percent)")
-    # the tutor's opener must lead with an image, not a bare stat
-    if msgs and re.match(r"^[@\w\s]*\d", (msgs[0].get("text", "") or "").strip()):
-        errors.append("tutor opener should lead with a specific image, not a stat")
-    errors += _shared_text_checks(msgs, scenes, banned_names, school, source_texts, 200)
+    # the tutor's opener must lead with an image, not a bare stat: only flag if
+    # it literally STARTS with a number (after any @mentions), e.g. "63% of...".
+    if msgs:
+        opener = re.sub(r"^\s*(@\w+\s*)+", "", msgs[0].get("text", "") or "").strip()
+        if opener[:1].isdigit():
+            errors.append("tutor opener should lead with an image, not a number/stat")
+    # Slack posts run longer than texts; allow a roomier cap.
+    errors += _shared_text_checks(msgs, scenes, banned_names, school, source_texts, 300)
     return errors
 
 
