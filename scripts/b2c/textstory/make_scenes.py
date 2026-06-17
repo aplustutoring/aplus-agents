@@ -186,9 +186,8 @@ DYNAMIC_CONFIG = {
             "Generational and warm. The grandma's love comes first, always. Use "
             "ALL-CAPS as EMOTION (set \"caps\": true), not anger. Give her at least "
             "TWO voice_message notes (grandmas leave voice notes). Light tech "
-            "bewilderment is endearing, never mocking. A Spanish term of endearment "
-            "(mi amor, mija, que lindo) is welcome where it fits naturally. Payoff: "
-            "the kid reads/works FOR the grandma. Add a reaction on the final beat."),
+            "bewilderment is endearing, never mocking. Payoff: the kid reads/works "
+            "FOR the grandma. Add a reaction on the final beat."),
         "fewshot": GRANDMA_FEWSHOT,
     },
     "mom_friend": {
@@ -241,8 +240,20 @@ DYNAMIC_CONFIG = {
 }
 
 
-def build_system_prompt(dynamic: str, contacts: dict) -> str:
+def build_system_prompt(dynamic: str, contacts: dict, lang_hint: str | None = None) -> str:
     cfg = DYNAMIC_CONFIG[dynamic]
+    if dynamic == "grandma":
+        label = contacts.get("left", "Grandma")
+        senders = (
+            f'Use from "right" (the mom, you) and "left" (the grandma). Her contact '
+            f'name is "{label}" — write her as that kind of grandma. For her voice, '
+            f'use {lang_hint or "English"}.')
+        return (
+            "You write 30-second vertical social videos for A+ Tutoring as a "
+            "text-message thread about a child's tutoring turnaround.\n\n"
+            f"DYNAMIC: grandma\n{senders}\n\nVOICE: {cfg['voice']}\n\n"
+            f"{SCHEMA_SPEC}\n{cfg['fewshot']}"
+        )
     if dynamic == "team_slack":
         members = contacts.get("members", {})
         roster = ", ".join(f'"{k}" ({members[k]})' for k in contacts.get("member_keys", []))
@@ -277,7 +288,7 @@ def build_system_prompt(dynamic: str, contacts: dict) -> str:
 
 # ── Claude call ──────────────────────────────────────────────────────────────
 def claude_scenes(dynamic: str, contacts: dict, meta: dict, doc1: str,
-                  feedback: str | None = None) -> dict:
+                  feedback: str | None = None, lang_hint: str | None = None) -> dict:
     import anthropic
 
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -298,7 +309,7 @@ def claude_scenes(dynamic: str, contacts: dict, meta: dict, doc1: str,
                  f"{feedback}\nRegenerate the full JSON fixing every violation.")
     message = client.messages.create(
         model=CLAUDE_MODEL, max_tokens=4000,
-        system=build_system_prompt(dynamic, contacts),
+        system=build_system_prompt(dynamic, contacts, lang_hint),
         messages=[{"role": "user", "content": user}],
     )
     text = "".join(b.text for b in message.content if getattr(b, "type", "") == "text")
@@ -496,11 +507,13 @@ def main() -> int:
     st_path = Path(args.bundle) / "source_texts.json"
     source_texts = json.loads(st_path.read_text()) if st_path.exists() else {}
 
+    lang_hint = (tc.grandma_language_hint(name_map.get("category"))
+                 if args.dynamic == "grandma" else None)
     feedback, errors = None, ["init"]
     for attempt in (1, 2, 3):
         print(f"[{args.dynamic}] scene generation attempt {attempt} ...")
         try:
-            scenes = claude_scenes(args.dynamic, contacts, meta, doc1, feedback)
+            scenes = claude_scenes(args.dynamic, contacts, meta, doc1, feedback, lang_hint)
         except (ValueError, json.JSONDecodeError) as exc:
             print(f"  could not parse Claude output: {exc}")
             feedback = f"- your output was not a single valid JSON object ({exc})"

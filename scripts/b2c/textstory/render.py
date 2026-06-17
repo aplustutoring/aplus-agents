@@ -216,7 +216,9 @@ def build_timeline(episode: dict) -> dict:
                             or "https://meetings.hubspot.com/successful/consultation"
                             ).replace("https://", ""),
             # baked-in by design — never sourced from generated JSON
-            "disclosure": "Based on real A+ family outcomes",
+            "disclosure": ("Based on real A+ family outcomes. Student and family "
+                           "names and details changed for privacy; conversations "
+                           "are dramatized."),
             "logo": "",  # set in main() once the tinted logo exists
         },
         "total": total,

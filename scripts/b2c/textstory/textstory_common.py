@@ -118,8 +118,43 @@ def _name_part(label: str) -> str:
 # Per-dynamic label pools for the "left" (contact) side of a 1:1 thread.
 # right is always the mom ("you"). All labels are generic / role-based —
 # never a real first name lifted from the case.
-GRANDMA_POOL = ["Má ❤️", "Mom ❤️", "Grandma 💕", "Abuela ❤️", "Nana 💕",
-                "Mamá ❤️", "Gigi 💕", "Grams ❤️"]
+# Grandma contact labels, keyed to the student's cultural category (from
+# name-map.json) so the grandma reads as that family's grandma. Different
+# students -> different cultures -> natural variety across episodes, without a
+# mismatched grandma landing on a case. GRANDMA_DEFAULT is the diverse mix used
+# when the category is unknown.
+GRANDMA_BY_CULTURE = {
+    "latino_hispanic": ["Abuela ❤️", "Abuelita 💕", "Lita ❤️", "Buela 💕", "Welita ❤️"],
+    "african_american": ["Grandma ❤️", "Granny 💕", "Big Mama ❤️", "Nana 💕", "Gigi 💕"],
+    "asian_east":  ["Nai Nai 💕", "Po Po ❤️", "Halmoni 💕", "Obaachan ❤️", "Ah-Ma 💕"],
+    "asian_south": ["Nani ❤️", "Dadi 💕", "Naani ❤️", "Aaji 💕"],
+    "middle_eastern": ["Teta ❤️", "Sitti 💕", "Tete ❤️", "Mama Joon 💕"],
+    "white_american": ["Grandma ❤️", "Granny 💕", "Nana 💕", "Gigi ❤️", "Grams 💕",
+                       "Mémé ❤️", "Oma 💕", "Nonna ❤️", "Babushka 💕", "Yia Yia ❤️"],
+}
+GRANDMA_DEFAULT = ["Grandma ❤️", "Granny 💕", "Nana 💕", "Abuela ❤️", "Nonna 💕",
+                   "Oma ❤️", "Babushka 💕", "Halmoni ❤️", "Nai Nai 💕", "Teta ❤️",
+                   "Nani 💕", "Yia Yia ❤️", "Big Mama ❤️", "Lola 💕"]
+# Per-culture hint so the grandma's endearments/interjections match her name
+# rather than always defaulting to Spanish. Empty => English only.
+GRANDMA_LANG_BY_CULTURE = {
+    "latino_hispanic": "Spanish terms of endearment (mija, mi amor, mi vida) where natural",
+    "african_american": "warm Southern English (baby, sugar) where natural",
+    "asian_east": "the occasional word in HER language matching her name "
+                  "(Korean for Halmoni, Mandarin for Nai Nai/Po Po, Japanese for "
+                  "Obaachan) — never mix languages",
+    "asian_south": "a Hindi/Urdu term of endearment (beta) where natural",
+    "middle_eastern": "an Arabic/Persian term of endearment (habibi, joonam) where natural",
+    "white_american": "mostly English; an occasional heritage word only if her "
+                      "name implies one (Nonna->Italian, Oma->German, Babushka->"
+                      "Russian, Yia Yia->Greek)",
+}
+
+
+def grandma_language_hint(category) -> str:
+    return GRANDMA_LANG_BY_CULTURE.get(category or "",
+        "if her name implies a language/culture, use that language for endearments "
+        "where natural — match her name, never mix cultures")
 FRIEND_POOL = ["Jess 🌸", "Steph ☀️", "Nicole 💛", "Dani 🌷", "Court 💐",
                "Mel ✨", "Bri 🌼", "Kayla 💗"]
 # family group: a group name + a set of role-based members (no real names)
@@ -179,7 +214,9 @@ def build_contacts(dynamic: str, bundle, name_map: dict | None, meta: dict) -> d
     if dynamic == "parents":
         return {"left": _pick_from(CONTACT_POOL, bundle, "parents", taken), "right": "Mom"}
     if dynamic == "grandma":
-        return {"left": _pick_from(GRANDMA_POOL, bundle, "grandma", taken), "right": "Mom"}
+        category = (name_map or {}).get("category")
+        pool = GRANDMA_BY_CULTURE.get(category, GRANDMA_DEFAULT)
+        return {"left": _pick_from(pool, bundle, "grandma", taken), "right": "Mom"}
     if dynamic == "mom_friend":
         return {"left": _pick_from(FRIEND_POOL, bundle, "friend", taken), "right": "Mom"}
     if dynamic == "kid_parent":
