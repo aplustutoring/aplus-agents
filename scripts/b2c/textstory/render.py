@@ -450,6 +450,12 @@ def main() -> int:
         work = src.parent / "work"
         final = Path(args.out) if args.out else src.with_suffix(".mp4")
 
+    # resolve to absolute: the renderer builds file:// URIs for the template,
+    # font, and logo, which fail on a relative bundle path (e.g. when invoked
+    # with --bundle aplus-content/<name> from the repo root).
+    work = work.resolve()
+    final = final.resolve()
+
     if _skin(episode) == "slack":
         data = build_timeline_slack(episode)
         template = "template_slack.html"
