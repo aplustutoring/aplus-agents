@@ -11,6 +11,11 @@ on:
         description: 'Bundle artifact name, e.g. 2026-06-16-case-study-victoria'
         required: true
         type: string
+      dynamics:
+        description: 'Optional comma-separated subset, e.g. team_slack (default: all 5)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   rerender:
@@ -60,5 +65,9 @@ jobs:
           echo "BUNDLE=aplus-content/$name" >> "$GITHUB_ENV"
 
       - name: Render + deliver text-stories
+        env:
+          ONLY: ${{ github.event.inputs.dynamics }}
         run: |
-          python3 scripts/b2c/build-case-study-textstory.py --bundle "$BUNDLE" --deliver
+          args=(--bundle "$BUNDLE" --deliver)
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python3 scripts/b2c/build-case-study-textstory.py "${args[@]}"
