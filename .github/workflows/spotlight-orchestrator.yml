@@ -45,6 +45,9 @@ jobs:
       # team_slack uses real A+ team names (Roman-authorized 2026-06-16). Set
       # to 0 to fall back to invented names.
       SPOTLIGHT_TEAM_SLACK_REAL_NAMES: '1'
+      # Where the orchestrator posts a heads-up if the (non-fatal) textstory
+      # stage ships fewer videos than expected. Unset -> no heads-up.
+      SLACK_FAILURE_CHANNEL: ${{ vars.SLACK_FAILURE_CHANNEL || '' }}
       # Resolve the folder ID from whichever trigger fired this run.
       DRIVE_FOLDER_ID: ${{ github.event.client_payload.drive_folder_id || github.event.inputs.drive_folder_id }}
       FOLDER_NAME: ${{ github.event.client_payload.folder_name || github.event.inputs.folder_name || '(unnamed)' }}
