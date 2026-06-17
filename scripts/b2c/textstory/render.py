@@ -297,17 +297,32 @@ def build_timeline_slack(episode: dict) -> dict:
 
 
 def make_white_logo(work: Path) -> Path:
-    """Tint the orange transparent logo to brand Ivory for the orange endcard
-    (same approach as the comic stage's white-variant logo)."""
+    """Build the Ivory end-card logo. Prefer the transparent logo (clean
+    anti-aliased edges); if it's missing, fall back to chroma-keying the
+    ivory background out of the tracked logo.png so a missing asset can never
+    silently fail every render again."""
     from PIL import Image
-    src = Image.open(tc.REPO / "assets" / "logo-transparent.png").convert("RGBA")
     ivory = (248, 244, 237)
-    px = src.load()
-    for y in range(src.height):
-        for x in range(src.width):
-            r, g, b, a = px[x, y]
-            if a:
-                px[x, y] = (*ivory, a)
+    transparent = tc.REPO / "assets" / "logo-transparent.png"
+    if transparent.exists():
+        src = Image.open(transparent).convert("RGBA")
+        px = src.load()
+        for y in range(src.height):
+            for x in range(src.width):
+                r, g, b, a = px[x, y]
+                if a:
+                    px[x, y] = (*ivory, a)
+    else:
+        # fallback: derive the mark from the ivory-background logo.png
+        src = Image.open(tc.REPO / "assets" / "logo.png").convert("RGBA")
+        px = src.load()
+        for y in range(src.height):
+            for x in range(src.width):
+                r, g, b, a = px[x, y]
+                if r > 225 and g > 215 and b > 205:   # near-ivory/white -> transparent
+                    px[x, y] = (255, 255, 255, 0)
+                else:
+                    px[x, y] = (*ivory, 255)
     out = work / "logo_white.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     src.save(out)
