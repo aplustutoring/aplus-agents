@@ -80,6 +80,9 @@ A <message> is one of:
 
 RULES (all dynamics):
 - 3-4 scenes, each a different evening/day weeks apart, shown by its timestamp.
+- KEEP IT TIGHT: about 11-14 messages TOTAL across all scenes (~3 per scene).
+  The finished video must stay under 30 seconds, so every message has to earn
+  its place — punchy, not crowded. Fewer, better lines beat more lines.
 - Arc across the scenes: struggle -> change begins -> proof -> joy.
 - EXACTLY ONE screenshot message, in the proof/joy stretch. Put a realistic
   grade/score/level in its "shot" (a clean PUBLIC stat only — never a
@@ -405,8 +408,8 @@ def validate(dynamic, scenes, contacts, banned_names, school, source_texts) -> l
     msgs = [m for s in sc for m in s.get("msgs", [])]
     valid_from = _valid_senders(dynamic, contacts)
     n_text = sum(1 for m in msgs if m.get("text"))
-    if not 8 <= n_text <= 24:
-        errors.append(f"need ~10-22 text messages, got {n_text}")
+    if not 8 <= n_text <= 16:
+        errors.append(f"need 11-14 text messages (tight, under-30s video), got {n_text}")
     n_shot = sum(1 for m in msgs if m.get("type") == "screenshot")
     if n_shot != 1:
         errors.append(f"need exactly one screenshot, got {n_shot}")

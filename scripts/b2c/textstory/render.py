@@ -31,19 +31,30 @@ import textstory_common as tc  # noqa: E402
 HERE = Path(__file__).resolve().parent
 FPS, W, H = tc.FPS, tc.W, tc.H
 
-TARGET_CHAT_SECONDS = 27.5   # chat portion budget; endcard rides on top
-ENDCARD_SECONDS = 4.2
+# Hard ceiling: the finished video must stay under 30s. Endcard rides on top of
+# the chat budget, so chat budget = ceiling - gap - endcard.
+TOTAL_CEILING = 29.5
+ENDCARD_SECONDS = 3.6
+ENDCARD_GAP = 0.5
+CHAT_BUDGET = TOTAL_CEILING - ENDCARD_GAP - ENDCARD_SECONDS   # ~25.4s
+# When the chat runs long we compress the DEAD AIR (reading dwells + gaps),
+# NOT the typing indicators — so typing never flies by. Dwells won't shrink
+# below this fraction; past that a uniform safety squeeze kicks in (which
+# means the episode simply has too many messages — see make_scenes targets).
+MIN_DWELL_SCALE = 0.4
 
 # pacing constants (seconds)
 DIVIDER_HOLD = 0.75          # divider fade + hold before first typing
-SAME_SENDER_GAP = 0.42       # quick-fire follow-up from the same sender
-PAUSE_TYPING = 1.5           # typing_pause: dots run this long...
-PAUSE_STILLNESS = 0.85       # ...then stop. beat of stillness.
+SAME_SENDER_GAP = 0.42       # quick-fire follow-up from the same sender (dwell)
+PAUSE_TYPING = 1.5           # typing_pause: dots run this long... (protected)
+PAUSE_STILLNESS = 0.85       # ...then stop. beat of stillness. (protected)
 SCREENSHOT_DWELL = 1.5
+VOICE_DWELL_PROTECT = True   # screenshot/voice beats are protected, not dead air
 
 
 def typing_dur(text: str) -> float:
-    return min(max(0.6 + 0.007 * len(text), 0.65), 1.05)
+    # a touch longer than before so the indicator reads with presence
+    return min(max(0.72 + 0.007 * len(text), 0.78), 1.18)
 
 
 def read_dwell(text: str) -> float:
@@ -102,16 +113,19 @@ def _resolve_sender(msg: dict, episode: dict, header: dict):
     return "left", None, frm
 
 
-def build_timeline(episode: dict) -> dict:
-    """Flatten scenes into DOM items + typing windows + sfx events, all with
-    absolute times. One source of truth for both frames and audio.
-
-    Supports msg types: text (default), typing_pause, screenshot,
-    voice_message, reaction. Sides come from `from` (left/right or group
-    member keys) resolved against the episode's `contacts`."""
-    header = _resolve_header(episode)
+def _layout(episode: dict, header: dict, ds: float):
+    """Build the chat timeline with dead-air (reading dwells, gaps, breaths)
+    scaled by `ds`, while typing indicators and emotional beats stay full
+    length. Returns (items, typing, sfx, t_end, dwell_total) where dwell_total
+    is the UNSCALED sum of the compressible dead air."""
     items, typing, sfx = [], [], []
     t = 0.7  # settle on the empty thread for a beat
+    dwell_total = 0.0
+
+    def dwell(dt):  # compressible dead air
+        nonlocal t, dwell_total
+        dwell_total += dt
+        t += dt * ds
 
     for scene in episode["scenes"]:
         items.append({"kind": "divider", "text": scene["ts"], "appear": t})
@@ -125,12 +139,11 @@ def build_timeline(episode: dict) -> dict:
             if mtype == "typing_pause":
                 typing.append({"side": side, "start": t, "end": t + PAUSE_TYPING})
                 sfx.append({"t": t, "name": "keyboard_clicks", "dur": PAUSE_TYPING})
-                t += PAUSE_TYPING + PAUSE_STILLNESS
-                prev_sender = None  # they type again -> dots again
+                t += PAUSE_TYPING + PAUSE_STILLNESS   # protected beat
+                prev_sender = None
                 continue
 
             if mtype == "reaction":
-                # instant tap — no typing indicator, quick beat
                 items.append({"kind": "reaction", "side": side, "appear": t,
                               "emoji": msg.get("emoji", "❤️"),
                               "who": label, "who_key": who_key})
@@ -143,19 +156,14 @@ def build_timeline(episode: dict) -> dict:
             is_voice = mtype == "voice_message"
             text = msg.get("text", "")
 
-            # typing indicator before a fresh sender's turn (recording, for voice)
+            # typing indicator before a fresh sender's turn — PROTECTED (full length)
             if msg.get("from") != prev_sender:
-                if is_voice:
-                    dur = 1.1
-                elif is_shot:
-                    dur = 0.9
-                else:
-                    dur = typing_dur(text)
+                dur = 1.1 if is_voice else 0.9 if is_shot else typing_dur(text)
                 typing.append({"side": side, "start": t, "end": t + dur})
                 sfx.append({"t": t, "name": "keyboard_clicks", "dur": dur})
                 t += dur
             else:
-                t += SAME_SENDER_GAP
+                dwell(SAME_SENDER_GAP)
 
             item = {"side": side, "appear": t, "sender_label": label, "who_key": who_key}
             if is_shot:
@@ -176,19 +184,36 @@ def build_timeline(episode: dict) -> dict:
 
             nxt = msgs[i + 1] if i + 1 < len(msgs) else None
             if is_shot:
-                t += SCREENSHOT_DWELL
+                t += SCREENSHOT_DWELL          # protected beat
             elif is_voice:
-                t += VOICE_DWELL
+                t += VOICE_DWELL               # protected beat
             elif nxt and nxt.get("from") == msg.get("from") and not nxt.get("type"):
-                t += 0.15  # same-sender gap applied on the next message
+                dwell(0.15)
             else:
-                t += read_dwell(text)
+                dwell(read_dwell(text))
             prev_sender = msg.get("from")
-        t += 0.3  # breath at scene end
+        dwell(0.3)  # breath at scene end
+    return items, typing, sfx, t, dwell_total
 
-    # scale chat timing to budget if it ran long
-    if t > TARGET_CHAT_SECONDS:
-        k = TARGET_CHAT_SECONDS / t
+
+def build_timeline(episode: dict) -> dict:
+    """Flatten scenes into DOM items + typing windows + sfx events.
+
+    Fits the chat under CHAT_BUDGET by compressing dead air first (so typing
+    never flies by); a uniform safety squeeze only kicks in if the episode has
+    so many messages that even minimal dead air overflows the budget."""
+    header = _resolve_header(episode)
+    items, typing, sfx, t_nat, dwell_total = _layout(episode, header, 1.0)
+
+    if t_nat > CHAT_BUDGET and dwell_total > 0:
+        fixed_total = t_nat - dwell_total
+        ds = max((CHAT_BUDGET - fixed_total) / dwell_total, MIN_DWELL_SCALE)
+        items, typing, sfx, t_chat, _ = _layout(episode, header, ds)
+    else:
+        t_chat = t_nat
+
+    if t_chat > CHAT_BUDGET:  # safety: too many messages even at min dead air
+        k = CHAT_BUDGET / t_chat
         for it in items:
             it["appear"] *= k
         for w in typing:
@@ -198,9 +223,9 @@ def build_timeline(episode: dict) -> dict:
             e["t"] *= k
             if "dur" in e:
                 e["dur"] *= k
-        t = TARGET_CHAT_SECONDS
+        t_chat = CHAT_BUDGET
 
-    endcard_start = t + 0.5
+    endcard_start = t_chat + ENDCARD_GAP
     total = endcard_start + ENDCARD_SECONDS
     ec = episode.get("endcard", {})
     return {
@@ -267,16 +292,16 @@ def build_timeline_slack(episode: dict) -> dict:
             t += read_dwell(text) + (SLACK_REACT_DWELL if reactions else 0.0)
         t += 0.3
 
-    if t > TARGET_CHAT_SECONDS:
-        k = TARGET_CHAT_SECONDS / t
+    if t > CHAT_BUDGET:
+        k = CHAT_BUDGET / t
         for it in items:
             it["appear"] *= k
             it["react_at"] *= k
         for e in sfx:
             e["t"] *= k
-        t = TARGET_CHAT_SECONDS
+        t = CHAT_BUDGET
 
-    endcard_start = t + 0.5
+    endcard_start = t + ENDCARD_GAP
     total = endcard_start + ENDCARD_SECONDS
     ec = episode.get("endcard", {})
     return {
