@@ -359,9 +359,13 @@ def main():
     channel_id = sd.resolve_channel_id(args.channel)
     print(f"  Channel ID: {channel_id}")
 
-    sd.deliver_pieces(channel_id, header_text, effective, bundle)
+    header_ts = sd.deliver_pieces(channel_id, header_text, effective, bundle)
 
     print(f"\nDone. Open {args.channel} in Slack to review the spotlight thread.")
+    # Emit the thread ts so the orchestrator can nest the reel + text-stories
+    # under this same per-student thread.
+    if header_ts:
+        print(f"THREAD_TS={header_ts}")
     return 0
 
 
