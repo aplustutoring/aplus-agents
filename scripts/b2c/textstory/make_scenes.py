@@ -407,9 +407,12 @@ def validate(dynamic, scenes, contacts, banned_names, school, source_texts) -> l
 
     msgs = [m for s in sc for m in s.get("msgs", [])]
     valid_from = _valid_senders(dynamic, contacts)
-    n_text = sum(1 for m in msgs if m.get("text"))
-    if not 8 <= n_text <= 16:
-        errors.append(f"need 11-14 text messages (tight, under-30s video), got {n_text}")
+    # count message BEATS (text bubbles + voice notes + the screenshot), so a
+    # grandma episode that leans on voice messages isn't wrongly under-count.
+    n_beats = sum(1 for m in msgs
+                  if m.get("text") or m.get("type") in ("voice_message", "screenshot"))
+    if not 8 <= n_beats <= 16:
+        errors.append(f"need 11-14 message beats (tight, under-30s video), got {n_beats}")
     n_shot = sum(1 for m in msgs if m.get("type") == "screenshot")
     if n_shot != 1:
         errors.append(f"need exactly one screenshot, got {n_shot}")
