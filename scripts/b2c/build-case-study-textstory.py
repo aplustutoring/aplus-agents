@@ -54,6 +54,8 @@ def main() -> int:
     ap.add_argument("--deliver", action="store_true",
                     help="post the finished mp4s to Slack")
     ap.add_argument("--channel", default=None, help="override Slack channel")
+    ap.add_argument("--thread-ts", default=None,
+                    help="nest the delivery under an existing Slack thread")
     args = ap.parse_args()
 
     if args.only:
@@ -88,6 +90,8 @@ def main() -> int:
                 "--bundle", args.bundle, "--dynamics", ",".join(built)]
         if args.channel:
             dcmd.extend(["--channel", args.channel])
+        if args.thread_ts:
+            dcmd.extend(["--thread-ts", args.thread_ts])
         run_step("deliver", dcmd)
 
     print(f"\ntextstory: built {built or '[]'}"

@@ -3413,10 +3413,20 @@ def stage_slack(args: argparse.Namespace, run: dict) -> dict:
     if tail:
         print(f"    {tail[0]}")
 
+    # Capture the thread ts so the reel + text-stories nest under the SAME
+    # per-student thread instead of starting their own top-level threads.
+    thread_ts = None
+    for line in (result.stdout or "").splitlines():
+        if line.startswith("THREAD_TS="):
+            thread_ts = line.split("=", 1)[1].strip()
+    if thread_ts:
+        print(f"    thread ts {thread_ts} — reel + text-stories will nest here")
+
     run.update(
         {
             "stage": "slack",
             "slack_channel": args.slack_channel or "#student-spotlight-ready",
+            "slack_thread_ts": thread_ts,
         }
     )
     update_run(run["run_id"], run)
@@ -3460,6 +3470,8 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
             dcmd = ["python3", str(REEL_DIR / "deliver_reel.py"), "--bundle", bundle]
             if args.slack_channel:
                 dcmd.extend(["--channel", args.slack_channel])
+            if run.get("slack_thread_ts"):
+                dcmd.extend(["--thread-ts", run["slack_thread_ts"]])
             print("  reel:deliver ...")
             r = subprocess.run(dcmd, capture_output=True, text=True)
             if r.returncode != 0:
@@ -3520,6 +3532,8 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
         cmd.append("--deliver")
         if args.slack_channel:
             cmd.extend(["--channel", args.slack_channel])
+        if run.get("slack_thread_ts"):
+            cmd.extend(["--thread-ts", run["slack_thread_ts"]])
     alert = None
     try:
         print("  textstory: scenes -> render -> deliver ...")
