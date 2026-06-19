@@ -1,89 +1,73 @@
 {
-  "current_week": "2026-06-11",
+  "current_week": "2026-06-18",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "CDE Opens FY 2026\u201327 Title III English Learner + Immigrant RFAs \u2014 Partners Have a Closing Window to Apply",
-      "category": "A (federal/state K-12 funding) \u2014 strongest policy_funding_hawk topic this cycle",
-      "sources": [
-        "https://www.cde.ca.gov/fg/fo/",
-        "https://www.cde.ca.gov/fg/fo/af/"
-      ],
-      "why_matters": "Five Tier A partners (Ocean Grove, South Sutter, Visions in Education, Heartland, Pacific Coast Academy) already receive Title III Immigrant funds, and 18 partners have never applied at all. CDE released the 2026-27 Title III English Learner Student Program Subgrant for Nonprofit Private School Participation letter and the FY 2026-27 Title III English Learner RFA on May 21, 2026, with the FY 2026-27 Title III Immigrant Student Program RFA released the same day. This is the doorway moment Danielle has been waiting for to convert never-applied partners into applicants \u2014 and to flag unspent-funds risk for Community Collaborative Charter ($7,384) and Cabrillo Point ($3,813). The federal threat to eliminate Title III makes \"use it before it disappears\" a real argument, not a sales line.",
-      "angle": "\"The Title III RFA window is open. Here's the timeline charter LEAs need to hit, and the three most-common reasons partners leave Immigrant funds on the table.\" Anchor to the May 21 CDE release date.",
-      "roman_take": "Conviction angle \u2014 Title III is the most politically vulnerable Title stream and may not exist in this form in 18 months; LEAs that skip this cycle aren't being cautious, they're being passive in a closing window.",
-      "danielle_take": "Implementation angle \u2014 walk through what a charter's Title III Immigrant application actually needs (allowable activities, intervention tie-in, documentation), and what intervention partners can pre-build so the LEA doesn't miss the deadline.",
-      "redundancy_max_similarity": 0.5871757774039966,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-13T16:46:26.448955+00:00",
-      "post_date": "2026-06-15",
-      "bundle_dir": "aplus-content/2026-06-15-california-title-iii-rfa-2026",
-      "hubspot_post_id": "214976205220"
+      "headline": "California Legislature just put $5B more on the table for K-12 than Newsom proposed \u2014 including a $5B no-strings block grant for charters",
+      "category": "A (state funding) \u2014 strongest topic from the `policy_funding_hawk` lens",
+      "sources": [],
+      "why_matters": "Every Tier A partner \u2014 Visions, Heritage Peak, Sage Oak, iLEAD, Heartland, Compass, all of them \u2014 is about to receive (a) a higher COLA, (b) more special ed funding, and (c) a discretionary block grant they can legally point at intervention contracts. The LAO explicitly counts charter schools as \"districts\" for Prop 98 distribution purposes. The negotiation window between the Legislature and Newsom is the next two weeks. This is the single biggest \"what to spend it on\" conversation charter directors will have all summer, and A+ has a credible answer for the SpEd and discretionary buckets.",
+      "angle": "\"California charter schools are about to get a $5B one-time block grant they can spend however they want. Here are the three things our partner schools are already telling us they're prioritizing.\"",
+      "roman_take": "The discretionary block grant is a trap for any charter without a measurement framework \u2014 money you can spend \"however you want\" gets spent on things no one can defend at the next board meeting. Tie discretionary dollars to ESSA-evidenced interventions or watch them disappear into the general fund.",
+      "danielle_take": "Concrete checklist for charter business managers: how to code the block grant against existing intervention contracts, what to ask your CFO before October 1, and which partner schools have already started this conversation. ---",
+      "redundancy_max_similarity": 0.37537412297348327,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "Visions In Education is hiring \"many new positions\" for 26/27 \u2014 and just graduated its largest class ever",
-      "category": "C (Tier A active partner, Sacramento cluster)",
-      "sources": [],
-      "why_matters": "Visions is one of A+'s five Sacramento-cluster Tier A partners and one of the five partners with **confirmed Title III Immigrant receipts**. A growing partner with an expanding hiring footprint and a record graduating class is the cleanest possible B2B social proof signal \u2014 and authentic, because A+ already works there. This also signals capacity strain that intervention partners can solve.",
-      "angle": "Congratulate Visions on Class of 2026, then pivot to what growth at scale means for intervention infrastructure (new staff onboarding + EL services + Title III spend planning happening simultaneously).",
-      "roman_take": "Why \"growth + intervention staffing\" is the real conviction story \u2014 charter networks that grow without scaling intervention capacity end up on the CSI list two years later.",
-      "danielle_take": "A practitioner note on what 26/27 onboarding should look like for special programs coordinators inheriting a bigger roster \u2014 specifically, building reclassification cadence into the August calendar before LCAP work eats the bandwidth. ---",
-      "redundancy_max_similarity": 0.3614658306853317,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-13T17:09:24.847894+00:00",
-      "post_date": "2026-06-17",
-      "bundle_dir": "aplus-content/2026-06-17-charter-growth-intervention-staffing",
-      "hubspot_post_id": "214978811776"
+      "headline": "iLEAD Schools launches new Lancaster charter (iLEAD Flex) as California's NCB moratorium ends",
+      "category": "C (Tier A partner news) \u2014 primary lens hit",
+      "sources": [
+        "https://www.prnewswire.com/news-releases/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster-302804663.html"
+      ],
+      "why_matters": "iLEAD is a Tier A partner across multiple campuses (Antelope Valley, Lancaster Charter Academy, Exploration, Hybrid, Online). iLEAD Schools announced the expansion of its charter network into Lancaster, California, adding a new charter school in their network beginning in 2026. The unlock is structural: since the statewide moratorium on new nonclassroom-based charters concluded on January 1, 2026, mission-driven networks like iLEAD have been moving quickly to bring their programs to communities that have long lacked access to flex learning. iLEAD Flex will open in August 2026 \u2014 meaning an intervention staffing/program-build window opens in the next 60 days. The existing iLEAD Lancaster Charter context makes the intervention case sharp: In Ilead Lancaster Charter District, 17% of students tested at or above the proficient level for reading, and 10% tested at or above that level for math.",
+      "angle": "\"California's NCB moratorium ended six months ago. The first wave of partner expansions is starting \u2014 here's what that means for intervention planning.\"",
+      "roman_take": "Conviction angle on why the moratorium lift is a generational opening for flex-based public schools \u2014 and why intervention infrastructure (not just enrollment marketing) determines which new charters survive renewal.",
+      "danielle_take": "Implementation angle on the 60-day window between charter approval and August opening \u2014 what Title III / Title I funding decisions need to be made now so a new charter doesn't start year one with a reactive intervention model. ---",
+      "redundancy_max_similarity": 0.5343925750430434,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "Varsity Tutors' \"Live+AI\" pitch and the \"2X gains over traditional interventions\" claim",
-      "category": "D (industry/competitor moves) \u2014 primary lens hit",
+      "headline": "The Nashville Problem \u2014 why big tutoring vendors keep failing at scale, and what charter directors should ask before signing",
+      "category": "D (primary) / B (secondary)",
       "sources": [
-        "https://www.stocktitan.net/news/NRDY/varsity-tutors-launches-live-aitm-platform-for-schools",
-        "https://www.edtechinnovationhub.com/news/varsity-tutors-launches-liveai",
-        "https://www.varsitytutors.com/school-solutions"
+        "https://www.ascd.org/el/articles/a-closer-look-at-high-dosage-tutoring",
+        "https://www.gse.harvard.edu/ideas/usable-knowledge/26/02/high-dosage-tutoring-can-make-real-difference-harvards-strategic-data",
+        "https://www.mdrc.org/work/publications/bringing-high-dosage-tutoring-more-students"
       ],
-      "why_matters": "This is the most direct competitive challenge to A+'s positioning in the past 30 days. Live + AI\u2122 is pitched as \"a next-generation, AI-powered, high-dosage tutoring and live intervention platform\" grounded in the idea that \"technology is most powerful when it amplifies, not replaces, the human bond at the center of learning\" \u2014 language that sounds like A+'s own positioning but is delivered through a platform-first model. Varsity Tutors says it is \"trusted by more than 1,000 school districts nationwide\" with \"nearly two decades of experience and over 10 million hours of live instruction\" and claims results that double \"student growth in core subjects compared to traditional interventions\". Charter directors will see this pitch in their inboxes. A+ needs to be on record about what \"traditional interventions\" actually means and where the platform model breaks down for LTEL and IEP students specifically.",
-      "angle": "\"When a national tutoring platform claims '2X gains over traditional interventions,' ask what they mean by traditional \u2014 because A+'s small-group LTEL work, with the same tutor for 30+ weeks, isn't 'traditional.' It's what the research actually points to.\"",
-      "roman_take": "The platform-vs-relationship distinction matters \u2014 \"doubling growth\" is a measurement game that depends entirely on what baseline you choose; A+'s case-study evidence is against the right baseline (the kids who weren't reclassifying for years).",
-      "danielle_take": "Walk through the operational reality of \"AI for HI\" inside a charter \u2014 what happens when a 10th-grade LTEL student logs into a chat-window tutor for 60 minutes vs. spends that same 60 minutes with a human tutor who knows their ELPAC subscore profile.",
-      "redundancy_max_similarity": 0.4638207890017623,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-13T17:31:47.522807+00:00",
-      "post_date": "2026-06-19",
-      "bundle_dir": "aplus-content/2026-06-19-varsity-tutors-live-ai-claims",
-      "hubspot_post_id": "214978812303"
+      "why_matters": "The field's most credible institutions are now openly admitting that vendor-led high-dosage tutoring stops working when it scales \u2014 impacts decline as programs scale up, and some of the most effective programs are intensive, expensive, and difficult to implement. That's exactly the A+ thesis stated by Harvard and AIBM. The Harvard toolkit launch reframes \"evidence-based tutoring\" from a marketing line into a procurement standard: \"Measure, Monitor, Improve\" aims to help solve common challenges when bringing tutoring programs to students and provides a set of data collection strategies, tools, and best practices for district leaders, policymakers, and academic researchers. A+ should plant a flag here before Varsity, IXL, and Saga rewrite the narrative.",
+      "angle": "\"Harvard just told K-12 leaders the quiet part out loud: tutoring works in studies and fails at scale. Here's what charter directors should ask any vendor before signing \u2014 including us.\"",
+      "roman_take": "Conviction angle \u2014 the reason small operators outperform \"platform\" tutoring at scale isn't capacity, it's that the platforms sell hours and we sell outcomes; Nashville bought 125,000 hours and got minimal gains because hours aren't the unit of impact.",
+      "danielle_take": "Implementation angle \u2014 walk through the four conditions Harvard says actually drive results (it happens during the school day, districts that include tutoring into existing learning blocks saw far higher participation than tutoring outside of core hours, it's measured, data enables visibility of student participation and monitoring of tutoring frequency and duration, it depends on people, proper training of supported and reliable tutors gets the best results, and programs are held accountable) and show how A+'s iEM program is already structured exactly that way at Ocean Grove + South Sutter + Sky Mountain. ---",
+      "redundancy_max_similarity": 0.5056628647278237,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1781238079.544329",
-    "posted_at": "2026-06-11T21:16:27.522808-07:00",
+    "message_ts": "1781844577.533469",
+    "posted_at": "2026-06-18T21:44:34.154675-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1781238079.708159"
+        "ts": "1781844577.633429"
       },
       {
         "slot": 2,
-        "ts": "1781238079.968549"
+        "ts": "1781844577.754339"
       },
       {
         "slot": 3,
-        "ts": "1781238080.193309"
+        "ts": "1781844577.880259"
       }
     ],
     "processed_reply_ts": []
@@ -92,7 +76,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-06-11T21:16:27.522808-07:00",
+    "approved_at": "2026-06-18T21:44:34.154675-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null
