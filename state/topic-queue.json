@@ -13,7 +13,12 @@
       "roman_take": "The discretionary block grant is a trap for any charter without a measurement framework \u2014 money you can spend \"however you want\" gets spent on things no one can defend at the next board meeting. Tie discretionary dollars to ESSA-evidenced interventions or watch them disappear into the general fund.",
       "danielle_take": "Concrete checklist for charter business managers: how to code the block grant against existing intervention contracts, what to ask your CFO before October 1, and which partner schools have already started this conversation. ---",
       "redundancy_max_similarity": 0.37537412297348327,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-20T16:43:59.018538+00:00",
+      "post_date": "2026-06-22",
+      "bundle_dir": "aplus-content/2026-06-22-california-charter-block-grant-2026",
+      "hubspot_post_id": "215478348033"
     },
     {
       "slot": 2,
@@ -29,7 +34,12 @@
       "roman_take": "Conviction angle on why the moratorium lift is a generational opening for flex-based public schools \u2014 and why intervention infrastructure (not just enrollment marketing) determines which new charters survive renewal.",
       "danielle_take": "Implementation angle on the 60-day window between charter approval and August opening \u2014 what Title III / Title I funding decisions need to be made now so a new charter doesn't start year one with a reactive intervention model. ---",
       "redundancy_max_similarity": 0.5343925750430434,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-20T17:07:29.653924+00:00",
+      "post_date": "2026-06-24",
+      "bundle_dir": "aplus-content/2026-06-24-ilead-flex-lancaster-charter-planning",
+      "hubspot_post_id": "215477653342"
     },
     {
       "slot": 3,
@@ -47,7 +57,12 @@
       "roman_take": "Conviction angle \u2014 the reason small operators outperform \"platform\" tutoring at scale isn't capacity, it's that the platforms sell hours and we sell outcomes; Nashville bought 125,000 hours and got minimal gains because hours aren't the unit of impact.",
       "danielle_take": "Implementation angle \u2014 walk through the four conditions Harvard says actually drive results (it happens during the school day, districts that include tutoring into existing learning blocks saw far higher participation than tutoring outside of core hours, it's measured, data enables visibility of student participation and monitoring of tutoring frequency and duration, it depends on people, proper training of supported and reliable tutors gets the best results, and programs are held accountable) and show how A+'s iEM program is already structured exactly that way at Ocean Grove + South Sutter + Sky Mountain. ---",
       "redundancy_max_similarity": 0.5056628647278237,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-20T17:37:59.874366+00:00",
+      "post_date": "2026-06-26",
+      "bundle_dir": "aplus-content/2026-06-26-nashville-tutoring-vendors-scale",
+      "hubspot_post_id": "215479310938"
     }
   ],
   "slack": {

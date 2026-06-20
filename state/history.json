@@ -734,6 +734,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1781844577.533469"
+    },
+    {
+      "ts": "2026-06-20T16:43:59.019796+00:00",
+      "kind": "content_build",
+      "week": "2026-06-18",
+      "slot": 1,
+      "post_date": "2026-06-22",
+      "headline": "California Legislature just put $5B more on the table for K-12 than Newsom proposed \u2014 including a $5B no-strings block grant for charters",
+      "bundle_dir": "aplus-content/2026-06-22-california-charter-block-grant-2026",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "215478348033",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-20T17:07:29.655095+00:00",
+      "kind": "content_build",
+      "week": "2026-06-18",
+      "slot": 2,
+      "post_date": "2026-06-24",
+      "headline": "iLEAD Schools launches new Lancaster charter (iLEAD Flex) as California's NCB moratorium ends",
+      "bundle_dir": "aplus-content/2026-06-24-ilead-flex-lancaster-charter-planning",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "215477653342",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-20T17:37:59.875339+00:00",
+      "kind": "content_build",
+      "week": "2026-06-18",
+      "slot": 3,
+      "post_date": "2026-06-26",
+      "headline": "The Nashville Problem \u2014 why big tutoring vendors keep failing at scale, and what charter directors should ask before signing",
+      "bundle_dir": "aplus-content/2026-06-26-nashville-tutoring-vendors-scale",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "215479310938",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
