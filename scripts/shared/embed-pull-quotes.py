@@ -338,16 +338,7 @@ def insert_figure_after_paragraph(html, anchor, image_url, alt_text):
 
     Returns (new_html, success_bool).
     """
-    import html as _html_module
-    safe_url = _html_module.escape(image_url, quote=True)
-    safe_alt = _html_module.escape(alt_text, quote=True)
-    figure_html = (
-        '<figure style="margin: 2.5em auto; text-align: center; max-width: 640px;">'
-        f'<img src="{safe_url}" alt="{safe_alt}" '
-        'style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />'
-        "</figure>"
-    )
-
+    figure_html = _figure_html(image_url, alt_text)
     pos = html.lower().find(anchor.lower())
     if pos == -1:
         return html, False
@@ -357,6 +348,34 @@ def insert_figure_after_paragraph(html, anchor, image_url, alt_text):
     insert_pos = end_pos + len("</p>")
     new_html = html[:insert_pos] + "\n" + figure_html + html[insert_pos:]
     return new_html, True
+
+
+def _figure_html(image_url, alt_text):
+    import html as _html_module
+    safe_url = _html_module.escape(image_url, quote=True)
+    safe_alt = _html_module.escape(alt_text, quote=True)
+    return (
+        '<figure style="margin: 2.5em auto; text-align: center; max-width: 640px;">'
+        f'<img src="{safe_url}" alt="{safe_alt}" '
+        'style="max-width: 100%; height: auto; display: block; margin: 0 auto;" />'
+        "</figure>"
+    )
+
+
+def insert_figure_after_nth_paragraph(html, n, image_url, alt_text):
+    """Fallback when no verbatim anchor matches: insert the figure right after the
+    nth </p> (1-indexed). Returns (new_html, success_bool). <figure> tags add no
+    </p>, so sequential nth-paragraph inserts stay stable."""
+    idx = -1
+    for _ in range(n):
+        nxt = html.find("</p>", idx + 1)
+        if nxt == -1:
+            break
+        idx = nxt
+    if idx == -1:
+        return html, False
+    insert_pos = idx + len("</p>")
+    return html[:insert_pos] + "\n" + _figure_html(image_url, alt_text) + html[insert_pos:], True
 
 
 def patch_post(post_id, post_body):
@@ -487,14 +506,34 @@ def main():
     print("\nInserting <figure> tags...")
     new_body = current_body
     inserted = []
+    fallback = []
     for fig in figures:
         url = image_urls[fig["file"]]
-        new_body, ok = insert_figure_after_paragraph(new_body, fig["anchor"], url, fig["alt"])
+        nb, ok = insert_figure_after_paragraph(new_body, fig["anchor"], url, fig["alt"])
         if ok:
+            new_body = nb
             print(f"  ✓ [{fig.get('kind','?')}] inserted after anchor: '{fig['anchor'][:60]}...'")
             inserted.append(fig["file"])
         else:
-            print(f"  ✗ [{fig.get('kind','?')}] NOT FOUND anchor: '{fig['anchor'][:60]}...'", file=sys.stderr)
+            print(f"  … [{fig.get('kind','?')}] anchor not in body, will place by position: '{fig['anchor'][:50]}...'")
+            fallback.append(fig)
+
+    # Fallback: distribute any unanchored figures evenly across the paragraphs so a
+    # non-verbatim pull-quote never aborts the embed and leaves the post with zero
+    # images (which is exactly what happened to the Fri post).
+    if fallback:
+        total_p = new_body.count("</p>")
+        k = len(fallback)
+        for i, fig in enumerate(fallback):
+            n = max(1, round((i + 1) * total_p / (k + 1)))
+            url = image_urls[fig["file"]]
+            nb, ok = insert_figure_after_nth_paragraph(new_body, n, url, fig["alt"])
+            if ok:
+                new_body = nb
+                print(f"  ✓ [{fig.get('kind','?')}] placed after paragraph {n}/{total_p}")
+                inserted.append(fig["file"])
+            else:
+                print(f"  ✗ [{fig.get('kind','?')}] could not place {fig['file']}", file=sys.stderr)
 
     if len(inserted) != len(figures):
         print(f"\nERROR: expected {len(figures)} insertions, got {len(inserted)}", file=sys.stderr)
