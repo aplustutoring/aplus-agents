@@ -37,7 +37,7 @@ SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 HUBSPOT_TOKEN = os.environ.get("HUBSPOT_PRIVATE_APP_TOKEN")
 CHANNEL = "#weekly-content-ready"
 PORTAL_ID = "6312752"
-MAX_IMAGE_BYTES = 5_000_000
+MAX_IMAGE_BYTES = 1_500_000  # resize anything larger so Slack uploads don't time out
 LOG_PATH = Path(__file__).parent / "slack-usage.log"
 
 
@@ -226,20 +226,30 @@ def upload_one_file(image_path, upload_name):
     """Upload a single file to Slack via the modern files API. Returns file_id.
     Does NOT share to a channel yet — caller does that via completeUploadExternal.
     """
+    import time
     image_path = ensure_under_size(image_path)
     file_size = Path(image_path).stat().st_size
 
-    step1 = slack_call("GET", "files.getUploadURLExternal",
-                       params={"filename": upload_name, "length": file_size})
-    upload_url = step1["upload_url"]
-    file_id = step1["file_id"]
-
-    with open(image_path, "rb") as f:
-        r = requests.post(upload_url, files={"file": (upload_name, f)}, timeout=120)
-    log("upload_bytes", r.status_code, upload_name)
-    if r.status_code != 200:
-        raise RuntimeError(f"Upload bytes failed for {upload_name}: HTTP {r.status_code} {r.text[:300]}")
-    return file_id
+    # Retry transient upload timeouts. Each attempt gets a FRESH upload URL
+    # (Slack upload URLs are single-use), so a timed-out POST can be re-driven.
+    last_err = None
+    for attempt in range(3):
+        try:
+            step1 = slack_call("GET", "files.getUploadURLExternal",
+                               params={"filename": upload_name, "length": file_size})
+            upload_url = step1["upload_url"]
+            file_id = step1["file_id"]
+            with open(image_path, "rb") as f:
+                r = requests.post(upload_url, files={"file": (upload_name, f)}, timeout=180)
+            if r.status_code == 200:
+                log("upload_bytes", 200, upload_name)
+                return file_id
+            last_err = f"HTTP {r.status_code} {r.text[:200]}"
+        except Exception as e:
+            last_err = str(e)
+        log("upload_retry", "warn", f"{upload_name} attempt {attempt + 1}: {last_err}")
+        time.sleep(2 * (attempt + 1))
+    raise RuntimeError(f"Upload bytes failed for {upload_name} after 3 attempts: {last_err}")
 
 
 def complete_upload_to_channel(file_ids_and_titles, channel, initial_comment, thread_ts=None):
