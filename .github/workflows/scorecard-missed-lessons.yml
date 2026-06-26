@@ -1,0 +1,33 @@
+name: Scorecard — missed lessons (Mon ~8:55 AM PT)
+
+on:
+  schedule:
+    - cron: "55 15 * * 1"   # 15:55 UTC = 08:55 PDT / 07:55 PST Monday
+  workflow_dispatch:
+    inputs:
+      check_only:
+        description: "Smoke test: confirm secrets wired, skip all reads/writes"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ops/scorecard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run missed-lessons sync
+        env:
+          TEACHWORKS_API_KEY: ${{ secrets.TEACHWORKS_API_KEY }}
+          MONDAY_API_KEY: ${{ secrets.MONDAY_API_KEY }}
+          CHECK_ONLY: ${{ inputs.check_only && 'true' || '' }}
+        run: python3 aplus_missed_lessons_sync.py

@@ -41,3 +41,7 @@ marketing/scripts/state/
 # Textstory — standalone prototype scratch (superseded by marketing/scripts/b2c/textstory/)
 /textstory/
 /textstory-*.mp4
+
+# ops/scorecard — secrets are written at runtime by CI; never commit them
+ops/scorecard/service_account.json
+ops/scorecard/.env

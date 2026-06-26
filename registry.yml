@@ -220,54 +220,54 @@ agents:
     writes: [marketing/state/topic-queue.json, marketing/state/history.json]
     depends_on: [marketing/scripts/shared/state.py]
 
-  # ───────────────────────── External (not in this repo) ────────────────
-  # These run the data-sync side of the fleet. They live OUTSIDE this repo
-  # at ~/Documents/aplus-sync/ and are NOT version-controlled (only .bak
-  # files). Cataloged here so the fleet map is honest; migration into
-  # ops/scorecard/ is a separate PR (must handle .env + service_account.json
-  # secrets before they can be committed).
+  # ───────────────────────── Data sync (ops/scorecard) ─────────────────
+  # Migrated 2026-06 from the local-cron folder ~/aplus-sync INTO this repo
+  # (Tier B -> Tier A). Now runs on GitHub Actions; secrets are repo secrets.
+  # Stateless (no state committed back). Cutover note: the 3 local crontab
+  # lines are removed once the Actions runs are verified green.
   - id: scorecard-weekly-sync
-    name: Weekly scorecard sync (Teachworks → HubSpot)
+    name: Weekly scorecard sync
     owner: roman@wetutorathome.com
-    status: unverified
+    status: active
     trigger:
-      type: unverified            # local/manual cron — not in this repo's CI
-    entrypoint: ~/Documents/aplus-sync/aplus_weekly_sync.py   # EXTERNAL
-    reads:
-      - Teachworks                # unverified
-      - HubSpot                   # unverified
-    writes:
-      - HubSpot                   # scorecard properties (unverified)
-    depends_on:
-      - ~/Documents/aplus-sync/.env                 # secrets (not committed)
-      - ~/Documents/aplus-sync/service_account.json # Google SA key (not committed)
-    notes: >
-      Intended future home: ops/scorecard/. Has manual .bak/.bak2/.bak3
-      backups instead of git history. See [[google-service-account]].
+      type: cron
+      schedule: ["0 17 * * 1 (10:00 PDT / 09:00 PST Mon)"]
+      workflow: .github/workflows/scorecard-weekly.yml
+    entrypoint: ops/scorecard/aplus_weekly_sync.py
+    reads: [Teachworks]                       # lessons
+    writes: [HubSpot, Monday]                  # scorecard
+    depends_on: ["secrets: TEACHWORKS_API_KEY, HUBSPOT_API_KEY, MONDAY_API_KEY"]
+    notes: CHECK_ONLY smoke mode for CI (no DRY_RUN). WEEK_START/WEEK_END manual override.
 
   - id: retention-sync
     name: Retention sync
     owner: roman@wetutorathome.com
-    status: unverified
+    status: active
     trigger:
-      type: unverified
-    entrypoint: ~/Documents/aplus-sync/aplus_retention_sync.py   # EXTERNAL
-    reads: [Teachworks, HubSpot]   # unverified
-    writes: [HubSpot]              # unverified
-    depends_on: []
-    notes: External, un-versioned. Candidate for ops/ migration.
+      type: cron
+      schedule: ["0 16 * * 1 (09:00 PDT / 08:00 PST Mon)"]
+      workflow: .github/workflows/scorecard-retention.yml
+    entrypoint: ops/scorecard/aplus_retention_sync.py
+    reads: [Teachworks]
+    writes: [GoogleSheets, Slack]
+    depends_on:
+      - "secrets: TEACHWORKS_API_KEY, SLACK_WEBHOOK_URL, RETENTION_SA_JSON"
+      - service_account: aplus-retention@a-plus-retention.iam.gserviceaccount.com
+    notes: Has built-in DRY_RUN. SA JSON written from secret at runtime.
 
   - id: missed-lessons-sync
     name: Missed-lessons sync
     owner: roman@wetutorathome.com
-    status: unverified
+    status: active
     trigger:
-      type: unverified
-    entrypoint: ~/Documents/aplus-sync/aplus_missed_lessons_sync.py   # EXTERNAL
-    reads: [Teachworks, HubSpot]   # unverified
-    writes: [HubSpot]              # unverified
-    depends_on: []
-    notes: External, un-versioned. Candidate for ops/ migration.
+      type: cron
+      schedule: ["55 15 * * 1 (08:55 PDT / 07:55 PST Mon)"]
+      workflow: .github/workflows/scorecard-missed-lessons.yml
+    entrypoint: ops/scorecard/aplus_missed_lessons_sync.py
+    reads: [Teachworks]
+    writes: [Monday]
+    depends_on: ["secrets: TEACHWORKS_API_KEY, MONDAY_API_KEY"]
+    notes: CHECK_ONLY smoke mode for CI (no DRY_RUN).
 
   # ───────────────────────── Email / inbox-ops engine ──────────────────
   # Separate repo: github.com/aplustutoring/aplus-email. Runs on GitHub Actions
