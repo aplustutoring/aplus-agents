@@ -245,7 +245,7 @@ Each frame's body text comes from one of three approved sources:
 
 ### Builder + Slack delivery
 
-- Build with `scripts/b2c/build-instagram-stories.py --bundle aplus-content/{date}-weekly/`. The script renders all 3 frames with matplotlib + brand fonts, then composites the white logo bottom-center on each.
+- Build with `marketing/scripts/b2c/build-instagram-stories.py --bundle marketing/aplus-content/{date}-weekly/`. The script renders all 3 frames with matplotlib + brand fonts, then composites the white logo bottom-center on each.
 - `scripts/deliver-to-slack.py` ships the 3 frames as a single Slack gallery piece labeled "Instagram Story (3 frames)" with the per-frame copy from `instagram-story-1.md` / `-2.md` / `-3.md` included for verification.
 
 ## Photographic image style for B2C
@@ -274,7 +274,7 @@ If any of those eight points fails, the graphic must be revised before publicati
 ## Logo composite rules (new in v2.3)
 
 The PIL composite logic in `_composite_logo_v2.py` (per-bundle) and
-`scripts/b2c/build-instagram-stories.py` (shared) must follow these three
+`marketing/scripts/b2c/build-instagram-stories.py` (shared) must follow these three
 rules to avoid the visible rectangular halo that appeared on textured
 backgrounds (most visible on the orange carousel slide 3 before v2.3).
 
@@ -335,7 +335,7 @@ predicted_blog_url = "https://blog.wetutorathome.com/" + url_slug.lstrip("/")
 
 This URL is:
 - Recorded in the meta file as `predicted_blog_url:`
-- Logged by `scripts/shared/publish-to-hubspot.py` for traceability
+- Logged by `marketing/scripts/shared/publish-to-hubspot.py` for traceability
 - Included in the Slack delivery header (next to the HubSpot edit URL)
 - Substituted into the IG Story (3 frames) piece body via the
   `{predicted_blog_url}` placeholder in `scripts/deliver-to-slack.py`
@@ -351,9 +351,9 @@ can reference it specifically.
 
 - Reads from: `aplus-b2b-brand-kit` and `aplus-b2c-brand-kit` (color and logo authority)
 - Reads from: `aplus-blog-longform` (the blog body that the graphics complement, plus the typography decisions and proof-points)
-- Applied by: `ai-image-generator` (community skill for photographic generation), `scripts/build-creative-graphic.py` (matplotlib topic graphics), `scripts/build-ilead-outcomes-graphic.py` (matplotlib preset stat graphic), `aplus-content/{date}-weekly/graphics/_batch_v2.py` (per-bundle batch generator)
+- Applied by: `ai-image-generator` (community skill for photographic generation), `scripts/build-creative-graphic.py` (matplotlib topic graphics), `scripts/build-ilead-outcomes-graphic.py` (matplotlib preset stat graphic), `marketing/aplus-content/{date}-weekly/graphics/_batch_v2.py` (per-bundle batch generator)
 - Checked by: `aplus-brand-check` v1.2 (visual failures section)
-- QA against: `aplus-content/{date}-weekly/qa-checklist.md` (human walkthrough)
+- QA against: `marketing/aplus-content/{date}-weekly/qa-checklist.md` (human walkthrough)
 
 ## AI must NOT generate logos (new in v2.4)
 
@@ -399,7 +399,7 @@ Why this works where v2.2 didn't:
 
 - AI generation: produces clean canvases with NO logos
 - `scripts/composite-logo.py`: adds exactly one logo per graphic, in the correct color variant
-- The Instagram Story builder (`scripts/b2c/build-instagram-stories.py`): adds its own logo composite directly during matplotlib rendering — no AI involved, so no risk of double-logo
+- The Instagram Story builder (`marketing/scripts/b2c/build-instagram-stories.py`): adds its own logo composite directly during matplotlib rendering — no AI involved, so no risk of double-logo
 - The preset stat graphic: composited at brand-kit build time, copied verbatim into bundles, never re-composited
 
 ### Idempotency rule
@@ -416,7 +416,7 @@ v2.4 . Updated 2026-05-20 . Diagnosed and fixed the double-logo artifact on Link
 
 v2.3 . Updated 2026-05-20 . Three fixes after Danielle's first review of the v2.2 bundle: (1) Instagram Story Frame 3 no longer renders a literal placeholder box or "[ link sticker goes here ]" text — the top region is intentionally empty and the bottom arrow + instruction does the visual work; (2) Logo composite pipeline rewrites to eliminate the rectangular halo: removed the erase-rectangle step, added hard alpha threshold (binary alpha: <128 -> 0, >=128 -> 255) after chroma-key and after every LANCZOS resize, preserved logo aspect ratio when resizing; (3) Predicted blog URL is now constructed deterministically from `url_slug:` BEFORE the HubSpot publish call so it is available to the Slack delivery header and the IG Story Frame 3 piece body via the `{predicted_blog_url}` placeholder.
 
-v2.2 . Updated 2026-05-20 . Removed Instagram feed posts from the weekly bundle. Added 3-frame Instagram Story sequence (Hook / Key Insight / CTA-with-link-sticker-placement) with hard rules: NO AI-generated people, Playfair Display + DM Sans, heavy A+ brand colors, logo bottom-center on every frame, 1080x1920 vertical each, Swipe → indicator on frames 1 and 2 only, Frame 3 reserves top-center cleanspace for the user-added link sticker. New `instagram_story_frames:` + optional `instagram_story_subheads:` meta schema fields. Builder script: `scripts/b2c/build-instagram-stories.py`. Slack delivery ships the 3 frames as a single labeled gallery piece.
+v2.2 . Updated 2026-05-20 . Removed Instagram feed posts from the weekly bundle. Added 3-frame Instagram Story sequence (Hook / Key Insight / CTA-with-link-sticker-placement) with hard rules: NO AI-generated people, Playfair Display + DM Sans, heavy A+ brand colors, logo bottom-center on every frame, 1080x1920 vertical each, Swipe → indicator on frames 1 and 2 only, Frame 3 reserves top-center cleanspace for the user-added link sticker. New `instagram_story_frames:` + optional `instagram_story_subheads:` meta schema fields. Builder script: `marketing/scripts/b2c/build-instagram-stories.py`. Slack delivery ships the 3 frames as a single labeled gallery piece.
 
 v2.1 . Updated 2026-05-20 . Added inline-blog-body placement rule for the preset stat graphic AND the topic graphic. Both must be embedded as `<figure>` tags in the published blog body (not only delivered as Slack assets or used in carousel slides). The meta schema gains `inline_data_viz_images` + `inline_data_viz_anchors` parallel lists; `scripts/embed-pull-quotes.py` processes them alongside pull-quote figures. Backward compatible with v2.0 bundles that didn't have the fields; retro-fit applied to the May 19 and May 20 bundles.
 

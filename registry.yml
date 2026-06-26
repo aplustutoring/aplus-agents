@@ -1,0 +1,272 @@
+# Source of truth for the agent fleet. If it's not here, it doesn't exist.
+#
+# Built from the actual repo inventory on the restructure/aplus-agents-split
+# branch (2026-06). One entry per live agent/script behind a workflow, plus
+# external entrypoints that are part of the fleet but not yet in this repo.
+#
+# Fields:
+#   id          stable slug
+#   name        human label (matches the workflow `name:` where one exists)
+#   owner       responsible human
+#   status      active | manual | deprecated | unverified
+#   trigger     cron (with PT meaning) or event description
+#   entrypoint  repo-relative path, or absolute for external agents
+#   reads       HubSpot objects / Teachworks / Drive / Sheets it consumes
+#   writes      what it mutates (HubSpot, Slack, repo state, Sheets)
+#   depends_on  skills/scripts/state it needs to function
+#
+# Times: HubSpot is the single source of truth. Schedules carry both a PDT and
+# a PST cron so the wall-clock hour is stable across DST.
+
+agents:
+  # ───────────────────────── B2B content engine ─────────────────────────
+  - id: topic-gen
+    name: Topic generation (Thursday 5 PM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 0 * * 5 (17:00 PDT Thu)", "0 1 * * 5 (17:00 PST Thu)"]
+      workflow: .github/workflows/topic-gen.yml
+    entrypoint: marketing/scripts/b2b/topic_gen.py
+    reads:
+      - marketing/state/topic-registry.json   # anti-repeat anchors/candidates
+    writes:
+      - marketing/state/topic-queue.json       # slate, AUTO-APPROVED
+      - marketing/state/history.json
+    depends_on:
+      - skill:aplus-research
+      - marketing/scripts/b2b/topic-registry.py
+      - marketing/scripts/shared/state.py
+
+  - id: content-build
+    name: Content build (Saturday — approved slate → HubSpot drafts)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 15 * * 6 (08:00 PDT Sat)", "0 16 * * 6 (08:00 PST Sat)"]
+      workflow: .github/workflows/content-build.yml
+    entrypoint: marketing/scripts/b2b/content-build.py
+    reads:
+      - marketing/state/topic-queue.json        # the approved slate
+      - HubSpot:blog_posts                       # contentGroupId 12422338726 (B2B blog)
+    writes:
+      - HubSpot:blog_posts                       # draft posts via /cms/v3/blogs/posts
+      - Slack                                    # bundle delivery
+      - marketing/state/topic-queue.json
+      - marketing/state/history.json
+    depends_on:
+      - marketing/scripts/shared/publish-to-hubspot.py
+      - marketing/scripts/b2b/deliver-to-slack.py
+      - marketing/scripts/b2b/build-graphics.py
+      - marketing/scripts/shared/composite-logo.py
+      - marketing/scripts/shared/embed-pull-quotes.py
+      - marketing/scripts/b2b/fix-links.py
+      - skill:aplus-blog-longform
+      - skill:aplus-brand-check
+      - skill:aplus-fact-check
+
+  - id: blog-metrics
+    name: Blog metrics scorecard (Monday 9 AM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 16 * * 1 (09:00 PDT Mon)", "0 17 * * 1 (09:00 PST Mon)"]
+      workflow: .github/workflows/blog-metrics.yml
+    entrypoint: marketing/scripts/b2b/blog-metrics.py
+    reads:
+      - marketing/state/history.json            # content_build records → which posts
+      - HubSpot:blog_posts                       # live URLs + analytics
+    writes:
+      - Slack                                    # metrics scorecard post (unverified target)
+    depends_on:
+      - marketing/scripts/shared/state.py
+
+  # ───────────────────────── B2C spotlight engine ───────────────────────
+  - id: spotlight-orchestrator
+    name: Spotlight Orchestrator
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [repository_dispatch, workflow_dispatch]
+      source: Drive watcher (marketing/scripts/watcher/apps-script.gs) fires repository_dispatch with the intake folder ID
+      workflow: .github/workflows/spotlight-orchestrator.yml
+    entrypoint: marketing/scripts/b2c/spotlight_orchestrator.py
+    reads:
+      - GoogleDrive                              # intake folder, via download-drive-folder.py → /tmp/spotlight-source
+      - marketing/data/partner-schools.md        # demographics cache (self-populating)
+      - HubSpot:contacts                          # auto-discovery (Phase 0)
+    writes:
+      - HubSpot:blog_posts                       # case-study draft, contentGroupId 81499394054
+      - Slack                                    # delivery to Paola
+      - marketing/data/partner-schools.md        # writes back derived demographics
+      - marketing/aplus-content/<bundle>/         # generated bundle (gitignored)
+    depends_on:
+      - marketing/scripts/watcher/download-drive-folder.py
+      - marketing/scripts/b2c/build-case-study-hero-card.py
+      - marketing/scripts/b2c/build-case-study-topic-graphic.py
+      - marketing/scripts/b2c/build-case-study-pull-quotes.py
+      - marketing/scripts/b2c/build-case-study-ig-carousel.py
+      - marketing/scripts/b2c/build-instagram-stories.py
+      - marketing/scripts/b2c/build-case-study-facebook.py
+      - marketing/scripts/shared/composite-logo.py
+      - marketing/scripts/shared/publish-to-hubspot.py
+      - skill:aplus-spotlight-orchestrator
+      - skill:aplus-spotlight-case-study
+      - skill:aplus-b2c-hashtag-analyst
+
+  - id: rerender-textstory
+    name: Re-render textstories for a bundle
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/rerender-textstory.yml
+    entrypoint: marketing/scripts/b2c/build-case-study-textstory.py
+    reads:
+      - bundle artifact (passed via --bundle)
+      - marketing/assets/sfx/                     # SFX bed
+    writes:
+      - Slack                                    # delivers re-rendered textstory
+    depends_on:
+      - marketing/scripts/b2c/textstory/
+
+  # ───────────────────────── Case-study log sheet ───────────────────────
+  - id: backfill-logsheet
+    name: Backfill case-study log sheet
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/backfill-logsheet.yml
+    entrypoint: marketing/scripts/b2c/sheet_log.py
+    reads:
+      - GoogleDrive                              # bundle artifacts
+    writes:
+      - GoogleSheets                             # case-study log sheet (service account)
+    depends_on:
+      - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
+
+  - id: verify-logsheet
+    name: Verify case-study log sheet
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/verify-logsheet.yml
+    entrypoint: marketing/scripts/b2c/sheet_log.py   # invoked with --check
+    reads:
+      - GoogleSheets                             # connectivity check only
+    writes: []
+    depends_on:
+      - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
+
+  # ───────────────────────── Deprecated (kept for dispatch) ─────────────
+  - id: blog-publish
+    name: Blog publish (DEPRECATED — superseded by content-build)
+    owner: roman@wetutorathome.com
+    status: deprecated
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/blog-publish.yml
+    entrypoint: marketing/scripts/b2b/blog_publish.py
+    reads: [marketing/state/topic-queue.json]
+    writes: [HubSpot:blog_posts, marketing/state/topic-queue.json, marketing/state/history.json]
+    depends_on: [marketing/scripts/shared/publish-to-hubspot.py]
+
+  - id: approval-deadline
+    name: Approval deadline check (DEPRECATED — approval gate removed)
+    owner: roman@wetutorathome.com
+    status: deprecated
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/approval-deadline.yml
+    entrypoint: marketing/scripts/b2b/approval_deadline.py
+    reads: [marketing/state/topic-queue.json]
+    writes: [marketing/state/topic-queue.json, marketing/state/history.json]
+    depends_on: [marketing/scripts/shared/state.py]
+
+  - id: approval-poll
+    name: Approval poll (DEPRECATED — approval gate removed)
+    owner: roman@wetutorathome.com
+    status: deprecated
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/approval-poll.yml
+    entrypoint: marketing/scripts/b2b/await-slack-approval.py
+    reads: [marketing/state/topic-queue.json]
+    writes: [marketing/state/topic-queue.json, marketing/state/history.json]
+    depends_on: [marketing/scripts/shared/state.py]
+
+  # ───────────────────────── External (not in this repo) ────────────────
+  # These run the data-sync side of the fleet. They live OUTSIDE this repo
+  # at ~/Documents/aplus-sync/ and are NOT version-controlled (only .bak
+  # files). Cataloged here so the fleet map is honest; migration into
+  # ops/scorecard/ is a separate PR (must handle .env + service_account.json
+  # secrets before they can be committed).
+  - id: scorecard-weekly-sync
+    name: Weekly scorecard sync (Teachworks → HubSpot)
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger:
+      type: unverified            # local/manual cron — not in this repo's CI
+    entrypoint: ~/Documents/aplus-sync/aplus_weekly_sync.py   # EXTERNAL
+    reads:
+      - Teachworks                # unverified
+      - HubSpot                   # unverified
+    writes:
+      - HubSpot                   # scorecard properties (unverified)
+    depends_on:
+      - ~/Documents/aplus-sync/.env                 # secrets (not committed)
+      - ~/Documents/aplus-sync/service_account.json # Google SA key (not committed)
+    notes: >
+      Intended future home: ops/scorecard/. Has manual .bak/.bak2/.bak3
+      backups instead of git history. See [[google-service-account]].
+
+  - id: retention-sync
+    name: Retention sync
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger:
+      type: unverified
+    entrypoint: ~/Documents/aplus-sync/aplus_retention_sync.py   # EXTERNAL
+    reads: [Teachworks, HubSpot]   # unverified
+    writes: [HubSpot]              # unverified
+    depends_on: []
+    notes: External, un-versioned. Candidate for ops/ migration.
+
+  - id: missed-lessons-sync
+    name: Missed-lessons sync
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger:
+      type: unverified
+    entrypoint: ~/Documents/aplus-sync/aplus_missed_lessons_sync.py   # EXTERNAL
+    reads: [Teachworks, HubSpot]   # unverified
+    writes: [HubSpot]              # unverified
+    depends_on: []
+    notes: External, un-versioned. Candidate for ops/ migration.
+
+  # ───────────────────────── Reserved (do not yet exist) ────────────────
+  - id: hubspot-schema
+    name: HubSpot property/schema management
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger:
+      type: unverified            # manual / dispatch when it lands
+    entrypoint: ops/hubspot-schema/   # PLACEHOLDER — module not present in repo
+    reads: [HubSpot]
+    writes: [HubSpot]              # property/schema definitions
+    depends_on: []
+    notes: >
+      Referenced by the original work order but not present in this repo.
+      ops/hubspot-schema/ is scaffolded empty (.gitkeep) pending the module.

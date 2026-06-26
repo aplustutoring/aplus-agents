@@ -21,8 +21,8 @@ This directory ships three pieces:
 | `download-drive-folder.py`    | GitHub Actions runner       | Downloads the Drive folder into /tmp   |
 | `spotlight-orchestrator.yml`  | GitHub Actions (`.github/`) | Wraps the orchestrator in a CI job     |
 
-The A+ logo lives in the repo at `assets/logo.png`. The graphics
-compositor (`scripts/shared/composite-logo.py`) and the IG-story builder
+The A+ logo lives in the repo at `marketing/assets/logo.png`. The graphics
+compositor (`marketing/scripts/shared/composite-logo.py`) and the IG-story builder
 prefer that path and fall back to `~/Desktop/logo.png` for local dev, so
 CI works with no extra Drive download step.
 
@@ -38,7 +38,7 @@ The orchestrator itself is unchanged — it still takes `--source <local-dir>` a
 2. **Create service account** — name it `aplus-spotlight-drive-reader` or similar.
 3. Skip the "Grant access" step for the project (no GCP roles needed).
 4. Open the new service account, go to **Keys > Add Key > Create new key > JSON**. Download the JSON.
-5. In Drive, **share the intake folder** with the service account's email (something like `aplus-spotlight-drive-reader@<project>.iam.gserviceaccount.com`) as **Viewer**. The watcher only needs read access. (The logo lives in the repo at `assets/logo.png`, so the service account does NOT need access to any other Drive file.)
+5. In Drive, **share the intake folder** with the service account's email (something like `aplus-spotlight-drive-reader@<project>.iam.gserviceaccount.com`) as **Viewer**. The watcher only needs read access. (The logo lives in the repo at `marketing/assets/logo.png`, so the service account does NOT need access to any other Drive file.)
 
 ### 2. Add GitHub repo secrets
 

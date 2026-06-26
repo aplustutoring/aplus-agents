@@ -15,7 +15,7 @@ succeeded before moving to the next.
 
 ### Spotlight reel (auto, after Slack delivery)
 Full runs (`--stop-after complete`) now also generate and deliver an animated
-9:16 **spotlight reel** via the `reel` stage (`scripts/b2c/reel/`, see the
+9:16 **spotlight reel** via the `reel` stage (`marketing/scripts/b2c/reel/`, see the
 `aplus-spotlight-reel` skill). It reads the same `metadata.md` + case study,
 produces its own stills/voice/Veo animation/captions, and posts the video into
 `#student-spotlight-ready`. The stage is **non-fatal** — a Veo quota or ffmpeg
@@ -41,7 +41,7 @@ Ask Roman (once, batched) for anything not obvious from the folder:
 - Confirm bundle output date (defaults to today)
 
 The bundle directory is:
-`aplus-content/{YYYY-MM-DD}-case-study-{pseudonym}/`
+`marketing/aplus-content/{YYYY-MM-DD}-case-study-{pseudonym}/`
 
 ## Phase 1: Draft the case study (uses aplus-spotlight-case-study skill)
 
@@ -56,7 +56,7 @@ Write these files into the bundle directory:
 
 Run the anonymization checker before proceeding:
 ```
-python3 scripts/b2c/check-anonymization.py --bundle aplus-content/{bundle}/
+python3 marketing/scripts/b2c/check-anonymization.py --bundle marketing/aplus-content/{bundle}/
 ```
 If it flags a real name in Document 1, FIX before continuing. Hard gate.
 
@@ -77,7 +77,7 @@ hero_alt_text: [...]
 Plus `pull_quotes:` (2, both passing the grammar gate).
 
 ### Deriving student_ethnicity (IMPORTANT)
-Look up the school's dominant demographics. Check `data/partner-schools.md`
+Look up the school's dominant demographics. Check `marketing/data/partner-schools.md`
 first for a demographics field. If absent, web-search the school's CA
 DataQuest / enrollment demographics and pick the representation that matches
 the actual student population (most A+ charter schools are minority-majority,
@@ -99,23 +99,23 @@ All six graphics builders are generalized scripts in scripts/ that take
 --bundle and read everything from metadata.md. No per-bundle copies, no
 path editing. Run from repo root, replacing {bundle} with the new bundle dir:
 
-   python3 scripts/b2c/build-case-study-hero-card.py --bundle aplus-content/{bundle}/
-   python3 scripts/b2c/build-case-study-topic-graphic.py --bundle aplus-content/{bundle}/
-   python3 scripts/b2c/build-case-study-pull-quotes.py --bundle aplus-content/{bundle}/
-   python3 scripts/b2c/build-case-study-ig-carousel.py --bundle aplus-content/{bundle}/
-   python3 scripts/b2c/build-instagram-stories.py --bundle aplus-content/{bundle}/
-   python3 scripts/b2c/build-case-study-facebook.py --bundle aplus-content/{bundle}/
-   python3 scripts/shared/composite-logo.py --bundle aplus-content/{bundle}/
+   python3 marketing/scripts/b2c/build-case-study-hero-card.py --bundle marketing/aplus-content/{bundle}/
+   python3 marketing/scripts/b2c/build-case-study-topic-graphic.py --bundle marketing/aplus-content/{bundle}/
+   python3 marketing/scripts/b2c/build-case-study-pull-quotes.py --bundle marketing/aplus-content/{bundle}/
+   python3 marketing/scripts/b2c/build-case-study-ig-carousel.py --bundle marketing/aplus-content/{bundle}/
+   python3 marketing/scripts/b2c/build-instagram-stories.py --bundle marketing/aplus-content/{bundle}/
+   python3 marketing/scripts/b2c/build-case-study-facebook.py --bundle marketing/aplus-content/{bundle}/
+   python3 marketing/scripts/shared/composite-logo.py --bundle marketing/aplus-content/{bundle}/
 
 Notes:
-- Hero auto-varies by subject/grade/gender/ethnicity via scripts/b2c/hero_scene.py. No manual prompt editing.
+- Hero auto-varies by subject/grade/gender/ethnicity via marketing/scripts/b2c/hero_scene.py. No manual prompt editing.
 - The topic graphic reads its milestones list from metadata.md. Phase 2 must write that list (month | topic | verbatim_phrase per line) from the student's actual lesson-note progression.
 - After generation, visually spot-check the hero and pull quotes. Grammar gate + ethnicity + face-partial rules must hold.
 
 ## Phase 5: Publish to HubSpot (draft)
 
 ```
-python3 scripts/shared/publish-to-hubspot.py --bundle aplus-content/{bundle}/
+python3 marketing/scripts/shared/publish-to-hubspot.py --bundle marketing/aplus-content/{bundle}/
 ```
 Record the returned `post_id`. The post is a DRAFT — never auto-published.
 HubSpot publish is Roman + Danielle's Gate 2 decision.
@@ -134,8 +134,8 @@ Two scripts, in order. First the text bundle (header + Paola feedback +
 file list), then the graphics + captions pack.
 
 ```
-python3 scripts/b2c/deliver-case-study-to-slack.py --bundle aplus-content/{bundle}/ --post-id {post_id}
-python3 scripts/b2c/deliver-case-study-graphics-to-slack.py --bundle aplus-content/{bundle}/
+python3 marketing/scripts/b2c/deliver-case-study-to-slack.py --bundle marketing/aplus-content/{bundle}/ --post-id {post_id}
+python3 marketing/scripts/b2c/deliver-case-study-graphics-to-slack.py --bundle marketing/aplus-content/{bundle}/
 ```
 
 Both post to `#student-spotlight-ready`. The graphics script @mentions Paola.
