@@ -1,5 +1,18 @@
 # Source of truth for the agent fleet. If it's not here, it doesn't exist.
 #
+# DATA sources of truth (what each engine reads/writes against):
+#   HubSpot    — FAMILIES: all family/contact information AND all communication
+#                (contacts, deals, tickets, conversations, blog posts, properties)
+#   Teachworks — LESSONS: all lesson, scheduling, and attendance data
+# Engines sync FROM Teachworks (lessons) INTO HubSpot (family record); HubSpot is
+# where humans act. Never treat a local cache/sheet as authoritative over these.
+#
+# Spans the whole fleet across repos/machines, not just this repo:
+#   marketing  — aplus-marketing-skills (this repo): B2B blogs + B2C spotlights
+#   email      — aplus-email repo: inbox/customer-comms ops (GitHub Actions)
+#   sync       — ~/aplus-sync (local cron): Teachworks -> HubSpot data sync
+#   charter    — ~/charter_tool + ~/aplus-sync/charter: B2B prospecting + sales
+#
 # Built from the actual repo inventory on the restructure/aplus-agents-split
 # branch (2026-06). One entry per live agent/script behind a workflow, plus
 # external entrypoints that are part of the fleet but not yet in this repo.
@@ -255,6 +268,93 @@ agents:
     writes: [HubSpot]              # unverified
     depends_on: []
     notes: External, un-versioned. Candidate for ops/ migration.
+
+  # ───────────────────────── Email / inbox-ops engine ──────────────────
+  # Separate repo: github.com/aplustutoring/aplus-email. Runs on GitHub Actions
+  # (no always-on server). Triages admin@wetutorathome.com + HubSpot
+  # Conversations (portal 6312752). Draft-only except two locked auto-actions
+  # (junk->archive, tutor_document->fixed receipt). FERPA-safe enrichment.
+  - id: email-triage
+    name: Inbox triage
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["every 15 min during business hours + hourly"]   # triage.yml
+      repo: aplustutoring/aplus-email
+      workflow: .github/workflows/triage.yml
+    entrypoint: src/main.py            # in aplus-email repo
+    reads: [HubSpot:conversations, HubSpot:contacts, Teachworks]
+    writes: [HubSpot:tickets, HubSpot:conversations(comment), Slack]
+    depends_on: [rules.md, config.yaml, "Claude Sonnet classifier"]
+  - id: email-sla-sweep
+    name: SLA sweep
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["hourly"], repo: aplustutoring/aplus-email, workflow: .github/workflows/sla_sweep.yml}
+    entrypoint: src/sla_sweep.py
+    reads: [HubSpot:tickets]
+    writes: [Slack, HubSpot:tickets]
+  - id: email-weekly-digest
+    name: Weekly digest
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["Mon 8 AM PT"], repo: aplustutoring/aplus-email, workflow: .github/workflows/weekly_digest.yml}
+    entrypoint: src/digest.py
+    reads: [HubSpot:tickets, state/audit_log.jsonl]
+    writes: [Slack]
+  - id: email-other-workflows
+    name: Email engine — daily_summary / deal_sync / hourly_update / po_inbox
+    owner: roman@wetutorathome.com
+    status: unverified                 # exist as workflows; entrypoints not individually confirmed
+    trigger:
+      type: cron
+      repo: aplustutoring/aplus-email
+      workflows: [daily_summary.yml, deal_sync.yml, hourly_update.yml, po_inbox.yml]
+    entrypoint: src/ (aplus-email)
+    reads: [HubSpot, Teachworks]
+    writes: [HubSpot, Slack]
+    notes: Purchase-order inbox + deal sync + daily summary. Confirm entrypoints + schedules.
+
+  # ───────────────────────── Charter prospecting + sales-ops ────────────
+  # B2B SALES pipeline (distinct from B2B blog CONTENT). Tier B: local,
+  # un-versioned, manual. Candidate to promote to GitHub Actions like email.
+  - id: charter-prospecting-pull
+    name: Charter prospecting pull
+    owner: roman@wetutorathome.com
+    status: unverified                 # local, manual
+    trigger: {type: manual}
+    entrypoint: ~/charter_tool/charter_prospecting_pull.py   # EXTERNAL (moved out of iCloud 2026-06-26)
+    reads: [CDE source files]
+    writes: [GoogleSheets, "email to Danielle"]
+    depends_on:
+      - service_account: charter-prospecting@aplus-automations-cars.iam.gserviceaccount.com
+    notes: Tiers charter prospects A/B/C/Watch by CDS code; builds a dated Drive sheet.
+  - id: charter-deals
+    name: Create charter deals
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger: {type: manual}
+    entrypoint: ~/aplus-sync/create_charter_deals.py        # EXTERNAL
+    reads: [GoogleSheets]              # unverified
+    writes: [HubSpot:deals]
+  - id: charter-school-research
+    name: School research
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger: {type: manual}
+    entrypoint: ~/aplus-sync/charter/research_school.py     # EXTERNAL
+    reads: [web, HubSpot]             # unverified
+    writes: [GoogleSheets]           # unverified
+  - id: hubspot-contact-properties
+    name: HubSpot contact-property setup (per-school, e.g. Pilibos)
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger: {type: manual}
+    entrypoint: ~/aplus-sync/pilibos_create_contact_properties.py   # EXTERNAL
+    reads: [HubSpot]
+    writes: [HubSpot]                 # contact property/schema definitions
+    notes: A real (external) instance of the reserved hubspot-schema slot below.
 
   # ───────────────────────── Reserved (do not yet exist) ────────────────
   - id: hubspot-schema
