@@ -1,88 +1,73 @@
 {
-  "current_week": "2026-06-18",
+  "current_week": "2026-06-25",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "California Legislature just put $5B more on the table for K-12 than Newsom proposed \u2014 including a $5B no-strings block grant for charters",
-      "category": "A (state funding) \u2014 strongest topic from the `policy_funding_hawk` lens",
-      "sources": [],
-      "why_matters": "Every Tier A partner \u2014 Visions, Heritage Peak, Sage Oak, iLEAD, Heartland, Compass, all of them \u2014 is about to receive (a) a higher COLA, (b) more special ed funding, and (c) a discretionary block grant they can legally point at intervention contracts. The LAO explicitly counts charter schools as \"districts\" for Prop 98 distribution purposes. The negotiation window between the Legislature and Newsom is the next two weeks. This is the single biggest \"what to spend it on\" conversation charter directors will have all summer, and A+ has a credible answer for the SpEd and discretionary buckets.",
-      "angle": "\"California charter schools are about to get a $5B one-time block grant they can spend however they want. Here are the three things our partner schools are already telling us they're prioritizing.\"",
-      "roman_take": "The discretionary block grant is a trap for any charter without a measurement framework \u2014 money you can spend \"however you want\" gets spent on things no one can defend at the next board meeting. Tie discretionary dollars to ESSA-evidenced interventions or watch them disappear into the general fund.",
-      "danielle_take": "Concrete checklist for charter business managers: how to code the block grant against existing intervention contracts, what to ask your CFO before October 1, and which partner schools have already started this conversation. ---",
-      "redundancy_max_similarity": 0.37537412297348327,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-20T16:43:59.018538+00:00",
-      "post_date": "2026-06-22",
-      "bundle_dir": "aplus-content/2026-06-22-california-charter-block-grant-2026",
-      "hubspot_post_id": "215478348033"
+      "headline": "California's new $5B one-time block grant explicitly includes charter schools \u2014 and the $3.9B Newsom withhold could shrink it",
+      "category": "A (federal/state K-12 funding)",
+      "sources": [
+        "https://edsource.org/2026/california-legislature-passes-budget/760411",
+        "https://edsource.org/2026/newsom-revised-state-budget-schools/758339",
+        "https://lao.ca.gov/Publications/Report/5110"
+      ],
+      "why_matters": "The Legislature's budget includes $1 billion more for community schools, a $2.4 billion boost to ongoing special education funding, and a $5 billion one-time block grant that districts and charter schools can spend however they want. That last clause is the headline for every Tier A partner \u2014 Visions, iLEAD, Sage Oak, Heartland and the rest get unrestricted dollars they can route into intervention. At the same time, the $3.9 billion in education funding that Newsom would withhold until revenue projections come true is being contested, with education groups threatening to sue over the delay. The compliance window is short and the funding picture is unstable \u2014 exactly when charter directors need someone telling them what to do with the money.",
+      "angle": "\"California charter schools just got a $5B discretionary block grant. Here are three intervention investments that defend the spend in your next audit.\" Lead with the LAO/EdSource numbers, anchor to A+'s ESSA-aligned model.",
+      "roman_take": "The discretionary block grant is a trap if you treat it like found money \u2014 districts that spend it on one-time tech licenses will be apologizing to their boards in 18 months. Conviction angle: only evidence-tied spending survives.",
+      "danielle_take": "Practical implementation playbook \u2014 how a charter director should layer the $5B block grant on top of Title I, Title III, and LCFF supplemental/concentration without supplanting. Reference the CARS calendar and audit timing. ---",
+      "redundancy_max_similarity": 0.7531414109332605,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "iLEAD Schools launches new Lancaster charter (iLEAD Flex) as California's NCB moratorium ends",
-      "category": "C (Tier A partner news) \u2014 primary lens hit",
-      "sources": [
-        "https://www.prnewswire.com/news-releases/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster-302804663.html"
-      ],
-      "why_matters": "iLEAD is a Tier A partner across multiple campuses (Antelope Valley, Lancaster Charter Academy, Exploration, Hybrid, Online). iLEAD Schools announced the expansion of its charter network into Lancaster, California, adding a new charter school in their network beginning in 2026. The unlock is structural: since the statewide moratorium on new nonclassroom-based charters concluded on January 1, 2026, mission-driven networks like iLEAD have been moving quickly to bring their programs to communities that have long lacked access to flex learning. iLEAD Flex will open in August 2026 \u2014 meaning an intervention staffing/program-build window opens in the next 60 days. The existing iLEAD Lancaster Charter context makes the intervention case sharp: In Ilead Lancaster Charter District, 17% of students tested at or above the proficient level for reading, and 10% tested at or above that level for math.",
-      "angle": "\"California's NCB moratorium ended six months ago. The first wave of partner expansions is starting \u2014 here's what that means for intervention planning.\"",
-      "roman_take": "Conviction angle on why the moratorium lift is a generational opening for flex-based public schools \u2014 and why intervention infrastructure (not just enrollment marketing) determines which new charters survive renewal.",
-      "danielle_take": "Implementation angle on the 60-day window between charter approval and August opening \u2014 what Title III / Title I funding decisions need to be made now so a new charter doesn't start year one with a reactive intervention model. ---",
-      "redundancy_max_similarity": 0.5343925750430434,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-20T17:07:29.653924+00:00",
-      "post_date": "2026-06-24",
-      "bundle_dir": "aplus-content/2026-06-24-ilead-flex-lancaster-charter-planning",
-      "hubspot_post_id": "215477653342"
+      "headline": "iLEAD Schools launches iLEAD Flex in Lancaster \u2014 first new charter post-NCB-moratorium",
+      "category": "C (Tier A partner \u2014 iLEAD network)",
+      "sources": [],
+      "why_matters": "iLEAD \u2014 one of A+'s largest Tier A partner networks \u2014 announced June 18 that it is expanding its charter network into Lancaster, opening iLEAD Flex as a new TK-12 campus, and explicitly framed the move as a response to the statewide moratorium on new non-classroom-based charters concluding on January 1, 2026. iLEAD Flex is expected to open with approximately 750 learners, bringing iLEAD's total network enrollment to nearly 7,000 students, and is part of a longer growth plan that includes iLEAD Innovate \u2014 the network's first school outside Los Angeles County \u2014 expected to open fall 2027. A+ already serves iLEAD Hybrid, Antelope Valley, Lancaster, Exploration, and Online. A new Lancaster site = new intervention contracts, new EL/SPED populations to onboard, and a public moment where A+ can celebrate a partner.",
+      "angle": "Congratulate iLEAD on iLEAD Flex Lancaster and use it to spotlight what happens when flex-based charters scale: intervention infrastructure has to scale with them, or new students inherit old service gaps.",
+      "roman_take": "The NCB moratorium lift isn't just a policy footnote \u2014 it's the starting gun for the next decade of independent-study charter growth in CA, and the schools that win will be the ones that built intervention systems BEFORE they scaled.",
+      "danielle_take": "When a partner opens a new campus, the intervention conversation has to start before day one \u2014 by the time CAASPP scores come back showing the gap, you've already lost a year of Title I/III leverage; here's the 90-day onboarding checklist that prevents that. ---",
+      "redundancy_max_similarity": 0.6398586955223987,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "The Nashville Problem \u2014 why big tutoring vendors keep failing at scale, and what charter directors should ask before signing",
-      "category": "D (primary) / B (secondary)",
+      "headline": "Catapult Learning makes \"the tutor\u2013student relationship\" its lead HIT message \u2014 and walks straight into A+'s lane",
+      "category": "D (industry/competitor moves) \u2014 primary lens hit",
       "sources": [
-        "https://www.ascd.org/el/articles/a-closer-look-at-high-dosage-tutoring",
-        "https://www.gse.harvard.edu/ideas/usable-knowledge/26/02/high-dosage-tutoring-can-make-real-difference-harvards-strategic-data",
-        "https://www.mdrc.org/work/publications/bringing-high-dosage-tutoring-more-students"
+        "https://www.globenewswire.com/news-release/2026/06/09/3309246/0/en/Catapult-Learning-to-Host-Free-High-Impact-Tutoring-Webinar-Exploring-the-Power-of-Relationships-in-Student-Success.html"
       ],
-      "why_matters": "The field's most credible institutions are now openly admitting that vendor-led high-dosage tutoring stops working when it scales \u2014 impacts decline as programs scale up, and some of the most effective programs are intensive, expensive, and difficult to implement. That's exactly the A+ thesis stated by Harvard and AIBM. The Harvard toolkit launch reframes \"evidence-based tutoring\" from a marketing line into a procurement standard: \"Measure, Monitor, Improve\" aims to help solve common challenges when bringing tutoring programs to students and provides a set of data collection strategies, tools, and best practices for district leaders, policymakers, and academic researchers. A+ should plant a flag here before Varsity, IXL, and Saga rewrite the narrative.",
-      "angle": "\"Harvard just told K-12 leaders the quiet part out loud: tutoring works in studies and fails at scale. Here's what charter directors should ask any vendor before signing \u2014 including us.\"",
-      "roman_take": "Conviction angle \u2014 the reason small operators outperform \"platform\" tutoring at scale isn't capacity, it's that the platforms sell hours and we sell outcomes; Nashville bought 125,000 hours and got minimal gains because hours aren't the unit of impact.",
-      "danielle_take": "Implementation angle \u2014 walk through the four conditions Harvard says actually drive results (it happens during the school day, districts that include tutoring into existing learning blocks saw far higher participation than tutoring outside of core hours, it's measured, data enables visibility of student participation and monitoring of tutoring frequency and duration, it depends on people, proper training of supported and reliable tutors gets the best results, and programs are held accountable) and show how A+'s iEM program is already structured exactly that way at Ocean Grove + South Sutter + Sky Mountain. ---",
-      "redundancy_max_similarity": 0.5056628647278237,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-20T17:37:59.874366+00:00",
-      "post_date": "2026-06-26",
-      "bundle_dir": "aplus-content/2026-06-26-nashville-tutoring-vendors-scale",
-      "hubspot_post_id": "215479310938"
+      "why_matters": "Catapult Learning, a division of FullBloom, announced a free professional development webinar \u2014 \"The Human Element: Why the Tutor-Student Relationship Drives Tutoring Outcomes\" \u2014 held June 22, 2026. Their VP of Teaching and Learning framed the pitch this way: high-impact tutoring is often discussed in terms of dosage, curriculum and data, but relationships are what bring those elements to life. The panel was anchored by Liz Cohen, VP of policy at 50CAN and author of The Future of Tutoring \u2014 meaning the most influential HIT policy voice in the country just legitimized the relational frame on a competitor's stage. Catapult Learning partners with 500+ school districts, so this is not a small competitor talking \u2014 it is the largest at-scale K-12 intervention provider repositioning its message around the differentiator A+ has always led with. If A+ doesn't plant a flag here in the next 7\u201310 days, A+ cedes the relational frame to the player with 500-district reach.",
+      "angle": "\"Relationships have always been the lever. Welcome to the conversation \u2014 here's what 13 years of doing it actually looks like.\" Use a partner-tutor pairing data point (sessions per tutor-student dyad, retention rate of tutor matches) to show A+ has the receipts, not just the talking point.",
+      "roman_take": "When the biggest player in your category starts using your language, that's not validation \u2014 it's a warning that the differentiator is about to commoditize unless you defend it with proof points only you have.",
+      "danielle_take": "Webinars about relationships are easy; staffing model design that actually produces consistent tutor-student dyads inside a charter's master schedule is the hard part. Here's the operational checklist directors should ask any vendor \u2014 including A+. ---",
+      "redundancy_max_similarity": 0.4999243662181113,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1781844577.533469",
-    "posted_at": "2026-06-18T21:44:34.154675-07:00",
+    "message_ts": "1782446683.092659",
+    "posted_at": "2026-06-25T20:59:32.711813-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1781844577.633429"
+        "ts": "1782446683.267049"
       },
       {
         "slot": 2,
-        "ts": "1781844577.754339"
+        "ts": "1782446683.485629"
       },
       {
         "slot": 3,
-        "ts": "1781844577.880259"
+        "ts": "1782446683.691089"
       }
     ],
     "processed_reply_ts": []
@@ -91,7 +76,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-06-18T21:44:34.154675-07:00",
+    "approved_at": "2026-06-25T20:59:32.711813-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null
