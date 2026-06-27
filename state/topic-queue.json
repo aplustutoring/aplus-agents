@@ -17,7 +17,12 @@
       "roman_take": "The discretionary block grant is a trap if you treat it like found money \u2014 districts that spend it on one-time tech licenses will be apologizing to their boards in 18 months. Conviction angle: only evidence-tied spending survives.",
       "danielle_take": "Practical implementation playbook \u2014 how a charter director should layer the $5B block grant on top of Title I, Title III, and LCFF supplemental/concentration without supplanting. Reference the CARS calendar and audit timing. ---",
       "redundancy_max_similarity": 0.7531414109332605,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-27T16:29:15.204180+00:00",
+      "post_date": "2026-06-29",
+      "bundle_dir": "aplus-content/2026-06-29-california-charter-block-grant-audit",
+      "hubspot_post_id": "215980725899"
     },
     {
       "slot": 2,
@@ -31,7 +36,12 @@
       "roman_take": "The NCB moratorium lift isn't just a policy footnote \u2014 it's the starting gun for the next decade of independent-study charter growth in CA, and the schools that win will be the ones that built intervention systems BEFORE they scaled.",
       "danielle_take": "When a partner opens a new campus, the intervention conversation has to start before day one \u2014 by the time CAASPP scores come back showing the gap, you've already lost a year of Title I/III leverage; here's the 90-day onboarding checklist that prevents that. ---",
       "redundancy_max_similarity": 0.6398586955223987,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-27T16:59:49.380780+00:00",
+      "post_date": "2026-07-01",
+      "bundle_dir": "aplus-content/2026-07-01-ilead-flex-lancaster-charter-intervention",
+      "hubspot_post_id": "215979500100"
     },
     {
       "slot": 3,
@@ -47,7 +57,12 @@
       "roman_take": "When the biggest player in your category starts using your language, that's not validation \u2014 it's a warning that the differentiator is about to commoditize unless you defend it with proof points only you have.",
       "danielle_take": "Webinars about relationships are easy; staffing model design that actually produces consistent tutor-student dyads inside a charter's master schedule is the hard part. Here's the operational checklist directors should ask any vendor \u2014 including A+. ---",
       "redundancy_max_similarity": 0.4999243662181113,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-06-27T17:24:55.609683+00:00",
+      "post_date": "2026-07-03",
+      "bundle_dir": "aplus-content/2026-07-03-tutor-student-relationship-hit",
+      "hubspot_post_id": "215980559287"
     }
   ],
   "slack": {
