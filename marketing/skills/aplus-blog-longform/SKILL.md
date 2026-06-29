@@ -321,12 +321,20 @@ inline_data_viz_anchors:
 inline_data_viz_alt_topic-graphic-with-logo: Descriptive alt text for the topic-specific data viz.
 inline_data_viz_alt_preset-stat-graphic-with-logo: A+ Tutoring iLEAD 2024-25 Tier 3 outcomes. 75 percent Math (12 students, 9 improved), 87.5 percent ELA (8 students, 7 improved), 80 percent Combined (20 students, 16 improved).
 carousel_slides:
-  # Each slide is rendered onto a portrait graphic — keep SHORT: AT MOST ~120 characters
-  # (about 18 words), 1 punchy sentence. Longer text gets cut off on the card.
-  - "Slide 2 body text: one short insight or data point distilled from the blog (<=120 chars)"
-  - "Slide 3 body text: a second short insight or data point (<=120 chars)"
-  - "Slide 4 body text: a third short insight or data point (<=120 chars)"
-  - "Slide 5 body text: the short CTA line driving readers to the blog or Danielle's booking (<=120 chars)"
+  # These 4 slides (carousel 2-5), with slide 1 (the hook), must read as ONE connected
+  # story the reader SWIPES through — not 4 disconnected facts or a stat dump.
+  # RULES per slide: exactly ONE idea, ONE short plain-English sentence, conversational
+  # (no colons, no lists, no multiple stats crammed in), AT MOST ~100 characters /
+  # ~14 words. Longer or multi-fact slides get cut off on the card and read as confusing.
+  # Narrative arc:
+  #   slide 2 = the problem / tension in one plain sentence
+  #   slide 3 = the turn — the insight that reframes it
+  #   slide 4 = what it means for the reader / why it matters now
+  #   slide 5 = the CTA (read the blog or book Danielle)
+  - "Slide 2 — the problem, one plain sentence (<=100 chars)"
+  - "Slide 3 — the insight/turn that reframes it (<=100 chars)"
+  - "Slide 4 — what it means for the reader, why now (<=100 chars)"
+  - "Slide 5 — the CTA: read the blog or book Danielle (<=100 chars)"
 reading_time: [estimated minutes]
 target_publish_date: [date]
 target_promotion: [channels]

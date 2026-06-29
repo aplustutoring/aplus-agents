@@ -66,7 +66,10 @@ PIECES = [
         "publish_window": "company page — after the blog is published",
         "destination": "A+ Tutoring LinkedIn company page",
         "body_file": "linkedin-company.md",
-        "image_files": ["graphics/linkedin-carousel-slide-1-with-logo.png"],
+        # social card (not carousel slide 1) — slide 1 has a "swipe" arrow that's
+        # confusing when shown alone (Danielle flagged this); the full swipeable
+        # carousel is its own reply below.
+        "image_files": ["graphics/social-card-with-logo.png"],
     },
     {
         "name": "Reply 2 — Roman op-ed",
