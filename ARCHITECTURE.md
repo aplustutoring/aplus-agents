@@ -13,24 +13,26 @@ truth; this file is the human-readable companion.
 Engines sync **from Teachworks (lessons) into HubSpot (family record)**. No local
 cache, sheet, or state file is ever authoritative over these two.
 
-## The five engines
+## The four engines
 
 ```
-                         ┌────────────────────────────────────┐
-                         │  HubSpot (families + comms)         │
-                         │  Teachworks (lessons)               │
-                         └────────────────────────────────────┘
-        ┌──────────────┬───────────┴───────────┬──────────────┬──────────────┐
-        │              │                        │              │              │
-  ┌─────┴─────┐  ┌─────┴─────┐          ┌───────┴──────┐ ┌─────┴─────┐  ┌─────┴──────┐
-  │ B2B blogs │  │ B2C       │          │ Email /      │ │ Data sync │  │ Charter    │
-  │           │  │ spotlights│          │ inbox ops    │ │           │  │ prospecting│
-  │ marketing │  │ marketing │          │ aplus-email  │ │ ops/score-│  │ + sales    │
-  │ repo, CI  │  │ repo, CI  │          │ repo, CI     │ │ card · CI │  │ops/charter │
-  └───────────┘  └───────────┘          └──────────────┘ └───────────┘  └────────────┘
-   └──── Tier A: GitHub + Actions ──────────────────────────────────┘    └ manual ──┘
-                                                                  (versioned, run locally)
+                    ┌────────────────────────────────────┐
+                    │  HubSpot (families + comms)         │
+                    │  Teachworks (lessons)               │
+                    └────────────────────────────────────┘
+        ┌──────────────┬───────────┴────────────┬──────────────┐
+        │              │                         │              │
+  ┌─────┴─────┐  ┌─────┴─────┐          ┌────────┴─────┐ ┌─────┴─────┐
+  │ B2B blogs │  │ B2C       │          │ Email /      │ │ Data sync │
+  │           │  │ spotlights│          │ inbox ops    │ │           │
+  │ marketing │  │ marketing │          │ aplus-email  │ │ops/score- │
+  │ repo, CI  │  │ repo, CI  │          │ repo, CI     │ │ card · CI │
+  └───────────┘  └───────────┘          └──────────────┘ └───────────┘
+   └──────────────── Tier A: GitHub + Actions ────────────────────────┘
 ```
+
+(A fifth engine — **charter prospecting + sales** — has been discussed but **nothing
+is built yet**: no code in the repo, no automation. See the note in `registry.yml`.)
 
 | Engine | Home | Trigger | What it does |
 |---|---|---|---|
@@ -38,15 +40,17 @@ cache, sheet, or state file is ever authoritative over these two.
 | **B2C spotlights** | `aplus-agents/marketing` | Actions: Drive-watcher event | Student spotlight intake → case-study draft + graphics/reels + Slack |
 | **Email / inbox ops** | `aplus-email` repo | Actions: triage (15min+hourly), SLA sweep (hourly), digests, deal-sync, PO inbox | Triage admin@ inbox + HubSpot Conversations → enrich → classify (Claude) → ticket + SLA + draft reply. Draft-only. |
 | **Data sync** | `aplus-agents/ops/scorecard` | Actions: missed-lessons Mon 8:55, retention Mon 9:00, weekly Mon 10:00 PT | Teachworks → HubSpot/Monday/Sheets: scorecard, retention, missed-lessons |
-| **Charter prospecting + sales** | `aplus-agents/ops/charter` | **manual** (run locally) | CDE pull → tier prospects → Drive sheet → email Danielle; school research; create HubSpot deals |
 
-## Service accounts (three, distinct — do not cross-wire)
+## Service accounts (two active — do not cross-wire)
 
 | SA | Project | Used by | Key location |
 |---|---|---|---|
 | `spotlight-watcher@…` | `a-plus-spotlight-watcher` | B2C spotlights (Drive ingest + log sheet) | GitHub Actions secret `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON` |
 | `aplus-retention@…` | `a-plus-retention` | Data sync (Sheets) | GitHub Actions secret `RETENTION_SA_JSON` (dormant local copy: `~/aplus-sync/service_account.json`) |
-| `charter-prospecting@…` | `aplus-automations-cars` | Charter prospecting (Sheets/Drive) | `ops/charter/service_account.json` (gitignored; legacy copy in `~/charter_tool/`) |
+
+> A third SA, `charter-prospecting@aplus-automations-cars`, exists in GCP from an
+> earlier charter experiment but is **unused** (no charter engine is built). Revoke
+> its keys if charter stays unbuilt.
 
 ## Governance tiers
 
@@ -54,21 +58,15 @@ cache, sheet, or state file is ever authoritative over these two.
   `ops/scorecard`), `aplus-email`.
   Versioned in GitHub · run on GitHub Actions cron (no always-on machine) · state
   committed back to the repo · secrets in GitHub Actions secrets · documented.
-- **Tier C (versioned, manual):** charter engine in `ops/charter`.
-  Versioned + documented in the repo, but **run locally by a human, not on cron** —
-  the prospecting pull needs hand-downloaded CDE files + annual URL checks and runs
-  twice a year, so a headless schedule is the wrong target. Secrets live in a
-  gitignored `ops/charter/.env`, not Actions secrets. This is the intended end state
-  for charter, not a way-station to Tier A.
-- **Tier B (fragile, being retired):** none active.
-  As of 2026-06-29 both former Tier B engines are migrated: data-sync → `ops/scorecard`
-  (Tier A) and charter → `ops/charter` (Tier C). The legacy folders `~/aplus-sync`
-  (dormant scorecard fallback) and `~/charter_tool` (legacy charter inputs/SA) remain
-  on disk only as backups and can be retired.
+- **Tier B (fragile, local):** none active.
+  As of 2026-06-29 the data-sync engine — the last Tier B holdout — is migrated to
+  `ops/scorecard` (Tier A). The charter idea was never built and has been dropped (no
+  repo code, no automation). All four live engines are Tier A.
 
-## Migration plan — promote Tier B → Tier A
+## Migration history — Tier B → Tier A (✅ complete)
 
-Goal: every engine versioned, scheduled in the cloud, secrets out of plaintext.
+Goal was: every engine versioned, scheduled in the cloud, secrets out of plaintext.
+With the sync migration done and charter dropped, there is no Tier B left.
 
 **Sync engine (`aplus-sync`) → `ops/scorecard/` — ✅ DONE 2026-06-29**
 Scripts live in `ops/scorecard/` (with a `CHECK_ONLY` CI smoke-test guard added);
@@ -76,24 +74,19 @@ the 3 workflows (`scorecard-{missed-lessons,retention,weekly}.yml`) run on Actio
 and went green on 2026-06-29; secrets `TEACHWORKS_API_KEY`, `HUBSPOT_API_KEY`,
 `MONDAY_API_KEY`, `SLACK_WEBHOOK_URL`, `RETENTION_SA_JSON` are repo secrets; the 3
 local crontab lines were removed (backup at `~/aplus-sync/crontab-local-backup.txt`).
-Remaining cleanup: after one clean Actions Monday, delete the dormant `~/aplus-sync`
-scorecard copies + its plaintext `.env`/SA (the folder still hosts the charter engine,
-so don't delete it wholesale). Optional: rotate the `aplus-retention` SA key + tokens.
+The `~/aplus-sync` folder was emptied of code + plaintext secrets on 2026-06-29 (only
+the crontab backup remains) and can be deleted. Optional: rotate the `aplus-retention`
+SA key + tokens.
 
-**Charter engine (`charter_tool` + `aplus-sync/charter`) → `ops/charter/` — ✅ DONE 2026-06-29 (as Tier C)**
-The 4 scripts (`charter_prospecting_pull`, `research_school`, `create_charter_deals`,
-`pilibos_create_contact_properties`) + the prospect template are versioned in
-`ops/charter/`, with `.gitignore` (excludes `input/`, `output/`, `.env`,
-`service_account.json`), a `.env.example`, and a consolidated `README.md`. Trigger
-stays **manual by design** (see Tier C above) — not promoted to Actions cron. Secrets
-are a gitignored `ops/charter/.env` + `service_account.json`, not Actions secrets.
-Remaining cleanup: retire the legacy `~/charter_tool` folder once a cycle is run from
-`ops/charter`; optionally rotate the `charter-prospecting` SA key.
+**Charter engine — ❌ dropped 2026-06-29 (never built).**
+A short-lived migration into `ops/charter/` was backed out: charter has no live
+automation set up, so there's nothing to version. The old experiment folders
+(`~/charter_tool`, `~/aplus-sync/charter`) can be deleted. If charter is ever built
+for real, do it as a fresh Tier-A engine and add it to `registry.yml` then.
 
 **Cross-cutting**
 - One `registry.yml` (this file's companion) stays the single fleet map.
-- Optional hardening: rotate the three SA keys + the API tokens (deferred 2026-06-26).
-- Consider consolidating the three GCP projects' SAs if scopes allow.
+- Optional hardening: rotate the two active SA keys + the API tokens (deferred 2026-06-26).
 
 ## Repos in the org
 `aplus-agents` (this) · `aplus-email` · `linkedin-skills` ·

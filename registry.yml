@@ -12,7 +12,8 @@
 #   email      — aplus-email repo: inbox/customer-comms ops (GitHub Actions)
 #   sync       — aplus-agents/ops/scorecard (this repo, GitHub Actions): Teachworks
 #                -> HubSpot data sync. Migrated 2026-06 from ~/aplus-sync local cron.
-#   charter    — ~/charter_tool + ~/aplus-sync/charter: B2B prospecting + sales
+#   charter    — NOT BUILT: discussed B2B prospecting/sales engine, no live automation
+#                (earlier ~/charter_tool experiment dropped 2026-06-29)
 #
 # Built from the actual repo inventory on the restructure/aplus-agents-split
 # branch (2026-06). One entry per live agent/script behind a workflow, plus
@@ -318,53 +319,12 @@ agents:
     notes: Purchase-order inbox + deal sync + daily summary. Confirm entrypoints + schedules.
 
   # ───────────────────────── Charter prospecting + sales-ops ────────────
-  # B2B SALES pipeline (distinct from B2B blog CONTENT). Migrated 2026-06-29
-  # from ~/charter_tool + ~/aplus-sync/charter INTO ops/charter (now versioned).
-  # Stays MANUAL by design — the prospecting pull needs hand-downloaded CDE
-  # files + annual URL checks and runs twice a year, so no GitHub Actions cron.
-  # Secrets live in a gitignored ops/charter/.env, not Actions secrets.
-  - id: charter-prospecting-pull
-    name: Charter prospecting pull
-    owner: roman@wetutorathome.com
-    status: manual
-    trigger: {type: manual}            # run locally: May 1 (CARS) + December
-    entrypoint: ops/charter/charter_prospecting_pull.py
-    reads: [CDE source files]
-    writes: [GoogleSheets, "email to Danielle"]
-    depends_on:
-      - service_account: charter-prospecting@aplus-automations-cars.iam.gserviceaccount.com
-      - "ops/charter/.env (gitignored): GOOGLE_SERVICE_ACCOUNT_FILE, CHARTER_TEMPLATE_SHEET_ID, CHARTER_DRIVE_FOLDER_ID, SMTP_*"
-    notes: Tiers charter prospects A/B/C/Watch by CDS code; builds a dated Drive sheet.
-  - id: charter-deals
-    name: Create charter deals
-    owner: roman@wetutorathome.com
-    status: manual                     # one-off snapshot, not a recurring agent
-    trigger: {type: manual}
-    entrypoint: ops/charter/create_charter_deals.py
-    reads: []                          # hardcoded DEALS list in-script
-    writes: [HubSpot:deals]            # pipeline 145539386
-    depends_on: ["ops/charter/.env (gitignored): HUBSPOT_API_KEY"]
-    notes: Point-in-time deal batch (Mar 2026). Edit the DEALS list before reuse.
-  - id: charter-school-research
-    name: School research
-    owner: roman@wetutorathome.com
-    status: manual
-    trigger: {type: manual}
-    entrypoint: ops/charter/research_school.py
-    reads: [web]                       # Anthropic web_search tool
-    writes: []                         # returns JSON to caller / stdout
-    depends_on: ["ops/charter/.env (gitignored): ANTHROPIC_API_KEY"]
-    notes: Library + CLI. Anthropic web-search research on one CA charter school.
-  - id: hubspot-contact-properties
-    name: HubSpot contact-property setup (per-school, e.g. Pilibos)
-    owner: roman@wetutorathome.com
-    status: manual                     # one-off, template for future schools
-    trigger: {type: manual}
-    entrypoint: ops/charter/pilibos_create_contact_properties.py
-    reads: [HubSpot]
-    writes: [HubSpot]                 # contact property/schema definitions
-    depends_on: ["ops/charter/.env (gitignored): HUBSPOT_TOKEN"]
-    notes: A real instance of the reserved hubspot-schema slot below.
+  # NOT BUILT. A B2B charter-sales engine has been discussed (prospecting pull,
+  # school research, deal creation) but no live automation exists — so per this
+  # file's first rule ("if it's not here, it doesn't exist"), there are no agent
+  # entries. An earlier manual experiment lived in ~/charter_tool + ~/aplus-sync;
+  # those were dropped 2026-06-29. The GCP SA charter-prospecting@aplus-automations-cars
+  # exists but is unused. If charter is ever built, add it here as a Tier-A engine.
 
   # ───────────────────────── Reserved (do not yet exist) ────────────────
   - id: hubspot-schema
