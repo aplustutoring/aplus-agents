@@ -785,6 +785,73 @@
       "brand_pass": true,
       "seo_issues": 0,
       "flags": []
+    },
+    {
+      "ts": "2026-06-25T20:59:32.711813-07:00",
+      "kind": "topic_gen",
+      "week": "2026-06-25",
+      "lenses": [
+        "policy_funding_hawk",
+        "target_school_radar",
+        "competitive_intel"
+      ],
+      "topics_produced": 3,
+      "topics_rejected_redundant": 0,
+      "topics_posted": 3,
+      "refresh_mode": false,
+      "slack_channel": "C0B4K9K0162",
+      "slack_ts": "1782446683.092659"
+    },
+    {
+      "ts": "2026-06-27T16:29:15.206012+00:00",
+      "kind": "content_build",
+      "week": "2026-06-25",
+      "slot": 1,
+      "post_date": "2026-06-29",
+      "headline": "California's new $5B one-time block grant explicitly includes charter schools \u2014 and the $3.9B Newsom withhold could shrink it",
+      "bundle_dir": "aplus-content/2026-06-29-california-charter-block-grant-audit",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "215980725899",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-27T16:59:49.382018+00:00",
+      "kind": "content_build",
+      "week": "2026-06-25",
+      "slot": 2,
+      "post_date": "2026-07-01",
+      "headline": "iLEAD Schools launches iLEAD Flex in Lancaster \u2014 first new charter post-NCB-moratorium",
+      "bundle_dir": "aplus-content/2026-07-01-ilead-flex-lancaster-charter-intervention",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "215979500100",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-06-27T17:24:55.610869+00:00",
+      "kind": "content_build",
+      "week": "2026-06-25",
+      "slot": 3,
+      "post_date": "2026-07-03",
+      "headline": "Catapult Learning makes \"the tutor\u2013student relationship\" its lead HIT message \u2014 and walks straight into A+'s lane",
+      "bundle_dir": "aplus-content/2026-07-03-tutor-student-relationship-hit",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "215980559287",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
