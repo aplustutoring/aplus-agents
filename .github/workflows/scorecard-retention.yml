@@ -1,0 +1,43 @@
+name: Scorecard — retention (Mon ~9:00 AM PT)
+
+on:
+  schedule:
+    - cron: "0 16 * * 1"   # 16:00 UTC = 09:00 PDT / 08:00 PST Monday
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (real reads, skip all writes)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ops/scorecard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Write service-account key
+        env:
+          RETENTION_SA_JSON: ${{ secrets.RETENTION_SA_JSON }}
+        run: |
+          printf '%s' "$RETENTION_SA_JSON" > service_account.json
+          python3 -c "import json; json.load(open('service_account.json')); print('SA JSON valid')"
+      - name: Run retention sync
+        env:
+          TEACHWORKS_API_KEY: ${{ secrets.TEACHWORKS_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: service_account.json
+          DRY_RUN: ${{ inputs.dry_run && 'true' || '' }}
+        run: python3 aplus_retention_sync.py
+      - name: Always remove SA key
+        if: always()
+        run: rm -f service_account.json

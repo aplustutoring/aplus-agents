@@ -16,7 +16,7 @@ This skill needs live web search to find currently-trending hashtags. Use this o
 
 1. **Claude for Chrome extension** (preferred for live IG/TikTok feed scrolling)
 2. **WebSearch + WebFetch tools** (acceptable, less thorough but works for trending topic discovery)
-3. **Static hashtag library at `data/b2c-hashtags.md`** (last resort, if no web search available)
+3. **Static hashtag library at `marketing/data/b2c-hashtags.md`** (last resort, if no web search available)
 
 Pick the best available path and continue.
 
@@ -258,7 +258,7 @@ Hashtags chosen:
 4. #hashtag4 — brand voice
 5. #hashtag5 — Roman voice
 
-Written to: aplus-content/{bundle}/metadata.md
+Written to: marketing/aplus-content/{bundle}/metadata.md
 
 Next step: Slack delivery picks these up automatically.
 ```

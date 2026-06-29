@@ -63,7 +63,7 @@ If `metadata.md` is missing, stop — the bundle hasn't been processed yet.
 ### Phase 0: Baseline script
 Generate the deterministic baseline storyboard script from metadata:
 ```
-python3 scripts/b2c/reel/make_script.py --bundle aplus-content/{bundle}/ [--voice Achird]
+python3 marketing/scripts/b2c/reel/make_script.py --bundle marketing/aplus-content/{bundle}/ [--voice Achird]
 ```
 Writes `{bundle}/reel/script.json` — 5 beats (struggle → sidekick → breakthrough →
 win → end card), each with `scene` (image prompt), `motion` (Veo prompt), `vo`
@@ -80,7 +80,7 @@ and `motion` unless you want to adjust the visuals. Captions are auto-derived fr
 spoken `vo`, so editing `vo` updates both voice and captions.
 
 ### Phase 2: Gates (hard)
-- `python3 scripts/b2c/check-anonymization.py --bundle aplus-content/{bundle}/` — must pass; no real name leaks.
+- `python3 marketing/scripts/b2c/check-anonymization.py --bundle marketing/aplus-content/{bundle}/` — must pass; no real name leaks.
 - Apply `aplus-brand-check` to every `vo` line (banned words: empower, unlock potential,
   transform, leverage, delve, harness, foster, "all students", game-changer; no em-dash tics
   if narrated oddly). Apply `aplus-fact-check` to any outcome claim you added.
@@ -88,16 +88,16 @@ spoken `vo`, so editing `vo` updates both voice and captions.
 
 ### Phase 3: Render media (direct APIs — costs ~$5 on the Google account)
 ```
-python3 scripts/b2c/reel/make_stills.py --bundle aplus-content/{bundle}/   # Gemini images (anchor + 4 beats)
-python3 scripts/b2c/reel/make_vo.py     --bundle aplus-content/{bundle}/   # Gemini TTS (5 lines)
-python3 scripts/b2c/reel/make_clips.py  --bundle aplus-content/{bundle}/   # Veo 3.1 Fast (4 clips, ~8s each)
+python3 marketing/scripts/b2c/reel/make_stills.py --bundle marketing/aplus-content/{bundle}/   # Gemini images (anchor + 4 beats)
+python3 marketing/scripts/b2c/reel/make_vo.py     --bundle marketing/aplus-content/{bundle}/   # Gemini TTS (5 lines)
+python3 marketing/scripts/b2c/reel/make_clips.py  --bundle marketing/aplus-content/{bundle}/   # Veo 3.1 Fast (4 clips, ~8s each)
 ```
 All three are resumable (existing outputs are reused; pass `--force` to regenerate).
 Verify the stills look on-brand and artifact-free before spending on video.
 
 ### Phase 4: Assemble
 ```
-python3 scripts/b2c/reel/build_reel.py  --bundle aplus-content/{bundle}/
+python3 marketing/scripts/b2c/reel/build_reel.py  --bundle marketing/aplus-content/{bundle}/
 ```
 Trims each clip to its narration length, strips clip audio, overlays the top-left A+
 watermark + karaoke captions, appends the 4s end card, and muxes the voiceover.
@@ -115,7 +115,7 @@ Output: `{bundle}/reel/spotlight-reel.mp4` (9:16, h264 + AAC). Open it to review
 - Per-beat copy or visuals: edit `script.json` and rerun the affected phase.
 
 ## Delivery & automation
-- **Deliver to Slack:** `python3 scripts/b2c/reel/deliver_reel.py --bundle aplus-content/{bundle}/`
+- **Deliver to Slack:** `python3 marketing/scripts/b2c/reel/deliver_reel.py --bundle marketing/aplus-content/{bundle}/`
   posts the reel into `#student-spotlight-ready` (header + video upload) for review.
   Pass `--thread-ts` to attach it to an existing spotlight thread.
 - **Automatic:** the `aplus-spotlight-orchestrator` runs this whole pipeline as its

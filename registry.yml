@@ -1,0 +1,372 @@
+# Source of truth for the agent fleet. If it's not here, it doesn't exist.
+#
+# DATA sources of truth (what each engine reads/writes against):
+#   HubSpot    — FAMILIES: all family/contact information AND all communication
+#                (contacts, deals, tickets, conversations, blog posts, properties)
+#   Teachworks — LESSONS: all lesson, scheduling, and attendance data
+# Engines sync FROM Teachworks (lessons) INTO HubSpot (family record); HubSpot is
+# where humans act. Never treat a local cache/sheet as authoritative over these.
+#
+# Spans the whole fleet across repos/machines, not just this repo:
+#   marketing  — aplus-marketing-skills (this repo): B2B blogs + B2C spotlights
+#   email      — aplus-email repo: inbox/customer-comms ops (GitHub Actions)
+#   sync       — ~/aplus-sync (local cron): Teachworks -> HubSpot data sync
+#   charter    — ~/charter_tool + ~/aplus-sync/charter: B2B prospecting + sales
+#
+# Built from the actual repo inventory on the restructure/aplus-agents-split
+# branch (2026-06). One entry per live agent/script behind a workflow, plus
+# external entrypoints that are part of the fleet but not yet in this repo.
+#
+# Fields:
+#   id          stable slug
+#   name        human label (matches the workflow `name:` where one exists)
+#   owner       responsible human
+#   status      active | manual | deprecated | unverified
+#   trigger     cron (with PT meaning) or event description
+#   entrypoint  repo-relative path, or absolute for external agents
+#   reads       HubSpot objects / Teachworks / Drive / Sheets it consumes
+#   writes      what it mutates (HubSpot, Slack, repo state, Sheets)
+#   depends_on  skills/scripts/state it needs to function
+#
+# Times: HubSpot is the single source of truth. Schedules carry both a PDT and
+# a PST cron so the wall-clock hour is stable across DST.
+
+agents:
+  # ───────────────────────── B2B content engine ─────────────────────────
+  - id: topic-gen
+    name: Topic generation (Thursday 5 PM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 0 * * 5 (17:00 PDT Thu)", "0 1 * * 5 (17:00 PST Thu)"]
+      workflow: .github/workflows/topic-gen.yml
+    entrypoint: marketing/scripts/b2b/topic_gen.py
+    reads:
+      - marketing/state/topic-registry.json   # anti-repeat anchors/candidates
+    writes:
+      - marketing/state/topic-queue.json       # slate, AUTO-APPROVED
+      - marketing/state/history.json
+    depends_on:
+      - skill:aplus-research
+      - marketing/scripts/b2b/topic-registry.py
+      - marketing/scripts/shared/state.py
+
+  - id: content-build
+    name: Content build (Saturday — approved slate → HubSpot drafts)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 15 * * 6 (08:00 PDT Sat)", "0 16 * * 6 (08:00 PST Sat)"]
+      workflow: .github/workflows/content-build.yml
+    entrypoint: marketing/scripts/b2b/content-build.py
+    reads:
+      - marketing/state/topic-queue.json        # the approved slate
+      - HubSpot:blog_posts                       # contentGroupId 12422338726 (B2B blog)
+    writes:
+      - HubSpot:blog_posts                       # draft posts via /cms/v3/blogs/posts
+      - Slack                                    # bundle delivery
+      - marketing/state/topic-queue.json
+      - marketing/state/history.json
+    depends_on:
+      - marketing/scripts/shared/publish-to-hubspot.py
+      - marketing/scripts/b2b/deliver-to-slack.py
+      - marketing/scripts/b2b/build-graphics.py
+      - marketing/scripts/shared/composite-logo.py
+      - marketing/scripts/shared/embed-pull-quotes.py
+      - marketing/scripts/b2b/fix-links.py
+      - skill:aplus-blog-longform
+      - skill:aplus-brand-check
+      - skill:aplus-fact-check
+
+  - id: blog-metrics
+    name: Blog metrics scorecard (Monday 9 AM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 16 * * 1 (09:00 PDT Mon)", "0 17 * * 1 (09:00 PST Mon)"]
+      workflow: .github/workflows/blog-metrics.yml
+    entrypoint: marketing/scripts/b2b/blog-metrics.py
+    reads:
+      - marketing/state/history.json            # content_build records → which posts
+      - HubSpot:blog_posts                       # live URLs + analytics
+    writes:
+      - Slack                                    # metrics scorecard post (unverified target)
+    depends_on:
+      - marketing/scripts/shared/state.py
+
+  # ───────────────────────── B2C spotlight engine ───────────────────────
+  - id: spotlight-orchestrator
+    name: Spotlight Orchestrator
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [repository_dispatch, workflow_dispatch]
+      source: Drive watcher (marketing/scripts/watcher/apps-script.gs) fires repository_dispatch with the intake folder ID
+      workflow: .github/workflows/spotlight-orchestrator.yml
+    entrypoint: marketing/scripts/b2c/spotlight_orchestrator.py
+    reads:
+      - GoogleDrive                              # intake folder, via download-drive-folder.py → /tmp/spotlight-source
+      - marketing/data/partner-schools.md        # demographics cache (self-populating)
+      - HubSpot:contacts                          # auto-discovery (Phase 0)
+    writes:
+      - HubSpot:blog_posts                       # case-study draft, contentGroupId 81499394054
+      - Slack                                    # delivery to Paola
+      - marketing/data/partner-schools.md        # writes back derived demographics
+      - marketing/aplus-content/<bundle>/         # generated bundle (gitignored)
+    depends_on:
+      - marketing/scripts/watcher/download-drive-folder.py
+      - marketing/scripts/b2c/build-case-study-hero-card.py
+      - marketing/scripts/b2c/build-case-study-topic-graphic.py
+      - marketing/scripts/b2c/build-case-study-pull-quotes.py
+      - marketing/scripts/b2c/build-case-study-ig-carousel.py
+      - marketing/scripts/b2c/build-instagram-stories.py
+      - marketing/scripts/b2c/build-case-study-facebook.py
+      - marketing/scripts/shared/composite-logo.py
+      - marketing/scripts/shared/publish-to-hubspot.py
+      - skill:aplus-spotlight-orchestrator
+      - skill:aplus-spotlight-case-study
+      - skill:aplus-b2c-hashtag-analyst
+
+  - id: rerender-textstory
+    name: Re-render textstories for a bundle
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/rerender-textstory.yml
+    entrypoint: marketing/scripts/b2c/build-case-study-textstory.py
+    reads:
+      - bundle artifact (passed via --bundle)
+      - marketing/assets/sfx/                     # SFX bed
+    writes:
+      - Slack                                    # delivers re-rendered textstory
+    depends_on:
+      - marketing/scripts/b2c/textstory/
+
+  # ───────────────────────── Case-study log sheet ───────────────────────
+  - id: backfill-logsheet
+    name: Backfill case-study log sheet
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/backfill-logsheet.yml
+    entrypoint: marketing/scripts/b2c/sheet_log.py
+    reads:
+      - GoogleDrive                              # bundle artifacts
+    writes:
+      - GoogleSheets                             # case-study log sheet (service account)
+    depends_on:
+      - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
+
+  - id: verify-logsheet
+    name: Verify case-study log sheet
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/verify-logsheet.yml
+    entrypoint: marketing/scripts/b2c/sheet_log.py   # invoked with --check
+    reads:
+      - GoogleSheets                             # connectivity check only
+    writes: []
+    depends_on:
+      - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
+
+  # ───────────────────────── Deprecated (kept for dispatch) ─────────────
+  - id: blog-publish
+    name: Blog publish (DEPRECATED — superseded by content-build)
+    owner: roman@wetutorathome.com
+    status: deprecated
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/blog-publish.yml
+    entrypoint: marketing/scripts/b2b/blog_publish.py
+    reads: [marketing/state/topic-queue.json]
+    writes: [HubSpot:blog_posts, marketing/state/topic-queue.json, marketing/state/history.json]
+    depends_on: [marketing/scripts/shared/publish-to-hubspot.py]
+
+  - id: approval-deadline
+    name: Approval deadline check (DEPRECATED — approval gate removed)
+    owner: roman@wetutorathome.com
+    status: deprecated
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/approval-deadline.yml
+    entrypoint: marketing/scripts/b2b/approval_deadline.py
+    reads: [marketing/state/topic-queue.json]
+    writes: [marketing/state/topic-queue.json, marketing/state/history.json]
+    depends_on: [marketing/scripts/shared/state.py]
+
+  - id: approval-poll
+    name: Approval poll (DEPRECATED — approval gate removed)
+    owner: roman@wetutorathome.com
+    status: deprecated
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/approval-poll.yml
+    entrypoint: marketing/scripts/b2b/await-slack-approval.py
+    reads: [marketing/state/topic-queue.json]
+    writes: [marketing/state/topic-queue.json, marketing/state/history.json]
+    depends_on: [marketing/scripts/shared/state.py]
+
+  # ───────────────────────── Data sync (ops/scorecard) ─────────────────
+  # Migrated 2026-06 from the local-cron folder ~/aplus-sync INTO this repo
+  # (Tier B -> Tier A). Now runs on GitHub Actions; secrets are repo secrets.
+  # Stateless (no state committed back). Cutover note: the 3 local crontab
+  # lines are removed once the Actions runs are verified green.
+  - id: scorecard-weekly-sync
+    name: Weekly scorecard sync
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 17 * * 1 (10:00 PDT / 09:00 PST Mon)"]
+      workflow: .github/workflows/scorecard-weekly.yml
+    entrypoint: ops/scorecard/aplus_weekly_sync.py
+    reads: [Teachworks]                       # lessons
+    writes: [HubSpot, Monday]                  # scorecard
+    depends_on: ["secrets: TEACHWORKS_API_KEY, HUBSPOT_API_KEY, MONDAY_API_KEY"]
+    notes: CHECK_ONLY smoke mode for CI (no DRY_RUN). WEEK_START/WEEK_END manual override.
+
+  - id: retention-sync
+    name: Retention sync
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 16 * * 1 (09:00 PDT / 08:00 PST Mon)"]
+      workflow: .github/workflows/scorecard-retention.yml
+    entrypoint: ops/scorecard/aplus_retention_sync.py
+    reads: [Teachworks]
+    writes: [GoogleSheets, Slack]
+    depends_on:
+      - "secrets: TEACHWORKS_API_KEY, SLACK_WEBHOOK_URL, RETENTION_SA_JSON"
+      - service_account: aplus-retention@a-plus-retention.iam.gserviceaccount.com
+    notes: Has built-in DRY_RUN. SA JSON written from secret at runtime.
+
+  - id: missed-lessons-sync
+    name: Missed-lessons sync
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["55 15 * * 1 (08:55 PDT / 07:55 PST Mon)"]
+      workflow: .github/workflows/scorecard-missed-lessons.yml
+    entrypoint: ops/scorecard/aplus_missed_lessons_sync.py
+    reads: [Teachworks]
+    writes: [Monday]
+    depends_on: ["secrets: TEACHWORKS_API_KEY, MONDAY_API_KEY"]
+    notes: CHECK_ONLY smoke mode for CI (no DRY_RUN).
+
+  # ───────────────────────── Email / inbox-ops engine ──────────────────
+  # Separate repo: github.com/aplustutoring/aplus-email. Runs on GitHub Actions
+  # (no always-on server). Triages admin@wetutorathome.com + HubSpot
+  # Conversations (portal 6312752). Draft-only except two locked auto-actions
+  # (junk->archive, tutor_document->fixed receipt). FERPA-safe enrichment.
+  - id: email-triage
+    name: Inbox triage
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["every 15 min during business hours + hourly"]   # triage.yml
+      repo: aplustutoring/aplus-email
+      workflow: .github/workflows/triage.yml
+    entrypoint: src/main.py            # in aplus-email repo
+    reads: [HubSpot:conversations, HubSpot:contacts, Teachworks]
+    writes: [HubSpot:tickets, HubSpot:conversations(comment), Slack]
+    depends_on: [rules.md, config.yaml, "Claude Sonnet classifier"]
+  - id: email-sla-sweep
+    name: SLA sweep
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["hourly"], repo: aplustutoring/aplus-email, workflow: .github/workflows/sla_sweep.yml}
+    entrypoint: src/sla_sweep.py
+    reads: [HubSpot:tickets]
+    writes: [Slack, HubSpot:tickets]
+  - id: email-weekly-digest
+    name: Weekly digest
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["Mon 8 AM PT"], repo: aplustutoring/aplus-email, workflow: .github/workflows/weekly_digest.yml}
+    entrypoint: src/digest.py
+    reads: [HubSpot:tickets, state/audit_log.jsonl]
+    writes: [Slack]
+  - id: email-other-workflows
+    name: Email engine — daily_summary / deal_sync / hourly_update / po_inbox
+    owner: roman@wetutorathome.com
+    status: unverified                 # exist as workflows; entrypoints not individually confirmed
+    trigger:
+      type: cron
+      repo: aplustutoring/aplus-email
+      workflows: [daily_summary.yml, deal_sync.yml, hourly_update.yml, po_inbox.yml]
+    entrypoint: src/ (aplus-email)
+    reads: [HubSpot, Teachworks]
+    writes: [HubSpot, Slack]
+    notes: Purchase-order inbox + deal sync + daily summary. Confirm entrypoints + schedules.
+
+  # ───────────────────────── Charter prospecting + sales-ops ────────────
+  # B2B SALES pipeline (distinct from B2B blog CONTENT). Tier B: local,
+  # un-versioned, manual. Candidate to promote to GitHub Actions like email.
+  - id: charter-prospecting-pull
+    name: Charter prospecting pull
+    owner: roman@wetutorathome.com
+    status: unverified                 # local, manual
+    trigger: {type: manual}
+    entrypoint: ~/charter_tool/charter_prospecting_pull.py   # EXTERNAL (moved out of iCloud 2026-06-26)
+    reads: [CDE source files]
+    writes: [GoogleSheets, "email to Danielle"]
+    depends_on:
+      - service_account: charter-prospecting@aplus-automations-cars.iam.gserviceaccount.com
+    notes: Tiers charter prospects A/B/C/Watch by CDS code; builds a dated Drive sheet.
+  - id: charter-deals
+    name: Create charter deals
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger: {type: manual}
+    entrypoint: ~/aplus-sync/create_charter_deals.py        # EXTERNAL
+    reads: [GoogleSheets]              # unverified
+    writes: [HubSpot:deals]
+  - id: charter-school-research
+    name: School research
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger: {type: manual}
+    entrypoint: ~/aplus-sync/charter/research_school.py     # EXTERNAL
+    reads: [web, HubSpot]             # unverified
+    writes: [GoogleSheets]           # unverified
+  - id: hubspot-contact-properties
+    name: HubSpot contact-property setup (per-school, e.g. Pilibos)
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger: {type: manual}
+    entrypoint: ~/aplus-sync/pilibos_create_contact_properties.py   # EXTERNAL
+    reads: [HubSpot]
+    writes: [HubSpot]                 # contact property/schema definitions
+    notes: A real (external) instance of the reserved hubspot-schema slot below.
+
+  # ───────────────────────── Reserved (do not yet exist) ────────────────
+  - id: hubspot-schema
+    name: HubSpot property/schema management
+    owner: roman@wetutorathome.com
+    status: unverified
+    trigger:
+      type: unverified            # manual / dispatch when it lands
+    entrypoint: ops/hubspot-schema/   # PLACEHOLDER — module not present in repo
+    reads: [HubSpot]
+    writes: [HubSpot]              # property/schema definitions
+    depends_on: []
+    notes: >
+      Referenced by the original work order but not present in this repo.
+      ops/hubspot-schema/ is scaffolded empty (.gitkeep) pending the module.

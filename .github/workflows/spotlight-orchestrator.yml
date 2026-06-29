@@ -1,7 +1,7 @@
 name: Spotlight Orchestrator
 
 # Fires when Paola drops a folder into the Drive intake area. The Apps
-# Script watcher (scripts/watcher/apps-script.gs) calls GitHub's
+# Script watcher (marketing/scripts/watcher/apps-script.gs) calls GitHub's
 # repository_dispatch API with the folder ID. workflow_dispatch is the
 # same path for manual reruns from the Actions UI.
 on:
@@ -102,7 +102,7 @@ jobs:
 
       - name: Download Drive folder
         run: |
-          python3 scripts/watcher/download-drive-folder.py \
+          python3 marketing/scripts/watcher/download-drive-folder.py \
               --folder-id "${DRIVE_FOLDER_ID}" \
               --dest /tmp/spotlight-source \
               --verbose
@@ -122,7 +122,7 @@ jobs:
           # run's Doc 1 instead of reusing a stale draft. Without it, embed
           # matches the new anchors against an old published body and fails
           # ("expected N insertions, got N-1").
-          python3 scripts/b2c/spotlight_orchestrator.py \
+          python3 marketing/scripts/b2c/spotlight_orchestrator.py \
               --source /tmp/spotlight-source \
               --stop-after complete \
               --force-update \
@@ -136,7 +136,7 @@ jobs:
         run: |
           # The orchestrator writes one bundle per run under aplus-content/.
           # Find the freshest case-study-* dir for artifact upload.
-          BUNDLE_DIR=$(ls -td aplus-content/*-case-study-* 2>/dev/null | head -1 || echo "")
+          BUNDLE_DIR=$(ls -td marketing/aplus-content/*-case-study-* 2>/dev/null | head -1 || echo "")
           if [ -n "$BUNDLE_DIR" ]; then
             echo "bundle_dir=$BUNDLE_DIR" >> "$GITHUB_OUTPUT"
             echo "bundle_name=$(basename "$BUNDLE_DIR")" >> "$GITHUB_OUTPUT"

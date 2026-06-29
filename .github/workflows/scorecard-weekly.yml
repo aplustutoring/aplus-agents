@@ -1,0 +1,44 @@
+name: Scorecard — weekly sync (Mon ~10:00 AM PT)
+
+on:
+  schedule:
+    - cron: "0 17 * * 1"   # 17:00 UTC = 10:00 PDT / 09:00 PST Monday
+  workflow_dispatch:
+    inputs:
+      check_only:
+        description: "Smoke test: confirm secrets wired, skip all reads/writes"
+        type: boolean
+        default: false
+      week_start:
+        description: "Optional manual week start (YYYY-MM-DD)"
+        type: string
+        default: ""
+      week_end:
+        description: "Optional manual week end (YYYY-MM-DD)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ops/scorecard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run weekly sync
+        env:
+          TEACHWORKS_API_KEY: ${{ secrets.TEACHWORKS_API_KEY }}
+          HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_API_KEY }}
+          MONDAY_API_KEY: ${{ secrets.MONDAY_API_KEY }}
+          CHECK_ONLY: ${{ inputs.check_only && 'true' || '' }}
+          WEEK_START: ${{ inputs.week_start }}
+          WEEK_END: ${{ inputs.week_end }}
+        run: python3 aplus_weekly_sync.py

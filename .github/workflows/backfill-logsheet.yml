@@ -64,6 +64,6 @@ jobs:
             # ensure the bundle dir's basename == the bundle name (the sheet key)
             target="bf/keyed/$name"
             mkdir -p "bf/keyed"; rm -rf "$target"; mv "$bdir" "$target"
-            python3 scripts/b2c/sheet_log.py --bundle "$target" && logged=$((logged+1)) || skipped=$((skipped+1))
+            python3 marketing/scripts/b2c/sheet_log.py --bundle "$target" && logged=$((logged+1)) || skipped=$((skipped+1))
           done < arts.tsv
           echo "backfill done: logged=$logged skipped=$skipped"

@@ -70,4 +70,4 @@ jobs:
         run: |
           args=(--bundle "$BUNDLE" --deliver)
           if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
-          python3 scripts/b2c/build-case-study-textstory.py "${args[@]}"
+          python3 marketing/scripts/b2c/build-case-study-textstory.py "${args[@]}"

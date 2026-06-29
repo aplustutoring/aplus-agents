@@ -38,4 +38,4 @@ jobs:
           if [ -z "$SPOTLIGHT_LOG_SHEET_ID" ]; then
             echo "SPOTLIGHT_LOG_SHEET_ID secret is not set"; exit 1
           fi
-          python3 scripts/b2c/sheet_log.py --check
+          python3 marketing/scripts/b2c/sheet_log.py --check

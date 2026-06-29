@@ -10,32 +10,38 @@
 __pycache__/
 *.pyc
 
-# Runtime usage logs (machine state, grow over time). Scripts live in subdirs
-# (b2b/ b2c/ shared/) after the restructure, so match usage logs at any depth.
-scripts/**/*-usage.log
+# Runtime usage logs (machine state, grow over time). Scripts live under
+# marketing/scripts/<b2b|b2c|shared|watcher>/, so match usage logs at any depth.
+marketing/scripts/**/*-usage.log
 
-# Bundle outputs (too large for git; produced by weekly content engine)
+# Bundle outputs (too large for git; produced by the content/spotlight engines).
+# Unanchored so it matches wherever a bundle dir lands (marketing/aplus-content/
+# from REPO_ROOT-based scripts, or a top-level scratch dir from rerender).
 aplus-content/
 
 # State lock sidecars (transient — fcntl.flock anchors)
-state/*.lock
+marketing/state/*.lock
 
 # Embedding cache (rebuilt cheaply each CI run; would bloat repo)
-state/blog-embeddings.json
+marketing/state/blog-embeddings.json
 
 # Spotlight orchestrator local run history — accumulates per-machine
-state/spotlight-runs.json
+marketing/state/spotlight-runs.json
 
 # Case study Phase 1 — local-only files
-scripts/**/*.bak
+marketing/scripts/**/*.bak
 
-# Orphaned state dir from the pre-fix path bug (real state lives at repo-root state/)
-scripts/state/
+# Orphaned state dir from the pre-fix path bug (real state lives at marketing/state/)
+marketing/scripts/state/
 
-# Spotlight reel — standalone prototype scratch (superseded by scripts/b2c/reel/)
+# Spotlight reel — standalone prototype scratch (superseded by marketing/scripts/b2c/reel/)
 /spotlight-reel/
 /spotlight-reel-*.mp4
 
-# Textstory — standalone prototype scratch (superseded by scripts/b2c/textstory/)
+# Textstory — standalone prototype scratch (superseded by marketing/scripts/b2c/textstory/)
 /textstory/
 /textstory-*.mp4
+
+# ops/scorecard — secrets are written at runtime by CI; never commit them
+ops/scorecard/service_account.json
+ops/scorecard/.env

@@ -42,4 +42,4 @@ jobs:
           if [ "${{ inputs.dry_run }}" = "true" ]; then
             ARGS="$ARGS --dry-run"
           fi
-          python3 scripts/b2b/blog-metrics.py $ARGS
+          python3 marketing/scripts/b2b/blog-metrics.py $ARGS
