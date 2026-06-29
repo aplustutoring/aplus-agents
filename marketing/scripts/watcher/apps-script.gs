@@ -19,7 +19,7 @@
  * edits:
  *
  *   PIPELINE_ROOT_ID         — the Drive folder ID Paola drops into
- *   GITHUB_REPO              — full "owner/repo" string, e.g. "aplustutoring/aplus-marketing-skills"
+ *   GITHUB_REPO              — full "owner/repo" string, e.g. "aplustutoring/aplus-agents"
  *   GITHUB_TOKEN             — fine-grained PAT with "Actions: write" permission
  *   SLACK_WEBHOOK_URL        — Slack incoming webhook for notifications (optional)
  *   PAOLA_SLACK_USER_ID      — Paola's Slack user ID for mentions (optional)

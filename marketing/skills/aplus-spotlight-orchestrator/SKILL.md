@@ -26,7 +26,7 @@ with env `SPOTLIGHT_REEL=0`. Requires `ffmpeg` on the runner (CI installs it).
 
 Confirm these exist before starting:
 - The intake source folder (Drive or local) with the student's raw documents
-- Repo at `~/Desktop/aplus-marketing-skills`
+- Repo at `~/code/aplus-agents`
 - `.env` with `GEMINI_API_KEY`, `OPENAI_API_KEY`, `SLACK_BOT_TOKEN`, `HUBSPOT_PRIVATE_APP_TOKEN`
 - The two sibling skills present: `aplus-spotlight-case-study`, `aplus-b2c-hashtag-analyst`
 

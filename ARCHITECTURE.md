@@ -33,8 +33,8 @@ cache, sheet, or state file is ever authoritative over these two.
 
 | Engine | Home | Trigger | What it does |
 |---|---|---|---|
-| **B2B blogs** | `aplus-marketing-skills/marketing` | Actions: topic-gen Thu 5pm, content-build Sat 8am, blog-metrics Mon 9am | Research → topic slate → HubSpot blog drafts + graphics + Slack |
-| **B2C spotlights** | `aplus-marketing-skills/marketing` | Actions: Drive-watcher event | Student spotlight intake → case-study draft + graphics/reels + Slack |
+| **B2B blogs** | `aplus-agents/marketing` | Actions: topic-gen Thu 5pm, content-build Sat 8am, blog-metrics Mon 9am | Research → topic slate → HubSpot blog drafts + graphics + Slack |
+| **B2C spotlights** | `aplus-agents/marketing` | Actions: Drive-watcher event | Student spotlight intake → case-study draft + graphics/reels + Slack |
 | **Email / inbox ops** | `aplus-email` repo | Actions: triage (15min+hourly), SLA sweep (hourly), digests, deal-sync, PO inbox | Triage admin@ inbox + HubSpot Conversations → enrich → classify (Claude) → ticket + SLA + draft reply. Draft-only. |
 | **Data sync** | `~/aplus-sync` (local) | **local crontab**, Mon 8:55/9:00/10:00 | Teachworks → HubSpot: scorecard, retention, missed-lessons |
 | **Charter prospecting + sales** | `~/charter_tool` + `~/aplus-sync/charter` | **manual** | CDE pull → tier prospects → Drive sheet → email Danielle; create HubSpot deals |
@@ -49,7 +49,7 @@ cache, sheet, or state file is ever authoritative over these two.
 
 ## Governance tiers
 
-- **Tier A (the target model):** `aplus-marketing-skills`, `aplus-email`.
+- **Tier A (the target model):** `aplus-agents`, `aplus-email`.
   Versioned in GitHub · run on GitHub Actions cron (no always-on machine) · state
   committed back to the repo · secrets in GitHub Actions secrets · documented.
 - **Tier B (fragile):** `aplus-sync`, `charter_tool`.
@@ -85,6 +85,6 @@ Goal: every engine versioned, scheduled in the cloud, secrets out of plaintext.
 - Consider consolidating the three GCP projects' SAs if scopes allow.
 
 ## Repos in the org
-`aplus-marketing-skills` (this) · `aplus-email` · `linkedin-skills` ·
+`aplus-agents` (this) · `aplus-email` · `linkedin-skills` ·
 `social-media-skills` · `aplus-tutor-resources` · `skills` (public). The last
 four are skill/content libraries, not scheduled automation.

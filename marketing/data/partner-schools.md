@@ -280,7 +280,7 @@ When A+ Tutoring begins providing services to a new charter partnership:
 
 1. Add the new partnership in HubSpot Companies (this is the operational system of record)
 2. Add a new entry to the `schools:` list in the YAML frontmatter of this file, following the same schema
-3. Commit the change to the `aplus-marketing-skills` repo in the same PR/commit as any related work
+3. Commit the change to the `aplus-agents` repo in the same PR/commit as any related work
 4. If the new school will get a dedicated wetutorathome.com landing page, update `has_landing_page` to `true` and fill in `landing_page_url` once the page is live
 
 ## How to mark a school as former

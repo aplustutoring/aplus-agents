@@ -28,7 +28,7 @@ this script for graphics). Both B2B and B2C import scripts/shared/
 slack_delivery_common.py so the two channels look identical.
 
 Usage:
-    cd ~/Desktop/aplus-marketing-skills
+    cd ~/code/aplus-agents
     python3 scripts/b2c/deliver-case-study-graphics-to-slack.py \\
         --bundle aplus-content/2026-05-21-case-study-gabriela/ \\
         --post-id 213647971614 \\

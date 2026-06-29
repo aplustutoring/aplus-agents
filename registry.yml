@@ -8,7 +8,7 @@
 # where humans act. Never treat a local cache/sheet as authoritative over these.
 #
 # Spans the whole fleet across repos/machines, not just this repo:
-#   marketing  — aplus-marketing-skills (this repo): B2B blogs + B2C spotlights
+#   marketing  — aplus-agents (this repo): B2B blogs + B2C spotlights
 #   email      — aplus-email repo: inbox/customer-comms ops (GitHub Actions)
 #   sync       — ~/aplus-sync (local cron): Teachworks -> HubSpot data sync
 #   charter    — ~/charter_tool + ~/aplus-sync/charter: B2B prospecting + sales

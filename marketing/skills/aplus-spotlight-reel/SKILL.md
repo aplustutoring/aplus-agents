@@ -33,7 +33,7 @@ them consistent in substance while free to differ in look.
 
 ## Prerequisites
 
-- Repo at `~/Desktop/aplus-marketing-skills`
+- Repo at `~/code/aplus-agents`
 - `.env` with `GEMINI_API_KEY` (stills, video, voice) and `OPENAI_API_KEY` (caption word-timing)
 - `ffmpeg` / `ffprobe` (Homebrew). Install: `brew install ffmpeg`
 - A bundle with `metadata.md` (produced by the case-study / orchestrator phase),

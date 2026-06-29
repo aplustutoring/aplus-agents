@@ -42,7 +42,7 @@ The orchestrator itself is unchanged — it still takes `--source <local-dir>` a
 
 ### 2. Add GitHub repo secrets
 
-Go to **Settings > Secrets and variables > Actions > Secrets** on the `aplustutoring/aplus-marketing-skills` repo and add:
+Go to **Settings > Secrets and variables > Actions > Secrets** on the `aplustutoring/aplus-agents` repo and add:
 
 | Secret                              | Value                                                  |
 |-------------------------------------|--------------------------------------------------------|
@@ -65,7 +65,7 @@ Go to **Settings > Secrets and variables > Actions > Variables** if you want to 
 ### 4. Create a GitHub fine-grained PAT for the Apps Script
 
 1. On `github.com`: **Settings > Developer settings > Personal access tokens > Fine-grained tokens > Generate new token**.
-2. Resource owner: `aplustutoring`. Repository access: only `aplus-marketing-skills`.
+2. Resource owner: `aplustutoring`. Repository access: only `aplus-agents`.
 3. Repository permissions: **Actions: Read and write**, **Contents: Read** (Contents is needed because `repository_dispatch` is technically a contents-level call on the GitHub API).
 4. Expiration: pick a date you'll remember (a year is fine, the watcher will fail loudly when it expires).
 5. Copy the token immediately — you can't view it later.
@@ -77,7 +77,7 @@ Go to **Settings > Secrets and variables > Actions > Variables** if you want to 
 3. **Project Settings > Script Properties > Edit script properties** — add:
    - `INTAKE_FOLDER_ID` → the Drive folder ID Paola drops into
    - `GITHUB_OWNER` → `aplustutoring`
-   - `GITHUB_REPO` → `aplus-marketing-skills`
+   - `GITHUB_REPO` → `aplus-agents`
    - `GITHUB_PAT` → the PAT from step 4
    - `ERROR_NOTIFY_EMAIL` → (optional) your email for poll-cycle errors
 4. **Save**, then in the editor switch to function `checkConfig` and click **Run**. Authorize the script when prompted (it needs Drive read/write and outbound URL fetch). The execution log should show every property as `set`.
