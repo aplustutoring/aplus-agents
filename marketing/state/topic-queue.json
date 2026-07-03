@@ -1,88 +1,73 @@
 {
-  "current_week": "2026-06-25",
+  "current_week": "2026-07-02",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "California's new $5B one-time block grant explicitly includes charter schools \u2014 and the $3.9B Newsom withhold could shrink it",
-      "category": "A (federal/state K-12 funding)",
+      "headline": "California's 2026-27 budget just handed charter schools a $5B \"spend it how you want\" block grant \u2014 the intervention window is open NOW",
+      "category": "A (state K-12 funding)",
       "sources": [
         "https://edsource.org/2026/california-legislature-passes-budget/760411",
-        "https://edsource.org/2026/newsom-revised-state-budget-schools/758339",
-        "https://lao.ca.gov/Publications/Report/5110"
+        "https://www.hatchingresults.com/blog/californias-2026-27-budget",
+        "https://lao.ca.gov/Publications/Report/5131"
       ],
-      "why_matters": "The Legislature's budget includes $1 billion more for community schools, a $2.4 billion boost to ongoing special education funding, and a $5 billion one-time block grant that districts and charter schools can spend however they want. That last clause is the headline for every Tier A partner \u2014 Visions, iLEAD, Sage Oak, Heartland and the rest get unrestricted dollars they can route into intervention. At the same time, the $3.9 billion in education funding that Newsom would withhold until revenue projections come true is being contested, with education groups threatening to sue over the delay. The compliance window is short and the funding picture is unstable \u2014 exactly when charter directors need someone telling them what to do with the money.",
-      "angle": "\"California charter schools just got a $5B discretionary block grant. Here are three intervention investments that defend the spend in your next audit.\" Lead with the LAO/EdSource numbers, anchor to A+'s ESSA-aligned model.",
-      "roman_take": "The discretionary block grant is a trap if you treat it like found money \u2014 districts that spend it on one-time tech licenses will be apologizing to their boards in 18 months. Conviction angle: only evidence-tied spending survives.",
-      "danielle_take": "Practical implementation playbook \u2014 how a charter director should layer the $5B block grant on top of Title I, Title III, and LCFF supplemental/concentration without supplanting. Reference the CARS calendar and audit timing. ---",
-      "redundancy_max_similarity": 0.7531414109332605,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-27T16:29:15.204180+00:00",
-      "post_date": "2026-06-29",
-      "bundle_dir": "aplus-content/2026-06-29-california-charter-block-grant-audit",
-      "hubspot_post_id": "215980725899"
+      "why_matters": "Every Tier A partner is a California charter. This budget cycle just increased their per-pupil resources materially and \u2014 crucially \u2014 created a large discretionary pool. Per-pupil funding hits $27,418 per student across all funding sources and $20,427 per student under the Proposition 98 General Fund, with a 4.31% COLA and a massive one-time Student Support and Professional Development Block Grant of $5 billion. The LAO's earlier framing makes the intervention hook explicit: districts receive funding based on average daily attendance \u2014 roughly $512 per student \u2014 and the grant would not have specific spending requirements, though trailer legislation suggests potential uses including teacher professional development and career pathways, with funds spendable any time before June 30, 2030. Meanwhile $1 billion in ongoing Prop 98 funds will expand community schools to sites with large concentrations of English learners, foster youth, and low-income students \u2014 exactly A+'s LTEL profile.",
+      "angle": "\"The state just gave charter schools a $5B flexible block grant with a 2030 deadline. Here's the three-question framework A+ uses with partners to convert those dollars into reclassification outcomes.\"",
+      "roman_take": "Flexibility without a plan is how districts leave money on the table \u2014 the conviction post is about the difference between \"we got the grant\" and \"we moved the metric,\" and why the 4-year runway is a trap without an intervention design decision made in Q1.",
+      "danielle_take": "Practical walkthrough of what a special programs coordinator should be putting into their August board packet \u2014 LCAP language, evidence-tier documentation, and the mechanics of braiding the new block grant with existing Title III Immigrant carryover so nothing expires. ---",
+      "redundancy_max_similarity": 0.7606740232050581,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "iLEAD Schools launches iLEAD Flex in Lancaster \u2014 first new charter post-NCB-moratorium",
-      "category": "C (Tier A partner \u2014 iLEAD network)",
+      "headline": "iLEAD Schools launches iLEAD Flex in Lancaster \u2014 first Tier A partner to move on the lifted NCB moratorium",
+      "category": "C (Tier A partner news; also touches A \u2014 charter policy)",
       "sources": [],
-      "why_matters": "iLEAD \u2014 one of A+'s largest Tier A partner networks \u2014 announced June 18 that it is expanding its charter network into Lancaster, opening iLEAD Flex as a new TK-12 campus, and explicitly framed the move as a response to the statewide moratorium on new non-classroom-based charters concluding on January 1, 2026. iLEAD Flex is expected to open with approximately 750 learners, bringing iLEAD's total network enrollment to nearly 7,000 students, and is part of a longer growth plan that includes iLEAD Innovate \u2014 the network's first school outside Los Angeles County \u2014 expected to open fall 2027. A+ already serves iLEAD Hybrid, Antelope Valley, Lancaster, Exploration, and Online. A new Lancaster site = new intervention contracts, new EL/SPED populations to onboard, and a public moment where A+ can celebrate a partner.",
-      "angle": "Congratulate iLEAD on iLEAD Flex Lancaster and use it to spotlight what happens when flex-based charters scale: intervention infrastructure has to scale with them, or new students inherit old service gaps.",
-      "roman_take": "The NCB moratorium lift isn't just a policy footnote \u2014 it's the starting gun for the next decade of independent-study charter growth in CA, and the schools that win will be the ones that built intervention systems BEFORE they scaled.",
-      "danielle_take": "When a partner opens a new campus, the intervention conversation has to start before day one \u2014 by the time CAASPP scores come back showing the gap, you've already lost a year of Title I/III leverage; here's the 90-day onboarding checklist that prevents that. ---",
-      "redundancy_max_similarity": 0.6398586955223987,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-27T16:59:49.380780+00:00",
-      "post_date": "2026-07-01",
-      "bundle_dir": "aplus-content/2026-07-01-ilead-flex-lancaster-charter-intervention",
-      "hubspot_post_id": "215979500100"
+      "why_matters": "iLEAD is one of A+'s largest Tier A partners (multiple locations across LA + Ventura). With California's moratorium on new non-classroom-based charter schools lifted this year, iLEAD is expanding into new communities, announcing a new charter in Lancaster beginning in 2026. iLEAD Flex opens in August 2026, offering families a choice between full classroom-based instruction, Independent Study, or hybrid options on campus each week. This is the first visible signal that the post-moratorium growth wave is real \u2014 and Lancaster is precisely a community where intervention demand is acute: iLEAD Lancaster Charter District currently has 17% of students proficient in reading and 10% in math, well below the California averages of 43% and 35%. New site, low baseline outcomes, 83% economically disadvantaged, hybrid model = textbook intervention services opportunity, on top of an existing partner relationship.",
+      "angle": "Congratulate iLEAD on the Flex launch and frame the broader question \u2014 what does responsible charter growth in the post-moratorium era look like when authorizer scrutiny is only going to tighten?",
+      "roman_take": "The moratorium didn't lift so networks could sprint blind \u2014 it lifted so mission-driven networks could grow with proof-of-outcomes infrastructure. The next round of authorizer fights will be won by charters that can show, not tell.",
+      "danielle_take": "When you launch a new campus, your intervention plan can't be Year 2 work \u2014 it has to be in the launch playbook. Here's what \"Tier 2 from day one\" actually looks like operationally.",
+      "redundancy_max_similarity": 0.7323671873367847,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "Catapult Learning makes \"the tutor\u2013student relationship\" its lead HIT message \u2014 and walks straight into A+'s lane",
-      "category": "D (industry/competitor moves) \u2014 primary lens hit",
+      "headline": "Stanford/NSSA RCT finds \"access to AI tutors is not the same as using them\" \u2014 human support is the missing ingredient",
+      "category": "D (competitor/industry) + E (research) \u2014 competitive_intel lens primary",
       "sources": [
-        "https://www.globenewswire.com/news-release/2026/06/09/3309246/0/en/Catapult-Learning-to-Host-Free-High-Impact-Tutoring-Webinar-Exploring-the-Power-of-Relationships-in-Student-Success.html"
+        "https://nssa.stanford.edu/studies/access-not-enough-human-support-improves-engagement-ai-tutoring"
       ],
-      "why_matters": "Catapult Learning, a division of FullBloom, announced a free professional development webinar \u2014 \"The Human Element: Why the Tutor-Student Relationship Drives Tutoring Outcomes\" \u2014 held June 22, 2026. Their VP of Teaching and Learning framed the pitch this way: high-impact tutoring is often discussed in terms of dosage, curriculum and data, but relationships are what bring those elements to life. The panel was anchored by Liz Cohen, VP of policy at 50CAN and author of The Future of Tutoring \u2014 meaning the most influential HIT policy voice in the country just legitimized the relational frame on a competitor's stage. Catapult Learning partners with 500+ school districts, so this is not a small competitor talking \u2014 it is the largest at-scale K-12 intervention provider repositioning its message around the differentiator A+ has always led with. If A+ doesn't plant a flag here in the next 7\u201310 days, A+ cedes the relational frame to the player with 500-district reach.",
-      "angle": "\"Relationships have always been the lever. Welcome to the conversation \u2014 here's what 13 years of doing it actually looks like.\" Use a partner-tutor pairing data point (sessions per tutor-student dyad, retention rate of tutor matches) to show A+ has the receipts, not just the talking point.",
-      "roman_take": "When the biggest player in your category starts using your language, that's not validation \u2014 it's a warning that the differentiator is about to commoditize unless you defend it with proof points only you have.",
-      "danielle_take": "Webinars about relationships are easy; staffing model design that actually produces consistent tutor-student dyads inside a charter's master schedule is the hard part. Here's the operational checklist directors should ask any vendor \u2014 including A+. ---",
-      "redundancy_max_similarity": 0.4999243662181113,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-06-27T17:24:55.609683+00:00",
-      "post_date": "2026-07-03",
-      "bundle_dir": "aplus-content/2026-07-03-tutor-student-relationship-hit",
-      "hubspot_post_id": "215980559287"
+      "why_matters": "Two RCTs found that nearly half of students in the AI-only control group never used the platform, those who did averaged only 2-5 minutes per week, and even with a human tutor focused on engagement, weekly platform usage only rose 1 to 4 minutes and reading achievement did not improve \u2014 leading researchers to conclude that access alone is insufficient and human support matters for meaningful engagement with AI-based learning tools. This is the single strongest piece of external evidence in 2026 that A+'s model (real humans, high-dosage, embedded) is the model that actually moves students. It's also a direct rebuttal to every \"AI tutor will replace intervention\" pitch charter directors have been fielding for 18 months. The study also aligns with the experience of Khanmigo founder Sal Khan, who recently acknowledged that students didn't engage much with the AI tutor he initially hoped would revolutionize education.",
+      "angle": "Lead with the RCT finding, connect to A+'s consistent-tutor / small-group model, close with the \"human relationship is the intervention\" thesis. Include one A+ case study data point.",
+      "roman_take": "Conviction post \u2014 \"The AI tutor gold rush just hit its first RCT wall. We told you: relationships are the intervention, not the interface.\" Name Khanmigo directly.",
+      "danielle_take": "Implementation post \u2014 What this study means for a special programs coordinator writing next year's MTSS plan: don't budget Title I dollars against a login rate, budget them against attended sessions with a named tutor. ---",
+      "redundancy_max_similarity": 0.5414711711490833,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1782446683.092659",
-    "posted_at": "2026-06-25T20:59:32.711813-07:00",
+    "message_ts": "1783049986.592059",
+    "posted_at": "2026-07-02T20:32:52.797311-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1782446683.267049"
+        "ts": "1783049986.886449"
       },
       {
         "slot": 2,
-        "ts": "1782446683.485629"
+        "ts": "1783049987.180989"
       },
       {
         "slot": 3,
-        "ts": "1782446683.691089"
+        "ts": "1783049987.464579"
       }
     ],
     "processed_reply_ts": []
@@ -91,7 +76,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-06-25T20:59:32.711813-07:00",
+    "approved_at": "2026-07-02T20:32:52.797311-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null
