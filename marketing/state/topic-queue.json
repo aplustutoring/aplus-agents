@@ -17,7 +17,12 @@
       "roman_take": "Flexibility without a plan is how districts leave money on the table \u2014 the conviction post is about the difference between \"we got the grant\" and \"we moved the metric,\" and why the 4-year runway is a trap without an intervention design decision made in Q1.",
       "danielle_take": "Practical walkthrough of what a special programs coordinator should be putting into their August board packet \u2014 LCAP language, evidence-tier documentation, and the mechanics of braiding the new block grant with existing Title III Immigrant carryover so nothing expires. ---",
       "redundancy_max_similarity": 0.7606740232050581,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-04T16:24:48.878433+00:00",
+      "post_date": "2026-07-06",
+      "bundle_dir": "aplus-content/2026-07-06-california-charter-block-grant-2026",
+      "hubspot_post_id": "216478551203"
     },
     {
       "slot": 2,
@@ -31,7 +36,12 @@
       "roman_take": "The moratorium didn't lift so networks could sprint blind \u2014 it lifted so mission-driven networks could grow with proof-of-outcomes infrastructure. The next round of authorizer fights will be won by charters that can show, not tell.",
       "danielle_take": "When you launch a new campus, your intervention plan can't be Year 2 work \u2014 it has to be in the launch playbook. Here's what \"Tier 2 from day one\" actually looks like operationally.",
       "redundancy_max_similarity": 0.7323671873367847,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-04T16:49:40.708977+00:00",
+      "post_date": "2026-07-08",
+      "bundle_dir": "aplus-content/2026-07-08-ilead-flex-lancaster-post-moratorium",
+      "hubspot_post_id": "216484383278"
     },
     {
       "slot": 3,
@@ -47,7 +57,12 @@
       "roman_take": "Conviction post \u2014 \"The AI tutor gold rush just hit its first RCT wall. We told you: relationships are the intervention, not the interface.\" Name Khanmigo directly.",
       "danielle_take": "Implementation post \u2014 What this study means for a special programs coordinator writing next year's MTSS plan: don't budget Title I dollars against a login rate, budget them against attended sessions with a named tutor. ---",
       "redundancy_max_similarity": 0.5414711711490833,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-04T17:11:01.499435+00:00",
+      "post_date": "2026-07-10",
+      "bundle_dir": "aplus-content/2026-07-10-stanford-ai-tutor-rct-human",
+      "hubspot_post_id": "216484572590"
     }
   ],
   "slack": {

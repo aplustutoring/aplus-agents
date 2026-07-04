@@ -868,6 +868,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1783049986.592059"
+    },
+    {
+      "ts": "2026-07-04T16:24:48.879841+00:00",
+      "kind": "content_build",
+      "week": "2026-07-02",
+      "slot": 1,
+      "post_date": "2026-07-06",
+      "headline": "California's 2026-27 budget just handed charter schools a $5B \"spend it how you want\" block grant \u2014 the intervention window is open NOW",
+      "bundle_dir": "aplus-content/2026-07-06-california-charter-block-grant-2026",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "216478551203",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-04T16:49:40.710258+00:00",
+      "kind": "content_build",
+      "week": "2026-07-02",
+      "slot": 2,
+      "post_date": "2026-07-08",
+      "headline": "iLEAD Schools launches iLEAD Flex in Lancaster \u2014 first Tier A partner to move on the lifted NCB moratorium",
+      "bundle_dir": "aplus-content/2026-07-08-ilead-flex-lancaster-post-moratorium",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "216484383278",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-04T17:11:01.500765+00:00",
+      "kind": "content_build",
+      "week": "2026-07-02",
+      "slot": 3,
+      "post_date": "2026-07-10",
+      "headline": "Stanford/NSSA RCT finds \"access to AI tutors is not the same as using them\" \u2014 human support is the missing ingredient",
+      "bundle_dir": "aplus-content/2026-07-10-stanford-ai-tutor-rct-human",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "216484572590",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
