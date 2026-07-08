@@ -576,8 +576,16 @@ HS_BASE = "https://api.hubapi.com"
 
 def hs_get(endpoint, params=None):
     headers = {"Authorization": f"Bearer {HUBSPOT_API_KEY}"}
-    r = requests.get(f"{HS_BASE}/{endpoint}", headers=headers, params=params or {}, timeout=30)
-    r.raise_for_status()
+    for attempt in range(4):
+        r = requests.get(f"{HS_BASE}/{endpoint}", headers=headers, params=params or {}, timeout=30)
+        if r.status_code == 429:
+            wait = float(r.headers.get("Retry-After", 5 * (attempt + 1)))
+            print(f"      ⏳ HubSpot rate limit (429), retrying in {wait:.0f}s...")
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+        return r.json()
+    r.raise_for_status()  # raise on final failure
     return r.json()
 
 def hs_post(endpoint, payload):
@@ -585,8 +593,16 @@ def hs_post(endpoint, payload):
         "Authorization": f"Bearer {HUBSPOT_API_KEY}",
         "Content-Type": "application/json",
     }
-    r = requests.post(f"{HS_BASE}/{endpoint}", headers=headers, json=payload, timeout=30)
-    r.raise_for_status()
+    for attempt in range(4):
+        r = requests.post(f"{HS_BASE}/{endpoint}", headers=headers, json=payload, timeout=30)
+        if r.status_code == 429:
+            wait = float(r.headers.get("Retry-After", 5 * (attempt + 1)))
+            print(f"      ⏳ HubSpot rate limit (429), retrying in {wait:.0f}s...")
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+        return r.json()
+    r.raise_for_status()  # raise on final failure
     return r.json()
 
 def fetch_72hr_turnaround(start_date, end_date):
