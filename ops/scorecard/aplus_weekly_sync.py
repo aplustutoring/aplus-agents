@@ -86,7 +86,10 @@ SCORECARD_ITEMS = {
 }
 
 # Auto-status rules for L10 scorecard rows.
-# weekly_threshold: status = "On Track" if value >= threshold, else "Off Track"
+# weekly_threshold: status = "On Track" if value >= goal, else "Off Track".
+#                   The goal is read live from the board's `target` column
+#                   (SCORECARD_COLS["target"]); "threshold" below is only a
+#                   fallback used when that cell is empty or unparseable.
 # vs_prior_week:    status = "On Track" if value >= prior week's value, else "Off Track"
 # Rows not listed here keep manual status (no auto-update).
 SCORECARD_STATUS_RULES = {
@@ -1092,12 +1095,17 @@ def write_weekly_lesson_report(metrics, post_lesson_pct, missed_deals,
 # ─────────────────────────────────────────────
 # WRITE: L10 SCORECARD
 # ─────────────────────────────────────────────
-def compute_status(rule, current_value, prior_value=None):
-    """Compute On Track / Off Track / No Data based on rule type."""
+def compute_status(rule, current_value, prior_value=None, threshold_override=None):
+    """Compute On Track / Off Track / No Data based on rule type.
+
+    threshold_override: the goal read from the board's `target` column. When
+    provided it wins over the rule's hardcoded fallback `threshold`.
+    """
     if current_value is None:
         return rule.get("no_data_label")  # returns "No Data" or None
     if rule["type"] == "weekly_threshold":
-        return "On Track" if current_value >= rule["threshold"] else "Off Track"
+        threshold = threshold_override if threshold_override is not None else rule["threshold"]
+        return "On Track" if current_value >= threshold else "Off Track"
     if rule["type"] == "vs_prior_week":
         if prior_value is None:
             return "On Track"  # first week of data, can't compare
@@ -1128,6 +1136,34 @@ def fetch_prior_week_value(board_id, item_id, prior_col):
         return None
 
 
+def fetch_target_value(board_id, item_id):
+    """Read a scorecard row's goal from the board's `target` column and parse a number.
+
+    Returns None if the column/cell is empty or unparseable, so the caller falls
+    back to the rule's hardcoded threshold. Grabs the first numeric token, so
+    goal text like "5", ">= 5", "5+", or "9.0" all resolve.
+    """
+    try:
+        query = """
+        query ($board: ID!, $item: [ID!]) {
+          boards(ids: [$board]) {
+            items_page(query_params: {ids: $item}) {
+              items { column_values(ids: ["%s"]) { text } }
+            }
+          }
+        }
+        """ % SCORECARD_COLS["target"]
+        result = monday_query(query, {"board": str(board_id), "item": [str(item_id)]})
+        text = result["data"]["boards"][0]["items_page"]["items"][0]["column_values"][0]["text"]
+        if not text:
+            return None
+        m = re.search(r"[-+]?\d*\.?\d+", text.replace(",", ""))
+        return float(m.group()) if m else None
+    except Exception as e:
+        print(f"   ⚠️  Couldn't fetch target for item {item_id}: {e}")
+        return None
+
+
 def apply_status_updates(metric_values, board_id, prior_col):
     """Set On Track / Off Track status on each scorecard row per SCORECARD_STATUS_RULES."""
     import json
@@ -1138,9 +1174,12 @@ def apply_status_updates(metric_values, board_id, prior_col):
         item_id = SCORECARD_ITEMS[metric_key]
         current = metric_values.get(metric_key, 0)
         prior = None
+        target = None
         if rule["type"] == "vs_prior_week" and prior_col:
             prior = fetch_prior_week_value(board_id, item_id, prior_col)
-        status = compute_status(rule, current, prior)
+        elif rule["type"] == "weekly_threshold":
+            target = fetch_target_value(board_id, item_id)
+        status = compute_status(rule, current, prior, threshold_override=target)
         if status is None:
             continue
         status_value = json.dumps({STATUS_COLUMN_ID: {"label": status}})
@@ -1150,7 +1189,8 @@ def apply_status_updates(metric_values, board_id, prior_col):
         }
         """
         monday_query(mutation, {"board": str(board_id), "item": str(item_id), "vals": status_value})
-        print(f"   {metric_key}: {current} → {status}")
+        goal_src = f"goal {target:g}" if target is not None else f"default {rule.get('threshold')}"
+        print(f"   {metric_key}: {current} → {status}  (vs {goal_src})")
 
 
 def write_l10_scorecard(metrics, post_lesson_pct, charter_deals,
