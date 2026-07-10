@@ -1,0 +1,56 @@
+name: Deal sync (HubSpot → Teachworks)
+
+# Every 15 min business hours, hourly otherwise. First run baselines.
+on:
+  schedule:
+    - cron: "*/15 16-23 * * 1-5"
+    - cron: "*/15 0-2 * * 1-5"
+    - cron: "45 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (log intended creates/updates, write nothing)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-email-state
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run deal sync
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.deal_sync
+      - name: Commit state changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/sync_cursor.json state/audit_log.jsonl
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "deal-sync: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+          fi

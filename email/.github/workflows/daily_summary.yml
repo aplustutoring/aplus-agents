@@ -1,0 +1,40 @@
+name: Daily summary
+
+# 6:00 PM PT every day. PDT = 01:00 UTC (next day), PST = 02:00 UTC. Both fire;
+# a PT-hour gate in the script runs it only at 18:00 PT, so exactly one fires.
+on:
+  schedule:
+    - cron: "0 1 * * *"   # 18:00 PDT
+    - cron: "0 2 * * *"   # 18:00 PST
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print, send nothing)"
+        required: false
+        type: boolean
+        default: false
+      force:
+        description: "Force run now (bypass the 6 PM PT gate)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run daily summary
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          FORCE_RUN: ${{ inputs.force }}
+        run: python -m src.daily_summary

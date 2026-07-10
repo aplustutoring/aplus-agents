@@ -1,0 +1,250 @@
+# aplus_email_agent configuration. LOCKED routing table — June 9, 2026.
+# Fill the `id` placeholders during SETUP.md (HubSpot owner IDs + Slack member IDs).
+
+hubspot:
+  portal_id: 6312752
+  # Conversations inbox to poll = admin@wetutorathome.com ("Inbox").
+  inbox_id: "565493"
+  # Single free pipeline (id 0, "Support Pipeline") shared with human support tickets.
+  # Stage mapping onto existing stages (works today):
+  #   needs_approval → "Working on it"     (agent drop / review queue)
+  #   handled        → "Waiting on Family" (agent flips here after a human replies)
+  #   closed         → "Done"
+  # RECOMMENDED upgrade: add a dedicated "Needs Approval" stage and set it below
+  # (run smoke_test.py to get its id). Optional: route low-confidence/breached to "Stuck".
+  ticket_pipeline_id: "0"
+  ticket_stages:
+    needs_approval: "1378066770"  # Needs Approval (agent's review queue)
+    handled: "2"                  # Waiting on Family
+    closed: "4"                   # Done
+  # Optional per-category handled stage (tutor-facing → Waiting on Tutor). Empty = use
+  # the single handled stage above for everything.
+  handled_stage_tutor: "3"        # Waiting on Tutor
+  tutor_facing_categories: [tutor_document, recruitment]
+  # Optional: stage for low-confidence / unknown / escalated tickets. Empty = disabled.
+  stuck_stage: "131537028"        # Stuck
+
+# HubSpot ticket fields set on every ticket (all editable here, no code change).
+ticket_fields:
+  source: "EMAIL"                 # source_type (these all arrive via the inbox)
+  priority_urgent_on_high_risk: true   # bump to URGENT when the classifier risk == high
+  priority_map:                   # routing priority → hs_ticket_priority
+    high: "HIGH"
+    normal: "MEDIUM"
+    low: "LOW"
+  category_default: "GENERAL_INQUIRY"     # label: General
+  # our category → hs_ticket_category INTERNAL value (reshaped options).
+  category_map:
+    reschedule: "reschedule"
+    tutor_issue: "Tutor Issue"
+    complaint: "complaint"
+    payment_dispute: "billing_refund"
+    new_po: "new_deal_po"
+    tor_inquiry: "new_deal_po"
+    school_partner: "new_deal_po"
+    business_dev: "GENERAL_INQUIRY"
+    scheduling: "GENERAL_INQUIRY"
+    tutor_document: "Tutor Issue"
+    recruitment: "GENERAL_INQUIRY"
+    charter_newsletter: "GENERAL_INQUIRY"
+    unknown: "GENERAL_INQUIRY"
+  # cancellation's category depends on its TYPE (drives the cancellation-rate KPI).
+  cancellation_category_map:
+    one_time: "cancellation_onetime"
+    pause: "pause"
+    stop: "cancel_service"
+    default: "cancellation_onetime"
+
+slack:
+  digest_channel: "C0B9SEU76MA"   # #email-agent (private; use ID so the bot can post)
+
+# Daily end-of-day summary, DM'd at 6 PM PT every day.
+daily_summary:
+  recipient: roman        # staff key whose slack_user_id gets the DM
+  also_channel: false     # set true to also post it in #email-agent
+
+# CC a staffer on every owner notification (shows the owner's NAME). Empty = off.
+notify:
+  cc_owner_dms_to: roman
+
+# Launch-monitoring: hourly rollup DM during business hours, auto-stops after `until`.
+hourly_update:
+  enabled: true
+  recipient: roman
+  until: "2026-06-24"        # 2 weeks; no-op after this date
+  business_hours_only: true  # 9am-6pm PT, Mon-Fri only
+
+# Also create a HubSpot Task (owner to-do with a due date + reminders) per routed
+# email, on top of the ticket + Slack DM. Empty/false = off.
+owner_task:
+  enabled: true
+
+# Tutor-document auto-receipt (the agent's ONLY outbound email). sender_actor_id is
+# "A-{hubspot userId}" of the agent it sends as (Kath). Empty = disable the receipt.
+doc_receipt:
+  sender_actor_id: "A-59969437"   # Kath Hitosis
+
+monday:
+  scorecard_board_id: 18402267902
+  # Create these two rows on the L10 Scorecard by hand, then paste item ids.
+  measurables:
+    sla_breaches_item_id: "12238741454"        # goal: 0 (L10 group: Emily — Company Metrics)
+    median_response_hrs_item_id: "12238737226" # goal: < 8
+
+google_sheets:
+  dashboard_sheet_id: "1_eSSJ5EtlENv_idZ3LHHeK5_Pc1Jstlb-fYdx_6HfPw"
+  dashboard_tab: "Email Agent"
+
+# ── Staff registry ───────────────────────────────────────────────
+# hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
+staff:
+  danielle: { name: "Danielle", hubspot_owner_id: "227538487", slack_user_id: "U05NMABF3B2" }  # Sales
+  mandy:    { name: "Mandy",    hubspot_owner_id: "80047201",  slack_user_id: "U08S3CHE93N" }  # Scheduling Lead
+  paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR" }  # Sales Support
+  janelle:  { name: "Janelle",  hubspot_owner_id: "80047202",  slack_user_id: "U08S3CG8XNY" }  # Scheduler 1 (A-L)
+  yolanda:  { name: "Yolanda",  hubspot_owner_id: "86868539",  slack_user_id: "U0A6XGBU7QT" }  # Scheduler 2 (M-Z)
+  kath:     { name: "Kath",     hubspot_owner_id: "513215050", slack_user_id: "U05NW5H3SLC" }  # Admin
+  emily:    { name: "Emily",    hubspot_owner_id: "39191217",  slack_user_id: "U05MXK1MC5Q" }  # Operations — 2x-breach escalation
+  roman:    { name: "Roman",    hubspot_owner_id: "38681249",  slack_user_id: "U05NA7UMSSV" }  # Director
+
+# ── Routing table (LOCKED) ───────────────────────────────────────
+# owner: a staff key above, or the special token "assigned_scheduler" /
+# "scheduler_split" meaning resolve by student last name (A-L→janelle, M-Z→yolanda).
+# sla_hours: business hours (9-18 PT, Mon-Fri). 1.5 = our 90-min response SLA.
+# draft:false suppresses the reply draft.
+routing:
+  reschedule:          { owner: scheduler_split,   sla_hours: 1.5, draft: true,  priority: high }   # save — push a time fast
+  scheduling:          { owner: scheduler_split,   sla_hours: 1.5, draft: true,  priority: normal } # new booking / availability
+  cancellation:        { owner: scheduler_split,   sla_hours: 1.5, draft: true,  priority: high }
+  tutor_issue:         { owner: mandy,             sla_hours: 1.5, draft: false, priority: high }    # retention — a switch saves it
+  complaint:           { owner: mandy,             sla_hours: 1.5, draft: false, priority: high }
+  payment_dispute:     { owner: mandy,             sla_hours: 1.5, draft: false, priority: high }
+  school_partner:      { owner: danielle,          sla_hours: 1.5, draft: true,  priority: high }
+  business_dev:        { owner: danielle,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
+  tor_inquiry:         { owner: paola,             sla_hours: 1.5, draft: true,  priority: normal }
+  new_po:              { owner: paola,             sla_hours: 1.5, draft: true,  priority: normal }
+  tutor_document:      { owner: kath,              sla_hours: 1.5, draft: true,  priority: low }
+  recruitment:         { owner: mandy,             sla_hours: 1.5, draft: true,  priority: low }
+  charter_newsletter:  { owner: danielle,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
+  junk:                { owner: null,              sla_hours: null, draft: false, auto_archive: true }
+  unknown:             { owner: mandy,             sla_hours: 4,   draft: false, review: true }  # Mandy owns the Stuck queue
+
+# Last-name split boundary for scheduling/cancellation.
+scheduler_split:
+  a_to_l: janelle   # last name initial A-L
+  m_to_z: yolanda   # last name initial M-Z
+
+# Cancellation re-engagement follow-up: on a cancellation, schedule a task with a sample
+# re-engagement email, due the sooner of +`days` or `by_date` (summer pauses → re-contact
+# before fall). assign_to: "owner" = the scheduler, or a staff key (e.g. paola for retention).
+cancellation_followup:
+  enabled: true
+  days: 90
+  # Don't start win-backs in summer — any +90 date landing in these months bumps to the
+  # fall term start. (1/1-area dates fall out of the +90 naturally for fall cancellations.)
+  blackout_months: [5, 6, 7]   # May, June, July → bump to fall start
+  blackout_to: "09-01"         # → September 1
+  # Holiday blackout: week before Christmas through New Year's → resume after.
+  holiday_blackout: { start: "12-18", end: "01-01", resume: "01-02" }
+  assign_to: owner
+  reengage_workflow_id: ""   # set a HubSpot workflow id to AUTO-ENROLL the family contact
+                             # into a re-engagement drip on cancellation. Empty = off.
+
+# Deal automation on cancellations. Auto-moves the student's deal to its pipeline's
+# "Stopped" stage ONLY when: type=stop (not a pause), confidence ≥ min, and exactly ONE
+# active deal matches the student. Anything else → surface the deal(s) for a human. Every
+# move is logged with the old stage (reversible) and announced on the ticket + Slack.
+deal_automation:
+  enabled: true
+  # Both pause AND stop close the current deal: each engagement period is its own deal,
+  # and a returning family gets a NEW (renewal) deal — the win-back task handles that.
+  # one_time never touches deals.
+  auto_move_types: [stop, pause]
+  min_confidence: 0.9
+  active_stage_patterns: ["pre-lesson", "post-lesson", "only booking", "in program",
+                          "active subscription", "pre-session", "post-session"]
+  stop_stage_patterns: ["stopped", "closed lost", "cancelled", "refunded", "withdrew"]
+
+# ── HubSpot → Teachworks deal sync (Zapier replacement) ─────────
+# Every NEW HubSpot deal: upsert the family in Teachworks (match by EMAIL — the
+# identifier; HubSpot contact info wins on update) and create the student. Account by
+# pipeline; charter students get billing_method=Package, private pay=Service List Cost.
+deal_sync:
+  enabled: true
+  dry_run_first: true          # log intended creates/updates only, until flipped false
+  in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account
+  charter_pipelines: ["907748", "72281989", "88841552", "5119061"]  # → online + Package billing
+  exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
+  charter_student_billing: "Package"
+  private_student_billing: "Service List Cost"
+
+# Returning-family deal creation: when a `scheduling` email is a returning customer
+# booking new service (existing-customer signals + high confidence), create a NEW deal
+# marked dealtype=existingbusiness (per the deal model: resumed families get a NEW deal,
+# never a 'Renewal' deal; renewals only continue a just-ended deal).
+b2c_deal:
+  enabled: true
+  min_confidence: 0.9
+  dealtype: "existingbusiness"
+  # Pipeline = follow the family's most recent B2C deal (their established service
+  # type); fall back to Gold Tutoring. value = that pipeline's Pre-Lesson stage id.
+  pipeline_stage_map:
+    default: "appointmentscheduled"   # Gold Tutoring → Pre-Lesson
+    "3067397": "3067398"              # In-Person → Pre-Lesson
+    "21277473": "51098471"            # Subscription → Pre-Lesson
+  fallback_pipeline: "default"
+
+# ── Charter PO inbox (separate Gmail) ───────────────────────────
+# Full admin-inbox treatment (ticket/draft/DM, owner Kath) + deal automation + labels.
+# DISABLED until `address` is set and the service account is granted gmail.modify
+# domain-wide delegation (SETUP §7). Drafts are REAL Gmail drafts; agent never sends.
+po_inbox:
+  address: "charter@wetutorathome.com"
+  owner: kath
+  deal_pipeline_id: "907748"   # Charter Schools - Traditional Vendor Funds
+  waiting_for_po_stage: ""     # stage retired 2026-06-11 (deals moved to Stopped) — POs now CREATE deals
+  advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
+  label_processed: "A+ Agent/Processed"
+  label_review: "A+ Agent/Needs Review"
+
+# Teachworks notice → family-contact disambiguation. When two contacts share a last
+# name, the student first name from the notice is matched against these (messy, multi-
+# sibling) contact properties to pick the right family. Best-effort; unresolved = manual.
+teachworks:
+  student_name_properties:
+    - student_last_name            # mislabeled: actually holds student 1 FIRST name
+    - student_full_name_clone_     # "Student 2 Full Name"
+    - student_3_full_name
+    - student_4_full_name
+    - pilibos_student_first_name
+    - spotlight_student_first_name
+
+# Internal staff email handling: route to the teammate the email is addressed to
+# (e.g. "Hi Kath" → Kath), with a ticket. Falls back to `fallback` if unclear.
+internal:
+  domain: wetutorathome.com
+  fallback: roman
+
+# Confidence + autonomy thresholds (LOCKED).
+thresholds:
+  min_confidence: 0.7        # below this → unknown, ticket only, no draft
+  junk_auto_archive: 0.9     # junk below this → unknown instead of archive
+
+# SLA escalation chain. 1x breach → the owner. 2x → level2 (supervisor who watches the
+# owners). 3x → level3 (last resort) + ticket moved to Stuck. level2 is skipped if the
+# supervisor is already the owner (no double-ping).
+escalation:
+  level2: mandy   # watches the schedulers
+  level3: emily   # last resort
+
+# Categories that NEVER get a drafted reply regardless of routing.draft.
+no_draft_categories: [complaint, payment_dispute]
+
+classifier:
+  model: "claude-sonnet-4-6"
+  max_tokens: 1500
+
+# FUTURE: per-category auto-send graduation. No graduation criteria defined yet —
+# do NOT build auto-send promotion logic. The only outbound the agent sends is the
+# tutor-document receipt (templates/doc_receipt.md). Everything else is draft-only.
+auto_send_graduation: {}
