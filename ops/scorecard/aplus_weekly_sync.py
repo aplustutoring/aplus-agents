@@ -75,11 +75,12 @@ SCORECARD_ITEMS = {
     "new_students":          11487301255,   # Emily — New Students First Lesson Completed
     "package_hours_sold":    11487307948,   # Roman — Annual Package Hours Sold (running total)
     "post_lesson_72hr":      11521873481,   # Mandy — 72-Hr Post-Lesson Turnaround %
-    "charter_deals":         11521760217,   # Danielle — Active Proposals snapshot (Proposal Out)
-    "csm_new_deals":         11487307910,   # Danielle — New Deals Created This Week
-    "csm_outreach_initiated":12005709448,   # Danielle — Outreach Initiated This Week
-    "csm_meetings_scheduled":11760102894,   # Danielle — Meetings Scheduled This Week
-    "csm_meetings_held":     11760067895,   # Danielle — Meetings Held This Week
+    # Danielle — charter school marketing (CSM) pipeline stages (HubSpot pipeline 145539386)
+    "csm_meeting_requested": 11487307910,   # Meeting Requested — entered stage this week
+    "csm_meeting_scheduled": 12005709448,   # Meeting Scheduled — entered stage this week
+    "csm_proposal_out":      11760102894,   # Proposal Out — entered stage this week
+    "csm_active_proposals":  12504179404,   # Active Proposals (Outstanding) — snapshot currently in Proposal Out
+    "csm_program_won":       11760067895,   # Program Contracted (Won) — entered stage this week
     "nps_client":            12017535419,   # Paola — NPS Client Satisfaction (avg of Family NPS responses)
     "nps_tutor":             12017557543,   # Mandy — Tutor NPS (avg of Tutor Satisfaction responses)
     "nps_support_bot":       12017578482,   # Roman — Support BOT NPS (avg of Support Bot responses)
@@ -93,11 +94,11 @@ SCORECARD_ITEMS = {
 # vs_prior_week:    status = "On Track" if value >= prior week's value, else "Off Track"
 # Rows not listed here keep manual status (no auto-update).
 SCORECARD_STATUS_RULES = {
-    "csm_new_deals":          {"type": "weekly_threshold", "threshold": 5},
-    "csm_outreach_initiated": {"type": "weekly_threshold", "threshold": 5},
-    "csm_meetings_scheduled": {"type": "weekly_threshold", "threshold": 2},
-    "csm_meetings_held":      {"type": "weekly_threshold", "threshold": 1},
-    "charter_deals":          {"type": "weekly_threshold", "threshold": 1},
+    "csm_meeting_requested":  {"type": "weekly_threshold", "threshold": 5},
+    "csm_meeting_scheduled":  {"type": "weekly_threshold", "threshold": 2},
+    "csm_proposal_out":       {"type": "weekly_threshold", "threshold": 1},
+    "csm_active_proposals":   {"type": "weekly_threshold", "threshold": 3},
+    "csm_program_won":        {"type": "weekly_threshold", "threshold": 1},
     "nps_client":             {"type": "weekly_threshold", "threshold": 9.0, "no_data_label": "No Data"},
     "nps_tutor":              {"type": "weekly_threshold", "threshold": 9.0, "no_data_label": "No Data"},
     "nps_support_bot":        {"type": "weekly_threshold", "threshold": 9.0, "no_data_label": "No Data"},
@@ -849,6 +850,10 @@ def fetch_csm_meetings_scheduled(start_date, end_date):
     return _fetch_csm_stage_entry_count(start_date, end_date, CSM_STAGE_MEETING_SCHEDULED)
 
 
+def fetch_csm_proposal_out_entered(start_date, end_date):
+    return _fetch_csm_stage_entry_count(start_date, end_date, CSM_STAGE_PROPOSAL_SENT)
+
+
 def fetch_csm_meetings_held(start_date, end_date):
     return _fetch_csm_stage_entry_count(start_date, end_date, CSM_STAGE_MEETING_HELD)
 
@@ -1198,10 +1203,10 @@ def apply_status_updates(metric_values, board_id, prior_col):
         print(f"   {metric_key}: {current} → {status}  (vs {goal_src})")
 
 
-def write_l10_scorecard(metrics, post_lesson_pct, charter_deals,
+def write_l10_scorecard(metrics, post_lesson_pct,
                         package_hours_fy, new_students, pkg_units_wk=0,
-                        csm_new_deals=0, csm_outreach=0,
-                        csm_meetings_sch=0, csm_meetings_held=0,
+                        csm_meeting_requested=0, csm_meeting_scheduled=0,
+                        csm_proposal_out=0, csm_active_proposals=0, csm_program_won=0,
                         nps_client=None, nps_tutor=None, nps_support_bot=None,
                         start_date=None, end_date=None):
     board_id = BOARDS["l10_scorecard"]
@@ -1213,12 +1218,12 @@ def write_l10_scorecard(metrics, post_lesson_pct, charter_deals,
         (SCORECARD_ITEMS["cancellation_rate"],      {col: metrics["company"]["cancel_rate"]}),
         (SCORECARD_ITEMS["new_students"],           {col: new_students}),
         (SCORECARD_ITEMS["package_hours_sold"],     {col: package_hours_fy}),
-        (SCORECARD_ITEMS["charter_deals"],          {col: charter_deals}),
         (SCORECARD_ITEMS["post_lesson_72hr"],       {col: post_lesson_pct}),
-        (SCORECARD_ITEMS["csm_new_deals"],          {col: csm_new_deals}),
-        (SCORECARD_ITEMS["csm_outreach_initiated"], {col: csm_outreach}),
-        (SCORECARD_ITEMS["csm_meetings_scheduled"], {col: csm_meetings_sch}),
-        (SCORECARD_ITEMS["csm_meetings_held"],      {col: csm_meetings_held}),
+        (SCORECARD_ITEMS["csm_meeting_requested"],  {col: csm_meeting_requested}),
+        (SCORECARD_ITEMS["csm_meeting_scheduled"],  {col: csm_meeting_scheduled}),
+        (SCORECARD_ITEMS["csm_proposal_out"],       {col: csm_proposal_out}),
+        (SCORECARD_ITEMS["csm_active_proposals"],   {col: csm_active_proposals}),
+        (SCORECARD_ITEMS["csm_program_won"],        {col: csm_program_won}),
         (SCORECARD_ITEMS["nps_client"],             {col: nps_client}),
         (SCORECARD_ITEMS["nps_tutor"],              {col: nps_tutor}),
         (SCORECARD_ITEMS["nps_support_bot"],        {col: nps_support_bot}),
@@ -1234,11 +1239,11 @@ def write_l10_scorecard(metrics, post_lesson_pct, charter_deals,
     print("  ✅ L10 Scorecard updated.")
 
     metric_values = {
-        "csm_new_deals":          csm_new_deals,
-        "csm_outreach_initiated": csm_outreach,
-        "csm_meetings_scheduled": csm_meetings_sch,
-        "csm_meetings_held":      csm_meetings_held,
-        "charter_deals":          charter_deals,
+        "csm_meeting_requested":  csm_meeting_requested,
+        "csm_meeting_scheduled":  csm_meeting_scheduled,
+        "csm_proposal_out":       csm_proposal_out,
+        "csm_active_proposals":   csm_active_proposals,
+        "csm_program_won":        csm_program_won,
         "nps_client":             nps_client,
         "nps_tutor":              nps_tutor,
         "nps_support_bot":        nps_support_bot,
@@ -1386,11 +1391,11 @@ def main():
     yolanda_missed = [d for d in missed_deals if d.get("scheduler") == "yolanda"]
     janelle_72hr_pct = round(len(janelle_missed) / janelle_total * 100, 1) if janelle_total else 0
     yolanda_72hr_pct = round(len(yolanda_missed) / yolanda_total * 100, 1) if yolanda_total else 0
-    charter_deals     = fetch_charter_active_deals()
-    csm_new_deals     = fetch_csm_new_deals_created(start_date, end_date)
-    csm_outreach      = fetch_csm_outreach_initiated(start_date, end_date)
-    csm_meetings_sch  = fetch_csm_meetings_scheduled(start_date, end_date)
-    csm_meetings_held = fetch_csm_meetings_held(start_date, end_date)
+    csm_meeting_requested = fetch_csm_outreach_initiated(start_date, end_date)    # entries into Meeting Requested stage
+    csm_meeting_scheduled = fetch_csm_meetings_scheduled(start_date, end_date)    # entries into Meeting Scheduled stage
+    csm_proposal_out      = fetch_csm_proposal_out_entered(start_date, end_date)  # entries into Proposal Out stage
+    csm_active_proposals  = fetch_charter_active_deals()                          # snapshot: deals currently in Proposal Out
+    csm_program_won       = fetch_charter_pilots_signed(start_date, end_date)     # entries into Program Contracted (Won)
     print(f"   72-hr turnaround: {post_lesson_pct}% missed (did NOT reach Post-Lesson within 72 hrs)")
     if missed_deals:
         print(f"\n   Deals that missed 72-hr window ({len(missed_deals)}):")
@@ -1399,11 +1404,11 @@ def main():
             print(f"     {d['name']:40} {d['pipeline']:15} {status}")
     else:
         print("   All deals moved to Post-Lesson within 72 hours.")
-    print(f"\n   Active Proposals (Proposal Out): {charter_deals}")
-    print(f"   New Deals Created this week: {csm_new_deals}")
-    print(f"   Outreach Initiated this week: {csm_outreach}")
-    print(f"   Meetings Scheduled this week: {csm_meetings_sch}")
-    print(f"   Meetings Held this week: {csm_meetings_held}")
+    print(f"\n   Meeting Requested (entered this week): {csm_meeting_requested}")
+    print(f"   Meeting Scheduled (entered this week): {csm_meeting_scheduled}")
+    print(f"   Proposal Out (entered this week): {csm_proposal_out}")
+    print(f"   Active Proposals (outstanding snapshot): {csm_active_proposals}")
+    print(f"   Program Contracted / Won (entered this week): {csm_program_won}")
 
     # 6. Pull NPS data from Monday.com source boards
     print("\n📥 Pulling NPS data from Monday.com...")
@@ -1420,10 +1425,11 @@ def main():
                                janelle_72hr_pct, yolanda_72hr_pct,
                                janelle_missed, yolanda_missed,
                                start_date, end_date)
-    write_l10_scorecard(metrics, post_lesson_pct, charter_deals,
+    write_l10_scorecard(metrics, post_lesson_pct,
                         package_hrs, new_students, pkg_units_wk,
-                        csm_new_deals=csm_new_deals, csm_outreach=csm_outreach,
-                        csm_meetings_sch=csm_meetings_sch, csm_meetings_held=csm_meetings_held,
+                        csm_meeting_requested=csm_meeting_requested, csm_meeting_scheduled=csm_meeting_scheduled,
+                        csm_proposal_out=csm_proposal_out, csm_active_proposals=csm_active_proposals,
+                        csm_program_won=csm_program_won,
                         nps_client=nps_client, nps_tutor=nps_tutor, nps_support_bot=nps_support_bot,
                         start_date=start_date, end_date=end_date)
     write_first_lesson_report(new_students, start_date, end_date)
