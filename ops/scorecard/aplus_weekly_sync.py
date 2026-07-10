@@ -339,6 +339,25 @@ def classify_lesson(lesson):
         return "yolanda"
     return None
 
+def scheduler_for_initial(initial):
+    """Map a last-name initial to the owning scheduler (A–L Janelle, M–Z Yolanda)."""
+    if initial in JANELLE_RANGE:
+        return "janelle"
+    if initial in YOLANDA_RANGE:
+        return "yolanda"
+    return "unassigned"
+
+def scheduler_from_deal_name(dealname):
+    """Scheduler for a HubSpot deal, keyed off the PARENT's last name.
+
+    Deal names follow 'Parent First Last - Student ...', so the parent's last
+    name is the last token before the ' - ' student separator (falling back to
+    the last token of the whole name when there's no separator)."""
+    parent = (dealname or "").split(" - ")[0].strip()
+    tokens = parent.split()
+    initial = tokens[-1][0].lower() if tokens and tokens[-1] else ""
+    return scheduler_for_initial(initial)
+
 def get_lesson_hours(lesson):
     """Return duration in hours from duration_minutes."""
     minutes = float(lesson.get("duration_minutes") or 0)
@@ -679,16 +698,9 @@ def fetch_72hr_turnaround(start_date, end_date):
                 created = datetime.fromisoformat(p["createdate"].replace("Z", "+00:00"))
                 elapsed = (datetime.now(created.tzinfo) - created).total_seconds() / 3600
                 pre_hrs = elapsed
-            # Classify deal by scheduler using first word of deal name (last name)
+            # Classify deal by scheduler using the parent's last name
             dealname = p.get("dealname", "Unknown")
-            first_word = dealname.split()[0].lower() if dealname.split() else ""
-            initial = first_word[0] if first_word else ""
-            if initial in JANELLE_RANGE:
-                scheduler = "janelle"
-            elif initial in YOLANDA_RANGE:
-                scheduler = "yolanda"
-            else:
-                scheduler = "unassigned"
+            scheduler = scheduler_from_deal_name(dealname)
             missed.append({
                 "name": dealname,
                 "pipeline": cfg["name"],
@@ -702,17 +714,10 @@ def fetch_72hr_turnaround(start_date, end_date):
     pct_missed = round(len(missed) / total * 100, 1) if total > 0 else 0
 
     # Also add scheduler to on-time deals for per-scheduler % calculation
-    all_deal_schedulers = []
-    for d in all_deals:
-        dealname = d["properties"].get("dealname", "")
-        first_word = dealname.split()[0].lower() if dealname.split() else ""
-        initial = first_word[0] if first_word else ""
-        if initial in JANELLE_RANGE:
-            all_deal_schedulers.append("janelle")
-        elif initial in YOLANDA_RANGE:
-            all_deal_schedulers.append("yolanda")
-        else:
-            all_deal_schedulers.append("unassigned")
+    all_deal_schedulers = [
+        scheduler_from_deal_name(d["properties"].get("dealname", ""))
+        for d in all_deals
+    ]
 
     return pct_missed, missed, all_deal_schedulers
 
