@@ -1,0 +1,40 @@
+name: Weekly digest
+
+# Monday 8:00 AM PT. PDT = 15:00 UTC, PST = 16:00 UTC. Both fire; the digest is
+# computed for the last completed Sun-Sat week and is idempotent enough to re-run.
+on:
+  schedule:
+    - cron: "0 15 * * 1"   # 08:00 PDT Monday
+    - cron: "0 16 * * 1"   # 08:00 PST Monday
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print digest, write nothing)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run weekly digest
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          MONDAY_TOKEN: ${{ secrets.MONDAY_TOKEN }}
+          GOOGLE_SHEETS_CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.digest

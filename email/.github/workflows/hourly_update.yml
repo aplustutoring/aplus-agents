@@ -1,0 +1,33 @@
+name: Hourly update (launch monitoring)
+
+# Every hour; a PT business-hours gate + the config `until` date keep it to the
+# 2-week launch window, 9-6 PT Mon-Fri. Auto-stops itself after `until`.
+on:
+  schedule:
+    - cron: "5 * * * *"   # hourly, offset :05
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force send now (bypass hours/window gate)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run hourly update
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          FORCE_RUN: ${{ inputs.force }}
+        run: python -m src.hourly_update

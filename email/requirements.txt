@@ -1,0 +1,11 @@
+# aplus_email_agent — pinned for GitHub Actions (Python 3.11)
+# HubSpot Conversations + Tickets use documented REST endpoints directly (requests),
+# not the SDK — its Conversations coverage is uncertain and this keeps every call
+# transparent/testable (same pattern as aplus-sync).
+anthropic>=0.40.0
+requests>=2.32.0
+python-dotenv>=1.0.1
+PyYAML>=6.0.2
+gspread>=6.1.0
+google-auth>=2.34.0
+tzdata>=2024.1

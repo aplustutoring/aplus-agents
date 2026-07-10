@@ -1,0 +1,67 @@
+name: Triage (inbox poll)
+
+# Cadence (UTC; PT business hours = 9-18 America/Los_Angeles, Mon-Fri):
+#   PDT (Mar-Nov): 9-18 PT = 16:00-01:00 UTC.  PST (Nov-Mar): 9-18 PT = 17:00-02:00 UTC.
+# So */5 over 16:00-02:59 UTC weekdays covers the business window in both offsets.
+# A separate hourly cron handles off-window hours and weekends. Runs are idempotent
+# (audit-log message-id dedupe) so overlapping fires are safe.
+on:
+  schedule:
+    - cron: "*/5 16-23 * * 1-5"   # business window (UTC), weekdays
+    - cron: "*/5 0-2 * * 1-5"     # business window wrap past midnight UTC, weekdays
+    - cron: "0 * * * *"            # hourly everywhere else (off-window + weekends)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (log intended actions, write nothing)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-email-state
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run triage
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          MONDAY_TOKEN: ${{ secrets.MONDAY_TOKEN }}
+          GOOGLE_SHEETS_CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.main
+
+      - name: Commit state changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/cursor.json state/audit_log.jsonl
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "triage: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+          fi

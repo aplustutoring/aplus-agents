@@ -1,0 +1,57 @@
+name: PO inbox (charter Gmail)
+
+# Every 15 min during business hours, hourly otherwise. No-ops until
+# config po_inbox.address is set + the service account has gmail.modify delegation.
+on:
+  schedule:
+    - cron: "*/15 16-23 * * 1-5"
+    - cron: "*/15 0-2 * * 1-5"
+    - cron: "30 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (log intended actions, write nothing)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  po:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-email-state
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run PO inbox
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GOOGLE_SHEETS_CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.po_inbox
+      - name: Commit state changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/po_cursor.json state/audit_log.jsonl
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "po-inbox: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+          fi
