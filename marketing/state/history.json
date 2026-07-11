@@ -935,6 +935,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1783654903.884559"
+    },
+    {
+      "ts": "2026-07-11T16:11:51.814008+00:00",
+      "kind": "content_build",
+      "week": "2026-07-09",
+      "slot": 1,
+      "post_date": "2026-07-13",
+      "headline": "California's $128B TK-12 budget locks in a 4.31% COLA and a $5B one-time block grant \u2014 charter schools included",
+      "bundle_dir": "aplus-content/2026-07-13-california-5b-school-block-grant",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "216946225949",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-11T16:31:50.675736+00:00",
+      "kind": "content_build",
+      "week": "2026-07-09",
+      "slot": 2,
+      "post_date": "2026-07-15",
+      "headline": "iLEAD Flex opens in Lancaster August 2026 \u2014 first mover as the NCB moratorium ends",
+      "bundle_dir": "aplus-content/2026-07-15-ilead-flex-lancaster-2026-moratorium",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "216947054127",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-11T16:54:06.827179+00:00",
+      "kind": "content_build",
+      "week": "2026-07-09",
+      "slot": 3,
+      "post_date": "2026-07-17",
+      "headline": "LAUSD's court-mandated tutoring rollout is running a live vendor bake-off \u2014 and every district in California is watching",
+      "bundle_dir": "aplus-content/2026-07-17-lausd-tutoring-vendor-evaluation",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "216948685355",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

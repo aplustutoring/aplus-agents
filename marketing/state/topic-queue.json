@@ -17,7 +17,12 @@
       "roman_take": "Record-high funding removes the last excuse for LTEL stagnation \u2014 the money is on the table; the constraint is execution capacity, not dollars.",
       "danielle_take": "Walk through how to sequence the $5B one-time block grant against existing Title III subgrants so schools don't leave 2024-25 carryover on the table when 2026-27 starts. ---",
       "redundancy_max_similarity": 0.7560455972615899,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-11T16:11:51.812486+00:00",
+      "post_date": "2026-07-13",
+      "bundle_dir": "aplus-content/2026-07-13-california-5b-school-block-grant",
+      "hubspot_post_id": "216946225949"
     },
     {
       "slot": 2,
@@ -34,7 +39,12 @@
       "roman_take": "The schools who win the next five years won't be the ones who opened first \u2014 they'll be the ones who built the reclassification and Tier 2/3 systems before the state made them.",
       "danielle_take": "When a charter opens a new site, the intervention plan can't be an afterthought \u2014 Title III and Title I services need to be scoped into the LCAP before the doors open, not audited into existence later.",
       "redundancy_max_similarity": 0.7624698199062808,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-11T16:31:50.674265+00:00",
+      "post_date": "2026-07-15",
+      "bundle_dir": "aplus-content/2026-07-15-ilead-flex-lancaster-2026-moratorium",
+      "hubspot_post_id": "216947054127"
     },
     {
       "slot": 3,
@@ -50,7 +60,12 @@
       "roman_take": "When a mandate forces a district to buy tutoring at scale, procurement almost always wins the fight against pedagogy \u2014 and that's why most district-scale tutoring underdelivers. The vendors who \"win\" LAUSD will be the ones with the lowest bid, not the ones with the highest reclassification rate.",
       "danielle_take": "A \"mix of virtual and in-person sessions\" across 100,000 students is only as good as the intervention tracking behind it. Roll-up dashboards don't move CAASPP scores; small-group fidelity with a documented dosage floor does \u2014 and that's the operational bar a charter can hold a vendor to before signing. ---",
       "redundancy_max_similarity": 0.49903616625221175,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-11T16:54:06.826161+00:00",
+      "post_date": "2026-07-17",
+      "bundle_dir": "aplus-content/2026-07-17-lausd-tutoring-vendor-evaluation",
+      "hubspot_post_id": "216948685355"
     }
   ],
   "slack": {
