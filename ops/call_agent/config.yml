@@ -1,0 +1,93 @@
+# ops/call_agent — Call Agent v1.1 configuration
+# Secrets live in env vars (.env locally, repo secrets on Actions) — never here.
+
+justcall:
+  # JustCall numbers to poll for completed INBOUND calls. V1 scope: exactly one
+  # number — the main A+ line. This is a list so more lines can be added later
+  # without code changes, but before adding a number confirm its recording
+  # disclosure is in place (see README — CA two-party consent).
+  monitored_numbers:
+    - "+18188506284"        # Main A+ line (IVR announces recording)
+
+  # Consent guardrail: calls with no recording are never transcribed or
+  # summarized — they are skipped and counted in the digest. Keep true.
+  require_recording: true
+
+  # Only calls of this type are processed (others are logged and ignored).
+  # Live API values (lowercase, case-insensitive here):
+  # answered | missed | voicemail | abandoned.
+  process_call_types: ["answered"]
+
+  # Hang-up filter: transcripts shorter than this are IVR fragments/hang-ups —
+  # no Claude call, no HubSpot writes, just a count in the digest.
+  # (3 of 7 answered calls in the 2026-07 test week were these.)
+  min_transcript_chars: 200
+
+  # First-run lookback when no state cursor exists yet (days).
+  initial_lookback_days: 1
+  # Overlap window re-queried each run to survive crashes (idempotent via call IDs).
+  overlap_minutes: 60
+  # Pause between per-call AI-transcript fetches (JustCall burst limit is
+  # 30 req/min on the Team plan).
+  ai_fetch_pause_seconds: 2
+
+claude:
+  # Repo-standard model (matches marketing/scripts/*).
+  model: "claude-opus-4-7"
+  max_tokens: 2000
+  # Cost guard: transcripts longer than this are truncated before summarization
+  # (truncation is noted in the summary metadata + digest line).
+  max_transcript_chars: 50000
+
+hubspot:
+  # V1 never auto-creates contacts. Unmatched calls go to the digest for triage.
+  auto_create_contacts: false
+
+  # Owner IDs (HubSpot owner ids, not user ids) for task/ticket assignment.
+  owners:
+    roman: 38681249
+    paola: 81494333
+    janelle: 80047202
+  # Action items whose owner_hint doesn't match anyone above default to:
+  default_task_owner: paola
+  # Follow-up tasks are due this many business days after the call.
+  task_due_business_days: 1
+
+  # Negative-sentiment / complaint check-in ticket (Support Pipeline).
+  ticket:
+    pipeline: "0"                 # Support Pipeline
+    stage: "131537027"            # "Working on it"
+    priority: "HIGH"
+    owner: roman
+    check_in_business_days: 2     # companion check-in task due date
+
+slack:
+  # Daily digest channel — used only with SLACK_BOT_TOKEN.
+  # With SLACK_WEBHOOK_URL the webhook's own channel config wins.
+  # #calls is PRIVATE — the bot must be invited (/invite in the channel).
+  channel: "#calls"
+  # Channel for immediate negative-sentiment/complaint alerts
+  # (fires per call, not end-of-day). Leave empty to disable immediate
+  # alerts (they still appear in the digest).
+  alert_channel: "#calls"
+
+coaching:
+  # Rubric-based call scoring for coaching (see rubric.md — edit anchors
+  # there, no code changes). Scores every processed call, attributed to the
+  # team member who answered (JustCall agent_name). Coaching cards post to a
+  # PRIVATE channel per call; nothing is written to the family's HubSpot
+  # record. Falls back to slack.alert_channel when channel is empty.
+  enabled: true
+  channel: "#calls"           # private; bot must be invited
+  rubric_path: "ops/call_agent/rubric.md"
+  # Also attach the full rubric evaluation as a Note on the matched HubSpot
+  # contact. NOTE: contact Notes are visible to everyone with HubSpot access —
+  # coaching scores become team-visible on family records. Flip to false to
+  # keep coaching in the private Slack channel only.
+  note_to_contact: true
+
+state:
+  # Repo-relative path; committed back by the workflow (topic-gen pattern).
+  path: "ops/call_agent/state/state.json"
+  # Cap on remembered processed call IDs (oldest dropped first).
+  max_processed_ids: 5000
