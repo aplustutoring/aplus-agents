@@ -23,6 +23,11 @@ justcall:
   # (3 of 7 answered calls in the 2026-07 test week were these.)
   min_transcript_chars: 200
 
+  # JustCall interprets the from_datetime filter in the ACCOUNT timezone,
+  # while response timestamps (call_date/call_time) are UTC (verified live
+  # 2026-07-17). Must match the JustCall account setting.
+  account_timezone: "America/Los_Angeles"
+
   # First-run lookback when no state cursor exists yet (days).
   initial_lookback_days: 1
   # Overlap window re-queried each run to survive crashes (idempotent via call IDs).

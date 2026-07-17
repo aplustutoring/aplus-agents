@@ -174,9 +174,15 @@ def fetch_inbound_calls(cfg, since_utc):
     """
     jc = cfg["justcall"]
     seen, calls = set(), []
-    since_str = since_utc.strftime("%Y-%m-%d %H:%M:%S")
+    # from_datetime is interpreted in the ACCOUNT timezone even though the
+    # response's call_date/call_time are UTC (verified live 2026-07-17 — a UTC
+    # cursor reads as hours in the future and silently returns nothing).
+    from zoneinfo import ZoneInfo
+    tz_name = jc.get("account_timezone", "America/Los_Angeles")
+    since_str = since_utc.astimezone(ZoneInfo(tz_name)).strftime("%Y-%m-%d %H:%M:%S")
     for number in jc["monitored_numbers"]:
-        log.info(f"Fetching inbound calls on {number} since {since_str} UTC...")
+        log.info(f"Fetching inbound calls on {number} since {since_str} {tz_name} "
+                 f"({since_utc.strftime('%Y-%m-%d %H:%M:%S')} UTC)...")
         page = 0  # pagination is 0-indexed (verified live 2026-07-10; docs don't say)
         while True:
             data = jc_get("/v2.1/calls", params={
