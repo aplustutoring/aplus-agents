@@ -75,8 +75,9 @@ coaching:
   # Rubric-based call scoring for coaching (see rubric.md — edit anchors
   # there, no code changes). Scores every processed call, attributed to the
   # team member who answered (JustCall agent_name). Coaching cards post to a
-  # PRIVATE channel per call; nothing is written to the family's HubSpot
-  # record. Falls back to slack.alert_channel when channel is empty.
+  # PRIVATE channel per call; with note_to_contact true (below) the full
+  # evaluation is ALSO attached as a Note on the matched HubSpot contact.
+  # Falls back to slack.alert_channel when channel is empty.
   enabled: true
   channel: "#calls"           # private; bot must be invited
   rubric_path: "ops/call_agent/rubric.md"
