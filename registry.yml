@@ -271,6 +271,50 @@ agents:
     depends_on: ["secrets: TEACHWORKS_API_KEY, MONDAY_API_KEY"]
     notes: CHECK_ONLY smoke mode for CI (no DRY_RUN).
 
+  # ───────────────────────── Call agent (ops/call_agent) ───────────────
+  # V1: inbound calls on the main A+ line only. JustCall native AI transcripts
+  # (no third-party fallback); require_recording consent guardrail; no
+  # auto-created contacts. Deployment defaults to --dry-run until the repo
+  # variable CALL_AGENT_LIVE=true.
+  - id: call-agent
+    name: Call agent — daily digest (~5:30 PM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["30 0 * * * (17:30 PDT / 16:30 PST daily)"]
+      workflow: .github/workflows/call-agent.yml
+    entrypoint: ops/call_agent/call_agent.py
+    reads:
+      - JustCall                                # inbound calls + AI transcripts (v2.1)
+      - HubSpot:contacts                        # phone match (search only)
+      - ops/call_agent/state/state.json         # cursor + processed call IDs
+    writes:
+      - HubSpot:calls                           # Call engagement per matched call
+      - HubSpot:contacts                        # key-property updates (log/overwrite/fill-only policies)
+      - HubSpot:tasks                           # action items (default owner Paola)
+      - HubSpot:notes                           # rubric evaluation on the contact (coaching.note_to_contact)
+      - HubSpot:tickets                         # negative-sentiment check-in (Support Pipeline)
+      - Slack                                   # daily digest + immediate negative-call alerts
+      - ops/call_agent/state/state.json
+    depends_on:
+      - "secrets: JUSTCALL_API_KEY, JUSTCALL_API_SECRET, HUBSPOT_API_KEY, ANTHROPIC_API_KEY, SLACK_BOT_TOKEN or SLACK_WEBHOOK_URL"
+      - ops/call_agent/config.yml
+    notes: >
+      Claude summarization + record-update proposal (claude-opus-4-7,
+      structured outputs). Family-record loop: What's-going-on / what-we-can-
+      do-to-help are dated append-logs; grade/school/subject overwrite;
+      names/attribution fill-only; email/phone only on confirmed correction.
+      Negative sentiment -> HIGH ticket + 2-business-day check-in task +
+      private Slack alert. Coaching: every call scored against
+      ops/call_agent/rubric.md, attributed via JustCall agent_name; cards to
+      a private channel AND full evaluation as a Note on the matched contact
+      (coaching.note_to_contact toggle; team-visible). Hang-ups (<200-char
+      transcript) skipped. CHECK_ONLY
+      smoke mode + --dry-run. Unmatched callers go to digest triage (never
+      auto-created). monitored_numbers is a list for future lines — confirm
+      recording disclosure before adding any.
+
   # ───────────────────────── Email / inbox-ops engine ──────────────────
   # Separate repo: github.com/aplustutoring/aplus-email. Runs on GitHub Actions
   # (no always-on server). Triages admin@wetutorathome.com + HubSpot
