@@ -1,91 +1,72 @@
 {
-  "current_week": "2026-07-09",
+  "current_week": "2026-07-16",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "California's $128B TK-12 budget locks in a 4.31% COLA and a $5B one-time block grant \u2014 charter schools included",
-      "category": "A (state funding)",
-      "sources": [
-        "https://edsource.org/updates/california-legislature-to-vote-on-128-billion-budget-for-schools-and-community-colleges",
-        "https://www.hatchingresults.com/blog/californias-2026-27-budget",
-        "https://edsource.org/2026/california-legislature-passes-budget/760411"
-      ],
-      "why_matters": "The $128 billion portion of the 2026-27 budget grew by about $400 million from what Newsom proposed in May, and school districts and charter schools will receive a larger-than-projected cost-of-living increase of 4.31%, which includes funding to cover up to 14 weeks of paid maternity leave for all school staff. Critically for A+'s HOT 13 and Tier A partners, the Legislature's budget includes $1 billion more for community schools, a $2.4 billion boost to ongoing special education funding and a $5 billion one-time block grant that districts and charter schools can spend however they want. That $5B is discretionary money A+ partners can braid with Title III for LTEL intervention right now.",
-      "angle": "\"The biggest state education budget in California history just passed. Here's what the $5B discretionary block grant means for your intervention plan before the school year starts.\"",
-      "roman_take": "Record-high funding removes the last excuse for LTEL stagnation \u2014 the money is on the table; the constraint is execution capacity, not dollars.",
-      "danielle_take": "Walk through how to sequence the $5B one-time block grant against existing Title III subgrants so schools don't leave 2024-25 carryover on the table when 2026-27 starts. ---",
-      "redundancy_max_similarity": 0.7560455972615899,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-07-11T16:11:51.812486+00:00",
-      "post_date": "2026-07-13",
-      "bundle_dir": "aplus-content/2026-07-13-california-5b-school-block-grant",
-      "hubspot_post_id": "216946225949"
+      "headline": "AB 126 just changed the rules for nonclassroom-based charter schools \u2014 effective immediately",
+      "category": "A (state funding / charter accountability)",
+      "sources": [],
+      "why_matters": "Nearly every Tier A partner (Visions, Sky Mountain, South Sutter, Ocean Grove, Heartwood, iLEAD Online/Hybrid, Sage Oak, Compass, Pacific Coast Academy, Heartland, etc.) is an NCB charter. AB 126 requires them to itemize contract costs related to staff and instruction \u2014 meaning A+ invoices and service agreements are about to be scrutinized line-by-line inside their funding determinations. Simultaneously, the new $1B ongoing community schools stream explicitly excludes them. A+ is one of the few vendors that can honestly say: our reporting stack was already built to itemize by student, by minute, by skill.",
+      "angle": "\"AB 126 just made your funding determination harder. Here's what NCB charter directors are asking us about this week.\" Frame A+ as the vendor whose invoicing and outcome documentation already meets the new itemization bar.",
+      "roman_take": "The conviction cut \u2014 Sacramento keeps writing rules that treat NCB charters as second-class LEAs. If the state is going to demand line-item accountability, then partners should demand line-item accountability from every vendor they hire. That's the standard A+ has always operated at.",
+      "danielle_take": "The implementation cut \u2014 a walk-through of exactly which line items on a typical A+ invoice map to the new itemization requirement, and what a partner director should ask any tutoring vendor to hand over before September funding determinations. ---",
+      "redundancy_max_similarity": 0.4806432051247895,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "iLEAD Flex opens in Lancaster August 2026 \u2014 first mover as the NCB moratorium ends",
-      "category": "C (Tier A partner news) with A (state policy) overlay",
+      "headline": "iLEAD Flex opens in Lancaster \u2014 Tier A partner expansion post-NCB moratorium",
+      "category": "C (Tier A partner news) \u2014 primary; A (state policy) \u2014 secondary",
       "sources": [
-        "https://www.prnewswire.com/news-releases/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster-302804663.html",
-        "https://edsource.org/2025/california-lawmakers-pass-charter-school-bill/740815"
+        "https://www.prnewswire.com/news-releases/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster-302804663.html"
       ],
-      "why_matters": "iLEAD announced expansion into Lancaster with a new charter school in their network beginning in 2026, with iLEAD Flex opening in August 2026. The California moratorium on new nonclassroom-based charters concluded on January 1, 2026, and iLEAD \u2014 already a Tier A A+ partner across Antelope Valley, Lancaster, Exploration, Hybrid, and Online \u2014 is one of the first networks moving. The TK\u201312 campus offers families a choice between full classroom-based instruction, Independent Study, or hybrid options on campus each week. New site + new enrollment pipeline = new intervention needs on day one.",
-      "angle": "Congratulate iLEAD on the Lancaster launch and frame the moratorium's end as the beginning of a new capacity-planning era for flex-based schools \u2014 where intervention infrastructure is the differentiator, not marketing.",
-      "roman_take": "The schools who win the next five years won't be the ones who opened first \u2014 they'll be the ones who built the reclassification and Tier 2/3 systems before the state made them.",
-      "danielle_take": "When a charter opens a new site, the intervention plan can't be an afterthought \u2014 Title III and Title I services need to be scoped into the LCAP before the doors open, not audited into existence later.",
-      "redundancy_max_similarity": 0.7624698199062808,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-07-11T16:31:50.674265+00:00",
-      "post_date": "2026-07-15",
-      "bundle_dir": "aplus-content/2026-07-15-ilead-flex-lancaster-2026-moratorium",
-      "hubspot_post_id": "216947054127"
+      "why_matters": "iLEAD is one of A+'s largest active partners across the Southern CA cluster. iLEAD Flex is expected to open with approximately 750 learners, bringing iLEAD's total network enrollment to nearly 7,000 students. The launch is part of a longer growth plan that includes iLEAD Innovate, the network's next planned campus, which would be their first school outside of Los Angeles County and is expected to open in fall 2027. Since the statewide moratorium on new nonclassroom-based charters concluded on January 1, 2026, mission-driven networks like iLEAD have been moving quickly to bring their programs to communities that have long lacked access \u2014 meaning more iLEAD-shaped opportunities are coming, fast. Every new campus needs an intervention layer on day one.",
+      "angle": "Congratulate iLEAD on the Lancaster launch; frame the NCB-moratorium-lift moment as a wave of new charters that will need intervention infrastructure built in, not bolted on.",
+      "roman_take": "New charters can't afford to spend Year 1 discovering they have an LTEL problem in Year 3 \u2014 bake in Tier 2/3 intervention capacity before you open the doors.",
+      "danielle_take": "Practical checklist for a launching charter: how to design intervention delivery around classroom-based instruction, Independent Study, or hybrid options from the first bell so Title I/Title III dollars land on structured services, not scramble.",
+      "redundancy_max_similarity": 0.7563957897670341,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "LAUSD's court-mandated tutoring rollout is running a live vendor bake-off \u2014 and every district in California is watching",
-      "category": "D (industry/competitor) \u2014 primary competitive_intel signal",
+      "headline": "Stanford NSSA RCT . \"Having access to an AI tutor isn't the same as using it\"",
+      "category": "D (competitor/industry) + E (research)",
       "sources": [
-        "https://edsource.org/2026/los-angeles-unified-is-now-accountable-for-high-dosage-tutoring-as-settlement-is-approved/752370"
+        "https://nssa.stanford.edu/news",
+        "https://nssa.stanford.edu/"
       ],
-      "why_matters": "This is the largest live competitive comparison in the tutoring category anywhere in the country. LAUSD is now officially on the hook, following a court-approved settlement, to provide high-dosage tutoring to more than 100,000 TK-12 students \u2014 more than a quarter of the district. In a statement, LAUSD said it is conducting a program evaluation that will explore variation in the implementation, take-up, and impact on student outcomes across a range of tutoring models and vendors. More than a quarter of the district's TK-12 students will receive a mix of virtual and in-person sessions, delivered in small groups or one-on-one to complement classroom instruction. Every charter director in California will be reading the eventual LAUSD evaluation report. A+ can front-run that conversation by defining what \"fidelity\" actually looks like, using its own reclassification data, before Varsity Tutors and the AI-tutor vendors write their own version of the narrative.",
-      "angle": "\"The biggest tutoring RFP in California isn't an RFP \u2014 it's a court settlement. Here's what LAUSD's vendor evaluation should be measuring.\"",
-      "roman_take": "When a mandate forces a district to buy tutoring at scale, procurement almost always wins the fight against pedagogy \u2014 and that's why most district-scale tutoring underdelivers. The vendors who \"win\" LAUSD will be the ones with the lowest bid, not the ones with the highest reclassification rate.",
-      "danielle_take": "A \"mix of virtual and in-person sessions\" across 100,000 students is only as good as the intervention tracking behind it. Roll-up dashboards don't move CAASPP scores; small-group fidelity with a documented dosage floor does \u2014 and that's the operational bar a charter can hold a vendor to before signing. ---",
-      "redundancy_max_similarity": 0.49903616625221175,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-07-11T16:54:06.826161+00:00",
-      "post_date": "2026-07-17",
-      "bundle_dir": "aplus-content/2026-07-17-lausd-tutoring-vendor-evaluation",
-      "hubspot_post_id": "216948685355"
+      "why_matters": "Stanford SCALE's Carly Robinson stated that \"having access to this AI tutor isn't the same as using it\" \u2014 researchers found that when two school districts carved out dedicated time for hundreds of elementary students to work with a well-known AI reading tutor, students didn't use it much at all. The RCTs tested elementary students assigned to use an AI literacy platform independently or with an in-person tutor focused on engagement. Every competitor in A+'s space \u2014 Varsity Tutors, IXL, Carnegie Learning, and every AI-native entrant \u2014 is currently pitching AI tutoring as the answer to district budget pressure. This is the first Tier-1 research result publicly poking holes in that pitch. A+ can say something *only A+ can say*: our model is engagement-first, humans-first, and our attendance/completion data proves it. Nobody with an AI product can credibly counter this.",
+      "angle": "\"Stanford just published what we've been saying for 20 years. Access isn't intervention. Attendance is.\"",
+      "roman_take": "Call out the venture-backed AI-tutoring pitch deck directly \u2014 the industry has spent $12B convincing districts that scale = software, and Stanford just handed us the RCT proving scale without engagement equals nothing.",
+      "danielle_take": "Walk charter directors through what \"engagement-designed\" tutoring actually looks like at implementation \u2014 tutor consistency, small groups, session cadence, the specific things NSSA's own standards require that a login screen can't provide.",
+      "redundancy_max_similarity": 0.4890855978290313,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1783654903.884559",
-    "posted_at": "2026-07-09T20:35:52.664138-07:00",
+    "message_ts": "1784256941.023289",
+    "posted_at": "2026-07-16T19:50:45.945521-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1783654904.127899"
+        "ts": "1784256941.224069"
       },
       {
         "slot": 2,
-        "ts": "1783654904.375399"
+        "ts": "1784256941.534779"
       },
       {
         "slot": 3,
-        "ts": "1783654904.600999"
+        "ts": "1784256941.746959"
       }
     ],
     "processed_reply_ts": []
@@ -94,7 +75,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-07-09T20:35:52.664138-07:00",
+    "approved_at": "2026-07-16T19:50:45.945521-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null
