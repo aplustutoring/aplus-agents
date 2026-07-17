@@ -179,6 +179,11 @@ API differs from its own docs (all handled in code):
 
 - **Pagination is 0-indexed**: `page=0` is the first page. (`page=1` +
   `per_page=100` silently returns nothing.)
+- **`from_datetime` is account-timezone, responses are UTC** (verified live
+  2026-07-17): the list filter is interpreted in the JustCall account's
+  timezone (PT for us — `config.yml → justcall.account_timezone`), while
+  `call_date`/`call_time` in the response are UTC. Sending a UTC cursor reads
+  as hours in the future and silently returns zero calls.
 - **`call_info.type` is lowercase** (`answered`, not the documented `Answered`).
 - **`recording` is nested under `call_info`**, not top-level on the call object.
 
