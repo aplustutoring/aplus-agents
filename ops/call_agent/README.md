@@ -28,8 +28,12 @@ call's native AI transcript, and turns each call into CRM actions:
   call processing.
 
 A **scheduled poller, not a webhook** — one Python script
-(`call_agent.py`) run daily by `.github/workflows/call-agent.yml`, same
-pattern as `ops/scorecard`. HubSpot stays the single source of truth for
+(`call_agent.py`) run by `.github/workflows/call-agent.yml` every 15 min
+during business hours (~8 AM–8 PM PT, `--no-digest`: coaching cards and
+alerts post per call for near-real-time feedback) plus a daily ~5:30 PM PT
+digest run that flushes held entries. Same pattern as `ops/scorecard`.
+Calls whose JustCall AI transcript isn't ready yet are retried on later
+polls within `transcript_grace_minutes` (must stay < `overlap_minutes`). HubSpot stays the single source of truth for
 families/communication; this agent only *adds* engagements, never edits
 contact data.
 

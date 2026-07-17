@@ -1,7 +1,15 @@
-name: Call agent — daily digest (~5:30 PM PT)
+name: Call agent — 15-min polls + daily digest (~5:30 PM PT)
 
-# Single fixed-UTC cron pinned to PDT (scorecard convention — winter runs ~1h
-# earlier in PT, harmless for an end-of-day digest, avoids dual-cron double-runs).
+# Fixed-UTC crons pinned to PDT (scorecard convention — winter runs ~1h
+# earlier in PT, harmless, avoids dual-cron double-runs).
+#
+# Two run modes, decided by which cron fired (github.event.schedule):
+#   - POLL runs (every 15 min, ~8 AM–8 PM PT): process new calls with
+#     --no-digest. Coaching cards + negative-sentiment alerts post per call
+#     (near-real-time feedback for whoever answered); digest entries are held
+#     in state.
+#   - DIGEST run (30 0 = ~5:30 PM PT): processes + flushes all held entries
+#     as the daily digest. Manual dispatches also post the digest.
 #
 # SAFETY DEFAULT: runs in --dry-run until the repo *variable* CALL_AGENT_LIVE
 # is set to "true" (Settings -> Secrets and variables -> Actions -> Variables).
@@ -9,7 +17,10 @@ name: Call agent — daily digest (~5:30 PM PT)
 # HubSpot/Slack and does not persist state.
 on:
   schedule:
-    - cron: "30 0 * * *"   # 00:30 UTC = 17:30 PDT / 16:30 PST daily
+    - cron: "30 0 * * *"        # DIGEST: 00:30 UTC = 17:30 PDT / 16:30 PST daily
+    - cron: "*/15 15-23 * * *"  # polls 8:00 AM–4:45 PM PDT
+    - cron: "0,15,45 0 * * *"   # polls 5:00/5:15/5:45 PM PDT (5:30 is the digest run)
+    - cron: "*/15 1-2 * * *"    # polls 6:00–7:45 PM PDT
   workflow_dispatch:
     inputs:
       dry_run:
@@ -62,6 +73,11 @@ jobs:
           fi
           if [ -n "${{ inputs.since }}" ]; then
             ARGS="$ARGS --since ${{ inputs.since }}"
+          fi
+          # Scheduled poll runs hold digest entries; only the 00:30 UTC cron
+          # (and manual dispatches) post the daily digest.
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "30 0 * * *" ]; then
+            ARGS="$ARGS --no-digest"
           fi
           python3 call_agent.py $ARGS
       - name: Commit state changes
