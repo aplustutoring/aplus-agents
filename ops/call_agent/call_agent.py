@@ -1296,6 +1296,15 @@ def main():
             continue
         try:
             kind, payload = process_call(call, cfg, args.dry_run, now_utc)
+            if kind == "skipped" and payload["reason"] == "no transcript":
+                # JustCall's AI transcript lags the call by a few minutes. Leave
+                # the call unprocessed and retry next run until the grace window
+                # expires; only then count it as a real "no transcript" skip.
+                call_dt = call_datetime_utc(call)
+                grace = jc.get("transcript_grace_minutes", 45)
+                if call_dt and (now_utc - call_dt) < timedelta(minutes=grace):
+                    log.info(f"  call {cid}: transcript not ready yet — retrying next run")
+                    continue  # not marked processed
             (entries if kind == "entry" else skipped).append(payload)
         except Exception as e:  # one bad call must never kill the run
             log.error(f"  call {cid} FAILED: {e}", exc_info=True)
@@ -1308,9 +1317,11 @@ def main():
     log.info(f"Run summary: {len(entries)} processed, {len(skipped)} skipped, "
              f"{len(failures)} failed")
 
-    # Digest: pending entries from earlier --no-digest runs flush with this one.
-    pending = state.get("pending_digest", [])
-    all_entries = pending + entries
+    # Digest: pending entries/skips/failures from earlier --no-digest runs
+    # flush with this one.
+    all_entries = state.get("pending_digest", []) + entries
+    all_skipped = state.get("pending_skipped", []) + skipped
+    all_failures = state.get("pending_failures", []) + failures
     try:
         from zoneinfo import ZoneInfo
         run_date_pt = now_utc.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%b %-d, %Y")
@@ -1319,17 +1330,22 @@ def main():
 
     if args.no_digest:
         state["pending_digest"] = all_entries
-        log.info(f"--no-digest: holding {len(all_entries)} entries for a later run")
-    elif all_entries or skipped or failures:
-        digest = build_digest(all_entries, skipped, failures, run_date_pt)
-        if args.dry_run:
-            log.info(f"DRY RUN — digest that would post to Slack:\n{digest}")
-        else:
-            post_to_slack(digest, cfg["slack"]["channel"])
-        state["pending_digest"] = []
+        state["pending_skipped"] = all_skipped
+        state["pending_failures"] = all_failures
+        log.info(f"--no-digest: holding {len(all_entries)} entries, "
+                 f"{len(all_skipped)} skips, {len(all_failures)} failures for a later run")
     else:
-        log.info("No new calls, nothing skipped/failed — no digest to post")
+        if all_entries or all_skipped or all_failures:
+            digest = build_digest(all_entries, all_skipped, all_failures, run_date_pt)
+            if args.dry_run:
+                log.info(f"DRY RUN — digest that would post to Slack:\n{digest}")
+            else:
+                post_to_slack(digest, cfg["slack"]["channel"])
+        else:
+            log.info("No new calls, nothing skipped/failed — no digest to post")
         state["pending_digest"] = []
+        state["pending_skipped"] = []
+        state["pending_failures"] = []
 
     if not args.dry_run:
         state["last_run_utc"] = now_utc.isoformat()

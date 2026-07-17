@@ -27,6 +27,11 @@ justcall:
   initial_lookback_days: 1
   # Overlap window re-queried each run to survive crashes (idempotent via call IDs).
   overlap_minutes: 60
+  # Recording-but-no-transcript calls younger than this are retried next run
+  # (JustCall AI transcription lags the call by a few minutes); older ones are
+  # counted as real "no transcript" skips. MUST stay below overlap_minutes or
+  # a pending call can fall out of the re-fetch window before it's retried.
+  transcript_grace_minutes: 45
   # Pause between per-call AI-transcript fetches (JustCall burst limit is
   # 30 req/min on the Team plan).
   ai_fetch_pause_seconds: 2
