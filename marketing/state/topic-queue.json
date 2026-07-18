@@ -13,7 +13,12 @@
       "roman_take": "The conviction cut \u2014 Sacramento keeps writing rules that treat NCB charters as second-class LEAs. If the state is going to demand line-item accountability, then partners should demand line-item accountability from every vendor they hire. That's the standard A+ has always operated at.",
       "danielle_take": "The implementation cut \u2014 a walk-through of exactly which line items on a typical A+ invoice map to the new itemization requirement, and what a partner director should ask any tutoring vendor to hand over before September funding determinations. ---",
       "redundancy_max_similarity": 0.4806432051247895,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-18T16:19:00.264184+00:00",
+      "post_date": "2026-07-20",
+      "bundle_dir": "aplus-content/2026-07-20-ab-126-ncb-charter-funding",
+      "hubspot_post_id": "217440544613"
     },
     {
       "slot": 2,
@@ -29,7 +34,12 @@
       "roman_take": "New charters can't afford to spend Year 1 discovering they have an LTEL problem in Year 3 \u2014 bake in Tier 2/3 intervention capacity before you open the doors.",
       "danielle_take": "Practical checklist for a launching charter: how to design intervention delivery around classroom-based instruction, Independent Study, or hybrid options from the first bell so Title I/Title III dollars land on structured services, not scramble.",
       "redundancy_max_similarity": 0.7563957897670341,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-18T16:38:56.597784+00:00",
+      "post_date": "2026-07-22",
+      "bundle_dir": "aplus-content/2026-07-22-ilead-flex-lancaster-charter-intervention",
+      "hubspot_post_id": "217440808607"
     },
     {
       "slot": 3,
@@ -46,7 +56,12 @@
       "roman_take": "Call out the venture-backed AI-tutoring pitch deck directly \u2014 the industry has spent $12B convincing districts that scale = software, and Stanford just handed us the RCT proving scale without engagement equals nothing.",
       "danielle_take": "Walk charter directors through what \"engagement-designed\" tutoring actually looks like at implementation \u2014 tutor consistency, small groups, session cadence, the specific things NSSA's own standards require that a login screen can't provide.",
       "redundancy_max_similarity": 0.4890855978290313,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-18T16:58:01.440775+00:00",
+      "post_date": "2026-07-24",
+      "bundle_dir": "aplus-content/2026-07-24-stanford-ai-tutor-access-intervention",
+      "hubspot_post_id": "217441357387"
     }
   ],
   "slack": {

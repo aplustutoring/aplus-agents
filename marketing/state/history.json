@@ -1002,6 +1002,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1784256941.023289"
+    },
+    {
+      "ts": "2026-07-18T16:19:00.265526+00:00",
+      "kind": "content_build",
+      "week": "2026-07-16",
+      "slot": 1,
+      "post_date": "2026-07-20",
+      "headline": "AB 126 just changed the rules for nonclassroom-based charter schools \u2014 effective immediately",
+      "bundle_dir": "aplus-content/2026-07-20-ab-126-ncb-charter-funding",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "217440544613",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-18T16:38:56.598888+00:00",
+      "kind": "content_build",
+      "week": "2026-07-16",
+      "slot": 2,
+      "post_date": "2026-07-22",
+      "headline": "iLEAD Flex opens in Lancaster \u2014 Tier A partner expansion post-NCB moratorium",
+      "bundle_dir": "aplus-content/2026-07-22-ilead-flex-lancaster-charter-intervention",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "217440808607",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-18T16:58:01.442026+00:00",
+      "kind": "content_build",
+      "week": "2026-07-16",
+      "slot": 3,
+      "post_date": "2026-07-24",
+      "headline": "Stanford NSSA RCT . \"Having access to an AI tutor isn't the same as using it\"",
+      "bundle_dir": "aplus-content/2026-07-24-stanford-ai-tutor-access-intervention",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "217441357387",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
