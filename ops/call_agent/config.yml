@@ -8,6 +8,7 @@ justcall:
   # disclosure is in place (see README — CA two-party consent).
   monitored_numbers:
     - "+18188506284"        # Main A+ line (IVR announces recording)
+    - "+18188691627"        # Customer support line (recording disclosure confirmed by Roman 2026-07-20)
 
   # Consent guardrail: calls with no recording are never transcribed or
   # summarized — they are skipped and counted in the digest. Keep true.
