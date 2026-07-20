@@ -8,6 +8,13 @@ call's native AI transcript, and turns each call into CRM actions:
   properties ("What's going on?", "What we can do to help", student name/
   grade/school, subject, modality, referral source) and updates them per a
   per-field write policy (see below)
+- **Lead status** — Claude assigns `hs_lead_status` per call (portal option
+  VALUES, e.g. `We Connected` = "QTL - NEW"): prospective families →
+  QTL - NEW / QTL - Charter (charter funds) / QTL - Diagnostic Sent (test
+  prep or evaluate-first); school staff → School Personnel or Charter TOR/EF;
+  tutor applicants → Tutors; spam/vendors → Unqualified. Existing/past
+  customers → no change (the deal pipeline owns their status). Changes are
+  applied every call (Claude's judgment wins) and surfaced in the digest.
 - **Action items → HubSpot Tasks** with owner + due date (default owner Paola)
 - **Negative sentiment / complaints → HIGH ticket** in the Support Pipeline
   ("Working on it") + check-in task due in 2 business days + an **immediate

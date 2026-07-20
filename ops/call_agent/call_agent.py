@@ -290,6 +290,22 @@ CALLER_TYPES = ["parent", "school/charter contact", "tutor applicant", "vendor",
 INTENTS = ["new inquiry", "scheduling", "billing", "complaint", "school partnership", "other"]
 SENTIMENTS = ["positive", "neutral", "negative"]
 
+# Lead-status assignment (hs_lead_status). These are the portal's internal
+# option VALUES, not labels (verified live 2026-07-20 — e.g. value
+# 'We Connected' is labeled 'QTL - NEW' in the UI). Claude picks one per call
+# per the rules in SUMMARY_PROMPT; "no_change" leaves the field alone (used
+# for existing/past customers, whose status the deal pipeline owns).
+LEAD_STATUS_OPTIONS = [
+    "We Connected",                  # QTL - NEW: prospective family we spoke with
+    "QTL - Charter",                 # charter family paying with charter funds
+    "QTL - Diagnostic Sent",         # test prep / must evaluate first
+    "Teacher in a School",           # school personnel
+    "Charter School Teacher TOR/EF", # charter TOR/EF facilitating a family
+    "Tutor-Active",                  # tutor applicant
+    "UNQUALIFIED",                   # spam / vendor / dead opportunity
+    "no_change",
+]
+
 # HubSpot enum option values (verified against the live portal 2026-07-10).
 GRADE_OPTIONS = ["Pre-K", "TK", "Kindergarten", "1", "2", "3", "4", "5", "6",
                  "7", "8", "9", "10", "11", "12", "Graduated/College"]
@@ -329,7 +345,8 @@ RECORD_FIELD_MAP = {
 
 # Properties fetched with the contact so Claude can compare call vs record.
 KEY_PROPERTIES = sorted({prop for prop, _ in RECORD_FIELD_MAP.values()}
-                        | {"firstname", "lastname", "email", "phone", "mobilephone"})
+                        | {"firstname", "lastname", "email", "phone", "mobilephone",
+                           "hs_lead_status"})
 
 SUMMARY_PROMPT = """You are processing an inbound phone call to A+ Tutoring, \
 a K-12 tutoring company in California (families/parents, partner schools and \
@@ -364,6 +381,25 @@ record, creates follow-up tasks, and feeds a daily ops digest.
      (e.g. it bounced too), leave null and cover it in an action item instead.
      Never infer.
    Never invent values. Null means "no update".
+5. Assign lead_status — the contact's CRM lead status after this call (the
+   current value is current_lead_status in the record below):
+   - Prospective FAMILY inquiries we actually spoke with: "QTL - Charter" if
+     the family pays with charter-school instructional funds; "QTL -
+     Diagnostic Sent" if the need is test prep or A+ must evaluate/diagnose
+     the student before proposing a plan; otherwise "We Connected".
+   - School staff calling in a professional capacity: "Teacher in a School";
+     if they are specifically a charter-school TOR/EF facilitating a family's
+     enrollment: "Charter School Teacher TOR/EF".
+   - Tutor applicants: "Tutor-Active". Spam, solicitors, vendors: "UNQUALIFIED".
+   - "no_change" is ONLY for: an EXISTING or past CUSTOMER (family already
+     receiving/received tutoring) calling about their service — their status
+     is owned by the deal pipeline, never demote it; a caller who is not the
+     person in the record shown; or a call too garbled to classify at all.
+     A record that merely already CONTAINS notes about this same inquiry is
+     NOT a reason for no_change — prospective families, school staff, tutor
+     applicants, and spam must always get a status, especially when
+     current_lead_status is null.
+   Briefly justify in lead_status_reason.
 
 CURRENT RECORD (HubSpot contact):
 {record_json}
@@ -401,6 +437,8 @@ SUMMARY_SCHEMA = {
             },
         },
         "follow_up_needed": {"type": "boolean"},
+        "lead_status": {"type": "string", "enum": LEAD_STATUS_OPTIONS},
+        "lead_status_reason": {"type": "string"},
         "student_or_school_names_mentioned": {
             "type": "array",
             "items": {"type": "string"},
@@ -426,8 +464,8 @@ SUMMARY_SCHEMA = {
         },
     },
     "required": ["summary", "caller_type", "intent", "sentiment", "action_items",
-                 "follow_up_needed", "student_or_school_names_mentioned",
-                 "record_updates"],
+                 "follow_up_needed", "lead_status", "lead_status_reason",
+                 "student_or_school_names_mentioned", "record_updates"],
     "additionalProperties": False,
 }
 
@@ -448,7 +486,8 @@ def summarize_call(transcript, cfg, contact=None):
     props = (contact or {}).get("properties", {})
     record = {"parent_name": f"{props.get('firstname') or ''} {props.get('lastname') or ''}".strip() or None,
               "email_on_file": props.get("email"),
-              "phone_on_file": props.get("phone")}
+              "phone_on_file": props.get("phone"),
+              "current_lead_status": props.get("hs_lead_status") or None}
     for field, (hs_prop, _) in RECORD_FIELD_MAP.items():
         record[field] = props.get(hs_prop) or None
 
@@ -489,6 +528,9 @@ def _validate_summary(d):
         d["intent"] = "other"
     if d["sentiment"] not in SENTIMENTS:
         d["sentiment"] = "neutral"
+    if d.get("lead_status") not in LEAD_STATUS_OPTIONS:
+        d["lead_status"] = "no_change"
+    d["lead_status_reason"] = str(d.get("lead_status_reason") or "")
     if not isinstance(d["action_items"], list):
         raise ValueError("action_items must be an array")
     items = []
@@ -1122,6 +1164,9 @@ def process_call(call, cfg, dry_run, now_utc):
         if contact:
             log.info(f"  call {cid}: DRY RUN — would log call to contact {contact['id']} "
                      f"({contact_label}) and apply record updates")
+            if summary["lead_status"] != "no_change":
+                log.info(f"  call {cid}: DRY RUN — would set lead status to "
+                         f"'{summary['lead_status']}' ({summary['lead_status_reason']})")
         for it in summary["action_items"]:
             oid = _resolve_owner(it["owner_hint"], cfg)
             log.info(f"  call {cid}: DRY RUN — would create Task '{it['item']}' (owner {oid})")
@@ -1134,6 +1179,14 @@ def process_call(call, cfg, dry_run, now_utc):
             log_call_to_hubspot(contact["id"], call, summary, transcript)
             applied, skipped_updates = apply_record_updates(
                 contact, summary["record_updates"], call_date_pt)
+            new_status = summary["lead_status"]
+            current_status = (contact.get("properties") or {}).get("hs_lead_status") or ""
+            if new_status != "no_change" and new_status != current_status:
+                hs_patch(f"crm/v3/objects/contacts/{contact['id']}",
+                         {"properties": {"hs_lead_status": new_status}})
+                applied.append(("lead_status", current_status or "(blank)", new_status))
+                log.info(f"  call {cid}: lead status {current_status or '(blank)'} → "
+                         f"{new_status} ({summary['lead_status_reason']})")
             if applied:
                 log.info(f"  call {cid}: record updated — "
                          + "; ".join(f"{f}: {n!r}" for f, _, n in applied))
