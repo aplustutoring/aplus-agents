@@ -324,7 +324,9 @@ def gspread_client():
     creds = Credentials.from_service_account_file(
         GOOGLE_SERVICE_ACCOUNT_JSON, scopes=GOOGLE_SCOPES
     )
-    return gspread.authorize(creds)
+    # BackOffHTTPClient retries transient Sheets API errors (429/5xx) with
+    # exponential backoff instead of killing the whole run on one 502.
+    return gspread.authorize(creds, http_client=gspread.BackOffHTTPClient)
 
 
 def get_or_create_sheet(gc):
