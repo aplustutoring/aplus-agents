@@ -306,6 +306,42 @@ LEAD_STATUS_OPTIONS = [
     "no_change",
 ]
 
+# Human-facing display names for Slack/digest/logs. HubSpot gets the internal
+# values above; the team sees the portal's UI labels (which differ — verified
+# live 2026-07-20).
+LEAD_STATUS_LABELS = {
+    "NEW": "New (Inbox)",
+    "ATTEMPTED_TO_CONTACT": "Attempting to Contact",
+    "We Connected": "QTL - NEW",
+    "CAP": "QTL - CAP",
+    "OPEN_DEAL": "Open deal",
+    "Using Someone Else": "Check Back Quarterly",
+    "UNQUALIFIED": "Dead Opportunity/Unqualified",
+    "Teacher in a School": "School Personnel",
+    "Tutor-Active": "Tutors",
+}
+
+FIELD_LABELS = {
+    "whats_going_on": "What's going on?",
+    "what_we_can_do_to_help": "What we can do to help",
+    "student_first_name": "Student first name",
+    "student_last_name": "Student last name",
+    "grade_level": "Grade level",
+    "student_school": "School",
+    "subject_need": "Subject",
+    "online_or_in_person": "Online/In-person",
+    "how_did_you_hear": "How did you hear about us",
+    "referral_name": "Referral name",
+    "email_correction": "Email",
+    "phone_correction": "Phone",
+    "lead_status": "Lead status",
+}
+
+
+def status_label(value):
+    """UI label for an hs_lead_status internal value (falls back to the value)."""
+    return LEAD_STATUS_LABELS.get(value, value)
+
 # HubSpot enum option values (verified against the live portal 2026-07-10).
 GRADE_OPTIONS = ["Pre-K", "TK", "Kindergarten", "1", "2", "3", "4", "5", "6",
                  "7", "8", "9", "10", "11", "12", "Graduated/College"]
@@ -1070,7 +1106,7 @@ def build_digest(entries, skipped, failures, run_date_pt):
             who = e["contact_label"] or e["number"]
             for field, old, new in e["record_applied"]:
                 shown = new if len(str(new)) <= 80 else str(new)[:77] + "..."
-                lines.append(f"• {who}: {field} — {old} → {shown}")
+                lines.append(f"• {who}: {FIELD_LABELS.get(field, field)} — {old} → {shown}")
 
     review = [e for e in entries if e.get("record_skipped")]
     if review:
@@ -1078,7 +1114,8 @@ def build_digest(entries, skipped, failures, run_date_pt):
         for e in review:
             who = e["contact_label"] or e["number"]
             for field, current, proposed, _ in e["record_skipped"]:
-                lines.append(f"• {who}: {field} — record has '{current}', call says '{proposed}'")
+                lines.append(f"• {who}: {FIELD_LABELS.get(field, field)} — "
+                             f"record has '{current}', call says '{proposed}'")
 
     if unmatched:
         lines += ["", "*Unmatched calls — human triage (no HubSpot contact; not auto-created)*"]
@@ -1166,7 +1203,8 @@ def process_call(call, cfg, dry_run, now_utc):
                      f"({contact_label}) and apply record updates")
             if summary["lead_status"] != "no_change":
                 log.info(f"  call {cid}: DRY RUN — would set lead status to "
-                         f"'{summary['lead_status']}' ({summary['lead_status_reason']})")
+                         f"'{status_label(summary['lead_status'])}' "
+                         f"({summary['lead_status_reason']})")
         for it in summary["action_items"]:
             oid = _resolve_owner(it["owner_hint"], cfg)
             log.info(f"  call {cid}: DRY RUN — would create Task '{it['item']}' (owner {oid})")
@@ -1184,12 +1222,13 @@ def process_call(call, cfg, dry_run, now_utc):
             if new_status != "no_change" and new_status != current_status:
                 hs_patch(f"crm/v3/objects/contacts/{contact['id']}",
                          {"properties": {"hs_lead_status": new_status}})
-                applied.append(("lead_status", current_status or "(blank)", new_status))
-                log.info(f"  call {cid}: lead status {current_status or '(blank)'} → "
-                         f"{new_status} ({summary['lead_status_reason']})")
+                old_lbl = status_label(current_status) or "(blank)"
+                applied.append(("lead_status", old_lbl, status_label(new_status)))
+                log.info(f"  call {cid}: lead status {old_lbl} → "
+                         f"{status_label(new_status)} ({summary['lead_status_reason']})")
             if applied:
                 log.info(f"  call {cid}: record updated — "
-                         + "; ".join(f"{f}: {n!r}" for f, _, n in applied))
+                         + "; ".join(f"{FIELD_LABELS.get(f, f)}: {n!r}" for f, _, n in applied))
         else:
             log.info(f"  call {cid}: no HubSpot contact for {number} — digest triage "
                      f"(auto-create disabled in v1)")
