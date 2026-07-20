@@ -31,6 +31,9 @@ justcall:
     "+18188506284": "Main line"
     "+18188691627": "Support line"
     "+18185736644": "Sales line"   # outbound to leads + texting missed calls
+    "+18185736293": "Roman's line"
+    "+18185736258": "Recruitment & hiring"
+    "+13235150123": "Sales line 2"
 
   # JustCall interprets the from_datetime filter in the ACCOUNT timezone,
   # while response timestamps (call_date/call_time) are UTC (verified live
