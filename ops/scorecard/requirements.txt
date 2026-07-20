@@ -1,4 +1,4 @@
 python-dotenv
 requests
-gspread
+gspread>=6  # BackOffHTTPClient (5xx/429 retry) requires v6 naming
 google-auth
