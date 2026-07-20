@@ -34,6 +34,7 @@ justcall:
     "+18185736293": "Roman's line"
     "+18185736258": "Recruitment & hiring"
     "+13235150123": "Sales line 2"
+    "+18888697637": "Sales line 3 (888)"   # toll-free; barely published anywhere
 
   # JustCall interprets the from_datetime filter in the ACCOUNT timezone,
   # while response timestamps (call_date/call_time) are UTC (verified live
