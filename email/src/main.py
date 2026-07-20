@@ -365,6 +365,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     # Teachworks account isn't one, and scheduler-routing them drops the sale
     # (per Roman 2026-07-20, after the Deanna Smith miss).
     split = cfg()["scheduler_split"]
+    predeal_intake = False
     if (decision.owner_key in (split["a_to_l"], split["m_to_z"])
             and (hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
             and not hs_enrich.get("associated_deals")
@@ -372,6 +373,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         decision.owner_key = "paola"
         decision.owner = cfg()["staff"].get("paola")
         decision.notes.append("pre-deal lead (no deal, no Teachworks account) — Paola owns until deal creation")
+        predeal_intake = True
 
     # #4 Internal staff email → route to the teammate it's addressed to ("Hi Kath" → Kath)
     icfg = cfg().get("internal", {})
@@ -533,6 +535,26 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             except Exception as e:  # noqa: BLE001 — best-effort
                 print(f"  ⚠️  b2c deal create failed (non-fatal): {e}")
 
+    # ── Pre-deal lead → suggest the deal, human creates it ──
+    # New Business can't infer a pipeline from prior deals (there are none), so the
+    # agent hands Paola a ready-to-create suggestion instead of guessing one into
+    # the CRM and polluting funnel metrics.
+    predeal_line = ""
+    if predeal_intake:
+        props = (contact or {}).get("properties") or {}
+        parent = " ".join(filter(None, [props.get("firstname"), props.get("lastname")])) or contact_name
+        student = (result.get("student_first_name") or "").strip()
+        sug_name = f"{parent} - {student}" if student else parent
+        pref = (result.get("schedule_preference") or "").strip()
+        pref_bit = f" Schedule preference: {pref}." if pref else " Schedule preference: not stated."
+        predeal_line = (
+            f"\n🧲 PRE-DEAL LEAD — no deal on file; you own this until the deal exists. "
+            f"Suggested deal: '{sug_name}' → Gold Tutoring / Pre-Lesson (switch pipeline if "
+            f"Free Trial or In-Person fits better).{pref_bit} "
+            f"Create it from the contact: {hs.contact_url(contact_id) if contact_id else '(no contact id)'}"
+        )
+        record["predeal_intake"] = True
+
     # ── Cancellation extras: deal automation + win-back + Teachworks verify ──
     deal_line, deal_rec, followup_line, tw_line = "", None, "", ""
     if decision.category == "cancellation":
@@ -593,7 +615,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         f"{subject}\nOwner: {decision.owner_key} | SLA due: {record['sla_due']}\n"
         f"Confidence: {result['confidence']:.2f}\nReason: {result.get('reason')}\n"
         + (f"Cancellation reason: {cancel_reason}\n" if cancel_reason else "")
-        + task_line + deal_line + followup_line + tw_line + b2c_line
+        + task_line + deal_line + followup_line + tw_line + b2c_line + predeal_line
         + f"\n\nProposed reply:\n{draft_text or '(none — flagged for human handling)'}"
     )
     if ticket_id:
@@ -610,8 +632,9 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     tw_bit = (f" ⚠️ {n_left} TW lesson(s) to remove." if n_left
               else (" ✅ TW schedule clear." if n_left == 0 else ""))
     b2c_bit = " 💼 deal created (Existing Business)." if record.get("deal_created") else ""
+    predeal_bit = f" {predeal_line.strip()}" if predeal_line else ""
     notify_text = (
-        f"New *{decision.category}* from {contact_name}{flag}.{reason_bit}{task_bit}{deal_bit}{followup_bit}{tw_bit}{b2c_bit} "
+        f"New *{decision.category}* from {contact_name}{flag}.{reason_bit}{task_bit}{deal_bit}{followup_bit}{tw_bit}{b2c_bit}{predeal_bit} "
         f"Due {record['sla_due']}. {hs.ticket_url(ticket_id) if ticket_id else ''}"
     )
     _notify_owner(decision, notify_text)
