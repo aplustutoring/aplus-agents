@@ -360,6 +360,19 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     decision = resolve(result["category"], result["confidence"], last_name)
     contact_name = email.split("@")[0] if email else "unknown"
 
+    # Pre-deal leads own their thread with sales support until a deal exists.
+    # The A-L/M-Z split assumes an active family; a lead with no deal and no
+    # Teachworks account isn't one, and scheduler-routing them drops the sale
+    # (per Roman 2026-07-20, after the Deanna Smith miss).
+    split = cfg()["scheduler_split"]
+    if (decision.owner_key in (split["a_to_l"], split["m_to_z"])
+            and (hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
+            and not hs_enrich.get("associated_deals")
+            and not tw_enrich.get("teachworks_match")):
+        decision.owner_key = "paola"
+        decision.owner = cfg()["staff"].get("paola")
+        decision.notes.append("pre-deal lead (no deal, no Teachworks account) — Paola owns until deal creation")
+
     # #4 Internal staff email → route to the teammate it's addressed to ("Hi Kath" → Kath)
     icfg = cfg().get("internal", {})
     idomain = (icfg.get("domain") or "").lower()
