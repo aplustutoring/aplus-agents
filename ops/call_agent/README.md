@@ -16,6 +16,16 @@ call's native AI transcript, and turns each call into CRM actions:
   customers → no change (the deal pipeline owns their status). Changes are
   applied every call (Claude's judgment wins) and surfaced in the digest.
 - **Action items → HubSpot Tasks** with owner + due date (default owner Paola)
+- **Missed-call alerts (conversion guard)** — inbound missed/abandoned/
+  voicemail calls on ANY account line fire an immediate Slack alert + a
+  same-day HIGH call-back task on the next poll. Metadata only (caller,
+  line, time — nothing transcribed), so the consent guardrail doesn't apply
+  and all lines are covered. `config.yml → missed_calls`.
+- **No-next-step guard (conversion guard)** — a new family inquiry that ends
+  without a concrete booked next step (assessment, first session, or a
+  callback at an agreed time) is flagged `:calendar:` in the digest's
+  Needs-attention section and gets a same-day HIGH task to call back and
+  lock one in.
 - **Negative sentiment / complaints → HIGH ticket** in the Support Pipeline
   ("Working on it") + check-in task due in 2 business days + an **immediate
   alert** to a private Slack channel

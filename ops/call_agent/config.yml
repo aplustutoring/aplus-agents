@@ -54,6 +54,17 @@ justcall:
   # 30 req/min on the Team plan).
   ai_fetch_pause_seconds: 2
 
+# Immediate alerts for inbound calls that never became conversations.
+# Metadata only (caller, line, time — nothing is transcribed or summarized),
+# so this safely covers ALL account lines, not just monitored_numbers.
+# Speed-to-callback is the conversion lever: contact rates drop ~10x after
+# the first few minutes.
+missed_calls:
+  enabled: true
+  alert_types: ["missed", "abandoned", "voicemail"]
+  channel: "#calls"       # falls back to slack.alert_channel when empty
+  create_task: true       # same-day HIGH call-back task (default task owner)
+
 claude:
   # Repo-standard model (matches marketing/scripts/*).
   model: "claude-opus-4-7"
