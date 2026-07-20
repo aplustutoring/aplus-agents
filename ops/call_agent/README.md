@@ -51,9 +51,10 @@ contact data.
    the Call API in Aug 2024). There is **no** Whisper/third-party fallback:
    a call with a recording but no transcript is skipped and counted in the
    digest's "Skipped" section. That's the whole fallback.
-2. **Inbound calls on ONE number.** `config.yml → justcall.monitored_numbers`
-   ships with exactly the main A+ line. It's a list so more lines can be added
-   later without code changes — but no outbound, no tutor lines, no individual
+2. **Inbound calls on monitored numbers only.** `config.yml →
+   justcall.monitored_numbers`: the main A+ line, plus the customer support
+   line (added 2026-07-20, recording disclosure confirmed). More lines can be
+   added without code changes — but no outbound, no tutor lines, no individual
    team lines in v1.
 3. **Consent guardrail (CA two-party consent).** The IVR on the main line
    announces that calls are recorded — confirmed and handled at the
