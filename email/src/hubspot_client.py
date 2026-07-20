@@ -48,6 +48,11 @@ def ticket_url(ticket_id: str) -> str:
     return f"https://app.hubspot.com/contacts/{portal}/ticket/{ticket_id}"
 
 
+def contact_url(contact_id: str) -> str:
+    portal = cfg()["hubspot"]["portal_id"]
+    return f"https://app.hubspot.com/contacts/{portal}/record/0-1/{contact_id}"
+
+
 # ── Scope probe (used by smoke test) ─────────────────────────────
 def check_scopes() -> dict:
     """Verify the token can reach Conversations + Tickets + Contacts. Read-only."""
