@@ -169,8 +169,9 @@ def jc_get(path, params=None):
 
 def fetch_inbound_calls(cfg, since_utc):
     """
-    Completed inbound calls on the monitored numbers since since_utc.
-    Pages via page/per_page; dedup across pages/numbers by call id.
+    ALL inbound calls account-wide (every line) since since_utc. One fetch
+    serves both monitored-number processing and missed-call alerting — the
+    main loop routes by line. Pages via page/per_page; dedup by call id.
     """
     jc = cfg["justcall"]
     seen, calls = set(), []
@@ -180,31 +181,29 @@ def fetch_inbound_calls(cfg, since_utc):
     from zoneinfo import ZoneInfo
     tz_name = jc.get("account_timezone", "America/Los_Angeles")
     since_str = since_utc.astimezone(ZoneInfo(tz_name)).strftime("%Y-%m-%d %H:%M:%S")
-    for number in jc["monitored_numbers"]:
-        log.info(f"Fetching inbound calls on {number} since {since_str} {tz_name} "
-                 f"({since_utc.strftime('%Y-%m-%d %H:%M:%S')} UTC)...")
-        page = 0  # pagination is 0-indexed (verified live 2026-07-10; docs don't say)
-        while True:
-            data = jc_get("/v2.1/calls", params={
-                "call_direction": "Incoming",
-                "justcall_number": re.sub(r"\D", "", str(number)),
-                "from_datetime": since_str,
-                "per_page": 100,
-                "page": page,
-                "sort": "datetime",
-                "order": "asc",
-            })
-            batch = data.get("data", data if isinstance(data, list) else [])
-            if not batch:
-                break
-            for c in batch:
-                cid = c.get("id")
-                if cid is not None and cid not in seen:
-                    seen.add(cid)
-                    calls.append(c)
-            if len(batch) < 100:
-                break
-            page += 1
+    log.info(f"Fetching inbound calls (all lines) since {since_str} {tz_name} "
+             f"({since_utc.strftime('%Y-%m-%d %H:%M:%S')} UTC)...")
+    page = 0  # pagination is 0-indexed (verified live 2026-07-10; docs don't say)
+    while True:
+        data = jc_get("/v2.1/calls", params={
+            "call_direction": "Incoming",
+            "from_datetime": since_str,
+            "per_page": 100,
+            "page": page,
+            "sort": "datetime",
+            "order": "asc",
+        })
+        batch = data.get("data", data if isinstance(data, list) else [])
+        if not batch:
+            break
+        for c in batch:
+            cid = c.get("id")
+            if cid is not None and cid not in seen:
+                seen.add(cid)
+                calls.append(c)
+        if len(batch) < 100:
+            break
+        page += 1
     log.info(f"  -> {len(calls)} inbound calls fetched")
     return calls
 
@@ -554,6 +553,13 @@ record, creates follow-up tasks, and feeds a daily ops digest.
      applicants, and spam must always get a status, especially when
      current_lead_status is null.
    Briefly justify in lead_status_reason.
+6. Set next_step_scheduled — true ONLY if a CONCRETE next step was locked in
+   during the call: an assessment/diagnostic or first session booked, or a
+   callback/meeting at a specific agreed day+time. "We'll send pricing",
+   "we'll follow up", "call us anytime" = false. This only applies to
+   prospective-family and school-partnership calls; for every other caller
+   type (existing customers, vendors, tutors, spam) set true so no flag is
+   raised.
 
 CURRENT RECORD (HubSpot contact):
 {record_json}
@@ -591,6 +597,7 @@ SUMMARY_SCHEMA = {
             },
         },
         "follow_up_needed": {"type": "boolean"},
+        "next_step_scheduled": {"type": "boolean"},
         "lead_status": {"type": "string", "enum": LEAD_STATUS_OPTIONS},
         "lead_status_reason": {"type": "string"},
         "student_or_school_names_mentioned": {
@@ -618,8 +625,9 @@ SUMMARY_SCHEMA = {
         },
     },
     "required": ["summary", "caller_type", "intent", "sentiment", "action_items",
-                 "follow_up_needed", "lead_status", "lead_status_reason",
-                 "student_or_school_names_mentioned", "record_updates"],
+                 "follow_up_needed", "next_step_scheduled", "lead_status",
+                 "lead_status_reason", "student_or_school_names_mentioned",
+                 "record_updates"],
     "additionalProperties": False,
 }
 
@@ -695,6 +703,7 @@ def _validate_summary(d):
             items.append({"item": str(it["item"]), "owner_hint": it.get("owner_hint") or None})
     d["action_items"] = items
     d["follow_up_needed"] = bool(d["follow_up_needed"])
+    d["next_step_scheduled"] = bool(d.get("next_step_scheduled", True))
     if not isinstance(d["student_or_school_names_mentioned"], list):
         d["student_or_school_names_mentioned"] = []
     d["student_or_school_names_mentioned"] = [str(x) for x in d["student_or_school_names_mentioned"]]
@@ -1193,6 +1202,8 @@ def build_digest(entries, skipped, failures, run_date_pt):
             flags += " :red_circle:"
         if s["follow_up_needed"]:
             flags += " :bangbang: follow-up"
+        if e.get("no_next_step"):
+            flags += " :calendar: NO next step booked"
         if e.get("ticket_id"):
             flags += f" :ticket: {e['ticket_id']}"
         if e.get("tasks_created"):
@@ -1202,7 +1213,9 @@ def build_digest(entries, skipped, failures, run_date_pt):
         return f"• {e['time_pt']} — {who} ({s['intent']}){flags} — {first}"
 
     attention = [e for e in entries
-                 if e["summary"]["follow_up_needed"] or e["summary"]["sentiment"] == "negative"]
+                 if e["summary"]["follow_up_needed"]
+                 or e["summary"]["sentiment"] == "negative"
+                 or e.get("no_next_step")]
     if attention:
         lines += ["", "*Needs attention*"]
         lines += [one_liner(e) for e in attention]
@@ -1313,6 +1326,9 @@ def process_call(call, cfg, dry_run, now_utc):
 
     call_date_pt = now_utc.strftime("%Y-%m-%d")
     is_negative = (summary["sentiment"] == "negative" or summary["intent"] == "complaint")
+    no_next_step = (summary["caller_type"] == "parent"
+                    and summary["intent"] == "new inquiry"
+                    and not summary["next_step_scheduled"])
     applied, skipped_updates, tasks_created, ticket_id = [], [], [], None
 
     if dry_run:
@@ -1329,6 +1345,9 @@ def process_call(call, cfg, dry_run, now_utc):
         if is_negative:
             log.info(f"  call {cid}: DRY RUN — would create HIGH ticket + check-in task "
                      f"+ alert to {cfg['slack']['alert_channel'] or '(alert_channel unset)'}")
+        if no_next_step:
+            log.info(f"  call {cid}: DRY RUN — new inquiry with NO next step booked; "
+                     f"would create same-day HIGH task")
         log.info(f"  call {cid} summary:\n{json.dumps(summary, indent=2)}")
     else:
         if contact:
@@ -1371,6 +1390,19 @@ def process_call(call, cfg, dry_run, now_utc):
                 contact["id"] if contact else None,
                 contact_label, number, summary, cfg, now_utc)
             log.info(f"  call {cid}: check-in ticket {ticket_id} created")
+
+        # No-next-step guard: a new family inquiry that ended without a booked
+        # next step gets a same-day HIGH task — "we'll follow up" is where
+        # leads die.
+        if no_next_step:
+            create_task(
+                contact["id"] if contact else None,
+                f"Book next step with {contact_label or number} — none set on call",
+                f"[Call Agent] New-inquiry call ended without a concrete next "
+                f"step (assessment / first session / scheduled callback). Call "
+                f"back TODAY and lock one in.\n\n{summary['summary']}",
+                _resolve_owner(None, cfg), now_utc, priority="HIGH")
+            log.info(f"  call {cid}: no next step booked — same-day HIGH task created")
 
     # Coaching: rubric score, posted to the private coaching channel.
     # Never allowed to fail the call — it's an internal-quality side channel.
@@ -1423,6 +1455,7 @@ def process_call(call, cfg, dry_run, now_utc):
         "time_pt": time_pt,
         "matched": contact is not None,
         "contact_label": contact_label,
+        "no_next_step": no_next_step,
         "summary": summary,
         "record_applied": [(f, o, n) for f, o, n in applied],
         "record_skipped": [(f, c, p, r) for f, c, p, r in skipped_updates],
@@ -1430,6 +1463,57 @@ def process_call(call, cfg, dry_run, now_utc):
         "ticket_id": ticket_id,
         "coached": coached,
     }
+
+
+def handle_missed_call(call, cfg, dry_run, now_utc):
+    """
+    Immediate Slack alert (+ same-day HIGH call-back task) for an inbound
+    call that never became a conversation (missed/abandoned/voicemail).
+    Metadata only — nothing is transcribed or summarized — so this safely
+    covers ALL account lines regardless of recording disclosure.
+    """
+    mc = cfg["missed_calls"]
+    number = call.get("contact_number", "?")
+    line = _line_name(call.get("justcall_number"), cfg)
+    ctype = call_type(call)
+    time_pt = fmt_time_pt(call)
+
+    contact, label = None, None
+    try:
+        contact = find_contact_by_phone(number)
+    except Exception as e:
+        log.warning(f"  missed-call contact lookup failed for {number}: {e}")
+    if contact:
+        p = contact.get("properties", {})
+        label = f"{p.get('firstname', '')} {p.get('lastname', '')}".strip() or p.get("email")
+
+    who = label or f"`{number}`"
+    status = (contact or {}).get("properties", {}).get("hs_lead_status")
+    status_txt = f" · lead status: {status_label(status)}" if status else ""
+    text = (f":telephone_receiver: :x: *{ctype.capitalize()} call — {line}* ({time_pt})\n"
+            f"{who}{status_txt} — call back NOW. Contact rates drop ~10x after "
+            f"the first few minutes.")
+
+    channel = mc.get("channel") or cfg["slack"]["alert_channel"]
+    if dry_run or not channel:
+        log.info(f"  missed-call alert{' (DRY RUN)' if dry_run else ' (channel unset)'}:\n{text}")
+    else:
+        post_to_slack(text, channel)
+
+    if mc.get("create_task", True):
+        subject = f"Call back {label or number} — {ctype} call on {line}"
+        if dry_run:
+            log.info(f"  DRY RUN — would create same-day call-back task: {subject}")
+        else:
+            create_task(
+                contact["id"] if contact else None,
+                subject,
+                f"[Call Agent] Inbound {ctype} call at {time_pt} on {line}. "
+                f"No conversation happened — call back promptly.",
+                _resolve_owner(None, cfg), now_utc,  # due immediately, not tomorrow
+                priority="HIGH",
+            )
+    log.info(f"  call {call.get('id')}: {ctype} on {line} ({number}) — alerted")
 
 
 def build_alert(contact_label, number, time_pt, summary, ticket_id):
@@ -1499,12 +1583,35 @@ def main():
 
     calls = fetch_inbound_calls(cfg, since)
 
+    monitored_digits = {re.sub(r"\D", "", str(n)) for n in jc["monitored_numbers"]}
+    mc_cfg = cfg.get("missed_calls") or {}
+    mc_types = [t.lower() for t in mc_cfg.get("alert_types", [])]
+
     entries, skipped, failures = [], [], []
+    n_missed = 0
     for call in calls:
         cid = call.get("id")
         if cid in processed_ids:
             continue  # idempotency: never process the same call twice
         ctype = call_type(call)
+        on_monitored = (re.sub(r"\D", "", str(call.get("justcall_number") or ""))
+                        in monitored_digits)
+        # Missed-call alerting: any line, metadata only. Speed-to-callback
+        # is the conversion lever, so these alert on the poll that sees them.
+        if mc_cfg.get("enabled") and ctype in mc_types:
+            try:  # never fatal
+                handle_missed_call(call, cfg, args.dry_run, now_utc)
+                n_missed += 1
+            except Exception as e:
+                log.warning(f"  call {cid}: missed-call alert failed: {e}")
+            processed_ids.add(cid)
+            state["processed_call_ids"].append(cid)
+            continue
+        if not on_monitored:
+            log.info(f"  call {cid}: line not monitored — ignored")
+            processed_ids.add(cid)
+            state["processed_call_ids"].append(cid)
+            continue
         if ctype not in [t.lower() for t in jc["process_call_types"]]:
             log.info(f"  call {cid}: type '{ctype}' not processed in v1 — ignored")
             processed_ids.add(cid)
@@ -1531,7 +1638,7 @@ def main():
         state["processed_call_ids"].append(cid)
 
     log.info(f"Run summary: {len(entries)} processed, {len(skipped)} skipped, "
-             f"{len(failures)} failed")
+             f"{len(failures)} failed, {n_missed} missed-call alert{'s' if n_missed != 1 else ''}")
 
     # Digest: pending entries/skips/failures from earlier --no-digest runs
     # flush with this one.
