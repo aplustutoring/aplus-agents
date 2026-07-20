@@ -20,7 +20,11 @@ call's native AI transcript, and turns each call into CRM actions:
   ("Working on it") + check-in task due in 2 business days + an **immediate
   alert** to a private Slack channel
 - **Daily digest** to Slack (counts, per-call one-liners, record updates,
-  unmatched-caller triage)
+  unmatched-caller triage), headed by a **daily-activity brief**: account-wide
+  call totals for the day — ALL lines, inbound + outbound — broken down by
+  person, by outcome (answered/missed/abandoned/voicemail), and by line
+  (friendly names via `config.yml → justcall.line_names`). The brief posts
+  every day even when no calls were processed.
 - **Coaching** — every processed call is scored against [rubric.md](rubric.md)
   (11 dimensions: 5 universal, 4 new-inquiry, 2 service-recovery), attributed
   to the team member who answered (JustCall `agent_name`). Coaching cards

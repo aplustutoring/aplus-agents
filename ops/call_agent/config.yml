@@ -24,6 +24,13 @@ justcall:
   # (3 of 7 answered calls in the 2026-07 test week were these.)
   min_transcript_chars: 200
 
+  # Friendly names for the digest's daily-activity brief (account-wide stats
+  # cover ALL lines, not just monitored_numbers). Unnamed lines display as
+  # a formatted number.
+  line_names:
+    "+18188506284": "Main line"
+    "+18188691627": "Support line"
+
   # JustCall interprets the from_datetime filter in the ACCOUNT timezone,
   # while response timestamps (call_date/call_time) are UTC (verified live
   # 2026-07-17). Must match the JustCall account setting.
