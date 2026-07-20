@@ -209,6 +209,124 @@ def fetch_inbound_calls(cfg, since_utc):
     return calls
 
 
+def fetch_daily_activity(cfg, now_utc):
+    """
+    ALL calls today (both directions, every line in the account) since
+    midnight in the account timezone — feeds the digest's daily-activity
+    brief. Independent of the processing cursor and monitored_numbers.
+    """
+    from zoneinfo import ZoneInfo
+    tz = ZoneInfo(cfg["justcall"].get("account_timezone", "America/Los_Angeles"))
+    day_start = now_utc.astimezone(tz).replace(hour=0, minute=0, second=0, microsecond=0)
+    since_str = day_start.strftime("%Y-%m-%d %H:%M:%S")
+    calls, page = [], 0
+    while True:
+        data = jc_get("/v2.1/calls", params={
+            "from_datetime": since_str,
+            "per_page": 100,
+            "page": page,
+            "sort": "datetime",
+            "order": "asc",
+        })
+        batch = data.get("data", data if isinstance(data, list) else [])
+        if not batch:
+            break
+        calls.extend(batch)
+        if len(batch) < 100:
+            break
+        page += 1
+    return calls
+
+
+def _line_name(number, cfg):
+    """Friendly line name from config (justcall.line_names), else (818) 555-1234."""
+    digits = re.sub(r"\D", "", str(number or ""))
+    names = cfg["justcall"].get("line_names") or {}
+    for key, name in names.items():
+        if re.sub(r"\D", "", str(key)) == digits:
+            return name
+    if len(digits) == 11 and digits.startswith("1"):
+        return f"({digits[1:4]}) {digits[4:7]}-{digits[7:]}"
+    return str(number or "?")
+
+
+def _fmt_outcomes(counter):
+    """Counter of call types -> '8 answered, 2 missed, 1 voicemail'."""
+    order = ["answered", "missed", "abandoned", "voicemail", "unanswered"]
+    parts = [f"{counter[t]} {t}" for t in order if counter.get(t)]
+    parts += [f"{v} {t}" for t, v in sorted(counter.items())
+              if t not in order and v]
+    return ", ".join(parts)
+
+
+def build_activity_brief(calls, cfg, run_date_pt):
+    """Slack block: today's account-wide call totals by person and by line."""
+    from collections import Counter, defaultdict
+    n_in, n_out = 0, 0
+    in_types, out_types = Counter(), Counter()
+    per_person = defaultdict(lambda: {"in": Counter(), "out": Counter()})
+    per_line = defaultdict(lambda: {"in": Counter(), "out": Counter()})
+
+    for c in calls:
+        ci = c.get("call_info", {}) or {}
+        direction = (ci.get("direction") or "").lower()
+        ctype = (ci.get("type") or "unknown").lower()
+        person = c.get("agent_name") or (c.get("agent") or {}).get("name") or "Unassigned"
+        line = _line_name(c.get("justcall_number"), cfg)
+        if direction == "incoming":
+            n_in += 1
+            in_types[ctype] += 1
+            per_person[person]["in"][ctype] += 1
+            per_line[line]["in"][ctype] += 1
+        else:
+            n_out += 1
+            out_types[ctype] += 1
+            per_person[person]["out"][ctype] += 1
+            per_line[line]["out"][ctype] += 1
+
+    total = n_in + n_out
+    lines = [
+        f":bar_chart: *Daily call activity — {run_date_pt}* (all lines)",
+        f"Total *{total}*: {n_in} inbound · {n_out} outbound",
+    ]
+    if in_types:
+        lines.append(f"Inbound: {_fmt_outcomes(in_types)}")
+    if out_types:
+        lines.append(f"Outbound: {_fmt_outcomes(out_types)}")
+
+    def side(counts):
+        n = sum(counts.values())
+        return n, _fmt_outcomes(counts)
+
+    if per_person:
+        lines += ["", "*By person*"]
+        for person in sorted(per_person, key=lambda p: -sum(
+                sum(s.values()) for s in per_person[p].values())):
+            i_n, i_s = side(per_person[person]["in"])
+            o_n, o_s = side(per_person[person]["out"])
+            bits = []
+            if i_n:
+                bits.append(f"{i_n} in ({i_s})")
+            if o_n:
+                bits.append(f"{o_n} out ({o_s})")
+            lines.append(f"• {person} — " + " · ".join(bits))
+
+    if per_line:
+        lines += ["", "*By line*"]
+        for line_nm in sorted(per_line, key=lambda l: -sum(
+                sum(s.values()) for s in per_line[l].values())):
+            i_n, i_s = side(per_line[line_nm]["in"])
+            o_n, o_s = side(per_line[line_nm]["out"])
+            bits = []
+            if i_n:
+                bits.append(f"{i_n} in ({i_s})")
+            if o_n:
+                bits.append(f"{o_n} out ({o_s})")
+            lines.append(f"• {line_nm} — " + " · ".join(bits))
+
+    return "\n".join(lines)
+
+
 def fetch_transcript(call_id, pause_s):
     """
     Transcript via the AI endpoint (transcripts were removed from the Call API
@@ -1433,14 +1551,27 @@ def main():
         log.info(f"--no-digest: holding {len(all_entries)} entries, "
                  f"{len(all_skipped)} skips, {len(all_failures)} failures for a later run")
     else:
+        # Daily-activity brief (account-wide, all lines, both directions) —
+        # posts every digest run even when the agent processed nothing. Never
+        # allowed to sink the digest itself.
+        brief = None
+        try:
+            activity = fetch_daily_activity(cfg, now_utc)
+            brief = build_activity_brief(activity, cfg, run_date_pt)
+        except Exception as e:
+            log.warning(f"daily-activity brief failed (digest still posts): {e}")
+
+        digest = None
         if all_entries or all_skipped or all_failures:
             digest = build_digest(all_entries, all_skipped, all_failures, run_date_pt)
-            if args.dry_run:
-                log.info(f"DRY RUN — digest that would post to Slack:\n{digest}")
-            else:
-                post_to_slack(digest, cfg["slack"]["channel"])
         else:
-            log.info("No new calls, nothing skipped/failed — no digest to post")
+            log.info("No new processed calls — posting activity brief only")
+        combined = "\n\n".join(part for part in (brief, digest) if part)
+        if combined:
+            if args.dry_run:
+                log.info(f"DRY RUN — digest that would post to Slack:\n{combined}")
+            else:
+                post_to_slack(combined, cfg["slack"]["channel"])
         state["pending_digest"] = []
         state["pending_skipped"] = []
         state["pending_failures"] = []
