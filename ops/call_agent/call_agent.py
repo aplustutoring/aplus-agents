@@ -1471,6 +1471,16 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
     call that never became a conversation (missed/abandoned/voicemail).
     Metadata only — nothing is transcribed or summarized — so this safely
     covers ALL account lines regardless of recording disclosure.
+
+    Spam filter: "abandoned" means the caller hung up in the IVR before any
+    agent rang — the classic robocall signature (numbers look local-spoofed,
+    duration metadata is all zeros so it can't help). With
+    abandoned_known_only (default), abandoned calls alert ONLY when the
+    number matches a HubSpot contact; unknown ones are counted silently
+    (still visible in the daily brief's totals). Missed and voicemail calls
+    navigated the IVR like a human and always alert.
+
+    Returns "alerted" or "suppressed".
     """
     mc = cfg["missed_calls"]
     number = call.get("contact_number", "?")
@@ -1486,6 +1496,12 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
     if contact:
         p = contact.get("properties", {})
         label = f"{p.get('firstname', '')} {p.get('lastname', '')}".strip() or p.get("email")
+
+    if (ctype == "abandoned" and contact is None
+            and mc.get("abandoned_known_only", True)):
+        log.info(f"  call {call.get('id')}: abandoned in IVR from unknown "
+                 f"{number} on {line} — likely spam, no alert")
+        return "suppressed"
 
     who = label or f"`{number}`"
     status = (contact or {}).get("properties", {}).get("hs_lead_status")
@@ -1514,6 +1530,7 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
                 priority="HIGH",
             )
     log.info(f"  call {call.get('id')}: {ctype} on {line} ({number}) — alerted")
+    return "alerted"
 
 
 def build_alert(contact_label, number, time_pt, summary, ticket_id):
@@ -1588,7 +1605,7 @@ def main():
     mc_types = [t.lower() for t in mc_cfg.get("alert_types", [])]
 
     entries, skipped, failures = [], [], []
-    n_missed = 0
+    n_missed, n_spam = 0, 0
     for call in calls:
         cid = call.get("id")
         if cid in processed_ids:
@@ -1600,8 +1617,10 @@ def main():
         # is the conversion lever, so these alert on the poll that sees them.
         if mc_cfg.get("enabled") and ctype in mc_types:
             try:  # never fatal
-                handle_missed_call(call, cfg, args.dry_run, now_utc)
-                n_missed += 1
+                if handle_missed_call(call, cfg, args.dry_run, now_utc) == "alerted":
+                    n_missed += 1
+                else:
+                    n_spam += 1
             except Exception as e:
                 log.warning(f"  call {cid}: missed-call alert failed: {e}")
             processed_ids.add(cid)
@@ -1638,7 +1657,8 @@ def main():
         state["processed_call_ids"].append(cid)
 
     log.info(f"Run summary: {len(entries)} processed, {len(skipped)} skipped, "
-             f"{len(failures)} failed, {n_missed} missed-call alert{'s' if n_missed != 1 else ''}")
+             f"{len(failures)} failed, {n_missed} missed-call alert{'s' if n_missed != 1 else ''}, "
+             f"{n_spam} likely-spam abandoned suppressed")
 
     # Digest: pending entries/skips/failures from earlier --no-digest runs
     # flush with this one.

@@ -20,7 +20,10 @@ call's native AI transcript, and turns each call into CRM actions:
   voicemail calls on ANY account line fire an immediate Slack alert + a
   same-day HIGH call-back task on the next poll. Metadata only (caller,
   line, time — nothing transcribed), so the consent guardrail doesn't apply
-  and all lines are covered. `config.yml → missed_calls`.
+  and all lines are covered. Spam filter: abandoned-in-IVR calls from
+  numbers with no HubSpot match are suppressed (robocall signature — they
+  still count in the daily brief); missed/voicemail always alert.
+  `config.yml → missed_calls`.
 - **No-next-step guard (conversion guard)** — a new family inquiry that ends
   without a concrete booked next step (assessment, first session, or a
   callback at an agreed time) is flagged `:calendar:` in the digest's

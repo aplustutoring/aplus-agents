@@ -64,6 +64,12 @@ missed_calls:
   alert_types: ["missed", "abandoned", "voicemail"]
   channel: "#calls"       # falls back to slack.alert_channel when empty
   create_task: true       # same-day HIGH call-back task (default task owner)
+  # Spam filter: "abandoned" (hung up in the IVR before any agent rang) is
+  # the robocall signature. When true, abandoned calls alert ONLY if the
+  # number matches a HubSpot contact; unknown ones are counted silently
+  # (still in the daily brief totals). Missed/voicemail always alert —
+  # those callers navigated the IVR like a human.
+  abandoned_known_only: true
 
 claude:
   # Repo-standard model (matches marketing/scripts/*).
