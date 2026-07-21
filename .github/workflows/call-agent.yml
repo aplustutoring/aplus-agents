@@ -1,15 +1,17 @@
-name: Call agent — 15-min polls + daily digest (~5:30 PM PT)
+name: Call agent — 15-min polls + daily digest (~5:30 PM PT) + Mon weekly report
 
 # Fixed-UTC crons pinned to PDT (scorecard convention — winter runs ~1h
 # earlier in PT, harmless, avoids dual-cron double-runs).
 #
-# Two run modes, decided by which cron fired (github.event.schedule):
-#   - POLL runs (every 15 min, ~8 AM–8 PM PT): process new calls with
-#     --no-digest. Coaching cards + negative-sentiment alerts post per call
-#     (near-real-time feedback for whoever answered); digest entries are held
+# Three run modes, decided by which cron fired (github.event.schedule):
+#   - POLL runs (every 15 min, ~8 AM–8 PM PT): process new calls + SMS with
+#     --no-digest. Coaching cards, negative-sentiment alerts, missed-call
+#     alerts, and SMS-SLA alerts post per poll; digest entries are held
 #     in state.
 #   - DIGEST run (30 0 = ~5:30 PM PT): processes + flushes all held entries
 #     as the daily digest. Manual dispatches also post the digest.
+#   - WEEKLY run (5 16 Mon = ~9:05 AM PT Monday): --weekly-report — volume
+#     trends, inquiry funnel, coaching trends, missed-call hot hours.
 #
 # SAFETY DEFAULT: runs in --dry-run until the repo *variable* CALL_AGENT_LIVE
 # is set to "true" (Settings -> Secrets and variables -> Actions -> Variables).
@@ -21,6 +23,7 @@ on:
     - cron: "*/15 15-23 * * *"  # polls 8:00 AM–4:45 PM PDT
     - cron: "0,15,45 0 * * *"   # polls 5:00/5:15/5:45 PM PDT (5:30 is the digest run)
     - cron: "*/15 1-2 * * *"    # polls 6:00–7:45 PM PDT
+    - cron: "5 16 * * 1"        # WEEKLY report: 16:05 UTC Mon = 9:05 AM PDT
   workflow_dispatch:
     inputs:
       dry_run:
@@ -29,6 +32,10 @@ on:
         default: true
       check_only:
         description: "Smoke test: confirm secrets wired, skip all reads/writes"
+        type: boolean
+        default: false
+      weekly_report:
+        description: "Post the weekly analytics report instead of processing calls"
         type: boolean
         default: false
       since:
@@ -74,9 +81,12 @@ jobs:
           if [ -n "${{ inputs.since }}" ]; then
             ARGS="$ARGS --since ${{ inputs.since }}"
           fi
+          # Weekly-report mode: the Monday cron or the manual input.
+          if [ "${{ github.event.schedule }}" = "5 16 * * 1" ] || [ "${{ inputs.weekly_report }}" = "true" ]; then
+            ARGS="$ARGS --weekly-report"
           # Scheduled poll runs hold digest entries; only the 00:30 UTC cron
           # (and manual dispatches) post the daily digest.
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "30 0 * * *" ]; then
+          elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "30 0 * * *" ]; then
             ARGS="$ARGS --no-digest"
           fi
           python3 call_agent.py $ARGS
@@ -86,8 +96,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Dry-run/check-only runs write no state; --ignore-errors tolerates the
-          # file not existing yet.
-          git add --ignore-errors ops/call_agent/state/state.json || true
+          # files not existing yet. metrics.jsonl is the weekly report's data.
+          git add --ignore-errors ops/call_agent/state/state.json ops/call_agent/state/metrics.jsonl || true
           if git diff --cached --quiet; then
             echo "no state changes to commit"
           else

@@ -1,14 +1,23 @@
-# ops/call_agent — Call Agent v1.1 configuration
+# ops/call_agent — Call Agent v2 configuration
 # Secrets live in env vars (.env locally, repo secrets on Actions) — never here.
 
 justcall:
-  # JustCall numbers to poll for completed INBOUND calls. V1 scope: exactly one
-  # number — the main A+ line. This is a list so more lines can be added later
-  # without code changes, but before adding a number confirm its recording
-  # disclosure is in place (see README — CA two-party consent).
+  # JustCall numbers to poll for completed INBOUND calls. Before adding a
+  # number confirm its recording disclosure is in place (see README — CA
+  # two-party consent).
   monitored_numbers:
     - "+18188506284"        # Main A+ line (IVR announces recording)
     - "+18188691627"        # Customer support line (recording disclosure confirmed by Roman 2026-07-20)
+
+  # OUTBOUND lines to process (v2): answered outbound calls on these lines get
+  # the full loop (transcript -> summary -> HubSpot -> coaching). SAME consent
+  # rule, but stricter in practice: no IVR plays on outbound, so disclosure
+  # must come from the agent's script or a JustCall announcement. Confirm the
+  # outbound disclosure story for a line BEFORE uncommenting it.
+  # Empty list = outbound processing off.
+  monitored_outbound_numbers: []
+  #  - "+18185736644"       # Sales line — uncomment after confirming outbound disclosure
+  #  - "+13235150123"       # Sales line 2 — same
 
   # Consent guardrail: calls with no recording are never transcribed or
   # summarized — they are skipped and counted in the digest. Keep true.
@@ -70,6 +79,31 @@ missed_calls:
   # (still in the daily brief totals). Missed/voicemail always alert —
   # those callers navigated the IVR like a human.
   abandoned_known_only: true
+
+# SMS ingestion (v2). No recording-consent guardrail needed — texts are
+# inherently written. Texts on monitored lines are logged to the matched
+# HubSpot contact as SMS Communications; inbound texts that go unanswered
+# past the SLA fire a Slack alert + HIGH task (once per thread, cleared by
+# any outbound reply). Unmatched senders appear in the digest's SMS section.
+sms:
+  enabled: true
+  monitored_numbers:
+    - "+18188506284"        # Main line
+    - "+18188691627"        # Support line
+    - "+18185736644"        # Sales line (missed-call texting lives here)
+  log_to_hubspot: true      # SMS -> Communication on the matched contact
+  reply_sla_minutes: 60     # inbound text unanswered longer than this -> alert
+  create_task: true         # SLA breach also files a HIGH reply task
+  channel: "#calls"         # SLA alerts; falls back to slack.alert_channel
+
+# Analytics (v2): every live run appends per-call/SMS metric rows to a JSONL
+# log (committed back by the workflow, like state.json). --weekly-report
+# (Monday cron) reads it + JustCall volume data and posts trends to
+# slack.channel: volume WoW, inbound answer rate, inquiry->booked-next-step
+# funnel, coaching averages per person, missed-call hot hours, SMS counts.
+analytics:
+  enabled: true
+  metrics_path: "ops/call_agent/state/metrics.jsonl"
 
 claude:
   # Repo-standard model (matches marketing/scripts/*).
