@@ -2,23 +2,28 @@
 """
 call_agent.py
 -------------
-Call Agent v1 for A+ Tutoring: JustCall -> Claude summary -> HubSpot -> Slack.
+Call Agent v2 for A+ Tutoring: JustCall -> Claude summary -> HubSpot -> Slack.
 
-Polls the JustCall API for completed INBOUND calls on the monitored numbers
-(config.yml), pulls each call's AI transcript, summarizes it with Claude,
-logs a Call engagement (+ Note when there are action items) on the matching
-HubSpot contact, and posts a daily digest to Slack.
+Polls the JustCall API for completed calls on the monitored numbers
+(config.yml) — inbound always, outbound on lines explicitly listed in
+monitored_outbound_numbers — pulls each call's AI transcript, summarizes it
+with Claude, logs a Call engagement on the matching HubSpot contact, applies
+family-record updates, and posts a daily digest to Slack. Also ingests SMS
+threads (HubSpot Communications + unanswered-text SLA alerts) and appends
+per-call metric rows that feed a Monday --weekly-report.
 
-Scheduled poller, not a webhook — run daily via GitHub Actions
+Scheduled poller, not a webhook — run via GitHub Actions
 (.github/workflows/call-agent.yml), same pattern as ops/scorecard.
 
-V1 SCOPE (do not expand casually — see README):
-  - Inbound calls only, one monitored number (the main A+ line).
+SCOPE GUARDRAILS (do not expand casually — see README):
   - JustCall native AI transcripts only; no third-party transcription.
     Recording-but-no-transcript calls are skipped and counted in the digest.
   - require_recording guardrail (CA two-party consent): calls with no
-    recording are never transcribed/summarized by any means.
-  - No auto-created HubSpot contacts; unmatched calls go to digest triage.
+    recording are never transcribed/summarized by any means. Outbound lines
+    additionally require an explicit entry in monitored_outbound_numbers —
+    confirm the outbound recording-disclosure story per line first (no IVR
+    plays on outbound).
+  - No auto-created HubSpot contacts; unmatched calls/texts go to digest triage.
 
 ENVIRONMENT VARIABLES (.env locally / repo secrets on Actions):
   JUSTCALL_API_KEY, JUSTCALL_API_SECRET   required
@@ -29,20 +34,26 @@ ENVIRONMENT VARIABLES (.env locally / repo secrets on Actions):
 
 FLAGS / MODES:
   --dry-run        real JustCall + Claude reads, print instead of writing to
-                   HubSpot/Slack, state not persisted. Default for the first
-                   deployment (workflow passes --dry-run until the repo
-                   variable CALL_AGENT_LIVE=true).
-  --no-digest      process calls but hold digest entries in state for a later
+                   HubSpot/Slack, state/metrics not persisted.
+  --no-digest      process but hold digest entries in state for a later
                    run to flush (for multiple runs per day).
   --since ISO      manual cursor override (UTC, e.g. 2026-07-09T00:00:00).
+  --weekly-report  build + post the weekly analytics report (volume trends,
+                   inquiry funnel, coaching trends, missed-call patterns)
+                   instead of processing calls. Monday cron.
   CHECK_ONLY=true  CI smoke mode: confirm secrets/config wired, no reads/writes
                    (matches ops/scorecard convention).
 
-JustCall API notes (verified against developer.justcall.io, 2026-07):
-  - GET /v2.1/calls               list; call_direction=Incoming, from/to_datetime,
-                                  justcall_number, page/per_page (max 100).
+JustCall API notes (verified against developer.justcall.io + live account):
+  - GET /v2.1/calls               list; from/to_datetime, justcall_number,
+                                  page/per_page (max 100). Omitting
+                                  call_direction returns BOTH directions.
   - GET /v2.1/calls_ai/{id}       transcript lives HERE (fetch_transcription=true),
                                   NOT on the call object (moved Aug 2024).
+  - GET /v2.1/texts               SMS list (verified live 2026-07-20): top-level
+                                  `direction` (Incoming/Outgoing), body under
+                                  sms_info.body, sms_date/sms_time are UTC
+                                  (sms_user_* are user-local).
   - Auth header is "key:secret" per official docs; some clients need Basic
     base64 — we fall back automatically on 401.
   - 429 backoff via X-Rate-Limit-* headers (no Retry-After documented).
@@ -110,14 +121,25 @@ def load_config():
 
 def load_state(path):
     p = REPO_ROOT / path
+    state = {}
     if p.exists():
         with open(p) as f:
-            return json.load(f)
-    return {"processed_call_ids": [], "last_run_utc": None, "pending_digest": []}
+            state = json.load(f)
+    # New keys default in (v1 state files predate SMS/outbound support).
+    state.setdefault("processed_call_ids", [])
+    state.setdefault("processed_sms_ids", [])
+    state.setdefault("last_run_utc", None)
+    state.setdefault("pending_digest", [])
+    state.setdefault("pending_skipped", [])
+    state.setdefault("pending_failures", [])
+    state.setdefault("pending_sms", [])
+    state.setdefault("sms_awaiting_reply", {})
+    return state
 
 
 def save_state(state, path, max_ids):
     state["processed_call_ids"] = state["processed_call_ids"][-max_ids:]
+    state["processed_sms_ids"] = state["processed_sms_ids"][-max_ids:]
     p = REPO_ROOT / path
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(".json.tmp")
@@ -167,74 +189,79 @@ def jc_get(path, params=None):
     return r.json()
 
 
-def fetch_inbound_calls(cfg, since_utc):
-    """
-    ALL inbound calls account-wide (every line) since since_utc. One fetch
-    serves both monitored-number processing and missed-call alerting — the
-    main loop routes by line. Pages via page/per_page; dedup by call id.
-    """
-    jc = cfg["justcall"]
-    seen, calls = set(), []
-    # from_datetime is interpreted in the ACCOUNT timezone even though the
-    # response's call_date/call_time are UTC (verified live 2026-07-17 — a UTC
-    # cursor reads as hours in the future and silently returns nothing).
+def _account_tz(cfg):
     from zoneinfo import ZoneInfo
-    tz_name = jc.get("account_timezone", "America/Los_Angeles")
-    since_str = since_utc.astimezone(ZoneInfo(tz_name)).strftime("%Y-%m-%d %H:%M:%S")
-    log.info(f"Fetching inbound calls (all lines) since {since_str} {tz_name} "
-             f"({since_utc.strftime('%Y-%m-%d %H:%M:%S')} UTC)...")
-    page = 0  # pagination is 0-indexed (verified live 2026-07-10; docs don't say)
+    return ZoneInfo(cfg["justcall"].get("account_timezone", "America/Los_Angeles"))
+
+
+def _since_str_local(cfg, since_utc):
+    """from_datetime is interpreted in the ACCOUNT timezone even though the
+    response's call_date/call_time are UTC (verified live 2026-07-17 — a UTC
+    cursor reads as hours in the future and silently returns nothing)."""
+    return since_utc.astimezone(_account_tz(cfg)).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _jc_paged(path, params):
+    """Page through a JustCall list endpoint (0-indexed pages, verified live
+    2026-07-10; docs don't say). Dedup by id."""
+    seen, items, page = set(), [], 0
     while True:
-        data = jc_get("/v2.1/calls", params={
-            "call_direction": "Incoming",
-            "from_datetime": since_str,
-            "per_page": 100,
-            "page": page,
-            "sort": "datetime",
-            "order": "asc",
-        })
+        data = jc_get(path, params={**params, "per_page": 100, "page": page,
+                                    "sort": "datetime", "order": "asc"})
         batch = data.get("data", data if isinstance(data, list) else [])
         if not batch:
             break
-        for c in batch:
-            cid = c.get("id")
-            if cid is not None and cid not in seen:
-                seen.add(cid)
-                calls.append(c)
+        for it in batch:
+            iid = it.get("id")
+            if iid is not None and iid not in seen:
+                seen.add(iid)
+                items.append(it)
         if len(batch) < 100:
             break
         page += 1
-    log.info(f"  -> {len(calls)} inbound calls fetched")
+    return items
+
+
+def fetch_recent_calls(cfg, since_utc):
+    """
+    ALL calls account-wide (every line, BOTH directions) since since_utc.
+    One fetch serves monitored-number processing (inbound + outbound) and
+    missed-call alerting — the main loop routes by line and direction.
+    """
+    since_str = _since_str_local(cfg, since_utc)
+    log.info(f"Fetching calls (all lines, both directions) since {since_str} "
+             f"{cfg['justcall'].get('account_timezone', 'America/Los_Angeles')} "
+             f"({since_utc.strftime('%Y-%m-%d %H:%M:%S')} UTC)...")
+    calls = _jc_paged("/v2.1/calls", {"from_datetime": since_str})
+    log.info(f"  -> {len(calls)} calls fetched")
     return calls
+
+
+def fetch_activity_since(cfg, start_utc):
+    """ALL calls (both directions, every line) since start_utc — feeds the
+    digest's daily-activity brief and the weekly report's volume stats.
+    Independent of the processing cursor and monitored numbers."""
+    return _jc_paged("/v2.1/calls", {"from_datetime": _since_str_local(cfg, start_utc)})
 
 
 def fetch_daily_activity(cfg, now_utc):
+    """ALL calls today since midnight in the account timezone."""
+    day_start = now_utc.astimezone(_account_tz(cfg)).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+    return fetch_activity_since(cfg, day_start)
+
+
+def fetch_texts(cfg, since_utc):
     """
-    ALL calls today (both directions, every line in the account) since
-    midnight in the account timezone — feeds the digest's daily-activity
-    brief. Independent of the processing cursor and monitored_numbers.
+    ALL SMS account-wide since since_utc via GET /v2.1/texts (verified live
+    2026-07-20): top-level `direction` (Incoming/Outgoing), body under
+    sms_info.body, sms_date/sms_time are UTC. Same account-timezone
+    from_datetime convention as /calls.
     """
-    from zoneinfo import ZoneInfo
-    tz = ZoneInfo(cfg["justcall"].get("account_timezone", "America/Los_Angeles"))
-    day_start = now_utc.astimezone(tz).replace(hour=0, minute=0, second=0, microsecond=0)
-    since_str = day_start.strftime("%Y-%m-%d %H:%M:%S")
-    calls, page = [], 0
-    while True:
-        data = jc_get("/v2.1/calls", params={
-            "from_datetime": since_str,
-            "per_page": 100,
-            "page": page,
-            "sort": "datetime",
-            "order": "asc",
-        })
-        batch = data.get("data", data if isinstance(data, list) else [])
-        if not batch:
-            break
-        calls.extend(batch)
-        if len(batch) < 100:
-            break
-        page += 1
-    return calls
+    since_str = _since_str_local(cfg, since_utc)
+    texts = _jc_paged("/v2.1/texts", {"from_datetime": since_str})
+    log.info(f"  -> {len(texts)} texts fetched since {since_str}")
+    return texts
 
 
 def _line_name(number, cfg):
@@ -387,11 +414,27 @@ def call_datetime_utc(call):
         return None
 
 
+def sms_datetime_utc(text):
+    """Best-effort UTC datetime of a JustCall text object (sms_date/sms_time
+    are UTC; sms_user_* are user-local — verified live 2026-07-20)."""
+    d, t = text.get("sms_date", ""), text.get("sms_time", "")
+    try:
+        return datetime.strptime(f"{d} {t}"[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
 def call_type(call):
     """Lowercase call type ('answered'|'missed'|'voicemail'|'abandoned').
     Live API returns lowercase despite the docs' capitalized enum."""
     info = call.get("call_info") or {}
     return str(info.get("type") or call.get("type") or "").lower()
+
+
+def call_direction(call):
+    """'incoming' or 'outgoing' (call_info.direction, verified live)."""
+    info = call.get("call_info") or {}
+    return str(info.get("direction") or call.get("direction") or "").lower()
 
 
 def has_recording(call):
@@ -501,12 +544,12 @@ KEY_PROPERTIES = sorted({prop for prop, _ in RECORD_FIELD_MAP.values()}
                         | {"firstname", "lastname", "email", "phone", "mobilephone",
                            "hs_lead_status"})
 
-SUMMARY_PROMPT = """You are processing an inbound phone call to A+ Tutoring, \
+SUMMARY_PROMPT = """You are processing {call_desc} A+ Tutoring, \
 a K-12 tutoring company in California (families/parents, partner schools and \
 charter schools, tutor applicants). Your output updates the family's CRM \
 record, creates follow-up tasks, and feeds a daily ops digest.
-
-1. Summarize the call: 3-5 sentences covering who called, why, and outcome.
+{direction_note}
+1. Summarize the call: 3-5 sentences covering who was on the call, why, and outcome.
 2. Classify the caller and intent, note sentiment.
 3. List action items — things A+ STAFF must do after this call (not things the
    family will do). Include an owner_hint only when a specific A+ person was
@@ -632,7 +675,7 @@ SUMMARY_SCHEMA = {
 }
 
 
-def summarize_call(transcript, cfg, contact=None):
+def summarize_call(transcript, cfg, contact=None, direction="inbound", agent_name=None):
     """Claude summary + record-update proposal as validated dict.
     contact: matched HubSpot contact (or None) — current values feed the prompt."""
     import anthropic
@@ -653,7 +696,21 @@ def summarize_call(transcript, cfg, contact=None):
     for field, (hs_prop, _) in RECORD_FIELD_MAP.items():
         record[field] = props.get(hs_prop) or None
 
+    if direction == "outbound":
+        call_desc = (f"an OUTBOUND phone call made by "
+                     f"{agent_name or 'a staff member'} of")
+        direction_note = (
+            "\nThis was an OUTBOUND call placed by A+ staff (e.g. following up "
+            "on an inquiry or returning a missed call). caller_type, intent, "
+            "sentiment, and every record field describe the OTHER party — the "
+            "person who was called — never the A+ staff member.\n")
+    else:
+        call_desc = "an inbound phone call to"
+        direction_note = ""
+
     prompt = SUMMARY_PROMPT.format(
+        call_desc=call_desc,
+        direction_note=direction_note,
         record_json=json.dumps(record, indent=2),
         truncated_note=" (truncated)" if truncated else "",
         transcript=transcript,
@@ -731,7 +788,7 @@ def _validate_summary(d):
 RUBRIC_DIMENSIONS = ["U1", "U2", "U3", "U4", "U5", "S1", "S2", "S3", "S4", "V1", "V2"]
 
 COACHING_PROMPT = """You are a supportive call coach for A+ Tutoring, reviewing \
-an inbound call answered by {agent_name}. Score the call against the rubric \
+an {direction} call handled by {agent_name}. Score the call against the rubric \
 below. Apply the S-dimensions only when the call is a new inquiry or school \
 partnership; the V-dimensions only for scheduling/billing/complaint calls; \
 universal dimensions always. Use null for N/A. Anchor every observation to a \
@@ -805,12 +862,13 @@ def load_rubric(cfg):
     return _rubric_cache
 
 
-def score_call(transcript, summary, agent_name, cfg):
+def score_call(transcript, summary, agent_name, cfg, direction="inbound"):
     """Rubric score for coaching. Returns dict with scores + overall, or raises."""
     import anthropic
 
     ccfg = cfg["claude"]
     prompt = COACHING_PROMPT.format(
+        direction=direction,
         agent_name=agent_name or "the team member",
         rubric=load_rubric(cfg),
         caller_type=summary["caller_type"],
@@ -994,14 +1052,16 @@ def find_contact_by_phone(caller_number):
     return None
 
 
-def log_call_to_hubspot(contact_id, call, summary, transcript_status):
+def log_call_to_hubspot(contact_id, call, summary, transcript_status, direction="inbound"):
     """Create a Call engagement on the contact; Note when there are action items."""
     when = call_datetime_utc(call) or datetime.now(timezone.utc)
     ts_ms = str(int(when.timestamp() * 1000))
     duration = (call.get("call_duration") or {}).get("total_duration") or 0
+    outbound = direction == "outbound"
+    dir_word = "Outbound" if outbound else "Inbound"
 
     body_lines = [
-        f"[Call Agent] Inbound call summary ({summary['caller_type']} / {summary['intent']} / {summary['sentiment']})",
+        f"[Call Agent] {dir_word} call summary ({summary['caller_type']} / {summary['intent']} / {summary['sentiment']})",
         "",
         summary["summary"],
     ]
@@ -1015,12 +1075,12 @@ def log_call_to_hubspot(contact_id, call, summary, transcript_status):
     call_obj = hs_post("crm/v3/objects/calls", {
         "properties": {
             "hs_timestamp": ts_ms,
-            "hs_call_title": f"Inbound call — {summary['intent']} ({summary['caller_type']})",
+            "hs_call_title": f"{dir_word} call — {summary['intent']} ({summary['caller_type']})",
             "hs_call_body": "\n".join(body_lines),
-            "hs_call_direction": "INBOUND",
+            "hs_call_direction": "OUTBOUND" if outbound else "INBOUND",
             "hs_call_status": "COMPLETED",
-            "hs_call_from_number": call.get("contact_number", ""),
-            "hs_call_to_number": call.get("justcall_number", ""),
+            "hs_call_from_number": call.get("justcall_number", "") if outbound else call.get("contact_number", ""),
+            "hs_call_to_number": call.get("contact_number", "") if outbound else call.get("justcall_number", ""),
             "hs_call_duration": str(int(duration) * 1000),  # HubSpot wants ms
         },
         "associations": [{
@@ -1159,11 +1219,269 @@ def create_checkin_ticket(contact_id, contact_label, number, summary, cfg, now_u
     return ticket_id
 
 
+def log_sms_to_hubspot(contact_id, text_obj, when_utc, line_name):
+    """SMS as a HubSpot Communication (channel SMS) on the matched contact.
+    hs_communication_logged_from must be 'CRM' (API requirement)."""
+    direction = (text_obj.get("direction") or "").lower()
+    agent = text_obj.get("agent_name") or ""
+    body = ((text_obj.get("sms_info") or {}).get("body") or "").replace("\\'", "'")
+    arrow = "from family" if direction == "incoming" else f"to family ({agent})"
+    return hs_post("crm/v3/objects/communications", {
+        "properties": {
+            "hs_communication_channel_type": "SMS",
+            "hs_communication_logged_from": "CRM",
+            "hs_communication_body": f"[Call Agent] SMS {arrow} via {line_name}:\n{body}"[:65000],
+            "hs_timestamp": str(int(when_utc.timestamp() * 1000)),
+        },
+        "associations": [{
+            "to": {"id": contact_id},
+            "types": [{"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": 81}],
+        }],
+    }).get("id")
+
+
+# ─── SMS pipeline ─────────────────────────────────────────────────────────────
+
+def process_texts(cfg, state, since_utc, dry_run, now_utc):
+    """
+    Ingest new SMS on monitored SMS lines: log each to HubSpot as a
+    Communication on the matched contact, track inbound texts awaiting a
+    reply (SLA guard in check_sms_sla), and collect digest entries.
+    No consent guardrail needed — texts are inherently written.
+    Returns (sms_entries, metrics_rows).
+    """
+    scfg = cfg.get("sms") or {}
+    if not scfg.get("enabled"):
+        return [], []
+    monitored = {re.sub(r"\D", "", str(n)) for n in scfg.get("monitored_numbers") or []}
+    if not monitored:
+        return [], []
+
+    texts = fetch_texts(cfg, since_utc)
+    processed = set(state["processed_sms_ids"])
+    awaiting = state["sms_awaiting_reply"]
+    contact_cache = {}
+    entries, metrics = [], []
+
+    for t in sorted(texts, key=lambda x: sms_datetime_utc(x) or now_utc):
+        tid = t.get("id")
+        if tid is None or tid in processed:
+            continue
+        line_digits = re.sub(r"\D", "", str(t.get("justcall_number") or ""))
+        if line_digits not in monitored:
+            processed.add(tid)
+            state["processed_sms_ids"].append(tid)
+            continue
+        direction = (t.get("direction") or "").lower()   # incoming|outgoing
+        number = str(t.get("contact_number") or "?")
+        body = ((t.get("sms_info") or {}).get("body") or "").replace("\\'", "'").strip()
+        when = sms_datetime_utc(t) or now_utc
+        line = _line_name(t.get("justcall_number"), cfg)
+
+        # Contact match (cached per number within the run; never fatal).
+        if number not in contact_cache:
+            try:
+                contact_cache[number] = find_contact_by_phone(number)
+            except Exception as e:
+                log.warning(f"  sms {tid}: contact lookup failed for {number}: {e}")
+                contact_cache[number] = None
+        contact = contact_cache[number]
+        label = None
+        if contact:
+            p = contact.get("properties", {})
+            label = f"{p.get('firstname', '')} {p.get('lastname', '')}".strip() or p.get("email")
+
+        # Log to HubSpot (matched contacts only — orphan Communications are
+        # useless and v2 never auto-creates contacts).
+        if scfg.get("log_to_hubspot", True) and contact:
+            if dry_run:
+                log.info(f"  sms {tid}: DRY RUN — would log {direction} SMS to "
+                         f"contact {contact['id']} ({label})")
+            else:
+                try:
+                    log_sms_to_hubspot(contact["id"], t, when, line)
+                except Exception as e:
+                    log.warning(f"  sms {tid}: HubSpot Communication failed: {e}")
+
+        # Reply-SLA tracking: an inbound text opens (or refreshes the preview
+        # of) an awaiting-reply entry; ANY outbound text to that number
+        # closes it. Keyed by 10-digit number.
+        key = re.sub(r"\D", "", number)[-10:]
+        if direction == "incoming":
+            ent = awaiting.get(key)
+            if ent is None:
+                awaiting[key] = {
+                    "since_utc": when.isoformat(),
+                    "number": number,
+                    "line": line,
+                    "contact_id": contact["id"] if contact else None,
+                    "contact_label": label,
+                    "preview": body[:120],
+                    "alerted": False,
+                }
+            else:  # keep the oldest unanswered timestamp, refresh the preview
+                ent["preview"] = body[:120]
+        else:
+            awaiting.pop(key, None)
+
+        entries.append({
+            "sms_id": tid,
+            "number": number,
+            "contact_label": label,
+            "matched": contact is not None,
+            "direction": "in" if direction == "incoming" else "out",
+            "line": line,
+            "time_pt": fmt_dt_pt(when),
+            "preview": body[:120],
+        })
+        metrics.append({
+            "ts": when.isoformat(),
+            "kind": "sms",
+            "direction": "in" if direction == "incoming" else "out",
+            "line": line,
+            "matched": contact is not None,
+            "hour_pt": when.astimezone(_account_tz(cfg)).hour,
+        })
+        processed.add(tid)
+        state["processed_sms_ids"].append(tid)
+
+    if entries:
+        n_in = sum(1 for e in entries if e["direction"] == "in")
+        log.info(f"SMS: {len(entries)} new ({n_in} in / {len(entries) - n_in} out)")
+    return entries, metrics
+
+
+def check_sms_sla(cfg, state, dry_run, now_utc):
+    """
+    Alert on inbound texts still unanswered past sms.reply_sla_minutes.
+    Runs every poll; each thread alerts once (until an outbound reply clears
+    it). Entries older than 48h are purged. Returns metrics rows for alerts.
+    """
+    scfg = cfg.get("sms") or {}
+    if not scfg.get("enabled"):
+        return []
+    sla_min = scfg.get("reply_sla_minutes", 60)
+    fired = []
+    for key, ent in list(state["sms_awaiting_reply"].items()):
+        try:
+            since = datetime.fromisoformat(ent["since_utc"])
+        except (KeyError, ValueError):
+            del state["sms_awaiting_reply"][key]
+            continue
+        age_min = (now_utc - since).total_seconds() / 60
+        if age_min > 48 * 60:
+            del state["sms_awaiting_reply"][key]  # stale — nobody is replying to this
+            continue
+        if ent.get("alerted") or age_min < sla_min:
+            continue
+
+        who = ent.get("contact_label") or f"`{ent.get('number')}`"
+        text = (f":speech_balloon: :x: *Unanswered text — {ent.get('line')}* "
+                f"(received {fmt_dt_pt(since)})\n"
+                f"{who}: \"{ent.get('preview')}\"\n"
+                f"No reply in {int(age_min)} min — text or call back.")
+        channel = scfg.get("channel") or cfg["slack"]["alert_channel"]
+        if dry_run or not channel:
+            log.info(f"  sms SLA alert{' (DRY RUN)' if dry_run else ' (channel unset)'}:\n{text}")
+        else:
+            try:
+                post_to_slack(text, channel)
+            except Exception as e:
+                log.warning(f"  sms SLA alert post failed: {e}")
+
+        if scfg.get("create_task", True):
+            subject = f"Reply to text from {ent.get('contact_label') or ent.get('number')} — unanswered {int(age_min)} min"
+            if dry_run:
+                log.info(f"  DRY RUN — would create SMS reply task: {subject}")
+            else:
+                try:
+                    create_task(
+                        ent.get("contact_id"), subject,
+                        f"[Call Agent] Inbound text on {ent.get('line')} at "
+                        f"{fmt_dt_pt(since)} still unanswered:\n\n\"{ent.get('preview')}\"",
+                        _resolve_owner(None, cfg), now_utc, priority="HIGH")
+                except Exception as e:
+                    log.warning(f"  sms SLA task failed: {e}")
+
+        ent["alerted"] = True
+        fired.append({"ts": now_utc.isoformat(), "kind": "sms_sla",
+                      "line": ent.get("line"), "number": ent.get("number"),
+                      "matched": ent.get("contact_id") is not None})
+    return fired
+
+
+def build_sms_section(sms_entries, awaiting):
+    """Digest section: SMS thread one-liners + threads still awaiting a reply."""
+    if not sms_entries and not awaiting:
+        return None
+    threads = {}
+    for e in sms_entries:
+        th = threads.setdefault(e["number"], {"label": None, "in": 0, "out": 0,
+                                              "last": None, "matched": e["matched"]})
+        th["label"] = th["label"] or e["contact_label"]
+        th[e["direction"]] += 1
+        th["last"] = e  # entries arrive time-sorted
+    n_in = sum(t["in"] for t in threads.values())
+    n_out = sum(t["out"] for t in threads.values())
+    lines = [f"*SMS* — {n_in} in / {n_out} out across {len(threads)} "
+             f"thread{'s' if len(threads) != 1 else ''}"]
+    for number, th in threads.items():
+        who = th["label"] or f"`{number}`" + (" _(no CRM match)_" if not th["matched"] else "")
+        last = th["last"]
+        arrow = "←" if last["direction"] == "in" else "→"
+        lines.append(f"• {who} — {th['in']} in / {th['out']} out · "
+                     f"last {arrow} {last['time_pt']}: \"{last['preview'][:80]}\"")
+    pending = [e for e in awaiting.values() if e.get("alerted")]
+    if pending:
+        lines.append(":hourglass_flowing_sand: *Still awaiting reply:* " + "; ".join(
+            (e.get("contact_label") or e.get("number", "?")) for e in pending))
+    return "\n".join(lines)
+
+
+# ─── Metrics (analytics log) ──────────────────────────────────────────────────
+
+def append_metrics(cfg, rows, dry_run):
+    """Append metric rows (JSONL) to analytics.metrics_path — the durable
+    per-call/SMS record the weekly report reads. Never fatal."""
+    acfg = cfg.get("analytics") or {}
+    if not acfg.get("enabled", True) or not rows:
+        return
+    if dry_run:
+        log.info(f"DRY RUN — would append {len(rows)} metric row(s)")
+        return
+    try:
+        p = REPO_ROOT / acfg.get("metrics_path", "ops/call_agent/state/metrics.jsonl")
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "a") as f:
+            for row in rows:
+                f.write(json.dumps(row, separators=(",", ":")) + "\n")
+        log.info(f"Appended {len(rows)} metric row(s) to {p.relative_to(REPO_ROOT)}")
+    except Exception as e:
+        log.warning(f"metrics append failed (run continues): {e}")
+
+
+def load_metrics(cfg):
+    acfg = cfg.get("analytics") or {}
+    p = REPO_ROOT / acfg.get("metrics_path", "ops/call_agent/state/metrics.jsonl")
+    rows = []
+    if not p.exists():
+        return rows
+    with open(p) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return rows
+
+
 # ─── Slack digest ─────────────────────────────────────────────────────────────
 
-def fmt_time_pt(call):
-    """Call time as short PT string (fleet reports in PT)."""
-    dt = call_datetime_utc(call)
+def fmt_dt_pt(dt):
+    """Datetime as short PT string (fleet reports in PT)."""
     if not dt:
         return "?"
     try:
@@ -1171,6 +1489,11 @@ def fmt_time_pt(call):
         return dt.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%-I:%M %p")
     except Exception:
         return dt.strftime("%H:%M UTC")
+
+
+def fmt_time_pt(call):
+    """Call time as short PT string."""
+    return fmt_dt_pt(call_datetime_utc(call))
 
 
 def build_digest(entries, skipped, failures, run_date_pt):
@@ -1186,10 +1509,12 @@ def build_digest(entries, skipped, failures, run_date_pt):
     n_tasks = sum(len(e.get("tasks_created", [])) for e in entries)
     n_updates = sum(len(e.get("record_applied", [])) for e in entries)
 
+    n_outbound = sum(1 for e in entries if e.get("direction") == "outbound")
+    outbound_note = f", {n_outbound} outbound" if n_outbound else ""
     lines = [
         f":telephone_receiver: *Call Agent digest — {run_date_pt}*",
         f"Processed *{len(entries)}* call{'s' if len(entries) != 1 else ''} "
-        f"(matched {len(matched)}, unmatched {len(unmatched)}) · "
+        f"(matched {len(matched)}, unmatched {len(unmatched)}{outbound_note}) · "
         f"Hang-ups: {n_hangup} · Skipped: {n_no_rec} no recording, {n_no_tr} no transcript · "
         f"Tasks created: {n_tasks} · Record updates: {n_updates} · "
         f"Failures: {len(failures)}",
@@ -1210,7 +1535,8 @@ def build_digest(entries, skipped, failures, run_date_pt):
             flags += f" ({len(e['tasks_created'])} task{'s' if len(e['tasks_created']) != 1 else ''})"
         first = s["summary"].split(". ")[0].rstrip(".") + "."
         who = e["contact_label"] or e["number"]
-        return f"• {e['time_pt']} — {who} ({s['intent']}){flags} — {first}"
+        arrow = "↗ " if e.get("direction") == "outbound" else ""
+        return f"• {arrow}{e['time_pt']} — {who} ({s['intent']}){flags} — {first}"
 
     attention = [e for e in entries
                  if e["summary"]["follow_up_needed"]
@@ -1291,12 +1617,13 @@ def post_to_slack(text, channel):
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
-def process_call(call, cfg, dry_run, now_utc):
+def process_call(call, cfg, dry_run, now_utc, direction="inbound"):
     """One call end-to-end. Returns ('entry'|'skipped', payload)."""
     cid = call.get("id")
     number = call.get("contact_number", "?")
     time_pt = fmt_time_pt(call)
     jc = cfg["justcall"]
+    agent_name = call.get("agent_name") or (call.get("agent") or {}).get("name")
 
     # Consent guardrail — never transcribe/summarize an unrecorded call.
     if jc["require_recording"] and not has_recording(call):
@@ -1320,9 +1647,10 @@ def process_call(call, cfg, dry_run, now_utc):
         p = contact.get("properties", {})
         contact_label = f"{p.get('firstname', '')} {p.get('lastname', '')}".strip() or p.get("email")
 
-    log.info(f"  call {cid}: summarizing ({len(transcript)} chars, "
+    log.info(f"  call {cid}: summarizing {direction} ({len(transcript)} chars, "
              f"{'matched: ' + contact_label if contact else 'unmatched'})...")
-    summary = summarize_call(transcript, cfg, contact)
+    summary = summarize_call(transcript, cfg, contact, direction=direction,
+                             agent_name=agent_name)
 
     call_date_pt = now_utc.strftime("%Y-%m-%d")
     is_negative = (summary["sentiment"] == "negative" or summary["intent"] == "complaint")
@@ -1351,7 +1679,8 @@ def process_call(call, cfg, dry_run, now_utc):
         log.info(f"  call {cid} summary:\n{json.dumps(summary, indent=2)}")
     else:
         if contact:
-            log_call_to_hubspot(contact["id"], call, summary, transcript)
+            log_call_to_hubspot(contact["id"], call, summary, transcript,
+                                direction=direction)
             applied, skipped_updates = apply_record_updates(
                 contact, summary["record_updates"], call_date_pt)
             new_status = summary["lead_status"]
@@ -1368,7 +1697,7 @@ def process_call(call, cfg, dry_run, now_utc):
                          + "; ".join(f"{FIELD_LABELS.get(f, f)}: {n!r}" for f, _, n in applied))
         else:
             log.info(f"  call {cid}: no HubSpot contact for {number} — digest triage "
-                     f"(auto-create disabled in v1)")
+                     f"(auto-create disabled)")
 
         # Action items -> HubSpot Tasks (owner from hint, default Paola).
         due = next_business_day(now_utc, cfg["hubspot"]["task_due_business_days"])
@@ -1377,7 +1706,7 @@ def process_call(call, cfg, dry_run, now_utc):
             task_id = create_task(
                 contact["id"] if contact else None,
                 it["item"][:250],
-                f"[Call Agent] From inbound call {call_date_pt} ({contact_label or number}).\n\n"
+                f"[Call Agent] From {direction} call {call_date_pt} ({contact_label or number}).\n\n"
                 f"{summary['summary']}",
                 oid, due,
                 priority="HIGH" if is_negative else "MEDIUM",
@@ -1407,10 +1736,10 @@ def process_call(call, cfg, dry_run, now_utc):
     # Coaching: rubric score, posted to the private coaching channel.
     # Never allowed to fail the call — it's an internal-quality side channel.
     coached = False
+    coaching_overall, coaching_scores = None, {}
     if cfg["coaching"]["enabled"]:
         try:
-            agent_name = call.get("agent_name") or (call.get("agent") or {}).get("name")
-            card = score_call(transcript, summary, agent_name, cfg)
+            card = score_call(transcript, summary, agent_name, cfg, direction=direction)
             coaching_text = build_coaching_card(
                 agent_name, contact_label, number, time_pt, summary, card)
             coach_channel = cfg["coaching"]["channel"] or cfg["slack"]["alert_channel"]
@@ -1433,6 +1762,9 @@ def process_call(call, cfg, dry_run, now_utc):
                         now_utc)
                     log.info(f"  call {cid}: coaching Note {note_id} on contact {contact['id']}")
             coached = True
+            coaching_overall = card.get("overall")
+            coaching_scores = {s["dimension"]: s["score"] for s in card.get("scores", [])
+                               if s.get("score") is not None}
         except Exception as e:
             log.warning(f"  call {cid}: coaching scoring failed (call still processed): {e}")
 
@@ -1449,10 +1781,17 @@ def process_call(call, cfg, dry_run, now_utc):
             except Exception as e:
                 log.warning(f"  call {cid}: alert post failed: {e}")
 
+    call_dt = call_datetime_utc(call) or now_utc
     return "entry", {
         "call_id": cid,
         "number": number,
         "time_pt": time_pt,
+        "direction": direction,
+        "line": _line_name(call.get("justcall_number"), cfg),
+        "agent": agent_name,
+        "duration_s": (call.get("call_duration") or {}).get("total_duration") or 0,
+        "hour_pt": call_dt.astimezone(_account_tz(cfg)).hour,
+        "ts": call_dt.isoformat(),
         "matched": contact is not None,
         "contact_label": contact_label,
         "no_next_step": no_next_step,
@@ -1462,6 +1801,8 @@ def process_call(call, cfg, dry_run, now_utc):
         "tasks_created": [(item, oid) for item, oid, _ in tasks_created],
         "ticket_id": ticket_id,
         "coached": coached,
+        "coaching_overall": coaching_overall,
+        "coaching_scores": coaching_scores,
     }
 
 
@@ -1480,7 +1821,7 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
     (still visible in the daily brief's totals). Missed and voicemail calls
     navigated the IVR like a human and always alert.
 
-    Returns "alerted" or "suppressed".
+    Returns ("alerted"|"suppressed", known_contact: bool).
     """
     mc = cfg["missed_calls"]
     number = call.get("contact_number", "?")
@@ -1501,7 +1842,7 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
             and mc.get("abandoned_known_only", True)):
         log.info(f"  call {call.get('id')}: abandoned in IVR from unknown "
                  f"{number} on {line} — likely spam, no alert")
-        return "suppressed"
+        return "suppressed", False
 
     who = label or f"`{number}`"
     status = (contact or {}).get("properties", {}).get("hs_lead_status")
@@ -1530,7 +1871,7 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
                 priority="HIGH",
             )
     log.info(f"  call {call.get('id')}: {ctype} on {line} ({number}) — alerted")
-    return "alerted"
+    return "alerted", contact is not None
 
 
 def build_alert(contact_label, number, time_pt, summary, ticket_id):
@@ -1547,14 +1888,218 @@ def build_alert(contact_label, number, time_pt, summary, ticket_id):
     return "\n".join(lines)
 
 
+# ─── Weekly report (analytics) ────────────────────────────────────────────────
+
+def _week_windows(now_utc, tz):
+    """Most recent COMPLETE Mon–Sun week in tz. Returns aware-UTC
+    (week_start, week_end, prev_week_start)."""
+    local = now_utc.astimezone(tz)
+    this_monday = (local - timedelta(days=local.weekday())).replace(
+        hour=0, minute=0, second=0, microsecond=0)
+    week_start = this_monday - timedelta(days=7)
+    return (week_start.astimezone(timezone.utc),
+            this_monday.astimezone(timezone.utc),
+            (week_start - timedelta(days=7)).astimezone(timezone.utc))
+
+
+def _fmt_hour(h):
+    if h == 0:
+        return "12 AM"
+    if h < 12:
+        return f"{h} AM"
+    if h == 12:
+        return "12 PM"
+    return f"{h - 12} PM"
+
+
+def _vol_stats(calls, cfg):
+    """Volume stats over a list of JustCall call objects (both directions)."""
+    from collections import Counter
+    tz = _account_tz(cfg)
+    st = {"total": 0, "in": 0, "out": 0, "in_types": Counter(), "out_types": Counter(),
+          "per_line": Counter(), "per_person": Counter(), "missed_by_hour": Counter()}
+    for c in calls:
+        st["total"] += 1
+        t = call_type(c)
+        st["per_line"][_line_name(c.get("justcall_number"), cfg)] += 1
+        st["per_person"][c.get("agent_name") or (c.get("agent") or {}).get("name")
+                         or "Unassigned"] += 1
+        if call_direction(c) == "incoming":
+            st["in"] += 1
+            st["in_types"][t] += 1
+            if t in ("missed", "abandoned", "voicemail"):
+                dt = call_datetime_utc(c)
+                if dt:
+                    st["missed_by_hour"][dt.astimezone(tz).hour] += 1
+        else:
+            st["out"] += 1
+            st["out_types"][t] += 1
+    return st
+
+
+def _pct(a, b):
+    return f"{round(100 * a / b)}%" if b else "–"
+
+
+def _wow(cur, prev):
+    """Week-over-week delta marker."""
+    if not prev:
+        return ""
+    diff = round(100 * (cur - prev) / prev)
+    if diff == 0:
+        return " (flat WoW)"
+    return f" ({'▲' if diff > 0 else '▼'}{abs(diff)}% WoW)"
+
+
+def _row_ts(row):
+    try:
+        return datetime.fromisoformat(row["ts"])
+    except (KeyError, ValueError, TypeError):
+        return None
+
+
+def build_weekly_report(cfg, cur_calls, prev_calls, cur_rows, prev_rows, week_label):
+    """Deterministic weekly analytics: volume trends (JustCall), inquiry
+    funnel + coaching trends + SMS (metrics.jsonl). No Claude involved."""
+    from collections import Counter, defaultdict
+    cur, prev = _vol_stats(cur_calls, cfg), _vol_stats(prev_calls, cfg)
+
+    lines = [f":calendar: *Call Agent weekly report — {week_label}*", ""]
+
+    # Volume
+    answered = cur["in_types"].get("answered", 0)
+    lines += [
+        f"*Volume* — {cur['total']} calls ({cur['in']} in / {cur['out']} out)"
+        f"{_wow(cur['total'], prev['total'])}",
+        f"Inbound answer rate: {_pct(answered, cur['in'])}"
+        f" (prev {_pct(prev['in_types'].get('answered', 0), prev['in'])})"
+        f" — {_fmt_outcomes(cur['in_types'])}",
+    ]
+    if cur["out"]:
+        lines.append(f"Outbound: {_fmt_outcomes(cur['out_types'])}")
+    if cur["per_line"]:
+        lines.append("By line: " + " · ".join(
+            f"{l} {n}" for l, n in cur["per_line"].most_common()))
+    if cur["per_person"]:
+        lines.append("By person: " + " · ".join(
+            f"{p} {n}" for p, n in cur["per_person"].most_common()))
+    hot = cur["missed_by_hour"].most_common(3)
+    if hot:
+        lines.append("Missed/abandoned hot hours (PT): " + " · ".join(
+            f"{_fmt_hour(h)} ×{n}" for h, n in hot))
+
+    # Funnel (qualitative — from metrics.jsonl call rows)
+    def _call_rows(rows):
+        return [r for r in rows if r.get("kind") == "call"]
+
+    cur_c, prev_c = _call_rows(cur_rows), _call_rows(prev_rows)
+    new_inq = [r for r in cur_c if r.get("caller_type") == "parent"
+               and r.get("intent") == "new inquiry"]
+    booked = [r for r in new_inq if r.get("next_step_scheduled")]
+    statuses = Counter(status_label(r["lead_status"]) for r in cur_c
+                       if r.get("lead_status") and r["lead_status"] != "no_change")
+    n_negative = sum(1 for r in cur_c if r.get("sentiment") == "negative")
+    missed_rows = [r for r in cur_rows if r.get("kind") == "missed_call"]
+    n_mc_alerted = sum(1 for r in missed_rows if r.get("result") == "alerted")
+    n_mc_spam = sum(1 for r in missed_rows if r.get("result") == "suppressed")
+
+    lines += ["", f"*Inquiry funnel* — {len(new_inq)} new-inquiry call"
+                  f"{'s' if len(new_inq) != 1 else ''} · next step booked on the "
+                  f"call: {len(booked)} ({_pct(len(booked), len(new_inq))})"]
+    if statuses:
+        lines.append("Lead statuses set: " + " · ".join(
+            f"{s} ×{n}" for s, n in statuses.most_common()))
+    lines.append(f"Negative-sentiment calls: {n_negative} · Missed-call alerts: "
+                 f"{n_mc_alerted}" + (f" ({n_mc_spam} spam-suppressed)" if n_mc_spam else ""))
+
+    # Coaching trends
+    def _coach_by_agent(rows):
+        by = defaultdict(list)
+        for r in _call_rows(rows):
+            if r.get("coaching_overall") is not None:
+                by[r.get("agent") or "Unassigned"].append(r)
+        return by
+
+    cur_by, prev_by = _coach_by_agent(cur_rows), _coach_by_agent(prev_rows)
+    if cur_by:
+        lines += ["", "*Coaching* (rubric avg, this week vs prior)"]
+        for agent, rows_ in sorted(cur_by.items(), key=lambda kv: -len(kv[1])):
+            avg = round(sum(r["coaching_overall"] for r in rows_) / len(rows_), 1)
+            prev_rows_ = prev_by.get(agent)
+            delta = ""
+            if prev_rows_:
+                pavg = sum(r["coaching_overall"] for r in prev_rows_) / len(prev_rows_)
+                d = round(avg - pavg, 1)
+                if d:
+                    delta = f", {'▲' if d > 0 else '▼'}{abs(d)}"
+            dim_scores = defaultdict(list)
+            for r in rows_:
+                for dim, s in (r.get("coaching_scores") or {}).items():
+                    dim_scores[dim].append(s)
+            focus = ""
+            if dim_scores:
+                dim, ss = min(dim_scores.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
+                focus = (f" · focus: {dim} {RUBRIC_DIM_LABELS.get(dim, dim)} "
+                         f"({round(sum(ss) / len(ss), 1)})")
+            lines.append(f"• {agent} — {avg} ({len(rows_)} call"
+                         f"{'s' if len(rows_) != 1 else ''} scored{delta}){focus}")
+
+    # SMS
+    sms_rows = [r for r in cur_rows if r.get("kind") == "sms"]
+    if sms_rows:
+        n_in = sum(1 for r in sms_rows if r.get("direction") == "in")
+        n_sla = sum(1 for r in cur_rows if r.get("kind") == "sms_sla")
+        lines += ["", f"*SMS* — {n_in} in / {len(sms_rows) - n_in} out · "
+                      f"unanswered-past-SLA alerts: {n_sla}"]
+
+    lines += ["", "_Data: JustCall (volume) + state/metrics.jsonl (qualitative; "
+                  "collected since 2026-07-20)._"]
+    return "\n".join(lines)
+
+
+def run_weekly_report(cfg, dry_run, now_utc):
+    tz = _account_tz(cfg)
+    week_start, week_end, prev_start = _week_windows(now_utc, tz)
+    week_label = (f"{week_start.astimezone(tz).strftime('%b %-d')} – "
+                  f"{(week_end - timedelta(days=1)).astimezone(tz).strftime('%b %-d, %Y')}")
+    log.info(f"Weekly report for {week_label}...")
+
+    calls = fetch_activity_since(cfg, prev_start)
+    cur_calls, prev_calls = [], []
+    for c in calls:
+        dt = call_datetime_utc(c)
+        if not dt or dt >= week_end:
+            continue
+        (cur_calls if dt >= week_start else prev_calls).append(c)
+
+    cur_rows, prev_rows = [], []
+    for row in load_metrics(cfg):
+        ts = _row_ts(row)
+        if not ts or ts >= week_end:
+            continue
+        if ts >= week_start:
+            cur_rows.append(row)
+        elif ts >= prev_start:
+            prev_rows.append(row)
+
+    report = build_weekly_report(cfg, cur_calls, prev_calls, cur_rows, prev_rows, week_label)
+    if dry_run:
+        log.info(f"DRY RUN — weekly report that would post to Slack:\n{report}")
+    else:
+        post_to_slack(report, cfg["slack"]["channel"])
+    log.info("Weekly report complete.")
+
+
 def main():
-    ap = argparse.ArgumentParser(description="Call Agent v1 (JustCall -> HubSpot + Slack)")
+    ap = argparse.ArgumentParser(description="Call Agent v2 (JustCall -> HubSpot + Slack)")
     ap.add_argument("--dry-run", action="store_true",
                     help="fetch + summarize, print instead of writing to HubSpot/Slack")
     ap.add_argument("--no-digest", action="store_true",
                     help="hold digest entries in state; a later run flushes them")
     ap.add_argument("--since", default=None,
                     help="manual cursor override, UTC ISO (e.g. 2026-07-09T00:00:00)")
+    ap.add_argument("--weekly-report", action="store_true",
+                    help="post the weekly analytics report instead of processing calls")
     args = ap.parse_args()
 
     # CI smoke mode (scorecard convention): secrets wired? then exit.
@@ -1584,9 +2129,13 @@ def main():
     if args.dry_run:
         log.info("DRY RUN MODE — no HubSpot/Slack writes, state not persisted")
 
+    now_utc = datetime.now(timezone.utc)
+    if args.weekly_report:
+        run_weekly_report(cfg, args.dry_run, now_utc)
+        return
+
     state = load_state(cfg["state"]["path"])
     processed_ids = set(state["processed_call_ids"])
-    now_utc = datetime.now(timezone.utc)
     jc = cfg["justcall"]
 
     if args.since:
@@ -1598,46 +2147,62 @@ def main():
         since = now_utc - timedelta(days=jc["initial_lookback_days"])
         log.info(f"No cursor — first run, looking back {jc['initial_lookback_days']} day(s)")
 
-    calls = fetch_inbound_calls(cfg, since)
+    calls = fetch_recent_calls(cfg, since)
 
     monitored_digits = {re.sub(r"\D", "", str(n)) for n in jc["monitored_numbers"]}
+    outbound_digits = {re.sub(r"\D", "", str(n))
+                       for n in jc.get("monitored_outbound_numbers") or []}
     mc_cfg = cfg.get("missed_calls") or {}
     mc_types = [t.lower() for t in mc_cfg.get("alert_types", [])]
+    process_types = [t.lower() for t in jc["process_call_types"]]
 
-    entries, skipped, failures = [], [], []
+    entries, skipped, failures, metrics_rows = [], [], [], []
     n_missed, n_spam = 0, 0
     for call in calls:
         cid = call.get("id")
         if cid in processed_ids:
             continue  # idempotency: never process the same call twice
         ctype = call_type(call)
-        on_monitored = (re.sub(r"\D", "", str(call.get("justcall_number") or ""))
-                        in monitored_digits)
-        # Missed-call alerting: any line, metadata only. Speed-to-callback
-        # is the conversion lever, so these alert on the poll that sees them.
-        if mc_cfg.get("enabled") and ctype in mc_types:
+        is_outbound = call_direction(call) == "outgoing"
+        line_digits = re.sub(r"\D", "", str(call.get("justcall_number") or ""))
+        # Missed-call alerting: INBOUND only, any line, metadata only.
+        # Speed-to-callback is the conversion lever, so these alert on the
+        # poll that sees them. (An unanswered OUTBOUND call is just us not
+        # reaching someone — no alert.)
+        if not is_outbound and mc_cfg.get("enabled") and ctype in mc_types:
             try:  # never fatal
-                if handle_missed_call(call, cfg, args.dry_run, now_utc) == "alerted":
+                result, known = handle_missed_call(call, cfg, args.dry_run, now_utc)
+                if result == "alerted":
                     n_missed += 1
                 else:
                     n_spam += 1
+                dt = call_datetime_utc(call) or now_utc
+                metrics_rows.append({
+                    "ts": dt.isoformat(), "kind": "missed_call", "ctype": ctype,
+                    "line": _line_name(call.get("justcall_number"), cfg),
+                    "hour_pt": dt.astimezone(_account_tz(cfg)).hour,
+                    "known": known, "result": result})
             except Exception as e:
                 log.warning(f"  call {cid}: missed-call alert failed: {e}")
             processed_ids.add(cid)
             state["processed_call_ids"].append(cid)
             continue
-        if not on_monitored:
-            log.info(f"  call {cid}: line not monitored — ignored")
+        if line_digits not in (outbound_digits if is_outbound else monitored_digits):
+            # Outbound-ignored is the common case while monitored_outbound_numbers
+            # is empty — keep it out of the run log.
+            (log.debug if is_outbound else log.info)(
+                f"  call {cid}: {'outbound ' if is_outbound else ''}line not monitored — ignored")
             processed_ids.add(cid)
             state["processed_call_ids"].append(cid)
             continue
-        if ctype not in [t.lower() for t in jc["process_call_types"]]:
-            log.info(f"  call {cid}: type '{ctype}' not processed in v1 — ignored")
+        if ctype not in process_types:
+            log.info(f"  call {cid}: type '{ctype}' not processed — ignored")
             processed_ids.add(cid)
             state["processed_call_ids"].append(cid)
             continue
         try:
-            kind, payload = process_call(call, cfg, args.dry_run, now_utc)
+            kind, payload = process_call(call, cfg, args.dry_run, now_utc,
+                                         direction="outbound" if is_outbound else "inbound")
             if kind == "skipped" and payload["reason"] == "no transcript":
                 # JustCall's AI transcript lags the call by a few minutes. Leave
                 # the call unprocessed and retry next run until the grace window
@@ -1648,6 +2213,21 @@ def main():
                     log.info(f"  call {cid}: transcript not ready yet — retrying next run")
                     continue  # not marked processed
             (entries if kind == "entry" else skipped).append(payload)
+            if kind == "entry":
+                s = payload["summary"]
+                metrics_rows.append({
+                    "ts": payload["ts"], "kind": "call",
+                    "direction": payload["direction"], "line": payload["line"],
+                    "agent": payload["agent"], "caller_type": s["caller_type"],
+                    "intent": s["intent"], "sentiment": s["sentiment"],
+                    "matched": payload["matched"],
+                    "next_step_scheduled": s["next_step_scheduled"],
+                    "no_next_step": payload["no_next_step"],
+                    "lead_status": s["lead_status"],
+                    "coaching_overall": payload["coaching_overall"],
+                    "coaching_scores": payload["coaching_scores"],
+                    "duration_s": payload["duration_s"],
+                    "hour_pt": payload["hour_pt"]})
         except Exception as e:  # one bad call must never kill the run
             log.error(f"  call {cid} FAILED: {e}", exc_info=True)
             failures.append({"call_id": cid,
@@ -1656,15 +2236,30 @@ def main():
         processed_ids.add(cid)
         state["processed_call_ids"].append(cid)
 
+    # SMS ingestion + reply-SLA guard — never allowed to sink call processing.
+    sms_entries = []
+    try:
+        sms_entries, sms_metrics = process_texts(cfg, state, since, args.dry_run, now_utc)
+        metrics_rows += sms_metrics
+    except Exception as e:
+        log.warning(f"SMS processing failed (calls unaffected): {e}")
+    try:
+        metrics_rows += check_sms_sla(cfg, state, args.dry_run, now_utc)
+    except Exception as e:
+        log.warning(f"SMS SLA check failed: {e}")
+
     log.info(f"Run summary: {len(entries)} processed, {len(skipped)} skipped, "
              f"{len(failures)} failed, {n_missed} missed-call alert{'s' if n_missed != 1 else ''}, "
-             f"{n_spam} likely-spam abandoned suppressed")
+             f"{n_spam} likely-spam abandoned suppressed, {len(sms_entries)} SMS")
+
+    append_metrics(cfg, metrics_rows, args.dry_run)
 
     # Digest: pending entries/skips/failures from earlier --no-digest runs
     # flush with this one.
     all_entries = state.get("pending_digest", []) + entries
     all_skipped = state.get("pending_skipped", []) + skipped
     all_failures = state.get("pending_failures", []) + failures
+    all_sms = state.get("pending_sms", []) + sms_entries
     try:
         from zoneinfo import ZoneInfo
         run_date_pt = now_utc.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%b %-d, %Y")
@@ -1675,8 +2270,10 @@ def main():
         state["pending_digest"] = all_entries
         state["pending_skipped"] = all_skipped
         state["pending_failures"] = all_failures
+        state["pending_sms"] = all_sms
         log.info(f"--no-digest: holding {len(all_entries)} entries, "
-                 f"{len(all_skipped)} skips, {len(all_failures)} failures for a later run")
+                 f"{len(all_skipped)} skips, {len(all_failures)} failures, "
+                 f"{len(all_sms)} SMS for a later run")
     else:
         # Daily-activity brief (account-wide, all lines, both directions) —
         # posts every digest run even when the agent processed nothing. Never
@@ -1693,7 +2290,8 @@ def main():
             digest = build_digest(all_entries, all_skipped, all_failures, run_date_pt)
         else:
             log.info("No new processed calls — posting activity brief only")
-        combined = "\n\n".join(part for part in (brief, digest) if part)
+        sms_section = build_sms_section(all_sms, state.get("sms_awaiting_reply", {}))
+        combined = "\n\n".join(part for part in (brief, digest, sms_section) if part)
         if combined:
             if args.dry_run:
                 log.info(f"DRY RUN — digest that would post to Slack:\n{combined}")
@@ -1702,6 +2300,7 @@ def main():
         state["pending_digest"] = []
         state["pending_skipped"] = []
         state["pending_failures"] = []
+        state["pending_sms"] = []
 
     if not args.dry_run:
         state["last_run_utc"] = now_utc.isoformat()

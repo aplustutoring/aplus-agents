@@ -1,7 +1,10 @@
-# ops/call_agent — Call Agent v1.1 (JustCall → HubSpot family-record loop + Slack)
+# ops/call_agent — Call Agent v2 (JustCall → HubSpot family-record loop + SMS + Slack + weekly analytics)
 
-Polls JustCall for completed **inbound** calls on the main A+ line, pulls each
-call's native AI transcript, and turns each call into CRM actions:
+Polls JustCall for completed calls on the monitored lines — **inbound**
+always, **outbound** on lines explicitly opted in via
+`justcall.monitored_outbound_numbers` — pulls each call's native AI
+transcript, and turns each call into CRM actions. Also ingests **SMS**
+threads and posts a Monday **weekly analytics report**. Per call:
 
 - **Call engagement** on the matching HubSpot contact (summary + metadata)
 - **Family-record updates** — the call is checked against the contact's key
@@ -38,6 +41,28 @@ call's native AI transcript, and turns each call into CRM actions:
   person, by outcome (answered/missed/abandoned/voicemail), and by line
   (friendly names via `config.yml → justcall.line_names`). The brief posts
   every day even when no calls were processed.
+- **Outbound calls (v2)** — answered outbound calls on lines listed in
+  `monitored_outbound_numbers` get the same loop (transcript → summary →
+  engagement → record updates → coaching), with direction-aware prompts (the
+  record fields always describe the person *called*, never the A+ agent) and
+  OUTBOUND Call engagements. Ships with the list EMPTY: no IVR plays on
+  outbound, so confirm each line's outbound recording-disclosure story before
+  uncommenting it in config.yml (CA two-party consent). Unanswered outbound
+  calls never fire missed-call alerts.
+- **SMS ingestion (v2)** — texts on `sms.monitored_numbers` are logged to the
+  matched contact as HubSpot **SMS Communications** (unmatched senders go to
+  the digest's SMS triage list; contacts are never auto-created). An inbound
+  text unanswered past `sms.reply_sla_minutes` (default 60) fires ONE Slack
+  alert + HIGH reply task per thread; any outbound reply clears the thread.
+  The daily digest gets an SMS section (per-thread in/out counts + last
+  message preview). No consent guardrail needed — texts are written.
+- **Weekly analytics report (v2)** — every live run appends per-call/SMS
+  metric rows to `state/metrics.jsonl` (committed back like state.json). A
+  Monday-morning run (`--weekly-report`) posts trends for the last complete
+  Mon–Sun week to Slack: volume + WoW delta, inbound answer rate, per-line and
+  per-person counts, missed-call hot hours, new-inquiry → next-step-booked
+  funnel, lead statuses set, per-person coaching averages (with focus
+  dimension + WoW delta), and SMS counts. Deterministic — no Claude call.
 - **Coaching** — every processed call is scored against [rubric.md](rubric.md)
   (11 dimensions: 5 universal, 4 new-inquiry, 2 service-recovery), attributed
   to the team member who answered (JustCall `agent_name`). Coaching cards
@@ -55,47 +80,49 @@ A **scheduled poller, not a webhook** — one Python script
 (`call_agent.py`) run by `.github/workflows/call-agent.yml` every 15 min
 during business hours (~8 AM–8 PM PT, `--no-digest`: coaching cards and
 alerts post per call for near-real-time feedback) plus a daily ~5:30 PM PT
-digest run that flushes held entries. Same pattern as `ops/scorecard`.
+digest run that flushes held entries and a Monday ~9:05 AM PT
+`--weekly-report` run. Same pattern as `ops/scorecard`.
 Calls whose JustCall AI transcript isn't ready yet are retried on later
 polls within `transcript_grace_minutes` (must stay < `overlap_minutes`). HubSpot stays the single source of truth for
 families/communication; this agent only *adds* engagements, never edits
 contact data.
 
-## V1 scope decisions (locked — do not expand casually)
+## Scope decisions (locked — do not expand casually)
 
 1. **Transcription source: JustCall native AI only.** Transcripts come from
    `GET /v2.1/calls_ai/{id}?fetch_transcription=true` (they were removed from
    the Call API in Aug 2024). There is **no** Whisper/third-party fallback:
    a call with a recording but no transcript is skipped and counted in the
    digest's "Skipped" section. That's the whole fallback.
-2. **Inbound calls on monitored numbers only.** `config.yml →
-   justcall.monitored_numbers`: the main A+ line, plus the customer support
-   line (added 2026-07-20, recording disclosure confirmed). More lines can be
-   added without code changes — but no outbound, no tutor lines, no individual
-   team lines in v1.
-3. **Consent guardrail (CA two-party consent).** The IVR on the main line
+2. **Only explicitly monitored lines are processed.**
+   `justcall.monitored_numbers` for inbound;
+   `justcall.monitored_outbound_numbers` for outbound (v2, ships empty);
+   `sms.monitored_numbers` for texts. More lines can be added without code
+   changes — after the consent check below.
+3. **Consent guardrail (CA two-party consent).** The IVR on the inbound lines
    announces that calls are recorded — confirmed and handled at the
    phone-system level. The agent still enforces `require_recording: true`:
    calls with no recording are never transcribed or summarized by any means,
-   only counted. This keeps the guardrail intact when numbers are added to
-   `monitored_numbers` later, where the disclosure hasn't yet been confirmed.
-   **Before adding any number to the config, confirm its recording disclosure.**
-4. **No auto-created HubSpot contacts.** Calls with no phone match go to the
-   digest's "Unmatched" section with number, time, and summary — a human
-   decides.
+   only counted. **Before adding any number to either monitored list, confirm
+   its recording disclosure** — for outbound lines that means the agent's
+   script or a JustCall announcement, since no IVR plays. SMS is exempt
+   (written medium; no recording involved).
+4. **No auto-created HubSpot contacts.** Calls and texts with no phone match
+   go to the digest's triage sections — a human decides.
 
-Out of scope for v1: outbound calls, SMS, webhook/real-time ingestion,
-third-party transcription, sentiment analytics dashboards, Family-State
-integration (future: call transcripts as genesis events).
+Out of scope for v2: webhook/real-time ingestion, third-party transcription,
+MMS media handling, Family-State integration (future: call transcripts as
+genesis events).
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `call_agent.py` | The whole pipeline (fetch → transcript → summarize → HubSpot → digest) |
-| `config.yml` | Monitored numbers, guardrails, model, Slack channel, state path |
+| `call_agent.py` | The whole pipeline (fetch → transcript → summarize → HubSpot → digest), SMS ingestion, weekly report |
+| `config.yml` | Monitored numbers (in/out/SMS), guardrails, model, Slack channels, state/metrics paths |
 | `.env.example` | Env var names for local runs |
-| `state/state.json` | Cursor + processed call IDs + held digest entries (committed back by the workflow) |
+| `state/state.json` | Cursor + processed call/SMS IDs + held digest entries + SMS awaiting-reply tracker (committed back by the workflow) |
+| `state/metrics.jsonl` | Append-only per-call/SMS metric rows — the weekly report's data (committed back by the workflow) |
 
 ## Secrets
 
@@ -147,15 +174,23 @@ dispatch with `check_only=true`, or locally `CHECK_ONLY=true python3 call_agent.
 
 Flags: `--since 2026-07-09T00:00:00` (UTC cursor override),
 `--no-digest` (process but hold digest entries in state for a later run —
-for multi-run-per-day schedules; the next digest-posting run flushes them).
+for multi-run-per-day schedules; the next digest-posting run flushes them),
+`--weekly-report` (post the weekly analytics report for the last complete
+Mon–Sun week instead of processing; scheduled Mondays ~9:05 AM PT, also a
+`weekly_report` input on manual dispatch).
 
 ## How a run works
 
-1. **Fetch** — `GET /v2.1/calls` per monitored number
-   (`call_direction=Incoming`, `from_datetime` = cursor − 60 min overlap,
-   paged 100/page). Idempotent: processed call IDs live in `state/state.json`,
-   so crashes/re-runs never double-process. Only `Answered` calls are
-   processed (`config.yml → process_call_types`).
+1. **Fetch** — `GET /v2.1/calls` account-wide, BOTH directions
+   (`from_datetime` = cursor − 60 min overlap, paged 100/page); the main loop
+   routes by line + direction (inbound → `monitored_numbers`, outbound →
+   `monitored_outbound_numbers`, missed-call alerts → inbound on any line).
+   Idempotent: processed call IDs live in `state/state.json`, so
+   crashes/re-runs never double-process. Only `answered` calls are
+   processed (`config.yml → process_call_types`). SMS is fetched the same
+   way from `GET /v2.1/texts` (verified live 2026-07-20: top-level
+   `direction`, body under `sms_info.body`, `sms_date`/`sms_time` are UTC)
+   and deduped via `processed_sms_ids`.
 2. **Transcript** — `GET /v2.1/calls_ai/{id}?fetch_transcription=true`, paced
    2 s/call (JustCall burst limit is 30/min on Team). No recording → skipped
    (consent guardrail); recording but no transcript → skipped; both counted.
@@ -194,8 +229,13 @@ for multi-run-per-day schedules; the next digest-posting run flushes them).
    unmatched/hang-ups/tasks/updates/failed), "Needs attention" on top,
    one-liners grouped by caller type, record updates applied, proposed-but-
    kept conflicts for review, unmatched-numbers triage, skipped and failure
-   sections. Per-call errors are caught and reported in the digest — one bad
-   call never kills the run.
+   sections, and an SMS section (per-thread counts, last-message previews,
+   threads still awaiting a reply). Per-call errors are caught and reported
+   in the digest — one bad call never kills the run.
+8. **Metrics** — each processed call, missed-call alert, and SMS appends a
+   row to `state/metrics.jsonl` (caller type, intent, sentiment, next-step
+   flag, lead status, coaching scores, line, agent, hour). `--weekly-report`
+   reads it plus fresh JustCall volume data and posts the Monday report.
 
 ## Known API caveats (doc verification + live testing, 2026-07)
 
@@ -211,6 +251,10 @@ API differs from its own docs (all handled in code):
   as hours in the future and silently returns zero calls.
 - **`call_info.type` is lowercase** (`answered`, not the documented `Answered`).
 - **`recording` is nested under `call_info`**, not top-level on the call object.
+- **`/v2.1/texts`** (verified live 2026-07-20): `direction` is TOP-LEVEL on the
+  text object (unlike calls), the body is `sms_info.body`, and
+  `sms_date`/`sms_time` are UTC while `sms_user_*` are user-local. Omitting
+  `call_direction` on `/v2.1/calls` returns both directions.
 
 
 - **Auth header:** official docs show plain `key:secret`; some clients need
