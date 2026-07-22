@@ -1,0 +1,37 @@
+name: Email — hourly update (launch monitoring)
+
+# STAGED FOR CUTOVER: schedule disabled until the old aplus-email repo is switched off.
+# NOTE: the config `until` date (2026-06-24) has passed, so this is a no-op even when
+# scheduled — kept for parity; safe to retire once the old repo is off.
+on:
+  # schedule:
+  #   - cron: "5 * * * *"   # hourly, offset :05
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force send now (bypass hours/window gate)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run hourly update
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          FORCE_RUN: ${{ inputs.force }}
+        run: python -m src.hourly_update

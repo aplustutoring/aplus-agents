@@ -1,0 +1,59 @@
+name: Email — SLA sweep
+
+# STAGED FOR CUTOVER: schedule disabled until the old aplus-email repo is switched off.
+on:
+  # schedule:
+  #   - cron: "20 * * * *"   # hourly, offset :20 to avoid colliding with triage
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (log intended escalations, write nothing)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-email-state
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run SLA sweep
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.sla_sweep
+
+      - name: Commit state changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/audit_log.jsonl
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "email-sla-sweep: record escalations for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+          fi
