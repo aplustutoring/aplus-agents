@@ -48,7 +48,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           MONDAY_TOKEN: ${{ secrets.MONDAY_TOKEN }}
-          GOOGLE_SHEETS_CREDS: ${{ secrets.GOOGLE_SHEETS_CREDS }}
+          # Same service account as the retention sync — the standalone email repo's
+          # local JSON was wiped in the 6/29 secrets cleanup; the value lives on here.
+          GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: python -m src.main
 
