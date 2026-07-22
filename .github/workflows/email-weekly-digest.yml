@@ -4,9 +4,9 @@ name: Email — weekly digest
 # Monday 8:00 AM PT. PDT = 15:00 UTC, PST = 16:00 UTC. Both fire; the digest is
 # idempotent for the same week so the duplicate is harmless.
 on:
-  # schedule:
-  #   - cron: "0 15 * * 1"   # 08:00 PDT Monday
-  #   - cron: "0 16 * * 1"   # 08:00 PST Monday
+  schedule:
+    - cron: "0 15 * * 1"   # 08:00 PDT Monday
+    - cron: "0 16 * * 1"   # 08:00 PST Monday
   workflow_dispatch:
     inputs:
       dry_run:

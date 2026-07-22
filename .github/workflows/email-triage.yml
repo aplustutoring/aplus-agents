@@ -6,10 +6,10 @@ name: Email — triage (inbox poll)
 #   PDT (Mar-Nov): 9-18 PT = 16:00-01:00 UTC.  PST (Nov-Mar): 9-18 PT = 17:00-02:00 UTC.
 # Runs are idempotent (audit-log message-id dedupe) so overlapping fires are safe.
 on:
-  # schedule:
-  #   - cron: "*/5 16-23 * * 1-5"   # business window (UTC), weekdays
-  #   - cron: "*/5 0-2 * * 1-5"     # business window wrap past midnight UTC, weekdays
-  #   - cron: "0 * * * *"            # hourly everywhere else (off-window + weekends)
+  schedule:
+    - cron: "*/5 16-23 * * 1-5"   # business window (UTC), weekdays
+    - cron: "*/5 0-2 * * 1-5"     # business window wrap past midnight UTC, weekdays
+    - cron: "0 * * * *"            # hourly everywhere else (off-window + weekends)
   workflow_dispatch:
     inputs:
       dry_run:

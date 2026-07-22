@@ -3,10 +3,10 @@ name: Email — PO inbox (charter Gmail)
 # STAGED FOR CUTOVER: schedules disabled until the old aplus-email repo is switched off.
 # No-ops until config po_inbox.address is set + the service account has gmail.modify delegation.
 on:
-  # schedule:
-  #   - cron: "*/15 16-23 * * 1-5"
-  #   - cron: "*/15 0-2 * * 1-5"
-  #   - cron: "30 * * * *"
+  schedule:
+    - cron: "*/15 16-23 * * 1-5"
+    - cron: "*/15 0-2 * * 1-5"
+    - cron: "30 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

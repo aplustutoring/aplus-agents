@@ -2,10 +2,10 @@ name: Email — deal sync (HubSpot → Teachworks)
 
 # STAGED FOR CUTOVER: schedules disabled until the old aplus-email repo is switched off.
 on:
-  # schedule:
-  #   - cron: "*/15 16-23 * * 1-5"
-  #   - cron: "*/15 0-2 * * 1-5"
-  #   - cron: "45 * * * *"
+  schedule:
+    - cron: "*/15 16-23 * * 1-5"
+    - cron: "*/15 0-2 * * 1-5"
+    - cron: "45 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

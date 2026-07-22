@@ -4,8 +4,8 @@ name: Email — hourly update (launch monitoring)
 # NOTE: the config `until` date (2026-06-24) has passed, so this is a no-op even when
 # scheduled — kept for parity; safe to retire once the old repo is off.
 on:
-  # schedule:
-  #   - cron: "5 * * * *"   # hourly, offset :05
+  schedule:
+    - cron: "5 * * * *"   # hourly, offset :05
   workflow_dispatch:
     inputs:
       force:

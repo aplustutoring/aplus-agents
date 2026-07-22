@@ -2,8 +2,8 @@ name: Email — SLA sweep
 
 # STAGED FOR CUTOVER: schedule disabled until the old aplus-email repo is switched off.
 on:
-  # schedule:
-  #   - cron: "20 * * * *"   # hourly, offset :20 to avoid colliding with triage
+  schedule:
+    - cron: "20 * * * *"   # hourly, offset :20 to avoid colliding with triage
   workflow_dispatch:
     inputs:
       dry_run:
