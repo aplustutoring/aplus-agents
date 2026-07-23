@@ -13,10 +13,95 @@
     396494744,
     396564722,
     396568713,
-    396590039
+    396590039,
+    396944816
   ],
-  "last_run_utc": "2026-07-23T04:12:16.972478+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-07-23T16:39:56.601742+00:00",
+  "pending_digest": [
+    {
+      "call_id": 396944816,
+      "number": "13238280701",
+      "time_pt": "9:36 AM",
+      "matched": true,
+      "contact_label": "Jena Malone",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Jena Malone (calling as Ode Malone's parent) called to reschedule her son Ode's 10:30 virtual assessment because they were running errands and wouldn't be home in time. Roman confirmed a new time of 1:30 and said Paola would resend the updated virtual meeting link. Friendly, quick rescheduling call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Resend the virtual assessment meeting link updated for the new 1:30 time",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [
+          "Ode Malone"
+        ],
+        "record_updates": {
+          "whats_going_on": "Parent called to reschedule Ode's virtual assessment from 10:30 to 1:30 today because the family was out running errands. Assessment is virtual (diagnostic).",
+          "what_we_can_do_to_help": "Paola to resend the updated virtual meeting link for the 1:30 assessment today, then proceed with the diagnostic and follow up with recommendations.",
+          "student_first_name": "Ode",
+          "student_last_name": "Malone",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Parent called to reschedule Ode's virtual assessment from 10:30 to 1:30 today because the family was out running errands. Assessment is virtual (diagnostic)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to resend the updated virtual meeting link for the 1:30 assessment today, then proceed with the diagnostic and follow up with recommendations."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Ode"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Malone"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Resend the virtual assessment meeting link updated for the new 1:30 time",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
