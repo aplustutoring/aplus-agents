@@ -25,10 +25,92 @@
     397381435,
     397386306,
     397403807,
-    397433187
+    397433187,
+    397458320,
+    397458742
   ],
-  "last_run_utc": "2026-07-24T18:22:45.667875+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-07-24T19:56:52.717789+00:00",
+  "pending_digest": [
+    {
+      "call_id": 397458320,
+      "number": "18186183831",
+      "time_pt": "11:20 AM",
+      "matched": true,
+      "contact_label": "Lucy Garcia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Lucy Garcia, an A+ tutor pursuing LAUSD substitute credentialing, called to check whether Mr. Slavinski had returned the final verification form LAUSD re-sent the previous Thursday. Paola explained that Emily (who was tracking it) is out of office today, but offered to reach out to Roman and Emily to confirm status. Paola committed to follow up with Lucy once she has updates. No resolution reached on the call.",
+        "caller_type": "tutor applicant",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Contact Roman to confirm whether Mr. Slavinski has returned the final LAUSD verification form for Lucy Garcia",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Follow up with Emily (out of office today) regarding the status of Lucy's LAUSD substitute paperwork",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Report back to Lucy with any updates on the LAUSD form status",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Caller is an existing A+ tutor (Tutor-Active); status is correct and should not change.",
+        "student_or_school_names_mentioned": [
+          "LAUSD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Lucy (A+ tutor) called following up on her LAUSD substitute credentialing paperwork. LAUSD re-sent the final verification request to Mr. Slavinski the previous Thursday and his response is the last item outstanding in her process.",
+          "what_we_can_do_to_help": "Paola to contact Roman and Emily (OOO today) to confirm whether Mr. Slavinski submitted the LAUSD form, then update Lucy with status.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Lucy (A+ tutor) called following up on her LAUSD substitute credentialing paperwork. LAUSD re-sent the final verification request to Mr. Slavinski the previous Thursday and his response is the last item outstanding in her process."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to contact Roman and Emily (OOO today) to confirm whether Mr. Slavinski submitted the LAUSD form, then update Lucy with status."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Contact Roman to confirm whether Mr. Slavinski has returned the final LAUSD verification form for Lucy Garcia",
+          81494333
+        ],
+        [
+          "Follow up with Emily (out of office today) regarding the status of Lucy's LAUSD substitute paperwork",
+          81494333
+        ],
+        [
+          "Report back to Lucy with any updates on the LAUSD form status",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
