@@ -1069,6 +1069,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1784861825.848909"
+    },
+    {
+      "ts": "2026-07-25T16:24:46.807341+00:00",
+      "kind": "content_build",
+      "week": "2026-07-23",
+      "slot": 1,
+      "post_date": "2026-07-27",
+      "headline": "NWEA's new national study \u2014 chronic absenteeism is a direct brake on academic recovery",
+      "bundle_dir": "aplus-content/2026-07-27-chronic-absenteeism-tier-3-tutoring",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "217971192938",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-25T16:47:02.270536+00:00",
+      "kind": "content_build",
+      "week": "2026-07-23",
+      "slot": 2,
+      "post_date": "2026-07-29",
+      "headline": "The Aspire renewal denial is a warning shot for every nonclassroom-based charter in A+'s book",
+      "bundle_dir": "aplus-content/2026-07-29-aspire-charter-renewal-denial-ab",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "217971211891",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-07-25T17:17:30.477106+00:00",
+      "kind": "content_build",
+      "week": "2026-07-23",
+      "slot": 3,
+      "post_date": "2026-07-31",
+      "headline": "Varsity Tutors' \"Live+AI\" launch \u2014 what the biggest competitor's pivot tells charter directors about the intervention buy",
+      "bundle_dir": "aplus-content/2026-07-31-varsity-live-ai-charter-directors",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "217974790796",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

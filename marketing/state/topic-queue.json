@@ -15,7 +15,12 @@
       "roman_take": "The conviction move \u2014 call out that most intervention vendors sell \"sessions delivered\" as their KPI, when the NWEA data proves attended dosage is the only number that matters; challenge peers to publish attendance-adjusted outcomes.",
       "danielle_take": "The implementation move \u2014 walk through how A+'s partner schools structure make-up sessions, family communication, and MTSS attendance flags so that Tier 3 kids actually hit the 3x/week threshold the research requires.",
       "redundancy_max_similarity": 0.3594558790295434,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-25T16:24:46.805859+00:00",
+      "post_date": "2026-07-27",
+      "bundle_dir": "aplus-content/2026-07-27-chronic-absenteeism-tier-3-tutoring",
+      "hubspot_post_id": "217971192938"
     },
     {
       "slot": 2,
@@ -33,7 +38,12 @@
       "roman_take": "Charter schools were promised predictability under AB 1505 and got the opposite \u2014 the only defense is math-and-ELA outcomes you can prove line-by-line, and if you're not building that evidence file starting in year one of the renewal cycle, you're negotiating from the loser's chair.",
       "danielle_take": "For every charter director reading Aspire's obit: the operational fix is boring \u2014 quarterly NWEA growth reports tied to your intervention roster, LTEL reclassification counts with names attached, and Title III spend-down documentation. That's the paper trail that survives a hostile authorizer. ---",
       "redundancy_max_similarity": 0.44776100990289536,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-25T16:47:02.269342+00:00",
+      "post_date": "2026-07-29",
+      "bundle_dir": "aplus-content/2026-07-29-aspire-charter-renewal-denial-ab",
+      "hubspot_post_id": "217971211891"
     },
     {
       "slot": 3,
@@ -50,7 +60,12 @@
       "roman_take": "The conviction post \u2014 \"AI dashboards don't reclassify LTELs. People do. Here's the math on what 'double proficiency growth' actually costs when the tutor doesn't know your kid's name.\"",
       "danielle_take": "The implementation post \u2014 \"I sat with a Title III coordinator last week comparing vendor decks. Here's the checklist I use to separate an intervention partner from a login.\" (Pull from Title III pitch angles for Ocean Grove / South Sutter / Visions / Heartland / Pacific Coast.)",
       "redundancy_max_similarity": 0.49833590826745033,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-07-25T17:17:30.475930+00:00",
+      "post_date": "2026-07-31",
+      "bundle_dir": "aplus-content/2026-07-31-varsity-live-ai-charter-directors",
+      "hubspot_post_id": "217974790796"
     }
   ],
   "slack": {
