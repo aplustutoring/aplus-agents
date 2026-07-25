@@ -29,10 +29,17 @@
     397458320,
     397458742,
     397552892,
-    397558572
+    397558572,
+    397627587
   ],
-  "last_run_utc": "2026-07-25T16:08:05.924264+00:00",
+  "last_run_utc": "2026-07-25T17:17:31.782356+00:00",
   "pending_digest": [],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "12139024637",
+      "time_pt": "9:27 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
