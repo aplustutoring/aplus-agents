@@ -32,14 +32,8 @@
     397558572,
     397627587
   ],
-  "last_run_utc": "2026-07-26T02:24:13.040834+00:00",
+  "last_run_utc": "2026-07-26T04:05:15.245823+00:00",
   "pending_digest": [],
-  "pending_skipped": [
-    {
-      "number": "12139024637",
-      "time_pt": "9:27 AM",
-      "reason": "hang-up"
-    }
-  ],
+  "pending_skipped": [],
   "pending_failures": []
 }
