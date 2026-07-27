@@ -88,6 +88,24 @@ Out of scope for v1: outbound calls, SMS, webhook/real-time ingestion,
 third-party transcription, sentiment analytics dashboards, Family-State
 integration (future: call transcripts as genesis events).
 
+### Scope amendment — 2026-07-27 (Roman): v1 = CALLS ONLY
+
+SMS/text evaluation is **PARKED and removed from v1 scope entirely** — do not
+build, stub, or half-implement it. Preserved requirement for when text
+evaluation returns (v2):
+
+> **Day-context rule:** before evaluating ANY text exchange, load the FULL
+> most recent day of communication with that contact — every message from the
+> latest calendar day on which any back-and-forth occurred, both directions,
+> in order. Never evaluate a single text in isolation: texts are fragments of
+> one conversation spread across hours; coaching generated off a lone message
+> is invalid by definition. "Last day" = the most recent **calendar day**
+> containing any message (not a rolling 24 hours); if that day's thread opens
+> mid-conversation (e.g. continues from the prior evening), extend the window
+> backward to the start of the contiguous exchange. The Next Call Playbook
+> structure applies, adapted: opener callback, unresolved threads, template
+> reply, trap to avoid.
+
 ## Files
 
 | File | Purpose |
