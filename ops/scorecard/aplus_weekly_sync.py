@@ -309,7 +309,7 @@ def fetch_new_students_week(start_date, end_date, week_lessons=None):
     print(f"    First lesson students: {len(new_students)} (checked {len(week_student_ids)} this week, {len(candidates)} candidates verified against full history)")
     for sid, name in sorted(new_students.items(), key=lambda x: x[1]):
         print(f"      {name}")
-    return len(new_students)
+    return sorted(new_students.values())
 
 # ─────────────────────────────────────────────
 # LESSON DATA PROCESSING
@@ -951,6 +951,20 @@ def update_item(board_id, item_id, column_values):
         "colVals": json.dumps(sanitized),
     })
 
+def add_item_update(item_id, body):
+    """Post an update (feed comment) on a Monday.com item. Best-effort: a failed
+    update never blocks the sync — the numeric column write is the source of truth."""
+    q = """
+    mutation ($itemId: ID!, $body: String!) {
+      create_update(item_id: $itemId, body: $body) { id }
+    }"""
+    try:
+        data = monday_query(q, {"itemId": str(item_id), "body": body})
+        if data.get("errors"):
+            print(f"    ⚠️  update post failed for item {item_id}: {data['errors']}")
+    except Exception as e:  # noqa: BLE001
+        print(f"    ⚠️  update post failed for item {item_id}: {e}")
+
 def get_or_create_scorecard_week_col(board_id, start_date, end_date):
     """Find or create the weekly numbers column on the L10 Scorecard.
     Column title format: '3/8/26-3/14/26' (no words, just dates with 2-digit year)."""
@@ -1208,7 +1222,8 @@ def write_l10_scorecard(metrics, post_lesson_pct,
                         csm_meeting_requested=0, csm_meeting_scheduled=0,
                         csm_proposal_out=0, csm_active_proposals=0, csm_program_won=0,
                         nps_client=None, nps_tutor=None, nps_support_bot=None,
-                        start_date=None, end_date=None):
+                        start_date=None, end_date=None,
+                        missed_deals=None, total_deals=0, new_student_names=None):
     board_id = BOARDS["l10_scorecard"]
     col = get_or_create_scorecard_week_col(board_id, start_date, end_date)
 
@@ -1237,6 +1252,50 @@ def write_l10_scorecard(metrics, post_lesson_pct,
         update_item(board_id, item_id, col_vals)
 
     print("  ✅ L10 Scorecard updated.")
+
+    # ── Post a context update on each row: the number says WHAT, this says WHY ──
+    wk = f"Week {start_date.strftime('%-m/%-d')}–{end_date.strftime('%-m/%-d/%Y')}"
+    j, y, comp = metrics["janelle"], metrics["yolanda"], metrics["company"]
+
+    if missed_deals:
+        deal_lines = []
+        for d in missed_deals:
+            what = (f"still in pre-lesson ({d['pre_hours']}h)" if not d.get("reached_post")
+                    else f"reached post-lesson in {d['pre_hours']}h")
+            deal_lines.append(f"• {d['name']} ({d['pipeline']}) — {what}")
+        seventytwo_body = (f"{wk}: {post_lesson_pct}% missed"
+                           + (f" ({len(missed_deals)} of {total_deals} deals)" if total_deals else "")
+                           + ".\nDeals that missed the 72-hr window:\n" + "\n".join(deal_lines))
+    else:
+        seventytwo_body = (f"{wk}: all deals reached Post-Lesson within 72 hrs"
+                           + (f" ({total_deals} deals)" if total_deals else "") + ". ✅")
+
+    names_body = ", ".join(new_student_names) if new_student_names else "none"
+    update_bodies = {
+        "hours_attended":       (f"{wk}: {comp['attended']:.2f} hrs attended of {comp['total']:.2f} scheduled "
+                                 f"(Janelle A–L: {j['attended']:.2f}, Yolanda M–Z: {y['attended']:.2f})."),
+        "package_units_sold":   f"{wk}: {pkg_units_wk} package units sold.",
+        "cancellation_rate":    (f"{wk}: {comp['cancel_rate']}% cancelled "
+                                 f"(Janelle: {j['cancel_rate']}%, Yolanda: {y['cancel_rate']}%). "
+                                 f"Cancelled {comp['cancelled']:.2f} hrs, no-show {comp['no_show']:.2f} hrs, "
+                                 f"unmarked {comp['unmarked']:.2f} hrs."),
+        "new_students":         f"{wk}: {new_students} first-lesson student(s): {names_body}.",
+        "package_hours_sold":   f"FY-to-date through {end_date.strftime('%-m/%-d/%Y')}: {package_hours_fy} package hours sold.",
+        "post_lesson_72hr":     seventytwo_body,
+        "csm_meeting_requested":f"{wk}: {csm_meeting_requested} deal(s) entered Meeting Requested.",
+        "csm_meeting_scheduled":f"{wk}: {csm_meeting_scheduled} deal(s) entered Meeting Scheduled.",
+        "csm_proposal_out":     f"{wk}: {csm_proposal_out} deal(s) entered Proposal Out.",
+        "csm_active_proposals": (f"Snapshot as of {end_date.strftime('%-m/%-d/%Y')}: {csm_active_proposals} "
+                                 f"proposal(s) currently outstanding (stage headcount, not weekly flow)."),
+        "csm_program_won":      f"{wk}: {csm_program_won} deal(s) entered Program Contracted (Won).",
+        "nps_client":           None if nps_client is None else f"{wk}: avg client NPS {nps_client}.",
+        "nps_tutor":            None if nps_tutor is None else f"{wk}: avg tutor NPS {nps_tutor}.",
+        "nps_support_bot":      None if nps_support_bot is None else f"{wk}: avg support-bot NPS {nps_support_bot}.",
+    }
+    print("    Posting context updates on scorecard rows...")
+    for key, body in update_bodies.items():
+        if body:
+            add_item_update(SCORECARD_ITEMS[key], f"🤖 {body}")
 
     metric_values = {
         "csm_meeting_requested":  csm_meeting_requested,
@@ -1333,7 +1392,8 @@ def main():
     metrics       = process_lessons(lessons)
     package_hrs   = fetch_package_hours_fy(end_date)
     pkg_units_wk  = fetch_package_hours_week(start_date, end_date)
-    new_students  = fetch_new_students_week(start_date, end_date, week_lessons=lessons)
+    new_student_names = fetch_new_students_week(start_date, end_date, week_lessons=lessons)
+    new_students  = len(new_student_names)
     print(f"   Lessons pulled: {len(lessons)}")
     print(f"\n   {'':20} {'Attended':>10} {'Cancelled':>10} {'No Show':>10} {'Unmarked':>10} {'Total':>10} {'Cancel%':>8} {'Unmrk%':>8}")
     print(f"   {'─'*88}")
@@ -1431,7 +1491,9 @@ def main():
                         csm_proposal_out=csm_proposal_out, csm_active_proposals=csm_active_proposals,
                         csm_program_won=csm_program_won,
                         nps_client=nps_client, nps_tutor=nps_tutor, nps_support_bot=nps_support_bot,
-                        start_date=start_date, end_date=end_date)
+                        start_date=start_date, end_date=end_date,
+                        missed_deals=missed_deals, total_deals=len(all_deal_schedulers),
+                        new_student_names=new_student_names)
     write_first_lesson_report(new_students, start_date, end_date)
     write_inactive_family_report(inactive_families, start_date, end_date)
 
