@@ -96,6 +96,11 @@ Upsells, any creator — human or agent) is synced to Teachworks within ~15 minu
 - **Student(s):** first name(s) from the deal name (`Parent - Student`, sibling names
   like "Kash and Kingston" both created), skipped if already under the family.
   Charter students get **Package** billing; private pay gets **Service List Cost**.
+- **Per-pipeline settings:** each pipeline can carry its own Teachworks settings
+  (account, billing method, extra family/student fields) via
+  `deal_sync.pipeline_settings` in `config.yaml` — that's where the differences
+  between the online pipelines (Charter Trad/Terri/Amy, IEM, Subscription, Gold)
+  live. Filling that table in is part of the go-live checklist below.
 - **Safety guards — the sync will NOT write, and instead posts to #email-agent,**
   when a charter deal's contact doesn't look like the parent named in the deal (it's
   usually the school's education specialist). Fix: associate the real parent contact,
@@ -110,7 +115,9 @@ checklist for flipping `dry_run_first: false`:
    CREATE/UPDATE targets and student names right?
 2. Confirm the NEEDS-REVIEW flags are catching the school-staff contacts (and not
    flagging real parents).
-3. Flip the flag in `email/config.yaml` and merge. The cursor was frozen during the
+3. Fill in `deal_sync.pipeline_settings` — the per-pipeline Teachworks settings
+   (billing method, extra fields) for each online pipeline.
+4. Flip the flag in `email/config.yaml` and merge. The cursor was frozen during the
    pilot, so **every deal since the pilot started replays for real** on the next run
    — expect a large first batch and spot-check it in Teachworks.
 

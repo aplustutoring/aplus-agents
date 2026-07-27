@@ -110,7 +110,11 @@ def sync_deal(deal: dict) -> dict | None:
         return None
 
     is_charter = pid in set(ds.get("charter_pipelines", []))
-    acct = "in_person" if pid in set(ds.get("in_person_pipelines", [])) else "online"
+    # Per-pipeline Teachworks overrides (account, billing, extra fields) — the
+    # different online pipelines need different TW settings, all editable in config.
+    ps = (ds.get("pipeline_settings") or {}).get(pid) or {}
+    acct = ps.get("account") or (
+        "in_person" if pid in set(ds.get("in_person_pipelines", [])) else "online")
     token = tw.accounts().get(acct)
     if not token:
         print(f"  ⚠️  no token for TW account '{acct}'; skipping deal {deal['id']}")
@@ -129,6 +133,9 @@ def sync_deal(deal: dict) -> dict | None:
 
     dealname = deal["properties"].get("dealname", "")
     fields = _tw_fields(props)
+    # Pipeline-specific customer settings ride along on create AND update, so an
+    # existing family gets its settings adjusted too.
+    fields.update(ps.get("customer_fields") or {})
     students = _student_firsts_from_dealname(dealname)
 
     # Guards: never turn a non-family contact into a Teachworks family.
@@ -153,8 +160,11 @@ def sync_deal(deal: dict) -> dict | None:
         else:
             existing = tw.find_customer_by_email(email, token)
             intended = f"UPDATE customer {existing['id']}" if existing else "CREATE family"
+        pilot_billing = ps.get("student_billing") or (
+            ds["charter_student_billing"] if is_charter else ds["private_student_billing"])
         print(f"  [PILOT] {record['deal_name']} → TW[{acct}] {intended} {fields} "
-              f"+ students {students or '(none)'} ({'Package' if is_charter else 'Service List Cost'})")
+              f"+ students {students or '(none)'} ({pilot_billing})"
+              + (f" [pipeline_settings: {ps}]" if ps else ""))
         record.update({"message_id": f"pilot-{key}", "action_taken": "sync_pilot_logged",
                        "review": review[1] if review else None})
         audit.append(record)
@@ -187,7 +197,8 @@ def sync_deal(deal: dict) -> dict | None:
     if students and record.get("tw_customer_id") not in (None, "DRYRUN"):
         studs = tw.tw_get("students", {"customer_id": record["tw_customer_id"]}, token=token)
         have = {(s.get("first_name") or "").strip().lower() for s in studs}
-        billing = ds["charter_student_billing"] if is_charter else ds["private_student_billing"]
+        billing = ps.get("student_billing") or (
+            ds["charter_student_billing"] if is_charter else ds["private_student_billing"])
         made = []
         for sf in students:
             if sf.lower() in have:
@@ -195,7 +206,8 @@ def sync_deal(deal: dict) -> dict | None:
             tw.create_student({"customer_id": record["tw_customer_id"],
                                "first_name": sf,
                                "last_name": fields.get("last_name", ""),
-                               "billing_method": billing}, token)
+                               "billing_method": billing,
+                               **(ps.get("student_fields") or {})}, token)
             made.append(sf)
         if made:
             record["tw_student_created"] = ", ".join(made)

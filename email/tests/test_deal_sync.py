@@ -141,6 +141,23 @@ def test_charter_po_deal_exempt_from_guard(monkeypatch):
     assert rec["action_taken"] == "tw_synced" and calls["created"]
 
 
+def test_pipeline_settings_override(monkeypatch):
+    calls = _wire(monkeypatch, existing=None)
+    base = _cfg(False)
+    base["deal_sync"]["pipeline_settings"] = {"21277473": {
+        "account": "in_person", "student_billing": "Flat Monthly",
+        "customer_fields": {"welcome_email": "no"},
+        "student_fields": {"default_service": "Subscription Tutoring"}}}
+    monkeypatch.setattr(dsy, "cfg", lambda: {**base,
+                                             "internal": {"domain": "wetutorathome.com"},
+                                             "slack": {"digest_channel": "CTEST"}})
+    rec = dsy.sync_deal(_deal(pid="21277473"))
+    assert rec["tw_account"] == "in_person"                       # account override
+    assert calls["created"][0][0]["welcome_email"] == "no"        # customer fields merged
+    assert calls["students"][0]["billing_method"] == "Flat Monthly"
+    assert calls["students"][0]["default_service"] == "Subscription Tutoring"
+
+
 def test_internal_contact_skipped(monkeypatch):
     calls = _wire(monkeypatch, existing=None, contact={
         "email": "danielle+001@wetutorathome.com", "firstname": "Danielle", "lastname": "Brodetsky"})

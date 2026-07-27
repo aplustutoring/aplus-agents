@@ -177,6 +177,21 @@ deal_sync:
   exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
   charter_student_billing: "Package"
   private_student_billing: "Service List Cost"
+  # Per-pipeline Teachworks overrides — each ONLINE pipeline can need different TW
+  # settings after the family-exists check. Keys = HubSpot pipeline ids. Per entry:
+  #   account: online | in_person       (overrides the account routing above)
+  #   student_billing: "<TW billing method>"  (overrides the charter/private default)
+  #   customer_fields: { <tw field>: value }  merged into the family CREATE and UPDATE
+  #   student_fields:  { <tw field>: value }  merged into each student CREATE
+  # An empty entry = today's behavior. TODO(Roman): fill in the real per-pipeline
+  # settings before flipping dry_run_first off.
+  pipeline_settings:
+    "907748": {}     # Charter Trad (Traditional Vendor Funds) — Package via charter_pipelines
+    "72281989": {}   # Charter Terri
+    "88841552": {}   # Charter Amy
+    "5119061": {}    # IEM Inc
+    "21277473": {}   # Subscription
+    # Gold Tutoring (pipeline "default") + Free Trial ("19120821"): add entries if needed
 
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
