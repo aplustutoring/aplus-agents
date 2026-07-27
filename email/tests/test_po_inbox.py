@@ -189,6 +189,36 @@ def test_get_attachments_filters_and_converts(monkeypatch):
     assert base64.b64decode(atts[0]["data_b64"]) == b"PDFDATA"
 
 
+def test_po_pdf_attached_to_created_deal(monkeypatch):
+    uploads, notes_created = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D77"})
+    monkeypatch.setattr(po.hs, "upload_file",
+                        lambda fn, data, mime, folder_path="/po-inbox": uploads.append((fn, data, mime)) or "F1")
+    monkeypatch.setattr(po.hs, "add_deal_note",
+                        lambda did, body, att=None: notes_created.append((did, att)) or {"id": "N1"})
+    notes = []
+    atts = [{"filename": "po.pdf", "mime": "application/pdf",
+             "data_b64": base64.b64encode(b"PDF").decode()}]
+    po._handle_deal(_po(), notes, atts)
+    assert uploads == [("po.pdf", b"PDF", "application/pdf")]
+    assert notes_created == [("D77", ["F1"])]
+    assert any("PO document attached" in n for n in notes)
+
+
+def test_po_upload_failure_asks_manual(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D77"})
+    monkeypatch.setattr(po.hs, "upload_file", lambda fn, data, mime, folder_path="/po-inbox": None)
+    monkeypatch.setattr(po.hs, "add_deal_note",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no note without files")))
+    notes = []
+    atts = [{"filename": "po.pdf", "mime": "application/pdf",
+             "data_b64": base64.b64encode(b"PDF").decode()}]
+    po._handle_deal(_po(), notes, atts)
+    assert any("attach the PDF to the deal manually" in n for n in notes)
+
+
 def test_no_names_no_action(monkeypatch):
     notes = []
     po._handle_deal(_po(school="", student_first="", student_last=""), notes)

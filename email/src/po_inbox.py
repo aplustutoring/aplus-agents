@@ -75,7 +75,34 @@ def po_extract(body: str, subject: str, sender: str,
     return json.loads(cleaned[start:end + 1])
 
 
-def _handle_deal(po: dict, note_parts: list[str]) -> None:
+def _attach_po_to_deal(deal_id, attachments: list[dict], po: dict,
+                       note_parts: list[str]) -> None:
+    """Upload the PO document(s) to HubSpot Files and pin them to the deal as a
+    note — the deal record must carry the actual PO PDF. Best-effort: a failed
+    upload never blocks the deal, it just asks for a manual attach."""
+    if not attachments or not deal_id or deal_id == "DRYRUN":
+        return
+    import base64 as _b64
+    try:
+        file_ids = []
+        for a in attachments:
+            fid = hs.upload_file(a["filename"], _b64.b64decode(a["data_b64"]), a["mime"])
+            if fid:
+                file_ids.append(fid)
+        if file_ids:
+            hs.add_deal_note(deal_id,
+                             f"📎 PO document from charter@ email (PO {po.get('po_number') or 'n/a'}, "
+                             f"{po.get('school') or 'school n/a'}).", file_ids)
+            note_parts.append(f"📎 PO document attached to the deal "
+                              f"({', '.join(a['filename'] for a in attachments)}).")
+        else:
+            note_parts.append("📎 PO upload to HubSpot failed — attach the PDF to the deal manually.")
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  PO attach failed (non-fatal): {e}")
+        note_parts.append("📎 PO upload to HubSpot failed — attach the PDF to the deal manually.")
+
+
+def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None = None) -> None:
     """Advance the matching Waiting-for-PO deal, or create one."""
     pc = cfg()["po_inbox"]
     student = (po.get("student_last") or po.get("student_first") or "").strip()
@@ -99,6 +126,7 @@ def _handle_deal(po: dict, note_parts: list[str]) -> None:
         hs.move_deal_stage(d["id"], pc["advance_to_stage"])
         note_parts.append(f"💼 Deal '{d['properties'].get('dealname')}' advanced: "
                           f"Waiting for PO → Pre-Lesson (PO {po.get('po_number') or 'n/a'}).")
+        _attach_po_to_deal(d["id"], attachments or [], po, note_parts)
     elif len(waiting) > 1:
         names = "; ".join(d["properties"].get("dealname", "?") for d in waiting)
         note_parts.append(f"💼 {len(waiting)} deals waiting for PO match '{token}' — advance manually: {names}")
@@ -163,6 +191,7 @@ def _handle_deal(po: dict, note_parts: list[str]) -> None:
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
+        _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
 
 
 def _thread_already_handled(thread_id: str) -> bool:
@@ -197,7 +226,7 @@ def process_po_message(stub_id: str) -> dict | None:
     sla_due = add_business_hours(now_la(), 8)
 
     if po.get("is_po"):
-        _handle_deal(po, note_parts)
+        _handle_deal(po, note_parts, attachments)
         labels = [pc["label_processed"]] + ([f"School/{po['school'][:40]}"] if po.get("school") else [])
     else:
         labels = [pc["label_review"]]

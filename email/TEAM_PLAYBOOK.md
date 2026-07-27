@@ -81,7 +81,10 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
      parent's name, email, and phone** (while still acknowledging the PO). Fallback:
      if an existing family contact uniquely matches the student's name, it's
      associated anyway.
-5. Ticket → Kath with everything extracted (incl. parent info + which attachments
+5. **The PO document itself is uploaded to HubSpot and pinned to the deal** as a
+   note attachment — the deal record carries the actual PDF. (If the upload fails,
+   the ticket says "attach the PDF to the deal manually".)
+6. Ticket → Kath with everything extracted (incl. parent info + which attachments
    were read) + the original email embedded as a note; Slack DM to Kath (copy to
    Roman); labels `A+ Agent/Processed` + `School/<name>`.
 

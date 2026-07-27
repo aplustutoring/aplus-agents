@@ -4,6 +4,9 @@ Documented REST endpoints via requests (Bearer private-app token). The private a
 MUST hold: conversations.read, conversations.write, tickets,
 crm.objects.contacts.read, crm.objects.contacts.write.
 
+PO-document upload (upload_file/add_deal_note) additionally needs the `files` scope —
+without it the deal is still created and the ticket asks for a manual attach.
+
 The proposed reply is posted as an internal COMMENT (HubSpot has no draft status).
 The ONLY MESSAGE the agent ever sends is the tutor-document receipt — guarded in main.
 """
@@ -497,6 +500,43 @@ def list_inboxes() -> list[dict]:
 
 def list_ticket_pipelines() -> list[dict]:
     return _get("/crm/v3/pipelines/tickets").get("results", [])
+
+
+def upload_file(filename: str, data: bytes, mime: str,
+                folder_path: str = "/po-inbox") -> str | None:
+    """Upload a file to HubSpot Files (PRIVATE) and return its id. Requires the
+    `files` scope on the private app; returns None on failure (callers treat the
+    attachment as best-effort)."""
+    if DRY_RUN:
+        print(f"[DRY_RUN] hubspot file upload {filename} ({len(data)} bytes)")
+        return "DRYRUN"
+    import json as _json
+    r = requests.post(
+        f"{HS_BASE}/files/v3/files",
+        headers={"Authorization": f"Bearer {HUBSPOT_PRIVATE_APP_TOKEN}"},
+        files={"file": (filename, data, mime)},
+        data={"options": _json.dumps({"access": "PRIVATE"}), "folderPath": folder_path},
+        timeout=60,
+    )
+    if r.status_code >= 400:
+        print(f"    ⚠️  file upload failed ({r.status_code}): {r.text[:200]}")
+        return None
+    return r.json().get("id")
+
+
+def add_deal_note(deal_id: str, body: str, attachment_ids: list[str] | None = None) -> dict:
+    """Attach a note (optionally with uploaded files) to a DEAL (typeId 214)."""
+    props = {"hs_note_body": body, "hs_timestamp": _now_ms()}
+    if attachment_ids:
+        props["hs_attachment_ids"] = ";".join(str(a) for a in attachment_ids)
+    payload = {
+        "properties": props,
+        "associations": [{
+            "to": {"id": deal_id},
+            "types": [{"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": 214}],
+        }],
+    }
+    return _write("POST", "/crm/v3/objects/notes", payload)
 
 
 def add_ticket_note(ticket_id: str, body: str) -> dict:
