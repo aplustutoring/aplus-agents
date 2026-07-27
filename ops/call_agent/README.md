@@ -90,6 +90,15 @@ integration (future: call transcripts as genesis events).
 
 ### Scope amendment — 2026-07-27 (Roman): v1 = CALLS ONLY
 
+**Precedence (Roman, 2026-07-27): the LIVE agent supersedes the parallel
+"Conversation Agent v1" spec doc.** Where that doc's language differs from
+deployed behavior — draft-only mode, Paola's-calls-first rollout, CA consent
+listed as an open go-live gate — the live agent's behavior is authoritative:
+it writes directly (no draft approval loop), processes all answered calls on
+the monitored line, and consent is handled by the main-line IVR disclosure
+plus the `require_recording` guardrail. Only the SMS parking + v2 day-context
+rule below carry over from the amendment.
+
 SMS/text evaluation is **PARKED and removed from v1 scope entirely** — do not
 build, stub, or half-implement it. Preserved requirement for when text
 evaluation returns (v2):
