@@ -17,6 +17,7 @@ Own cursor (state/sync_cursor.json); idempotent via audit (deal:{id}).
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import traceback
@@ -96,17 +97,20 @@ def _contact_matches_dealname(props: dict, dealname: str) -> bool:
     return bool(first and last and first in dn and last in dn)
 
 
-def sync_deal(deal: dict) -> dict | None:
+def sync_deal(deal: dict, force: bool = False) -> dict | None:
+    """`force=True` (FORCE_DEAL_ID runs) does the REAL write for one deal even in
+    pilot mode, and re-runs a deal the audit already marked (writes are upserts, so
+    replaying is safe). The charter/internal guards still apply."""
     ds = cfg()["deal_sync"]
     pid = deal["properties"].get("pipeline")
     if pid in set(ds.get("exclude_pipelines", [])):
         return None
     key = f"deal:{deal['id']}"
-    if audit.already_processed(key):
+    if not force and audit.already_processed(key):
         return None
     # Pilot runs re-fetch the same window every 15 min (cursor frozen); one log line
     # per deal is enough.
-    if ds.get("dry_run_first") and audit.already_processed(f"pilot-{key}"):
+    if not force and ds.get("dry_run_first") and audit.already_processed(f"pilot-{key}"):
         return None
 
     is_charter = pid in set(ds.get("charter_pipelines", []))
@@ -154,7 +158,7 @@ def sync_deal(deal: dict) -> dict | None:
 
     # Pilot gate: log the intended write, touch nothing, and don't mark processed —
     # so flipping dry_run_first=false replays these deals for real.
-    if ds.get("dry_run_first"):
+    if ds.get("dry_run_first") and not force:
         if review:
             intended = f"NEEDS REVIEW ({review[1]})"
         else:
@@ -222,6 +226,17 @@ def run() -> None:
     ds = cfg().get("deal_sync", {})
     if not ds.get("enabled"):
         print("deal_sync disabled")
+        return
+    force_id = (os.environ.get("FORCE_DEAL_ID") or "").strip()
+    if force_id:
+        # One-deal REAL sync (test / selective go-live). Cursor untouched.
+        d = hs._get(f"/crm/v3/objects/deals/{force_id}",
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number"})
+        rec = sync_deal(d, force=True) or {}
+        print(f"deal_sync FORCE {force_id}: {rec.get('action_taken', 'skipped (excluded pipeline?)')}"
+              + (f" — {rec['reason']}" if rec.get("reason") else ""))
+        if rec.get("action_taken") == "sync_skipped" and "no contact email" in (rec.get("reason") or ""):
+            print("  ↳ associate the parent/family contact on the deal in HubSpot, then re-run.")
         return
     state = json.loads(CUR_PATH.read_text()) if CUR_PATH.exists() else {}
     since_ms = state.get("last_createdate_ms")

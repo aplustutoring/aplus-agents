@@ -13,6 +13,11 @@ on:
         required: false
         type: boolean
         default: false
+      deal_id:
+        description: "FORCE: really sync this one HubSpot deal id (bypasses pilot mode; guards still apply)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -40,6 +45,7 @@ jobs:
           TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run }}
+          FORCE_DEAL_ID: ${{ inputs.deal_id }}
         run: python -m src.deal_sync
       - name: Commit state changes
         if: ${{ inputs.dry_run != true }}

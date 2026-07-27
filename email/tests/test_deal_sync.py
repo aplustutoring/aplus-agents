@@ -105,6 +105,21 @@ def test_pilot_logs_each_deal_once(monkeypatch):
     assert not calls["created"] and not calls["students"]
 
 
+def test_force_bypasses_pilot_and_audit(monkeypatch):
+    calls = _wire(monkeypatch, existing=None, pilot=True)
+    monkeypatch.setattr(dsy.audit, "already_processed", lambda k: True)  # even if marked
+    rec = dsy.sync_deal(_deal(), force=True)
+    assert rec["action_taken"] == "tw_synced" and calls["created"]
+
+
+def test_force_still_respects_charter_guard(monkeypatch):
+    calls = _wire(monkeypatch, existing=None, pilot=True, contact={
+        "email": "es@school.org", "firstname": "Celine", "lastname": "Gaeta"})
+    rec = dsy.sync_deal(_deal(pid="907748", name="Ana Tzubery - Maksim - iLead"), force=True)
+    assert rec["action_taken"] == "sync_needs_review"
+    assert not calls["created"] and not calls["updated"]
+
+
 def test_sibling_students_all_created(monkeypatch):
     calls = _wire(monkeypatch, existing=None)
     dsy.sync_deal(_deal(name="Alexa Marcano- Kash and Kingston"))
