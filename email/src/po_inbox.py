@@ -91,13 +91,30 @@ def _handle_deal(po: dict, note_parts: list[str]) -> None:
         extra = {"po_number": po_num}
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
+        # Associate the PARENT contact when uniquely resolvable — the Teachworks sync
+        # keys the family on the deal's contact email, so a deal without a parent
+        # contact never reaches Teachworks.
+        contact_id = None
+        try:
+            parents = hs.find_family_contact(po.get("student_first") or "",
+                                             po.get("student_last") or "")
+        except Exception:  # noqa: BLE001 — association is best-effort
+            parents = []
+        if len(parents) == 1:
+            contact_id = parents[0]["id"]
         d = hs.create_deal(name or f"PO {po.get('po_number') or '(new)'}",
                            pc["deal_pipeline_id"], pc["advance_to_stage"], po.get("amount") or None,
+                           contact_id=contact_id,
                            dealtype=dtype, owner_id=sched.get("hubspot_owner_id"),
                            closedate_ms=close_ms, extra_props=extra)
+        contact_bit = (f"linked to family contact {parents[0]['properties'].get('firstname', '')} "
+                       f"{parents[0]['properties'].get('lastname', '')}".strip() + ", "
+                       if contact_id else
+                       "NO unique family contact found — associate the parent on the deal "
+                       "so the Teachworks sync picks it up, ")
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
-                          f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}), "
-                          f"id {d.get('id')}.")
+                          f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
+                          f"{contact_bit}id {d.get('id')}).")
 
 
 def _thread_already_handled(thread_id: str) -> bool:

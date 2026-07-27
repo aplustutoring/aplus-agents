@@ -52,6 +52,68 @@ document get an automatic "we received it" receipt.)
 
 ---
 
+## Charter PO inbox (charter@wetutorathome.com)
+
+A separate Gmail the agent polls every 15 minutes on the same schedule as the admin
+inbox. **Every** email there gets a HubSpot ticket to **Kath** (same accountability
+spine), a Gmail label, and — when a reply makes sense — a **real Gmail draft** (the
+agent never sends from this address).
+
+**When the email is a NEW purchase order** (a funding authorization that starts or
+adds service — not an invoice follow-up, statement, or renewal paperwork):
+
+1. The agent extracts school, student, PO #, amount, and hours.
+2. **Dedupe:** if a deal already carries that PO # (the `po_number` property, with
+   deal-name search as backstop), no new deal — the ticket notes the existing one.
+3. Otherwise it **creates the deal** in the Charter pipeline at **Pre-Lesson**:
+   - name `School - Student First Last - PO 123`, close date +30 days
+   - `po_number` + hours properties filled
+   - **New Business** if the student has no prior deals, else **Existing Business**
+   - owner = the **assigned scheduler** (A–L → Janelle, M–Z → Yolanda)
+   - the **parent's family contact associated** when it can be uniquely matched by
+     student name — this is what lets the Teachworks sync (below) create the family.
+4. Ticket → Kath with everything extracted + the original email embedded as a note;
+   Slack DM to Kath (copy to Roman); labels `A+ Agent/Processed` + `School/<name>`.
+
+**What Kath does:** review the ticket, send the Gmail draft, and check the deal note.
+If it says **"NO unique family contact found"**, find or create the parent contact in
+HubSpot and associate it to the deal — until that's done the family never reaches
+Teachworks. **What the scheduler does:** the deal is on your board at Pre-Lesson; get
+the student scheduled.
+
+Anything that is NOT a new PO (invoicing follow-ups, vendor renewals, COI requests,
+event invites, out-of-office) gets the `A+ Agent/Needs Review` label and a review
+ticket to Kath — no deal is touched.
+
+## Deal → Teachworks sync (replaces the Zapier zap)
+
+Every **new HubSpot deal** (any pipeline except New Tutor / School Partnership /
+Upsells, any creator — human or agent) is synced to Teachworks within ~15 minutes:
+
+- **Family:** matched by the deal contact's **email**. Existing family → contact info
+  updated (HubSpot wins); no family → one is created. In-person pipelines go to the
+  in-person Teachworks account; everything else to online.
+- **Student(s):** first name(s) from the deal name (`Parent - Student`, sibling names
+  like "Kash and Kingston" both created), skipped if already under the family.
+  Charter students get **Package** billing; private pay gets **Service List Cost**.
+- **Safety guards — the sync will NOT write, and instead posts to #email-agent,**
+  when a charter deal's contact doesn't look like the parent named in the deal (it's
+  usually the school's education specialist). Fix: associate the real parent contact,
+  or create the family in Teachworks by hand. Internal @wetutorathome.com contacts
+  are skipped silently.
+
+**Status: pilot mode** (`deal_sync.dry_run_first: true` in `config.yaml`). Every run
+logs exactly what it *would* write — nothing touches Teachworks yet. Go-live
+checklist for flipping `dry_run_first: false`:
+
+1. Review the latest `[PILOT]` lines in the deal-sync Action run: are the
+   CREATE/UPDATE targets and student names right?
+2. Confirm the NEEDS-REVIEW flags are catching the school-staff contacts (and not
+   flagging real parents).
+3. Flip the flag in `email/config.yaml` and merge. The cursor was frozen during the
+   pilot, so **every deal since the pilot started replays for real** on the next run
+   — expect a large first batch and spot-check it in Teachworks.
+
 ## Escalation — when something sits too long
 - **1× past due** → the **owner** gets a Slack reminder.
 - **2× past due** → **Mandy** is pinged (she watches the schedulers, nudges them).

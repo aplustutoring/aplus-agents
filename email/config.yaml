@@ -195,9 +195,9 @@ b2c_deal:
   fallback_pipeline: "default"
 
 # ── Charter PO inbox (separate Gmail) ───────────────────────────
-# Full admin-inbox treatment (ticket/draft/DM, owner Kath) + deal automation + labels.
-# DISABLED until `address` is set and the service account is granted gmail.modify
-# domain-wide delegation (SETUP §7). Drafts are REAL Gmail drafts; agent never sends.
+# LIVE since the 2026-07-22 cutover. Full admin-inbox treatment (ticket/draft/DM,
+# owner Kath) + deal creation/dedupe + labels. Drafts are REAL Gmail drafts; the
+# agent never sends from this address. Procedure: TEAM_PLAYBOOK.md §Charter PO inbox.
 po_inbox:
   address: "charter@wetutorathome.com"
   owner: kath

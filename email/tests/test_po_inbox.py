@@ -97,6 +97,36 @@ def test_thread_dedupe(monkeypatch):
     assert po._thread_already_handled("TH2") is False
 
 
+def test_created_deal_gets_parent_contact(monkeypatch):
+    # Unique family-contact match → the deal is created WITH the parent associated
+    # (that's what lets the Teachworks sync key the family by email downstream).
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: [{"id": "C7", "properties": {"firstname": "Maria", "lastname": "Diaz"}}])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, dealtype=None, owner_id=None, closedate_ms=None, extra_props=None:
+                        created.append(contact_id) or {"id": "D3"})
+    notes = []
+    po._handle_deal(_po(), notes)
+    assert created == ["C7"]
+    assert "linked to family contact Maria Diaz" in notes[0]
+
+
+def test_created_deal_ambiguous_contact_flagged(monkeypatch):
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: [{"id": "C1", "properties": {}}, {"id": "C2", "properties": {}}])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, dealtype=None, owner_id=None, closedate_ms=None, extra_props=None:
+                        created.append(contact_id) or {"id": "D4"})
+    notes = []
+    po._handle_deal(_po(), notes)
+    assert created == [None]
+    assert "NO unique family contact" in notes[0]
+
+
 def test_no_names_no_action(monkeypatch):
     notes = []
     po._handle_deal(_po(school="", student_first="", student_last=""), notes)

@@ -2,15 +2,22 @@
 
 Every NEW HubSpot deal (any creator): find the associated contact, pick the
 Teachworks account by pipeline, then UPSERT the family — matched by EMAIL (the
-identifier) — and create the student if missing. Charter students get
+identifier) — and create the student(s) if missing. Charter students get
 billing_method=Package; private pay gets Service List Cost. HubSpot contact info
 wins on updates, so contact drift can never spawn duplicate families again.
+
+Guards (no Teachworks write, flagged instead): internal @wetutorathome.com
+contacts, and charter deals whose contact doesn't match the deal-name parent
+(usually the school's education specialist — creating a "family" for school
+staff is the one mistake this sync must never make). PO-created deals are exempt
+from the charter guard: po_inbox associates the parent deliberately.
 
 Own cursor (state/sync_cursor.json); idempotent via audit (deal:{id}).
 """
 from __future__ import annotations
 
 import json
+import re
 import sys
 import traceback
 from datetime import datetime, timezone
@@ -51,12 +58,42 @@ def _tw_fields(props: dict) -> dict:
     return {k: v for k, v in out.items() if v}
 
 
-def _student_first_from_dealname(dealname: str) -> str:
-    """Team convention: 'Parent Name - Student' / 'School - First Last - PO 123'."""
-    parts = [p.strip() for p in (dealname or "").split(" - ")]
-    if len(parts) >= 2 and not parts[1].lower().startswith("po"):
-        return parts[1].split()[0] if parts[1] else ""
-    return ""
+# Split only on a dash with a space on at least one side, so hyphenated names
+# ("Anna-Marie", "Smith-Jones") survive but "Marcano- Kash" still splits.
+_DASH_SPLIT = re.compile(r"\s+-\s*|\s*-\s+")
+
+
+def _dealname_parts(dealname: str) -> list[str]:
+    parts = [p.strip() for p in _DASH_SPLIT.split(dealname or "") if p.strip()]
+    # "Renewal - Parent - Student": the prefix shifts every field — drop it.
+    if parts and parts[0].lower() in ("renewal", "renewals"):
+        parts = parts[1:]
+    return parts
+
+
+def _student_firsts_from_dealname(dealname: str) -> list[str]:
+    """Team convention: 'Parent Name - Student' / 'School - First Last - PO 123' /
+    'Renewal - Parent - Student'. The student segment may name siblings
+    ('Kash and Kingston') — one first name per student, order kept."""
+    parts = _dealname_parts(dealname)
+    if len(parts) < 2 or parts[1].lower().startswith("po"):
+        return []
+    out: list[str] = []
+    for chunk in re.split(r"\s+and\s+|\s*&\s*|\s*,\s*", parts[1]):
+        first = chunk.strip().split()[0] if chunk.strip() else ""
+        if first and first.lower() not in (o.lower() for o in out):
+            out.append(first)
+    return out
+
+
+def _contact_matches_dealname(props: dict, dealname: str) -> bool:
+    """Charter deals are named 'Parent - Student - School'; the associated HubSpot
+    contact must BE the parent. School staff (education specialists) share none of
+    those name tokens, so require both contact names to appear in the deal name."""
+    dn = (dealname or "").lower()
+    first = (props.get("firstname") or "").strip().lower()
+    last = (props.get("lastname") or "").strip().lower()
+    return bool(first and last and first in dn and last in dn)
 
 
 def sync_deal(deal: dict) -> dict | None:
@@ -66,6 +103,10 @@ def sync_deal(deal: dict) -> dict | None:
         return None
     key = f"deal:{deal['id']}"
     if audit.already_processed(key):
+        return None
+    # Pilot runs re-fetch the same window every 15 min (cursor frozen); one log line
+    # per deal is enough.
+    if ds.get("dry_run_first") and audit.already_processed(f"pilot-{key}"):
         return None
 
     is_charter = pid in set(ds.get("charter_pipelines", []))
@@ -86,20 +127,53 @@ def sync_deal(deal: dict) -> dict | None:
         audit.append(record)
         return record
 
+    dealname = deal["properties"].get("dealname", "")
     fields = _tw_fields(props)
-    existing = tw.find_customer_by_email(email, token)
+    students = _student_firsts_from_dealname(dealname)
+
+    # Guards: never turn a non-family contact into a Teachworks family.
+    internal_domain = cfg().get("internal", {}).get("domain", "wetutorathome.com")
+    po_num = (deal["properties"].get("po_number") or "").strip()
+    review = None  # (action, reason)
+    if email.endswith(f"@{internal_domain}"):
+        review = ("sync_skipped", f"internal contact (@{internal_domain}) — not a family")
+    elif is_charter and not po_num and not _contact_matches_dealname(props, dealname):
+        # Charter deals not born from a PO often carry the school ES as the contact;
+        # PO-created deals get the parent associated deliberately (po_inbox), so the
+        # po_number property exempts them.
+        review = ("sync_needs_review",
+                  f"contact '{props.get('firstname', '')} {props.get('lastname', '')}' "
+                  f"({email}) doesn't match the deal name — likely school staff, not the parent")
 
     # Pilot gate: log the intended write, touch nothing, and don't mark processed —
     # so flipping dry_run_first=false replays these deals for real.
     if ds.get("dry_run_first"):
-        intended = ("UPDATE customer %s" % existing["id"]) if existing else "CREATE family"
-        student_first = _student_first_from_dealname(deal["properties"].get("dealname", ""))
+        if review:
+            intended = f"NEEDS REVIEW ({review[1]})"
+        else:
+            existing = tw.find_customer_by_email(email, token)
+            intended = f"UPDATE customer {existing['id']}" if existing else "CREATE family"
         print(f"  [PILOT] {record['deal_name']} → TW[{acct}] {intended} {fields} "
-              f"+ student {student_first or '(none)'} ({'Package' if is_charter else 'Service List Cost'})")
-        record.update({"message_id": f"pilot-{key}", "action_taken": "sync_pilot_logged"})
+              f"+ students {students or '(none)'} ({'Package' if is_charter else 'Service List Cost'})")
+        record.update({"message_id": f"pilot-{key}", "action_taken": "sync_pilot_logged",
+                       "review": review[1] if review else None})
         audit.append(record)
         return record
 
+    if review:
+        action, why = review
+        record.update({"action_taken": action, "reason": why})
+        audit.append(record)
+        if action == "sync_needs_review":
+            slack_client.post_message(
+                cfg()["slack"]["digest_channel"],
+                f"🔎 Deal sync needs review: *{dealname}* — {why}. No Teachworks write was "
+                f"made. Fix: create/verify the family in Teachworks manually (or associate "
+                f"the parent contact and ask Roman to replay the deal).")
+        print(f"  ⏭️  {record['deal_name']} → {action}: {why}")
+        return record
+
+    existing = tw.find_customer_by_email(email, token)
     if existing:
         tw.update_customer(existing["id"], fields, token)
         record["tw_customer_id"] = existing["id"]
@@ -109,17 +183,22 @@ def sync_deal(deal: dict) -> dict | None:
         record["tw_customer_id"] = created.get("id")
         record["tw_action"] = "created"
 
-    # Student: from the deal name; skip if already under the family.
-    student_first = _student_first_from_dealname(deal["properties"].get("dealname", ""))
-    if student_first and record.get("tw_customer_id") not in (None, "DRYRUN"):
+    # Students: from the deal name (may be siblings); skip any already under the family.
+    if students and record.get("tw_customer_id") not in (None, "DRYRUN"):
         studs = tw.tw_get("students", {"customer_id": record["tw_customer_id"]}, token=token)
-        if not any((s.get("first_name") or "").strip().lower() == student_first.lower() for s in studs):
-            billing = ds["charter_student_billing"] if is_charter else ds["private_student_billing"]
+        have = {(s.get("first_name") or "").strip().lower() for s in studs}
+        billing = ds["charter_student_billing"] if is_charter else ds["private_student_billing"]
+        made = []
+        for sf in students:
+            if sf.lower() in have:
+                continue
             tw.create_student({"customer_id": record["tw_customer_id"],
-                               "first_name": student_first,
+                               "first_name": sf,
                                "last_name": fields.get("last_name", ""),
                                "billing_method": billing}, token)
-            record["tw_student_created"] = student_first
+            made.append(sf)
+        if made:
+            record["tw_student_created"] = ", ".join(made)
     record["action_taken"] = "tw_synced"
     audit.append(record)
     print(f"  🔄 {record['deal_name']} → TW[{acct}] {record['tw_action']}"
@@ -140,12 +219,22 @@ def run() -> None:
             CUR_PATH.write_text(json.dumps({"last_createdate_ms": since_ms}))
         print(f"deal_sync: baseline set ({since_ms}); new deals picked up next run")
         return
-    res = hs._write("POST", "/crm/v3/objects/deals/search", {
+    body = {
         "filterGroups": [{"filters": [
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
-        "properties": ["dealname", "pipeline", "dealstage", "createdate"], "limit": 50})
-    deals = res.get("results", []) if isinstance(res, dict) else []
+        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number"],
+        "limit": 50}
+    deals: list = []
+    while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
+        res = hs._write("POST", "/crm/v3/objects/deals/search", body)
+        if not isinstance(res, dict):
+            break
+        deals.extend(res.get("results", []))
+        after = ((res.get("paging") or {}).get("next") or {}).get("after")
+        if not after:
+            break
+        body["after"] = after
     print(f"deal_sync: {len(deals)} new deal(s)")
     newest = since_ms
     synced = 0
