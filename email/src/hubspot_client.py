@@ -159,10 +159,10 @@ def archive_thread(thread_id: str) -> dict:
 
 
 # ── Contacts ─────────────────────────────────────────────────────
-def find_contact_by_email(email: str) -> dict | None:
+def find_contact_by_email(email: str, properties: list | None = None) -> dict | None:
     body = {
         "filterGroups": [{"filters": [{"propertyName": "email", "operator": "EQ", "value": email}]}],
-        "properties": ["email", "firstname", "lastname", "lifecyclestage", "hubspot_owner_id"],
+        "properties": properties or ["email", "firstname", "lastname", "lifecyclestage", "hubspot_owner_id"],
         "limit": 1,
     }
     res = _write("POST", "/crm/v3/objects/contacts/search", body)
@@ -282,6 +282,15 @@ def create_deal(name: str, pipeline_id: str, stage_id: str, amount: str | None =
     except requests.HTTPError:
         payload.pop("associations", None)
         return _write("POST", "/crm/v3/objects/deals", payload)
+
+
+def associate_contact_to_deal(deal_id: str, contact_id: str) -> dict:
+    """Associate an existing contact to a deal (v4, default deal→contact typeId 3)."""
+    return _write(
+        "PUT",
+        f"/crm/v4/objects/deals/{deal_id}/associations/contacts/{contact_id}",
+        [{"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": 3}],
+    )
 
 
 def enroll_contact_in_workflow(workflow_id: str, email: str) -> dict:

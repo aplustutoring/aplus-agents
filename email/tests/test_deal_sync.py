@@ -120,6 +120,21 @@ def test_force_still_respects_charter_guard(monkeypatch):
     assert not calls["created"] and not calls["updated"]
 
 
+def test_force_overrides_contact_and_student(monkeypatch):
+    # Trace-by-email: explicit contact + student override syncs a charter deal whose
+    # name has neither (e.g. 'Ocean Grove Charter School - PO 1418959').
+    calls = _wire(monkeypatch, existing=None, pilot=True)
+    override = {"properties": {"email": "kennahunter41@gmail.com",
+                               "firstname": "Kenna", "lastname": "Hunter"}}
+    rec = dsy.sync_deal(_deal(pid="907748", name="Ocean Grove Charter School - PO 1418959"),
+                        force=True, contact_override=override, students_override=["McKenna"])
+    assert rec["action_taken"] == "tw_synced"
+    assert calls["created"][0][0]["email"] == "kennahunter41@gmail.com"
+    assert calls["students"][0]["first_name"] == "McKenna"
+    assert calls["students"][0]["last_name"] == "Hunter"
+    assert calls["students"][0]["billing_method"] == "Package"
+
+
 def test_sibling_students_all_created(monkeypatch):
     calls = _wire(monkeypatch, existing=None)
     dsy.sync_deal(_deal(name="Alexa Marcano- Kash and Kingston"))

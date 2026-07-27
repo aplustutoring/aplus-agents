@@ -97,7 +97,8 @@ def _contact_matches_dealname(props: dict, dealname: str) -> bool:
     return bool(first and last and first in dn and last in dn)
 
 
-def sync_deal(deal: dict, force: bool = False) -> dict | None:
+def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = None,
+              students_override: list[str] | None = None) -> dict | None:
     """`force=True` (FORCE_DEAL_ID runs) does the REAL write for one deal even in
     pilot mode, and re-runs a deal the audit already marked (writes are upserts, so
     replaying is safe). The charter/internal guards still apply."""
@@ -124,7 +125,7 @@ def sync_deal(deal: dict, force: bool = False) -> dict | None:
         print(f"  ⚠️  no token for TW account '{acct}'; skipping deal {deal['id']}")
         return None
 
-    contact = _deal_contact(deal["id"])
+    contact = contact_override or _deal_contact(deal["id"])
     props = (contact or {}).get("properties") or {}
     email = (props.get("email") or "").lower()
     record = {"message_id": key, "source": "deal_sync", "deal_id": deal["id"],
@@ -140,7 +141,7 @@ def sync_deal(deal: dict, force: bool = False) -> dict | None:
     # Pipeline-specific customer settings ride along on create AND update, so an
     # existing family gets its settings adjusted too.
     fields.update(ps.get("customer_fields") or {})
-    students = _student_firsts_from_dealname(dealname)
+    students = students_override or _student_firsts_from_dealname(dealname)
 
     # Guards: never turn a non-family contact into a Teachworks family.
     internal_domain = cfg().get("internal", {}).get("domain", "wetutorathome.com")
@@ -148,7 +149,8 @@ def sync_deal(deal: dict, force: bool = False) -> dict | None:
     review = None  # (action, reason)
     if email.endswith(f"@{internal_domain}"):
         review = ("sync_skipped", f"internal contact (@{internal_domain}) — not a family")
-    elif is_charter and not po_num and not _contact_matches_dealname(props, dealname):
+    elif (is_charter and not po_num and not contact_override
+          and not _contact_matches_dealname(props, dealname)):
         # Charter deals not born from a PO often carry the school ES as the contact;
         # PO-created deals get the parent associated deliberately (po_inbox), so the
         # po_number property exempts them.
@@ -232,7 +234,23 @@ def run() -> None:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
                     {"properties": "dealname,pipeline,dealstage,createdate,po_number"})
-        rec = sync_deal(d, force=True) or {}
+        # Optional trace-by-contact-email: fetch the contact, fix the missing
+        # association on the HubSpot deal, and sync with that contact.
+        contact = None
+        force_email = (os.environ.get("FORCE_CONTACT_EMAIL") or "").strip().lower()
+        if force_email:
+            contact = hs.find_contact_by_email(force_email, properties=CONTACT_PROPS)
+            if not contact:
+                print(f"deal_sync FORCE: no HubSpot contact with email {force_email} — create it first")
+                return
+            try:
+                hs.associate_contact_to_deal(force_id, contact["id"])
+                print(f"  🔗 associated contact {contact['id']} ({force_email}) to deal {force_id}")
+            except Exception as e:  # noqa: BLE001 — sync proceeds on the override either way
+                print(f"  ⚠️  HubSpot association failed (syncing with override anyway): {e}")
+        force_student = (os.environ.get("FORCE_STUDENT_FIRST") or "").strip()
+        rec = sync_deal(d, force=True, contact_override=contact,
+                        students_override=[force_student] if force_student else None) or {}
         print(f"deal_sync FORCE {force_id}: {rec.get('action_taken', 'skipped (excluded pipeline?)')}"
               + (f" — {rec['reason']}" if rec.get("reason") else ""))
         if rec.get("action_taken") == "sync_skipped" and "no contact email" in (rec.get("reason") or ""):

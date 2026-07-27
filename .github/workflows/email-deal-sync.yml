@@ -18,6 +18,16 @@ on:
         required: false
         type: string
         default: ""
+      contact_email:
+        description: "With deal_id: HubSpot contact email to associate to the deal + sync as the family"
+        required: false
+        type: string
+        default: ""
+      student_first:
+        description: "With deal_id: student first name to create (when not in the deal name)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -46,6 +56,8 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run }}
           FORCE_DEAL_ID: ${{ inputs.deal_id }}
+          FORCE_CONTACT_EMAIL: ${{ inputs.contact_email }}
+          FORCE_STUDENT_FIRST: ${{ inputs.student_first }}
         run: python -m src.deal_sync
       - name: Commit state changes
         if: ${{ inputs.dry_run != true }}
