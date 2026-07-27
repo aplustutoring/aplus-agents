@@ -33,7 +33,9 @@ CONTACT_PROPS = ["email", "firstname", "lastname", "phone", "mobilephone",
                  "address", "city", "state", "zip"]
 
 
-def _deal_contact(deal_id: str) -> dict | None:
+def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
+    """The deal's FAMILY contact. Deals can carry several contacts (parent + TOR);
+    prefer the one whose name matches the deal-name parent, else the first."""
     try:
         assoc = hs._get(f"/crm/v3/objects/deals/{deal_id}/associations/contacts")
     except Exception:  # noqa: BLE001
@@ -41,7 +43,16 @@ def _deal_contact(deal_id: str) -> dict | None:
     ids = [r.get("toObjectId") or r.get("id") for r in assoc.get("results", [])]
     if not ids:
         return None
-    return hs._get(f"/crm/v3/objects/contacts/{ids[0]}", {"properties": ",".join(CONTACT_PROPS)})
+    first = None
+    for cid in ids[:5]:
+        try:
+            c = hs._get(f"/crm/v3/objects/contacts/{cid}", {"properties": ",".join(CONTACT_PROPS)})
+        except Exception:  # noqa: BLE001
+            continue
+        first = first or c
+        if dealname and _contact_matches_dealname(c.get("properties") or {}, dealname):
+            return c
+    return first
 
 
 def _tw_fields(props: dict) -> dict:
@@ -125,7 +136,7 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
         print(f"  ⚠️  no token for TW account '{acct}'; skipping deal {deal['id']}")
         return None
 
-    contact = contact_override or _deal_contact(deal["id"])
+    contact = contact_override or _deal_contact(deal["id"], deal["properties"].get("dealname", ""))
     props = (contact or {}).get("properties") or {}
     email = (props.get("email") or "").lower()
     record = {"message_id": key, "source": "deal_sync", "deal_id": deal["id"],

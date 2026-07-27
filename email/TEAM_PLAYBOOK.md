@@ -81,6 +81,10 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
      parent's name, email, and phone** (while still acknowledging the PO). Fallback:
      if an existing family contact uniquely matches the student's name, it's
      associated anyway.
+   - **The Teacher of Record is also associated to the deal** (find-or-created by
+     email, usually the sender). The parent stays the deal's family contact — the
+     Teachworks sync picks whichever contact matches the deal-name parent, so the
+     TOR on the deal never becomes a Teachworks family.
 5. **The PO document itself is uploaded to HubSpot and pinned to the deal** as a
    note attachment — the deal record carries the actual PDF. (If the upload fails,
    the ticket says "attach the PDF to the deal manually".)

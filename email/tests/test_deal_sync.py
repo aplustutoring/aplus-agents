@@ -22,7 +22,7 @@ def _wire(monkeypatch, existing=None, pilot=False, contact=None):
                                              "slack": {"digest_channel": "CTEST"}})
     monkeypatch.setattr(dsy.audit, "already_processed", lambda k: False)
     monkeypatch.setattr(dsy.audit, "append", lambda r: None)
-    monkeypatch.setattr(dsy, "_deal_contact", lambda d: {"properties": contact or {
+    monkeypatch.setattr(dsy, "_deal_contact", lambda d, n="": {"properties": contact or {
         "email": "mom@x.com", "firstname": "Lara", "lastname": "Perkins",
         "phone": "555", "city": "LA"}})
     monkeypatch.setattr(dsy.tw, "accounts", lambda: {"online": "tok1", "in_person": "tok2"})
@@ -103,6 +103,23 @@ def test_pilot_logs_each_deal_once(monkeypatch):
     monkeypatch.setattr(dsy.audit, "already_processed", lambda k: k == "pilot-deal:D1")
     assert dsy.sync_deal(_deal()) is None
     assert not calls["created"] and not calls["students"]
+
+
+def test_deal_contact_prefers_dealname_parent(monkeypatch):
+    # Deal carries TOR + parent: the family contact is the one matching the deal name.
+    contacts = {"1": {"id": "1", "properties": {"firstname": "Terri", "lastname": "Tor",
+                                                "email": "tor@school.org"}},
+                "2": {"id": "2", "properties": {"firstname": "Lara", "lastname": "Perkins",
+                                                "email": "mom@x.com"}}}
+    def fake_get(path, params=None):
+        if path.endswith("/associations/contacts"):
+            return {"results": [{"toObjectId": "1"}, {"toObjectId": "2"}]}
+        return contacts[path.rsplit("/", 1)[1]]
+    monkeypatch.setattr(dsy.hs, "_get", fake_get)
+    c = dsy._deal_contact("D1", "Lara Perkins - Nomi")
+    assert c["properties"]["email"] == "mom@x.com"
+    # no dealname match → falls back to the first associated contact
+    assert dsy._deal_contact("D1", "Zzz Qqq - Kid")["id"] == "1"
 
 
 def test_force_bypasses_pilot_and_audit(monkeypatch):

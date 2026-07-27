@@ -189,6 +189,33 @@ def test_get_attachments_filters_and_converts(monkeypatch):
     assert base64.b64decode(atts[0]["data_b64"]) == b"PDFDATA"
 
 
+def test_tor_associated_to_created_deal(monkeypatch):
+    created_contacts, assoc = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None: created_contacts.append(e) or {"id": f"C-{e}"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", parent_first="Lara", parent_last="Perkins",
+                        tor_email="Terri@School.org", tor_first="Terri", tor_last="Tor"), notes)
+    assert created_contacts == ["mom@x.com", "terri@school.org"]   # parent + TOR created
+    assert assoc == [("D66", "C-terri@school.org")]                # TOR associated post-create
+    assert any("TOR Terri Tor" in n for n in notes)
+
+
+def test_tor_same_as_parent_not_duplicated(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda *a: (_ for _ in ()).throw(AssertionError("no TOR assoc")))
+    notes = []
+    po._handle_deal(_po(parent_email="same@x.com", tor_email="same@x.com"), notes)
+    assert not any("TOR" in n for n in notes)
+
+
 def test_po_pdf_attached_to_created_deal(monkeypatch):
     uploads, notes_created = [], []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])

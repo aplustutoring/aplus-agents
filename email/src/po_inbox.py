@@ -28,13 +28,15 @@ PO_SYSTEM = (
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
     "student_last, po_number, amount, hours, parent_first, parent_last, parent_email, "
-    "parent_phone, summary, draft_reply, confidence (0-1)}. "
+    "parent_phone, tor_first, tor_last, tor_email, summary, draft_reply, confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Invoice requests, invoicing follow-ups, payment reminders, statements, or "
     "questions about EXISTING service are NOT new POs → is_po=false (still extract "
     "school/student/po_number/amount and summarize; these get a review ticket, no deal). "
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
     "the school staff, TOR, or education specialist; empty string for anything not stated. "
+    "tor_* = the Teacher of Record / education specialist handling this PO (often the "
+    "email sender) — never the parent. "
     "draft_reply rules (first person plural, no em dashes, signed 'A+ Tutoring Team'): "
     "if is_po and the parent's email AND name are present → a short warm acknowledgment "
     "confirming receipt and next steps. If is_po but parent contact info is missing or "
@@ -102,6 +104,27 @@ def _attach_po_to_deal(deal_id, attachments: list[dict], po: dict,
         note_parts.append("📎 PO upload to HubSpot failed — attach the PDF to the deal manually.")
 
 
+def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
+    """Associate the Teacher of Record's contact to the deal (find-or-create by
+    email). The parent stays the deal's family contact — the Teachworks sync picks
+    the contact matching the deal-name parent, so adding the TOR is safe."""
+    t_email = (po.get("tor_email") or "").strip().lower()
+    p_email = (po.get("parent_email") or "").strip().lower()
+    if not t_email or t_email == p_email or not deal_id or deal_id == "DRYRUN":
+        return
+    try:
+        tor = hs.find_contact_by_email(t_email)
+        if not tor:
+            tor = hs.create_contact(t_email, po.get("tor_first") or None,
+                                    po.get("tor_last") or None)
+        if tor and tor.get("id") not in (None, "DRYRUN"):
+            hs.associate_contact_to_deal(deal_id, tor["id"])
+            note_parts.append(f"🧑‍🏫 TOR {po.get('tor_first', '')} {po.get('tor_last', '')} "
+                              f"<{t_email}> associated to the deal.")
+    except Exception as e:  # noqa: BLE001 — TOR association is best-effort
+        print(f"  ⚠️  TOR association failed (non-fatal): {e}")
+
+
 def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None = None) -> None:
     """Advance the matching Waiting-for-PO deal, or create one."""
     pc = cfg()["po_inbox"]
@@ -126,6 +149,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         hs.move_deal_stage(d["id"], pc["advance_to_stage"])
         note_parts.append(f"💼 Deal '{d['properties'].get('dealname')}' advanced: "
                           f"Waiting for PO → Pre-Lesson (PO {po.get('po_number') or 'n/a'}).")
+        _associate_tor(d["id"], po, note_parts)
         _attach_po_to_deal(d["id"], attachments or [], po, note_parts)
     elif len(waiting) > 1:
         names = "; ".join(d["properties"].get("dealname", "?") for d in waiting)
@@ -191,6 +215,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
+        _associate_tor(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
 
 
