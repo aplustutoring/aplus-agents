@@ -1,6 +1,12 @@
 name: Email — weekly digest
 
-# STAGED FOR CUTOVER: schedules disabled until the old aplus-email repo is switched off.
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
+# LIVE since the 2026-07-22 cutover (this monorepo is the production email agent).
 # Monday 8:00 AM PT. PDT = 15:00 UTC, PST = 16:00 UTC. Both fire; the digest is
 # idempotent for the same week so the duplicate is harmless.
 on:

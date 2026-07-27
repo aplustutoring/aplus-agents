@@ -1,5 +1,11 @@
 name: Approval poll (DEPRECATED — approval gate removed)
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 # RETIRED 2026-06-08: the engine is now single-touchpoint. topic-gen auto-approves
 # the slate on generation and content-build builds the drafts straight away; the
 # human's only gate is publishing each finished HubSpot draft. There is no topic

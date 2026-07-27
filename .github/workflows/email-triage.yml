@@ -1,6 +1,12 @@
 name: Email — triage (inbox poll)
 
-# STAGED FOR CUTOVER: schedules disabled until the old aplus-email repo is switched off.
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
+# LIVE since the 2026-07-22 cutover (this monorepo is the production email agent).
 # Re-enable at flip by uncommenting the schedule block below (verbatim from the old repo).
 # Cadence (UTC; PT business hours = 9-18 America/Los_Angeles, Mon-Fri):
 #   PDT (Mar-Nov): 9-18 PT = 16:00-01:00 UTC.  PST (Nov-Mar): 9-18 PT = 17:00-02:00 UTC.

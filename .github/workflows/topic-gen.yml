@@ -1,5 +1,11 @@
 name: Topic generation (Thursday 5 PM PT)
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 # Schedule: Thursday 17:00 PT.
 # During PDT (Mar-Nov) PT = UTC-7, so 17:00 PT = 00:00 UTC Friday.
 # During PST (Nov-Mar) PT = UTC-8, so 17:00 PT = 01:00 UTC Friday.

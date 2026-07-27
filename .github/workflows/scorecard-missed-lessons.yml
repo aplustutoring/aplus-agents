@@ -1,5 +1,11 @@
 name: Scorecard — missed lessons (Mon ~8:55 AM PT)
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 on:
   schedule:
     - cron: "55 15 * * 1"   # 15:55 UTC = 08:55 PDT / 07:55 PST Monday

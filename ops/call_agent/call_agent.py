@@ -1133,7 +1133,7 @@ def create_checkin_ticket(contact_id, contact_label, number, summary, cfg, now_u
                f"Check in with the family within {tcfg['check_in_business_days']} business days.")
     payload = {
         "properties": {
-            "subject": f"Check in with {who} — call {now_utc.strftime('%Y-%m-%d')}",
+            "subject": f"Check in with {who} — call {fmt_date_pt(now_utc)}",
             "content": content,
             "hs_pipeline": tcfg["pipeline"],
             "hs_pipeline_stage": tcfg["stage"],
@@ -1171,6 +1171,15 @@ def fmt_time_pt(call):
         return dt.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%-I:%M %p")
     except Exception:
         return dt.strftime("%H:%M UTC")
+
+
+def fmt_date_pt(dt_utc):
+    """Aware UTC datetime -> PT date string (fleet reports in PT)."""
+    try:
+        from zoneinfo import ZoneInfo
+        return dt_utc.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d")
+    except Exception:
+        return dt_utc.strftime("%Y-%m-%d")
 
 
 def build_digest(entries, skipped, failures, run_date_pt):
@@ -1324,7 +1333,12 @@ def process_call(call, cfg, dry_run, now_utc):
              f"{'matched: ' + contact_label if contact else 'unmatched'})...")
     summary = summarize_call(transcript, cfg, contact)
 
-    call_date_pt = now_utc.strftime("%Y-%m-%d")
+    try:
+        from zoneinfo import ZoneInfo
+        _pt = ZoneInfo("America/Los_Angeles")
+        call_date_pt = (call_datetime_utc(call) or now_utc).astimezone(_pt).strftime("%Y-%m-%d")
+    except Exception:
+        call_date_pt = now_utc.strftime("%Y-%m-%d")
     is_negative = (summary["sentiment"] == "negative" or summary["intent"] == "complaint")
     no_next_step = (summary["caller_type"] == "parent"
                     and summary["intent"] == "new inquiry"

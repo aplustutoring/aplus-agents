@@ -60,7 +60,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 CONTENT_DIR = REPO_ROOT / "aplus-content"
 PLACEHOLDER_HERO = REPO_ROOT / "skills" / "aplus-b2b-brand-kit" / "ilead-outcomes-graphic.png"
 
-PT = timezone(timedelta(hours=-7), name="PT")
+from zoneinfo import ZoneInfo
+PT = ZoneInfo("America/Los_Angeles")  # real Pacific (DST-aware); was fixed UTC-7
 
 WEEKDAY_TO_SLOT = {"Monday": 1, "Wednesday": 2, "Friday": 3}
 

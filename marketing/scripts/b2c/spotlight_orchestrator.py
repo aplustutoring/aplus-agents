@@ -1593,7 +1593,7 @@ def stage_bundle(args: argparse.Namespace, run: dict) -> dict:
     pseudonym = assign_student_pseudonym(real_firstname, gender, run.get("school"))
     print(f"  Real first name: {real_firstname}  ->  pseudonym: {pseudonym}")
 
-    date_str = datetime.utcnow().strftime("%Y-%m-%d")
+    date_str = datetime.now().strftime("%Y-%m-%d")  # PT via TZ env (fleet convention)
     bundle_dir = build_bundle_path(pseudonym, date_str)
     if bundle_dir.exists():
         raise OrchestratorError(
@@ -2266,7 +2266,7 @@ def stage_archive(args: argparse.Namespace, run: dict) -> dict:
         "",
         f"Bundle: `{bundle.name}`",
         f"Run id: `{run['run_id']}`",
-        f"Drafted: {datetime.utcnow().isoformat()}Z",
+        f"Drafted: {datetime.now().strftime('%Y-%m-%d %H:%M')} PT",
         f"Pseudonym: {run['pseudonym']}",
         f"Real first name: {run['real_firstname']}",
         f"Real last name: {run.get('real_lastname') or '(not provided)'}",
@@ -2430,7 +2430,7 @@ def stage_metadata(args: argparse.Namespace, run: dict) -> dict:
     doc1 = Path(run["doc1_path"]).read_text()
     milestone_seed = _detect_milestone_text(source_texts)
 
-    today = datetime.utcnow().date()
+    today = datetime.now().date()  # PT via TZ env (fleet convention)
     target_publish = today + timedelta(days=7)
 
     # Canonical name map so pull_quote_attribution + any names inside the
