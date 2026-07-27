@@ -1,5 +1,7 @@
 """PO-inbox deal handling: advance Waiting-for-PO, create when none, surface on multi."""
-from src import po_inbox as po
+import base64
+
+from src import gmail_client as gmc, po_inbox as po
 
 
 def _mock_po_prop(monkeypatch, result=None):
@@ -124,7 +126,67 @@ def test_created_deal_ambiguous_contact_flagged(monkeypatch):
     notes = []
     po._handle_deal(_po(), notes)
     assert created == [None]
-    assert "NO unique family contact" in notes[0]
+    assert "no unique family match" in notes[0]
+
+
+def test_parent_from_po_creates_contact(monkeypatch):
+    # Parent info extracted from the PO attachment → HubSpot contact created + on the deal.
+    created_deal, created_contact = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None: created_contact.append((e, f, l, phone)) or {"id": "C9"})
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: (_ for _ in ()).throw(AssertionError("must not fall back")))
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, dealtype=None, owner_id=None, closedate_ms=None, extra_props=None:
+                        created_deal.append(contact_id) or {"id": "D8"})
+    notes = []
+    po._handle_deal(_po(parent_email="Kenna@Gmail.com", parent_first="Mckenna",
+                        parent_last="Tschumperlin", parent_phone="555-1"), notes)
+    assert created_contact == [("kenna@gmail.com", "Mckenna", "Tschumperlin", "555-1")]
+    assert created_deal == ["C9"]
+    assert "CREATED HubSpot contact" in notes[0]
+
+
+def test_parent_email_existing_contact_linked(monkeypatch):
+    created_deal = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C5"})
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not create")))
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, dealtype=None, owner_id=None, closedate_ms=None, extra_props=None:
+                        created_deal.append(contact_id) or {"id": "D8"})
+    notes = []
+    po._handle_deal(_po(parent_email="kenna@gmail.com"), notes)
+    assert created_deal == ["C5"]
+    assert "linked to existing contact" in notes[0]
+
+
+def test_content_blocks_attachments():
+    blocks = po._content_blocks("body", "subj", "from", [
+        {"filename": "po.pdf", "mime": "application/pdf", "data_b64": "QUJD"},
+        {"filename": "scan.png", "mime": "image/png", "data_b64": "REVG"}])
+    assert blocks[1]["type"] == "document"
+    assert blocks[1]["source"]["media_type"] == "application/pdf"
+    assert blocks[2]["type"] == "image"
+    assert blocks[-1]["type"] == "text"
+
+
+def test_get_attachments_filters_and_converts(monkeypatch):
+    payload = {"payload": {"parts": [
+        {"filename": "po.pdf", "mimeType": "application/pdf",
+         "body": {"data": base64.urlsafe_b64encode(b"PDFDATA").decode()}},
+        {"filename": "notes.docx",
+         "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+         "body": {"data": "eHg="}},
+        {"filename": "", "mimeType": "text/plain", "body": {"data": "eHg="}},
+    ]}}
+    monkeypatch.setattr(gmc, "_get", lambda p, params=None: payload)
+    atts = gmc.get_attachments("M1")
+    assert [a["filename"] for a in atts] == ["po.pdf"]
+    assert base64.b64decode(atts[0]["data_b64"]) == b"PDFDATA"
 
 
 def test_no_names_no_action(monkeypatch):

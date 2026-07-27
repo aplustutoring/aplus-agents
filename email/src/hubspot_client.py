@@ -353,12 +353,15 @@ def find_family_contact(student_first: str, lastname: str) -> list[dict]:
     return parents  # ambiguous → caller leaves it for manual linking
 
 
-def create_contact(email: str, firstname: str | None = None, lastname: str | None = None) -> dict:
+def create_contact(email: str, firstname: str | None = None, lastname: str | None = None,
+                   phone: str | None = None) -> dict:
     props = {"email": email}
     if firstname:
         props["firstname"] = firstname
     if lastname:
         props["lastname"] = lastname
+    if phone:
+        props["phone"] = phone
     return _write("POST", "/crm/v3/objects/contacts", {"properties": props})
 
 

@@ -62,7 +62,9 @@ agent never sends from this address).
 **When the email is a NEW purchase order** (a funding authorization that starts or
 adds service — not an invoice follow-up, statement, or renewal paperwork):
 
-1. The agent extracts school, student, PO #, amount, and hours.
+1. The agent extracts school, student, PO #, amount, hours, **and the parent's
+   contact info — reading PDF/image attachments (the actual PO document) directly**,
+   not just the email body.
 2. **Dedupe:** if a deal already carries that PO # (the `po_number` property, with
    deal-name search as backstop), no new deal — the ticket notes the existing one.
 3. Otherwise it **creates the deal** in the Charter pipeline at **Pre-Lesson**:
@@ -70,16 +72,26 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
    - `po_number` + hours properties filled
    - **New Business** if the student has no prior deals, else **Existing Business**
    - owner = the **assigned scheduler** (A–L → Janelle, M–Z → Yolanda)
-   - the **parent's family contact associated** when it can be uniquely matched by
-     student name — this is what lets the Teachworks sync (below) create the family.
-4. Ticket → Kath with everything extracted + the original email embedded as a note;
-   Slack DM to Kath (copy to Roman); labels `A+ Agent/Processed` + `School/<name>`.
+4. **Parent contact — the fork that decides everything downstream:**
+   - **Parent info found in the PO/email** → the agent finds the HubSpot contact by
+     the parent's email, **creates it if new** (name/email/phone from the PO), and
+     associates it to the deal — this is what lets the Teachworks sync (below)
+     create the family. The Gmail draft is a normal warm acknowledgment.
+   - **Parent info missing** → the Gmail **draft asks the TOR/sender for the
+     parent's name, email, and phone** (while still acknowledging the PO). Fallback:
+     if an existing family contact uniquely matches the student's name, it's
+     associated anyway.
+5. Ticket → Kath with everything extracted (incl. parent info + which attachments
+   were read) + the original email embedded as a note; Slack DM to Kath (copy to
+   Roman); labels `A+ Agent/Processed` + `School/<name>`.
 
-**What Kath does:** review the ticket, send the Gmail draft, and check the deal note.
-If it says **"NO unique family contact found"**, find or create the parent contact in
-HubSpot and associate it to the deal — until that's done the family never reaches
-Teachworks. **What the scheduler does:** the deal is on your board at Pre-Lesson; get
-the student scheduled.
+**What Kath does:** review the ticket, send the Gmail draft (especially the
+parent-info request drafts — that's the loop that unblocks Teachworks), and check
+the deal note. If it says **"NO parent contact info"**, the family reaches
+Teachworks only after the parent contact is associated on the deal — when the TOR
+replies with the info, add the contact and associate it (or forward to the agent's
+next poll). **What the scheduler does:** the deal is on your board at Pre-Lesson;
+get the student scheduled.
 
 Anything that is NOT a new PO (invoicing follow-ups, vendor renewals, COI requests,
 event invites, out-of-office) gets the `A+ Agent/Needs Review` label and a review

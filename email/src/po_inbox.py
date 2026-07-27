@@ -1,9 +1,13 @@
 """Charter-PO inbox flow (separate Gmail).
 
-Per new email: extract PO details with Claude → HubSpot ticket to Kath (same
-accountability spine as the admin inbox) → advance the matching "Waiting for PO"
-deal or create one → label the email in Gmail → leave a REAL Gmail draft reply →
-Slack DM Kath (+ CC) → audit. The agent never sends from this address.
+Per new email: extract PO details with Claude — READING PDF/image attachments
+(the actual PO document) natively — → HubSpot ticket to Kath (same accountability
+spine as the admin inbox) → advance the matching "Waiting for PO" deal or create
+one. Parent contact info found in the PO → the HubSpot contact is found-or-created
+and associated to the deal (that's what lets the Teachworks sync create the
+family); parent info missing → the Gmail draft asks the TOR for it instead of a
+plain acknowledgment. Then: label the email → REAL Gmail draft reply → Slack DM
+Kath (+ CC) → audit. The agent never sends from this address.
 """
 from __future__ import annotations
 
@@ -19,29 +23,51 @@ from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg
 
 PO_SYSTEM = (
-    "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. "
+    "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
+    "include PDF/image attachments (the actual PO document) — read them; PO details "
+    "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
-    "student_last, po_number, amount, hours, summary, draft_reply, confidence (0-1)}. "
+    "student_last, po_number, amount, hours, parent_first, parent_last, parent_email, "
+    "parent_phone, summary, draft_reply, confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Invoice requests, invoicing follow-ups, payment reminders, statements, or "
     "questions about EXISTING service are NOT new POs → is_po=false (still extract "
     "school/student/po_number/amount and summarize; these get a review ticket, no deal). "
-    "Extract from the email body; empty string for anything not stated. draft_reply = a "
-    "short warm acknowledgment (first person plural, no em dashes, signed 'A+ Tutoring "
-    "Team') confirming receipt and next steps; empty if no reply is warranted (e.g. "
-    "automated notification or spam). If the email is NOT PO-related (spam, misc), set "
-    "is_po=false and summarize what it is."
+    "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
+    "the school staff, TOR, or education specialist; empty string for anything not stated. "
+    "draft_reply rules (first person plural, no em dashes, signed 'A+ Tutoring Team'): "
+    "if is_po and the parent's email AND name are present → a short warm acknowledgment "
+    "confirming receipt and next steps. If is_po but parent contact info is missing or "
+    "incomplete → a polite request to the sender (the TOR / education specialist) for the "
+    "parent's name, email, and phone so we can set the family up for scheduling, still "
+    "acknowledging the PO. Empty if no reply is warranted (automated notification or "
+    "spam). If the email is NOT PO-related (spam, misc), set is_po=false and summarize "
+    "what it is."
 )
 
 
-def po_extract(body: str, subject: str, sender: str) -> dict:
+def _content_blocks(body: str, subject: str, sender: str, attachments: list[dict]) -> list:
+    """User-message content: the email text plus each readable attachment as a native
+    document/image block, so the extractor reads the PO PDF itself."""
+    blocks: list = [{"type": "text", "text":
+                     f"FROM: {sender}\nSUBJECT: {subject}\n\n{body[:6000]}"}]
+    for a in attachments or []:
+        kind = "document" if a["mime"] == "application/pdf" else "image"
+        blocks.append({"type": kind, "source": {
+            "type": "base64", "media_type": a["mime"], "data": a["data_b64"]}})
+    blocks.append({"type": "text", "text": "Return the JSON now."})
+    return blocks
+
+
+def po_extract(body: str, subject: str, sender: str,
+               attachments: list[dict] | None = None) -> dict:
     from anthropic import Anthropic
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
     c = cfg()["classifier"]
     msg = client.messages.create(
         model=c["model"], max_tokens=c["max_tokens"], system=PO_SYSTEM,
-        messages=[{"role": "user", "content":
-                   f"FROM: {sender}\nSUBJECT: {subject}\n\n{body[:6000]}\n\nReturn the JSON now."}],
+        messages=[{"role": "user",
+                   "content": _content_blocks(body, subject, sender, attachments or [])}],
     )
     text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
     cleaned = re.sub(r"^```(?:json)?|```$", "", text.strip()).strip()
@@ -91,27 +117,49 @@ def _handle_deal(po: dict, note_parts: list[str]) -> None:
         extra = {"po_number": po_num}
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
-        # Associate the PARENT contact when uniquely resolvable — the Teachworks sync
-        # keys the family on the deal's contact email, so a deal without a parent
-        # contact never reaches Teachworks.
+        # Associate the PARENT contact — the Teachworks sync keys the family on the
+        # deal's contact email, so a deal without a parent contact never reaches
+        # Teachworks. Best source: parent info extracted from the PO itself (find the
+        # HubSpot contact by email, CREATE it if new); fallback: unique student-name
+        # match against existing family contacts.
         contact_id = None
-        try:
-            parents = hs.find_family_contact(po.get("student_first") or "",
-                                             po.get("student_last") or "")
-        except Exception:  # noqa: BLE001 — association is best-effort
-            parents = []
-        if len(parents) == 1:
-            contact_id = parents[0]["id"]
+        contact_bit = ""
+        p_email = (po.get("parent_email") or "").strip().lower()
+        if p_email:
+            try:
+                existing = hs.find_contact_by_email(p_email)
+                if existing:
+                    contact_id = existing["id"]
+                    contact_bit = f"linked to existing contact {p_email}, "
+                else:
+                    created_c = hs.create_contact(p_email, po.get("parent_first") or None,
+                                                  po.get("parent_last") or None,
+                                                  phone=po.get("parent_phone") or None)
+                    contact_id = created_c.get("id")
+                    contact_bit = (f"CREATED HubSpot contact {po.get('parent_first', '')} "
+                                   f"{po.get('parent_last', '')} <{p_email}> from the PO, ")
+            except Exception as e:  # noqa: BLE001 — contact handling is best-effort
+                print(f"  ⚠️  parent-contact create/lookup failed (non-fatal): {e}")
+        if not contact_id:
+            try:
+                parents = hs.find_family_contact(po.get("student_first") or "",
+                                                 po.get("student_last") or "")
+            except Exception:  # noqa: BLE001
+                parents = []
+            if len(parents) == 1:
+                contact_id = parents[0]["id"]
+                contact_bit = (f"linked to family contact "
+                               f"{parents[0]['properties'].get('firstname', '')} "
+                               f"{parents[0]['properties'].get('lastname', '')}".strip() + ", ")
+        if not contact_id:
+            contact_bit = ("NO parent contact info in the PO and no unique family match — "
+                           "the draft reply asks the TOR for it; associate the parent on "
+                           "the deal once received so the Teachworks sync picks it up, ")
         d = hs.create_deal(name or f"PO {po.get('po_number') or '(new)'}",
                            pc["deal_pipeline_id"], pc["advance_to_stage"], po.get("amount") or None,
                            contact_id=contact_id,
                            dealtype=dtype, owner_id=sched.get("hubspot_owner_id"),
                            closedate_ms=close_ms, extra_props=extra)
-        contact_bit = (f"linked to family contact {parents[0]['properties'].get('firstname', '')} "
-                       f"{parents[0]['properties'].get('lastname', '')}".strip() + ", "
-                       if contact_id else
-                       "NO unique family contact found — associate the parent on the deal "
-                       "so the Teachworks sync picks it up, ")
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
@@ -131,12 +179,19 @@ def process_po_message(stub_id: str) -> dict | None:
     m = gm.get_message(stub_id)
     if audit.already_processed(f"gmail:{m['id']}") or _thread_already_handled(m["threadId"]):
         return None
-    po = po_extract(m["body"], m["subject"], m["sender"])
+    attachments: list[dict] = []
+    try:
+        attachments = gm.get_attachments(m["id"])
+    except Exception as e:  # noqa: BLE001 — extraction proceeds on the body alone
+        print(f"  ⚠️  attachment fetch failed (non-fatal): {e}")
+    po = po_extract(m["body"], m["subject"], m["sender"], attachments)
     owner = cfg()["staff"][pc.get("owner", "kath")]
     record = {"message_id": f"gmail:{m['id']}", "thread_id": m["threadId"], "source": "po_inbox",
               "category": "new_po" if po.get("is_po") else "po_inbox_other",
               "confidence": po.get("confidence"), "owner": pc.get("owner", "kath"),
               "po_number": po.get("po_number") or "", "school": po.get("school") or "",
+              "attachments_read": [a["filename"] for a in attachments],
+              "parent_email": po.get("parent_email") or "",
               "reason": (po.get("summary") or "")[:300]}
     note_parts: list[str] = []
     sla_due = add_business_hours(now_la(), 8)
@@ -155,6 +210,9 @@ def process_po_message(stub_id: str) -> dict | None:
     desc = (f"From PO inbox ({pc['address']}).\nFrom: {m['sender']}\nSubject: {m['subject']}\n"
             f"School: {po.get('school')} | Student: {po.get('student_first')} {po.get('student_last')} | "
             f"PO#: {po.get('po_number')} | Amount: {po.get('amount')} | Hours: {po.get('hours')}\n"
+            f"Parent: {po.get('parent_first', '')} {po.get('parent_last', '')} "
+            f"<{po.get('parent_email') or 'no email'}> {po.get('parent_phone') or ''}\n"
+            f"Attachments read: {', '.join(a['filename'] for a in attachments) or 'none'}\n"
             f"Summary: {po.get('summary')}\n" + "\n".join(note_parts)
             + f"\nSLA due: {sla_due.isoformat()}")
     ticket = hs.create_ticket(subject, owner["hubspot_owner_id"],
