@@ -46,10 +46,80 @@
     398173808,
     398183378,
     398434213,
-    398438057
+    398438057,
+    398558708
   ],
-  "last_run_utc": "2026-07-28T18:05:08.553757+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-07-28T19:54:53.671445+00:00",
+  "pending_digest": [
+    {
+      "call_id": 398558708,
+      "number": "19543171256",
+      "time_pt": "12:43 PM",
+      "matched": true,
+      "contact_label": "Pompano Bch Fl",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Robert Hernandez called from a 954 (Pompano Beach, FL) number pitching a marketing/advertising opportunity in a business and service directory for Hillcrest Country Club and 11 other LA-area country clubs, with a sales deadline of Monday, August 3. He asked to be routed to the owner or marketing decision-maker. Janelle took his callback number (954-317-1256) and said she would forward the message. No commitment was made.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Forward Robert Hernandez's marketing/directory solicitation to the owner or marketing decision-maker to decide whether to respond before the Aug 3 deadline",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Outbound sales solicitation from a vendor pitching a country club directory ad \u2014 not a family, school, or tutor applicant.",
+        "student_or_school_names_mentioned": [
+          "Hillcrest Country Club"
+        ],
+        "record_updates": {
+          "whats_going_on": "Vendor solicitation call from Robert Hernandez pitching a paid listing in a business/service directory for Hillcrest Country Club and 11 other LA-area country clubs, with a sales deadline of Monday, Aug 3. Requested to be routed to the owner/marketing decision-maker.",
+          "what_we_can_do_to_help": "Forward the pitch internally so the owner/marketing lead can decide whether to engage before the Aug 3 deadline; otherwise no action needed.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Vendor solicitation call from Robert Hernandez pitching a paid listing in a business/service directory for Hillcrest Country Club and 11 other LA-area country clubs, with a sales deadline of Monday, Aug 3. Requested to be routed to the owner/marketing decision-maker."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Forward the pitch internally so the owner/marketing lead can decide whether to engage before the Aug 3 deadline; otherwise no action needed."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Forward Robert Hernandez's marketing/directory solicitation to the owner or marketing decision-maker to decide whether to respond before the Aug 3 deadline",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
