@@ -88,7 +88,13 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
 5. **The PO document itself is uploaded to HubSpot and pinned to the deal** as a
    note attachment — the deal record carries the actual PDF. (If the upload fails,
    the ticket says "attach the PDF to the deal manually".)
-6. Ticket → Kath with everything extracted (incl. parent info + which attachments
+6. **Invoice step (manual by design):** Teachworks' API cannot create invoices, so
+   for every PO with an amount the agent creates a **HubSpot Task for Kath** — due
+   in 2 business days, HIGH priority — with everything ready to paste into
+   Teachworks' Create Invoice form: student, school, PO #, amount, hours, and the
+   school's exact **Bill To** from the PO (wrong Bill To = rejected invoice). By
+   then the family/student already exist in Teachworks via the deal sync.
+7. Ticket → Kath with everything extracted (incl. parent info + which attachments
    were read) + the original email embedded as a note; Slack DM to Kath (copy to
    Roman); labels `A+ Agent/Processed` + `School/<name>`.
 

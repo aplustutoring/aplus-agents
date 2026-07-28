@@ -28,7 +28,8 @@ PO_SYSTEM = (
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
     "student_last, po_number, amount, hours, parent_first, parent_last, parent_email, "
-    "parent_phone, tor_first, tor_last, tor_email, summary, draft_reply, confidence (0-1)}. "
+    "parent_phone, tor_first, tor_last, tor_email, school_bill_to, summary, draft_reply, "
+    "confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Invoice requests, invoicing follow-ups, payment reminders, statements, or "
     "questions about EXISTING service are NOT new POs → is_po=false (still extract "
@@ -36,7 +37,9 @@ PO_SYSTEM = (
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
     "the school staff, TOR, or education specialist; empty string for anything not stated. "
     "tor_* = the Teacher of Record / education specialist handling this PO (often the "
-    "email sender) — never the parent. "
+    "email sender) — never the parent. school_bill_to = the school's exact billing "
+    "name/address from the PO (schools reject invoices with a wrong Bill To); empty if "
+    "not stated. "
     "draft_reply rules (first person plural, no em dashes, signed 'A+ Tutoring Team'): "
     "if is_po and the parent's email AND name are present → a short warm acknowledgment "
     "confirming receipt and next steps. If is_po but parent contact info is missing or "
@@ -125,6 +128,35 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
         print(f"  ⚠️  TOR association failed (non-fatal): {e}")
 
 
+def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
+    """Teachworks invoices can NOT be created via API (GET-only per the TW API docs),
+    so the last mile is a human step: a due-dated HubSpot Task with every field ready
+    to paste into Teachworks' Create Invoice form."""
+    ic = cfg()["po_inbox"].get("invoice_task", {})
+    if not ic.get("enabled") or not po.get("amount"):
+        return
+    try:
+        owner = cfg()["staff"].get(ic.get("owner", "kath"), {})
+        due = add_business_hours(now_la(), int(ic.get("due_business_hours", 16)))
+        student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
+        body = (f"Create the invoice in Teachworks (API can't — manual step).\n"
+                f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
+                f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
+                f"Hours: {po.get('hours') or 'n/a'}\n"
+                f"Bill To: {po.get('school_bill_to') or 'NOT in the PO — confirm with the school'}\n"
+                f"HubSpot deal id: {deal_id}. The PO PDF is attached to the deal; the family/"
+                f"student are created in Teachworks by the deal sync.")
+        hs.create_task(f"Create TW invoice — {student} ({po.get('school') or '?'}, "
+                       f"PO {po.get('po_number') or 'n/a'}, ${po.get('amount')})",
+                       body, owner.get("hubspot_owner_id"),
+                       int(due.timestamp() * 1000), priority="HIGH")
+        note_parts.append(f"🧾 Teachworks-invoice task created for {owner.get('name', 'Kath')} "
+                          f"(${po.get('amount')}, due {due.strftime('%b %-d %-I:%M %p')}).")
+    except Exception as e:  # noqa: BLE001 — the deal must survive a task failure
+        print(f"  ⚠️  invoice task failed (non-fatal): {e}")
+        note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
+
+
 def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None = None) -> None:
     """Advance the matching Waiting-for-PO deal, or create one."""
     pc = cfg()["po_inbox"]
@@ -151,6 +183,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                           f"Waiting for PO → Pre-Lesson (PO {po.get('po_number') or 'n/a'}).")
         _associate_tor(d["id"], po, note_parts)
         _attach_po_to_deal(d["id"], attachments or [], po, note_parts)
+        _invoice_task(d["id"], po, note_parts)
     elif len(waiting) > 1:
         names = "; ".join(d["properties"].get("dealname", "?") for d in waiting)
         note_parts.append(f"💼 {len(waiting)} deals waiting for PO match '{token}' — advance manually: {names}")
@@ -217,6 +250,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                           f"{contact_bit}id {d.get('id')}).")
         _associate_tor(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
+        _invoice_task(d.get("id"), po, note_parts)
 
 
 def _thread_already_handled(thread_id: str) -> bool:

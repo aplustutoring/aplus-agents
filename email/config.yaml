@@ -221,6 +221,13 @@ po_inbox:
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
   label_processed: "A+ Agent/Processed"
   label_review: "A+ Agent/Needs Review"
+  # Teachworks invoices are NOT creatable via the TW API (GET-only) — so each PO with
+  # an amount spawns a due-dated HubSpot Task with all invoice fields (student, PO#,
+  # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.
+  invoice_task:
+    enabled: true
+    owner: kath
+    due_business_hours: 16   # 2 business days
 
 # Teachworks notice → family-contact disambiguation. When two contacts share a last
 # name, the student first name from the notice is matched against these (messy, multi-

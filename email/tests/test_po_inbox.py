@@ -246,6 +246,31 @@ def test_po_upload_failure_asks_manual(monkeypatch):
     assert any("attach the PDF to the deal manually" in n for n in notes)
 
 
+def test_invoice_task_created_with_po_fields(monkeypatch):
+    tasks = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D55"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
+                        tasks.append((subj, body, priority)) or {"id": "T1"})
+    notes = []
+    po._handle_deal(_po(school_bill_to="PCA, 13915 Danielson St, Poway CA"), notes)
+    assert tasks and "Create TW invoice" in tasks[0][0] and "$1500" in tasks[0][0]
+    assert "Bill To: PCA, 13915 Danielson St, Poway CA" in tasks[0][1]
+    assert "PO #: 4471" in tasks[0][1] and tasks[0][2] == "HIGH"
+    assert any("Teachworks-invoice task created" in n for n in notes)
+
+
+def test_no_amount_no_invoice_task(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D55"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no task without amount")))
+    notes = []
+    po._handle_deal(_po(amount=""), notes)
+    assert not any("invoice" in n.lower() for n in notes)
+
+
 def test_no_names_no_action(monkeypatch):
     notes = []
     po._handle_deal(_po(school="", student_first="", student_last=""), notes)
