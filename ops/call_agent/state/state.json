@@ -46,55 +46,8 @@
     398173808,
     398183378
   ],
-  "last_run_utc": "2026-07-28T02:06:21.854774+00:00",
-  "pending_digest": [
-    {
-      "call_id": 398019533,
-      "number": "13109460792",
-      "time_pt": "10:51 AM",
-      "matched": true,
-      "contact_label": "Inglewood Ca",
-      "no_next_step": false,
-      "summary": {
-        "summary": "A Spectrum sales rep called asking to speak with whoever handles the business's internet account. Yolanda explained that A+ Tutoring works remotely and does not have a business internet account. The caller thanked her and ended the call.",
-        "caller_type": "vendor",
-        "intent": "other",
-        "sentiment": "neutral",
-        "action_items": [],
-        "follow_up_needed": false,
-        "next_step_scheduled": true,
-        "lead_status": "UNQUALIFIED",
-        "lead_status_reason": "Spectrum solicitor pitching internet service \u2014 not a family, school, or tutor applicant.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": null,
-          "what_we_can_do_to_help": null,
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "lead_status",
-          "(blank)",
-          "Dead Opportunity/Unqualified"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [],
-      "ticket_id": null,
-      "coached": true
-    }
-  ],
+  "last_run_utc": "2026-07-28T03:45:13.476280+00:00",
+  "pending_digest": [],
   "pending_skipped": [],
   "pending_failures": []
 }
