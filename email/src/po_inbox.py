@@ -28,8 +28,8 @@ PO_SYSTEM = (
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
     "student_last, po_number, amount, hours, parent_first, parent_last, parent_email, "
-    "parent_phone, tor_first, tor_last, tor_email, school_bill_to, summary, draft_reply, "
-    "confidence (0-1)}. "
+    "parent_phone, tor_first, tor_last, tor_email, school_bill_to, po_month, summary, "
+    "draft_reply, confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Invoice requests, invoicing follow-ups, payment reminders, statements, or "
     "questions about EXISTING service are NOT new POs → is_po=false (still extract "
@@ -128,21 +128,49 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
         print(f"  ⚠️  TOR association failed (non-fatal): {e}")
 
 
+def _po_month_end(po_month: str):
+    """Last day of the PO's service month (5 PM PT) — the invoice due date. None if
+    the month is missing/unparseable."""
+    import calendar
+    m = re.match(r"^(\d{4})-(\d{2})$", (po_month or "").strip())
+    if not m:
+        return None
+    year, month = int(m.group(1)), int(m.group(2))
+    if not 1 <= month <= 12:
+        return None
+    last = calendar.monthrange(year, month)[1]
+    return now_la().replace(year=year, month=month, day=last,
+                            hour=17, minute=0, second=0, microsecond=0)
+
+
 def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
     """Teachworks invoices can NOT be created via API (GET-only per the TW API docs),
-    so the last mile is a human step: a due-dated HubSpot Task with every field ready
-    to paste into Teachworks' Create Invoice form."""
+    so the last mile is a human step: a HubSpot Task with every field ready to paste
+    into Teachworks' Create Invoice form. The invoice is DUE at the end of the PO's
+    service month — that's the task due date, and it's stamped on the deal too when
+    po_inbox.invoice_due_property names a HubSpot date property."""
     ic = cfg()["po_inbox"].get("invoice_task", {})
     if not ic.get("enabled") or not po.get("amount"):
         return
+    month_end = _po_month_end(po.get("po_month") or "")
     try:
+        prop = (ic.get("invoice_due_property") or "").strip()
+        if prop and month_end and deal_id and deal_id != "DRYRUN":
+            try:
+                hs._write("PATCH", f"/crm/v3/objects/deals/{deal_id}",
+                          {"properties": {prop: month_end.strftime("%Y-%m-%d")}})
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  invoice-due deal property failed (non-fatal): {e}")
         owner = cfg()["staff"].get(ic.get("owner", "kath"), {})
-        due = add_business_hours(now_la(), int(ic.get("due_business_hours", 16)))
+        due = month_end or add_business_hours(now_la(), int(ic.get("due_business_hours", 16)))
+        due_line = (f"Invoice due: {month_end.strftime('%b %-d, %Y')} (end of PO month "
+                    f"{po.get('po_month')})" if month_end else
+                    "Invoice due: PO month not stated — confirm the service month")
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
         body = (f"Create the invoice in Teachworks (API can't — manual step).\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
                 f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
-                f"Hours: {po.get('hours') or 'n/a'}\n"
+                f"Hours: {po.get('hours') or 'n/a'}\n{due_line}\n"
                 f"Bill To: {po.get('school_bill_to') or 'NOT in the PO — confirm with the school'}\n"
                 f"HubSpot deal id: {deal_id}. The PO PDF is attached to the deal; the family/"
                 f"student are created in Teachworks by the deal sync.")
@@ -151,7 +179,8 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
                        body, owner.get("hubspot_owner_id"),
                        int(due.timestamp() * 1000), priority="HIGH")
         note_parts.append(f"🧾 Teachworks-invoice task created for {owner.get('name', 'Kath')} "
-                          f"(${po.get('amount')}, due {due.strftime('%b %-d %-I:%M %p')}).")
+                          f"(${po.get('amount')}, due {due.strftime('%b %-d')}"
+                          + (" — end of PO month" if month_end else "") + ").")
     except Exception as e:  # noqa: BLE001 — the deal must survive a task failure
         print(f"  ⚠️  invoice task failed (non-fatal): {e}")
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")

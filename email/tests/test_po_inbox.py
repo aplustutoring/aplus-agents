@@ -261,6 +261,40 @@ def test_invoice_task_created_with_po_fields(monkeypatch):
     assert any("Teachworks-invoice task created" in n for n in notes)
 
 
+def test_po_month_end_parsing():
+    assert po._po_month_end("2026-08").strftime("%Y-%m-%d") == "2026-08-31"
+    assert po._po_month_end("2027-02").strftime("%Y-%m-%d") == "2027-02-28"
+    assert po._po_month_end("") is None
+    assert po._po_month_end("Aug 2026") is None
+    assert po._po_month_end("2026-13") is None
+
+
+def test_invoice_due_end_of_po_month_and_deal_stamped(monkeypatch):
+    tasks, patches = [], []
+    base = dict(po.cfg())
+    base["po_inbox"] = {**base["po_inbox"],
+                       "invoice_task": {"enabled": True, "owner": "kath",
+                                        "invoice_due_property": "invoice_due_date"}}
+    monkeypatch.setattr(po, "cfg", lambda: base)
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D44"})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None: patches.append((path, payload)) or {})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
+                        tasks.append((body, due)) or {"id": "T1"})
+    notes = []
+    po._handle_deal(_po(po_month="2026-08"), notes)
+    deal_patch = [p_ for p_ in patches if p_[0] == "/crm/v3/objects/deals/D44"]
+    assert deal_patch and deal_patch[0][1]["properties"]["invoice_due_date"] == "2026-08-31"
+    assert tasks and "Invoice due: Aug 31, 2026 (end of PO month 2026-08)" in tasks[0][0]
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    due_pt = datetime.fromtimestamp(tasks[0][1] / 1000, tz=ZoneInfo("America/Los_Angeles"))
+    assert due_pt.strftime("%Y-%m-%d %H") == "2026-08-31 17"
+    assert any("end of PO month" in n for n in notes)
+
+
 def test_no_amount_no_invoice_task(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D55"})

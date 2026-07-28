@@ -227,7 +227,12 @@ po_inbox:
   invoice_task:
     enabled: true
     owner: kath
-    due_business_hours: 16   # 2 business days
+    due_business_hours: 16   # fallback due window when the PO month isn't stated
+    # Invoice due date = END of the PO's service month (task due date + deal stamp).
+    # TODO(Roman): paste the INTERNAL name of the HubSpot deal DATE property that
+    # holds the invoice due / PO month (Settings → Properties → the property → 
+    # internal name). Empty = deal not stamped (task still carries the date).
+    invoice_due_property: ""
 
 # Teachworks notice → family-contact disambiguation. When two contacts share a last
 # name, the student first name from the notice is matched against these (messy, multi-
