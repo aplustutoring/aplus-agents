@@ -1,0 +1,55 @@
+# ops/hubspot-schema — the property registry.
+# Custom HubSpot properties the fleet depends on. If an agent writes a custom
+# property, it must be declared here — create_properties.py syncs this file
+# INTO the portal (create missing groups/properties, add missing enum
+# options; never deletes, never touches HubSpot-defined properties).
+#
+# Keys per property mirror the HubSpot property API:
+#   name / label / type / fieldType / description / options
+# Fleet extensions:
+#   options_from: registry  — enum options generated from registry.yml agent
+#                             ids (value = id, label = human name, #AP014),
+#                             merged with any literal `options` below it.
+#
+# Run: python3 create_properties.py --dry-run   (see README.md)
+
+groups:
+  tickets:
+    - name: fleet_automation
+      label: Fleet automation
+
+properties:
+  tickets:
+    # #AP007 conventions: tickets filed by automations carry ticket_source +
+    # source_agent so the re-ping ladder can filter and report by origin.
+    # First consumer: the Feedback Agent (ops/feedback-agent) —
+    # ticket_source=agent_feedback, source_agent=<registry id>.
+    - name: ticket_source
+      label: Ticket source
+      group: fleet_automation
+      type: enumeration
+      fieldType: select
+      description: >-
+        Which fleet mechanism created this ticket. Set by automations, not
+        humans. Declared in aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: agent_feedback
+          label: "Agent feedback (#agent-feedback)"
+        - value: call_agent
+          label: "Call agent"
+        - value: email_engine
+          label: "Email engine"
+
+    - name: source_agent
+      label: Source agent
+      group: fleet_automation
+      type: enumeration
+      fieldType: select
+      description: >-
+        The registered agent this ticket is about (registry.yml is the
+        vocabulary). Set by automations, not humans. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options_from: registry
+      options:
+        - value: UNKNOWN
+          label: "Unregistered automation"

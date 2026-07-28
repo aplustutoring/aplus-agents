@@ -1,0 +1,63 @@
+name: Feedback agent — close the loop (correction merged)
+
+# Fleet convention: agents think in Pacific Time (see registry.yml header).
+env:
+  TZ: America/Los_Angeles
+
+# When a correction PR merges, reply in the reporter's original thread: what
+# changed, when. Feedback that vanishes into a void kills the channel within
+# a month — the reply-back is the feature. Also counts clean merges (merged
+# with no human edits) toward the agent's 20-clean-reports graduation bar.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+    paths:
+      - "corrections/**"
+
+permissions:
+  contents: write   # state commit-back
+
+jobs:
+  close-loop:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: feedback-agent-state-write
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # read the merged correction files, not the PR branch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r ops/feedback-agent/requirements.txt
+      - name: Reply in the original threads
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ARGS=""
+          if [ "${{ vars.FEEDBACK_AGENT_LIVE }}" != "true" ]; then
+            ARGS="--dry-run"
+          fi
+          python3 ops/feedback-agent/feedback_agent.py --mode close-loop \
+            --pr ${{ github.event.pull_request.number }} $ARGS
+      - name: Commit state changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --ignore-errors ops/feedback-agent/state/state.json || true
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "feedback-agent: close-loop for PR #${{ github.event.pull_request.number }}"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+          fi

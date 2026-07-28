@@ -1,0 +1,67 @@
+# ops/feedback-agent — Feedback Agent v1 configuration
+# Secrets live in env vars (repo secrets on Actions) — never here.
+
+# The manifest is the vocabulary: reports are classified against these agents,
+# and anything that maps to none of them is UNKNOWN (possible shadow
+# automation -> Zapier census input).
+registry_path: "registry.yml"
+
+# Where structured corrections land: corrections/<agent>/YYYY-MM-DD-<slug>.md,
+# opened as PRs (draft probation — Emily merges).
+corrections_dir: "corrections"
+
+slack:
+  # The one channel for the whole fleet: #agent-feedback (created 2026-07-27,
+  # PRIVATE — enforces staff-only for v1; tutors' path stays through Mandy
+  # until this agent graduates and Roman revisits). Channel ID, not name:
+  # private channels don't resolve by name for bot posts. The aplus bot must
+  # be /invite'd.
+  channel: "C0BL05MCJ4B"
+  # Slack member IDs (Uxxxxxxxx) for pings (verified against the workspace
+  # 2026-07-27). If either is blank the agent falls back to a plain name.
+  people:
+    emily: "U05MXK1MC5Q"   # Emily Shulman — ledger owner: merges corrections, executes demotions
+    roman: "U05NA7UMSSV"   # Roman Slavinsky
+
+claude:
+  # Repo-standard model (matches ops/call_agent + marketing/scripts/*).
+  model: "claude-opus-4-7"
+  max_tokens: 1500
+
+hubspot:
+  # BROKEN / critical reports become tickets per #AP007 conventions
+  # ([AGENT] title, ticket_source=agent_feedback, source_agent=<id>) so they
+  # enter the re-ping ladder. Draft probation: the payload is posted in-thread
+  # for Emily to execute; after graduation the agent creates it directly.
+  # `ticket_source` and `source_agent` are custom ticket properties, created
+  # 2026-07-27 and declared in ops/hubspot-schema/properties.yml (re-run that
+  # sync when a new agent registers, so the source_agent enum stays current).
+  ticket:
+    pipeline: "0"           # Support Pipeline (same as call agent)
+    stage: "131537027"      # "Working on it"
+    priority: "MEDIUM"      # critical severity upgrades to HIGH
+
+probation:
+  # draft: corrections open as PRs, tickets are drafted in-thread, the DEMOTE
+  # registry flip is opened as a one-click PR that a human merges.
+  # autonomous (after graduation): classification+filing act directly; the
+  # DEMOTE flip STAYS human-executed until the Fleet Manager exists to verify
+  # state changes.
+  stage: draft
+  # Graduation bar (#AP011 scaling): clean reports = correction PRs merged
+  # without human edits. Tracked in state, reported in the Friday digest.
+  clean_reports_target: 20
+
+digest:
+  # Any agent with >= threshold WRONG/ANNOYING reports inside the window is
+  # flagged as a demotion-review candidate for Emily's ledger. Digests
+  # aggregate by agent, never by person — the scoreboard tracks agents.
+  review_threshold: 3
+  review_window_days: 14
+
+state:
+  # Repo-relative; committed back by the workflows (call-agent pattern).
+  path: "ops/feedback-agent/state/state.json"
+  # Friday digest is also written here — input to the Integrator's Monday brief.
+  digest_path: "ops/feedback-agent/state/digest-latest.md"
+  max_processed_ids: 2000
