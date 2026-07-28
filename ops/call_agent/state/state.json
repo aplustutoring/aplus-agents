@@ -54,9 +54,10 @@
     398574172,
     398574219,
     398574265,
-    398574294
+    398574294,
+    398628663
   ],
-  "last_run_utc": "2026-07-28T21:13:07.506061+00:00",
+  "last_run_utc": "2026-07-28T22:27:28.791343+00:00",
   "pending_digest": [
     {
       "call_id": 398558708,
@@ -121,6 +122,77 @@
         [
           "Forward Robert Hernandez's marketing/directory solicitation to the owner or marketing decision-maker to decide whether to respond before the Aug 3 deadline",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    },
+    {
+      "call_id": 398628663,
+      "number": "18186451510",
+      "time_pt": "3:17 PM",
+      "matched": true,
+      "contact_label": "Sheyna Ganzburg",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Sheyna Ganzburg, an existing customer, called about an email notification for her daughter Chaya Tova's lesson on Monday the 3rd. She wanted to confirm cancellation since Chaya is traveling out of state for a month and school doesn't start until September 1. Janelle confirmed the lesson was already canceled and Sheyna requested the next session be scheduled with tutor Theresa on Monday, September 7. Sheyna also shared that Chaya earned a B in the class overall and credited Theresa with helping her avoid failing the final.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Inform Theresa that Chaya Tova's next lesson will resume Monday, September 7",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Update remaining sessions to start September 7 in scheduling system",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Chaya Tova"
+        ],
+        "record_updates": {
+          "whats_going_on": "Chaya Tova is traveling out of state for a month and school starts September 1. Parent confirmed the Aug 30/Sep 3 lessons were correctly canceled and wants sessions to resume Monday, September 7 with Theresa so Chaya can meet her new teacher and plan going forward. Parent shared Chaya earned a B in the class overall; teacher never disclosed final exam score, but parent credits Theresa's tutoring with preventing a failing grade.",
+          "what_we_can_do_to_help": "Confirm Theresa's availability for Monday, September 7 and resume weekly sessions from that date. Coordinate with Theresa to review Chaya's final and build a forward plan aligned with her new teacher/class once school starts.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Chaya Tova is traveling out of state for a month and school starts September 1. Parent confirmed the Aug 30/Sep 3 lessons were correctly canceled and wants sessions to resume Monday, September 7 with Theresa so Chaya can meet her new teacher and plan going forward. Parent shared Chaya earned a B in the class overall; teacher never disclosed final exam score, but parent credits Theresa's tutoring with preventing a failing grade."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Theresa's availability for Monday, September 7 and resume weekly sessions from that date. Coordinate with Theresa to review Chaya's final and build a forward plan aligned with her new teacher/class once school starts."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Inform Theresa that Chaya Tova's next lesson will resume Monday, September 7",
+          80047202
+        ],
+        [
+          "Update remaining sessions to start September 7 in scheduling system",
+          80047202
         ]
       ],
       "ticket_id": null,
