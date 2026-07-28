@@ -1,0 +1,116 @@
+name: Feedback agent — intake (#agent-feedback doorbell)
+
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync.
+env:
+  TZ: America/Los_Angeles
+
+# Event-driven per instant-first doctrine (#AP009): the Slack Events relay
+# (ops/feedback-agent/relay/apps-script.gs) fires a repository_dispatch for
+# every human message in #agent-feedback. Slack is the doorbell; everything
+# else — classify, thread ack, correction PR, ticket draft, DEMOTE fast path —
+# happens here, in git.
+#
+# SAFETY DEFAULT: runs in --dry-run (classify + print, no Slack/PR/ticket
+# writes) until the repo *variable* FEEDBACK_AGENT_LIVE is set to "true"
+# (Settings -> Secrets and variables -> Actions -> Variables). Same pattern
+# as CALL_AGENT_LIVE.
+#
+# NOTE: correction/demote PRs require "Allow GitHub Actions to create and
+# approve pull requests" (Settings -> Actions -> General -> Workflow
+# permissions) to be enabled.
+on:
+  repository_dispatch:
+    types: [feedback-report]
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "Test report text (simulates a #agent-feedback message)"
+        required: true
+        type: string
+      user:
+        description: "Slack member ID of the pretend reporter (U…)"
+        required: true
+        type: string
+      channel:
+        description: "Channel ID to reply into (C…)"
+        required: true
+        type: string
+      ts:
+        description: "Message ts to thread under (blank = fabricate one; ack will not attach to a real message)"
+        required: false
+        type: string
+        default: ""
+      dry_run:
+        description: "Force dry run (classify + print, no writes)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write        # correction/demote branches + state commit-back
+  pull-requests: write   # gh pr create
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The ~1-minute ack promise: each report is small, so serialize only the
+    # state writes (same group across all feedback workflows), never cancel.
+    concurrency:
+      group: feedback-agent-state-write
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # branches for correction PRs need real history
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r ops/feedback-agent/requirements.txt
+      - name: Build payload (manual dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TS="${{ inputs.ts }}"
+          [ -z "$TS" ] && TS="$(date +%s).000000"
+          jq -n --arg channel "${{ inputs.channel }}" --arg user "${{ inputs.user }}" \
+                --arg text "${{ inputs.text }}" --arg ts "$TS" \
+                '{channel:$channel, user:$user, text:$text, ts:$ts, thread_ts:"", event_id:("manual-"+$ts)}' \
+                > /tmp/payload.json
+      - name: Run intake
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISPATCH_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            export REPORT_PAYLOAD="$DISPATCH_PAYLOAD"
+          else
+            export REPORT_PAYLOAD="$(cat /tmp/payload.json)"
+          fi
+          ARGS=""
+          if [ "${{ vars.FEEDBACK_AGENT_LIVE }}" != "true" ] || [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="--dry-run"
+          fi
+          python3 ops/feedback-agent/feedback_agent.py --mode intake $ARGS
+      - name: Commit state changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git add --ignore-errors ops/feedback-agent/state/state.json || true
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "feedback-agent: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin main && git push origin main && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+          fi

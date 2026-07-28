@@ -12,6 +12,9 @@ content.
 - **`call_agent/`** — Call Agent v1: JustCall inbound-call transcripts →
   Claude summary → HubSpot Call engagement → daily Slack digest. Scheduled
   poller on GitHub Actions. See `call_agent/README.md`.
-- **`hubspot-schema/`** — placeholder for the HubSpot property/schema management
-  module (baseline properties + `create_properties.py`). Not present in this repo
-  yet; reserved here so the structure exists when it lands (`.gitkeep` only).
+- **`feedback-agent/`** — Feedback Agent v1 "the doorbell for demotions":
+  #agent-feedback Slack channel → classify → correction PRs + ticket drafts +
+  the #AP011 DEMOTE fast path; Friday digest. See `feedback-agent/README.md`.
+- **`hubspot-schema/`** — the HubSpot property registry: `properties.yml`
+  declares every custom property the fleet writes; `create_properties.py`
+  syncs it into the portal (additive only). See `hubspot-schema/README.md`.

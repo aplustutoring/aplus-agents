@@ -29,6 +29,13 @@
 #   reads       HubSpot objects / Teachworks / Drive / Sheets it consumes
 #   writes      what it mutates (HubSpot, Slack, repo state, Sheets)
 #   depends_on  skills/scripts/state it needs to function
+#   probation   OPTIONAL: draft | autonomous. draft = nothing goes out without
+#               human approval. Set to draft by the feedback-agent DEMOTE path
+#               (#AP011 — honored first, reviewed after); absence means the
+#               agent runs at whatever autonomy its own workflow encodes.
+#   zaps        OPTIONAL: Zapier zap names owned by this agent — the DEMOTE
+#               path lists them for pausing (none listed = cross-check the
+#               Zapier census in ops/fleet-health/audit/zapier-census.md)
 #
 # Times: HubSpot is the single source of truth. Schedules carry both a PDT and
 # a PST cron so the wall-clock hour is stable across DST.
@@ -315,6 +322,53 @@ agents:
       auto-created). monitored_numbers is a list for future lines — confirm
       recording disclosure before adding any.
 
+  # ───────────────────────── Feedback agent (ops/feedback-agent) ───────
+  # V1 "the doorbell for demotions": #agent-feedback Slack channel -> Events
+  # relay -> repository_dispatch. Classifies freeform reports against THIS
+  # file's vocabulary, files corrections as PRs, drafts tickets for
+  # BROKEN/critical, and runs the #AP011 DEMOTE fast path (one-click registry
+  # PR, human-executed). Mechanism behind the /corrections loop (#AP008).
+  - id: feedback-agent
+    name: "Feedback agent — #agent-feedback intake + Friday digest"
+    owner: roman@wetutorathome.com
+    status: active
+    probation: draft            # ships at Draft; graduates filing after 20 clean reports
+    trigger:
+      type: event
+      events: [repository_dispatch, workflow_dispatch, pull_request, cron]
+      source: >
+        Slack Events relay (ops/feedback-agent/relay/apps-script.gs) fires
+        repository_dispatch feedback-report per human message in
+        #agent-feedback; correction-PR merges trigger the close-loop reply;
+        Friday 23:00 UTC (16:00 PDT) cron posts the weekly digest.
+      workflows:
+        - .github/workflows/feedback-intake.yml
+        - .github/workflows/feedback-digest.yml
+        - .github/workflows/feedback-close-loop.yml
+    entrypoint: ops/feedback-agent/feedback_agent.py
+    reads:
+      - Slack                                  # #agent-feedback messages (via relay payload) + user profiles
+      - registry.yml                           # classification vocabulary + demote target
+      - ops/feedback-agent/state/state.json    # dedupe, pending clarifications, report log
+    writes:
+      - Slack                                  # thread acks, clarifying questions, demote alerts, Friday digest
+      - corrections/<agent>/                   # structured correction files, as PRs (Emily merges)
+      - registry.yml                           # DEMOTE probation flip, as a one-click PR (human merges)
+      - HubSpot:tickets                        # BROKEN/critical — DRAFTED in-thread until graduation (#AP007 conventions)
+      - ops/feedback-agent/state/              # state.json + digest-latest.md (Integrator Monday-brief input)
+    depends_on:
+      - "secrets: ANTHROPIC_API_KEY, SLACK_BOT_TOKEN, HUBSPOT_API_KEY"
+      - "repo variable FEEDBACK_AGENT_LIVE (dry-run until true)"
+      - ops/feedback-agent/config.yml
+    notes: >
+      Claude classification (structured outputs): agent (registry id or
+      UNKNOWN -> Zapier-census flag) x type (BROKEN/WRONG/ANNOYING/IDEA/
+      DEMOTE) x severity (critical/normal/low). Acks by reporter first name;
+      one clarifying question max; never argues or defends an agent. FERPA:
+      student/family specifics stay in the thread — correction stores the
+      link (#AP008). Digests aggregate by agent, never by person. DEMOTE
+      registry-flip stays human-executed until the Fleet Manager exists.
+
   # ───────────────────────── Email / inbox-ops engine ──────────────────
   # Separate repo: github.com/aplustutoring/aplus-email. Runs on GitHub Actions
   # (no always-on server). Triages admin@wetutorathome.com + HubSpot
@@ -370,17 +424,30 @@ agents:
   # those were dropped 2026-06-29. The GCP SA charter-prospecting@aplus-automations-cars
   # exists but is unused. If charter is ever built, add it here as a Tier-A engine.
 
-  # ───────────────────────── Reserved (do not yet exist) ────────────────
+  # ───────────────────────── HubSpot schema (ops/hubspot-schema) ───────
+  # The property registry: properties.yml declares every custom property the
+  # fleet writes; create_properties.py syncs it INTO the portal (additive
+  # only — never deletes). First entries: ticket_source + source_agent
+  # (#AP007 ticket conventions), created 2026-07-27.
   - id: hubspot-schema
-    name: HubSpot property/schema management
+    name: HubSpot schema sync (manual)
     owner: roman@wetutorathome.com
-    status: unverified
+    status: manual
     trigger:
-      type: unverified            # manual / dispatch when it lands
-    entrypoint: ops/hubspot-schema/   # PLACEHOLDER — module not present in repo
-    reads: [HubSpot]
-    writes: [HubSpot]              # property/schema definitions
-    depends_on: []
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/hubspot-schema.yml
+    entrypoint: ops/hubspot-schema/create_properties.py
+    reads:
+      - ops/hubspot-schema/properties.yml   # the property registry
+      - registry.yml                        # options_from: registry -> source_agent enum
+      - HubSpot                             # existing groups/properties/options
+    writes:
+      - HubSpot                             # missing groups/properties/enum options only
+    depends_on:
+      - "secrets: HUBSPOT_API_KEY (crm.schemas.tickets.write scope)"
     notes: >
-      Referenced by the original work order but not present in this repo.
-      ops/hubspot-schema/ is scaffolded empty (.gitkeep) pending the module.
+      Idempotent + additive only. Schema changes are deliberate: edit
+      properties.yml in a PR, merge, run the workflow (dry-run by default).
+      Re-run after registering a new agent so source_agent picks up the new
+      option. CHECK_ONLY smoke mode.

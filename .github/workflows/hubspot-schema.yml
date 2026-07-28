@@ -1,0 +1,46 @@
+name: HubSpot schema sync (manual)
+
+# Fleet convention: agents think in Pacific Time (see registry.yml header).
+env:
+  TZ: America/Los_Angeles
+
+# Syncs ops/hubspot-schema/properties.yml INTO the portal — additive only
+# (create missing groups/properties, add missing enum options; never
+# deletes). Manual by design: schema changes are deliberate. Edit
+# properties.yml in a PR, merge, then run this.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print the plan without writing to HubSpot"
+        type: boolean
+        default: true
+      check_only:
+        description: "Smoke test: confirm secrets wired, skip all reads/writes"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r ops/hubspot-schema/requirements.txt
+      - name: Sync properties
+        env:
+          HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_API_KEY }}
+          CHECK_ONLY: ${{ inputs.check_only && 'true' || '' }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="--dry-run"
+          fi
+          python3 ops/hubspot-schema/create_properties.py $ARGS
