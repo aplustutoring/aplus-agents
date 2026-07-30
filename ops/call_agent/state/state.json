@@ -82,9 +82,10 @@
     399461087,
     399459983,
     399498582,
-    399502078
+    399502078,
+    399524119
   ],
-  "last_run_utc": "2026-07-30T21:17:00.950815+00:00",
+  "last_run_utc": "2026-07-30T22:37:51.747731+00:00",
   "pending_digest": [
     {
       "call_id": 399461087,
@@ -156,6 +157,77 @@
         ],
         [
           "Notify the billing/charter contact person that Cecilia from Sage Oak has been trying to reach us about EOY statement",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    },
+    {
+      "call_id": 399524119,
+      "number": "13109038584",
+      "time_pt": "2:33 PM",
+      "matched": true,
+      "contact_label": "Sylvia Friedel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Sylvia Friedel called asking whether A+ Tutoring offers an ERB test-prep tutor for her son, covering all subjects on the ERB. Paola explained that A+ does not have a dedicated ERB tutor but has tutors experienced in preparing students for the ERB. Sylvia said she would think about it and call back. No next step was scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Sylvia's callback; if not heard from in a few days, follow up to see if she'd like to move forward with ERB prep tutoring",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Sylvia called looking for an ERB tutor for her son to prepare him across all subjects on the ERB. She wanted a dedicated ERB specialist and said she'd think it over and call back.",
+          "what_we_can_do_to_help": "We don't offer an ERB-only specialist, but we have tutors experienced in preparing students for the ERB across math, ELA, and other subjects. Once she calls back we can gather student details (grade, timeline, target score) and match an experienced tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Sylvia called looking for an ERB tutor for her son to prepare him across all subjects on the ERB. She wanted a dedicated ERB specialist and said she'd think it over and call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "We don't offer an ERB-only specialist, but we have tutors experienced in preparing students for the ERB across math, ELA, and other subjects. Once she calls back we can gather student details (grade, timeline, target score) and match an experienced tutor."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Sylvia's callback; if not heard from in a few days, follow up to see if she'd like to move forward with ERB prep tutoring",
           81494333
         ]
       ],
