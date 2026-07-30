@@ -76,10 +76,91 @@
     399331420,
     399339694,
     399366055,
-    399404826
+    399404826,
+    399444816,
+    399454931,
+    399461087,
+    399459983
   ],
-  "last_run_utc": "2026-07-30T18:03:53.240734+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-07-30T19:53:51.116351+00:00",
+  "pending_digest": [
+    {
+      "call_id": 399461087,
+      "number": "19094850075",
+      "time_pt": "12:29 PM",
+      "matched": true,
+      "contact_label": "Joyce Showers",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Cecilia Hernandez from Sage Oak Charter School called to follow up on emails she sent regarding an end-of-year statement to confirm a zero account balance heading into the new school year. She hadn't received a response at charter@wetutorathome.com. Yolanda gave her admin@wetutorathome.com as the primary email to resend to, and said she'd notify the person in charge. Cecilia will resend her request today.",
+        "caller_type": "school/charter contact",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for Cecilia Hernandez's resent email at admin@wetutorathome.com regarding Sage Oak end-of-year statement and reply confirming zero balance or any outstanding amount",
+            "owner_hint": null
+          },
+          {
+            "item": "Notify the billing/charter contact person that Cecilia from Sage Oak has been trying to reach us about EOY statement",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "Charter School Teacher TOR/EF",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [
+          "Sage Oak Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Cecilia Hernandez from Sage Oak Charter School called to follow up on an end-of-year statement request \u2014 she has been emailing charter@wetutorathome.com but not getting a response, and wants confirmation that Sage Oak's account reflects a zero balance going into the new school year.",
+          "what_we_can_do_to_help": "Watch admin@wetutorathome.com for her resent email today and reply confirming zero balance (or flagging any outstanding amount). Loop in the charter billing lead so Sage Oak's EOY reconciliation isn't missed.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Cecilia Hernandez from Sage Oak Charter School called to follow up on an end-of-year statement request \u2014 she has been emailing charter@wetutorathome.com but not getting a response, and wants confirmation that Sage Oak's account reflects a zero balance going into the new school year."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Watch admin@wetutorathome.com for her resent email today and reply confirming zero balance (or flagging any outstanding amount). Loop in the charter billing lead so Sage Oak's EOY reconciliation isn't missed."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Charter School Teacher TOR/EF"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Cecilia Hernandez's resent email at admin@wetutorathome.com regarding Sage Oak end-of-year statement and reply confirming zero balance or any outstanding amount",
+          81494333
+        ],
+        [
+          "Notify the billing/charter contact person that Cecilia from Sage Oak has been trying to reach us about EOY statement",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
