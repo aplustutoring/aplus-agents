@@ -509,8 +509,10 @@ def intake(cfg, payload, dry_run):
     thread_ts = payload.get("thread_ts") or ""
     is_reply = bool(thread_ts) and thread_ts != payload["ts"]
 
-    # Status queries: answer in thread, file nothing.
-    if not is_reply and STATUS_RE.search(payload["text"].strip()):
+    # Status queries: answer in thread, file nothing. Match the first line
+    # only — some clients append attribution lines below the typed text.
+    first_line = (payload["text"].strip().splitlines() or [""])[0]
+    if not is_reply and STATUS_RE.search(first_line):
         post_reply(payload["channel"], payload["ts"], build_fleet_status(cfg), dry_run)
         state["processed"].append(event_key)
         if not dry_run:
