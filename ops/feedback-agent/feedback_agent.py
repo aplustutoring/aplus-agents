@@ -16,9 +16,10 @@ Mechanism behind two standing promises: the /corrections feedback loop
 (#AP008) and "anyone affected can demote an agent instantly" (#AP011).
 
 Probation: ships at Draft. Thread replies are live; correction files open as
-PRs Emily merges; tickets are drafted into the thread for Emily to execute;
+PRs Roman merges; tickets are drafted into the thread for Roman to execute;
 the DEMOTE registry flip is opened as a one-click PR, never merged by the
-agent. See README.md for the graduation plan.
+agent. All operational pings route per config slack.alerts_to (2026-07-31:
+everything goes through Roman). See README.md for the graduation plan.
 
 Fleet conventions honored here:
   - PT for everything human-facing (workflow sets TZ=America/Los_Angeles);
@@ -203,6 +204,14 @@ def mention(cfg, person):
     """<@Uxxx> when the member ID is configured, plain name otherwise."""
     uid = (cfg["slack"].get("people") or {}).get(person, "")
     return f"<@{uid}>" if uid.startswith("U") else person.capitalize()
+
+
+def alert_mentions(cfg):
+    """Everyone who receives operational pings (ticket drafts, DEMOTE alerts,
+    digest flags) — config slack.alerts_to. 2026-07-31: Roman, who runs
+    everything through himself."""
+    people = cfg["slack"].get("alerts_to") or ["roman"]
+    return " ".join(mention(cfg, p) for p in people)
 
 
 # ─── Classification (Claude) ──────────────────────────────────────────────────
@@ -469,13 +478,12 @@ def intake(cfg, payload, dry_run):
     if cls["type"] == "DEMOTE":
         ack = (f"{first_name} — done. *{label}* dropped to Draft — nothing goes out "
                f"without human approval until further notice. "
-               f"{mention(cfg, 'emily')} and {mention(cfg, 'roman')} are pinged with the "
-               f"registry change ready to execute.")
+               f"{alert_mentions(cfg)} pinged with the registry change ready to execute.")
     else:
         ack = cls["ack_message"]
     post_reply(payload["channel"], root_ts, ack, dry_run)
 
-    # 2. Correction file -> PR (draft mode: Emily merges).
+    # 2. Correction file -> PR (draft mode: Roman merges).
     corr_dir = Path(cfg["corrections_dir"]) / cls["agent_id"]
     corr_path = corr_dir / f"{date_pt}-{cls['slug']}.md"
     (REPO_ROOT / corr_dir).mkdir(parents=True, exist_ok=True)
@@ -497,13 +505,13 @@ def intake(cfg, payload, dry_run):
 
     # 3. BROKEN or critical -> HubSpot ticket, so it enters the re-ping ladder
     #    with a human name attached (#AP007). Draft probation: the payload is
-    #    posted for Emily to execute; graduated: created directly.
+    #    posted for the approver (slack.alerts_to) to execute; graduated: created directly.
     ticket_status = None
     if cls["type"] == "BROKEN" or cls["severity"] == "critical":
         tpayload = build_ticket_payload(cls, first_name, permalink, agents, cfg, date_pt)
         if cfg["probation"]["stage"] == "draft":
             post_reply(payload["channel"], root_ts,
-                       f"{mention(cfg, 'emily')} — ticket drafted for this one "
+                       f"{alert_mentions(cfg)} — ticket drafted for this one "
                        f"({cls['type']}/{cls['severity']}), ready to create:\n"
                        f"```{json.dumps(tpayload, indent=2)}```", dry_run)
             ticket_status = "drafted"
@@ -535,7 +543,7 @@ def intake(cfg, payload, dry_run):
         else:
             zap_note = "Agent is UNKNOWN — possible shadow automation; check the Zapier census before pausing anything."
         post_reply(payload["channel"], root_ts,
-                   f"{mention(cfg, 'emily')} {mention(cfg, 'roman')} — DEMOTE on *{label}* "
+                   f"{alert_mentions(cfg)} — DEMOTE on *{label}* "
                    f"from {first_name}. Registry PR ready: {demote_pr or '(see run log — PR not opened)'}. "
                    f"{zap_note}", dry_run)
 
@@ -602,7 +610,7 @@ def digest(cfg, dry_run):
     if candidates:
         lines.append(f"\n*Demotion-review candidates* (≥{cfg['digest']['review_threshold']} "
                      f"WRONG/ANNOYING in {cfg['digest']['review_window_days']}d — for "
-                     f"{mention(cfg, 'emily')}'s ledger):")
+                     f"{alert_mentions(cfg)}'s ledger):")
         for aid, n in sorted(candidates.items(), key=lambda kv: -kv[1]):
             lines.append(f"• *{agent_label(agents, aid) if aid in agents or aid == 'UNKNOWN' else aid}* — {n} reports")
     clean = state["graduation"]["clean_merges"]

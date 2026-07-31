@@ -39,14 +39,15 @@ via the Slack Events relay. Per message, the agent (posting as **@Fleet**):
 3. **Routes:**
    - All types → correction file `corrections/<agent>/YYYY-MM-DD-<slug>.md`
      (reporter, quote, classification, thread link), opened as a PR that
-     Emily merges.
+     Roman merges.
    - `BROKEN` or `critical` → HubSpot ticket per #AP007
      (`[AGENT]` title, `ticket_source=agent_feedback`, `source_agent=<id>`)
      so it enters the re-ping ladder. Draft probation: the ready-to-create
-     payload is posted in-thread for Emily to execute.
+     payload is posted in-thread for Roman to execute.
    - `DEMOTE` → the fast path, no debate, no triage: immediate thread
      confirmation ("*<agent>* dropped to Draft — nothing goes out without
-     human approval until further notice"), Emily + Roman pinged, and a
+     human approval until further notice"), Roman pinged (config
+     `slack.alerts_to`), and a
      one-click registry PR flipping the agent to `probation: draft`. The
      reporter is never asked to justify first. Zaps registered to the agent
      (registry `zaps:` field) are listed for pausing; none registered means
@@ -64,7 +65,7 @@ reporter's answer is read.
 **Friday ~4 PM PT** (`feedback-digest.yml`): one post in #agent-feedback —
 counts by agent and type, unresolved corrections aging, and any agent with
 ≥3 `WRONG`/`ANNOYING` reports in 14 days flagged as a demotion-review
-candidate for Emily's ledger. The same digest lands in
+candidate for the demotion ledger. The same digest lands in
 `state/digest-latest.md` as input to the Integrator's Monday brief. Digests
 aggregate by agent, never by person — the scoreboard tracks agents, not
 humans (reporter identity IS attached to corrections; it's a public channel).
@@ -82,9 +83,9 @@ humans (reporter identity IS attached to corrections; it's a public channel).
 Ships at **Draft**:
 
 - thread replies live (low risk, high value);
-- correction files are PRs Emily merges;
-- tickets are drafts posted in-thread for Emily;
-- the DEMOTE path opens the registry PR and pings Emily to execute — it
+- correction files are PRs Roman merges;
+- tickets are drafts posted in-thread for Roman;
+- the DEMOTE path opens the registry PR and pings Roman to execute — it
   never merges it.
 
 Classification + filing graduate to autonomous after **20 clean reports**
@@ -122,9 +123,9 @@ Live/dry-run gate: everything runs `--dry-run` until the repo variable
    Actions to create and approve pull requests"** (correction/demote PRs).
    Secrets: `ANTHROPIC_API_KEY`, `SLACK_BOT_TOKEN`, `HUBSPOT_API_KEY`
    (already present for sibling agents).
-4. **Config:** fill Emily's and Roman's Slack member IDs in
-   [config.yml](config.yml) (`slack.people`) — until then pings degrade to
-   plain names.
+4. **Config:** ping routing lives in [config.yml](config.yml)
+   `slack.alerts_to` — 2026-07-31 per Roman: everything routes to Roman.
+   Member IDs live in `slack.people`.
 5. **HubSpot:** ticket properties `ticket_source` and `source_agent` exist
    (created 2026-07-27, declared in
    [ops/hubspot-schema/properties.yml](../hubspot-schema/properties.yml)).
@@ -145,7 +146,7 @@ Expect in the log: classification (`agent=topic-gen type=WRONG`), the
 name-first ack text, the correction file body, and the PR it would open. Then
 set `dry_run: false` (with `FEEDBACK_AGENT_LIVE=true`) and confirm: thread ack
 under a minute opening with your first name, a correctly classified correction
-PR, and — for a DEMOTE test ("demote the call agent") — Emily pinged with the
+PR, and — for a DEMOTE test ("demote the call agent") — Roman pinged with the
 one-click registry PR ready. Digest fires Friday with real counts
 (`CHECK_ONLY=true` smoke mode verifies secrets without any reads/writes).
 

@@ -7,7 +7,7 @@
 registry_path: "registry.yml"
 
 # Where structured corrections land: corrections/<agent>/YYYY-MM-DD-<slug>.md,
-# opened as PRs (draft probation — Emily merges).
+# opened as PRs (draft probation — Roman merges).
 corrections_dir: "corrections"
 
 slack:
@@ -20,8 +20,13 @@ slack:
   # Slack member IDs (Uxxxxxxxx) for pings (verified against the workspace
   # 2026-07-27). If either is blank the agent falls back to a plain name.
   people:
-    emily: "U05MXK1MC5Q"   # Emily Shulman — ledger owner: merges corrections, executes demotions
+    emily: "U05MXK1MC5Q"   # Emily Shulman — kept for future delegation, not currently pinged
     roman: "U05NA7UMSSV"   # Roman Slavinsky
+  # Who receives operational pings: ticket drafts, DEMOTE alerts, and the
+  # digest's demotion-review flags. 2026-07-31 per Roman: everything runs
+  # through Roman. To delegate again, add "emily" to this list — the code
+  # reads it, no code changes needed.
+  alerts_to: ["roman"]
 
 claude:
   # Repo-standard model (matches ops/call_agent + marketing/scripts/*).
@@ -32,7 +37,7 @@ hubspot:
   # BROKEN / critical reports become tickets per #AP007 conventions
   # ([AGENT] title, ticket_source=agent_feedback, source_agent=<id>) so they
   # enter the re-ping ladder. Draft probation: the payload is posted in-thread
-  # for Emily to execute; after graduation the agent creates it directly.
+  # for the approver (slack.alerts_to) to execute; after graduation the agent creates it directly.
   # `ticket_source` and `source_agent` are custom ticket properties, created
   # 2026-07-27 and declared in ops/hubspot-schema/properties.yml (re-run that
   # sync when a new agent registers, so the source_agent enum stays current).
@@ -54,7 +59,7 @@ probation:
 
 digest:
   # Any agent with >= threshold WRONG/ANNOYING reports inside the window is
-  # flagged as a demotion-review candidate for Emily's ledger. Digests
+  # flagged as a demotion-review candidate for the demotion ledger. Digests
   # aggregate by agent, never by person — the scoreboard tracks agents.
   review_threshold: 3
   review_window_days: 14

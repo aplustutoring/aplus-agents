@@ -9,7 +9,7 @@ them over time. This is the standing #AP008 feedback loop.
 **#agent-feedback** (Slack) is the front door: any staff member posts a plain
 freeform message ("the blog picked a weird topic again"), and the Feedback
 Agent ([ops/feedback-agent/](../ops/feedback-agent/)) classifies it and opens
-a PR adding one file here. Emily merges (draft probation); merging is what
+a PR adding one file here. Roman merges (draft probation); merging is what
 accepts a correction into the log — and triggers the close-the-loop reply in
 the reporter's thread. Hand-written corrections are welcome via the same PR
 path and format.

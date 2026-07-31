@@ -352,7 +352,7 @@ agents:
       - ops/feedback-agent/state/state.json    # dedupe, pending clarifications, report log
     writes:
       - Slack                                  # thread acks, clarifying questions, demote alerts, Friday digest
-      - corrections/<agent>/                   # structured correction files, as PRs (Emily merges)
+      - corrections/<agent>/                   # structured correction files, as PRs (Roman merges)
       - registry.yml                           # DEMOTE probation flip, as a one-click PR (human merges)
       - HubSpot:tickets                        # BROKEN/critical — DRAFTED in-thread until graduation (#AP007 conventions)
       - ops/feedback-agent/state/              # state.json + digest-latest.md (Integrator Monday-brief input)
