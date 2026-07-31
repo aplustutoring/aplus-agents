@@ -889,8 +889,26 @@ def create_coaching_note(contact_id, note_html, when_utc):
     }).get("id")
 
 
+
+def fmt_phone(number):
+    """Pretty US phone for Slack display: (818) 555-1234; non-US left as-is."""
+    d = re.sub(r"\D", "", str(number or ""))
+    if len(d) == 11 and d.startswith("1"):
+        d = d[1:]
+    if len(d) == 10:
+        return f"({d[:3]}) {d[3:6]}-{d[6:]}"
+    return str(number or "?")
+
+
+def who_line(contact_label, number):
+    """Slack display name — ALWAYS includes the phone number (fleet rule,
+    Roman 2026-07-27: every call-agent Slack post carries the contact's number)."""
+    phone = f"`{fmt_phone(number)}`"
+    return f"{contact_label} {phone}" if contact_label else phone
+
+
 def build_coaching_card(agent_name, contact_label, number, time_pt, summary, card):
-    who = contact_label or f"`{number}`"
+    who = who_line(contact_label, number)
     by_dim = {s["dimension"]: s for s in card["scores"]}
     score_bits = [f"{d} {by_dim[d]['score']}" for d in RUBRIC_DIMENSIONS
                   if d in by_dim and by_dim[d]["score"] is not None]
@@ -1126,7 +1144,7 @@ def create_checkin_ticket(contact_id, contact_label, number, summary, cfg, now_u
     """
     tcfg = cfg["hubspot"]["ticket"]
     owner_id = cfg["hubspot"]["owners"][tcfg["owner"]]
-    who = contact_label or number
+    who = who_line(contact_label, number)
     content = (f"[Call Agent] Negative-sentiment/complaint call from {who} ({number}).\n\n"
                f"{summary['summary']}\n\n"
                f"Intent: {summary['intent']} · Sentiment: {summary['sentiment']}\n"
@@ -1218,7 +1236,7 @@ def build_digest(entries, skipped, failures, run_date_pt):
         if e.get("tasks_created"):
             flags += f" ({len(e['tasks_created'])} task{'s' if len(e['tasks_created']) != 1 else ''})"
         first = s["summary"].split(". ")[0].rstrip(".") + "."
-        who = e["contact_label"] or e["number"]
+        who = who_line(e["contact_label"], e["number"])
         return f"• {e['time_pt']} — {who} ({s['intent']}){flags} — {first}"
 
     attention = [e for e in entries
@@ -1243,7 +1261,7 @@ def build_digest(entries, skipped, failures, run_date_pt):
     if updated:
         lines += ["", "*Family-record updates applied*"]
         for e in updated:
-            who = e["contact_label"] or e["number"]
+            who = who_line(e["contact_label"], e["number"])
             for field, old, new in e["record_applied"]:
                 shown = new if len(str(new)) <= 80 else str(new)[:77] + "..."
                 lines.append(f"• {who}: {FIELD_LABELS.get(field, field)} — {old} → {shown}")
@@ -1252,7 +1270,7 @@ def build_digest(entries, skipped, failures, run_date_pt):
     if review:
         lines += ["", "*Proposed but NOT applied (existing value kept — review)*"]
         for e in review:
-            who = e["contact_label"] or e["number"]
+            who = who_line(e["contact_label"], e["number"])
             for field, current, proposed, _ in e["record_skipped"]:
                 lines.append(f"• {who}: {FIELD_LABELS.get(field, field)} — "
                              f"record has '{current}', call says '{proposed}'")
@@ -1391,7 +1409,7 @@ def process_call(call, cfg, dry_run, now_utc):
             task_id = create_task(
                 contact["id"] if contact else None,
                 it["item"][:250],
-                f"[Call Agent] From inbound call {call_date_pt} ({contact_label or number}).\n\n"
+                f"[Call Agent] From inbound call {call_date_pt} ({contact_label or fmt_phone(number)} · {fmt_phone(number)}).\n\n"
                 f"{summary['summary']}",
                 oid, due,
                 priority="HIGH" if is_negative else "MEDIUM",
@@ -1411,7 +1429,7 @@ def process_call(call, cfg, dry_run, now_utc):
         if no_next_step:
             create_task(
                 contact["id"] if contact else None,
-                f"Book next step with {contact_label or number} — none set on call",
+                f"Book next step with {contact_label or fmt_phone(number)} ({fmt_phone(number)}) — none set on call",
                 f"[Call Agent] New-inquiry call ended without a concrete next "
                 f"step (assessment / first session / scheduled callback). Call "
                 f"back TODAY and lock one in.\n\n{summary['summary']}",
@@ -1517,7 +1535,7 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
                  f"{number} on {line} — likely spam, no alert")
         return "suppressed"
 
-    who = label or f"`{number}`"
+    who = who_line(label, number)
     status = (contact or {}).get("properties", {}).get("hs_lead_status")
     status_txt = f" · lead status: {status_label(status)}" if status else ""
     text = (f":telephone_receiver: :x: *{ctype.capitalize()} call — {line}* ({time_pt})\n"
@@ -1548,7 +1566,7 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
 
 
 def build_alert(contact_label, number, time_pt, summary, ticket_id):
-    who = contact_label or f"`{number}`"
+    who = who_line(contact_label, number)
     lines = [
         f":rotating_light: *Negative call — {who}* ({time_pt})",
         summary["summary"],
