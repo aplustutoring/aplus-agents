@@ -234,6 +234,17 @@ po_inbox:
   # default Charter pipeline with a MOVE IT warning on the ticket.
   levelup_pipeline_id: ""
   levelup_stage_id: ""
+  # ALWAYS-filled deal properties. TODO(Roman): paste the INTERNAL names of the
+  # deal properties for each; empty entries are skipped (ticket flags anything the
+  # PO didn't state so a human fills it).
+  deal_property_map:
+    student_first: ""
+    student_last: ""
+    grade: ""
+    school: ""
+  # New PO + student has NO upcoming Teachworks lessons → post here (scheduling
+  # nudge). Students already on the calendar stay quiet. Empty = #email-agent.
+  no_lessons_channel: ""
   # Teachworks invoices are NOT creatable via the TW API (GET-only) — so each PO with
   # an amount spawns a due-dated HubSpot Task with all invoice fields (student, PO#,
   # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.

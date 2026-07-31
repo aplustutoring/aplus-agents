@@ -18,7 +18,7 @@ import sys
 import traceback
 from datetime import datetime, timedelta, timezone
 
-from . import audit, gmail_client as gm, hubspot_client as hs, slack_client
+from . import audit, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg
@@ -28,7 +28,7 @@ PO_SYSTEM = (
     "include PDF/image attachments (the actual PO document) — read them; PO details "
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
-    "student_last, po_number, amount, hours, parent_first, parent_last, parent_email, "
+    "student_last, grade, po_number, amount, hours, parent_first, parent_last, parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, po_month, level_up (bool), summary, "
     "draft_reply, confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
@@ -103,6 +103,54 @@ def _attach_po_to_deal(deal_id, attachments: list[dict], po: dict,
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  PO attach failed (non-fatal): {e}")
         note_parts.append("📎 PO upload to HubSpot failed — attach the PDF to the deal manually.")
+
+
+def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
+    """ALWAYS fill the core student properties on the deal — student first + last
+    name, grade, school — via the internal names in po_inbox.deal_property_map.
+    A separate non-fatal PATCH so a bad property name can never kill the deal."""
+    pmap = cfg()["po_inbox"].get("deal_property_map") or {}
+    values = {"student_first": po.get("student_first"), "student_last": po.get("student_last"),
+              "grade": po.get("grade"), "school": po.get("school")}
+    props = {pmap[k]: v for k, v in values.items() if pmap.get(k) and v}
+    if not props or not deal_id or deal_id == "DRYRUN":
+        missing = [k for k, v in values.items() if not v]
+        if missing:
+            note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
+        return
+    try:
+        hs._write("PATCH", f"/crm/v3/objects/deals/{deal_id}", {"properties": props})
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  deal property stamp failed (non-fatal): {e}")
+    missing = [k for k, v in values.items() if not v]
+    if missing:
+        note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
+
+
+def _no_lessons_alert(po: dict, deal_name: str, note_parts: list[str]) -> None:
+    """New PO for a student with NOTHING on the Teachworks calendar → post to the
+    Slack channel (scheduling needs to move). Student already has upcoming lessons →
+    stay quiet."""
+    p_email = (po.get("parent_email") or "").strip().lower()
+    upcoming = []
+    try:
+        if p_email:
+            upcoming = tw.upcoming_lessons_for_family(p_email, po.get("student_first") or "")
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  calendar check failed (treating as no lessons): {e}")
+    if upcoming:
+        note_parts.append(f"🗓️ {len(upcoming)} upcoming lesson(s) already on the calendar — "
+                          "no scheduling alert.")
+        return
+    channel = (cfg()["po_inbox"].get("no_lessons_channel")
+               or cfg()["slack"]["digest_channel"])
+    student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student"
+    slack_client.post_message(channel,
+                              f"🗓️ New PO, nothing on the calendar: *{student}* "
+                              f"({po.get('school') or 'school n/a'}) — deal '{deal_name}'. "
+                              f"PO {po.get('po_number') or 'n/a'}, {po.get('hours') or '?'} hrs. "
+                              f"Get them scheduled.")
+    note_parts.append("🗓️ No upcoming lessons — scheduling alert posted to Slack.")
 
 
 def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
@@ -291,8 +339,10 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
         _associate_tor(d.get("id"), po, note_parts)
+        _stamp_deal_properties(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
         _invoice_task(d.get("id"), po, note_parts)
+        _no_lessons_alert(po, name, note_parts)
         # No waiting on the next cron: run the Teachworks sync for THIS deal now.
         if d.get("id") and d.get("id") != "DRYRUN":
             try:

@@ -78,6 +78,9 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
    - name `School - Student First Last - PO 123`, close date +30 days
    - `po_number` + hours properties filled; **submission due date (end of the PO's
      service month) stamped on the deal** alongside the amount
+   - **student first + last name, grade, and school always stamped on the deal**
+     (property map in `po_inbox.deal_property_map`; anything the PO didn't state is
+     flagged on the ticket for manual fill)
    - **New Business** if the student has no prior deals, else **Existing Business**
    - owner = the **assigned scheduler** (A–L → Janelle, M–Z → Yolanda)
 4. **Parent contact fork:** parent info in the PO → HubSpot contact found-or-
@@ -95,9 +98,12 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
    the agent checks each active PO deal. Student's attended Teachworks hours have
    **used up the PO's hours** → Kath is DM'd to **submit now**; otherwise she's
    DM'd when the **end of the PO month** arrives. One prompt per deal.
-9. Ticket → Kath with everything extracted + the original email embedded as a
-   note; Slack DM to Kath (copy to Roman); labels `A+ Agent/Processed` +
-   `School/<name>`.
+9. **Scheduling nudge:** if the student has **no upcoming lessons on the
+   Teachworks calendar**, the agent posts to the Slack channel ("get them
+   scheduled"); students already on the calendar stay quiet.
+10. Ticket → Kath with everything extracted + the original email embedded as a
+    note; Slack DM to Kath (copy to Roman); labels `A+ Agent/Processed` +
+    `School/<name>`.
 
 Anything that is NOT a new PO (invoicing follow-ups, vendor renewals, COI requests,
 event invites, out-of-office) gets the `A+ Agent/Needs Review` label and a review

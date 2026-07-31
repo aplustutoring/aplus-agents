@@ -359,6 +359,60 @@ def test_po_never_gets_a_reply_draft():
     assert "ALWAYS empty" in PO_SYSTEM and "never reply to purchase" in PO_SYSTEM
 
 
+def test_student_properties_stamped_on_deal(monkeypatch):
+    patches = []
+    base = dict(po.cfg())
+    base["po_inbox"] = {**base["po_inbox"], "deal_property_map": {
+        "student_first": "student_first_name", "student_last": "student_last_name",
+        "grade": "grade_level", "school": "school_name"}}
+    monkeypatch.setattr(po, "cfg", lambda: base)
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None: patches.append((path, payload)) or {})
+    notes = []
+    po._handle_deal(_po(grade="4"), notes)
+    stamp = [x for x in patches if x[0] == "/crm/v3/objects/deals/D22"
+             and "student_first_name" in (x[1] or {}).get("properties", {})]
+    assert stamp and stamp[0][1]["properties"] == {
+        "student_first_name": "Ana", "student_last_name": "Diaz",
+        "grade_level": "4", "school_name": "iLEAD"}
+
+
+def test_missing_grade_flagged_for_manual_fill(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    notes = []
+    po._handle_deal(_po(), notes)   # no grade in the PO
+    assert any("Not in the PO: grade" in n for n in notes)
+
+
+def test_no_upcoming_lessons_posts_to_channel(monkeypatch):
+    posts = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family", lambda e, sf: [])
+    monkeypatch.setattr(po.slack_client, "post_message", lambda ch, t: posts.append((ch, t)))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com"), notes)
+    assert posts and "nothing on the calendar" in posts[0][1] and "Ana Diaz" in posts[0][1]
+    assert any("scheduling alert posted" in n for n in notes)
+
+
+def test_upcoming_lessons_no_channel_post(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family",
+                        lambda e, sf: [{"lesson_id": 1}, {"lesson_id": 2}])
+    monkeypatch.setattr(po.slack_client, "post_message",
+                        lambda *a: (_ for _ in ()).throw(AssertionError("must not post")))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com"), notes)
+    assert any("2 upcoming lesson(s) already on the calendar" in n for n in notes)
+
+
 def test_no_names_no_action(monkeypatch):
     notes = []
     po._handle_deal(_po(school="", student_first="", student_last=""), notes)
