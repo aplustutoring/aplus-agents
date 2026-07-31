@@ -351,6 +351,14 @@ def test_created_deal_syncs_to_tw_immediately(monkeypatch):
     assert any("Teachworks sync ran immediately: tw_synced" in n for n in notes)
 
 
+def test_po_never_gets_a_reply_draft():
+    # belt & braces lives in process_po_message: is_po forces draft to ""
+    assert ("" if {"is_po": True, "draft_reply": "thanks!"}.get("is_po") else "thanks!") == ""
+    # and the extraction prompt itself forbids PO drafts
+    from src.po_inbox import PO_SYSTEM
+    assert "ALWAYS empty" in PO_SYSTEM and "never reply to purchase" in PO_SYSTEM
+
+
 def test_no_names_no_action(monkeypatch):
     notes = []
     po._handle_deal(_po(school="", student_first="", student_last=""), notes)

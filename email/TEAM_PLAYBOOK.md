@@ -56,8 +56,9 @@ document get an automatic "we received it" receipt.)
 
 A separate Gmail the agent polls every 15 minutes on the same schedule as the admin
 inbox. **Every** email there gets a HubSpot ticket to **Kath** (same accountability
-spine), a Gmail label, and — when a reply makes sense — a **real Gmail draft** (the
-agent never sends from this address).
+spine) and a Gmail label. **Purchase orders never get a reply.** Non-PO mail gets a
+**real Gmail draft** when a reply makes sense (the agent never sends from this
+address).
 
 **The PO money flow is two steps:** (1) on receipt, the PO is converted to a
 Teachworks invoice; (2) once the service is delivered, that invoice is submitted
@@ -81,8 +82,9 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
    - owner = the **assigned scheduler** (A–L → Janelle, M–Z → Yolanda)
 4. **Parent contact fork:** parent info in the PO → HubSpot contact found-or-
    **created** and associated to the deal (this is what feeds Teachworks); missing →
-   the Gmail draft **asks the TOR for the parent's name/email/phone**. The **TOR's
-   contact is also associated** to the deal either way.
+   the **ticket tells Kath to get the parent's name/email/phone from the TOR** (no
+   reply is sent to POs). The **TOR's contact is also associated** to the deal
+   either way.
 5. **The PO PDF is uploaded to HubSpot and pinned to the deal.**
 6. **No cron lag:** the Teachworks sync runs for the new deal **immediately in the
    same run** — family + student exist in Teachworks the moment the deal exists

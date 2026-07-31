@@ -5,9 +5,10 @@ Per new email: extract PO details with Claude — READING PDF/image attachments
 spine as the admin inbox) → advance the matching "Waiting for PO" deal or create
 one. Parent contact info found in the PO → the HubSpot contact is found-or-created
 and associated to the deal (that's what lets the Teachworks sync create the
-family); parent info missing → the Gmail draft asks the TOR for it instead of a
-plain acknowledgment. Then: label the email → REAL Gmail draft reply → Slack DM
-Kath (+ CC) → audit. The agent never sends from this address.
+family); parent info missing → the ticket tells Kath to get it from the TOR.
+POs NEVER get a reply draft; non-PO mail gets one when warranted (drafts are
+REAL Gmail drafts a human sends). Label → ticket → Slack DM Kath (+ CC) →
+audit. The agent never sends from this address.
 """
 from __future__ import annotations
 
@@ -40,14 +41,11 @@ PO_SYSTEM = (
     "email sender) — never the parent. school_bill_to = the school's exact billing "
     "name/address from the PO (schools reject invoices with a wrong Bill To); empty if "
     "not stated. "
-    "draft_reply rules (first person plural, no em dashes, signed 'A+ Tutoring Team'): "
-    "if is_po and the parent's email AND name are present → a short warm acknowledgment "
-    "confirming receipt and next steps. If is_po but parent contact info is missing or "
-    "incomplete → a polite request to the sender (the TOR / education specialist) for the "
-    "parent's name, email, and phone so we can set the family up for scheduling, still "
-    "acknowledging the PO. Empty if no reply is warranted (automated notification or "
-    "spam). If the email is NOT PO-related (spam, misc), set is_po=false and summarize "
-    "what it is."
+    "draft_reply rules: if is_po → ALWAYS empty string (we never reply to purchase "
+    "orders). For non-PO emails that warrant a human reply → a short warm draft (first "
+    "person plural, no em dashes, signed 'A+ Tutoring Team'); empty for automated "
+    "notifications and spam. If the email is NOT PO-related (spam, misc), set "
+    "is_po=false and summarize what it is."
 )
 
 
@@ -272,8 +270,8 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                                f"{parents[0]['properties'].get('lastname', '')}".strip() + ", ")
         if not contact_id:
             contact_bit = ("NO parent contact info in the PO and no unique family match — "
-                           "the draft reply asks the TOR for it; associate the parent on "
-                           "the deal once received so the Teachworks sync picks it up, ")
+                           "get it from the TOR (no reply is sent to POs), then associate "
+                           "the parent on the deal so the Teachworks sync picks it up, ")
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
         if po.get("level_up"):
             if pc.get("levelup_pipeline_id"):
@@ -380,7 +378,7 @@ def process_po_message(stub_id: str) -> dict | None:
         gm.apply_labels(m["id"], labels)
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  label failed (non-fatal): {e}")
-    draft = (po.get("draft_reply") or "").strip()
+    draft = "" if po.get("is_po") else (po.get("draft_reply") or "").strip()
     if draft:
         try:
             sender_addr = re.search(r"<([^>]+)>", m["sender"])
