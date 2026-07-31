@@ -3,7 +3,8 @@
     "Ev0BLUFXUL3H",
     "Ev0BM3LZU6HH",
     "Ev0BM6NE5D0V",
-    "Ev0BN4FWLQJC"
+    "Ev0BN4FWLQJC",
+    "Ev0BM3US6F35"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -57,6 +58,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785536368353489"
+    },
+    {
+      "date": "2026-07-31",
+      "ts": "1785538139.972239",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "UNKNOWN",
+      "type": "IDEA",
+      "severity": "low",
+      "correction_path": "corrections/UNKNOWN/2026-07-31-fleet-status-command-request.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/55",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785538139972239"
     }
   ],
   "graduation": {
