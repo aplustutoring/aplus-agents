@@ -509,9 +509,11 @@ def intake(cfg, payload, dry_run):
     thread_ts = payload.get("thread_ts") or ""
     is_reply = bool(thread_ts) and thread_ts != payload["ts"]
 
-    # Status queries: answer in thread, file nothing. Match the first line
-    # only — some clients append attribution lines below the typed text.
-    first_line = (payload["text"].strip().splitlines() or [""])[0]
+    # Status queries: answer in thread, file nothing. Some clients append an
+    # attribution suffix ("*Sent using* <@U…>") on the same line — strip it,
+    # then match the first line of what the human actually typed.
+    typed = re.sub(r"\s*\*Sent using\*\s*<@[^>]+>\s*$", "", payload["text"].strip())
+    first_line = (typed.splitlines() or [""])[0]
     if not is_reply and STATUS_RE.search(first_line):
         post_reply(payload["channel"], payload["ts"], build_fleet_status(cfg), dry_run)
         state["processed"].append(event_key)
