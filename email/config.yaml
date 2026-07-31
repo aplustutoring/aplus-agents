@@ -192,6 +192,14 @@ deal_sync:
     "5119061": {}    # IEM Inc
     "21277473": {}   # Subscription
     # Gold Tutoring (pipeline "default") + Free Trial ("19120821"): add entries if needed
+  # Smart invoice prompt: daily (hour_pt, PT) check of every ACTIVE charter PO deal —
+  # student's attended TW hours >= PO hours → DM Kath to submit the invoice NOW;
+  # otherwise DM once the invoice due date passes (deal due property, else the
+  # deal-name '(Aug) 26/27' tag). One prompt per deal (audit invoice-prompt:{id}).
+  invoice_sweep:
+    enabled: true
+    hour_pt: 9
+    owner: kath
 
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal

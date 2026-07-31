@@ -98,7 +98,12 @@ adds service — not an invoice follow-up, statement, or renewal paperwork):
    stamped on the deal (date property named in `po_inbox.invoice_task.
    invoice_due_property`, alongside the deal amount). By then the family/student
    already exist in Teachworks via the deal sync.
-7. Ticket → Kath with everything extracted (incl. parent info + which attachments
+7. **Smart submit prompt:** every morning (9 AM PT) the agent checks each active
+   charter PO deal — if the student's **attended Teachworks hours have used up the
+   PO's hours**, Kath gets a Slack DM to submit the invoice **now**; otherwise she
+   gets it when the **invoice due date arrives** (end of the PO month, from the
+   deal's due property or the "(Aug) 26/27" deal-name tag). One prompt per deal.
+8. Ticket → Kath with everything extracted (incl. parent info + which attachments
    were read) + the original email embedded as a note; Slack DM to Kath (copy to
    Roman); labels `A+ Agent/Processed` + `School/<name>`.
 

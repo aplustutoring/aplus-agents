@@ -312,6 +312,13 @@ def run() -> None:
     if not DRY_RUN and not ds.get("dry_run_first"):
         CUR_PATH.write_text(json.dumps({"last_createdate_ms": newest}))
     print(f"deal_sync: {synced} processed (pilot={bool(ds.get('dry_run_first'))})")
+    try:
+        from . import invoice_sweep
+        invoice_sweep.run_sweep()
+    except Exception as e:  # noqa: BLE001 — the sweep must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  invoice_sweep error: {e}")
+        _tb.print_exc()
 
 
 if __name__ == "__main__":
