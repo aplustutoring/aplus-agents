@@ -2,9 +2,16 @@
   "processed": [
     "Ev0BLUFXUL3H",
     "Ev0BM3LZU6HH",
-    "Ev0BM6NE5D0V"
+    "Ev0BM6NE5D0V",
+    "Ev0BN4FWLQJC"
   ],
-  "awaiting": {},
+  "awaiting": {
+    "1785537854.599709": {
+      "user": "U05NA7UMSSV",
+      "text": "status *Sent using* <@U0AKFN28V1U>",
+      "asked_utc": "2026-07-31T22:44:47.124156+00:00"
+    }
+  },
   "reports": [
     {
       "date": "2026-07-31",
