@@ -1,7 +1,17 @@
 """PO-inbox deal handling: advance Waiting-for-PO, create when none, surface on multi."""
 import base64
 
-from src import gmail_client as gmc, po_inbox as po
+import pytest
+
+from src import deal_sync as dsy_mod, gmail_client as gmc, po_inbox as po
+
+
+@pytest.fixture(autouse=True)
+def _stub_immediate_tw_sync(monkeypatch):
+    # _handle_deal chains straight into the Teachworks sync — stub it so these
+    # tests stay unit-scoped (deal_sync has its own suite).
+    monkeypatch.setattr(dsy_mod, "sync_deal",
+                        lambda d, **k: {"action_taken": "sync_pilot_logged"})
 
 
 def _mock_po_prop(monkeypatch, result=None):
@@ -88,8 +98,11 @@ def test_po_number_dedupe_blocks_second_deal(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not create dup")))
     notes = []
+    dms = []
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
     po._handle_deal(_po(po_number="53779"), notes)
-    assert "already exists" in notes[0]
+    assert "DUPLICATE PO" in notes[0]
+    assert dms and "URGENT" in dms[0][1] and "53779" in dms[0][1]
 
 
 def test_thread_dedupe(monkeypatch):
@@ -254,11 +267,10 @@ def test_invoice_task_created_with_po_fields(monkeypatch):
                         lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
                         tasks.append((subj, body, priority)) or {"id": "T1"})
     notes = []
-    po._handle_deal(_po(school_bill_to="PCA, 13915 Danielson St, Poway CA"), notes)
-    assert tasks and "Create TW invoice" in tasks[0][0] and "$1500" in tasks[0][0]
-    assert "Bill To: PCA, 13915 Danielson St, Poway CA" in tasks[0][1]
+    po._handle_deal(_po(), notes)
+    assert tasks and "Convert PO to TW invoice" in tasks[0][0] and "$1500" in tasks[0][0]
     assert "PO #: 4471" in tasks[0][1] and tasks[0][2] == "HIGH"
-    assert any("Teachworks-invoice task created" in n for n in notes)
+    assert any("Convert-to-TW-invoice task created" in n for n in notes)
 
 
 def test_po_month_end_parsing():
@@ -287,12 +299,8 @@ def test_invoice_due_end_of_po_month_and_deal_stamped(monkeypatch):
     po._handle_deal(_po(po_month="2026-08"), notes)
     deal_patch = [p_ for p_ in patches if p_[0] == "/crm/v3/objects/deals/D44"]
     assert deal_patch and deal_patch[0][1]["properties"]["invoice_due_date"] == "2026-08-31"
-    assert tasks and "Invoice due: Aug 31, 2026 (end of PO month 2026-08)" in tasks[0][0]
-    from datetime import datetime
-    from zoneinfo import ZoneInfo
-    due_pt = datetime.fromtimestamp(tasks[0][1] / 1000, tz=ZoneInfo("America/Los_Angeles"))
-    assert due_pt.strftime("%Y-%m-%d %H") == "2026-08-31 17"
-    assert any("end of PO month" in n for n in notes)
+    assert tasks and "Submit to the school's ops system by: Aug 31, 2026" in tasks[0][0]
+    assert any("Convert-to-TW-invoice task" in n for n in notes)
 
 
 def test_no_amount_no_invoice_task(monkeypatch):
@@ -303,6 +311,44 @@ def test_no_amount_no_invoice_task(monkeypatch):
     notes = []
     po._handle_deal(_po(amount=""), notes)
     assert not any("invoice" in n.lower() for n in notes)
+
+
+def test_levelup_po_routes_to_levelup_pipeline(monkeypatch):
+    created = []
+    base = dict(po.cfg())
+    base["po_inbox"] = {**base["po_inbox"], "levelup_pipeline_id": "LU1",
+                        "levelup_stage_id": "LU-pre"}
+    monkeypatch.setattr(po, "cfg", lambda: base)
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append((pl, st)) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(level_up=True), notes)
+    assert created == [("LU1", "LU-pre")]
+    assert any("LEVEL UP PO" in n for n in notes)
+
+
+def test_levelup_unconfigured_warns(monkeypatch):
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(pl) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(level_up=True), notes)
+    assert created == ["907748"]   # falls back to default charter pipeline
+    assert any("MOVE IT" in n for n in notes)
+
+
+def test_created_deal_syncs_to_tw_immediately(monkeypatch):
+    synced = []
+    monkeypatch.setattr(dsy_mod, "sync_deal",
+                        lambda d, **k: synced.append(d) or {"action_taken": "tw_synced"})
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D33"})
+    notes = []
+    po._handle_deal(_po(), notes)
+    assert synced and synced[0]["id"] == "D33" and synced[0]["properties"]["po_number"] == "4471"
+    assert any("Teachworks sync ran immediately: tw_synced" in n for n in notes)
 
 
 def test_no_names_no_action(monkeypatch):

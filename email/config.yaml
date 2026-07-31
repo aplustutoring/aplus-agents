@@ -229,14 +229,20 @@ po_inbox:
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
   label_processed: "A+ Agent/Processed"
   label_review: "A+ Agent/Needs Review"
+  # LEVEL UP POs route to their own pipeline. TODO(Roman): paste the "Level Up A"
+  # pipeline id + its Pre-Lesson stage id; until set, Level Up POs land in the
+  # default Charter pipeline with a MOVE IT warning on the ticket.
+  levelup_pipeline_id: ""
+  levelup_stage_id: ""
   # Teachworks invoices are NOT creatable via the TW API (GET-only) — so each PO with
   # an amount spawns a due-dated HubSpot Task with all invoice fields (student, PO#,
   # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.
   invoice_task:
     enabled: true
     owner: kath
-    due_business_hours: 16   # fallback due window when the PO month isn't stated
-    # Invoice due date = END of the PO's service month (task due date + deal stamp).
+    due_business_hours: 8    # STEP 1 is same-day: convert the PO to a TW invoice on receipt
+    # STEP 2 (submitting to the school's ops system) is due at the END of the PO's
+    # service month — stamped on the deal and prompted by the invoice sweep.
     # TODO(Roman): paste the INTERNAL name of the HubSpot deal DATE property that
     # holds the invoice due / PO month (Settings → Properties → the property → 
     # internal name). Empty = deal not stamped (task still carries the date).

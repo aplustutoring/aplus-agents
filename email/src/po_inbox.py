@@ -28,7 +28,7 @@ PO_SYSTEM = (
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
     "student_last, po_number, amount, hours, parent_first, parent_last, parent_email, "
-    "parent_phone, tor_first, tor_last, tor_email, school_bill_to, po_month, summary, "
+    "parent_phone, tor_first, tor_last, tor_email, po_month, level_up (bool), summary, "
     "draft_reply, confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Invoice requests, invoicing follow-ups, payment reminders, statements, or "
@@ -144,11 +144,12 @@ def _po_month_end(po_month: str):
 
 
 def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
-    """Teachworks invoices can NOT be created via API (GET-only per the TW API docs),
-    so the last mile is a human step: a HubSpot Task with every field ready to paste
-    into Teachworks' Create Invoice form. The invoice is DUE at the end of the PO's
-    service month — that's the task due date, and it's stamped on the deal too when
-    po_inbox.invoice_due_property names a HubSpot date property."""
+    """STEP 1 of the PO money flow: on receipt, the PO is converted to a Teachworks
+    invoice — a same-day HubSpot Task for Kath (the TW API can't create invoices).
+    STEP 2 (submitting that invoice to the school's ops system once service is
+    delivered) is prompted separately by the invoice sweep. The submission due date
+    (end of the PO's service month) is stamped on the deal when
+    po_inbox.invoice_task.invoice_due_property names a HubSpot date property."""
     ic = cfg()["po_inbox"].get("invoice_task", {})
     if not ic.get("enabled") or not po.get("amount"):
         return
@@ -162,25 +163,24 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  invoice-due deal property failed (non-fatal): {e}")
         owner = cfg()["staff"].get(ic.get("owner", "kath"), {})
-        due = month_end or add_business_hours(now_la(), int(ic.get("due_business_hours", 16)))
-        due_line = (f"Invoice due: {month_end.strftime('%b %-d, %Y')} (end of PO month "
-                    f"{po.get('po_month')})" if month_end else
-                    "Invoice due: PO month not stated — confirm the service month")
+        due = add_business_hours(now_la(), int(ic.get("due_business_hours", 8)))
+        submit_line = (f"Submit to the school's ops system by: "
+                       f"{month_end.strftime('%b %-d, %Y')} (end of PO month "
+                       f"{po.get('po_month')}) — you'll be prompted when it's time." if month_end
+                       else "Submission due date: PO month not stated — confirm the service month.")
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
-        body = (f"Create the invoice in Teachworks (API can't — manual step).\n"
+        body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual).\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
                 f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
-                f"Hours: {po.get('hours') or 'n/a'}\n{due_line}\n"
-                f"Bill To: {po.get('school_bill_to') or 'NOT in the PO — confirm with the school'}\n"
+                f"Hours: {po.get('hours') or 'n/a'}\n{submit_line}\n"
                 f"HubSpot deal id: {deal_id}. The PO PDF is attached to the deal; the family/"
                 f"student are created in Teachworks by the deal sync.")
-        hs.create_task(f"Create TW invoice — {student} ({po.get('school') or '?'}, "
+        hs.create_task(f"Convert PO to TW invoice — {student} ({po.get('school') or '?'}, "
                        f"PO {po.get('po_number') or 'n/a'}, ${po.get('amount')})",
                        body, owner.get("hubspot_owner_id"),
                        int(due.timestamp() * 1000), priority="HIGH")
-        note_parts.append(f"🧾 Teachworks-invoice task created for {owner.get('name', 'Kath')} "
-                          f"(${po.get('amount')}, due {due.strftime('%b %-d')}"
-                          + (" — end of PO month" if month_end else "") + ").")
+        note_parts.append(f"🧾 Convert-to-TW-invoice task created for {owner.get('name', 'Kath')} "
+                          f"(${po.get('amount')}, due {due.strftime('%b %-d')}).")
     except Exception as e:  # noqa: BLE001 — the deal must survive a task failure
         print(f"  ⚠️  invoice task failed (non-fatal): {e}")
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
@@ -201,7 +201,12 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         dup = hs.find_deals_by_po_number(po_num) or hs.search_deals_by_name(po_num)
         if dup:
             dn = (dup[0].get("properties") or {}).get("dealname", "?")
-            note_parts.append(f"💼 Deal already exists for PO {po_num} ('{dn}') — no new deal.")
+            note_parts.append(f"💼 DUPLICATE PO {po_num} ('{dn}') — no new deal; Kath alerted.")
+            owner = cfg()["staff"].get(pc.get("owner", "kath"), {})
+            slack_client.dm(owner.get("slack_user_id"),
+                            f"🚨 URGENT — duplicate PO received: PO {po_num} already has deal "
+                            f"'{dn}'. Check whether the school re-sent it or this is a second "
+                            f"authorization before doing anything.")
             return
     waiting = (hs.search_deals_by_name(token, pc["deal_pipeline_id"], pc["waiting_for_po_stage"])
                if pc.get("waiting_for_po_stage") else [])   # stage retired → always create
@@ -269,8 +274,18 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
             contact_bit = ("NO parent contact info in the PO and no unique family match — "
                            "the draft reply asks the TOR for it; associate the parent on "
                            "the deal once received so the Teachworks sync picks it up, ")
+        pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
+        if po.get("level_up"):
+            if pc.get("levelup_pipeline_id"):
+                pipeline_id = pc["levelup_pipeline_id"]
+                stage_id = pc.get("levelup_stage_id") or stage_id
+                note_parts.append("⤴️ LEVEL UP PO → Level Up A pipeline.")
+            else:
+                note_parts.append("⚠️ LEVEL UP detected but po_inbox.levelup_pipeline_id is "
+                                  "not configured — deal created in the default Charter "
+                                  "pipeline; MOVE IT and set the config.")
         d = hs.create_deal(name or f"PO {po.get('po_number') or '(new)'}",
-                           pc["deal_pipeline_id"], pc["advance_to_stage"], po.get("amount") or None,
+                           pipeline_id, stage_id, po.get("amount") or None,
                            contact_id=contact_id,
                            dealtype=dtype, owner_id=sched.get("hubspot_owner_id"),
                            closedate_ms=close_ms, extra_props=extra)
@@ -280,6 +295,17 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         _associate_tor(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
         _invoice_task(d.get("id"), po, note_parts)
+        # No waiting on the next cron: run the Teachworks sync for THIS deal now.
+        if d.get("id") and d.get("id") != "DRYRUN":
+            try:
+                from . import deal_sync
+                rec = deal_sync.sync_deal(
+                    {"id": d["id"], "properties": {
+                        "pipeline": pipeline_id, "dealname": name, "po_number": po_num}}) or {}
+                note_parts.append(f"🔄 Teachworks sync ran immediately: "
+                                  f"{rec.get('action_taken', 'skipped')}.")
+            except Exception as e:  # noqa: BLE001 — the 15-min sync will retry
+                print(f"  ⚠️  immediate TW sync failed (cron will retry): {e}")
 
 
 def _thread_already_handled(thread_id: str) -> bool:

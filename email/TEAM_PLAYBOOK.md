@@ -59,61 +59,43 @@ inbox. **Every** email there gets a HubSpot ticket to **Kath** (same accountabil
 spine), a Gmail label, and — when a reply makes sense — a **real Gmail draft** (the
 agent never sends from this address).
 
+**The PO money flow is two steps:** (1) on receipt, the PO is converted to a
+Teachworks invoice; (2) once the service is delivered, that invoice is submitted
+to the school's ops system. The agent drives both.
+
 **When the email is a NEW purchase order** (a funding authorization that starts or
 adds service — not an invoice follow-up, statement, or renewal paperwork):
 
-1. The agent extracts school, student, PO #, amount, hours, **and the parent's
-   contact info — reading PDF/image attachments (the actual PO document) directly**,
-   not just the email body.
-2. **Dedupe:** if a deal already carries that PO # (the `po_number` property, with
-   deal-name search as backstop), no new deal — the ticket notes the existing one.
-3. Otherwise it **creates the deal** in the Charter pipeline at **Pre-Lesson**:
+1. The agent extracts school, student, PO #, amount, hours, the PO's **service
+   month**, and the parent's + TOR's contact info — **reading PDF/image attachments
+   (the actual PO document) directly**, not just the email body.
+2. **Dedupe:** if a deal already carries that PO # → **no new deal + an URGENT
+   Slack DM to Kath** (is it a re-send or a second authorization?).
+3. Otherwise it **creates the deal** at Pre-Lesson — in the **Level Up A pipeline
+   when the PO mentions LEVEL UP** (`po_inbox.levelup_pipeline_id`), else the
+   Charter pipeline:
    - name `School - Student First Last - PO 123`, close date +30 days
-   - `po_number` + hours properties filled
+   - `po_number` + hours properties filled; **submission due date (end of the PO's
+     service month) stamped on the deal** alongside the amount
    - **New Business** if the student has no prior deals, else **Existing Business**
    - owner = the **assigned scheduler** (A–L → Janelle, M–Z → Yolanda)
-4. **Parent contact — the fork that decides everything downstream:**
-   - **Parent info found in the PO/email** → the agent finds the HubSpot contact by
-     the parent's email, **creates it if new** (name/email/phone from the PO), and
-     associates it to the deal — this is what lets the Teachworks sync (below)
-     create the family. The Gmail draft is a normal warm acknowledgment.
-   - **Parent info missing** → the Gmail **draft asks the TOR/sender for the
-     parent's name, email, and phone** (while still acknowledging the PO). Fallback:
-     if an existing family contact uniquely matches the student's name, it's
-     associated anyway.
-   - **The Teacher of Record is also associated to the deal** (find-or-created by
-     email, usually the sender). The parent stays the deal's family contact — the
-     Teachworks sync picks whichever contact matches the deal-name parent, so the
-     TOR on the deal never becomes a Teachworks family.
-5. **The PO document itself is uploaded to HubSpot and pinned to the deal** as a
-   note attachment — the deal record carries the actual PDF. (If the upload fails,
-   the ticket says "attach the PDF to the deal manually".)
-6. **Invoice step (manual by design):** Teachworks' API cannot create invoices, so
-   for every PO with an amount the agent creates a **HubSpot Task for Kath** — HIGH
-   priority, **due at the END of the PO's service month** (the month the PO covers,
-   e.g. "Aug 26/27" → due Aug 31; fallback 2 business days when the month isn't
-   stated) — with everything ready to paste into Teachworks' Create Invoice form:
-   student, school, PO #, amount, hours, invoice due date, and the school's exact
-   **Bill To** from the PO (wrong Bill To = rejected invoice). The due date is also
-   stamped on the deal (date property named in `po_inbox.invoice_task.
-   invoice_due_property`, alongside the deal amount). By then the family/student
-   already exist in Teachworks via the deal sync.
-7. **Smart submit prompt:** every morning (9 AM PT) the agent checks each active
-   charter PO deal — if the student's **attended Teachworks hours have used up the
-   PO's hours**, Kath gets a Slack DM to submit the invoice **now**; otherwise she
-   gets it when the **invoice due date arrives** (end of the PO month, from the
-   deal's due property or the "(Aug) 26/27" deal-name tag). One prompt per deal.
-8. Ticket → Kath with everything extracted (incl. parent info + which attachments
-   were read) + the original email embedded as a note; Slack DM to Kath (copy to
-   Roman); labels `A+ Agent/Processed` + `School/<name>`.
-
-**What Kath does:** review the ticket, send the Gmail draft (especially the
-parent-info request drafts — that's the loop that unblocks Teachworks), and check
-the deal note. If it says **"NO parent contact info"**, the family reaches
-Teachworks only after the parent contact is associated on the deal — when the TOR
-replies with the info, add the contact and associate it (or forward to the agent's
-next poll). **What the scheduler does:** the deal is on your board at Pre-Lesson;
-get the student scheduled.
+4. **Parent contact fork:** parent info in the PO → HubSpot contact found-or-
+   **created** and associated to the deal (this is what feeds Teachworks); missing →
+   the Gmail draft **asks the TOR for the parent's name/email/phone**. The **TOR's
+   contact is also associated** to the deal either way.
+5. **The PO PDF is uploaded to HubSpot and pinned to the deal.**
+6. **No cron lag:** the Teachworks sync runs for the new deal **immediately in the
+   same run** — family + student exist in Teachworks the moment the deal exists
+   (the 15-min sync remains as backstop).
+7. **STEP 1 task — convert the PO to a Teachworks invoice:** a same-day HIGH task
+   for Kath with student, school, PO #, amount, hours, and the submission due date.
+8. **STEP 2 prompt — submit to the school's ops system:** every morning (9 AM PT)
+   the agent checks each active PO deal. Student's attended Teachworks hours have
+   **used up the PO's hours** → Kath is DM'd to **submit now**; otherwise she's
+   DM'd when the **end of the PO month** arrives. One prompt per deal.
+9. Ticket → Kath with everything extracted + the original email embedded as a
+   note; Slack DM to Kath (copy to Roman); labels `A+ Agent/Processed` +
+   `School/<name>`.
 
 Anything that is NOT a new PO (invoicing follow-ups, vendor renewals, COI requests,
 event invites, out-of-office) gets the `A+ Agent/Needs Review` label and a review

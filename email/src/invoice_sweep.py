@@ -148,9 +148,10 @@ def run_sweep(force: bool = False) -> None:
         hours_bit = (f" Hours used: {used:g}/{po_hours:g}." if used is not None and po_hours
                      else "")
         slack_client.dm(owner.get("slack_user_id"),
-                        f"🧾 Time to submit the invoice — {dealname}: {reason}."
+                        f"🧾 Time to SUBMIT the invoice to the school's ops system — "
+                        f"{dealname}: {reason}."
                         f" PO {p.get('po_number') or 'n/a'}, ${p.get('amount') or '?'}."
-                        f"{hours_bit} Create it in Teachworks now.")
+                        f"{hours_bit} The TW invoice was created at PO receipt — submit it now.")
         cc = cfg().get("notify", {}).get("cc_owner_dms_to")
         if cc and cc != sw.get("owner", "kath"):
             ccs = cfg()["staff"].get(cc, {})
