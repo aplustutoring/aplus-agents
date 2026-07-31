@@ -50,6 +50,7 @@ on:
 permissions:
   contents: write        # correction/demote branches + state commit-back
   pull-requests: write   # gh pr create
+  actions: read          # fleet-status command reads today's run history
 
 jobs:
   intake:

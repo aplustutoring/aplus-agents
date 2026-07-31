@@ -62,6 +62,13 @@ Thread replies in the channel are ignored by intake (they're conversation),
 except in threads @Fleet started with a clarifying question, where the
 reporter's answer is read.
 
+**Status command:** a top-level message of just "status" (or "fleet status",
+"how's the fleet", "how are my agents") is answered, not filed — a thread
+reply with today's fleet rundown: latest Actions run per workflow with
+green/red and PT times, failures linked, open correction/demote PR counts,
+and who's on Draft probation. Deterministic keyword match, so real reports
+can't be swallowed by it.
+
 **Friday ~4 PM PT** (`feedback-digest.yml`): one post in #agent-feedback —
 counts by agent and type, unresolved corrections aging, and any agent with
 ≥3 `WRONG`/`ANNOYING` reports in 14 days flagged as a demotion-review

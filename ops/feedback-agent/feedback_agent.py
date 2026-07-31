@@ -56,6 +56,15 @@ GH_TOKEN          = os.getenv("GH_TOKEN", "") or os.getenv("GITHUB_TOKEN", "")
 REPORT_TYPES = ["BROKEN", "WRONG", "ANNOYING", "IDEA", "DEMOTE"]
 SEVERITIES = ["critical", "normal", "low"]
 
+# Status queries are answered, not filed. Deterministic match (no Claude call)
+# so a genuine report never gets swallowed by a fuzzy "looks like a question".
+STATUS_RE = re.compile(
+    r"^\s*(fleet\s+)?status\??\s*$"
+    r"|^how'?s\s+the\s+fleet\b"
+    r"|^how\s+are\s+(the\s+|my\s+)?agents\b",
+    re.IGNORECASE,
+)
+
 
 # ─── Config / state ───────────────────────────────────────────────────────────
 
@@ -94,6 +103,7 @@ def load_registry_agents(cfg):
         agents[a["id"]] = {
             "name": a.get("name", a["id"]),
             "status": a.get("status", "unverified"),
+            "probation": a.get("probation"),
             "zaps": a.get("zaps", []),
         }
     return agents
@@ -416,6 +426,70 @@ def create_ticket(payload):
     return r.json().get("id")
 
 
+# ─── Fleet status ("status" in the channel answers, never files) ──────────────
+
+def gh_api(path, params=None):
+    r = requests.get(
+        f"https://api.github.com{path}",
+        headers={"Authorization": f"Bearer {GH_TOKEN}",
+                 "Accept": "application/vnd.github+json"},
+        params=params, timeout=20,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
+def build_fleet_status(cfg):
+    """Today's fleet rundown: latest Actions run per workflow (every agent is
+    a workflow, so the Actions history IS the heartbeat), open correction and
+    demote PRs, and who's on Draft probation."""
+    from zoneinfo import ZoneInfo
+    repo = os.getenv("GITHUB_REPOSITORY", "aplustutoring/aplus-agents")
+    pt = ZoneInfo("America/Los_Angeles")
+    now_pt = datetime.now(pt)
+    day_start_utc = now_pt.replace(hour=0, minute=0, second=0, microsecond=0) \
+        .astimezone(timezone.utc)
+    runs = gh_api(f"/repos/{repo}/actions/runs",
+                  {"created": f">={day_start_utc.isoformat()}", "per_page": 100}) \
+        .get("workflow_runs", [])
+    latest = {}
+    for r in runs:                       # API returns newest-first
+        latest.setdefault(r["name"], r)
+
+    icon = {"success": "✅", "failure": "❌", "timed_out": "❌",
+            "startup_failure": "❌", "cancelled": "⚠️"}
+    lines, problems = [], []
+    for name, r in sorted(latest.items()):
+        if r["status"] != "completed":
+            lines.append(f"🔄 {name} — running now")
+            continue
+        t = datetime.fromisoformat(r["created_at"].replace("Z", "+00:00")) \
+            .astimezone(pt).strftime("%-I:%M %p")
+        line = f"{icon.get(r['conclusion'], '⚠️')} {name} — {t}"
+        if r["conclusion"] != "success":
+            line += f" — <{r['html_url']}|run log>"
+            problems.append(name)
+        lines.append(line)
+    if not latest:
+        lines.append("No workflow runs yet today.")
+
+    prs = gh_api(f"/repos/{repo}/pulls", {"state": "open", "per_page": 100})
+    n_corr = sum(1 for p in prs if p["head"]["ref"].startswith("corrections/"))
+    n_demote = sum(1 for p in prs if p["head"]["ref"].startswith("demote/"))
+    drafts = [m["name"] for m in load_registry_agents(cfg).values()
+              if m.get("probation") == "draft"]
+
+    header = [f"*Fleet status — {now_pt.strftime('%a %b %-d, %-I:%M %p PT')}*"]
+    if problems:
+        header.append("⚠️ Needs attention: " + ", ".join(problems))
+    header.append("")
+    footer = ["", f"Open corrections awaiting review: {n_corr}"
+              + (f" · demote PRs pending: {n_demote}" if n_demote else "")]
+    if drafts:
+        footer.append("On Draft probation: " + ", ".join(drafts))
+    return "\n".join(header + lines + footer)
+
+
 # ─── Intake ───────────────────────────────────────────────────────────────────
 
 def now_utc():
@@ -434,6 +508,15 @@ def intake(cfg, payload, dry_run):
 
     thread_ts = payload.get("thread_ts") or ""
     is_reply = bool(thread_ts) and thread_ts != payload["ts"]
+
+    # Status queries: answer in thread, file nothing.
+    if not is_reply and STATUS_RE.search(payload["text"].strip()):
+        post_reply(payload["channel"], payload["ts"], build_fleet_status(cfg), dry_run)
+        state["processed"].append(event_key)
+        if not dry_run:
+            save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
+        log.info("status query answered")
+        return
     clarification = None
     if is_reply:
         # Thread replies are conversation, not new reports — except answers in
