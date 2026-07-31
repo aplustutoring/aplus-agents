@@ -93,6 +93,7 @@ agents:
     name: Blog metrics scorecard (Monday 9 AM PT)
     owner: roman@wetutorathome.com
     status: active
+    probation: draft   # DEMOTED 2026-07-31 via #agent-feedback
     trigger:
       type: cron
       schedule: ["0 16 * * 1 (09:00 PDT Mon)", "0 17 * * 1 (09:00 PST Mon)"]
