@@ -1,7 +1,25 @@
 {
-  "processed": [],
+  "processed": [
+    "Ev0BLUFXUL3H"
+  ],
   "awaiting": {},
-  "reports": [],
+  "reports": [
+    {
+      "date": "2026-07-31",
+      "ts": "1785534000.810129",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "topic-gen",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/topic-gen/2026-07-31-topic-gen-weird-picks-recurring.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/51",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785534000810129"
+    }
+  ],
   "graduation": {
     "clean_merges": 0
   }
