@@ -89,10 +89,120 @@
     399776217,
     399798047,
     399837631,
-    399873297
+    399873297,
+    399918911
   ],
-  "last_run_utc": "2026-07-31T20:04:10.940977+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-07-31T21:29:42.619451+00:00",
+  "pending_digest": [
+    {
+      "call_id": 399918911,
+      "number": "16263288076",
+      "time_pt": "1:30 PM",
+      "matched": true,
+      "contact_label": "Han,Ke N/A",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Dan Li (Daisy) called to ask whether A+ Tutoring offers proctoring services for her two children's Stanford OHS exams. She has two students \u2014 Jenae Han (rising 10th) and Terris Han (7th) \u2014 and prefers in-person proctoring near ZIP 91604. Paola explained A+ has no student location but can meet at the family's home, library, or coffee shop, and will check tutor availability and follow up via email. Dan also noted she previously emailed the wrong address; Paola confirmed the correct admin@wetutorathome.com.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check tutor availability for in-person proctoring services in ZIP 91604",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Email Dan Li at lidancc@gmail.com from paola@wetutorathome.com confirming whether proctoring is available and next steps",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family inquiry; spoke with parent about proctoring services, not charter-funded and no diagnostic required.",
+        "student_or_school_names_mentioned": [
+          "Jenae Han",
+          "Terris Han",
+          "Stanford OHS"
+        ],
+        "record_updates": {
+          "whats_going_on": "Parent Dan Li called asking whether A+ offers in-person proctoring services for her two children's Stanford Online High School exams (midterms/finals). Students are Jenae Han (rising 10th grade) and Terris Han (7th grade); family is in ZIP 91604. She noted she previously emailed the wrong address trying to reach us.",
+          "what_we_can_do_to_help": "Check whether any of our tutors are available/willing to serve as in-person proctors near 91604 (at the family's home, a library, or a coffee shop) and email Dan at lidancc@gmail.com with confirmation and next steps so Stanford OHS can register us as their proctor.",
+          "student_first_name": "Jenae",
+          "student_last_name": "Han",
+          "grade_level": "10",
+          "student_school": "Stanford OHS",
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Parent Dan Li called asking whether A+ offers in-person proctoring services for her two children's Stanford Online High School exams (midterms/finals). Students are Jenae Han (rising 10th grade) and Terris Han (7th grade); family is in ZIP 91604. She noted she previously emailed the wrong address trying to reach us."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check whether any of our tutors are available/willing to serve as in-person proctors near 91604 (at the family's home, a library, or a coffee shop) and email Dan at lidancc@gmail.com with confirmation and next steps so Stanford OHS can register us as their proctor."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Jenae"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Han"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "10"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Stanford OHS"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check tutor availability for in-person proctoring services in ZIP 91604",
+          81494333
+        ],
+        [
+          "Email Dan Li at lidancc@gmail.com from paola@wetutorathome.com confirming whether proctoring is available and next steps",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
