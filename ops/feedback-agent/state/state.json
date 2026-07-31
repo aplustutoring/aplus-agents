@@ -1,7 +1,8 @@
 {
   "processed": [
     "Ev0BLUFXUL3H",
-    "Ev0BM3LZU6HH"
+    "Ev0BM3LZU6HH",
+    "Ev0BM6NE5D0V"
   ],
   "awaiting": {},
   "reports": [
@@ -34,6 +35,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785534536866779"
+    },
+    {
+      "date": "2026-07-31",
+      "ts": "1785536368.353489",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "blog-metrics",
+      "type": "DEMOTE",
+      "severity": "normal",
+      "correction_path": "corrections/blog-metrics/2026-07-31-scorecard-double-counting-views.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/53",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785536368353489"
     }
   ],
   "graduation": {
