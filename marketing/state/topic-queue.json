@@ -1,91 +1,76 @@
 {
-  "current_week": "2026-07-23",
+  "current_week": "2026-07-30",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "NWEA's new national study \u2014 chronic absenteeism is a direct brake on academic recovery",
-      "category": "E (primary) / B (secondary)",
+      "headline": "NWEA's July 21 study \u2014 chronic absenteeism is the ceiling on academic recovery, and MAP Growth data from 2,000 districts now proves it",
+      "category": "E (research/academic) \u2014 strongest candidate from this lens: peer-quality research brief, published 10 days ago, from a source A+ partners already trust for universal screening",
       "sources": [
-        "https://www.nwea.org/news-center/press-releases/new-nwea-study-finds-chronic-absenteeism-associated-with-slower-academic-recovery/"
+        "https://www.nwea.org/news-center/press-releases/new-nwea-study-finds-chronic-absenteeism-associated-with-slower-academic-recovery/",
+        "https://www.nwea.org/research/publication/chronic-absenteeism-a-continued-impediment-to-academic-recovery/"
       ],
-      "why_matters": "NWEA examined the relationship between chronic absenteeism and academic recovery from COVID-era disruptions using MAP Growth data from 2,000 U.S. school districts, and found that 1 in 4 students misses at least one day every other week on average \u2014 and 1 in 3 in high-poverty districts. This is the single strongest evidence anchor of the past 14 days and it hits every one of A+'s partner types (independent-study charters with historically higher absenteeism than site-based). It also connects a Category B \"problem story\" to a Category E research release \u2014 the most valuable overlap for our audience.",
-      "angle": "\"Attendance isn't the tutoring problem. But it is the tutoring precondition. Here's what the new NWEA data means for how charter schools should structure Tier 2/3 dosage.\"",
-      "roman_take": "The conviction move \u2014 call out that most intervention vendors sell \"sessions delivered\" as their KPI, when the NWEA data proves attended dosage is the only number that matters; challenge peers to publish attendance-adjusted outcomes.",
-      "danielle_take": "The implementation move \u2014 walk through how A+'s partner schools structure make-up sessions, family communication, and MTSS attendance flags so that Tier 3 kids actually hit the 3x/week threshold the research requires.",
-      "redundancy_max_similarity": 0.3594558790295434,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-07-25T16:24:46.805859+00:00",
-      "post_date": "2026-07-27",
-      "bundle_dir": "aplus-content/2026-07-27-chronic-absenteeism-tier-3-tutoring",
-      "hubspot_post_id": "217971192938"
+      "why_matters": "Chronic absenteeism remains staggeringly high post-pandemic, with 1 in 4 students missing at least one day every other week, and 1 in 3 in high-poverty districts. Every A+ partner charter (independent study, hybrid, virtual academy) is battling this daily. Meanwhile, NSSA's own attendance research shows tutoring can do more than boost test scores \u2014 on average, students were 1.2 percentage points less likely to be absent on days they were scheduled to receive tutoring, suggesting the tutoring relationship itself pulls kids back into the classroom. A+ can bridge NWEA's problem statement with NSSA's evidence-based answer in one post \u2014 only A+ can say \"our tutoring model was designed for the exact student profile NWEA is describing.\"",
+      "angle": "New NWEA data + NSSA attendance research = the case for scheduled, relationship-based tutoring as an attendance intervention, not just an academic one.",
+      "roman_take": "Conviction angle \u2014 \"The absenteeism crisis is a relationship crisis. NWEA measured it; NSSA showed relationships fix it. Software doesn't. Screens don't. Scheduled human contact does.\" Anchor to A+'s human-first thesis.",
+      "danielle_take": "Implementation angle \u2014 for charter directors: how to structure Tier 2/3 intervention scheduling so tutoring becomes an attendance driver (fixed weekly slots, same tutor, family-visible schedule) rather than a pull-out that competes with instruction.",
+      "redundancy_max_similarity": 0.4952433413444894,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "The Aspire renewal denial is a warning shot for every nonclassroom-based charter in A+'s book",
-      "category": "C (charter/district news) with A (accountability/funding policy) overlay",
+      "headline": "Visions In Education opens its 26th year with a growth-momentum story (Tier A partner)",
+      "category": "C (with an assist to B \u2014 the story is quantitatively about the outcomes A+ helps drive)",
       "sources": [
-        "https://piedmontexedra.com/2026/07/puzzled-california-state-board-faults-legislature-as-it-denies-charter-school-appeal",
-        "https://www.calschoolnews.org/2026/07/state-board-urges-clarification-california-charter-school-law.html",
-        "https://edsource.org/2026/puzzled-california-state-board-faults-legislature-as-it-denies-charter-school-appeal/761876"
+        "https://www.viedu.org/news-cat/welcome-to-visions-2026/"
       ],
-      "why_matters": "The State Board voted to take no action on Aspire's appeal, hamstrung by a charter law that Gov. Newsom pushed through eight years ago to bring predictability to a litigious renewal process, and Aspire is among nearly 1,300 California charter schools facing renewal in the next few years. This was the first major charter school renewal case to reach the State Board under AB 1505, and Board members said the case revealed ambiguity over how districts should weigh different measures of student achievement. Every Tier A partner (iLEAD Lancaster just renewed Nov 2025 under this framework; South Sutter, Ocean Grove, Heritage Peak, Visions, Sage Oak, Compass, EPIC, Pacific Coast Academy all face this) is now operating in a legal environment where districts can weight bad test scores over college/career outcomes with no clear rulebook. That's exactly the environment where a documented intervention program with reclassification proof points becomes a renewal insurance policy.",
-      "angle": "Frame the Aspire decision as the new baseline reality \u2014 districts can now legally weigh test scores heavily in renewal, so charter EDs need documented intervention outcomes in their renewal binders, not just enrichment stories.",
-      "roman_take": "Charter schools were promised predictability under AB 1505 and got the opposite \u2014 the only defense is math-and-ELA outcomes you can prove line-by-line, and if you're not building that evidence file starting in year one of the renewal cycle, you're negotiating from the loser's chair.",
-      "danielle_take": "For every charter director reading Aspire's obit: the operational fix is boring \u2014 quarterly NWEA growth reports tied to your intervention roster, LTEL reclassification counts with names attached, and Title III spend-down documentation. That's the paper trail that survives a hostile authorizer. ---",
-      "redundancy_max_similarity": 0.44776100990289536,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-07-25T16:47:02.269342+00:00",
-      "post_date": "2026-07-29",
-      "bundle_dir": "aplus-content/2026-07-29-aspire-charter-renewal-denial-ab",
-      "hubspot_post_id": "217971211891"
+      "why_matters": "Visions is a Tier A partner AND a confirmed Title III Immigrant recipient. When Visions' own superintendent flags \"increasing graduation rates\" and \"declining withdrawal rates\" as the year's headline, A+ has earned the right to comment on the intervention infrastructure that supports those metrics \u2014 especially for ELs and LTELs. This is the rare partner news where A+ can post publicly without pitching.",
+      "angle": "Congratulate Visions on Year 26 and connect the growth signals (retention, graduation) to what happens when NCB charters build intervention muscle around EL and LTEL students.",
+      "roman_take": "Conviction angle \u2014 \"declining withdrawal rates\" isn't an accident at scale; it's what happens when NCB schools treat intervention as a retention lever, not a compliance box.",
+      "danielle_take": "Implementation angle \u2014 what does a 7,769-student NCB school actually need in place operationally to make Title III dollars translate into reclassification and grad-rate movement?",
+      "redundancy_max_similarity": 0.43814920417156156,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "Varsity Tutors' \"Live+AI\" launch \u2014 what the biggest competitor's pivot tells charter directors about the intervention buy",
-      "category": "D (primary), B (secondary)",
+      "headline": "Varsity Tutors' Live+AI + White House pledge is redefining what \"high-dosage tutoring\" means in the market \u2014 and A+ needs to plant its flag",
+      "category": "D (industry/competitor moves)",
       "sources": [
-        "https://www.edtechinnovationhub.com/news/varsity-tutors-launches-liveai-to-link-human-tutoring-with-always-on-ai",
-        "https://www.varsitytutors.com/school-solutions"
+        "https://www.stocktitan.net/news/NRDY/varsity-tutors-signs-white-house-pledge-to-advance-ai-education-for-q6b7qucfq53u.html",
+        "https://www.businesswire.com/news/home/20250429401366/en/",
+        "https://www.aei.org/education/ai-has-come-for-k-12-education/"
       ],
-      "why_matters": "This is the strongest competitive-intel signal of the quarter. Nerdy CEO Chuck Cohn framed Live+AI as delivering on the mission to \"transform intervention into impact\" by combining live tutors, AI-driven practice, and predictive analytics in one seamless platform, helping schools \"double proficiency growth while reducing teacher workload.\" Varsity is already positioned as \"the leading provider of research-based, live online 1:1 and small group high-dosage tutoring,\" trusted by more than 500 schools including 46 school districts in Michigan alone. The pitch to charter directors is now \"human tutors PLUS always-on AI,\" at scale, with dashboards. A+ cannot out-scale that. What A+ CAN do is out-specify it: LTEL reclassification proof, ELPAC-level Title III alignment, human tutors who know the charter's SIS and the counselor by name. This is exactly the topic where A+'s smallness is the story.",
-      "angle": "\"The biggest tutoring platform in the country just launched an AI+human hybrid. Here's what charter directors should actually be asking vendors this year \u2014 and the three questions that separate a platform from an intervention partner.\"",
-      "roman_take": "The conviction post \u2014 \"AI dashboards don't reclassify LTELs. People do. Here's the math on what 'double proficiency growth' actually costs when the tutor doesn't know your kid's name.\"",
-      "danielle_take": "The implementation post \u2014 \"I sat with a Title III coordinator last week comparing vendor decks. Here's the checklist I use to separate an intervention partner from a login.\" (Pull from Title III pitch angles for Ocean Grove / South Sutter / Visions / Heartland / Pacific Coast.)",
-      "redundancy_max_similarity": 0.49833590826745033,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-07-25T17:17:30.475930+00:00",
-      "post_date": "2026-07-31",
-      "bundle_dir": "aplus-content/2026-07-31-varsity-live-ai-charter-directors",
-      "hubspot_post_id": "217974790796"
+      "why_matters": "Nerdy just signed a four-year White House \"Investing in AI Education\" pledge to broaden AI literacy and accelerate student academic growth while preserving human connection in teaching, and its Live+AI platform is being positioned as an AI-powered, high-dosage tutoring and live intervention platform designed to accelerate learning and close achievement gaps. They're already claiming 2X gains in targeted skill areas across 1,000+ district partnerships. This isn't a features race A+ can win \u2014 but the *meaning* of \"high-dosage tutoring\" is being rewritten in real time, and if A+ doesn't articulate what it does differently (credentialed CA teachers, small-cohort continuity, direct charter partnership rather than platform-at-scale), it gets subsumed into the Varsity narrative by default. Adding urgency: a September 2025 RAND survey found 54% of K\u201312 students used AI for school, up more than 15 percentage points in two years, so the buyer conversation has already shifted.",
+      "angle": "\"High-dosage tutoring\" is becoming a category term the biggest players are redefining around AI scale. Here's what it still means when a credentialed teacher shows up for the same kids every week.",
+      "roman_take": "The AI + tutoring narrative treats human relationship as a *feature*; for A+ it's the whole product. Roman draws the line \u2014 a platform with 10 million hours of instruction is not the same thing as a teacher who knows your name.",
+      "danielle_take": "Danielle walks through what she actually asks charter partners: how many of your students would recognize their tutor on the street? That's the metric, and no AI dashboard reports it.",
+      "redundancy_max_similarity": 0.5226956787653069,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1784861825.848909",
-    "posted_at": "2026-07-23T19:51:59.049061-07:00",
+    "message_ts": "1785468096.821949",
+    "posted_at": "2026-07-30T20:16:16.579062-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1784861826.080209"
+        "ts": "1785468097.104659"
       },
       {
         "slot": 2,
-        "ts": "1784861826.289249"
+        "ts": "1785468097.371679"
       },
       {
         "slot": 3,
-        "ts": "1784861826.511549"
+        "ts": "1785468097.644709"
       }
     ],
     "processed_reply_ts": []
@@ -94,7 +79,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-07-23T19:51:59.049061-07:00",
+    "approved_at": "2026-07-30T20:16:16.579062-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null
