@@ -1,6 +1,7 @@
 {
   "processed": [
-    "Ev0BLUFXUL3H"
+    "Ev0BLUFXUL3H",
+    "Ev0BM3LZU6HH"
   ],
   "awaiting": {},
   "reports": [
@@ -18,6 +19,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785534000810129"
+    },
+    {
+      "date": "2026-07-31",
+      "ts": "1785534536.866779",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "spotlight-orchestrator",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-07-31-stale-school-logo-hero.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/52",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785534536866779"
     }
   ],
   "graduation": {
