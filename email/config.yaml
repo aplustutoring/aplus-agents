@@ -229,19 +229,19 @@ po_inbox:
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
   label_processed: "A+ Agent/Processed"
   label_review: "A+ Agent/Needs Review"
-  # LEVEL UP POs route to their own pipeline. TODO(Roman): paste the "Level Up A"
-  # pipeline id + its Pre-Lesson stage id; until set, Level Up POs land in the
-  # default Charter pipeline with a MOVE IT warning on the ticket.
-  levelup_pipeline_id: ""
-  levelup_stage_id: ""
-  # ALWAYS-filled deal properties. TODO(Roman): paste the INTERNAL names of the
-  # deal properties for each; empty entries are skipped (ticket flags anything the
-  # PO didn't state so a human fills it).
+  # LEVEL UP POs route to "Amy - Charter - iLead - Level Up" (Level Up A).
+  # Verified against the portal 2026-07-31.
+  levelup_pipeline_id: "88841552"
+  levelup_stage_id: "164922249"    # its Pre-Lesson stage
+  # ALWAYS-filled deal properties — INTERNAL names verified against the portal
+  # 2026-07-31. Ticket flags anything the PO didn't state so a human fills it.
   deal_property_map:
-    student_first: ""
-    student_last: ""
-    grade: ""
-    school: ""
+    student_first: "student_first_name"
+    student_last: "student_last_name_if_diff_from_parent"   # label: Student Last Name
+    grade: "student_grade"
+    school: "student_school"
+    parent_email: "parent_email"
+    parent_phone: "parent_phone"
   # New PO + student has NO upcoming Teachworks lessons → post here (scheduling
   # nudge). Students already on the calendar stay quiet. Empty = #email-agent.
   no_lessons_channel: ""
@@ -253,11 +253,11 @@ po_inbox:
     owner: kath
     due_business_hours: 8    # STEP 1 is same-day: convert the PO to a TW invoice on receipt
     # STEP 2 (submitting to the school's ops system) is due at the END of the PO's
-    # service month — stamped on the deal and prompted by the invoice sweep.
-    # TODO(Roman): paste the INTERNAL name of the HubSpot deal DATE property that
-    # holds the invoice due / PO month (Settings → Properties → the property → 
-    # internal name). Empty = deal not stamped (task still carries the date).
-    invoice_due_property: ""
+    # service month — stamped on lessons_fulfilled_date ("Expected Lessons Fulfilled
+    # Date: date when lessons will be completed so Invoice can be submitted") and
+    # prompted by the invoice sweep. Kath closes the loop by setting
+    # invoice_submitted_date + moving the deal to its Invoice Submitted stage.
+    invoice_due_property: "lessons_fulfilled_date"
 
 # Teachworks notice → family-contact disambiguation. When two contacts share a last
 # name, the student first name from the notice is matched against these (messy, multi-

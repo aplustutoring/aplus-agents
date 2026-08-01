@@ -297,8 +297,9 @@ def test_invoice_due_end_of_po_month_and_deal_stamped(monkeypatch):
                         tasks.append((body, due)) or {"id": "T1"})
     notes = []
     po._handle_deal(_po(po_month="2026-08"), notes)
-    deal_patch = [p_ for p_ in patches if p_[0] == "/crm/v3/objects/deals/D44"]
-    assert deal_patch and deal_patch[0][1]["properties"]["invoice_due_date"] == "2026-08-31"
+    due_patch = [p_ for p_ in patches if p_[0] == "/crm/v3/objects/deals/D44"
+                 and "invoice_due_date" in (p_[1] or {}).get("properties", {})]
+    assert due_patch and due_patch[0][1]["properties"]["invoice_due_date"] == "2026-08-31"
     assert tasks and "Submit to the school's ops system by: Aug 31, 2026" in tasks[0][0]
     assert any("Convert-to-TW-invoice task" in n for n in notes)
 
@@ -328,8 +329,18 @@ def test_levelup_po_routes_to_levelup_pipeline(monkeypatch):
     assert any("LEVEL UP PO" in n for n in notes)
 
 
+def test_levelup_configured_in_real_config():
+    # the live config carries the verified Level Up A ids
+    pc = po.cfg()["po_inbox"]
+    assert pc["levelup_pipeline_id"] == "88841552"
+    assert pc["levelup_stage_id"] == "164922249"
+
+
 def test_levelup_unconfigured_warns(monkeypatch):
     created = []
+    base = dict(po.cfg())
+    base["po_inbox"] = {**base["po_inbox"], "levelup_pipeline_id": "", "levelup_stage_id": ""}
+    monkeypatch.setattr(po, "cfg", lambda: base)
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, **k: created.append(pl) or {"id": "D1"})

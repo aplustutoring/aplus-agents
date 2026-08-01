@@ -81,7 +81,7 @@ def _hours_used(email: str, student_first: str, since_iso: str, token: str) -> f
 
 def _find_po_deals(charter_pipelines: list[str], due_prop: str) -> list[dict]:
     props = ["dealname", "pipeline", "dealstage", "createdate", "po_number",
-             "amount", "number_of_hours_in_this_po"]
+             "amount", "number_of_hours_in_this_po", "invoice_submitted_date"]
     if due_prop:
         props.append(due_prop)
     groups = [{"filters": [
@@ -117,6 +117,8 @@ def run_sweep(force: bool = False) -> None:
         if audit.already_processed(key):
             continue
         p = d.get("properties") or {}
+        if p.get("invoice_submitted_date"):
+            continue  # invoice already submitted to the school — never prompt
         label = hs.stage_label(p.get("pipeline"), p.get("dealstage")).lower()
         if label and not any(pat in label for pat in active_patterns):
             continue  # stopped/closed deals don't get invoiced
@@ -151,7 +153,8 @@ def run_sweep(force: bool = False) -> None:
                         f"🧾 Time to SUBMIT the invoice to the school's ops system — "
                         f"{dealname}: {reason}."
                         f" PO {p.get('po_number') or 'n/a'}, ${p.get('amount') or '?'}."
-                        f"{hours_bit} The TW invoice was created at PO receipt — submit it now.")
+                        f"{hours_bit} The TW invoice was created at PO receipt — submit it, "
+                        f"then set invoice_submitted_date and move the deal to Invoice Submitted.")
         cc = cfg().get("notify", {}).get("cc_owner_dms_to")
         if cc and cc != sw.get("owner", "kath"):
             ccs = cfg()["staff"].get(cc, {})

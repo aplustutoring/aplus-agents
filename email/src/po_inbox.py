@@ -111,7 +111,8 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
     A separate non-fatal PATCH so a bad property name can never kill the deal."""
     pmap = cfg()["po_inbox"].get("deal_property_map") or {}
     values = {"student_first": po.get("student_first"), "student_last": po.get("student_last"),
-              "grade": po.get("grade"), "school": po.get("school")}
+              "grade": po.get("grade"), "school": po.get("school"),
+              "parent_email": po.get("parent_email"), "parent_phone": po.get("parent_phone")}
     props = {pmap[k]: v for k, v in values.items() if pmap.get(k) and v}
     if not props or not deal_id or deal_id == "DRYRUN":
         missing = [k for k, v in values.items() if not v]
