@@ -91,9 +91,10 @@
     399837631,
     399873297,
     399918911,
-    399951157
+    399951157,
+    399968122
   ],
-  "last_run_utc": "2026-07-31T23:44:33.548149+00:00",
+  "last_run_utc": "2026-08-01T01:19:28.245955+00:00",
   "pending_digest": [
     {
       "call_id": 399918911,
@@ -200,6 +201,52 @@
           81494333
         ]
       ],
+      "ticket_id": null,
+      "coached": true
+    },
+    {
+      "call_id": 399968122,
+      "number": "18184631853",
+      "time_pt": "4:53 PM",
+      "matched": true,
+      "contact_label": "N Hollywood Ca",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Alyssa from Excel Garage Doors cold-called A+ Tutoring soliciting to send company info about garage doors, gates, fencing, intercoms, and related services. Roman declined, noting A+ is an educational company and the services aren't aligned. Call ended cordially with no further action.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Vendor solicitation from Excel Garage Doors \u2014 unrelated to tutoring services.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
       "ticket_id": null,
       "coached": true
     }
