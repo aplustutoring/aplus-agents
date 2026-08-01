@@ -1136,6 +1136,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1785468096.821949"
+    },
+    {
+      "ts": "2026-08-01T16:17:41.385788+00:00",
+      "kind": "content_build",
+      "week": "2026-07-30",
+      "slot": 1,
+      "post_date": "2026-08-03",
+      "headline": "NWEA's July 21 study \u2014 chronic absenteeism is the ceiling on academic recovery, and MAP Growth data from 2,000 districts now proves it",
+      "bundle_dir": "aplus-content/2026-08-03-chronic-absenteeism-tutoring-attendance",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "218510276173",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-01T16:38:56.756199+00:00",
+      "kind": "content_build",
+      "week": "2026-07-30",
+      "slot": 2,
+      "post_date": "2026-08-05",
+      "headline": "Visions In Education opens its 26th year with a growth-momentum story (Tier A partner)",
+      "bundle_dir": "aplus-content/2026-08-05-visions-education-year-26-growth",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "218508674117",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-01T16:59:19.464872+00:00",
+      "kind": "content_build",
+      "week": "2026-07-30",
+      "slot": 3,
+      "post_date": "2026-08-07",
+      "headline": "Varsity Tutors' Live+AI + White House pledge is redefining what \"high-dosage tutoring\" means in the market \u2014 and A+ needs to plant its flag",
+      "bundle_dir": "aplus-content/2026-08-07-high-dosage-tutoring-ai-era",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "218509439261",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

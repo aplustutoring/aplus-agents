@@ -16,7 +16,12 @@
       "roman_take": "Conviction angle \u2014 \"The absenteeism crisis is a relationship crisis. NWEA measured it; NSSA showed relationships fix it. Software doesn't. Screens don't. Scheduled human contact does.\" Anchor to A+'s human-first thesis.",
       "danielle_take": "Implementation angle \u2014 for charter directors: how to structure Tier 2/3 intervention scheduling so tutoring becomes an attendance driver (fixed weekly slots, same tutor, family-visible schedule) rather than a pull-out that competes with instruction.",
       "redundancy_max_similarity": 0.4952433413444894,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-01T16:17:41.384625+00:00",
+      "post_date": "2026-08-03",
+      "bundle_dir": "aplus-content/2026-08-03-chronic-absenteeism-tutoring-attendance",
+      "hubspot_post_id": "218510276173"
     },
     {
       "slot": 2,
@@ -32,7 +37,12 @@
       "roman_take": "Conviction angle \u2014 \"declining withdrawal rates\" isn't an accident at scale; it's what happens when NCB schools treat intervention as a retention lever, not a compliance box.",
       "danielle_take": "Implementation angle \u2014 what does a 7,769-student NCB school actually need in place operationally to make Title III dollars translate into reclassification and grad-rate movement?",
       "redundancy_max_similarity": 0.43814920417156156,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-01T16:38:56.755058+00:00",
+      "post_date": "2026-08-05",
+      "bundle_dir": "aplus-content/2026-08-05-visions-education-year-26-growth",
+      "hubspot_post_id": "218508674117"
     },
     {
       "slot": 3,
@@ -50,7 +60,12 @@
       "roman_take": "The AI + tutoring narrative treats human relationship as a *feature*; for A+ it's the whole product. Roman draws the line \u2014 a platform with 10 million hours of instruction is not the same thing as a teacher who knows your name.",
       "danielle_take": "Danielle walks through what she actually asks charter partners: how many of your students would recognize their tutor on the street? That's the metric, and no AI dashboard reports it.",
       "redundancy_max_similarity": 0.5226956787653069,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-01T16:59:19.463813+00:00",
+      "post_date": "2026-08-07",
+      "bundle_dir": "aplus-content/2026-08-07-high-dosage-tutoring-ai-era",
+      "hubspot_post_id": "218509439261"
     }
   ],
   "slack": {
