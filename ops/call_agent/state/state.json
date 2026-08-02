@@ -98,14 +98,8 @@
     400024182,
     400041631
   ],
-  "last_run_utc": "2026-08-02T02:22:47.439873+00:00",
+  "last_run_utc": "2026-08-02T04:02:55.174557+00:00",
   "pending_digest": [],
-  "pending_skipped": [
-    {
-      "number": "16094451572",
-      "time_pt": "10:48 AM",
-      "reason": "hang-up"
-    }
-  ],
+  "pending_skipped": [],
   "pending_failures": []
 }
