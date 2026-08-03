@@ -173,7 +173,10 @@ deal_sync:
   enabled: true
   dry_run_first: true          # log intended creates/updates only, until flipped false
   in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account
-  charter_pipelines: ["907748", "72281989", "88841552", "5119061"]  # → online + Package billing
+  # Known charter pipelines → Package billing. ALSO automatic: any pipeline whose
+  # NAME contains "Charter" is treated as charter — all charter families get
+  # Package billing in Teachworks by default, listed here or not.
+  charter_pipelines: ["907748", "72281989", "88841552", "5119061"]
   exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
   charter_student_billing: "Package"
   private_student_billing: "Service List Cost"

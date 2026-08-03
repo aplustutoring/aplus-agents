@@ -196,6 +196,20 @@ def _deal_pipelines() -> dict:
             for p in d.get("results", [])}
 
 
+@functools.lru_cache(maxsize=1)
+def _pipeline_labels() -> dict:
+    """{pipeline_id: pipeline_label} for all deal pipelines (cached)."""
+    d = _get("/crm/v3/pipelines/deals")
+    return {p["id"]: (p.get("label") or "") for p in d.get("results", [])}
+
+
+def pipeline_label(pipeline_id: str) -> str:
+    try:
+        return _pipeline_labels().get(pipeline_id, "")
+    except Exception:  # noqa: BLE001 — callers treat unknown as ""
+        return ""
+
+
 def stage_label(pipeline_id: str, stage_id: str) -> str:
     return _deal_pipelines().get(pipeline_id, {}).get(stage_id, "")
 

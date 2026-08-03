@@ -125,7 +125,11 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     if not force and ds.get("dry_run_first") and audit.already_processed(f"pilot-{key}"):
         return None
 
-    is_charter = pid in set(ds.get("charter_pipelines", []))
+    # ALL charter families default to Package billing: a pipeline is charter when
+    # listed in charter_pipelines OR when its NAME says Charter — so a new charter
+    # pipeline can never silently fall back to private-pay billing.
+    is_charter = (pid in set(ds.get("charter_pipelines", []))
+                  or "charter" in hs.pipeline_label(pid).lower())
     # Per-pipeline Teachworks overrides (account, billing, extra fields) — the
     # different online pipelines need different TW settings, all editable in config.
     ps = (ds.get("pipeline_settings") or {}).get(pid) or {}

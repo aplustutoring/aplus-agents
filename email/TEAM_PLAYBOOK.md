@@ -119,7 +119,10 @@ Upsells, any creator — human or agent) is synced to Teachworks within ~15 minu
   in-person Teachworks account; everything else to online.
 - **Student(s):** first name(s) from the deal name (`Parent - Student`, sibling names
   like "Kash and Kingston" both created), skipped if already under the family.
-  Charter students get **Package** billing; private pay gets **Service List Cost**.
+  **All charter families get Package billing by default** — a deal is charter when
+  its pipeline is in the config list *or its pipeline name contains "Charter"*, so
+  new charter pipelines can never fall back to private-pay billing. Private pay
+  gets **Service List Cost**.
 - **Per-pipeline settings:** each pipeline can carry its own Teachworks settings
   (account, billing method, extra family/student fields) via
   `deal_sync.pipeline_settings` in `config.yaml` — that's where the differences

@@ -25,6 +25,7 @@ def _wire(monkeypatch, existing=None, pilot=False, contact=None):
     monkeypatch.setattr(dsy, "_deal_contact", lambda d, n="": {"properties": contact or {
         "email": "mom@x.com", "firstname": "Lara", "lastname": "Perkins",
         "phone": "555", "city": "LA"}})
+    monkeypatch.setattr(dsy.hs, "pipeline_label", lambda p: "")
     monkeypatch.setattr(dsy.tw, "accounts", lambda: {"online": "tok1", "in_person": "tok2"})
     monkeypatch.setattr(dsy.tw, "find_customer_by_email", lambda e, t: existing)
     monkeypatch.setattr(dsy.tw, "create_family", lambda f, t: calls["created"].append((f, t)) or {"id": 99})
@@ -203,6 +204,17 @@ def test_pipeline_settings_override(monkeypatch):
     assert calls["created"][0][0]["welcome_email"] == "no"        # customer fields merged
     assert calls["students"][0]["billing_method"] == "Flat Monthly"
     assert calls["students"][0]["default_service"] == "Subscription Tutoring"
+
+
+def test_unlisted_charter_named_pipeline_gets_package(monkeypatch):
+    # a NEW charter pipeline not yet in config → still charter → Package billing
+    calls = _wire(monkeypatch, existing=None)
+    monkeypatch.setattr(dsy.hs, "pipeline_label", lambda p: "Charter - Brand New School")
+    d = _deal(pid="999999", name="Lara Perkins - Nomi")
+    d["properties"]["po_number"] = "5"   # PO-created → guard exempt
+    rec = dsy.sync_deal(d)
+    assert rec["charter"] is True
+    assert calls["students"][0]["billing_method"] == "Package"
 
 
 def test_internal_contact_skipped(monkeypatch):
