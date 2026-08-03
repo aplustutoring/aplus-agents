@@ -5,7 +5,8 @@
     "Ev0BM6NE5D0V",
     "Ev0BN4FWLQJC",
     "Ev0BM3US6F35",
-    "Ev0BN4L5A20G"
+    "Ev0BN4L5A20G",
+    "Ev0BMRUZCS0H"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -74,6 +75,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785538139972239"
+    },
+    {
+      "date": "2026-08-03",
+      "ts": "1785777978.795299",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-08-03-carousel-text-overflow-long-opeds.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/56",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785777978795299"
     }
   ],
   "graduation": {
