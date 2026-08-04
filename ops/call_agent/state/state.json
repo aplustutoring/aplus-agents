@@ -115,10 +115,62 @@
     400592296,
     400732289,
     400737608,
-    400781229
+    400781229,
+    400802505,
+    400802050,
+    400822031
   ],
-  "last_run_utc": "2026-08-04T16:57:09.942557+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-04T18:44:12.658319+00:00",
+  "pending_digest": [
+    {
+      "call_id": 400822031,
+      "number": "18329757204",
+      "time_pt": "10:46 AM",
+      "matched": true,
+      "contact_label": "Tutorgigs N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Joshua from Teach and Tutor called soliciting a staffing-agency partnership to supply tutors/teachers for their K-12 in-person program. Roman clarified A+ is a tutoring company, not a staffing agency. Joshua agreed to remove A+ from their contact list. No further action needed.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Solicitation from another tutoring company seeking a staffing partnership \u2014 not a family, school, or tutor applicant.",
+        "student_or_school_names_mentioned": [
+          "Teach and Tutor"
+        ],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
