@@ -14,6 +14,12 @@ justcall:
   # summarized — they are skipped and counted in the digest. Keep true.
   require_recording: true
 
+  # Outbound monitoring (Roman 2026-07-27): ALL company lines, both directions.
+  # Consent decision: process only calls that HAVE recordings (require_recording
+  # applies to both directions); disclosure practice on outbound dials is
+  # Roman's responsibility — no IVR plays on outgoing calls.
+  monitor_outbound: true
+
   # Only calls of this type are processed (others are logged and ignored).
   # Live API values (lowercase, case-insensitive here):
   # answered | missed | voicemail | abandoned.

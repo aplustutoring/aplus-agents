@@ -183,28 +183,32 @@ def fetch_inbound_calls(cfg, since_utc):
     since_str = since_utc.astimezone(ZoneInfo(tz_name)).strftime("%Y-%m-%d %H:%M:%S")
     log.info(f"Fetching inbound calls (all lines) since {since_str} {tz_name} "
              f"({since_utc.strftime('%Y-%m-%d %H:%M:%S')} UTC)...")
-    page = 0  # pagination is 0-indexed (verified live 2026-07-10; docs don't say)
-    while True:
-        data = jc_get("/v2.1/calls", params={
-            "call_direction": "Incoming",
-            "from_datetime": since_str,
-            "per_page": 100,
-            "page": page,
-            "sort": "datetime",
-            "order": "asc",
-        })
-        batch = data.get("data", data if isinstance(data, list) else [])
-        if not batch:
-            break
-        for c in batch:
-            cid = c.get("id")
-            if cid is not None and cid not in seen:
-                seen.add(cid)
-                calls.append(c)
-        if len(batch) < 100:
-            break
-        page += 1
-    log.info(f"  -> {len(calls)} inbound calls fetched")
+    directions = ["Incoming"]
+    if jc.get("monitor_outbound"):
+        directions.append("Outgoing")  # all lines (Roman 2026-07-27)
+    for direction in directions:
+        page = 0  # pagination is 0-indexed (verified live 2026-07-10; docs don't say)
+        while True:
+            data = jc_get("/v2.1/calls", params={
+                "call_direction": direction,
+                "from_datetime": since_str,
+                "per_page": 100,
+                "page": page,
+                "sort": "datetime",
+                "order": "asc",
+            })
+            batch = data.get("data", data if isinstance(data, list) else [])
+            if not batch:
+                break
+            for c in batch:
+                cid = c.get("id")
+                if cid is not None and cid not in seen:
+                    seen.add(cid)
+                    calls.append(c)
+            if len(batch) < 100:
+                break
+            page += 1
+    log.info(f"  -> {len(calls)} calls fetched ({', '.join(d.lower() for d in directions)})")
     return calls
 
 
@@ -387,6 +391,12 @@ def call_datetime_utc(call):
         return None
 
 
+def call_direction(call):
+    """'incoming' | 'outgoing' (normalized; live values are capitalized)."""
+    info = call.get("call_info") or {}
+    return str(info.get("direction") or call.get("direction") or "incoming").lower()
+
+
 def call_type(call):
     """Lowercase call type ('answered'|'missed'|'voicemail'|'abandoned').
     Live API returns lowercase despite the docs' capitalized enum."""
@@ -501,12 +511,14 @@ KEY_PROPERTIES = sorted({prop for prop, _ in RECORD_FIELD_MAP.values()}
                         | {"firstname", "lastname", "email", "phone", "mobilephone",
                            "hs_lead_status"})
 
-SUMMARY_PROMPT = """You are processing an inbound phone call to A+ Tutoring, \
+SUMMARY_PROMPT = """You are processing a phone call ({direction_desc}) for A+ Tutoring, \
 a K-12 tutoring company in California (families/parents, partner schools and \
 charter schools, tutor applicants). Your output updates the family's CRM \
 record, creates follow-up tasks, and feeds a daily ops digest.
 
-1. Summarize the call: 3-5 sentences covering who called, why, and outcome.
+1. Summarize the call: 3-5 sentences covering who was on the call, why, and
+   the outcome. For OUTBOUND calls, caller_type/intent describe the external
+   party and the purpose of our outreach (e.g. lead follow-up = new inquiry).
 2. Classify the caller and intent, note sentiment.
 3. List action items — things A+ STAFF must do after this call (not things the
    family will do). Include an owner_hint only when a specific A+ person was
@@ -632,9 +644,10 @@ SUMMARY_SCHEMA = {
 }
 
 
-def summarize_call(transcript, cfg, contact=None):
+def summarize_call(transcript, cfg, contact=None, call=None):
     """Claude summary + record-update proposal as validated dict.
-    contact: matched HubSpot contact (or None) — current values feed the prompt."""
+    contact: matched HubSpot contact (or None) — current values feed the prompt.
+    call: the JustCall call object (direction-aware prompt framing)."""
     import anthropic
 
     ccfg = cfg["claude"]
@@ -653,7 +666,10 @@ def summarize_call(transcript, cfg, contact=None):
     for field, (hs_prop, _) in RECORD_FIELD_MAP.items():
         record[field] = props.get(hs_prop) or None
 
+    direction = call_direction(call or {})
     prompt = SUMMARY_PROMPT.format(
+        direction_desc=("OUTBOUND — our team placed this call" if direction == "outgoing"
+                        else "INBOUND — the contact called us"),
         record_json=json.dumps(record, indent=2),
         truncated_note=" (truncated)" if truncated else "",
         transcript=transcript,
@@ -731,10 +747,14 @@ def _validate_summary(d):
 RUBRIC_DIMENSIONS = ["U1", "U2", "U3", "U4", "U5", "S1", "S2", "S3", "S4", "V1", "V2"]
 
 COACHING_PROMPT = """You are a supportive call coach for A+ Tutoring, reviewing \
-an inbound call answered by {agent_name}. Score the call against the rubric \
+a call handled by {agent_name} ({direction_desc}). Score the call against the rubric \
 below. Apply the S-dimensions only when the call is a new inquiry or school \
 partnership; the V-dimensions only for scheduling/billing/complaint calls; \
-universal dimensions always. Use null for N/A. Anchor every observation to a \
+universal dimensions always. Use null for N/A. For OUTBOUND calls adapt the
+anchors: U1 = introduced self + A+ Tutoring clearly at the start (no IVR
+exists); S4 advance matters MORE (we initiated — the call should end with a
+concrete commitment); V-dimensions apply when the outbound call is service
+recovery. Anchor every observation to a \
 short verbatim quote from the transcript. Tone: coach, not critic — assume \
 good intent.
 
@@ -805,12 +825,15 @@ def load_rubric(cfg):
     return _rubric_cache
 
 
-def score_call(transcript, summary, agent_name, cfg):
+def score_call(transcript, summary, agent_name, cfg, call=None):
     """Rubric score for coaching. Returns dict with scores + overall, or raises."""
     import anthropic
 
     ccfg = cfg["claude"]
+    direction = call_direction(call or {})
     prompt = COACHING_PROMPT.format(
+        direction_desc=("OUTBOUND — our team placed this call" if direction == "outgoing"
+                        else "INBOUND — the contact called us"),
         agent_name=agent_name or "the team member",
         rubric=load_rubric(cfg),
         caller_type=summary["caller_type"],
@@ -1033,12 +1056,12 @@ def log_call_to_hubspot(contact_id, call, summary, transcript_status):
     call_obj = hs_post("crm/v3/objects/calls", {
         "properties": {
             "hs_timestamp": ts_ms,
-            "hs_call_title": f"Inbound call — {summary['intent']} ({summary['caller_type']})",
+            "hs_call_title": f"{'Outbound' if call_direction(call) == 'outgoing' else 'Inbound'} call — {summary['intent']} ({summary['caller_type']})",
             "hs_call_body": "\n".join(body_lines),
-            "hs_call_direction": "INBOUND",
+            "hs_call_direction": "OUTBOUND" if call_direction(call) == "outgoing" else "INBOUND",
             "hs_call_status": "COMPLETED",
-            "hs_call_from_number": call.get("contact_number", ""),
-            "hs_call_to_number": call.get("justcall_number", ""),
+            "hs_call_from_number": call.get("justcall_number", "") if call_direction(call) == "outgoing" else call.get("contact_number", ""),
+            "hs_call_to_number": call.get("contact_number", "") if call_direction(call) == "outgoing" else call.get("justcall_number", ""),
             "hs_call_duration": str(int(duration) * 1000),  # HubSpot wants ms
         },
         "associations": [{
@@ -1237,7 +1260,8 @@ def build_digest(entries, skipped, failures, run_date_pt):
             flags += f" ({len(e['tasks_created'])} task{'s' if len(e['tasks_created']) != 1 else ''})"
         first = s["summary"].split(". ")[0].rstrip(".") + "."
         who = who_line(e["contact_label"], e["number"])
-        return f"• {e['time_pt']} — {who} ({s['intent']}){flags} — {first}"
+        arrow = "↗ " if e.get("direction") == "outgoing" else ""
+        return f"• {arrow}{e['time_pt']} — {who} ({s['intent']}){flags} — {first}"
 
     attention = [e for e in entries
                  if e["summary"]["follow_up_needed"]
@@ -1349,7 +1373,7 @@ def process_call(call, cfg, dry_run, now_utc):
 
     log.info(f"  call {cid}: summarizing ({len(transcript)} chars, "
              f"{'matched: ' + contact_label if contact else 'unmatched'})...")
-    summary = summarize_call(transcript, cfg, contact)
+    summary = summarize_call(transcript, cfg, contact, call)
 
     try:
         from zoneinfo import ZoneInfo
@@ -1442,7 +1466,7 @@ def process_call(call, cfg, dry_run, now_utc):
     if cfg["coaching"]["enabled"]:
         try:
             agent_name = call.get("agent_name") or (call.get("agent") or {}).get("name")
-            card = score_call(transcript, summary, agent_name, cfg)
+            card = score_call(transcript, summary, agent_name, cfg, call)
             coaching_text = build_coaching_card(
                 agent_name, contact_label, number, time_pt, summary, card)
             coach_channel = cfg["coaching"]["channel"] or cfg["slack"]["alert_channel"]
@@ -1494,6 +1518,7 @@ def process_call(call, cfg, dry_run, now_utc):
         "tasks_created": [(item, oid) for item, oid, _ in tasks_created],
         "ticket_id": ticket_id,
         "coached": coached,
+        "direction": call_direction(call),
     }
 
 
@@ -1643,11 +1668,14 @@ def main():
         if cid in processed_ids:
             continue  # idempotency: never process the same call twice
         ctype = call_type(call)
+        direction = call_direction(call)
         on_monitored = (re.sub(r"\D", "", str(call.get("justcall_number") or ""))
                         in monitored_digits)
+        if direction == "outgoing":
+            on_monitored = True  # outbound monitored on ALL lines (Roman 2026-07-27)
         # Missed-call alerting: any line, metadata only. Speed-to-callback
         # is the conversion lever, so these alert on the poll that sees them.
-        if mc_cfg.get("enabled") and ctype in mc_types:
+        if mc_cfg.get("enabled") and ctype in mc_types and direction == "incoming":
             try:  # never fatal
                 if handle_missed_call(call, cfg, args.dry_run, now_utc) == "alerted":
                     n_missed += 1
