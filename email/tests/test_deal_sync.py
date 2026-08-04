@@ -223,3 +223,35 @@ def test_internal_contact_skipped(monkeypatch):
     rec = dsy.sync_deal(_deal(name="Teacher Scholarship Family -  -"))
     assert rec["action_taken"] == "sync_skipped"
     assert not calls["created"] and not calls["slack"]
+
+
+def test_errored_deal_holds_cursor_and_retries(monkeypatch, tmp_path):
+    # deal 2 of 3 blows up → error audit uses the error: prefix (so the deal:
+    # key stays unclaimed) and the cursor stops just short of the errored deal.
+    appended, cur = [], tmp_path / "cur.json"
+    import json as _json
+    cur.write_text(_json.dumps({"last_createdate_ms": 1}))
+    monkeypatch.setattr(dsy, "CUR_PATH", cur)
+    monkeypatch.setattr(dsy, "DRY_RUN", False)
+    monkeypatch.setattr(dsy, "cfg", lambda: {**_cfg(False),
+                                             "internal": {"domain": "wetutorathome.com"},
+                                             "slack": {"digest_channel": "CTEST"}})
+    monkeypatch.setattr(dsy.audit, "append", lambda r: appended.append(r))
+    deals = [{"id": f"D{i}", "properties": {"pipeline": "default", "dealname": f"P{i} - S{i}",
+                                            "createdate": f"2026-08-0{i}T00:00:00Z"}}
+             for i in (1, 2, 3)]
+    monkeypatch.setattr(dsy.hs, "_write", lambda m, p_, b=None: {"results": deals})
+    def fake_sync(d, **k):
+        if d["id"] == "D2":
+            raise RuntimeError("403 boom")
+        return {"action_taken": "tw_synced"}
+    monkeypatch.setattr(dsy, "sync_deal", fake_sync)
+    monkeypatch.setattr(dsy, "run_sweep_import_guard", None, raising=False)
+    import src.invoice_sweep as isw
+    monkeypatch.setattr(isw, "run_sweep", lambda force=False: None)
+    dsy.run()
+    err = [r for r in appended if r.get("action_taken") == "error"]
+    assert err and err[0]["message_id"] == "error:deal:D2"
+    from datetime import datetime, timezone
+    d2_ms = int(datetime(2026, 8, 2, tzinfo=timezone.utc).timestamp() * 1000)
+    assert _json.loads(cur.read_text())["last_createdate_ms"] == d2_ms - 1

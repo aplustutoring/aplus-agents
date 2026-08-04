@@ -298,6 +298,7 @@ def run() -> None:
     print(f"deal_sync: {len(deals)} new deal(s)")
     newest = since_ms
     synced = 0
+    first_error_ms = None
     for d in deals:
         try:
             if sync_deal(d):
@@ -309,8 +310,16 @@ def run() -> None:
         except Exception as e:  # noqa: BLE001 — one bad deal never kills the run
             print(f"  ⚠️  sync error on deal {d.get('id')}: {e}", file=sys.stderr)
             traceback.print_exc()
-            audit.append({"message_id": f"deal:{d.get('id')}", "source": "deal_sync",
+            # error: prefix never matches the deal: key → the deal retries next run
+            audit.append({"message_id": f"error:deal:{d.get('id')}", "source": "deal_sync",
                           "action_taken": "error", "error": str(e)[:200]})
+            cd = d["properties"].get("createdate")
+            if cd:
+                ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)
+                first_error_ms = ms if first_error_ms is None else min(first_error_ms, ms)
+    # Errored deals must be re-fetched: hold the cursor just before the earliest one.
+    if first_error_ms is not None:
+        newest = min(newest, first_error_ms - 1)
     # In pilot mode the cursor stays put, so the same deals replay for real once
     # dry_run_first is flipped off.
     if not DRY_RUN and not ds.get("dry_run_first"):

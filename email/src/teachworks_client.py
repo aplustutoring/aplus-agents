@@ -66,15 +66,22 @@ def tw_get(endpoint: str, params: dict | None = None, token: str | None = None) 
 
 
 def tw_write(method: str, endpoint: str, payload: dict, token: str) -> dict:
-    """POST/PUT to Teachworks (short-circuited in DRY_RUN). Teachworks accepts flat
-    JSON per its docs; on a 400 we retry once with the documented resource wrapper
-    (e.g. {"customer": {...}}) to tolerate both API styles."""
+    """POST/PUT to Teachworks (short-circuited in DRY_RUN). 403 = Teachworks rate
+    limit → back off and retry (same as tw_get; a burst of writes hits it fast).
+    Teachworks accepts flat JSON per its docs; on a 400 we retry once with the
+    documented resource wrapper (e.g. {"customer": {...}})."""
     from .config import DRY_RUN
     if DRY_RUN:
         print(f"[DRY_RUN] teachworks {method} /{endpoint} {str(payload)[:160]}")
         return {"id": "DRYRUN", "dry_run": True}
     headers = {"Authorization": f"Token token={token}", "Content-Type": "application/json"}
-    r = requests.request(method, f"{TW_BASE}/{endpoint}", headers=headers, json=payload, timeout=30)
+    r = None
+    for attempt in range(4):
+        r = requests.request(method, f"{TW_BASE}/{endpoint}", headers=headers, json=payload, timeout=30)
+        if r.status_code == 403:
+            time.sleep(5 * (attempt + 1))
+            continue
+        break
     if r.status_code == 400:
         wrapper = "student" if endpoint.startswith("students") else "customer"
         r = requests.request(method, f"{TW_BASE}/{endpoint}", headers=headers,
