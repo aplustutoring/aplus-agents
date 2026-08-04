@@ -61,7 +61,14 @@ via the Slack Events relay. Per message, the agent (posting as **@Fleet**):
    opens a PR — linked back into the thread. Approval buys execution, not
    deployment: nothing ships without Roman's merge. Non-approvers replying
    "approve" are ignored.
-5. **Closes the loop.** When a correction PR merges,
+5. **Thread commands (2026-08-04) — the whole lifecycle lives in Slack.**
+   Approver-only, first line of a thread reply: **merge** ships the fix PR
+   (or the demote registry PR); **accept** merges the correction into the
+   log and fires the close-the-loop reply; **close** discards the thread's
+   PRs unmerged. Open PRs are found by the thread fingerprint every agent
+   branch name ends with — no lookup table. GitHub is now optional: it's
+   where you go to read diffs, not to click.
+6. **Closes the loop.** When a correction PR merges,
    `feedback-close-loop.yml` replies in the original thread — what changed,
    when. Feedback that vanishes into a void kills the channel within a month;
    the reply-back is the feature. ("A fix shipped" replies beyond the

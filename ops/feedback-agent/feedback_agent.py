@@ -69,6 +69,13 @@ STATUS_RE = re.compile(
 APPROVE_RE = re.compile(r"^\s*(approve[d]?|go(\s+ahead)?|yes|ship(\s+it)?|do\s+it)\b[.!]*\s*$", re.I)
 DECLINE_RE = re.compile(r"^\s*(no|reject(ed)?|skip|deny|denied|leave\s+it|don'?t)\b", re.I)
 
+# PR lifecycle commands, so the whole loop lives in Slack (2026-08-04, per
+# Roman): in a report thread, an approver's "merge" ships the fix PR,
+# "accept" merges the correction into the log, "close" discards unmerged.
+MERGE_RE  = re.compile(r"^\s*(merge|ship(\s+it)?)\b[.!]*\s*$", re.I)
+ACCEPT_RE = re.compile(r"^\s*(accept|log\s+it)\b[.!]*\s*$", re.I)
+CLOSE_RE  = re.compile(r"^\s*(close|discard)\b[.!]*\s*$", re.I)
+
 
 def strip_client_suffix(text):
     """Drop the "*Sent using* <@U…>" attribution some clients append."""
@@ -597,6 +604,104 @@ def handle_approval(cfg, state, payload, thread_ts, event_key, dry_run):
         save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
 
 
+def thread_prs(thread_ts):
+    """Open PRs tied to a report thread. Every branch the agent creates ends
+    in the thread's short_ts fingerprint (corrections/…-<ts>, demote/…-<ts>,
+    fix/…-<ts>), so resolution is stateless."""
+    short_ts = thread_ts.replace(".", "")[-6:]
+    repo = os.getenv("GITHUB_REPOSITORY", "aplustutoring/aplus-agents")
+    prs = gh_api(f"/repos/{repo}/pulls", {"state": "open", "per_page": 100})
+    mine = [p for p in prs if p["head"]["ref"].endswith(f"-{short_ts}")]
+    return {
+        "fix": next((p for p in mine if p["head"]["ref"].startswith("fix/")), None),
+        "correction": next((p for p in mine if p["head"]["ref"].startswith("corrections/")), None),
+        "demote": next((p for p in mine if p["head"]["ref"].startswith("demote/")), None),
+    }
+
+
+def merge_pr(number):
+    repo = os.getenv("GITHUB_REPOSITORY", "aplustutoring/aplus-agents")
+    run_git(["gh", "pr", "merge", str(number), "--repo", repo, "--squash", "--delete-branch"])
+
+
+def close_pr(number):
+    repo = os.getenv("GITHUB_REPOSITORY", "aplustutoring/aplus-agents")
+    run_git(["gh", "pr", "close", str(number), "--repo", repo, "--delete-branch"])
+
+
+def handle_pr_command(cfg, state, payload, thread_ts, event_key, dry_run):
+    """Approver PR commands in a report thread. Returns True when consumed.
+    Merges done here use the workflow token, which does NOT retrigger the
+    close-loop workflow — so correction accepts run close_loop inline."""
+    if payload["user"] not in approver_ids(cfg):
+        return False
+    typed = strip_client_suffix(payload["text"])
+    first_line = (typed.splitlines() or [""])[0]
+    is_merge, is_accept, is_close = (bool(r.search(first_line)) for r in (MERGE_RE, ACCEPT_RE, CLOSE_RE))
+    if not (is_merge or is_accept or is_close):
+        return False
+
+    name = get_first_name(payload["user"]) or "there"
+    prs = thread_prs(thread_ts)
+    replies = []
+
+    def accept_correction(pr):
+        if dry_run:
+            log.info(f"[dry-run] would merge correction PR #{pr['number']} + close loop")
+            return
+        merge_pr(pr["number"])
+        # Bring the merged correction file into this checkout, then close the
+        # loop inline (workflow-token merges never fire the close-loop workflow).
+        run_git(["git", "pull", "--rebase", "--autostash", "origin", "main"], check=False)
+        close_loop(cfg, pr["number"], dry_run)
+
+    if is_merge:
+        target = prs["fix"] or prs["demote"]
+        if target is prs["fix"] and target:
+            if not dry_run:
+                merge_pr(target["number"])
+            replies.append(f"{name} — merged. The fix ships with the agent's next run.")
+            if prs["correction"]:
+                replies.append(f"(The correction PR #{prs['correction']['number']} is still open — reply *accept* to log it.)")
+        elif target:
+            if not dry_run:
+                merge_pr(target["number"])
+            replies.append(f"{name} — registry updated: the agent is on Draft probation until further notice.")
+        elif prs["correction"]:
+            accept_correction(prs["correction"])
+            replies.append(f"{name} — no fix PR here, so I took *merge* as accepting the correction. Done.")
+        else:
+            replies.append(f"{name} — no open PRs tied to this thread.")
+    elif is_accept:
+        if prs["correction"]:
+            accept_correction(prs["correction"])
+            replies.append(f"{name} — correction accepted into the log.")
+        else:
+            replies.append(f"{name} — no open correction PR on this thread.")
+    else:  # close
+        targets = [p for p in prs.values() if p]
+        if targets:
+            for pr in targets:
+                if not dry_run:
+                    close_pr(pr["number"])
+            nums = ", ".join(f"#{p['number']}" for p in targets)
+            replies.append(f"{name} — closed without merging: {nums}. Nothing executed, nothing logged.")
+            state["pending_proposals"].pop(thread_ts, None)
+        else:
+            replies.append(f"{name} — nothing open to close on this thread.")
+
+    for r_text in replies:
+        post_reply(payload["channel"], thread_ts, r_text, dry_run)
+    # close_loop saved its own state; reload before recording the event so we
+    # don't clobber resolved/graduation marks.
+    fresh = load_state(cfg["state"]["path"])
+    fresh["processed"].append(event_key)
+    fresh["pending_proposals"].pop(thread_ts, None) if is_close else None
+    if not dry_run:
+        save_state(fresh, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
+    return True
+
+
 # ─── Fleet status ("status" in the channel answers, never files) ──────────────
 
 def gh_api(path, params=None):
@@ -701,7 +806,9 @@ def intake(cfg, payload, dry_run):
             if thread_ts in state.get("pending_proposals", {}):
                 handle_approval(cfg, state, payload, thread_ts, event_key, dry_run)
                 return
-            log.info("thread reply outside a pending clarification/proposal — ignoring")
+            if handle_pr_command(cfg, state, payload, thread_ts, event_key, dry_run):
+                return
+            log.info("thread reply outside a pending clarification/proposal/command — ignoring")
             return
         clarification = payload["text"]
         original_text = pending["text"]
