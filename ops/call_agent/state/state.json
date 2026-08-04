@@ -106,100 +106,11 @@
     400380969,
     400461617,
     400470390,
-    400548593
+    400548593,
+    400570539
   ],
-  "last_run_utc": "2026-08-04T02:05:28.276225+00:00",
-  "pending_digest": [
-    {
-      "call_id": 400331031,
-      "number": "19165822615",
-      "time_pt": "9:37 AM",
-      "matched": true,
-      "contact_label": "Farhanaaz Begum",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Farhanaaz Begum called to cancel her daughter Zunera's trial math lesson scheduled today at 10:00 with tutor Ashley Calvary, as the timing no longer worked. Yolanda agreed to cancel with the tutor and text the family to reschedule later this week. No new time was locked in during the call.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Notify tutor Ashley Calvary that today's 10:00 trial math lesson with Zunera is canceled",
-            "owner_hint": "Yolanda"
-          },
-          {
-            "item": "Text Farhanaaz to reschedule the trial math lesson for later this week",
-            "owner_hint": "Yolanda"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "lead_status": "no_change",
-        "lead_status_reason": "Family has an open deal / trial already scheduled \u2014 status owned by deal pipeline, not to be demoted.",
-        "student_or_school_names_mentioned": [
-          "Zunera",
-          "Ashley Calvary",
-          "Cottonwood Charter School"
-        ],
-        "record_updates": {
-          "whats_going_on": "Parent called to cancel Zunera's trial math lesson scheduled today at 10:00 because the timing wasn't working; asked to reschedule to another time this week.",
-          "what_we_can_do_to_help": "Cancel today's 10:00 trial with tutor Ashley Calvary, notify the tutor, and text the family to reschedule the trial math lesson later this week.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": "Math",
-          "online_or_in_person": "Online Tutoring",
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Parent called to cancel Zunera's trial math lesson scheduled today at 10:00 because the timing wasn't working; asked to reschedule to another time this week."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Cancel today's 10:00 trial with tutor Ashley Calvary, notify the tutor, and text the family to reschedule the trial math lesson later this week."
-        ],
-        [
-          "subject_need",
-          "(blank)",
-          "Math"
-        ],
-        [
-          "online_or_in_person",
-          "(blank)",
-          "Online Tutoring"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Notify tutor Ashley Calvary that today's 10:00 trial math lesson with Zunera is canceled",
-          81494333
-        ],
-        [
-          "Text Farhanaaz to reschedule the trial math lesson for later this week",
-          81494333
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true
-    }
-  ],
-  "pending_skipped": [
-    {
-      "number": "18185781732",
-      "time_pt": "8:08 AM",
-      "reason": "hang-up"
-    }
-  ],
+  "last_run_utc": "2026-08-04T03:46:37.238941+00:00",
+  "pending_digest": [],
+  "pending_skipped": [],
   "pending_failures": []
 }
