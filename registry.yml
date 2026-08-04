@@ -443,8 +443,7 @@ agents:
   - id: email-deal-sync
     name: Deal sync (HubSpot → Teachworks) + invoice sweep
     owner: roman@wetutorathome.com
-    status: active
-    probation: draft                   # dry_run_first pilot — logs intended TW writes only
+    status: active                     # LIVE 2026-08-03 (12-day pilot, backlog replayed)
     trigger:
       type: cron
       schedule: ["every 15 min during business hours + hourly"]
