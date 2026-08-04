@@ -1,0 +1,85 @@
+name: Feedback agent — execute approved fix
+
+# Fleet convention: agents think in Pacific Time (see registry.yml header).
+env:
+  TZ: America/Los_Angeles
+
+# The execution half of the propose->approve loop (2026-08-04, per Roman):
+# a report's fix proposal was approved by an approver (slack.alerts_to) in
+# the #agent-feedback thread. The intake fired this dispatch; here a coding
+# agent (claude-code-action) reads the correction + approved plan, implements
+# it on a fix/ branch, and opens a PR. Nothing ships without Roman's merge —
+# approval buys execution, not deployment.
+on:
+  repository_dispatch:
+    types: [feedback-fix-approved]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Implement the approved fix
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh pr create:*),Bash(gh pr list:*),Bash(python3:*),Bash(pip:*),Bash(ls:*)"
+          prompt: |
+            You are executing an approved fix for the A+ Tutoring agent fleet.
+
+            A team member reported a problem with the agent "${{ github.event.client_payload.agent_label }}"
+            (registry id: ${{ github.event.client_payload.agent }}). The report was
+            filed as a correction, a fix was proposed, and ${{ github.event.client_payload.approved_by }}
+            approved executing it.
+
+            Read the correction file for the reporter's own words and context:
+            ${{ github.event.client_payload.correction_path }}
+            (If it is not on this branch yet, the same content is in the open
+            correction PR — but the summary below is sufficient either way.)
+
+            Diagnosis: ${{ github.event.client_payload.diagnosis }}
+            Approved plan: ${{ github.event.client_payload.plan }}
+
+            Instructions:
+            1. Investigate the agent's code (see registry.yml for its entrypoint
+               and dependencies) and confirm or correct the diagnosis before
+               changing anything.
+            2. Implement the fix. Stay scoped to the approved plan — if the real
+               fix turns out to be materially different, implement the honest
+               minimal version and say so plainly in the PR body.
+            3. Match the repo's existing code style and comment conventions.
+            4. Create branch ${{ github.event.client_payload.branch }}, commit with
+               a clear message, push, and open a PR to main titled
+               "[fix] ${{ github.event.client_payload.agent_label }}: <short description>".
+               In the PR body: what was reported, what you changed, how you
+               verified it, and this thread link marker on its own line:
+               Thread: ${{ github.event.client_payload.channel }}/${{ github.event.client_payload.thread_ts }}
+            5. Do NOT merge the PR. Do not modify registry.yml, workflows, or
+               anything outside the scope of this fix.
+      - uses: actions/setup-python@v5
+        if: always()
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Link the PR (or the failure) in the thread
+        if: always()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FIX_CHANNEL: ${{ github.event.client_payload.channel }}
+          FIX_THREAD_TS: ${{ github.event.client_payload.thread_ts }}
+          FIX_AGENT_LABEL: ${{ github.event.client_payload.agent_label }}
+        run: |
+          pip install -q -r ops/feedback-agent/requirements.txt
+          export FIX_PR_URL=$(gh pr list --head "${{ github.event.client_payload.branch }}" --json url -q '.[0].url' || true)
+          python3 ops/feedback-agent/feedback_agent.py --mode fix-notify

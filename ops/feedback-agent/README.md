@@ -52,7 +52,16 @@ via the Slack Events relay. Per message, the agent (posting as **@Fleet**):
      reporter is never asked to justify first. Zaps registered to the agent
      (registry `zaps:` field) are listed for pausing; none registered means
      "cross-check the Zapier census."
-4. **Closes the loop.** When a correction PR merges,
+4. **Analyzes and proposes (2026-08-04, per Roman).** Every filed report
+   (except DEMOTE and UNKNOWN) gets a second pass: diagnosis, concrete fix
+   plan, files involved, risk/effort — posted in the thread as a proposal
+   pinging `slack.alerts_to`. An approver replying **approve** (first line;
+   "no"/"skip" declines) fires `feedback-fix.yml`, where a coding agent
+   (claude-code-action) implements the approved plan on a `fix/` branch and
+   opens a PR — linked back into the thread. Approval buys execution, not
+   deployment: nothing ships without Roman's merge. Non-approvers replying
+   "approve" are ignored.
+5. **Closes the loop.** When a correction PR merges,
    `feedback-close-loop.yml` replies in the original thread — what changed,
    when. Feedback that vanishes into a void kills the channel within a month;
    the reply-back is the feature. ("A fix shipped" replies beyond the

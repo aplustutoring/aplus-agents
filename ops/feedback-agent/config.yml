@@ -32,6 +32,9 @@ claude:
   # Repo-standard model (matches ops/call_agent + marketing/scripts/*).
   model: "claude-opus-4-7"
   max_tokens: 1500
+  # The analysis stage (diagnosis + fix plan proposed for approval) gets more
+  # room than classification.
+  analysis_max_tokens: 2500
 
 hubspot:
   # BROKEN / critical reports become tickets per #AP007 conventions

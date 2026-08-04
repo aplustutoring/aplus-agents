@@ -65,6 +65,15 @@ STATUS_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Fix-proposal approval/decline, first line of an approver's thread reply.
+APPROVE_RE = re.compile(r"^\s*(approve[d]?|go(\s+ahead)?|yes|ship(\s+it)?|do\s+it)\b[.!]*\s*$", re.I)
+DECLINE_RE = re.compile(r"^\s*(no|reject(ed)?|skip|deny|denied|leave\s+it|don'?t)\b", re.I)
+
+
+def strip_client_suffix(text):
+    """Drop the "*Sent using* <@U…>" attribution some clients append."""
+    return re.sub(r"\s*\*Sent using\*\s*<@[^>]+>\s*$", "", (text or "").strip())
+
 
 # ─── Config / state ───────────────────────────────────────────────────────────
 
@@ -77,8 +86,11 @@ def load_state(path):
     p = REPO_ROOT / path
     if p.exists():
         with open(p) as f:
-            return json.load(f)
-    return {"processed": [], "awaiting": {}, "reports": [], "graduation": {"clean_merges": 0}}
+            state = json.load(f)
+        state.setdefault("pending_proposals", {})
+        return state
+    return {"processed": [], "awaiting": {}, "reports": [], "graduation": {"clean_merges": 0},
+            "pending_proposals": {}}
 
 
 def save_state(state, path, max_ids):
@@ -107,6 +119,16 @@ def load_registry_agents(cfg):
             "zaps": a.get("zaps", []),
         }
     return agents
+
+
+def get_registry_entry(cfg, agent_id):
+    """Full registry block for one agent (analysis context)."""
+    with open(REPO_ROOT / cfg["registry_path"]) as f:
+        reg = yaml.safe_load(f)
+    for a in reg.get("agents", []):
+        if a["id"] == agent_id:
+            return a
+    return None
 
 
 def flip_registry_probation(cfg, agent_id, date_pt):
@@ -426,6 +448,155 @@ def create_ticket(payload):
     return r.json().get("id")
 
 
+# ─── Analysis -> proposal -> Roman's approval (2026-08-04) ────────────────────
+# Every filed report gets analyzed: diagnosis + concrete fix plan, proposed
+# in-thread to slack.alerts_to. An approver replying "approve" fires the
+# feedback-fix workflow (claude-code-action) which opens a fix PR — so
+# execution still ends at a human merge. Anything else stays filed only.
+
+ANALYZE_PROMPT = """\
+You are the fix-planning stage of the A+ Tutoring fleet's feedback loop. A \
+report was just classified and filed as a correction. Analyze it and propose \
+a concrete fix for the human owner (Roman) to approve or decline.
+
+The report (from {first_name}):
+<report>
+{text}
+</report>
+
+Classification: agent={agent_id} ({agent_label}) type={type} severity={severity}
+
+The agent's registry entry (its manifest — trigger, entrypoint, reads/writes,
+dependencies):
+```yaml
+{registry_entry}
+```
+
+Files in the agent's module directory:
+{file_list}
+
+Respond with:
+- diagnosis: 1-2 sentences — most likely root cause and where it lives. Be
+  specific about mechanism, honest about uncertainty.
+- fix_plan: 2-5 concrete steps an engineer would execute. Name files where
+  you can. If the fix is prompt/config-level, say which prompt/config.
+- files_likely_involved: repo-relative paths (best guess, from the registry
+  entry + file list).
+- risk: low (isolated, reversible) · medium (touches shared code or output
+  families/schools see) · high (data writes, external systems).
+- effort: minutes · hours · days.
+- recommendation: execute (worth doing as scoped) · needs_human_input
+  (fix requires a decision or info you don't have — say what) · skip
+  (not actionable / working as intended — say why).
+- proposal_message: the Slack proposal, 4-7 short lines, plain human
+  language, no corporate filler. Format: *Diagnosis:* … / *Plan:* … /
+  *Risk:* … · *Effort:* … / *Recommendation:* …. Use the agent's human
+  label, never its internal id (#AP014). Do NOT include any greeting or
+  mention — the code prepends those.
+"""
+
+ANALYZE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "diagnosis": {"type": "string"},
+        "fix_plan": {"type": "array", "items": {"type": "string"}},
+        "files_likely_involved": {"type": "array", "items": {"type": "string"}},
+        "risk": {"type": "string", "enum": ["low", "medium", "high"]},
+        "effort": {"type": "string", "enum": ["minutes", "hours", "days"]},
+        "recommendation": {"type": "string", "enum": ["execute", "needs_human_input", "skip"]},
+        "proposal_message": {"type": "string"},
+    },
+    "required": ["diagnosis", "fix_plan", "files_likely_involved", "risk",
+                 "effort", "recommendation", "proposal_message"],
+    "additionalProperties": False,
+}
+
+
+def analyze_report(text, first_name, cls, agents, cfg):
+    import anthropic
+
+    entry = get_registry_entry(cfg, cls["agent_id"]) or {}
+    module_dir = os.path.dirname(entry.get("entrypoint", "")) if entry else ""
+    file_list = "(module directory unknown)"
+    if module_dir:
+        r = run_git(["git", "ls-files", module_dir], check=False)
+        file_list = r.stdout.strip() or "(no files found)"
+    prompt = ANALYZE_PROMPT.format(
+        first_name=first_name, text=text,
+        agent_id=cls["agent_id"], agent_label=agent_label(agents, cls["agent_id"]),
+        type=cls["type"], severity=cls["severity"],
+        registry_entry=yaml.safe_dump(entry, sort_keys=False, width=80),
+        file_list=file_list,
+    )
+    ccfg = cfg["claude"]
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, max_retries=3)
+    resp = client.messages.create(
+        model=ccfg["model"],
+        max_tokens=ccfg.get("analysis_max_tokens", 2500),
+        output_config={"format": {"type": "json_schema", "schema": ANALYZE_SCHEMA}},
+        messages=[{"role": "user", "content": prompt}],
+    )
+    if resp.stop_reason == "refusal":
+        raise ValueError("Claude refused to analyze this report")
+    return json.loads(next(b.text for b in resp.content if b.type == "text"))
+
+
+def approver_ids(cfg):
+    people = cfg["slack"].get("people") or {}
+    return {people.get(p, "") for p in (cfg["slack"].get("alerts_to") or []) if people.get(p, "").startswith("U")}
+
+
+def fire_fix_dispatch(payload):
+    repo = os.getenv("GITHUB_REPOSITORY", "aplustutoring/aplus-agents")
+    r = requests.post(
+        f"https://api.github.com/repos/{repo}/dispatches",
+        headers={"Authorization": f"Bearer {GH_TOKEN}",
+                 "Accept": "application/vnd.github+json"},
+        json={"event_type": "feedback-fix-approved", "client_payload": payload},
+        timeout=20,
+    )
+    r.raise_for_status()
+
+
+def handle_approval(cfg, state, payload, thread_ts, event_key, dry_run):
+    """A thread reply landed on a pending fix proposal."""
+    prop = state["pending_proposals"][thread_ts]
+    typed = strip_client_suffix(payload["text"])
+    first_line = (typed.splitlines() or [""])[0]
+    if payload["user"] not in approver_ids(cfg):
+        log.info("thread reply on proposal from non-approver — ignoring")
+        return
+    name = get_first_name(payload["user"]) or "there"
+    if APPROVE_RE.search(first_line):
+        fix_payload = {
+            "channel": payload["channel"], "thread_ts": thread_ts,
+            "branch": prop["branch"], "agent": prop["agent"],
+            "agent_label": prop["agent_label"],
+            "correction_path": prop["correction_path"],
+            "plan": " / ".join(prop["fix_plan"]),
+            "diagnosis": prop["diagnosis"],
+            "approved_by": name,
+        }
+        if dry_run:
+            log.info(f"[dry-run] would dispatch feedback-fix-approved: {json.dumps(fix_payload)}")
+        else:
+            fire_fix_dispatch(fix_payload)
+        post_reply(payload["channel"], thread_ts,
+                   f"{name} — approved. Executing the fix for *{prop['agent_label']}* now; "
+                   f"the fix PR will land in this thread for your merge.", dry_run)
+        state["pending_proposals"].pop(thread_ts, None)
+    elif DECLINE_RE.search(first_line):
+        post_reply(payload["channel"], thread_ts,
+                   f"{name} — understood, staying filed as a correction only. No execution.", dry_run)
+        state["pending_proposals"].pop(thread_ts, None)
+    else:
+        log.info("reply on proposal matched neither approve nor decline — leaving pending")
+        return
+    state["processed"].append(event_key)
+    if not dry_run:
+        save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
+
+
 # ─── Fleet status ("status" in the channel answers, never files) ──────────────
 
 def gh_api(path, params=None):
@@ -512,7 +683,7 @@ def intake(cfg, payload, dry_run):
     # Status queries: answer in thread, file nothing. Some clients append an
     # attribution suffix ("*Sent using* <@U…>") on the same line — strip it,
     # then match the first line of what the human actually typed.
-    typed = re.sub(r"\s*\*Sent using\*\s*<@[^>]+>\s*$", "", payload["text"].strip())
+    typed = strip_client_suffix(payload["text"])
     first_line = (typed.splitlines() or [""])[0]
     if not is_reply and STATUS_RE.search(first_line):
         post_reply(payload["channel"], payload["ts"], build_fleet_status(cfg), dry_run)
@@ -527,7 +698,10 @@ def intake(cfg, payload, dry_run):
         # threads @Fleet started with a clarifying question.
         pending = state["awaiting"].get(thread_ts)
         if not pending or pending.get("user") != payload["user"]:
-            log.info("thread reply outside a pending clarification — ignoring")
+            if thread_ts in state.get("pending_proposals", {}):
+                handle_approval(cfg, state, payload, thread_ts, event_key, dry_run)
+                return
+            log.info("thread reply outside a pending clarification/proposal — ignoring")
             return
         clarification = payload["text"]
         original_text = pending["text"]
@@ -637,7 +811,31 @@ def intake(cfg, payload, dry_run):
     if cls["agent_id"] == "UNKNOWN":
         log.info("UNKNOWN agent — flagged as possible shadow automation (Zapier census input)")
 
-    # 5. Log for the digest + close-the-loop.
+    # 5. Analyze -> propose. Every filed report (except DEMOTE, which has its
+    #    own fast path, and UNKNOWN, where there's nothing to fix) gets a
+    #    diagnosis + fix plan proposed in-thread for approval. Execution waits
+    #    for an approver's "approve"; the fix PR still ends at a human merge.
+    if cls["type"] != "DEMOTE" and cls["agent_id"] != "UNKNOWN":
+        try:
+            analysis = analyze_report(original_text, first_name, cls, agents, cfg)
+            branch = f"fix/{cls['agent_id']}-{date_pt}-{short_ts}"
+            verdict = {"execute": "Reply *approve* in this thread to execute — a fix PR follows for your merge. Anything else leaves it filed.",
+                       "needs_human_input": "Needs your input before it can run (see above) — reply here with the call.",
+                       "skip": "Recommend leaving this one filed only — reply *approve* to execute anyway."}[analysis["recommendation"]]
+            post_reply(payload["channel"], root_ts,
+                       f"{alert_mentions(cfg)} — proposed fix, your call:\n"
+                       f"{analysis['proposal_message']}\n{verdict}", dry_run)
+            state["pending_proposals"][root_ts] = {
+                "agent": cls["agent_id"], "agent_label": label,
+                "correction_path": str(corr_path), "branch": branch,
+                "diagnosis": analysis["diagnosis"], "fix_plan": analysis["fix_plan"],
+                "risk": analysis["risk"], "recommendation": analysis["recommendation"],
+                "proposed_utc": now_utc().isoformat(), "reporter": first_name,
+            }
+        except Exception as e:
+            log.warning(f"analysis stage failed (report stays filed): {e}")
+
+    # 6. Log for the digest + close-the-loop.
     state["reports"].append({
         "date": date_pt, "ts": root_ts, "channel": payload["channel"],
         "reporter": first_name, "reporter_slack_id": payload["user"],
@@ -778,7 +976,7 @@ def close_loop(cfg, pr_number, dry_run):
 
 def main():
     ap = argparse.ArgumentParser(description="Feedback Agent v1")
-    ap.add_argument("--mode", choices=["intake", "digest", "close-loop"], default="intake")
+    ap.add_argument("--mode", choices=["intake", "digest", "close-loop", "fix-notify"], default="intake")
     ap.add_argument("--pr", type=int, help="PR number (close-loop mode)")
     ap.add_argument("--dry-run", action="store_true",
                     help="classify + print; no Slack/PR/ticket writes, no state persist")
@@ -809,6 +1007,17 @@ def main():
         intake(cfg, payload, args.dry_run)
     elif args.mode == "digest":
         digest(cfg, args.dry_run)
+    elif args.mode == "fix-notify":
+        channel, ts = os.getenv("FIX_CHANNEL", ""), os.getenv("FIX_THREAD_TS", "")
+        pr_url, label = os.getenv("FIX_PR_URL", ""), os.getenv("FIX_AGENT_LABEL", "the agent")
+        if not (channel and ts):
+            log.error("FIX_CHANNEL/FIX_THREAD_TS not set")
+            sys.exit(1)
+        if pr_url:
+            post_reply(channel, ts, f"Fix PR ready for *{label}*: {pr_url} — merge to ship.", args.dry_run)
+        else:
+            post_reply(channel, ts, f"The fix run for *{label}* finished but no PR was opened — "
+                       f"check the feedback-fix run log in Actions.", args.dry_run)
     else:
         if not args.pr:
             log.error("--pr required for close-loop mode")
