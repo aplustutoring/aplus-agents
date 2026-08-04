@@ -9,7 +9,8 @@
     "Ev0BMRUZCS0H",
     "Ev0BMQR01S3G",
     "Ev0BMQRM6AKG",
-    "Ev0BMKUUJN5V"
+    "Ev0BMKUUJN5V",
+    "Ev0BN51MGMRA"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -113,24 +114,5 @@
   "graduation": {
     "clean_merges": 0
   },
-  "pending_proposals": {
-    "1785877885.162849": {
-      "agent": "content-build",
-      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
-      "correction_path": "corrections/content-build/2026-08-04-carousel-text-overflow-clipping.md",
-      "branch": "fix/content-build-2026-08-04-162849",
-      "diagnosis": "Graphics generation likely renders text without measuring against the frame or wrapping/shrinking to fit \u2014 most likely in build-carousel-pdf.py for the LinkedIn carousel, with similar logic in build-graphics.py and build-creative-graphic.py. Root cause is probably a fixed font size / no text-fit routine, so long copy overflows the fixed canvas.",
-      "fix_plan": [
-        "Reproduce with a known-long carousel slide by running marketing/scripts/b2b/build-carousel-pdf.py against a recent slate to confirm where text clips (which slide, which text box).",
-        "Add a shared fit-text helper (auto-shrink font size and/or wrap lines until bbox fits the frame, with a sensible min font floor) \u2014 likely in a new helper under marketing/scripts/b2b/ or inline in build-carousel-pdf.py.",
-        "Wire the helper into build-carousel-pdf.py first (LinkedIn carousel), then build-graphics.py and build-creative-graphic.py for parity.",
-        "Add a QA guard in build-qa-checklist.py that flags any rendered text whose measured bbox exceeds its frame, so future overflow fails loudly instead of shipping.",
-        "Rebuild last Saturday's slate locally and eyeball each slide before enabling on the next cron run."
-      ],
-      "risk": "low",
-      "recommendation": "execute",
-      "proposed_utc": "2026-08-04T21:12:10.478487+00:00",
-      "reporter": "Roman"
-    }
-  }
+  "pending_proposals": {}
 }
