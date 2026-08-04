@@ -1,0 +1,200 @@
+{
+  "id": "552811839",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "23",
+  "name": "Low Balance Alerts - Charter",
+  "description": "Sends a text message to contact with low balance, delays for 6 minutes, rotates record ownership, and sends an email.",
+  "createdAt": "2024-01-11T01:44:31.413Z",
+  "updatedAt": "2025-10-01T16:57:42.319Z",
+  "startActionId": "5",
+  "nextAvailableActionId": "7",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "content_id": "118221215301"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "delta": "6",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "6"
+      },
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "Hi {{ _0_1.firstname }}, it's {{ _0_1.hubspot_owner_id.firstname }} with A+ Tutoring. You guys have {{ _0_1.unused_balance }} hours of tutoring left on your current PO. I wanted to check if you have had a chance to submit a new PO yet?",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-11",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "user_ids": [
+          "72636338"
+        ],
+        "target_property": "hubspot_owner_id",
+        "overwrite_current_owner": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "1"
+      },
+      "fields": {
+        "delta": "76",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "6",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63863438",
+      "fields": {
+        "listId": "2339",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "listId": "2339",
+              "operator": "IN_LIST",
+              "filterType": "IN_LIST"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "listId": "2339",
+            "operator": "IN_LIST",
+            "filterType": "IN_LIST"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

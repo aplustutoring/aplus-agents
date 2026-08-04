@@ -1,0 +1,58 @@
+{
+  "id": "74366984",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "Workflow for form: 265794585279099",
+  "description": "Connects contacts who submit a specific lead ad form to another workflow called \"Lead Pipe Line - Online.\"",
+  "uuid": "ads-FACEBOOK-305823740360576-23847366059410598-23847366059450598-23847366060020598",
+  "createdAt": "2021-05-21T01:03:48.533Z",
+  "updatedAt": "2021-05-21T01:05:06.546Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "50818589"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "2b1a4359-0be1-4ad3-9abf-b5e17e097748",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

@@ -1,0 +1,98 @@
+{
+  "id": "6127009",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "12",
+  "name": "SAT Tutoring - Stopped - Deal Settings - Do Not Change",
+  "description": "Navigates deals in the SAT Tutoring pipeline when their stage is set to Stopped.",
+  "uuid": "deal-912029-912034",
+  "createdAt": "2019-09-10T01:18:04.672Z",
+  "updatedAt": "2021-11-10T01:46:22.303Z",
+  "startActionId": "4",
+  "nextAvailableActionId": "5",
+  "actions": [
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "75335759"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [],
+      "filters": [
+        {
+          "property": "pipeline",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "912029"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        },
+        {
+          "property": "dealstage",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "912034"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        }
+      ],
+      "filterBranchType": "AND",
+      "filterBranchOperator": "AND"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "912034"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

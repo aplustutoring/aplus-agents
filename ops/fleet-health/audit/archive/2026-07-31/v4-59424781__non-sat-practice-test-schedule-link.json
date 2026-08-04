@@ -1,0 +1,206 @@
+{
+  "id": "59424781",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "7",
+  "name": "Non-SAT Practice Test Schedule Link",
+  "description": "Sends a practice test scheduling email 21 days after tutoring starts for students preparing for non-SAT tests in specific deal stages.",
+  "createdAt": "2021-03-13T01:21:09.935Z",
+  "updatedAt": "2023-11-14T22:06:45.872Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "4",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "delta": "30240",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "fields": {
+        "content_id": "41993801617"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "dealstage",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "1203906",
+                        "1203907"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Stopped"
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "dealstage",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "presentationscheduled"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  },
+                  {
+                    "property": "is_the_student_preparing_for_the_non_sat_test_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "true"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  },
+                  {
+                    "property": "dealstage",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "closedlost",
+                        "closedwon"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Non SAT",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "2"
+          }
+        }
+      ],
+      "type": "LIST_BRANCH"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "start_of_tutoring_for_this_deal",
+              "operation": {
+                "operator": "IS_KNOWN",
+                "includeObjectsWithNoValueSet": false,
+                "operationType": "ALL_PROPERTY"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1203904"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "start_of_tutoring_for_this_deal",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_KNOWN",
+              "includeObjectsWithNoValueSet": false,
+              "operationType": "ALL_PROPERTY"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

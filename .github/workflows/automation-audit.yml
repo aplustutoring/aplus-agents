@@ -1,0 +1,63 @@
+name: Automation audit (read-only census)
+
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
+# Manual one-shot census of every HubSpot workflow (ops/fleet-health/audit).
+# READ-ONLY: the script refuses tokens carrying any write scope. Produces the
+# HTML report + decision-log draft + run summary as a run artifact. Deliberately
+# NOT scheduled — this is a census, not a monitor.
+on:
+  workflow_dispatch:
+    inputs:
+      accept_write_scoped_token:
+        description: >-
+          Accept a write-scoped token (e.g. the shared HUBSPOT_API_KEY).
+          The script still blocks every non-GET request.
+        type: boolean
+        default: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # Prefers a dedicated read-only app token; falls back to the shared key
+      # (requires ticking accept_write_scoped_token at dispatch).
+      HUBSPOT_AUDIT_TOKEN: ${{ secrets.HUBSPOT_AUDIT_TOKEN || secrets.HUBSPOT_API_KEY }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r ops/fleet-health/audit/requirements.txt
+
+      - name: Run audit (read-only)
+        run: |
+          if [ -z "$HUBSPOT_AUDIT_TOKEN" ]; then
+            echo "no token: set HUBSPOT_AUDIT_TOKEN or HUBSPOT_API_KEY secret"; exit 1
+          fi
+          EXTRA=""
+          if [ "${{ inputs.accept_write_scoped_token }}" = "true" ]; then
+            EXTRA="--accept-write-scoped-token"
+          fi
+          python3 ops/fleet-health/audit/audit_hubspot_workflows.py $EXTRA
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-audit
+          path: |
+            ops/fleet-health/audit/reports/
+            ops/fleet-health/audit/runs/
+          if-no-files-found: error

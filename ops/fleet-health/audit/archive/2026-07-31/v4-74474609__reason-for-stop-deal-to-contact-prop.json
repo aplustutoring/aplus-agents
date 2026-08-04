@@ -1,0 +1,48 @@
+{
+  "id": "74474609",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Reason for Stop Deal to Contact Prop",
+  "description": "Enrolls contacts when the \"Reason for Stopping\" property is known.",
+  "createdAt": "2021-05-21T23:54:27.428Z",
+  "updatedAt": "2021-05-21T23:55:13.700Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "reason_for_stopping",
+              "operation": {
+                "operator": "IS_KNOWN",
+                "includeObjectsWithNoValueSet": false,
+                "operationType": "ALL_PROPERTY"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

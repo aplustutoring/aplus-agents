@@ -1,0 +1,82 @@
+{
+  "id": "63375741",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "7",
+  "name": "Pipeline is \"In-Person\", deal stage is \"Post-Lesson\"",
+  "description": "Sets \"Actively Tutoring\" to \"Yes\" when the pipeline is \"In-Person\" and the deal stage is \"Post-Lesson\".",
+  "createdAt": "2021-03-31T02:29:24.718Z",
+  "updatedAt": "2023-03-03T18:05:47.815Z",
+  "startActionId": "8",
+  "nextAvailableActionId": "9",
+  "actions": [
+    {
+      "actionId": "8",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "actively_tutoring",
+        "association": {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 3
+        },
+        "value": {
+          "staticValue": "true",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "3067397"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "3067401"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

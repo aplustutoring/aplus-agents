@@ -1,0 +1,408 @@
+{
+  "id": "1859964787",
+  "isEnabled": false,
+  "objectTypeId": "0-0",
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Teacher Form Submission \u2192 Create Family Deal for Paola",
+  "description": "Creates a family deal, assigns it to Paola, notifies them, and links it back to the teacher deal.",
+  "uuid": "wf-1859964787",
+  "createdAt": "2026-07-31T18:11:30.771Z",
+  "updatedAt": "2026-07-31T20:43:04.319Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "6",
+  "actions": [
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-14",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "object_type_id": "0-3",
+        "properties": [
+          {
+            "targetProperty": "dealname",
+            "value": {
+              "staticValue": "{{ enrolled_object.first_name }} {{ enrolled_object.last_name }} Family - {{ enrolled_object.student_first_name }} {{ enrolled_object.student_last_name_if_diff_from_parent }}",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "pipeline",
+            "value": {
+              "staticValue": "918901819",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "dealstage",
+            "value": {
+              "staticValue": "1403222409",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "first_name",
+            "value": {
+              "propertyName": "first_name",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "last_name",
+            "value": {
+              "propertyName": "last_name",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "parent_email",
+            "value": {
+              "propertyName": "parent_email",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "parent_phone",
+            "value": {
+              "propertyName": "parent_phone",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_first_name",
+            "value": {
+              "propertyName": "student_first_name",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_last_name_if_diff_from_parent",
+            "value": {
+              "propertyName": "student_last_name_if_diff_from_parent",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_student_email",
+            "value": {
+              "propertyName": "pilibos_student_email",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_student_phone",
+            "value": {
+              "propertyName": "pilibos_student_phone",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_school",
+            "value": {
+              "propertyName": "student_school",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "iem_student_id",
+            "value": {
+              "propertyName": "iem_student_id",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_grade",
+            "value": {
+              "propertyName": "student_grade",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "schedule_preferences",
+            "value": {
+              "propertyName": "schedule_preferences",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "message",
+            "value": {
+              "propertyName": "message",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "what_s_going_on_",
+            "value": {
+              "propertyName": "what_s_going_on_",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "teacher_of_record_name",
+            "value": {
+              "propertyName": "teacher_of_record_name",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "teacher_of_record_email",
+            "value": {
+              "propertyName": "teacher_of_record_email",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "diagnostic_submitted_date",
+            "value": {
+              "propertyName": "diagnostic_submitted_date",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_diagnostic_received",
+            "value": {
+              "propertyName": "pilibos_diagnostic_received",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_diagnostic_score_report",
+            "value": {
+              "propertyName": "pilibos_diagnostic_score_report",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_diagnostic_math_score",
+            "value": {
+              "propertyName": "pilibos_diagnostic_math_score",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_diagnostic_rw_score",
+            "value": {
+              "propertyName": "pilibos_diagnostic_rw_score",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "is_the_student_preparing_for_the_sat_",
+            "value": {
+              "propertyName": "is_the_student_preparing_for_the_sat_",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "is_the_student_preparing_for_the_non_sat_test_",
+            "value": {
+              "propertyName": "is_the_student_preparing_for_the_non_sat_test_",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_cb_practice_score_report",
+            "value": {
+              "propertyName": "pilibos_cb_practice_score_report",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "pilibos_psat_score_report",
+            "value": {
+              "propertyName": "pilibos_psat_score_report",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "hubspot_owner_id",
+            "value": {
+              "staticValue": "81494333",
+              "type": "STATIC_VALUE"
+            }
+          }
+        ],
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 451
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 3
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 3
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          }
+        ],
+        "use_explicit_associations": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-9",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "user_ids": [
+          "81494333"
+        ],
+        "delivery_method": "APP",
+        "subject": "New family nomination",
+        "body": "New family nomination for {{ enrolled_object.first_name }} {{ enrolled_object.last_name }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-8",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "5"
+      },
+      "fields": {
+        "user_ids": [
+          "81494333"
+        ],
+        "subject": "New family nomination: {{ enrolled_object.first_name }} {{ enrolled_object.last_name }}",
+        "body": "A new family has been nominated and needs outreach.\n\nFamily: {{ enrolled_object.first_name }} {{ enrolled_object.last_name }}\nNew family deal: https://app.hubspot.com/contacts/6312752/record/0-3/{{ action_outputs.action_output_2.hs_created_object.hs_object_id }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "secretNames": [
+        "Secret"
+      ],
+      "sourceCode": "const hubspot = require('@hubspot/api-client');\n\nexports.main = async (event, callback) => {\n  const familyDealId = event.inputFields['familyDealId'];\n  const teacherDealId = event.inputFields['teacherDealId'];\n  const token = process.env.Secret;\n\n  if (!familyDealId || !teacherDealId) {\n    throw new Error('Missing familyDealId or teacherDealId');\n  }\n\n  const client = new hubspot.Client({ accessToken: token });\n\n  try {\n    // 1. Link teacher deal <-> family deal (custom label, ID 7)\n    await client.apiRequest({\n      method: 'PUT',\n      path: `/crm/v4/objects/0-3/${teacherDealId}/associations/0-3/${familyDealId}`,\n      body: [{ associationCategory: 'USER_DEFINED', associationTypeId: 7 }]\n    });\n\n    // 2. Get the contact(s) on the teacher deal\n    const contactsResp = await client.apiRequest({\n      method: 'GET',\n      path: `/crm/v4/objects/0-3/${teacherDealId}/associations/0-1`\n    });\n    const contactsBody = await contactsResp.json();\n    const contactResults = contactsBody.results || [];\n\n    // 3. Associate each contact to the new family deal (default deal<->contact type, ID 3)\n    for (const c of contactResults) {\n      const contactId = c.toObjectId;\n      await client.apiRequest({\n        method: 'PUT',\n        path: `/crm/v4/objects/0-3/${familyDealId}/associations/0-1/${contactId}`,\n        body: [{ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 3 }]\n      });\n    }\n\n    callback({\n      outputFields: {\n        associationResult: 'success',\n        contactsLinked: contactResults.length\n      }\n    });\n  } catch (err) {\n    console.error('Association failed:', err.message);\n    callback({\n      outputFields: {\n        associationResult: 'error',\n        errorMessage: err.message\n      }\n    });\n  }\n};",
+      "runtime": "NODE20X",
+      "inputFields": [
+        {
+          "name": "familyDealId",
+          "value": {
+            "staticValue": "{{ action_outputs.action_output_2.hs_created_object.hs_object_id }}",
+            "type": "STATIC_VALUE"
+          }
+        },
+        {
+          "name": "teacherDealId",
+          "value": {
+            "propertyName": "hs_object_id",
+            "type": "OBJECT_PROPERTY"
+          }
+        }
+      ],
+      "outputFields": [],
+      "type": "CUSTOM_CODE"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "eventFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "1399145267"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "eventTypeId": "4-655002",
+        "operator": "HAS_COMPLETED",
+        "filterBranchType": "UNIFIED_EVENTS",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "listMembershipFilterBranches": [],
+    "type": "EVENT_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_327405997",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_327405999",
+      "objectTypeId": "0-8",
+      "associationTypeId": 19,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_327405996",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_327405998",
+      "objectTypeId": "0-2",
+      "associationTypeId": 341,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

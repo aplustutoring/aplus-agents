@@ -1,0 +1,24 @@
+{
+  "id": "452147889",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Unnamed workflow - Thu Aug 24 2023 18:49:18 GMT+0000",
+  "createdAt": "2023-08-24T18:49:18.875Z",
+  "updatedAt": "2023-08-24T18:49:18.875Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "type": "MANUAL"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

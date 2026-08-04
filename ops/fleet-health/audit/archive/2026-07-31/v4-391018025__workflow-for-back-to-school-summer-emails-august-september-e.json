@@ -1,0 +1,400 @@
+{
+  "id": "391018025",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "17",
+  "name": "Workflow for Back to School- Summer Emails- August/ September Emails",
+  "description": "Sends a series of back-to-school emails in August/September to contacts with children in specified grades, with follow-up tasks based on email opens and delays between messages.",
+  "createdAt": "2023-05-30T21:58:52.779Z",
+  "updatedAt": "2023-08-18T02:53:24.957Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "13",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1692230400000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "content_id": "117932664844"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "delta": "21600",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "260408255",
+                    "appId": "2286",
+                    "operator": "OPENED",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Opened",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "11"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Open",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "12"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "5",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "10"
+      },
+      "fields": {
+        "content_id": "117922314367"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "6",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "8"
+      },
+      "fields": {
+        "content_id": "117934222777"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "7",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Follow- Up with Back to School- Summer Email Families (August/ September)",
+        "body": "",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 8
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 279
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 3,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 11,
+            "minute": 0
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "8",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "260414392",
+                    "appId": "2286",
+                    "operator": "OPENED",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Opened",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "7"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Open",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "9",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Follow- Up with Back to School- Summer Email Families (August/ September)",
+        "body": "",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 8
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 279
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 3,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 11,
+            "minute": 0
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "10",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "260412640",
+                    "appId": "2286",
+                    "operator": "OPENED",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Opened ",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "9"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Open",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "11",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "5"
+      },
+      "fields": {
+        "delta": "10080",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "12",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "6"
+      },
+      "fields": {
+        "delta": "10080",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "what_is_your_child_s_current_grade_level_",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "11",
+                  "12",
+                  "Graduated/College",
+                  "Kindergarten",
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6",
+                  "TK",
+                  "7",
+                  "8",
+                  "9",
+                  "Pre-K",
+                  "10"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

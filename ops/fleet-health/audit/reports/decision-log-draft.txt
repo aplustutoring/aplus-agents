@@ -1,0 +1,44 @@
+DRAFT — NOT SENT. Roman approves, then append via the existing Zapier Google
+Docs pipe. Append gotcha: the document param key is `file`; pass the Decision
+Log ID explicitly (1rulyEYlUldSEPvlZtoM6KcKBa2tJ8ZlZ-HMDybbMYCI); treat any
+resolvedParams status of `guessed` on the file field as a FAILED write.
+
+======
+2026-07-31 | #AP015
+DECISION: HubSpot is the single system of record for operational work. Monday
+  is limited to the L10 scorecard + NPS boards only. Migrations: low-balance/PO
+  tracking moves to HubSpot tickets; teacher evaluations move to tickets on the
+  tutor contact + deal. The tutor pipeline is confirmed as a trigger rail, with
+  an Onboarding Agent exclusion.
+WHY: Two half-authoritative systems means every agent needs two write paths and
+  every human checks two places. HubSpot already owns families + comms
+  (registry.yml doctrine); consolidating kills the split-brain.
+OWNER: Roman
+STATUS: DRAFT — pending approval
+TAG: fleet / systems-of-record
+
+======
+2026-07-31 | #AP016
+DECISION: Workflows sense, agents decide. Every HubSpot workflow is classified
+  DOORBELL (trigger→notify, keep) / PLUMBING (mechanical, keep) / DECIDER
+  (business judgment frozen into if-branches → absorbed by a fleet agent) /
+  GUARDRAIL (deliberately deterministic safety logic — stays dumb forever).
+WHY: 8 years of workflows accumulated judgment calls that belong in agents.
+  Deterministic safety logic must NOT be absorbed — guardrails that "get smart"
+  stop being guardrails.
+OWNER: Roman
+STATUS: DRAFT — pending approval
+TAG: fleet / doctrine
+
+======
+2026-07-31 | #AP017
+DECISION: Automation Audit v1 findings accepted as the working inventory:
+  234 HubSpot workflows total, 231
+  enabled, 192 flagged with uselessness evidence (kill-list
+  candidates), 36 deciders queued for absorption.
+  Top absorptions: “Update Charter School Teacher property based on email domain” → Email Engine v2, “Lead Pipe Line - Online” → NEW, “Workflow for College Counseling Emails” → Email Engine v2, “Gold - Quality Check New  Until Renew” → NEW, “QTL New Customer  v2 - 10/2025” → NEW.
+WHY: First full census in 8 years; kill list + absorption backlog are now
+  evidence-backed instead of folklore. Humans approve all kills.
+OWNER: Roman
+STATUS: DRAFT — pending approval (fill/adjust after Roman's checkbox pass)
+TAG: fleet / audit / hubspot

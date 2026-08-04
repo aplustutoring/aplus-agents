@@ -1,0 +1,201 @@
+{
+  "id": "1761048176",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "Terri Level Up T Workflow Post Lesson",
+  "createdAt": "2026-01-16T20:28:48.971Z",
+  "updatedAt": "2026-01-16T21:45:25.637Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 3,
+      "actionTypeId": "0-63809083",
+      "fields": {
+        "listId": "2901",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "72281989"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "140397125"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "createdate",
+              "operation": {
+                "operator": "IS_AFTER",
+                "includeObjectsWithNoValueSet": false,
+                "timePoint": {
+                  "timezoneSource": "CUSTOM",
+                  "zoneId": "America/Los_Angeles",
+                  "year": 2025,
+                  "month": 10,
+                  "day": 1,
+                  "hour": 23,
+                  "minute": 59,
+                  "second": 59,
+                  "millisecond": 999,
+                  "timeType": "DATE"
+                },
+                "endpointBehavior": "EXCLUSIVE",
+                "propertyParser": "VALUE",
+                "type": "TIME_POINT",
+                "operationType": "TIME_POINT"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "140397125"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      },
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "pipeline",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "72281989"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_251788939",
+      "objectTypeId": "0-8",
+      "associationTypeId": 19,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_251788937",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_251788936",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_251788938",
+      "objectTypeId": "0-2",
+      "associationTypeId": 341,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

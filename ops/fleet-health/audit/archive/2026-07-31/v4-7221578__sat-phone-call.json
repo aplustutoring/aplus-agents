@@ -1,0 +1,69 @@
+{
+  "id": "7221578",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "6",
+  "name": "SAT Phone Call",
+  "description": "Sends a phone call action when a specific form is submitted by a contact.",
+  "uuid": "hybrid-execution-wf-7005484",
+  "createdAt": "2019-10-10T18:06:44.437Z",
+  "updatedAt": "2022-05-12T19:35:44.394Z",
+  "startActionId": "164827521",
+  "nextAvailableActionId": "164827522",
+  "actions": [
+    {
+      "actionId": "164827521",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-20",
+      "fields": {},
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "1a4341b1-dc14-4264-bc15-d4108ff8704d",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "formId": "1a4341b1-dc14-4264-bc15-d4108ff8704d",
+            "operator": "FILLED_OUT",
+            "filterType": "FORM_SUBMISSION"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

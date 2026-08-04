@@ -1,0 +1,90 @@
+{
+  "id": "450366216",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Correct invalid \".con\" email addresses with \".com\"",
+  "description": "Corrects email addresses by replacing \".con\" with \".com\" for contacts whose email domain contains \".con\".",
+  "createdAt": "2023-08-22T00:20:12.367Z",
+  "updatedAt": "2023-08-22T00:20:12.367Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "3",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-33",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "variables": [
+          {
+            "name": "email",
+            "value": {
+              "propertyName": "email",
+              "type": "OBJECT_PROPERTY"
+            }
+          }
+        ],
+        "template": "{{variable.email|replace(\"con\",\"com\",1)}}",
+        "locale": "en-us"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "email",
+        "value": {
+          "actionId": "1",
+          "dataKey": "formula_result_output",
+          "type": "FIELD_DATA"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "hs_email_domain",
+              "operation": {
+                "operator": "CONTAINS",
+                "includeObjectsWithNoValueSet": false,
+                "value": ".con",
+                "operationType": "STRING"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

@@ -1,0 +1,71 @@
+{
+  "id": "208754759",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "Send a follow-up email after form submission",
+  "description": "Sends a follow-up email to contacts after they submit the Pop up Subscribe form.",
+  "uuid": "6312752:6090f2a4-3a04-40f3-ad1e-d01df0bdb892:O65SGCF66D",
+  "createdAt": "2022-05-27T02:51:09.817Z",
+  "updatedAt": "2023-01-06T21:20:41.483Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "fields": {
+        "content_id": "38533090317"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "6090f2a4-3a04-40f3-ad1e-d01df0bdb892",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "formId": "6090f2a4-3a04-40f3-ad1e-d01df0bdb892",
+            "operator": "FILLED_OUT",
+            "filterType": "FORM_SUBMISSION"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

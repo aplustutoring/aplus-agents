@@ -1,0 +1,403 @@
+{
+  "id": "386577926",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "20",
+  "name": "June Zoom- 6th and 7th Grade Families",
+  "description": "Sends a June Zoom email to families with children in grades 5-7, then follows up based on email opens, link clicks, and engagement with additional emails and tasks.",
+  "createdAt": "2023-05-24T21:08:07.300Z",
+  "updatedAt": "2023-08-25T21:10:21.211Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "14",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "content_id": "116993756753"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "1"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1685577600000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "delta": "10080",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "259920087",
+                    "appId": "2286",
+                    "operator": "OPENED",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Opened",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "5"
+          }
+        }
+      ],
+      "defaultBranchName": "Did not Open",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "8"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "5",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "259920087",
+                    "appId": "2286",
+                    "operator": "LINK_CLICKED",
+                    "clickUrl": "www.eventbrite.com/e/helping-your-child-master-math-6th-and-7th-grade-parents-tickets-641715216487",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Clicked on Event Link",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "6"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Click on Event Link",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "6",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "7"
+      },
+      "fields": {
+        "listId": "1862",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "7",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Follow- Up with Families who Engaged with Email/ Send Follow- Up Email to Families who Sent RSVP",
+        "body": "",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 8
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 279
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 3,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 11,
+            "minute": 0
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "8",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "9"
+      },
+      "fields": {
+        "delta": "14400",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "9",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "11"
+      },
+      "fields": {
+        "content_id": "117212870969"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "10",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "259937410",
+                    "appId": "2286",
+                    "operator": "OPENED",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Opened Email",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "12"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Open Email",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "11",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "10"
+      },
+      "fields": {
+        "delta": "4320",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "12",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "13"
+      },
+      "fields": {
+        "listId": "1862",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "13",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Follow- Up with Families who Engaged with Email/ Send Follow- Up Email to Families who Sent RSVP",
+        "body": "",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 8
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 279
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 3,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 11,
+            "minute": 0
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "what_is_your_child_s_current_grade_level_",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "5",
+                  "6",
+                  "7"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}
