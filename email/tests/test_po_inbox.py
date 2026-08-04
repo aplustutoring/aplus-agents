@@ -277,8 +277,12 @@ def test_po_month_end_parsing():
     assert po._po_month_end("2026-08").strftime("%Y-%m-%d") == "2026-08-31"
     assert po._po_month_end("2027-02").strftime("%Y-%m-%d") == "2027-02-28"
     assert po._po_month_end("") is None
-    assert po._po_month_end("Aug 2026") is None
     assert po._po_month_end("2026-13") is None
+    # prose formats extractors actually return (caught by the Milo dry run):
+    assert po._po_month_end("August 2026").strftime("%Y-%m-%d") == "2026-08-31"
+    assert po._po_month_end("Aug 2026").strftime("%Y-%m-%d") == "2026-08-31"
+    assert po._po_month_end("8/2026").strftime("%Y-%m-%d") == "2026-08-31"
+    assert po._po_month_end("2026-8").strftime("%Y-%m-%d") == "2026-08-31"
 
 
 def test_invoice_due_end_of_po_month_and_deal_stamped(monkeypatch):

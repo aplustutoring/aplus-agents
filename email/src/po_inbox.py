@@ -175,14 +175,30 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
         print(f"  ⚠️  TOR association failed (non-fatal): {e}")
 
 
+_MONTH_NAMES = {m: i + 1 for i, m in enumerate(
+    ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
+
+
 def _po_month_end(po_month: str):
-    """Last day of the PO's service month (5 PM PT) — the invoice due date. None if
-    the month is missing/unparseable."""
+    """Last day of the PO's service month (5 PM PT) — the invoice due date. Accepts
+    '2026-08', 'August 2026', 'Aug 2026', or '8/2026' (extractors drift on format —
+    the Milo test returned the prose form). None if missing/unparseable."""
     import calendar
-    m = re.match(r"^(\d{4})-(\d{2})$", (po_month or "").strip())
-    if not m:
+    raw = (po_month or "").strip()
+    year = month = None
+    m = re.match(r"^(\d{4})-(\d{1,2})$", raw)
+    if m:
+        year, month = int(m.group(1)), int(m.group(2))
+    if year is None:
+        m = re.match(r"^([A-Za-z]{3,9})\.?,?\s+(\d{4})$", raw)
+        if m and m.group(1)[:3].lower() in _MONTH_NAMES:
+            year, month = int(m.group(2)), _MONTH_NAMES[m.group(1)[:3].lower()]
+    if year is None:
+        m = re.match(r"^(\d{1,2})[/-](\d{4})$", raw)
+        if m:
+            year, month = int(m.group(2)), int(m.group(1))
+    if year is None:
         return None
-    year, month = int(m.group(1)), int(m.group(2))
     if not 1 <= month <= 12:
         return None
     last = calendar.monthrange(year, month)[1]

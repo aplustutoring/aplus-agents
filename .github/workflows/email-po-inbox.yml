@@ -42,6 +42,9 @@ jobs:
           # Same service account as the retention sync — the standalone email repo's
           # local JSON was wiped in the 6/29 secrets cleanup; the value lives on here.
           GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
+          # The in-run Teachworks sync chain (no cron lag) needs the TW tokens too.
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: python -m src.po_inbox
       - name: Commit state changes
