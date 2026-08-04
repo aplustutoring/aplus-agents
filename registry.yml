@@ -9,7 +9,8 @@
 #
 # Spans the whole fleet across repos/machines, not just this repo:
 #   marketing  — aplus-agents (this repo): B2B blogs + B2C spotlights
-#   email      — aplus-email repo: inbox/customer-comms ops (GitHub Actions)
+#   email      — aplus-agents/email (this repo, GitHub Actions since the 2026-07-22
+#                cutover): inbox/customer-comms ops incl. charter-PO intake
 #   sync       — aplus-agents/ops/scorecard (this repo, GitHub Actions): Teachworks
 #                -> HubSpot data sync. Migrated 2026-06 from ~/aplus-sync local cron.
 #   charter    — NOT BUILT: discussed B2B prospecting/sales engine, no live automation
@@ -380,41 +381,88 @@ agents:
     status: active
     trigger:
       type: cron
-      schedule: ["every 15 min during business hours + hourly"]   # triage.yml
-      repo: aplustutoring/aplus-email
-      workflow: .github/workflows/triage.yml
-    entrypoint: src/main.py            # in aplus-email repo
+      schedule: ["every 15 min during business hours + hourly"]
+      repo: aplustutoring/aplus-agents
+      workflow: .github/workflows/email-triage.yml
+    entrypoint: email/src/main.py
     reads: [HubSpot:conversations, HubSpot:contacts, Teachworks]
     writes: [HubSpot:tickets, HubSpot:conversations(comment), Slack]
-    depends_on: [rules.md, config.yaml, "Claude Sonnet classifier"]
+    depends_on: [email/rules.md, email/config.yaml, "Claude Sonnet classifier"]
   - id: email-sla-sweep
     name: SLA sweep
     owner: roman@wetutorathome.com
     status: active
-    trigger: {type: cron, schedule: ["hourly"], repo: aplustutoring/aplus-email, workflow: .github/workflows/sla_sweep.yml}
-    entrypoint: src/sla_sweep.py
+    trigger: {type: cron, schedule: ["hourly"], repo: aplustutoring/aplus-agents, workflow: .github/workflows/email-sla-sweep.yml}
+    entrypoint: email/src/sla_sweep.py
     reads: [HubSpot:tickets]
     writes: [Slack, HubSpot:tickets]
   - id: email-weekly-digest
     name: Weekly digest
     owner: roman@wetutorathome.com
     status: active
-    trigger: {type: cron, schedule: ["Mon 8 AM PT"], repo: aplustutoring/aplus-email, workflow: .github/workflows/weekly_digest.yml}
-    entrypoint: src/digest.py
-    reads: [HubSpot:tickets, state/audit_log.jsonl]
+    trigger: {type: cron, schedule: ["Mon 8 AM PT"], repo: aplustutoring/aplus-agents, workflow: .github/workflows/email-weekly-digest.yml}
+    entrypoint: email/src/digest.py
+    reads: [HubSpot:tickets, email/state/audit_log.jsonl]
     writes: [Slack]
-  - id: email-other-workflows
-    name: Email engine — daily_summary / deal_sync / hourly_update / po_inbox
+  - id: email-daily-summary
+    name: Daily summary (6 PM PT DM)
     owner: roman@wetutorathome.com
-    status: unverified                 # exist as workflows; entrypoints not individually confirmed
+    status: active
+    trigger: {type: cron, schedule: ["daily 6 PM PT"], repo: aplustutoring/aplus-agents, workflow: .github/workflows/email-daily-summary.yml}
+    entrypoint: email/src/daily_summary.py
+    reads: [email/state/audit_log.jsonl, HubSpot:tickets]
+    writes: [Slack]
+  - id: email-hourly-update
+    name: Hourly launch-monitoring update
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["hourly, business hours"], repo: aplustutoring/aplus-agents, workflow: .github/workflows/email-hourly-update.yml}
+    entrypoint: email/src/hourly_update.py
+    reads: [email/state/audit_log.jsonl]
+    writes: [Slack]
+  - id: email-po-inbox
+    name: Charter PO inbox (charter@wetutorathome.com)
+    owner: roman@wetutorathome.com
+    status: active
     trigger:
       type: cron
-      repo: aplustutoring/aplus-email
-      workflows: [daily_summary.yml, deal_sync.yml, hourly_update.yml, po_inbox.yml]
-    entrypoint: src/ (aplus-email)
-    reads: [HubSpot, Teachworks]
-    writes: [HubSpot, Slack]
-    notes: Purchase-order inbox + deal sync + daily summary. Confirm entrypoints + schedules.
+      schedule: ["every 15 min during business hours + hourly"]
+      repo: aplustutoring/aplus-agents
+      workflow: .github/workflows/email-po-inbox.yml
+    entrypoint: email/src/po_inbox.py
+    reads: ["Gmail:charter@ (incl. PDF/image PO attachments)", HubSpot:deals, HubSpot:contacts, "Teachworks:lessons (upcoming-calendar check)"]
+    writes:
+      - "HubSpot:deals (create; Level Up A 88841552 routing; props: po_number, number_of_hours_in_this_po, student_first_name, student_last_name_if_diff_from_parent, student_grade, student_school, parent_email, parent_phone, lessons_fulfilled_date)"
+      - "HubSpot:contacts (find-or-create parent + TOR, associate to deal)"
+      - "HubSpot:files+notes (PO PDF pinned to the deal)"
+      - "HubSpot:tickets+tasks (Kath ticket; same-day convert-PO-to-TW-invoice task)"
+      - "Gmail:labels (drafts only on non-PO mail — POs never get replies)"
+      - "Slack (Kath DM; URGENT duplicate-PO alert; no-lessons scheduling nudge)"
+    depends_on: [email/config.yaml, "Claude Sonnet PO extractor"]
+    notes: Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
+  - id: email-deal-sync
+    name: Deal sync (HubSpot → Teachworks) + invoice sweep
+    owner: roman@wetutorathome.com
+    status: active
+    probation: draft                   # dry_run_first pilot — logs intended TW writes only
+    trigger:
+      type: cron
+      schedule: ["every 15 min during business hours + hourly"]
+      repo: aplustutoring/aplus-agents
+      workflow: .github/workflows/email-deal-sync.yml
+    entrypoint: email/src/deal_sync.py
+    reads: [HubSpot:deals, HubSpot:contacts, "Teachworks:customers/students/lessons"]
+    writes:
+      - "Teachworks:customers+students (family upsert by email; per-pipeline billing; guards: charter contact must match deal-name parent, internal domains skipped)"
+      - "Slack (needs-review flags; invoice-sweep submit prompts to Kath)"
+    depends_on: [email/config.yaml, email/src/invoice_sweep.py]
+    notes: >
+      Invoice sweep (daily 9 AM PT inside this workflow): active charter PO deals —
+      attended TW hours >= PO hours → prompt Kath to submit to the school's ops
+      system now, else prompt at end of PO month (lessons_fulfilled_date). Skips
+      deals with invoice_submitted_date set or in an Invoice Submitted stage.
+      Manual tools: FORCE_DEAL_ID / FORCE_CONTACT_EMAIL / FORCE_STUDENT_FIRST
+      workflow inputs (one-deal real sync).
 
   # ───────────────────────── Charter prospecting + sales-ops ────────────
   # NOT BUILT. A B2B charter-sales engine has been discussed (prospecting pull,

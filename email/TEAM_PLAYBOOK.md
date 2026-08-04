@@ -52,6 +52,102 @@ document get an automatic "we received it" receipt.)
 
 ---
 
+## Charter PO inbox (charter@wetutorathome.com)
+
+A separate Gmail the agent polls every 15 minutes on the same schedule as the admin
+inbox. **Every** email there gets a HubSpot ticket to **Kath** (same accountability
+spine) and a Gmail label. **Purchase orders never get a reply.** Non-PO mail gets a
+**real Gmail draft** when a reply makes sense (the agent never sends from this
+address).
+
+**The PO money flow is two steps:** (1) on receipt, the PO is converted to a
+Teachworks invoice; (2) once the service is delivered, that invoice is submitted
+to the school's ops system. The agent drives both.
+
+**When the email is a NEW purchase order** (a funding authorization that starts or
+adds service — not an invoice follow-up, statement, or renewal paperwork):
+
+1. The agent extracts school, student, PO #, amount, hours, the PO's **service
+   month**, and the parent's + TOR's contact info — **reading PDF/image attachments
+   (the actual PO document) directly**, not just the email body.
+2. **Dedupe:** if a deal already carries that PO # → **no new deal + an URGENT
+   Slack DM to Kath** (is it a re-send or a second authorization?).
+3. Otherwise it **creates the deal** at Pre-Lesson — in the **Level Up A pipeline
+   when the PO mentions LEVEL UP** (`po_inbox.levelup_pipeline_id`), else the
+   Charter pipeline:
+   - name `School - Student First Last - PO 123`, close date +30 days
+   - `po_number` + hours properties filled; **submission due date (end of the PO's
+     service month) stamped on the deal** alongside the amount
+   - **student first + last name, grade, and school always stamped on the deal**
+     (property map in `po_inbox.deal_property_map`; anything the PO didn't state is
+     flagged on the ticket for manual fill)
+   - **New Business** if the student has no prior deals, else **Existing Business**
+   - owner = the **assigned scheduler** (A–L → Janelle, M–Z → Yolanda)
+4. **Parent contact fork:** parent info in the PO → HubSpot contact found-or-
+   **created** and associated to the deal (this is what feeds Teachworks); missing →
+   the **ticket tells Kath to get the parent's name/email/phone from the TOR** (no
+   reply is sent to POs). The **TOR's contact is also associated** to the deal
+   either way.
+5. **The PO PDF is uploaded to HubSpot and pinned to the deal.**
+6. **No cron lag:** the Teachworks sync runs for the new deal **immediately in the
+   same run** — family + student exist in Teachworks the moment the deal exists
+   (the 15-min sync remains as backstop).
+7. **STEP 1 task — convert the PO to a Teachworks invoice:** a same-day HIGH task
+   for Kath with student, school, PO #, amount, hours, and the submission due date.
+8. **STEP 2 prompt — submit to the school's ops system:** every morning (9 AM PT)
+   the agent checks each active PO deal. Student's attended Teachworks hours have
+   **used up the PO's hours** → Kath is DM'd to **submit now**; otherwise she's
+   DM'd when the **end of the PO month** arrives. One prompt per deal.
+9. **Scheduling nudge:** if the student has **no upcoming lessons on the
+   Teachworks calendar**, the agent posts to the Slack channel ("get them
+   scheduled"); students already on the calendar stay quiet.
+10. Ticket → Kath with everything extracted + the original email embedded as a
+    note; Slack DM to Kath (copy to Roman); labels `A+ Agent/Processed` +
+    `School/<name>`.
+
+Anything that is NOT a new PO (invoicing follow-ups, vendor renewals, COI requests,
+event invites, out-of-office) gets the `A+ Agent/Needs Review` label and a review
+ticket to Kath — no deal is touched.
+
+## Deal → Teachworks sync (replaces the Zapier zap)
+
+Every **new HubSpot deal** (any pipeline except New Tutor / School Partnership /
+Upsells, any creator — human or agent) is synced to Teachworks within ~15 minutes:
+
+- **Family:** matched by the deal contact's **email**. Existing family → contact info
+  updated (HubSpot wins); no family → one is created. In-person pipelines go to the
+  in-person Teachworks account; everything else to online.
+- **Student(s):** first name(s) from the deal name (`Parent - Student`, sibling names
+  like "Kash and Kingston" both created), skipped if already under the family.
+  **All charter families get Package billing by default** — a deal is charter when
+  its pipeline is in the config list *or its pipeline name contains "Charter"*, so
+  new charter pipelines can never fall back to private-pay billing. Private pay
+  gets **Service List Cost**.
+- **Per-pipeline settings:** each pipeline can carry its own Teachworks settings
+  (account, billing method, extra family/student fields) via
+  `deal_sync.pipeline_settings` in `config.yaml` — that's where the differences
+  between the online pipelines (Charter Trad/Terri/Amy, IEM, Subscription, Gold)
+  live. Filling that table in is part of the go-live checklist below.
+- **Safety guards — the sync will NOT write, and instead posts to #email-agent,**
+  when a charter deal's contact doesn't look like the parent named in the deal (it's
+  usually the school's education specialist). Fix: associate the real parent contact,
+  or create the family in Teachworks by hand. Internal @wetutorathome.com contacts
+  are skipped silently.
+
+**Status: pilot mode** (`deal_sync.dry_run_first: true` in `config.yaml`). Every run
+logs exactly what it *would* write — nothing touches Teachworks yet. Go-live
+checklist for flipping `dry_run_first: false`:
+
+1. Review the latest `[PILOT]` lines in the deal-sync Action run: are the
+   CREATE/UPDATE targets and student names right?
+2. Confirm the NEEDS-REVIEW flags are catching the school-staff contacts (and not
+   flagging real parents).
+3. Fill in `deal_sync.pipeline_settings` — the per-pipeline Teachworks settings
+   (billing method, extra fields) for each online pipeline.
+4. Flip the flag in `email/config.yaml` and merge. The cursor was frozen during the
+   pilot, so **every deal since the pilot started replays for real** on the next run
+   — expect a large first batch and spot-check it in Teachworks.
+
 ## Escalation — when something sits too long
 - **1× past due** → the **owner** gets a Slack reminder.
 - **2× past due** → **Mandy** is pinged (she watches the schedulers, nudges them).

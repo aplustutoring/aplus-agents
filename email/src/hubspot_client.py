@@ -4,6 +4,9 @@ Documented REST endpoints via requests (Bearer private-app token). The private a
 MUST hold: conversations.read, conversations.write, tickets,
 crm.objects.contacts.read, crm.objects.contacts.write.
 
+PO-document upload (upload_file/add_deal_note) additionally needs the `files` scope —
+without it the deal is still created and the ticket asks for a manual attach.
+
 The proposed reply is posted as an internal COMMENT (HubSpot has no draft status).
 The ONLY MESSAGE the agent ever sends is the tutor-document receipt — guarded in main.
 """
@@ -159,10 +162,10 @@ def archive_thread(thread_id: str) -> dict:
 
 
 # ── Contacts ─────────────────────────────────────────────────────
-def find_contact_by_email(email: str) -> dict | None:
+def find_contact_by_email(email: str, properties: list | None = None) -> dict | None:
     body = {
         "filterGroups": [{"filters": [{"propertyName": "email", "operator": "EQ", "value": email}]}],
-        "properties": ["email", "firstname", "lastname", "lifecyclestage", "hubspot_owner_id"],
+        "properties": properties or ["email", "firstname", "lastname", "lifecyclestage", "hubspot_owner_id"],
         "limit": 1,
     }
     res = _write("POST", "/crm/v3/objects/contacts/search", body)
@@ -191,6 +194,20 @@ def _deal_pipelines() -> dict:
     d = _get("/crm/v3/pipelines/deals")
     return {p["id"]: {s["id"]: (s.get("label") or "") for s in p.get("stages", [])}
             for p in d.get("results", [])}
+
+
+@functools.lru_cache(maxsize=1)
+def _pipeline_labels() -> dict:
+    """{pipeline_id: pipeline_label} for all deal pipelines (cached)."""
+    d = _get("/crm/v3/pipelines/deals")
+    return {p["id"]: (p.get("label") or "") for p in d.get("results", [])}
+
+
+def pipeline_label(pipeline_id: str) -> str:
+    try:
+        return _pipeline_labels().get(pipeline_id, "")
+    except Exception:  # noqa: BLE001 — callers treat unknown as ""
+        return ""
 
 
 def stage_label(pipeline_id: str, stage_id: str) -> str:
@@ -284,6 +301,15 @@ def create_deal(name: str, pipeline_id: str, stage_id: str, amount: str | None =
         return _write("POST", "/crm/v3/objects/deals", payload)
 
 
+def associate_contact_to_deal(deal_id: str, contact_id: str) -> dict:
+    """Associate an existing contact to a deal (v4, default deal→contact typeId 3)."""
+    return _write(
+        "PUT",
+        f"/crm/v4/objects/deals/{deal_id}/associations/contacts/{contact_id}",
+        [{"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": 3}],
+    )
+
+
 def enroll_contact_in_workflow(workflow_id: str, email: str) -> dict:
     """Enroll a contact (by email) into a HubSpot workflow (legacy automation v2).
     The workflow must allow manual/API enrollment."""
@@ -344,12 +370,15 @@ def find_family_contact(student_first: str, lastname: str) -> list[dict]:
     return parents  # ambiguous → caller leaves it for manual linking
 
 
-def create_contact(email: str, firstname: str | None = None, lastname: str | None = None) -> dict:
+def create_contact(email: str, firstname: str | None = None, lastname: str | None = None,
+                   phone: str | None = None) -> dict:
     props = {"email": email}
     if firstname:
         props["firstname"] = firstname
     if lastname:
         props["lastname"] = lastname
+    if phone:
+        props["phone"] = phone
     return _write("POST", "/crm/v3/objects/contacts", {"properties": props})
 
 
@@ -485,6 +514,43 @@ def list_inboxes() -> list[dict]:
 
 def list_ticket_pipelines() -> list[dict]:
     return _get("/crm/v3/pipelines/tickets").get("results", [])
+
+
+def upload_file(filename: str, data: bytes, mime: str,
+                folder_path: str = "/po-inbox") -> str | None:
+    """Upload a file to HubSpot Files (PRIVATE) and return its id. Requires the
+    `files` scope on the private app; returns None on failure (callers treat the
+    attachment as best-effort)."""
+    if DRY_RUN:
+        print(f"[DRY_RUN] hubspot file upload {filename} ({len(data)} bytes)")
+        return "DRYRUN"
+    import json as _json
+    r = requests.post(
+        f"{HS_BASE}/files/v3/files",
+        headers={"Authorization": f"Bearer {HUBSPOT_PRIVATE_APP_TOKEN}"},
+        files={"file": (filename, data, mime)},
+        data={"options": _json.dumps({"access": "PRIVATE"}), "folderPath": folder_path},
+        timeout=60,
+    )
+    if r.status_code >= 400:
+        print(f"    ⚠️  file upload failed ({r.status_code}): {r.text[:200]}")
+        return None
+    return r.json().get("id")
+
+
+def add_deal_note(deal_id: str, body: str, attachment_ids: list[str] | None = None) -> dict:
+    """Attach a note (optionally with uploaded files) to a DEAL (typeId 214)."""
+    props = {"hs_note_body": body, "hs_timestamp": _now_ms()}
+    if attachment_ids:
+        props["hs_attachment_ids"] = ";".join(str(a) for a in attachment_ids)
+    payload = {
+        "properties": props,
+        "associations": [{
+            "to": {"id": deal_id},
+            "types": [{"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": 214}],
+        }],
+    }
+    return _write("POST", "/crm/v3/objects/notes", payload)
 
 
 def add_ticket_note(ticket_id: str, body: str) -> dict:

@@ -89,6 +89,51 @@ def get_message(msg_id: str) -> dict:
     }
 
 
+# Attachment types the PO extractor can read (Claude reads PDFs + images natively).
+_READABLE_MIMES = {"application/pdf", "image/png", "image/jpeg", "image/gif", "image/webp"}
+_MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024  # per attachment, decoded
+_MAX_ATTACHMENTS = 3
+
+
+def get_attachments(msg_id: str) -> list[dict]:
+    """Readable attachments of a message as [{filename, mime, data_b64}] — data_b64 is
+    STANDARD base64 (what the Anthropic API expects; Gmail hands back urlsafe).
+    Oversized/unreadable attachments are skipped with a note on stdout."""
+    m = _get(f"/messages/{msg_id}", {"format": "full"})
+    found: list[dict] = []
+
+    def _walk(part):
+        for p in part.get("parts", []) or []:
+            _walk(p)
+        fname = part.get("filename")
+        if not fname:
+            return
+        mime = (part.get("mimeType") or "").lower()
+        if mime == "application/octet-stream" and fname.lower().endswith(".pdf"):
+            mime = "application/pdf"
+        if mime not in _READABLE_MIMES:
+            print(f"    📎 skipping unreadable attachment {fname} ({mime})")
+            return
+        body = part.get("body", {})
+        data = body.get("data")
+        if not data and body.get("attachmentId"):
+            att = _get(f"/messages/{msg_id}/attachments/{body['attachmentId']}")
+            data = att.get("data")
+        if not data:
+            return
+        raw = base64.urlsafe_b64decode(data)
+        if len(raw) > _MAX_ATTACHMENT_BYTES:
+            print(f"    📎 skipping oversized attachment {fname} ({len(raw)} bytes)")
+            return
+        found.append({"filename": fname, "mime": mime,
+                      "data_b64": base64.b64encode(raw).decode()})
+
+    _walk(m.get("payload", {}))
+    if len(found) > _MAX_ATTACHMENTS:
+        print(f"    📎 {len(found)} attachments; reading first {_MAX_ATTACHMENTS}")
+    return found[:_MAX_ATTACHMENTS]
+
+
 @lru_cache(maxsize=1)
 def _labels() -> dict:
     return {l["name"]: l["id"] for l in _get("/labels").get("labels", [])}

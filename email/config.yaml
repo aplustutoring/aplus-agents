@@ -173,10 +173,36 @@ deal_sync:
   enabled: true
   dry_run_first: true          # log intended creates/updates only, until flipped false
   in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account
-  charter_pipelines: ["907748", "72281989", "88841552", "5119061"]  # → online + Package billing
+  # Known charter pipelines → Package billing. ALSO automatic: any pipeline whose
+  # NAME contains "Charter" is treated as charter — all charter families get
+  # Package billing in Teachworks by default, listed here or not.
+  charter_pipelines: ["907748", "72281989", "88841552", "5119061"]
   exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
   charter_student_billing: "Package"
   private_student_billing: "Service List Cost"
+  # Per-pipeline Teachworks overrides — each ONLINE pipeline can need different TW
+  # settings after the family-exists check. Keys = HubSpot pipeline ids. Per entry:
+  #   account: online | in_person       (overrides the account routing above)
+  #   student_billing: "<TW billing method>"  (overrides the charter/private default)
+  #   customer_fields: { <tw field>: value }  merged into the family CREATE and UPDATE
+  #   student_fields:  { <tw field>: value }  merged into each student CREATE
+  # An empty entry = today's behavior. TODO(Roman): fill in the real per-pipeline
+  # settings before flipping dry_run_first off.
+  pipeline_settings:
+    "907748": {}     # Charter Trad (Traditional Vendor Funds) — Package via charter_pipelines
+    "72281989": {}   # Charter Terri
+    "88841552": {}   # Charter Amy
+    "5119061": {}    # IEM Inc
+    "21277473": {}   # Subscription
+    # Gold Tutoring (pipeline "default") + Free Trial ("19120821"): add entries if needed
+  # Smart invoice prompt: daily (hour_pt, PT) check of every ACTIVE charter PO deal —
+  # student's attended TW hours >= PO hours → DM Kath to submit the invoice NOW;
+  # otherwise DM once the invoice due date passes (deal due property, else the
+  # deal-name '(Aug) 26/27' tag). One prompt per deal (audit invoice-prompt:{id}).
+  invoice_sweep:
+    enabled: true
+    hour_pt: 9
+    owner: kath
 
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
@@ -195,9 +221,9 @@ b2c_deal:
   fallback_pipeline: "default"
 
 # ── Charter PO inbox (separate Gmail) ───────────────────────────
-# Full admin-inbox treatment (ticket/draft/DM, owner Kath) + deal automation + labels.
-# DISABLED until `address` is set and the service account is granted gmail.modify
-# domain-wide delegation (SETUP §7). Drafts are REAL Gmail drafts; agent never sends.
+# LIVE since the 2026-07-22 cutover. Full admin-inbox treatment (ticket/draft/DM,
+# owner Kath) + deal creation/dedupe + labels. Drafts are REAL Gmail drafts; the
+# agent never sends from this address. Procedure: TEAM_PLAYBOOK.md §Charter PO inbox.
 po_inbox:
   address: "charter@wetutorathome.com"
   owner: kath
@@ -206,6 +232,35 @@ po_inbox:
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
   label_processed: "A+ Agent/Processed"
   label_review: "A+ Agent/Needs Review"
+  # LEVEL UP POs route to "Amy - Charter - iLead - Level Up" (Level Up A).
+  # Verified against the portal 2026-07-31.
+  levelup_pipeline_id: "88841552"
+  levelup_stage_id: "164922249"    # its Pre-Lesson stage
+  # ALWAYS-filled deal properties — INTERNAL names verified against the portal
+  # 2026-07-31. Ticket flags anything the PO didn't state so a human fills it.
+  deal_property_map:
+    student_first: "student_first_name"
+    student_last: "student_last_name_if_diff_from_parent"   # label: Student Last Name
+    grade: "student_grade"
+    school: "student_school"
+    parent_email: "parent_email"
+    parent_phone: "parent_phone"
+  # New PO + student has NO upcoming Teachworks lessons → post here (scheduling
+  # nudge). Students already on the calendar stay quiet. Empty = #email-agent.
+  no_lessons_channel: ""
+  # Teachworks invoices are NOT creatable via the TW API (GET-only) — so each PO with
+  # an amount spawns a due-dated HubSpot Task with all invoice fields (student, PO#,
+  # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.
+  invoice_task:
+    enabled: true
+    owner: kath
+    due_business_hours: 8    # STEP 1 is same-day: convert the PO to a TW invoice on receipt
+    # STEP 2 (submitting to the school's ops system) is due at the END of the PO's
+    # service month — stamped on lessons_fulfilled_date ("Expected Lessons Fulfilled
+    # Date: date when lessons will be completed so Invoice can be submitted") and
+    # prompted by the invoice sweep. Kath closes the loop by setting
+    # invoice_submitted_date + moving the deal to its Invoice Submitted stage.
+    invoice_due_property: "lessons_fulfilled_date"
 
 # Teachworks notice → family-contact disambiguation. When two contacts share a last
 # name, the student first name from the notice is matched against these (messy, multi-
