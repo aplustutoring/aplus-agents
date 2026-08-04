@@ -50,10 +50,12 @@ TEXT_FIT = (
     "outside the frame. Every word must be fully visible — never zoom in on or crop the text."
 )
 
-# Hard maximum characters that go onto each graphic format. These are tuned so the
-# text fits the canvas at a readable size (GPT Image does not reliably shrink-to-fit,
-# so the cap — not the prompt — is the real guarantee against overflow).
-MAX_CHARS = {
+# Characters each format holds at its DEFAULT (largest) type size. Copy longer than
+# this is NOT cut down to fit — _fit_note asks for a smaller type size instead, so the
+# whole sentence still lands inside the frame. Cutting copy to a fixed budget is what
+# produced the mid-sentence "incomplete thought" cards (worst on the carousel, whose
+# headline budget is the tightest and whose fallback copy is a long SEO title).
+FIT_CHARS = {
     "pull_quote": 130,      # 3:2 landscape
     "social_card": 90,      # 16:9 landscape
     "carousel_headline": 55,
@@ -61,31 +63,72 @@ MAX_CHARS = {
     "fb_ig": 60,            # 1:1 square — least room, keep it punchy
 }
 
+# Type-size tiers, roomiest first: (copy-to-FIT_CHARS ratio the tier absorbs, type-size
+# wording, max wrapped lines). Same shrink-as-it-gets-denser idea as the b2c timeline
+# graphic, expressed as prompt wording because GPT Image renders the type, not us.
+TYPE_TIERS = [
+    (1.0, "very large display", 3),
+    (1.6, "large", 5),
+    (2.4, "medium", 7),
+    (3.5, "modest but clearly legible", 10),
+]
 
-def _cap(text: str, n: int) -> str:
-    """Cap text to at most n chars, ending as cleanly as possible: prefer a sentence
-    boundary, then a clause (comma) boundary, then a word boundary. Avoids the
-    mid-phrase '...with a' truncations that read as cut off."""
+# Absolute ceiling per format: copy beyond the smallest tier's reach gets trimmed by
+# _cap — to WHOLE SENTENCES only, never mid-phrase.
+HARD_CHARS = {k: int(v * TYPE_TIERS[-1][0]) for k, v in FIT_CHARS.items()}
+
+# Copy that hit its format's ceiling and lost a trailing sentence. Surfaced loudly at
+# the end of the build and in graphics/_text-fit.json so QA sees it instead of finding
+# it on LinkedIn.
+SHORTENED: list[str] = []
+
+
+def _cap(text: str, n: int, label: str = "") -> str:
+    """Last-resort ceiling for copy too long even for the smallest type tier. Cuts ONLY
+    at a sentence boundary, keeping whole sentences while they fit, so a card never shows
+    an incomplete thought. If the first sentence alone is over the ceiling it is kept
+    whole anyway and the type tier shrinks to hold it — chopping at a word boundary is
+    exactly the 'cut off mid-sentence' bug this replaces."""
     text = " ".join((text or "").split())
     if len(text) <= n:
         return text
-    window = text[:n]
-    for sep in (". ", "! ", "? "):
-        idx = window.rfind(sep)
-        if idx >= n * 0.5:
-            return window[: idx + 1].strip()
-    idx = window.rfind(", ")
-    if idx >= n * 0.55:
-        return window[:idx].strip()
-    return window.rsplit(" ", 1)[0].rstrip(" ,;:-")
+    kept = ""
+    for part in re.findall(r"[^.!?]+(?:[.!?]+|$)", text):
+        candidate = (kept + part).strip()
+        if kept and len(candidate) > n:
+            break
+        kept = candidate
+    kept = kept or text
+    if kept != text and label:
+        SHORTENED.append(f"{label}: kept {len(kept)}/{len(text)} chars (dropped whole trailing sentences)")
+    return kept
+
+
+def _fit_note(text: str, budget: int, shrink: int = 0) -> str:
+    """Prompt instruction that sizes `text` to a format's default-size char `budget`.
+    Longer copy renders SMALLER and wraps across more lines rather than being cut — the
+    generative equivalent of shrink-to-fit. `shrink` steps down one extra tier per unit,
+    used to retry when vision QA still saw clipped text."""
+    ratio = len(" ".join((text or "").split())) / max(budget, 1)
+    tier = next((i for i, (r, _, _) in enumerate(TYPE_TIERS) if ratio <= r), len(TYPE_TIERS) - 1)
+    _, size_word, max_lines = TYPE_TIERS[min(tier + shrink, len(TYPE_TIERS) - 1)]
+    return (
+        f" TYPE SIZE: set the text at a {size_word} size, wrapped across at most {max_lines} "
+        "lines, chosen so every word — including the final punctuation — sits inside the "
+        "margins. Do NOT shorten, paraphrase, summarize, or drop any words to make it fit; "
+        "reduce the type size instead."
+    )
 
 
 _QA_ENABLED = os.environ.get("APLUS_GRAPHICS_QA", "1") != "0"
 
 
 def _qa_text_fits(image_path: Path) -> "tuple[bool, str]":
-    """Vision check: is any text on the graphic cropped/cut off/outside the frame?
-    Returns (ok, reason). Fail-open (ok=True) on any error so QA never blocks a build."""
+    """Vision check: is any text on the graphic cropped/cut off/outside the frame, OR left
+    reading as an incomplete thought? Returns (ok, reason). The incomplete-thought half
+    matters because a card whose copy was truncated renders perfectly fitted — visually
+    clean, semantically cut off — so an edges-only check passes it.
+    Fail-open (ok=True) on any error so QA never blocks a build."""
     if not _QA_ENABLED:
         return True, "qa-disabled"
     try:
@@ -98,10 +141,11 @@ def _qa_text_fits(image_path: Path) -> "tuple[bool, str]":
             messages=[{"role": "user", "content": [
                 {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": b64}},
                 {"type": "text", "text": (
-                    "This is a marketing graphic with text. Is ANY text cropped, cut off at an edge, "
-                    "or running outside the frame/margins? Reply ONLY 'OK' if every word is fully "
-                    "visible with comfortable margins, or 'CUTOFF: <short reason>' if any text is "
-                    "clipped, touching an edge, or past the frame.")},
+                    "This is a marketing graphic with text. Check TWO things: (a) is ANY text cropped, "
+                    "cut off at an edge, or running outside the frame/margins, and (b) does the visible "
+                    "text stop mid-sentence or mid-word, or otherwise read as an incomplete thought? "
+                    "Reply ONLY 'OK' if every word is fully visible with comfortable margins AND the "
+                    "text reads as a complete finished thought, or 'CUTOFF: <short reason>' otherwise.")},
             ]}],
         )
         txt = " ".join(b.text for b in resp.content if getattr(b, "type", "") == "text").strip()
@@ -111,21 +155,23 @@ def _qa_text_fits(image_path: Path) -> "tuple[bool, str]":
 
 
 def _gen_with_qa(make_prompt, size: str, out_path: Path, label: str, retries: int = 2) -> dict:
-    """Generate a text graphic, then vision-QA it for cut-off text. make_prompt(scale)
-    returns the prompt with its text capped to scale*max, so a cut-off result is retried
-    at a tighter scale (0.8x). Returns the last _gpt_image result dict."""
+    """Generate a text graphic, then vision-QA it for cut-off text. make_prompt(shrink)
+    returns the prompt for the SAME full copy one type tier smaller per shrink step, so a
+    clipped result is retried at smaller type — never by cutting words out of the copy
+    (the old scale-the-cap retry made the incomplete-thought problem worse each attempt).
+    Returns the last _gpt_image result dict, carrying the final QA verdict."""
     r = {}
     for attempt in range(retries + 1):
-        scale = 0.8 ** attempt
-        r = _gpt_image(make_prompt(scale), size, out_path)
+        r = _gpt_image(make_prompt(attempt), size, out_path)
         if not r.get("ok"):
             return r
         ok, reason = _qa_text_fits(out_path)
         print(f"  [QA] {label}: {'OK' if ok else reason}")
+        r["text_fit_qa"] = "ok" if ok else reason
         if ok:
             return r
         if attempt < retries:
-            print(f"  [QA] {label}: regenerating tighter (attempt {attempt + 2})")
+            print(f"  [QA] {label}: regenerating at smaller type (attempt {attempt + 2})")
     return r
 
 # A+ brand
@@ -221,7 +267,7 @@ def hero_prompt(subject: str, headline: str) -> str:
     )
 
 
-def pull_quote_prompt(quote: str) -> str:
+def pull_quote_prompt(quote: str, fit: str = "") -> str:
     return (
         "A landscape blog-body-width pull-quote graphic. Solid background A+ Orange "
         f"hex {ORANGE}. Subtle paper-grain texture at 5 percent opacity. Large white "
@@ -229,11 +275,11 @@ def pull_quote_prompt(quote: str) -> str:
         "centered vertically with generous left and right margins, reading EXACTLY: "
         f"\"{quote}\". Generous whitespace. NO date line. NO 'A+ Tutoring blog' text. "
         "NO attribution subtitle. NO 'Source:' footer. Just the verbatim quote. "
-        "Aspect 3:2 landscape." + LOGO_EXCLUSION + TEXT_FIT
+        "Aspect 3:2 landscape." + LOGO_EXCLUSION + TEXT_FIT + fit
     )
 
 
-def social_card_prompt(headline: str) -> str:
+def social_card_prompt(headline: str, fit: str = "") -> str:
     return (
         "A flat institutional social media share card for an A+ Tutoring B2B blog "
         f"post. Solid background A+ Navy hex {NAVY}. Large white serif headline "
@@ -241,11 +287,11 @@ def social_card_prompt(headline: str) -> str:
         f"third, left-aligned with generous margin, reading EXACTLY: \"{headline}\". "
         f"Below it, a thin horizontal A+ Orange {ORANGE} divider line ~200px wide. "
         "Generous whitespace. Clean, institutional. No photographs. No decorative "
-        "icons. No date. Aspect 16:9 landscape." + LOGO_EXCLUSION + TEXT_FIT
+        "icons. No date. Aspect 16:9 landscape." + LOGO_EXCLUSION + TEXT_FIT + fit
     )
 
 
-def fb_ig_card_prompt(hook: str) -> str:
+def fb_ig_card_prompt(hook: str, fit: str = "") -> str:
     return (
         "A warm, approachable SQUARE social media graphic for A+ Tutoring (a California K-12 "
         "tutoring company), sized for Facebook and Instagram feeds. Solid background A+ Navy "
@@ -254,11 +300,12 @@ def fb_ig_card_prompt(hook: str) -> str:
         f"margins, reading EXACTLY: \"{hook}\". A short A+ Orange {ORANGE} accent underline "
         "beneath it. Lots of whitespace, modern and inviting, community-facing (not corporate "
         "or academic). No photographs, no clip-art icons, no date. Aspect 1:1 square."
-        + LOGO_EXCLUSION + TEXT_FIT
+        + LOGO_EXCLUSION + TEXT_FIT + fit
     )
 
 
-def carousel_slide_prompt(headline: str, body: str, slide_num: int, total: int, is_cta: bool) -> str:
+def carousel_slide_prompt(headline: str, body: str, slide_num: int, total: int, is_cta: bool,
+                          fit: str = "") -> str:
     swipe = (" A small right-pointing swipe indicator in the lower-left (this is slide 1 of the set)."
              if slide_num == 1 else " NO swipe indicator.")
     head = (f"a white serif headline (Playfair Display style, weight 700) reading EXACTLY: \"{headline}\", then "
@@ -268,11 +315,13 @@ def carousel_slide_prompt(headline: str, body: str, slide_num: int, total: int, 
         f"A portrait-orientation flat design slide for a LinkedIn carousel, slide {slide_num} of {total}. "
         f"Solid background A+ Navy hex {NAVY}. {head}white sans-serif body text (DM Sans style) reading "
         f"EXACTLY: \"{body}\". A thin A+ Orange {ORANGE} accent line. Generous whitespace, clean and "
-        f"institutional. No photographs, no decorative icons, no 'Source:' footer.{swipe}{cta}" + LOGO_EXCLUSION + TEXT_FIT
+        f"institutional. No photographs, no decorative icons, no 'Source:' footer.{swipe}{cta}"
+        + LOGO_EXCLUSION + TEXT_FIT + fit
     )
 
 
 def build(bundle: Path, with_hero: bool = True) -> dict:
+    SHORTENED.clear()  # per-build, so a second call in-process reports only its own copy
     graphics = bundle / "graphics"
     graphics.mkdir(parents=True, exist_ok=True)
     meta_path = bundle / "blog-anchor-meta.md"
@@ -293,9 +342,12 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
         print("hero:", r.get("ok"), r.get("error", ""))
         results.append(r)
 
+    # Copy is capped ONCE here, at the format's hard ceiling and on sentence boundaries;
+    # the per-attempt lambda then only varies the type size, so a retry never eats words.
+
     # Social card — prefer the dedicated short headline, fall back to the SEO title.
-    sc_text = social_headline or headline
-    r = _gen_with_qa(lambda s: social_card_prompt(_cap(sc_text, int(MAX_CHARS["social_card"] * s))),
+    sc_text = _cap(social_headline or headline, HARD_CHARS["social_card"], "social_card")
+    r = _gen_with_qa(lambda k: social_card_prompt(sc_text, _fit_note(sc_text, FIT_CHARS["social_card"], k)),
                      "1536x1024", graphics / "social-card.png", "social_card")
     results.append(r)
 
@@ -303,38 +355,58 @@ def build(bundle: Path, with_hero: bool = True) -> dict:
     for slot, quote in zip(["s1", "s2"], (quotes + ["", ""])[:2]):
         if not quote:
             continue
-        r = _gen_with_qa(lambda s, q=quote: pull_quote_prompt(_cap(q, int(MAX_CHARS["pull_quote"] * s))),
+        q = _cap(quote, HARD_CHARS["pull_quote"], f"pull_quote_{slot}")
+        r = _gen_with_qa(lambda k, q=q: pull_quote_prompt(q, _fit_note(q, FIT_CHARS["pull_quote"], k)),
                          "1536x1024", graphics / f"pull-quote-{slot}.png", f"pull_quote_{slot}")
         results.append(r)
 
     # LinkedIn carousel (portrait): slide 1 = headline + first quote; slides 2-5 = carousel_slides.
     carousel = _meta_list(meta_text, "carousel_slides")
     if quotes or carousel:
-        c1_head = social_headline or headline
-        c1_body = quotes[0] if quotes else ""
+        c1_head = _cap(social_headline or headline, HARD_CHARS["carousel_headline"], "carousel_headline")
+        c1_body = _cap(quotes[0], HARD_CHARS["carousel_body"], "carousel_body") if quotes else ""
+        # Slide 1 carries both blocks, so size the type against their combined budget.
+        c1_budget = FIT_CHARS["carousel_headline"] + (FIT_CHARS["carousel_body"] if c1_body else 0)
         r = _gen_with_qa(
-            lambda s: carousel_slide_prompt(
-                _cap(c1_head, int(MAX_CHARS["carousel_headline"] * s)),
-                _cap(c1_body, int(MAX_CHARS["carousel_body"] * s)) if c1_body else "", 1, 5, False),
+            lambda k: carousel_slide_prompt(
+                c1_head, c1_body, 1, 5, False,
+                _fit_note(f"{c1_head} {c1_body}".strip(), c1_budget, k)),
             "1024x1536", graphics / "linkedin-carousel-slide-1.png", "carousel_1")
         results.append(r)
         for i, text in enumerate(carousel[:4]):
             n = i + 2
+            t = _cap(text, HARD_CHARS["carousel_body"], f"carousel_{n}")
             r = _gen_with_qa(
-                lambda s, t=text, nn=n: carousel_slide_prompt("", _cap(t, int(MAX_CHARS["carousel_body"] * s)), nn, 5, nn == 5),
+                lambda k, t=t, nn=n: carousel_slide_prompt(
+                    "", t, nn, 5, nn == 5, _fit_note(t, FIT_CHARS["carousel_body"], k)),
                 "1024x1536", graphics / f"linkedin-carousel-slide-{n}.png", f"carousel_{n}")
             results.append(r)
 
     # Facebook + Instagram share card (square — the SAME graphic posts to both).
-    fb_text = social_headline or (quotes[0] if quotes else headline)
-    r = _gen_with_qa(lambda s: fb_ig_card_prompt(_cap(fb_text, int(MAX_CHARS["fb_ig"] * s))),
+    fb_text = _cap(social_headline or (quotes[0] if quotes else headline), HARD_CHARS["fb_ig"], "fb_ig")
+    r = _gen_with_qa(lambda k: fb_ig_card_prompt(fb_text, _fit_note(fb_text, FIT_CHARS["fb_ig"], k)),
                      "1024x1024", graphics / "fb-ig-card.png", "fb_ig_card")
     results.append(r)
 
     (graphics / "_results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
+
+    # Text-fit guard: anything that lost a sentence, or that QA still called cut off, is
+    # reported loudly here and written for build-qa-checklist.py to surface. Silence here
+    # is the signal that every card holds its complete copy.
+    cutoff = [r.get("name") for r in results
+              if str(r.get("text_fit_qa", "ok")).upper().startswith("CUTOFF")]
+    (graphics / "_text-fit.json").write_text(
+        json.dumps({"shortened": SHORTENED, "qa_cutoff": cutoff}, indent=2), encoding="utf-8")
+    for line in SHORTENED:
+        print(f"graphics: WARNING text-fit — {line}", file=sys.stderr)
+    if cutoff:
+        print(f"graphics: WARNING text-fit — QA still saw cut-off text on: {', '.join(cutoff)}",
+              file=sys.stderr)
+
     ok = sum(1 for r in results if r.get("ok"))
     print(f"graphics: {ok}/{len(results)} generated")
-    return {"bundle": str(bundle), "generated": ok, "total": len(results), "results": results}
+    return {"bundle": str(bundle), "generated": ok, "total": len(results), "results": results,
+            "text_fit": {"shortened": SHORTENED, "qa_cutoff": cutoff}}
 
 
 def main() -> int:
