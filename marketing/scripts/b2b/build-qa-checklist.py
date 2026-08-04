@@ -7,12 +7,18 @@ the gates Danielle and Roman should walk through before publishing.
 
 Usage:
     python3 scripts/b2b/build-qa-checklist.py --bundle aplus-content/2026-05-18-weekly/
+    python3 scripts/b2b/build-qa-checklist.py --bundle <dir> --strict   # rc=1 on bad text fit
 
 Per the v1.4 master weekly run prompt, this runs at the end of every
 bundle generation so the team has a single canonical checklist to work
 from.
+
+If build-graphics.py left a graphics/_text-fit.json guard report, any shortened
+or still-clipped graphic copy is hoisted to the top of the checklist and echoed
+to stderr, so cut-off text stops a bundle here instead of reaching LinkedIn.
 """
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -21,7 +27,7 @@ from pathlib import Path
 CHECKLIST_TEMPLATE = """# Content QA Checklist: {date}
 
 > Bundle is NOT marked ready-to-publish until ALL boxes checked.
-
+{text_fit}
 ## Blog post
 
 - [ ] Word count between 1,200 and 1,500
@@ -45,6 +51,8 @@ CHECKLIST_TEMPLATE = """# Content QA Checklist: {date}
 - [ ] A+ logo present (bottom-right, real logo not AI-rendered)
 - [ ] Brand colors correct (navy + orange)
 - [ ] Text rendering clean (no garbled letters, no hallucinated tokens)
+- [ ] No text cut off at an edge or running outside the frame
+- [ ] Every line of copy reads as a COMPLETE thought (nothing ending mid-sentence)
 - [ ] Approved by: ___________
 
 ## Preset stat graphic (canonical iLEAD outcomes)
@@ -69,6 +77,9 @@ CHECKLIST_TEMPLATE = """# Content QA Checklist: {date}
 - [ ] Brand colors consistent across all 5 slides
 - [ ] Slide 1 (hook) reads as the blog's opening claim
 - [ ] Slide 5 (CTA) points to the blog URL or Danielle's booking
+- [ ] EVERY slide's copy finishes its sentence (no slide ends mid-phrase or mid-word)
+- [ ] No slide text touches or runs past the frame edge
+- [ ] Headline on slide 1 is the short `social_headline`, not a clipped SEO title
 
 ## Hero image (homeschool spec)
 
@@ -109,9 +120,45 @@ def extract_date(bundle_path):
     return m.group(1)
 
 
+def text_fit_report(bundle):
+    """Read the text-fit guard that build-graphics.py leaves in graphics/_text-fit.json.
+
+    Returns (markdown_block, problems). Graphics text that got shortened, or that the
+    vision QA still called cut off, is the failure Roman and Danielle reported: it used to
+    reach LinkedIn silently. Surfacing it at the TOP of the checklist (and on stderr) is
+    what makes it loud instead of something QA has to notice by eye.
+    """
+    report_path = bundle / "graphics" / "_text-fit.json"
+    if not report_path.exists():
+        return "", []
+    try:
+        data = json.loads(report_path.read_text())
+    except (ValueError, OSError) as e:
+        return "", [f"could not read {report_path.name}: {e}"]
+    if not isinstance(data, dict):
+        return "", [f"{report_path.name} is not a guard report (got {type(data).__name__})"]
+
+    problems = [f"copy shortened to fit — {s}" for s in data.get("shortened") or []]
+    problems += [f"text-fit QA still saw cut-off text on {n}" for n in data.get("qa_cutoff") or []]
+    if not problems:
+        return "\n> Text-fit guard: PASS — every graphic holds its complete copy.\n", []
+
+    lines = "\n".join(f"> - {p}" for p in problems)
+    block = (
+        "\n> **STOP — TEXT FIT FAILED.** Do NOT publish these graphics until a human has\n"
+        "> looked at each one. The build reported:\n"
+        f"{lines}\n"
+        "> Fix the source copy (shorten it in blog-anchor-meta.md, or add a short\n"
+        "> `social_headline`) and rerun build-graphics.py.\n"
+    )
+    return block, problems
+
+
 def main():
     parser = argparse.ArgumentParser(description="Emit qa-checklist.md for a weekly content bundle.")
     parser.add_argument("--bundle", required=True, help="Bundle directory")
+    parser.add_argument("--strict", action="store_true",
+                        help="Exit non-zero if the text-fit guard reports a problem")
     args = parser.parse_args()
 
     bundle = Path(args.bundle)
@@ -120,9 +167,16 @@ def main():
         return 1
 
     date_str = extract_date(bundle)
+    text_fit, problems = text_fit_report(bundle)
     out_path = bundle / "qa-checklist.md"
-    out_path.write_text(CHECKLIST_TEMPLATE.format(date=date_str))
+    out_path.write_text(CHECKLIST_TEMPLATE.format(date=date_str, text_fit=text_fit))
     print(f"Wrote: {out_path}")
+    for p in problems:
+        print(f"WARNING text-fit: {p}", file=sys.stderr)
+    if problems and args.strict:
+        print(f"ERROR: {len(problems)} text-fit problem(s); graphics are not publish-ready",
+              file=sys.stderr)
+        return 1
     return 0
 
 
