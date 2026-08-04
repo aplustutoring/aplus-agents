@@ -171,7 +171,7 @@ deal_automation:
 # pipeline; charter students get billing_method=Package, private pay=Service List Cost.
 deal_sync:
   enabled: true
-  dry_run_first: true          # log intended creates/updates only, until flipped false
+  dry_run_first: false         # LIVE since 2026-08-03 (pilot ran 2026-07-22 → 2026-08-03)
   in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account
   # Known charter pipelines → Package billing. ALSO automatic: any pipeline whose
   # NAME contains "Charter" is treated as charter — all charter families get
