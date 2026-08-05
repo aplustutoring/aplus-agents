@@ -930,13 +930,24 @@ def who_line(contact_label, number):
     return f"{contact_label} {phone}" if contact_label else phone
 
 
-def build_coaching_card(agent_name, contact_label, number, time_pt, summary, card):
+def agent_slack_id(agent_name, cfg):
+    """JustCall agent_name -> Slack user ID via coaching.slack_user_ids (first-name match)."""
+    ids = (cfg.get("coaching") or {}).get("slack_user_ids") or {}
+    name = (agent_name or "").lower()
+    for key, uid in ids.items():
+        if key in name:
+            return uid
+    return None
+
+
+def build_coaching_card(agent_name, contact_label, number, time_pt, summary, card, mention=None):
     who = who_line(contact_label, number)
     by_dim = {s["dimension"]: s for s in card["scores"]}
     score_bits = [f"{d} {by_dim[d]['score']}" for d in RUBRIC_DIMENSIONS
                   if d in by_dim and by_dim[d]["score"] is not None]
+    display = mention or (agent_name or "unknown")
     lines = [
-        f":studio_microphone: *Coaching — {agent_name or 'unknown'}* · {time_pt} · "
+        f":studio_microphone: *Coaching — {display}* · {time_pt} · "
         f"{who} ({summary['intent']})",
         f"Overall *{card['overall']}/5*  ·  " + " · ".join(score_bits),
     ]
@@ -1467,8 +1478,10 @@ def process_call(call, cfg, dry_run, now_utc):
         try:
             agent_name = call.get("agent_name") or (call.get("agent") or {}).get("name")
             card = score_call(transcript, summary, agent_name, cfg, call)
+            slack_uid = agent_slack_id(agent_name, cfg)
             coaching_text = build_coaching_card(
-                agent_name, contact_label, number, time_pt, summary, card)
+                agent_name, contact_label, number, time_pt, summary, card,
+                mention=f"<@{slack_uid}>" if slack_uid else None)
             coach_channel = cfg["coaching"]["channel"] or cfg["slack"]["alert_channel"]
             if dry_run or not coach_channel:
                 log.info(f"  call {cid}: coaching card"
@@ -1476,6 +1489,13 @@ def process_call(call, cfg, dry_run, now_utc):
                          f"{coaching_text}")
             else:
                 post_to_slack(coaching_text, coach_channel)
+                # DM the card to whoever handled the call — the channel tag
+                # alone doesn't notify non-members of the private channel.
+                if cfg["coaching"].get("dm_person") and slack_uid:
+                    try:
+                        post_to_slack(coaching_text, slack_uid)
+                    except Exception as e:
+                        log.warning(f"  coaching DM to {agent_name} failed: {e}")
             # Full evaluation as a Note on the contact (team-visible in HubSpot;
             # toggle via coaching.note_to_contact).
             if cfg["coaching"]["note_to_contact"] and contact:
