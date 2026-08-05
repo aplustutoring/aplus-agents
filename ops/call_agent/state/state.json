@@ -126,9 +126,10 @@
     401186877,
     401189043,
     401238030,
-    401254219
+    401254219,
+    401400618
   ],
-  "last_run_utc": "2026-08-05T20:10:33.026478+00:00",
+  "last_run_utc": "2026-08-05T21:34:28.364960+00:00",
   "pending_digest": [
     {
       "call_id": 401238030,
@@ -191,6 +192,82 @@
         [
           "Watch for RJ's tutor application submission via the website and review when it arrives",
           38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    },
+    {
+      "call_id": 401400618,
+      "number": "18184227382",
+      "time_pt": "1:57 PM",
+      "matched": true,
+      "contact_label": "Alexandra Lauterio",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Alexandra Lauterio called because she could not find the lesson reminder email for her daughter Genevieve's 3:00 PM session today. Janelle confirmed the email address on file was correct, and after troubleshooting they discovered the emails had been going to Alexandra's spam folder. Alexandra located the reminder, understood how to use the online lesson space link, and the session is on track.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm Alexandra successfully joins the 3:00 PM online session and troubleshoot if she has any issues logging in",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Note that A+ lesson reminder emails are landing in Alexandra's spam folder - consider advising her to whitelist admin@wetutorathome.com",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active session scheduled today; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Genevieve"
+        ],
+        "record_updates": {
+          "whats_going_on": "Alexandra called unable to find today's 3:00 PM lesson reminder email. After troubleshooting we discovered A+ emails are being routed to her spam folder. She located the reminder and confirmed she understands how to access the online lesson space.",
+          "what_we_can_do_to_help": "Advise Alexandra to whitelist admin@wetutorathome.com so lesson reminders no longer go to spam, and verify she successfully joins today's session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Alexandra called unable to find today's 3:00 PM lesson reminder email. After troubleshooting we discovered A+ emails are being routed to her spam folder. She located the reminder and confirmed she understands how to access the online lesson space."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Advise Alexandra to whitelist admin@wetutorathome.com so lesson reminders no longer go to spam, and verify she successfully joins today's session."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm Alexandra successfully joins the 3:00 PM online session and troubleshoot if she has any issues logging in",
+          80047202
+        ],
+        [
+          "Note that A+ lesson reminder emails are landing in Alexandra's spam folder - consider advising her to whitelist admin@wetutorathome.com",
+          81494333
         ]
       ],
       "ticket_id": null,
