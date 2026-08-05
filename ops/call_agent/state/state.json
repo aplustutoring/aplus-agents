@@ -130,9 +130,10 @@
     401400618,
     401413096,
     401415725,
-    401432643
+    401432643,
+    401441237
   ],
-  "last_run_utc": "2026-08-05T22:43:38.870870+00:00",
+  "last_run_utc": "2026-08-05T23:42:12.571047+00:00",
   "pending_digest": [
     {
       "call_id": 401238030,
@@ -270,6 +271,97 @@
         ],
         [
           "Note that A+ lesson reminder emails are landing in Alexandra's spam folder - consider advising her to whitelist admin@wetutorathome.com",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    },
+    {
+      "call_id": 401441237,
+      "number": "19514486024",
+      "time_pt": "3:53 PM",
+      "matched": true,
+      "contact_label": "Angie Meza",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Angie Meza called about tutoring for her son Aramis, an incoming 9th grader at Valley Academy of Arts and Science (VAAS) in Granada Hills. The family recently moved from Riverside County; Aramis previously attended River Springs Charter online. He has an IEP and ADHD, struggles with English and math, has been caught plagiarizing via AI, and needs in-person tutoring on Mondays, Wednesdays, or Fridays with a male tutor. Roman corrected her phone number on file (was 440, should be 448), emailed pricing, and Angie said she is price-shopping and will follow up.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Angie in a few days to check on decision after price-shopping",
+            "owner_hint": "Roman"
+          },
+          {
+            "item": "Identify and hold a male math tutor (caring but firm) in the Granada Hills/Northridge area for Aramis",
+            "owner_hint": null
+          },
+          {
+            "item": "Once Aramis's school schedule is known, coordinate scheduling for Mon/Wed/Fri in-home sessions",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "We Connected",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [
+          "Aramis",
+          "Valley Academy of Arts and Science",
+          "River Springs Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Aramis is starting 9th grade at VAAS in Granada Hills after moving from Riverside County (previously at River Springs Charter online). He has an IEP and ADHD, struggles with English and math, and has been caught using AI to do his work. Mom wants in-person tutoring with a male tutor who will actively engage and guide him, not let him use AI.",
+          "what_we_can_do_to_help": "Provide 1:1 in-home tutoring in Granada Hills with a male math tutor who is caring but firm. Target Mon/Wed/Fri (Tues/Thurs are baseball). Roman emailed pricing; Angie is price-shopping and will follow up. Recommend high-impact tutoring 3x/week given COVID learning impact.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Aramis is starting 9th grade at VAAS in Granada Hills after moving from Riverside County (previously at River Springs Charter online). He has an IEP and ADHD, struggles with English and math, and has been caught using AI to do his work. Mom wants in-person tutoring with a male tutor who will actively engage and guide him, not let him use AI."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide 1:1 in-home tutoring in Granada Hills with a male math tutor who is caring but firm. Target Mon/Wed/Fri (Tues/Thurs are baseball). Roman emailed pricing; Angie is price-shopping and will follow up. Recommend high-impact tutoring 3x/week given COVID learning impact."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Angie in a few days to check on decision after price-shopping",
+          38681249
+        ],
+        [
+          "Identify and hold a male math tutor (caring but firm) in the Granada Hills/Northridge area for Aramis",
+          81494333
+        ],
+        [
+          "Once Aramis's school schedule is known, coordinate scheduling for Mon/Wed/Fri in-home sessions",
           81494333
         ]
       ],
