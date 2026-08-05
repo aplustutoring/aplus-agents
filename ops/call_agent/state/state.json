@@ -121,10 +121,87 @@
     400822031,
     400910930,
     400948469,
-    400959041
+    400959041,
+    401156037,
+    401186877,
+    401189043,
+    401238030
   ],
-  "last_run_utc": "2026-08-05T03:57:17.043942+00:00",
-  "pending_digest": [],
-  "pending_skipped": [],
+  "last_run_utc": "2026-08-05T16:45:24.263835+00:00",
+  "pending_digest": [
+    {
+      "call_id": 401238030,
+      "number": "16123603603",
+      "time_pt": "9:31 AM",
+      "matched": true,
+      "contact_label": "Rajat Jha",
+      "no_next_step": false,
+      "summary": {
+        "summary": "RJ, a tutor based in Woodland Hills with a biomedical engineering background from Duke and Florida and a recent 1550 digital SAT score, called to ask if A+ is hiring tutors. Roman (owner) confirmed they are and directed him to apply via the website's 'Become a Tutor' section. RJ asked about in-demand subjects, matching process, and rates; Roman answered generally and declined to discuss rates until after an application and interview. RJ said he would apply online.",
+        "caller_type": "tutor applicant",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for RJ's tutor application submission via the website and review when it arrives",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Caller is a prospective tutor applicant (SAT/STEM specialist) directed to apply on the website.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "RJ (Rajat) called inquiring about tutoring opportunities. He is based in Woodland Hills, has a biomedical engineering bachelor's from Duke and master's from Florida, recently scored 1550 on the digital SAT, and specializes in test prep and STEM subjects.",
+          "what_we_can_do_to_help": "Roman directed RJ to apply through the website's 'Become a Tutor' page. Once submitted, review his application and, if aligned, invite him to an interview to discuss compensation and online/in-person tutoring.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "RJ (Rajat) called inquiring about tutoring opportunities. He is based in Woodland Hills, has a biomedical engineering bachelor's from Duke and master's from Florida, recently scored 1550 on the digital SAT, and specializes in test prep and STEM subjects."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman directed RJ to apply through the website's 'Become a Tutor' page. Once submitted, review his application and, if aligned, invite him to an interview to discuss compensation and online/in-person tutoring."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Tutors"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for RJ's tutor application submission via the website and review when it arrives",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true
+    }
+  ],
+  "pending_skipped": [
+    {
+      "number": "18188604854",
+      "time_pt": "7:23 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
