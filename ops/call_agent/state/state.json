@@ -123,57 +123,8 @@
     400948469,
     400959041
   ],
-  "last_run_utc": "2026-08-05T02:04:32.718911+00:00",
-  "pending_digest": [
-    {
-      "call_id": 400822031,
-      "number": "18329757204",
-      "time_pt": "10:46 AM",
-      "matched": true,
-      "contact_label": "Tutorgigs N/A",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Joshua from Teach and Tutor called soliciting a staffing-agency partnership to supply tutors/teachers for their K-12 in-person program. Roman clarified A+ is a tutoring company, not a staffing agency. Joshua agreed to remove A+ from their contact list. No further action needed.",
-        "caller_type": "vendor",
-        "intent": "other",
-        "sentiment": "neutral",
-        "action_items": [],
-        "follow_up_needed": false,
-        "next_step_scheduled": true,
-        "lead_status": "UNQUALIFIED",
-        "lead_status_reason": "Solicitation from another tutoring company seeking a staffing partnership \u2014 not a family, school, or tutor applicant.",
-        "student_or_school_names_mentioned": [
-          "Teach and Tutor"
-        ],
-        "record_updates": {
-          "whats_going_on": null,
-          "what_we_can_do_to_help": null,
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "lead_status",
-          "(blank)",
-          "Dead Opportunity/Unqualified"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [],
-      "ticket_id": null,
-      "coached": true
-    }
-  ],
+  "last_run_utc": "2026-08-05T03:42:31.655715+00:00",
+  "pending_digest": [],
   "pending_skipped": [],
   "pending_failures": []
 }
