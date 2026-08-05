@@ -11,7 +11,8 @@
     "Ev0BMQRM6AKG",
     "Ev0BMKUUJN5V",
     "Ev0BN51MGMRA",
-    "Ev0BNWA1V9HN"
+    "Ev0BNWA1V9HN",
+    "Ev0BN28QPX35"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -108,12 +109,12 @@
       "correction_path": "corrections/content-build/2026-08-04-carousel-text-overflow-clipping.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/57",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785877885162849"
     }
   ],
   "graduation": {
-    "clean_merges": 0
+    "clean_merges": 1
   },
   "pending_proposals": {}
 }
