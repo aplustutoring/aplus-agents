@@ -1,0 +1,45 @@
+name: Fleet retry sweeper (every 20 min)
+
+# Fleet convention: agents think in Pacific Time (see registry.yml header).
+env:
+  TZ: America/Los_Angeles
+
+# Failed runs get retried up to 3 extra times (spaced by this cron's cadence)
+# before anyone is bothered; only a run that fails all 4 attempts produces a
+# Slack alert to the approvers (2026-08-06, per Roman — born from the
+# GitHub Actions major outage that day). See ops/fleet-health/retry/sweep.py.
+on:
+  schedule:
+    - cron: "7,27,47 * * * *"   # offset from :00/:15/:30/:45 so the sweep sees settled results
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print what would be retried/alerted without doing it"
+        type: boolean
+        default: true
+
+permissions:
+  actions: write   # rerun-failed-jobs
+  contents: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install requests pyyaml
+      - name: Sweep failed runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="--dry-run"
+          fi
+          python3 ops/fleet-health/retry/sweep.py $ARGS

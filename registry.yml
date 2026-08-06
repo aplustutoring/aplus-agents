@@ -379,6 +379,33 @@ agents:
       link (#AP008). Digests aggregate by agent, never by person. DEMOTE
       registry-flip stays human-executed until the Fleet Manager exists.
 
+  # ───────────────────────── Fleet retry sweeper (ops/fleet-health) ────
+  # Failed runs get 3 automatic retries (~20 min apart — rides out platform
+  # outages like 2026-08-06's) before ONE Slack alert pings the approvers.
+  # GitHub's own per-failure emails are account-level noise; turn off at
+  # github.com/settings/notifications once this is live.
+  - id: fleet-retry
+    name: Fleet retry sweeper (every 20 min)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["7,27,47 * * * * (every 20 min, offset from agent crons)"]
+      workflow: .github/workflows/fleet-retry.yml
+    entrypoint: ops/fleet-health/retry/sweep.py
+    reads:
+      - GitHub:actions_runs                     # last 24h of completed runs
+      - ops/feedback-agent/config.yml           # alert routing (slack.alerts_to)
+    writes:
+      - GitHub:actions_runs                     # rerun-failed-jobs (attempts 2-4)
+      - Slack                                   # one alert per exhausted run
+    depends_on:
+      - "secrets: SLACK_BOT_TOKEN"
+    notes: >
+      Excludes itself and the approved-fix executor (paid coding-agent runs
+      are never blindly retried). Alert window matches the sweep interval so
+      each exhausted run alerts exactly once.
+
   # ───────────────────────── Email / inbox-ops engine ──────────────────
   # Separate repo: github.com/aplustutoring/aplus-email. Runs on GitHub Actions
   # (no always-on server). Triages admin@wetutorathome.com + HubSpot
