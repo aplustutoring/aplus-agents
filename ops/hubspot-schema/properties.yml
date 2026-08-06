@@ -17,6 +17,19 @@ groups:
   tickets:
     - name: fleet_automation
       label: Fleet automation
+  contacts:
+    - name: master
+      label: Master
+    - name: decisionmaker
+      label: Decision Maker/Director
+    - name: tor
+      label: Teacher of Record/EF/ES
+    - name: family
+      label: Family
+    - name: tutor
+      label: Tutors
+    - name: student
+      label: Student
 
 properties:
   tickets:
@@ -53,3 +66,25 @@ properties:
       options:
         - value: UNKNOWN
           label: "Unregistered automation"
+
+  contacts:
+    - name: a_persona
+      label: "A+ PERSONA"
+      group: master
+      type: enumeration
+      fieldType: select
+      description: >-
+        Master contact-type switch for the 5-persona model. Every agent reads
+        this FIRST to know who a contact is, before any persona-specific logic.
+        Read the LABEL, not the internal value.
+      options:
+        - value: "Decision Maker/Director"
+          label: "Decision Maker/Director"
+        - value: "Teacher of Record/EF/ES"
+          label: "Teacher of Record/EF/ES"
+        - value: "Family"
+          label: "Family"
+        - value: "Tutors"
+          label: "Tutors"
+        - value: "Student"
+          label: "Student"
