@@ -131,9 +131,10 @@
     401413096,
     401415725,
     401432643,
-    401441237
+    401441237,
+    401451873
   ],
-  "last_run_utc": "2026-08-05T23:42:12.571047+00:00",
+  "last_run_utc": "2026-08-06T01:07:59.121981+00:00",
   "pending_digest": [
     {
       "call_id": 401238030,
@@ -365,6 +366,79 @@
           81494333
         ]
       ],
+      "ticket_id": null,
+      "coached": true
+    },
+    {
+      "call_id": 401451873,
+      "number": "16268230840",
+      "time_pt": "4:49 PM",
+      "matched": true,
+      "contact_label": "Xindi Hu",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Xindi Hu called asking whether A+ Tutoring administers the NWEA or a similar certified math placement test for her incoming 7th grade daughter, who is trying to place into a high-level math class at High Point Academy. Roman informed her that A+ does not provide such testing. The caller thanked him and ended the call. No services were requested or scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": false,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective parent inquiry we spoke with; not a charter/instructional-funds family and no diagnostic sent, so default We Connected.",
+        "student_or_school_names_mentioned": [
+          "High Point Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Parent called seeking a certified NWEA-style math placement test so her incoming 7th grade daughter can be placed into a high-level math class at High Point Academy.",
+          "what_we_can_do_to_help": "A+ does not administer NWEA/certified placement tests, so we could not help with this specific request. If she returns for tutoring support (e.g., preparing for the placement or ongoing math enrichment), we could pair her with a math tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "7",
+          "student_school": "High Point Academy",
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Parent called seeking a certified NWEA-style math placement test so her incoming 7th grade daughter can be placed into a high-level math class at High Point Academy."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "A+ does not administer NWEA/certified placement tests, so we could not help with this specific request. If she returns for tutoring support (e.g., preparing for the placement or ongoing math enrichment), we could pair her with a math tutor."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "7"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "High Point Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
       "ticket_id": null,
       "coached": true
     }
