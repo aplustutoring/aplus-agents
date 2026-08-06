@@ -1,5 +1,11 @@
 name: Backfill case-study log sheet
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 # One-off (re-runnable) backfill: pulls every unexpired case-study bundle
 # artifact, and logs each into the master decode-log sheet. Re-running is safe —
 # sheet_log keys on the bundle folder, so existing rows update in place.

@@ -55,7 +55,8 @@ DANIELLE_USER_ID = "U05NMABF3B2"
 # Pacific Time hardcoded — A+ runs on PT (Roman + Danielle both in CA).
 # datetime.timezone has no DST awareness; use offsets matching the operating period.
 # May is PDT (-7); we'll switch if the architecture needs cross-year ops.
-PT = timezone(timedelta(hours=-7), name="PT")
+from zoneinfo import ZoneInfo
+PT = ZoneInfo("America/Los_Angeles")  # real Pacific (DST-aware); was fixed UTC-7
 
 
 def _slack_token() -> str:

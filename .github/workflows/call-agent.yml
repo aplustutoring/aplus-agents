@@ -1,5 +1,11 @@
 name: Call agent — 15-min polls + daily digest (~5:30 PM PT)
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 # Fixed-UTC crons pinned to PDT (scorecard convention — winter runs ~1h
 # earlier in PT, harmless, avoids dual-cron double-runs).
 #

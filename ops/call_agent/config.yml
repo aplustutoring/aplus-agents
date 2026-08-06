@@ -14,6 +14,12 @@ justcall:
   # summarized — they are skipped and counted in the digest. Keep true.
   require_recording: true
 
+  # Outbound monitoring (Roman 2026-07-27): ALL company lines, both directions.
+  # Consent decision: process only calls that HAVE recordings (require_recording
+  # applies to both directions); disclosure practice on outbound dials is
+  # Roman's responsibility — no IVR plays on outgoing calls.
+  monitor_outbound: true
+
   # Only calls of this type are processed (others are logged and ignored).
   # Live API values (lowercase, case-insensitive here):
   # answered | missed | voicemail | abandoned.
@@ -88,6 +94,7 @@ hubspot:
     roman: 38681249
     paola: 81494333
     janelle: 80047202
+    yolanda: 86868539
   # Action items whose owner_hint doesn't match anyone above default to:
   default_task_owner: paola
   # Follow-up tasks are due this many business days after the call.
@@ -121,6 +128,16 @@ coaching:
   enabled: true
   channel: "#calls"           # private; bot must be invited
   rubric_path: "ops/call_agent/rubric.md"
+  # Slack user IDs — whoever handled the call is @-tagged on their coaching
+  # card AND receives it as a DM (a tag in #calls alone doesn't notify
+  # non-members of the private channel; the DM guarantees delivery).
+  # Keys match the first name in JustCall agent_name, lowercase.
+  slack_user_ids:
+    roman: U05NA7UMSSV
+    paola: U094B5DRZBR
+    janelle: U08S3CG8XNY
+    yolanda: U0A6XGBU7QT
+  dm_person: true
   # Also attach the full rubric evaluation as a Note on the matched HubSpot
   # contact. NOTE: contact Notes are visible to everyone with HubSpot access —
   # coaching scores become team-visible on family records. Flip to false to

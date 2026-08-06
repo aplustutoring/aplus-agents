@@ -1,5 +1,11 @@
 name: Spotlight Orchestrator
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 # Fires when Paola drops a folder into the Drive intake area. The Apps
 # Script watcher (marketing/scripts/watcher/apps-script.gs) calls GitHub's
 # repository_dispatch API with the folder ID. workflow_dispatch is the

@@ -1,6 +1,12 @@
 name: Email — SLA sweep
 
-# STAGED FOR CUTOVER: schedule disabled until the old aplus-email repo is switched off.
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
+# LIVE since the 2026-07-22 cutover (this monorepo is the production email agent).
 on:
   schedule:
     - cron: "20 * * * *"   # hourly, offset :20 to avoid colliding with triage

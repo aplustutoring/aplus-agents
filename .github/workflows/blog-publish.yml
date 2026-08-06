@@ -1,5 +1,11 @@
 name: Blog publish (DEPRECATED — superseded by content-build)
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 # RETIRED: the weekend content-build workflow now generates all 3 blogs as HubSpot
 # drafts (drafts-only, post-date named, self-corrected). This old per-day
 # generate+publish flow is no longer scheduled — kept as a manual-only escape hatch.

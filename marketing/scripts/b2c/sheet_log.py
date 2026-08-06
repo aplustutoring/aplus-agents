@@ -76,8 +76,12 @@ def append_or_update(sheet_id: str, row: list[str]) -> str:
     return "appended"
 
 
-def _now_utc() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+def _now_utc() -> str:  # name kept for call-site compat; renders PT per fleet convention
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.now(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 
 def build_row(*, study_date="", pseudonym="", real_first="", real_last="",

@@ -68,11 +68,11 @@ contact data.
    the Call API in Aug 2024). There is **no** Whisper/third-party fallback:
    a call with a recording but no transcript is skipped and counted in the
    digest's "Skipped" section. That's the whole fallback.
-2. **Inbound calls on monitored numbers only.** `config.yml →
-   justcall.monitored_numbers`: the main A+ line, plus the customer support
-   line (added 2026-07-20, recording disclosure confirmed). More lines can be
-   added without code changes — but no outbound, no tutor lines, no individual
-   team lines in v1.
+2. **Inbound calls on monitored numbers; outbound on ALL lines.** Inbound:
+   `config.yml → justcall.monitored_numbers` — the main A+ line plus the
+   customer support line (added 2026-07-20, disclosure confirmed); more lines
+   need disclosure confirmation first. Outbound: every company line
+   (`monitor_outbound: true`, Roman 2026-07-27 — see below).
 3. **Consent guardrail (CA two-party consent).** The IVR on the main line
    announces that calls are recorded — confirmed and handled at the
    phone-system level. The agent still enforces `require_recording: true`:
@@ -84,9 +84,45 @@ contact data.
    digest's "Unmatched" section with number, time, and summary — a human
    decides.
 
-Out of scope for v1: outbound calls, SMS, webhook/real-time ingestion,
+**Outbound monitoring (added 2026-07-27, Roman):** outgoing calls on ALL
+company lines are processed through the same pipeline (summary, record
+updates, tasks, coaching — HubSpot engagement logged as OUTBOUND with
+from/to reversed). Outbound types: answered | unanswered | failed | busy;
+only `answered` is processed. Missed-call alerts remain inbound-only.
+Consent: no IVR plays on outgoing calls — `require_recording` still gates
+processing (unrecorded calls skipped), and disclosure practice on outbound
+dials is Roman's responsibility (his 2026-07-27 decision).
+
+Out of scope for v1: SMS, webhook/real-time ingestion,
 third-party transcription, sentiment analytics dashboards, Family-State
 integration (future: call transcripts as genesis events).
+
+### Scope amendment — 2026-07-27 (Roman): v1 = CALLS ONLY
+
+**Precedence (Roman, 2026-07-27): the LIVE agent supersedes the parallel
+"Conversation Agent v1" spec doc.** Where that doc's language differs from
+deployed behavior — draft-only mode, Paola's-calls-first rollout, CA consent
+listed as an open go-live gate — the live agent's behavior is authoritative:
+it writes directly (no draft approval loop), processes all answered calls on
+the monitored line, and consent is handled by the main-line IVR disclosure
+plus the `require_recording` guardrail. Only the SMS parking + v2 day-context
+rule below carry over from the amendment.
+
+SMS/text evaluation is **PARKED and removed from v1 scope entirely** — do not
+build, stub, or half-implement it. Preserved requirement for when text
+evaluation returns (v2):
+
+> **Day-context rule:** before evaluating ANY text exchange, load the FULL
+> most recent day of communication with that contact — every message from the
+> latest calendar day on which any back-and-forth occurred, both directions,
+> in order. Never evaluate a single text in isolation: texts are fragments of
+> one conversation spread across hours; coaching generated off a lone message
+> is invalid by definition. "Last day" = the most recent **calendar day**
+> containing any message (not a rolling 24 hours); if that day's thread opens
+> mid-conversation (e.g. continues from the prior evening), extend the window
+> backward to the start of the contiguous exchange. The Next Call Playbook
+> structure applies, adapted: opener callback, unresolved threads, template
+> reply, trap to avoid.
 
 ## Files
 

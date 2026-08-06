@@ -1,5 +1,11 @@
 name: Scorecard — weekly sync (Mon ~10:00 AM PT)
 
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
 on:
   schedule:
     - cron: "0 17 * * 1"   # 17:00 UTC = 10:00 PDT / 09:00 PST Monday

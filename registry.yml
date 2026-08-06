@@ -40,6 +40,15 @@
 #
 # Times: HubSpot is the single source of truth. Schedules carry both a PDT and
 # a PST cron so the wall-clock hour is stable across DST.
+#
+# TIMEZONE CONVENTION (fleet-wide, 2026-07): agents think in Pacific Time.
+# Every workflow sets TZ=America/Los_Angeles, so naive datetime.now() /
+# date.today() in scripts resolve to PT — human-facing labels (Slack, Sheets,
+# HubSpot notes/tasks, Monday groups) and date-window logic stay in sync.
+# Machine-facing values (state cursors, API epoch params, audit logs) stay
+# explicit UTC via datetime.now(timezone.utc). Crons in workflow files remain
+# UTC. Never hardcode a fixed UTC offset for PT — use ZoneInfo
+# ("America/Los_Angeles") when an explicit zone is needed (DST-aware).
 
 agents:
   # ───────────────────────── B2B content engine ─────────────────────────
