@@ -8,6 +8,26 @@ Newest entries first.
 
 ---
 
+## 2026-08-06 — PO agent: parent resolved from the student's prior deal
+
+**What:** POs typically omit parent info; Kath's manual fix — look the student
+up in HubSpot and read the parent off their prior deal — is now the agent's
+second resolution step (after PO-provided parent email, before the last-name
+guess): search deals by student first name, narrow to names containing the
+student's last name, collect the deals' non-TOR contacts (persona/tor-email
+filtered), and use a UNIQUE parent; anything ambiguous falls through
+unchanged. Resolution method is noted on the ticket.
+
+**Why:** Roman — "POs typically do not include parent name; Kath does this
+manually so it's possible for you to do it." No student↔parent association
+exists in the portal (verified read-only), so deal names are the link.
+
+**Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`
+(`get_deal_contacts`), `email/tests/test_po_inbox.py` (4 new tests; suite
+159 green).
+
+---
+
 ## 2026-08-06 — PO agent: one deal per PO number (multi-PO emails) + review threads stay open
 
 **What:** (1) The extractor now returns `pos: [...]` when one email carries

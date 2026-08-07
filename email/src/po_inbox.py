@@ -358,6 +358,43 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0))
 
 
+def _find_parent_via_deals(po: dict):
+    """POs typically DON'T include parent info — Kath's manual fix was to
+    look the student up in HubSpot and read the parent off their prior deal
+    (deals are named 'Parent - Student - School (Month)' and carry the family
+    contact). Mechanized: search deals by the student's first name, narrow to
+    names also containing the student's last name when possible, collect the
+    deals' non-TOR contacts — a UNIQUE parent across matches resolves it;
+    anything ambiguous falls through to the last-name search, then manual.
+    Returns (contact, deal_name) or None."""
+    sf = (po.get("student_first") or "").strip()
+    sl = (po.get("student_last") or "").strip().lower()
+    t_email = (po.get("tor_email") or "").strip().lower()
+    if not sf:
+        return None
+    try:
+        cands = hs.search_deals_by_name(sf)
+        if not cands:
+            return None
+        narrowed = [d for d in cands
+                    if sl and sl in ((d.get("properties") or {}).get("dealname") or "").lower()] or cands
+        parents = {}
+        for d in narrowed[:6]:
+            for c in hs.get_deal_contacts(d["id"]):
+                props = c.get("properties") or {}
+                em = (props.get("email") or "").lower()
+                if t_email and em == t_email:
+                    continue                      # the TOR is on deals too — never the parent
+                if "Teacher of Record" in (props.get("a_persona") or ""):
+                    continue
+                parents[str(c.get("id"))] = (c, (d.get("properties") or {}).get("dealname", "?"))
+        if len(parents) == 1:
+            return next(iter(parents.values()))
+    except Exception as e:  # noqa: BLE001 — parent resolution is best-effort
+        print(f"  ⚠️  prior-deal parent lookup failed (non-fatal): {e}")
+    return None
+
+
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True) -> None:
     """Advance the matching Waiting-for-PO deal, or create one."""
@@ -433,6 +470,14 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                                    f"{po.get('parent_last', '')} <{p_email}> from the PO, ")
             except Exception as e:  # noqa: BLE001 — contact handling is best-effort
                 print(f"  ⚠️  parent-contact create/lookup failed (non-fatal): {e}")
+        if not contact_id:
+            found = _find_parent_via_deals(po)
+            if found:
+                c, dn = found
+                contact_id = c.get("id")
+                nm = (f"{(c.get('properties') or {}).get('firstname', '')} "
+                      f"{(c.get('properties') or {}).get('lastname', '')}").strip() or "parent"
+                contact_bit = f"parent {nm} resolved from the student's prior deal '{dn}', "
         if not contact_id:
             try:
                 parents = hs.find_family_contact(po.get("student_first") or "",

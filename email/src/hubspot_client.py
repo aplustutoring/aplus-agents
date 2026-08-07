@@ -431,6 +431,26 @@ def create_contact(email: str, firstname: str | None = None, lastname: str | Non
     return _write("POST", "/crm/v3/objects/contacts", {"properties": props})
 
 
+def get_deal_contacts(deal_id: str) -> list[dict]:
+    """Contacts associated to a deal, with the properties needed to tell the
+    family contact from the TOR (parent resolution for POs that omit parent
+    info — most do; this is the student→prior-deal→parent lookup Kath did
+    manually)."""
+    try:
+        assoc = _get(f"/crm/v3/objects/deals/{deal_id}/associations/contacts")
+    except requests.HTTPError:
+        return []
+    ids = [r.get("toObjectId") or r.get("id") for r in assoc.get("results", [])]
+    out = []
+    for cid in ids[:10]:
+        try:
+            out.append(_get(f"/crm/v3/objects/contacts/{cid}",
+                            {"properties": "email,firstname,lastname,a_persona"}))
+        except requests.HTTPError:
+            continue
+    return out
+
+
 def contact_enrichment(contact_id: str) -> dict:
     """Best-effort CRM summary: properties + associated deal count. Partial on error."""
     summary: dict = {}
