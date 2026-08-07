@@ -38,7 +38,12 @@ PO_SYSTEM = (
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
     "the school staff, TOR, or education specialist; empty string for anything not stated. "
     "tor_* = the Teacher of Record / education specialist handling this PO (often the "
-    "email sender) — never the parent. school_bill_to = the school's exact billing "
+    "email sender) — never the parent. "
+    "If the email/attachments contain MULTIPLE distinct purchase orders (different PO "
+    "numbers — schools often issue one per service month), ALSO return pos: an array "
+    "[{po_number, amount, hours, po_month}, ...] with one entry per PO, each carrying "
+    "ITS OWN amount/hours/month from the document; the top-level student/school/"
+    "parent/TOR fields are shared. Omit pos for single-PO emails. school_bill_to = the school's exact billing "
     "name/address from the PO (schools reject invoices with a wrong Bill To); empty if "
     "not stated. "
     "draft_reply rules: if is_po → ALWAYS empty string (we never reply to purchase "
@@ -318,7 +323,43 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
 
 
+def _split_pos(po: dict) -> list[dict]:
+    """One deal per PO number (Roman, 2026-08-06: each PO number is its own
+    deal, even when several arrive in one email — schools issue one per
+    service month). Multi-PO emails come back from the extractor as pos=[...]
+    sharing the top-level student/school/parent/TOR; as a fallback, a
+    comma-jammed po_number field is split with per-PO amounts flagged for
+    manual fill (better three deals missing an amount than one mashed deal)."""
+    subs = po.get("pos") if isinstance(po.get("pos"), list) else []
+    subs = [x for x in subs if isinstance(x, dict) and (x.get("po_number") or "").strip()]
+    if len(subs) >= 2:
+        return [{**po, "pos": None, "po_number": x["po_number"].strip(),
+                 "amount": x.get("amount"), "hours": x.get("hours"),
+                 "po_month": x.get("po_month") or po.get("po_month")} for x in subs]
+    nums = [n.strip() for n in re.split(r"[,;]|\band\b", str(po.get("po_number") or ""))
+            if n.strip()]
+    if len(nums) >= 2:
+        return [{**po, "pos": None, "po_number": n, "amount": None, "hours": None,
+                 "_split_amount_unknown": True} for n in nums]
+    return [po]
+
+
 def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None = None) -> None:
+    """One deal per PO in the email (usually one; see _split_pos)."""
+    subs = _split_pos(po)
+    if len(subs) > 1:
+        note_parts.append(f"📑 Multi-PO email: {len(subs)} POs → one deal each "
+                          f"({', '.join(x['po_number'] for x in subs)}).")
+    for i, sub in enumerate(subs):
+        if sub.get("_split_amount_unknown"):
+            note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
+                              f"extracted — fill on the deal manually.")
+        # scheduling alert once per email, not once per PO month
+        _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0))
+
+
+def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
+                   no_lessons_check: bool = True) -> None:
     """Advance the matching Waiting-for-PO deal, or create one."""
     pc = cfg()["po_inbox"]
     student = (po.get("student_last") or po.get("student_first") or "").strip()
@@ -429,7 +470,8 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         _stamp_deal_properties(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
         _invoice_task(d.get("id"), po, note_parts)
-        _no_lessons_alert(po, name, note_parts)
+        if no_lessons_check:
+            _no_lessons_alert(po, name, note_parts)
         # No waiting on the next cron: run the Teachworks sync for THIS deal now.
         if d.get("id") and d.get("id") != "DRYRUN":
             try:
@@ -444,10 +486,14 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
 
 
 def _thread_already_handled(thread_id: str) -> bool:
-    """One conversation = one ticket: later messages on a handled thread are part of an
-    ongoing exchange humans are already on — skip them."""
+    """One PO conversation = one ticket — but only a thread where a REAL PO was
+    already processed is closed. A thread whose only record is a review ticket
+    (e.g. an order agreement marked 'THIS IS NOT A PO') stays OPEN: the actual
+    POs often arrive as replies on that same thread, and skipping them would
+    silently drop deals (the iLEAD/Jaramillo case, 2026-08-06)."""
     for r in audit._iter_records():
-        if r.get("source") == "po_inbox" and r.get("thread_id") == thread_id:
+        if r.get("source") == "po_inbox" and r.get("thread_id") == thread_id \
+                and r.get("category") == "new_po":
             return True
     return False
 

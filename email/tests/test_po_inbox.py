@@ -117,10 +117,21 @@ def test_po_number_dedupe_blocks_second_deal(monkeypatch):
 
 
 def test_thread_dedupe(monkeypatch):
+    # only a processed REAL PO closes a thread…
     monkeypatch.setattr(po.audit, "_iter_records",
-                        lambda: iter([{"source": "po_inbox", "thread_id": "TH1"}]))
+                        lambda: iter([{"source": "po_inbox", "thread_id": "TH1",
+                                       "category": "new_po"}]))
     assert po._thread_already_handled("TH1") is True
     assert po._thread_already_handled("TH2") is False
+
+
+def test_review_thread_stays_open(monkeypatch):
+    # …a review-only record (order agreement, "THIS IS NOT A PO") does NOT —
+    # the actual POs often arrive as replies on that same thread.
+    monkeypatch.setattr(po.audit, "_iter_records",
+                        lambda: iter([{"source": "po_inbox", "thread_id": "TH1",
+                                       "category": "po_inbox_other"}]))
+    assert po._thread_already_handled("TH1") is False
 
 
 def test_created_deal_gets_parent_contact(monkeypatch):
@@ -564,3 +575,65 @@ def test_tor_matched_via_secondary_email(monkeypatch):
                         tor_email="kristy.doyal@heartlandcharterschool.com"), notes)
     assert assoc == ["C-kristy"]
     assert any("SECONDARY email" in n for n in notes)
+
+
+# ── multi-PO emails: one deal per PO number ──────────────────────────────────
+
+def test_multi_po_email_creates_deal_per_po(monkeypatch):
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, dealtype=None,
+                        owner_id=None, closedate_ms=None, extra_props=None:
+                        created.append((extra_props.get("po_number"), amt)) or
+                        {"id": f"D-{extra_props.get('po_number')}"})
+    tasks = []
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
+                        tasks.append(subj) or {"id": "T"})
+    notes = []
+    po._handle_deal(_po(po_number="", pos=[
+        {"po_number": "3114047368", "amount": "150", "po_month": "2026-08"},
+        {"po_number": "3114047369", "amount": "300", "po_month": "2026-09"},
+        {"po_number": "3114047370", "amount": "300", "po_month": "2026-10"},
+    ]), notes)
+    assert created == [("3114047368", "150"), ("3114047369", "300"), ("3114047370", "300")]
+    assert len(tasks) == 3                       # one invoice task per PO month
+    assert any("Multi-PO email: 3 POs" in n for n in notes)
+
+
+def test_comma_jammed_po_numbers_split_with_flag(monkeypatch):
+    # extractor fallback: numbers mashed into po_number → one deal each,
+    # amounts flagged for manual fill (never one mashed deal).
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, dealtype=None,
+                        owner_id=None, closedate_ms=None, extra_props=None:
+                        created.append((extra_props.get("po_number"), amt)) or {"id": "D"})
+    notes = []
+    po._handle_deal(_po(po_number="3114047368, 3114047369"), notes)
+    assert [c[0] for c in created] == ["3114047368", "3114047369"]
+    assert all(c[1] is None for c in created)
+    assert any("fill on the deal manually" in n for n in notes)
+
+
+def test_multi_po_scheduling_alert_fires_once(monkeypatch):
+    posts = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family", lambda e, sf: [])
+    monkeypatch.setattr(po.slack_client, "post_message", lambda ch, t: posts.append(t))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", po_number="", pos=[
+        {"po_number": "A1", "amount": "100"}, {"po_number": "A2", "amount": "100"}]), notes)
+    assert len(posts) == 1                       # per email, not per PO
+
+
+def test_single_po_unchanged_by_split():
+    assert po._split_pos(_po()) == [_po()]
+    assert po._split_pos(_po(po_number="4471"))[0]["po_number"] == "4471"

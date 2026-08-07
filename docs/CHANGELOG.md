@@ -8,6 +8,26 @@ Newest entries first.
 
 ---
 
+## 2026-08-06 — PO agent: one deal per PO number (multi-PO emails) + review threads stay open
+
+**What:** (1) The extractor now returns `pos: [...]` when one email carries
+several distinct POs (schools issue one per service month); deal handling
+loops — one deal, invoice task, and TOR sync per PO number, scheduling alert
+once per email. Fallback: comma-jammed `po_number` values split into one deal
+each with amounts flagged for manual fill. (2) Thread dedupe now closes a
+thread only after a REAL PO was processed (`category=new_po`); review-only
+threads (order agreements marked "THIS IS NOT A PO") stay open so the actual
+POs arriving as replies aren't silently dropped.
+
+**Why:** Roman, on the live iLEAD/Jaramillo case (order agreement announcing
+POs 3114047368/69/70, Aug/Sept/Oct): each PO number is its own deal. The old
+code would have made one mashed deal (or skipped same-thread POs entirely).
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(5 new/updated tests; suite 155 green).
+
+---
+
 ## 2026-08-06 — PO agent: family→TOR association sync (#AP031) + persona stamping
 
 **What:** Every incoming PO now syncs the family contact's "Teacher of Record"
