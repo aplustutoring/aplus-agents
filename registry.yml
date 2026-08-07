@@ -534,3 +534,24 @@ agents:
       properties.yml in a PR, merge, run the workflow (dry-run by default).
       Re-run after registering a new agent so source_agent picks up the new
       option. CHECK_ONLY smoke mode.
+
+  - id: branch-hygiene
+    name: Fleet — branch hygiene (Mon 9 AM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 16 * * 1 (09:00 PDT / 08:00 PST Mon)"]
+      workflow: .github/workflows/branch-hygiene.yml
+    entrypoint: ops/fleet-health/branch_hygiene.py
+    reads:
+      - git                                     # remote branches vs main; open PRs
+    writes:
+      - Slack                                   # #calls, only when something is stranded
+    depends_on:
+      - "secrets: SLACK_BOT_TOKEN (GITHUB_TOKEN is ambient)"
+    notes: >
+      Catches work stranded outside main (2026-08-05 incidents: PR #47 sat
+      unmerged for a week; a CallRail matching fix sat unpushed locally for
+      16 days). Companion LOCAL mode (--local) runs from Roman's Mac crontab
+      daily — Actions cannot see never-pushed local commits.
