@@ -1,91 +1,72 @@
 {
-  "current_week": "2026-07-30",
+  "current_week": "2026-08-06",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "NWEA's July 21 study \u2014 chronic absenteeism is the ceiling on academic recovery, and MAP Growth data from 2,000 districts now proves it",
-      "category": "E (research/academic) \u2014 strongest candidate from this lens: peer-quality research brief, published 10 days ago, from a source A+ partners already trust for universal screening",
-      "sources": [
-        "https://www.nwea.org/news-center/press-releases/new-nwea-study-finds-chronic-absenteeism-associated-with-slower-academic-recovery/",
-        "https://www.nwea.org/research/publication/chronic-absenteeism-a-continued-impediment-to-academic-recovery/"
-      ],
-      "why_matters": "Chronic absenteeism remains staggeringly high post-pandemic, with 1 in 4 students missing at least one day every other week, and 1 in 3 in high-poverty districts. Every A+ partner charter (independent study, hybrid, virtual academy) is battling this daily. Meanwhile, NSSA's own attendance research shows tutoring can do more than boost test scores \u2014 on average, students were 1.2 percentage points less likely to be absent on days they were scheduled to receive tutoring, suggesting the tutoring relationship itself pulls kids back into the classroom. A+ can bridge NWEA's problem statement with NSSA's evidence-based answer in one post \u2014 only A+ can say \"our tutoring model was designed for the exact student profile NWEA is describing.\"",
-      "angle": "New NWEA data + NSSA attendance research = the case for scheduled, relationship-based tutoring as an attendance intervention, not just an academic one.",
-      "roman_take": "Conviction angle \u2014 \"The absenteeism crisis is a relationship crisis. NWEA measured it; NSSA showed relationships fix it. Software doesn't. Screens don't. Scheduled human contact does.\" Anchor to A+'s human-first thesis.",
-      "danielle_take": "Implementation angle \u2014 for charter directors: how to structure Tier 2/3 intervention scheduling so tutoring becomes an attendance driver (fixed weekly slots, same tutor, family-visible schedule) rather than a pull-out that competes with instruction.",
-      "redundancy_max_similarity": 0.4952433413444894,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-08-01T16:17:41.384625+00:00",
-      "post_date": "2026-08-03",
-      "bundle_dir": "aplus-content/2026-08-03-chronic-absenteeism-tutoring-attendance",
-      "hubspot_post_id": "218510276173"
+      "headline": "NWEA links chronic absenteeism to stalled COVID recovery in new 2,000-district study",
+      "category": "E (research/academic)",
+      "sources": [],
+      "why_matters": "This is the highest-evidence release of the window and it lands on A+'s strongest case-study angle. Research studies concluded that one of the critical pieces is making sure tutoring happens during school hours \u2014 not outside of them, and students themselves seem to want to come to school when they know they're going to receive personalized attention. A+'s in-school intervention model is exactly what NWEA is validating, and the finding that the percentage of chronically absent students has doubled since the onset of COVID-19, and in D.C. research showed tutoring reduced the probability of absences by as much as 11.4% on days when students were scheduled for tutoring gives A+ a defensible data pairing to cite alongside NWEA's newest evidence.",
+      "angle": "Pair NWEA's new chronic-absenteeism finding with the DC 11.4% data point and A+'s own attendance-on-intervention-days numbers to frame \"intervention as attendance strategy, not just academic strategy.\"",
+      "roman_take": "The absenteeism industry keeps treating attendance as a behavior problem \u2014 NWEA just showed it's a recovery problem, and the fastest lever is giving kids a reason to show up on Tuesday.",
+      "danielle_take": "Special programs coordinators can score this against their own CALPADS chronic-absenteeism rates before September; if intervention days don't show a lift, the program design is off.",
+      "redundancy_max_similarity": 0.4925671992032557,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "Visions In Education opens its 26th year with a growth-momentum story (Tier A partner)",
-      "category": "C (with an assist to B \u2014 the story is quantitatively about the outcomes A+ helps drive)",
+      "headline": "iLEAD Flex opens in Lancaster this month \u2014 Tier A network adds school #7 as CA's NCB moratorium lifts",
+      "category": "C (with A overlay \u2014 statewide charter policy)",
       "sources": [
-        "https://www.viedu.org/news-cat/welcome-to-visions-2026/"
+        "https://www.avpress.com/news/district-board-grants-approval-to-ilead-flex/article_92bad1f1-c392-4a2c-ad41-1e8dfd841dcb.html",
+        "https://www.prnewswire.com/news-releases/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster-302804663.html"
       ],
-      "why_matters": "Visions is a Tier A partner AND a confirmed Title III Immigrant recipient. When Visions' own superintendent flags \"increasing graduation rates\" and \"declining withdrawal rates\" as the year's headline, A+ has earned the right to comment on the intervention infrastructure that supports those metrics \u2014 especially for ELs and LTELs. This is the rare partner news where A+ can post publicly without pitching.",
-      "angle": "Congratulate Visions on Year 26 and connect the growth signals (retention, graduation) to what happens when NCB charters build intervention muscle around EL and LTEL students.",
-      "roman_take": "Conviction angle \u2014 \"declining withdrawal rates\" isn't an accident at scale; it's what happens when NCB schools treat intervention as a retention lever, not a compliance box.",
-      "danielle_take": "Implementation angle \u2014 what does a 7,769-student NCB school actually need in place operationally to make Title III dollars translate into reclassification and grad-rate movement?",
-      "redundancy_max_similarity": 0.43814920417156156,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-08-01T16:38:56.755058+00:00",
-      "post_date": "2026-08-05",
-      "bundle_dir": "aplus-content/2026-08-05-visions-education-year-26-growth",
-      "hubspot_post_id": "218508674117"
+      "why_matters": "iLEAD is a Tier A active partner AND an APLUS+ Network member \u2014 this touches two of A+'s highest-leverage relationships simultaneously. iLEAD Flex is the seventh school in the iLEAD network and aims to integrate a robust project-based curriculum with social-emotional learning, offering tuition-free TK-12 public education tailored to the unique needs of every student. The bigger frame: since the statewide moratorium on new nonclassroom-based charters concluded on January 1, 2026, mission-driven networks like iLEAD have been moving quickly to bring their programs to communities that have long lacked access to flexible learning. Every A+ NCB partner is now operating in a market where NCB competitors can enter \u2014 the intervention side of the house becomes a bigger differentiator, not smaller.",
+      "angle": "Congratulate iLEAD on the Flex opening; frame the story as \"what network expansion means for intervention capacity in year one\" \u2014 new schools need Tier 2/3 systems that scale on day one, not year three.",
+      "roman_take": "The moratorium lift changes the competitive calculus for every A+ partner \u2014 the schools that will win the next five years are the ones whose intervention systems can scale faster than their enrollment.",
+      "danielle_take": "What a new site actually needs in month one \u2014 she can walk through the intervention stack that a network expansion team has to stand up before the first NWEA window closes, drawing on how A+ has done this with existing iLEAD sites. ---",
+      "redundancy_max_similarity": 0.7092861329840687,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "Varsity Tutors' Live+AI + White House pledge is redefining what \"high-dosage tutoring\" means in the market \u2014 and A+ needs to plant its flag",
-      "category": "D (industry/competitor moves)",
+      "headline": "The ESSER cliff is over. The vendors still standing are the ones who never needed it.",
+      "category": "D (industry/competitor moves) \u2014 primary lens hit",
       "sources": [
-        "https://www.stocktitan.net/news/NRDY/varsity-tutors-signs-white-house-pledge-to-advance-ai-education-for-q6b7qucfq53u.html",
-        "https://www.businesswire.com/news/home/20250429401366/en/",
-        "https://www.aei.org/education/ai-has-come-for-k-12-education/"
+        "https://marketbrief.edweek.org/education-market/from-esser-boom-to-market-reset-states-bolster-high-dosage-tutorings-next-phase/2026/05"
       ],
-      "why_matters": "Nerdy just signed a four-year White House \"Investing in AI Education\" pledge to broaden AI literacy and accelerate student academic growth while preserving human connection in teaching, and its Live+AI platform is being positioned as an AI-powered, high-dosage tutoring and live intervention platform designed to accelerate learning and close achievement gaps. They're already claiming 2X gains in targeted skill areas across 1,000+ district partnerships. This isn't a features race A+ can win \u2014 but the *meaning* of \"high-dosage tutoring\" is being rewritten in real time, and if A+ doesn't articulate what it does differently (credentialed CA teachers, small-cohort continuity, direct charter partnership rather than platform-at-scale), it gets subsumed into the Varsity narrative by default. Adding urgency: a September 2025 RAND survey found 54% of K\u201312 students used AI for school, up more than 15 percentage points in two years, so the buyer conversation has already shifted.",
-      "angle": "\"High-dosage tutoring\" is becoming a category term the biggest players are redefining around AI scale. Here's what it still means when a credentialed teacher shows up for the same kids every week.",
-      "roman_take": "The AI + tutoring narrative treats human relationship as a *feature*; for A+ it's the whole product. Roman draws the line \u2014 a platform with 10 million hours of instruction is not the same thing as a teacher who knows your name.",
-      "danielle_take": "Danielle walks through what she actually asks charter partners: how many of your students would recognize their tutor on the street? That's the metric, and no AI dashboard reports it.",
-      "redundancy_max_similarity": 0.5226956787653069,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-08-01T16:59:19.463813+00:00",
-      "post_date": "2026-08-07",
-      "bundle_dir": "aplus-content/2026-08-07-high-dosage-tutoring-ai-era",
-      "hubspot_post_id": "218509439261"
+      "why_matters": "The trade press is openly asking how education companies can break through the new walls built by higher prices, smaller budgets, and growing uncertainty \u2014 and how they can deliver the right support to remain on the inside. A+ has an answer no ESSER-dependent competitor can give: our charter partners fund intervention through Title I, Title III, and LCFF \u2014 money that didn't disappear on September 30, 2024. This is the moment A+ can differentiate loudest with the least effort because the entire industry is publicly reckoning with a problem A+ structurally doesn't have.",
+      "angle": "\"Every tutoring vendor is writing a 'post-ESSER strategy' memo right now. A+ didn't need one. Here's why charter Title III + Title I is a more durable funding rail than federal stimulus ever was.\"",
+      "roman_take": "Conviction angle \u2014 the whole industry chased ESSER dollars and built cost structures around a temporary check; A+ built around the permanent one, and that's not luck, it's a thesis about where sustainable intervention money actually lives.",
+      "danielle_take": "Implementation angle \u2014 walk through how a partner charter renewed intervention spend for 2026-27 using Title III Immigrant + Title I set-aside, not ESSER carryover; concrete dollar amounts and the CARS line items she pulled from. ---",
+      "redundancy_max_similarity": 0.26487570960555695,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1785468096.821949",
-    "posted_at": "2026-07-30T20:16:16.579062-07:00",
+    "message_ts": "1786071106.957739",
+    "posted_at": "2026-08-06T19:46:42.582979-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1785468097.104659"
+        "ts": "1786071107.155809"
       },
       {
         "slot": 2,
-        "ts": "1785468097.371679"
+        "ts": "1786071107.413139"
       },
       {
         "slot": 3,
-        "ts": "1785468097.644709"
+        "ts": "1786071107.650709"
       }
     ],
     "processed_reply_ts": []
@@ -94,7 +75,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-07-30T20:16:16.579062-07:00",
+    "approved_at": "2026-08-06T19:46:42.582979-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null
