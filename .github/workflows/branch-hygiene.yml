@@ -1,0 +1,35 @@
+name: Fleet — branch hygiene (Mon 9 AM PT)
+
+# Fleet convention: agents think in Pacific Time.
+env:
+  TZ: America/Los_Angeles
+
+# Weekly sweep for work stranded outside main: remote branches ahead of main
+# and open PRs idle 3+ days. Posts to #calls only when something is found.
+# (Local never-pushed commits are covered by the companion laptop cron running
+# branch_hygiene.py --local — Actions cannot see those.)
+on:
+  schedule:
+    - cron: "0 16 * * 1"   # 16:00 UTC = 09:00 PDT / 08:00 PST Monday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests
+      - name: Branch hygiene audit
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 ops/fleet-health/branch_hygiene.py
