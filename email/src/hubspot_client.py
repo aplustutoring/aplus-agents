@@ -310,6 +310,52 @@ def associate_contact_to_deal(deal_id: str, contact_id: str) -> dict:
     )
 
 
+# Family→TOR contact-to-contact association (#AP031). Paired labels:
+# family→TOR = "Teacher of Record" (typeId 15, USER_DEFINED); the reverse
+# TOR→family = "Family" (typeId 14). The stamped teacher_of_record_name/email
+# text fields on family contacts are legacy intake capture, not source of truth.
+TOR_ASSOC_TYPE_ID = 15
+
+
+def get_contact_to_contact_associations(contact_id: str) -> list[dict]:
+    """v4 contact→contact associations for one contact:
+    [{toObjectId, associationTypes: [{category, typeId, label}]}]."""
+    try:
+        res = _get(f"/crm/v4/objects/contacts/{contact_id}/associations/contacts",
+                   {"limit": 500})
+    except requests.HTTPError:
+        return []
+    return res.get("results", [])
+
+
+def associate_contacts(from_contact_id: str, to_contact_id: str,
+                       type_id: int = TOR_ASSOC_TYPE_ID,
+                       category: str = "USER_DEFINED") -> dict:
+    """Create a labeled contact→contact association (v4). HubSpot creates the
+    paired reverse label (Family, typeId 14) automatically."""
+    return _write(
+        "PUT",
+        f"/crm/v4/objects/contacts/{from_contact_id}/associations/contacts/{to_contact_id}",
+        [{"associationCategory": category, "associationTypeId": type_id}],
+    )
+
+
+def find_contact_by_secondary_email(email: str) -> dict | None:
+    """Fallback lookup for contacts whose searched address is a HubSpot
+    SECONDARY email (real case: a TOR's school address is secondary, primary
+    is personal). hs_additional_emails holds secondaries; the plain email
+    filter misses them."""
+    body = {
+        "filterGroups": [{"filters": [{"propertyName": "hs_additional_emails",
+                                       "operator": "CONTAINS_TOKEN", "value": email}]}],
+        "properties": ["email", "firstname", "lastname"],
+        "limit": 1,
+    }
+    res = _write("POST", "/crm/v3/objects/contacts/search", body)
+    results = res.get("results", []) if isinstance(res, dict) else []
+    return results[0] if results else None
+
+
 def enroll_contact_in_workflow(workflow_id: str, email: str) -> dict:
     """Enroll a contact (by email) into a HubSpot workflow (legacy automation v2).
     The workflow must allow manual/API enrollment."""
@@ -371,7 +417,7 @@ def find_family_contact(student_first: str, lastname: str) -> list[dict]:
 
 
 def create_contact(email: str, firstname: str | None = None, lastname: str | None = None,
-                   phone: str | None = None) -> dict:
+                   phone: str | None = None, extra_props: dict | None = None) -> dict:
     props = {"email": email}
     if firstname:
         props["firstname"] = firstname
@@ -379,6 +425,9 @@ def create_contact(email: str, firstname: str | None = None, lastname: str | Non
         props["lastname"] = lastname
     if phone:
         props["phone"] = phone
+    for k, v in (extra_props or {}).items():
+        if v not in (None, ""):
+            props[k] = v
     return _write("POST", "/crm/v3/objects/contacts", {"properties": props})
 
 

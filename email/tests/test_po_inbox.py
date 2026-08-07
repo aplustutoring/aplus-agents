@@ -14,6 +14,17 @@ def _stub_immediate_tw_sync(monkeypatch):
                         lambda d, **k: {"action_taken": "sync_pilot_logged"})
 
 
+@pytest.fixture(autouse=True)
+def _stub_contact_associations(monkeypatch):
+    # #AP031 family→TOR sync reads/writes contact associations — inert by
+    # default so unrelated tests never touch the network; the sync tests
+    # override these with recorders.
+    monkeypatch.setattr(po.hs, "get_contact_to_contact_associations", lambda cid: [])
+    monkeypatch.setattr(po.hs, "associate_contacts",
+                        lambda f, t, type_id=15, category="USER_DEFINED": {"id": "A1"})
+    monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
+
+
 def _mock_po_prop(monkeypatch, result=None):
     po.hs.find_deals_by_po_number  # ensure attr exists
     monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: result or [])
@@ -148,7 +159,8 @@ def test_parent_from_po_creates_contact(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None: created_contact.append((e, f, l, phone)) or {"id": "C9"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None:
+                        created_contact.append((e, f, l, phone)) or {"id": "C9"})
     monkeypatch.setattr(po.hs, "find_family_contact",
                         lambda sf, ln: (_ for _ in ()).throw(AssertionError("must not fall back")))
     monkeypatch.setattr(po.hs, "create_deal",
@@ -208,7 +220,8 @@ def test_tor_associated_to_created_deal(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None: created_contacts.append(e) or {"id": f"C-{e}"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None:
+                        created_contacts.append(e) or {"id": f"C-{e}"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com", parent_first="Lara", parent_last="Perkins",
@@ -432,3 +445,122 @@ def test_no_names_no_action(monkeypatch):
     notes = []
     po._handle_deal(_po(school="", student_first="", student_last=""), notes)
     assert "review manually" in notes[0]
+
+
+# ── #AP031: family→TOR association sync + persona stamping ──────────────────
+
+def _tor_link(to_id, type_id=15, category="USER_DEFINED"):
+    return {"toObjectId": to_id,
+            "associationTypes": [{"category": category, "typeId": type_id,
+                                  "label": "Teacher of Record"}]}
+
+
+def test_family_tor_already_linked_noop(monkeypatch):
+    # (a) family already linked to THIS TOR → no association write, no flag.
+    monkeypatch.setattr(po.hs, "get_contact_to_contact_associations",
+                        lambda cid: [_tor_link("T1")])
+    monkeypatch.setattr(po.hs, "associate_contacts",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not re-link")))
+    notes = []
+    po._sync_family_tor("F1", "T1", "Terri Tor", notes)
+    assert notes == []
+
+
+def test_family_tor_link_created_when_missing(monkeypatch):
+    # (b) no typeId-15 link (unlabeled/other associations don't count) → create.
+    linked = []
+    monkeypatch.setattr(po.hs, "get_contact_to_contact_associations",
+                        lambda cid: [_tor_link("X9", type_id=449, category="HUBSPOT_DEFINED")])
+    monkeypatch.setattr(po.hs, "associate_contacts",
+                        lambda f, t, type_id=15, category="USER_DEFINED":
+                        linked.append((f, t, type_id, category)) or {"id": "A1"})
+    notes = []
+    po._sync_family_tor("F1", "T1", "Terri Tor", notes)
+    assert linked == [("F1", "T1", 15, "USER_DEFINED")]
+    assert any("Family → TOR association created" in n for n in notes)
+
+
+def test_family_tor_different_tor_adds_and_flags(monkeypatch):
+    # (c) family linked to a DIFFERENT TOR → ADD the new link, flag the change,
+    # never remove the old one (multi-kid families have multiple TORs).
+    linked = []
+    monkeypatch.setattr(po.hs, "get_contact_to_contact_associations",
+                        lambda cid: [_tor_link("OLD-TOR")])
+    monkeypatch.setattr(po.hs, "associate_contacts",
+                        lambda f, t, type_id=15, category="USER_DEFINED":
+                        linked.append((f, t)) or {"id": "A2"})
+    notes = []
+    po._sync_family_tor("F1", "NEW-TOR", "Terri Tor", notes)
+    assert linked == [("F1", "NEW-TOR")]          # added, nothing removed
+    flag = next(n for n in notes if "TOR CHANGE" in n)
+    assert "OLD-TOR" in flag and "existing links kept" in flag
+
+
+def test_sync_runs_from_create_path_with_family(monkeypatch):
+    # End-to-end through _handle_deal: parent created from PO + TOR created →
+    # the family→TOR link lands with the created ids.
+    linked = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": f"C-{e}"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "associate_contacts",
+                        lambda f, t, type_id=15, category="USER_DEFINED":
+                        linked.append((f, t)) or {"id": "A3"})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", tor_email="terri@school.org",
+                        tor_first="Terri", tor_last="Tor"), notes)
+    assert linked == [("C-mom@x.com", "C-terri@school.org")]
+
+
+def test_persona_stamped_on_created_tor_and_parent(monkeypatch):
+    # (d) contacts CREATED by this agent carry personas; TOR also gets lead status.
+    created = {}
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None, extra_props=None:
+                        created.update({e: extra_props}) or {"id": f"C-{e}"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", tor_email="terri@school.org"), notes)
+    assert created["mom@x.com"] == {"a_persona": "Family"}
+    assert created["terri@school.org"] == {"hs_lead_status": "Charter School Teacher TOR/EF",
+                                           "a_persona": "Teacher of Record/EF/ES"}
+
+
+def test_existing_contacts_never_persona_patched(monkeypatch):
+    # Existing parent + TOR found by email → no create, no property writes at all.
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": f"C-{e}"})
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not create")))
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", tor_email="terri@school.org"), notes)
+    assert not any("CREATED" in n for n in notes)
+
+
+def test_tor_matched_via_secondary_email(monkeypatch):
+    # Primary-email miss but secondary hit (the Kristy Doyal case) → the
+    # existing contact is used, flagged, and NO duplicate is created.
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C-mom"} if e == "mom@x.com" else None)
+    monkeypatch.setattr(po.hs, "find_contact_by_secondary_email",
+                        lambda e: {"id": "C-kristy"})
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no duplicate TOR")))
+    assoc = []
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append(c))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com",
+                        tor_email="kristy.doyal@heartlandcharterschool.com"), notes)
+    assert assoc == ["C-kristy"]
+    assert any("SECONDARY email" in n for n in notes)

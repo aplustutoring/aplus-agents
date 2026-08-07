@@ -154,10 +154,61 @@ def _no_lessons_alert(po: dict, deal_name: str, note_parts: list[str]) -> None:
     note_parts.append("🗓️ No upcoming lessons — scheduling alert posted to Slack.")
 
 
-def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
+# Personas are stamped ONLY on contacts this agent CREATES (a_persona is a
+# multi-select checkbox; a single value is a plain string, multiple are
+# semicolon-separated). Existing contacts are never overwritten — the checkbox
+# may already carry other personas.
+TOR_CREATE_PROPS = {"hs_lead_status": "Charter School Teacher TOR/EF",
+                    "a_persona": "Teacher of Record/EF/ES"}
+FAMILY_CREATE_PROPS = {"a_persona": "Family"}
+
+
+def _sync_family_tor(family_id, tor_id, tor_label: str, note_parts: list[str]) -> None:
+    """#AP031: the PO is the source-of-truth event for teacher assignment —
+    every incoming PO syncs the family's contact→contact "Teacher of Record"
+    association (typeId 15, USER_DEFINED) so the links never go stale.
+
+    ADD-only: a family already linked to a DIFFERENT TOR gets the new link
+    ADDED and the change flagged on the ticket; existing links are NEVER
+    auto-removed — multi-kid families legitimately have multiple TORs
+    (different kids, different teachers). Removal is out of scope for v1.
+    Best-effort like every other post-deal step."""
+    if not family_id or not tor_id or "DRYRUN" in (str(family_id), str(tor_id)) \
+            or str(family_id) == str(tor_id):
+        return
+    try:
+        existing = hs.get_contact_to_contact_associations(family_id)
+        linked_tor_ids = {str(r.get("toObjectId")) for r in existing
+                          if any(t.get("typeId") == hs.TOR_ASSOC_TYPE_ID
+                                 and t.get("category") == "USER_DEFINED"
+                                 for t in r.get("associationTypes", []))}
+        if str(tor_id) in linked_tor_ids:
+            return  # already linked — no-op
+        hs.associate_contacts(family_id, tor_id)
+        if linked_tor_ids:
+            note_parts.append(
+                f"🔗 TOR CHANGE: family contact {family_id} was already linked to "
+                f"different TOR(s) (contact id {', '.join(sorted(linked_tor_ids))}) — "
+                f"ADDED {tor_label}; existing links kept (multi-kid families have "
+                f"multiple TORs). Review whether the old link is stale.")
+        else:
+            note_parts.append(f"🔗 Family → TOR association created ({tor_label}, #AP031).")
+    except Exception as e:  # noqa: BLE001 — association sync is best-effort
+        print(f"  ⚠️  family→TOR association sync failed (non-fatal): {e}")
+        note_parts.append("🔗 Family→TOR association sync failed — link manually (#AP031).")
+
+
+def _associate_tor(deal_id, po: dict, note_parts: list[str],
+                   family_contact_id=None) -> None:
     """Associate the Teacher of Record's contact to the deal (find-or-create by
-    email). The parent stays the deal's family contact — the Teachworks sync picks
-    the contact matching the deal-name parent, so adding the TOR is safe."""
+    email), then sync the family→TOR contact association (#AP031). The parent
+    stays the deal's family contact — the Teachworks sync picks the contact
+    matching the deal-name parent, so adding the TOR is safe.
+
+    TOR lookup order: primary email, then secondary email (some TORs' school
+    address is a HubSpot secondary email; creating on a primary-only miss
+    would duplicate them). Contacts created here are stamped with the TOR
+    persona + lead status."""
     t_email = (po.get("tor_email") or "").strip().lower()
     p_email = (po.get("parent_email") or "").strip().lower()
     if not t_email or t_email == p_email or not deal_id or deal_id == "DRYRUN":
@@ -165,12 +216,30 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str]) -> None:
     try:
         tor = hs.find_contact_by_email(t_email)
         if not tor:
+            tor = hs.find_contact_by_secondary_email(t_email)
+            if tor:
+                note_parts.append(f"🧑‍🏫 TOR matched via SECONDARY email {t_email} "
+                                  f"(primary is different) — no duplicate created.")
+        if not tor:
             tor = hs.create_contact(t_email, po.get("tor_first") or None,
-                                    po.get("tor_last") or None)
+                                    po.get("tor_last") or None,
+                                    extra_props=TOR_CREATE_PROPS)
+            note_parts.append(f"🧑‍🏫 CREATED TOR contact <{t_email}> (persona + lead "
+                              f"status stamped) — if this teacher already exists under "
+                              f"a personal email, merge manually.")
         if tor and tor.get("id") not in (None, "DRYRUN"):
             hs.associate_contact_to_deal(deal_id, tor["id"])
             note_parts.append(f"🧑‍🏫 TOR {po.get('tor_first', '')} {po.get('tor_last', '')} "
                               f"<{t_email}> associated to the deal.")
+            # #AP031 family→TOR sync: family id from the create path when known,
+            # else resolved by the PO's parent email (lookup only, never create).
+            fam_id = family_contact_id
+            if not fam_id and p_email:
+                fam = hs.find_contact_by_email(p_email)
+                fam_id = fam.get("id") if fam else None
+            tor_label = (f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
+                         or t_email)
+            _sync_family_tor(fam_id, tor.get("id"), tor_label, note_parts)
     except Exception as e:  # noqa: BLE001 — TOR association is best-effort
         print(f"  ⚠️  TOR association failed (non-fatal): {e}")
 
@@ -316,7 +385,8 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                 else:
                     created_c = hs.create_contact(p_email, po.get("parent_first") or None,
                                                   po.get("parent_last") or None,
-                                                  phone=po.get("parent_phone") or None)
+                                                  phone=po.get("parent_phone") or None,
+                                                  extra_props=FAMILY_CREATE_PROPS)
                     contact_id = created_c.get("id")
                     contact_bit = (f"CREATED HubSpot contact {po.get('parent_first', '')} "
                                    f"{po.get('parent_last', '')} <{p_email}> from the PO, ")
@@ -355,7 +425,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
-        _associate_tor(d.get("id"), po, note_parts)
+        _associate_tor(d.get("id"), po, note_parts, family_contact_id=contact_id)
         _stamp_deal_properties(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
         _invoice_task(d.get("id"), po, note_parts)
