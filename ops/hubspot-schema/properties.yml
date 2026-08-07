@@ -72,7 +72,7 @@ properties:
       label: "A+ PERSONA"
       group: master
       type: enumeration
-      fieldType: select
+      fieldType: checkbox   # multi-select: a contact can be more than one persona (#AP030, e.g. TOR who is also a Family)
       description: >-
         Master contact-type switch for the 5-persona model. Every agent reads
         this FIRST to know who a contact is, before any persona-specific logic.
