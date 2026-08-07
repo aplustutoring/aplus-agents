@@ -132,10 +132,729 @@
     401415725,
     401432643,
     401441237,
-    401451873
+    401451873,
+    401590351,
+    401715765,
+    401716172,
+    401724490,
+    401724317,
+    401783307,
+    401852873,
+    401866106,
+    401870665,
+    401692017,
+    401731012,
+    401889029,
+    401889737,
+    401895143,
+    401896323,
+    401897846,
+    401900428
   ],
-  "last_run_utc": "2026-08-06T04:08:25.561655+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-07T00:32:20.613267+00:00",
+  "pending_digest": [
+    {
+      "call_id": 401715765,
+      "number": "13106008229",
+      "time_pt": "9:50 AM",
+      "matched": true,
+      "contact_label": "Alison Turner",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Alison Turner called about getting her son Hudson, an incoming 8th grader at Laurel Hall, prepared for the HSPT exam in December for Notre Dame admission. Roman explained A+ offers one-on-one online test prep aligned with Notre Dame's group prep book, and will send a full-length practice diagnostic. Alison plans to have Hudson complete the diagnostic on Monday, after which A+ will grade it within 48 hours and build a tutoring plan.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Alison the full-length HSPT practice/diagnostic test",
+            "owner_hint": "Roman"
+          },
+          {
+            "item": "Grade Hudson's diagnostic within 48 hours of receipt and follow up to discuss results and build a tutoring plan",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Test prep inquiry; diagnostic being sent for evaluation before proposing a plan.",
+        "student_or_school_names_mentioned": [
+          "Hudson",
+          "Laurel Hall",
+          "Notre Dame",
+          "Walter Reed"
+        ],
+        "record_updates": {
+          "whats_going_on": "Hudson (going into 8th at Laurel Hall) is prepping for the HSPT in December for Notre Dame admission. He is also enrolled in Notre Dame's group prep class starting in October. Family is in Valley Village.",
+          "what_we_can_do_to_help": "Send full-length HSPT diagnostic (same book Notre Dame uses), grade within 48 hours, then set up 1:1 online test prep tutoring targeting Hudson's weak areas to complement the Notre Dame group class.",
+          "student_first_name": "Hudson",
+          "student_last_name": null,
+          "grade_level": "8",
+          "student_school": "Laurel Hall",
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": "Google Search",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Hudson (going into 8th at Laurel Hall) is prepping for the HSPT in December for Notre Dame admission. He is also enrolled in Notre Dame's group prep class starting in October. Family is in Valley Village."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send full-length HSPT diagnostic (same book Notre Dame uses), grade within 48 hours, then set up 1:1 online test prep tutoring targeting Hudson's weak areas to complement the Notre Dame group class."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Alison the full-length HSPT practice/diagnostic test",
+          38681249
+        ],
+        [
+          "Grade Hudson's diagnostic within 48 hours of receipt and follow up to discuss results and build a tutoring plan",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 401852873,
+      "number": "18184867718",
+      "time_pt": "1:54 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "V\u00e9ronique Fabre, an Education Facilitator with Highly Exploration Charter School, called to confirm A+ Tutoring's hourly rate before submitting a purchase order for one of her students. Janelle confirmed the rate is $75/hour and that sessions can be broken into 30 or 45 minute blocks as long as it's noted on the PO. No specific student was discussed on this call.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for incoming purchase order from V\u00e9ronique Fabre at Highly Exploration Charter School and schedule sessions per the PO's block-length instructions",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "Charter School Teacher TOR/EF",
+        "lead_status_reason": "Caller is a charter school Education Facilitator placing a PO for a student's tutoring \u2014 fits Charter School Teacher TOR/EF.",
+        "student_or_school_names_mentioned": [
+          "Highly Exploration Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "V\u00e9ronique Fabre, EF at Highly Exploration Charter School, called to confirm our hourly rate before placing a PO for one of her students.",
+          "what_we_can_do_to_help": "Confirmed $75/hour and that time can be split into 30 or 45 minute blocks when noted on the PO. Await incoming purchase order and schedule accordingly.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for incoming purchase order from V\u00e9ronique Fabre at Highly Exploration Charter School and schedule sessions per the PO's block-length instructions",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 401866106,
+      "number": "18186014521",
+      "time_pt": "2:25 PM",
+      "matched": true,
+      "contact_label": "Debra Oshatz",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Debbie (Debra Oshatz) called A+ Tutoring as a sales rep pitching a new kiosk advertising placement at store entrances in Studio City/Sherman Oaks. Roman confirmed A+ operates online from Studio City and declined, stating shopping-cart-style advertising isn't their ideal marketing channel. The call ended cordially with no next step.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Caller is an advertising/marketing vendor pitching kiosk ad placements, not a family, school, or tutor applicant.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 401692017,
+      "number": "13108941830",
+      "time_pt": "9:15 AM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring made an outbound call to existing customer Hope Mclendon and reached a call-screening service. Yolanda left a voicemail asking whether Hope wants to pause lessons for the remainder of August or continue, and requested that Hope update her credit card information via a link that was emailed to her.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Hope's response on pausing August lessons vs. continuing; follow up if no reply",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Confirm receipt/completion of the CC update form sent via email",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) \u2014 status owned by deal pipeline; call was administrative (scheduling pause + CC update).",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Yolanda called Hope to ask whether she wants to pause lessons for the rest of August or continue. Reached voicemail/screening service; left a message.",
+          "what_we_can_do_to_help": "Pause August lessons per Hope's preference and get her updated credit card info via the emailed CC update link so billing can continue.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda called Hope to ask whether she wants to pause lessons for the rest of August or continue. Reached voicemail/screening service; left a message."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Pause August lessons per Hope's preference and get her updated credit card info via the emailed CC update link so billing can continue."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Hope's response on pausing August lessons vs. continuing; follow up if no reply",
+          86868539
+        ],
+        [
+          "Confirm receipt/completion of the CC update form sent via email",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401731012,
+      "number": "13236057682",
+      "time_pt": "10:20 AM",
+      "matched": true,
+      "contact_label": "Theodore Barber",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Ted Barber regarding his earlier inquiry about tutoring for his daughter Carys (AP coursework and SAT prep). The call went to voicemail, and Paola left a message asking him to call back to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Ted's callback; attempt another follow-up if no response in a few days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no new contact made and status already reflects prior connection.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola made a follow-up call to Ted regarding tutoring interest for his daughter Carys; call went to voicemail and a message was left asking him to call back.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola made a follow-up call to Ted regarding tutoring interest for his daughter Carys; call went to voicemail and a message was left asking him to call back."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Ted's callback; attempt another follow-up if no response in a few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401889029,
+      "number": "12019369863",
+      "time_pt": "3:37 PM",
+      "matched": true,
+      "contact_label": "Xaris Bloxham",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound follow-up call to Xaris Bloxham regarding tutoring for her child (Janelle referenced 'Vivint,' likely a mis-transcription of the student's name \u2014 record shows Pippin). The call went to voicemail (Clarice Watson's greeting, possibly a shared/old line). Janelle left a message offering to support the student again and inviting a callback to discuss options. No connection was made and no next step was scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Xaris Bloxham; if no response, attempt another follow-up contact",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 did not actually speak with the parent, so lead status should not change based on this outbound attempt.",
+        "student_or_school_names_mentioned": [
+          "Pippin (referenced as 'Vivint' in transcript)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle placed an outbound follow-up call to re-engage the family about tutoring; reached voicemail (greeting was for 'Clarice Watson') and left a message offering to support the student again.",
+          "what_we_can_do_to_help": "Continue outreach to reconnect the family with tutoring services and discuss current options for their student.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle placed an outbound follow-up call to re-engage the family about tutoring; reached voicemail (greeting was for 'Clarice Watson') and left a message offering to support the student again."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach to reconnect the family with tutoring services and discuss current options for their student."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Xaris Bloxham; if no response, attempt another follow-up contact",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401889737,
+      "number": "18186673480",
+      "time_pt": "3:39 PM",
+      "matched": true,
+      "contact_label": "Ashley Gitlin",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Janelle at A+ Tutoring to existing/returning customer Ashley Gitlin regarding tutoring for her children Alex and Jake. Call went to voicemail; Janelle left a message offering to resume tutoring support and inviting Ashley to call back to discuss options. No response received on this call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Ashley Gitlin; if no response, follow up again in a few days to discuss resuming tutoring for Alex and Jake",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Ashley is a returning/existing customer (current status OPEN_DEAL); status is owned by the deal pipeline and should not be changed based on an outbound voicemail.",
+        "student_or_school_names_mentioned": [
+          "Alex",
+          "Jake"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle left a voicemail following up about resuming tutoring for Ashley's children Alex and Jake. No callback yet.",
+          "what_we_can_do_to_help": "Re-engage the family and discuss tutoring options for both Alex and Jake once Ashley calls back.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle left a voicemail following up about resuming tutoring for Ashley's children Alex and Jake. No callback yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-engage the family and discuss tutoring options for both Alex and Jake once Ashley calls back."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Ashley Gitlin; if no response, follow up again in a few days to discuss resuming tutoring for Alex and Jake",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401895143,
+      "number": "18184159405",
+      "time_pt": "4:01 PM",
+      "matched": true,
+      "contact_label": "Jessie Bobadilla",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound follow-up call to Jessie Bobadilla, a past customer, to check in about resuming tutoring for her daughter Elena. Jessie explained that her homeschool/charter hasn't started yet and she hasn't reviewed the available instructional funds. She said she'll reach out to A+ once she knows the fund amount. No next step was scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Jessie to reach back out once her charter/homeschool funds are confirmed; consider a follow-up check-in later if no response",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Jessie is a past customer (existing/past family) \u2014 lead status is owned by the deal pipeline and should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Elena",
+          "iLEAD California Charters"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up with Jessie about resuming tutoring for Elena. Jessie said her homeschool/charter has not started yet and she has not reviewed available instructional funds. She will contact A+ once she knows how much funding is available.",
+          "what_we_can_do_to_help": "Stand by to set up tutoring (including possible summer session) for Elena once Jessie confirms her charter instructional funds. Follow up periodically if we don't hear back.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up with Jessie about resuming tutoring for Elena. Jessie said her homeschool/charter has not started yet and she has not reviewed available instructional funds. She will contact A+ once she knows how much funding is available."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Stand by to set up tutoring (including possible summer session) for Elena once Jessie confirms her charter instructional funds. Follow up periodically if we don't hear back."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Jessie to reach back out once her charter/homeschool funds are confirmed; consider a follow-up check-in later if no response",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401896323,
+      "number": "13238285023",
+      "time_pt": "4:07 PM",
+      "matched": true,
+      "contact_label": "Anna Kadinowa",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Janelle at A+ Tutoring to Anna Kadinowa, a returning customer, regarding tutoring for her son Max. Anna did not answer; Janelle left a voicemail offering to resume support and inviting a callback.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Anna Kadinowa regarding resuming tutoring for Max; follow up again if no response",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an open deal; status is owned by the deal pipeline and should not be changed based on an unanswered outreach voicemail.",
+        "student_or_school_names_mentioned": [
+          "Max"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle left a voicemail for Anna following up about resuming tutoring for Max. No response yet \u2014 awaiting callback.",
+          "what_we_can_do_to_help": "Re-engage the family and discuss tutoring options for Max once Anna returns the call.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle left a voicemail for Anna following up about resuming tutoring for Max. No response yet \u2014 awaiting callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-engage the family and discuss tutoring options for Max once Anna returns the call."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Anna Kadinowa regarding resuming tutoring for Max; follow up again if no response",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401897846,
+      "number": "13234768651",
+      "time_pt": "4:14 PM",
+      "matched": true,
+      "contact_label": "Nakita Burton",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound follow-up call to returning customer Nakita Burton to check in about resuming tutoring for London and Hycon. The call went to voicemail and Janelle left a message inviting Nakita to call back to discuss options. No response yet; awaiting callback.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Nakita; if no response in a few days, follow up again about resuming tutoring for London and Hycon",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer family \u2014 lead status is owned by the deal pipeline (currently OPEN_DEAL), do not demote.",
+        "student_or_school_names_mentioned": [
+          "London",
+          "Hycon"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle left a voicemail for Nakita following up about resuming tutoring for London and Hycon. No answer; awaiting callback to discuss options.",
+          "what_we_can_do_to_help": "Re-engage the family and offer tutoring options for London and Hycon once Nakita calls back.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle left a voicemail for Nakita following up about resuming tutoring for London and Hycon. No answer; awaiting callback to discuss options."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-engage the family and offer tutoring options for London and Hycon once Nakita calls back."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Nakita; if no response in a few days, follow up again about resuming tutoring for London and Hycon",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 401900428,
+      "number": "17078893583",
+      "time_pt": "4:24 PM",
+      "matched": true,
+      "contact_label": "Carmen Hurtado De La Cruz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound follow-up call to returning customer Carmen Hurtado De La Cruz about resuming tutoring for her daughters Alina and Adeline. The call went to voicemail; Janelle left a message inviting Carmen to call back to discuss options. No response or next step was secured on this call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Carmen's callback; if no response in a few days, attempt another follow-up contact",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Returning customer with an OPEN_DEAL; status is owned by the deal pipeline and this was just a voicemail follow-up.",
+        "student_or_school_names_mentioned": [
+          "Alina",
+          "Adeline",
+          "Heartwood"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Janelle re: resuming tutoring for Alina and Adeline. Reached voicemail and left a message inviting Carmen to call back to discuss options.",
+          "what_we_can_do_to_help": "Re-engage the family and discuss tutoring options for both girls once Carmen returns the call.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Janelle re: resuming tutoring for Alina and Adeline. Reached voicemail and left a message inviting Carmen to call back to discuss options."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-engage the family and discuss tutoring options for both girls once Carmen returns the call."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Carmen's callback; if no response in a few days, attempt another follow-up contact",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
