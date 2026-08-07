@@ -1007,16 +1007,74 @@ def phone_variants(number):
     return e164, variants
 
 
+# The CallRail→HubSpot integration auto-creates a contact for EVERY inbound
+# call, using the telco caller-ID (CNAM) string as the name — "Inglewood Ca",
+# "Wireless Caller", "Toll Free Call". Treating those shells as known contacts
+# defeats the abandoned-IVR spam suppression (abandoned_known_only), so
+# find_contact_by_phone filters them out of search results.
+US_STATE_ABBRS = {
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
+    "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS",
+    "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK",
+    "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV",
+    "WI", "WY", "DC", "PR", "VI", "GU",
+}
+
+GENERIC_CNAM_NAMES = ("wireless caller", "toll free", "unavailable",
+                      "voip caller", "anonymous", "restricted")
+
+
+def _is_cnam_name(name):
+    """True when a contact name looks like a telco CNAM caller-ID string:
+    a generic label, or a location string ending in a state abbreviation
+    ("Inglewood Ca", "Lsan Da 12 Ca")."""
+    name = " ".join((name or "").split())
+    if not name:
+        return False
+    low = name.lower()
+    if any(low == g or low.startswith(g + " ") for g in GENERIC_CNAM_NAMES):
+        return True
+    tokens = name.split()
+    last = tokens[-1]
+    return bool(len(tokens) >= 2 and re.fullmatch(r"[A-Z][a-z]", last)
+                and last.upper() in US_STATE_ABBRS)
+
+
+def _is_callrail_junk_contact(contact):
+    """CallRail auto-created caller-ID shell: sourced from CallRail, no email,
+    and named after the CNAM string. Real families keep matching — any email
+    or a human-looking name clears the record."""
+    p = contact.get("properties") or {}
+    if (p.get("hs_object_source_detail_1") or "").strip().lower() != "callrail":
+        return False
+    if (p.get("email") or "").strip():
+        return False
+    return _is_cnam_name(f"{p.get('firstname') or ''} {p.get('lastname') or ''}".strip())
+
+
+def _first_real_contact(results):
+    for c in results:
+        if _is_callrail_junk_contact(c):
+            p = c.get("properties") or {}
+            log.info(f"  ignoring CallRail caller-ID shell contact {c.get('id')} "
+                     f"({p.get('firstname', '')} {p.get('lastname', '')})")
+            continue
+        return c
+    return None
+
+
 def find_contact_by_phone(caller_number):
     """
     HubSpot contact by phone. Tier 1: exact IN-match on phone/mobilephone
     variants. Tier 2: CONTAINS_TOKEN on the wildcarded 10-digit number.
+    CallRail caller-ID shell contacts are skipped (see _is_callrail_junk_contact),
+    so a number whose only match is a shell counts as unknown.
     Returns contact dict or None.
     """
     e164, variants = phone_variants(caller_number)
     if not variants:
         return None
-    props = KEY_PROPERTIES
+    props = KEY_PROPERTIES + ["hs_object_source_detail_1"]
 
     payload = {
         "filterGroups": [
@@ -1027,8 +1085,9 @@ def find_contact_by_phone(caller_number):
         "limit": 5,
     }
     res = hs_post("crm/v3/objects/contacts/search", payload)
-    if res.get("total", 0) > 0:
-        return res["results"][0]
+    contact = _first_real_contact(res.get("results") or [])
+    if contact:
+        return contact
 
     digits = re.sub(r"\D", "", e164)[-10:]
     if len(digits) == 10:
@@ -1041,8 +1100,9 @@ def find_contact_by_phone(caller_number):
             "limit": 5,
         }
         res = hs_post("crm/v3/objects/contacts/search", payload)
-        if res.get("total", 0) > 0:
-            return res["results"][0]
+        contact = _first_real_contact(res.get("results") or [])
+        if contact:
+            return contact
     return None
 
 
