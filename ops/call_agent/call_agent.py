@@ -930,6 +930,83 @@ def who_line(contact_label, number):
     return f"{contact_label} {phone}" if contact_label else phone
 
 
+SCORES_LEDGER = "ops/call_agent/state/scores.jsonl"
+
+
+def append_score_record(call, agent_name, card, now_utc):
+    """One JSONL line per scored call — the data behind the weekly scorecard.
+    Committed back by the workflow with the rest of state/."""
+    rec = {
+        "call_id": call.get("id"),
+        "date_pt": fmt_date_pt(call_datetime_utc(call) or now_utc),
+        "agent": agent_name or "unknown",
+        "direction": call_direction(call),
+        "overall": card.get("overall"),
+        "scores": {s["dimension"]: s["score"] for s in card.get("scores", [])
+                   if s.get("score") is not None},
+    }
+    path = REPO_ROOT / SCORES_LEDGER
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a") as f:
+        f.write(json.dumps(rec) + "\n")
+
+
+def weekly_scorecard(cfg, now_utc):
+    """Aggregate last week's (Mon-Sun, PT) per-call scores per person -> #calls."""
+    from zoneinfo import ZoneInfo
+    today_pt = now_utc.astimezone(ZoneInfo("America/Los_Angeles")).date()
+    week_start = today_pt - timedelta(days=today_pt.weekday() + 7)  # prior Monday
+    week_end = week_start + timedelta(days=6)
+    prior_start, prior_end = week_start - timedelta(days=7), week_start - timedelta(days=1)
+
+    path = REPO_ROOT / SCORES_LEDGER
+    if not path.exists():
+        log.info("weekly scorecard: no scores ledger yet — nothing to report")
+        return
+    recs = [json.loads(l) for l in open(path) if l.strip()]
+
+    def window(a, b):
+        out = {}
+        for r in recs:
+            if r.get("overall") is None:
+                continue
+            if a.isoformat() <= r["date_pt"] <= b.isoformat():
+                out.setdefault(r["agent"], []).append(r)
+        return out
+
+    cur, prior = window(week_start, week_end), window(prior_start, prior_end)
+    lines = [f":bar_chart: *Weekly call scores — {week_start.strftime('%b %-d')}–{week_end.strftime('%b %-d')}*"]
+    if not cur:
+        lines.append("_No scored calls last week._")
+    known = {k.capitalize() for k in (cfg["coaching"].get("slack_user_ids") or {})}
+    seen_first = set()
+    for agent, rs in sorted(cur.items(), key=lambda kv: -len(kv[1])):
+        seen_first.add(agent.split()[0].capitalize())
+        overall = sum(r["overall"] for r in rs) / len(rs)
+        trend = ""
+        if agent in prior:
+            delta = overall - sum(r["overall"] for r in prior[agent]) / len(prior[agent])
+            arrow = "▲" if delta > 0.05 else ("▼" if delta < -0.05 else "→")
+            trend = f"  {arrow} {delta:+.1f} vs prior wk"
+        dims = {}
+        for r in rs:
+            for d, s in r["scores"].items():
+                dims.setdefault(d, []).append(s)
+        davg = {d: sum(v)/len(v) for d, v in dims.items()}
+        hi = max(davg, key=davg.get); lo = min(davg, key=davg.get)
+        n_out = sum(1 for r in rs if r["direction"] == "outgoing")
+        lines.append(
+            f"*{agent}* — *{overall:.1f}/5* ({len(rs)} scored: {len(rs)-n_out} in / {n_out} out){trend}\n"
+            f"    strongest {hi} {davg[hi]:.1f} · weakest {lo} {davg[lo]:.1f}"
+            + (f" — {RUBRIC_DIM_LABELS.get(lo, lo)}" if lo in RUBRIC_DIM_LABELS else ""))
+    quiet = known - seen_first
+    if quiet:
+        lines.append(f"_No scored calls: {', '.join(sorted(quiet))}_")
+    lines.append("_Per-dimension anchors: ops/call_agent/rubric.md_")
+    post_to_slack("\n".join(lines), cfg["coaching"]["channel"] or cfg["slack"]["channel"])
+    log.info(f"weekly scorecard posted ({len(cur)} people, week {week_start} – {week_end})")
+
+
 def agent_slack_id(agent_name, cfg):
     """JustCall agent_name -> Slack user ID via coaching.slack_user_ids (first-name match)."""
     ids = (cfg.get("coaching") or {}).get("slack_user_ids") or {}
@@ -1568,6 +1645,11 @@ def process_call(call, cfg, dry_run, now_utc):
                         build_coaching_note(agent_name, time_pt, summary, card),
                         now_utc)
                     log.info(f"  call {cid}: coaching Note {note_id} on contact {contact['id']}")
+            if not dry_run:
+                try:
+                    append_score_record(call, agent_name, card, now_utc)
+                except Exception as e:
+                    log.warning(f"  call {cid}: score ledger append failed: {e}")
             coached = True
         except Exception as e:
             log.warning(f"  call {cid}: coaching scoring failed (call still processed): {e}")
@@ -1692,6 +1774,8 @@ def main():
                     help="hold digest entries in state; a later run flushes them")
     ap.add_argument("--since", default=None,
                     help="manual cursor override, UTC ISO (e.g. 2026-07-09T00:00:00)")
+    ap.add_argument("--weekly-scorecard", action="store_true",
+                    help="post last week's per-person score rollup and exit (no call processing)")
     args = ap.parse_args()
 
     # CI smoke mode (scorecard convention): secrets wired? then exit.
@@ -1718,6 +1802,9 @@ def main():
             raise EnvironmentError(f"{k} not set")
 
     cfg = load_config()
+    if args.weekly_scorecard:
+        weekly_scorecard(cfg, datetime.now(timezone.utc))
+        return
     if args.dry_run:
         log.info("DRY RUN MODE — no HubSpot/Slack writes, state not persisted")
 
