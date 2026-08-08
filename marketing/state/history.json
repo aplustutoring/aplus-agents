@@ -1203,6 +1203,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1786071106.957739"
+    },
+    {
+      "ts": "2026-08-08T08:44:25.011989-07:00",
+      "kind": "content_build",
+      "week": "2026-08-06",
+      "slot": 1,
+      "post_date": "2026-08-10",
+      "headline": "NWEA links chronic absenteeism to stalled COVID recovery in new 2,000-district study",
+      "bundle_dir": "aplus-content/2026-08-10-nwea-chronic-absenteeism-intervention-strategy",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "218990520852",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-08T09:03:09.356224-07:00",
+      "kind": "content_build",
+      "week": "2026-08-06",
+      "slot": 2,
+      "post_date": "2026-08-12",
+      "headline": "iLEAD Flex opens in Lancaster this month \u2014 Tier A network adds school #7 as CA's NCB moratorium lifts",
+      "bundle_dir": "aplus-content/2026-08-12-ilead-flex-lancaster-ncb-moratorium",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "218990502018",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-08T09:19:34.681176-07:00",
+      "kind": "content_build",
+      "week": "2026-08-06",
+      "slot": 3,
+      "post_date": "2026-08-14",
+      "headline": "The ESSER cliff is over. The vendors still standing are the ones who never needed it.",
+      "bundle_dir": "aplus-content/2026-08-14-post-esser-charter-tutoring-funding",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "218991620353",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

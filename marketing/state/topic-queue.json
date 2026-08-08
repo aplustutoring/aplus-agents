@@ -13,7 +13,12 @@
       "roman_take": "The absenteeism industry keeps treating attendance as a behavior problem \u2014 NWEA just showed it's a recovery problem, and the fastest lever is giving kids a reason to show up on Tuesday.",
       "danielle_take": "Special programs coordinators can score this against their own CALPADS chronic-absenteeism rates before September; if intervention days don't show a lift, the program design is off.",
       "redundancy_max_similarity": 0.4925671992032557,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-08T08:44:25.010713-07:00",
+      "post_date": "2026-08-10",
+      "bundle_dir": "aplus-content/2026-08-10-nwea-chronic-absenteeism-intervention-strategy",
+      "hubspot_post_id": "218990520852"
     },
     {
       "slot": 2,
@@ -30,7 +35,12 @@
       "roman_take": "The moratorium lift changes the competitive calculus for every A+ partner \u2014 the schools that will win the next five years are the ones whose intervention systems can scale faster than their enrollment.",
       "danielle_take": "What a new site actually needs in month one \u2014 she can walk through the intervention stack that a network expansion team has to stand up before the first NWEA window closes, drawing on how A+ has done this with existing iLEAD sites. ---",
       "redundancy_max_similarity": 0.7092861329840687,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-08T09:03:09.354993-07:00",
+      "post_date": "2026-08-12",
+      "bundle_dir": "aplus-content/2026-08-12-ilead-flex-lancaster-ncb-moratorium",
+      "hubspot_post_id": "218990502018"
     },
     {
       "slot": 3,
@@ -46,7 +56,12 @@
       "roman_take": "Conviction angle \u2014 the whole industry chased ESSER dollars and built cost structures around a temporary check; A+ built around the permanent one, and that's not luck, it's a thesis about where sustainable intervention money actually lives.",
       "danielle_take": "Implementation angle \u2014 walk through how a partner charter renewed intervention spend for 2026-27 using Title III Immigrant + Title I set-aside, not ESSER carryover; concrete dollar amounts and the CARS line items she pulled from. ---",
       "redundancy_max_similarity": 0.26487570960555695,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-08T09:19:34.680120-07:00",
+      "post_date": "2026-08-14",
+      "bundle_dir": "aplus-content/2026-08-14-post-esser-charter-tutoring-funding",
+      "hubspot_post_id": "218991620353"
     }
   ],
   "slack": {
