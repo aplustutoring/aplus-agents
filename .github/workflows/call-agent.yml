@@ -27,6 +27,7 @@ on:
     - cron: "*/15 15-23 * * *"  # polls 8:00 AM–4:45 PM PDT
     - cron: "0,15,45 0 * * *"   # polls 5:00/5:15/5:45 PM PDT (5:30 is the digest run)
     - cron: "*/15 1-2 * * *"    # polls 6:00–7:45 PM PDT
+    - cron: "0 16 * * 1"        # WEEKLY SCORECARD: Mon 9 AM PDT / 8 AM PST
   workflow_dispatch:
     inputs:
       dry_run:
@@ -85,6 +86,11 @@ jobs:
           if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "30 0 * * *" ]; then
             ARGS="$ARGS --no-digest"
           fi
+          # Monday 16:00 UTC cron posts the weekly per-person scorecard instead
+          # of polling (the */15 poll cron fires separately and still polls).
+          if [ "${{ github.event.schedule }}" = "0 16 * * 1" ]; then
+            ARGS="--weekly-scorecard"
+          fi
           python3 call_agent.py $ARGS
       - name: Commit state changes
         working-directory: .
@@ -93,7 +99,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Dry-run/check-only runs write no state; --ignore-errors tolerates the
           # file not existing yet.
-          git add --ignore-errors ops/call_agent/state/state.json || true
+          git add --ignore-errors ops/call_agent/state/state.json ops/call_agent/state/scores.jsonl || true
           if git diff --cached --quiet; then
             echo "no state changes to commit"
           else
