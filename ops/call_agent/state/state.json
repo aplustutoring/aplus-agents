@@ -156,14 +156,8 @@
     402331701,
     402401895
   ],
-  "last_run_utc": "2026-08-09T01:19:32.725997+00:00",
+  "last_run_utc": "2026-08-09T02:34:35.449063+00:00",
   "pending_digest": [],
-  "pending_skipped": [
-    {
-      "number": "13238947827",
-      "time_pt": "3:21 PM",
-      "reason": "no recording"
-    }
-  ],
+  "pending_skipped": [],
   "pending_failures": []
 }
