@@ -157,10 +157,64 @@
     402401895,
     402443998,
     402686705,
-    402701265
+    402701265,
+    402739803,
+    402732931
   ],
-  "last_run_utc": "2026-08-10T17:10:27.423255+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-10T18:05:02.689843+00:00",
+  "pending_digest": [
+    {
+      "call_id": 402732931,
+      "number": "17602781482",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Daniel Leonidas",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound call to Daniel Leonidas, an active tutor, and reached voicemail. She left a message referencing a prior Slack message about Daniel and Michael, asking him to call or text back to confirm availability today or tomorrow.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback/text from Daniel regarding availability; follow up again if no response",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Daniel is an active tutor with A+; outbound scheduling outreach does not change his status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback/text from Daniel regarding availability; follow up again if no response",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
