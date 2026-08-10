@@ -1,6 +1,6 @@
 # HubSpot Contact Property Consolidation — Proposal
 
-**Status: PROPOSAL — nothing in this document has been executed.** Roman approves; only then does anything move, sync, or archive. Archive (reversible) is always the proposal, never hard-delete (#AP rules as cited).
+**Status: APPROVED by Roman 2026-08-10.** Persona group moves EXECUTED same day (`execute_group_moves.py`, 41/41 verified in place); keeper set declared in `properties.yml`. RETIRE-CANDIDATEs remain **pending** — each needs Roman's per-property "Used in" check before any (reversible) archive; nothing has been archived. STORAGE-ONLY and KEEP-IN-PLACE require no action.
 
 884 total contact properties in portal 6312752; **405 are `hubspotDefined` (HubSpot system) and out of scope**. The 479 custom properties below are each assigned a disposition. Properties referenced by agent code are marked 【code: …】 and are keepers regardless of fill rate (locked rule 12).
 
@@ -28,9 +28,9 @@ Known label/internal mismatches (locked rule 9 — agents read LABELS, never int
 | SYSTEM | 35 |
 | **Total custom** | **479** |
 
-## Proposed move → `family` group (Family)
+## Moved → `family` group (Family) — EXECUTED 2026-08-10
 
-Group moves keep internal names unchanged (safe, #AP024) — still a proposal, not an action.
+Internal names unchanged (safe, #AP024). "Current group" shows the pre-move location for the audit trail.
 
 | Internal name | Label | Current group | Rationale | Decision |
 |---|---|---|---|---|
@@ -60,9 +60,9 @@ Group moves keep internal names unchanged (safe, #AP024) — still a proposal, n
 | `wednesday_schedule_preference` | Wednesday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
 | `what_is_your_child_s_current_grade_level_` | What grade is your child in? | contactinformation | CANONICAL student grade — the property agents use for grade level, always (Roman 2026-08-10); call agent overwrite target 【code: ops】 | #AP027 |
 
-## Proposed move → `tor` group (Teacher of Record/EF/ES)
+## Moved → `tor` group (Teacher of Record/EF/ES) — EXECUTED 2026-08-10
 
-Group moves keep internal names unchanged (safe, #AP024) — still a proposal, not an action.
+Internal names unchanged (safe, #AP024). "Current group" shows the pre-move location for the audit trail.
 
 | Internal name | Label | Current group | Rationale | Decision |
 |---|---|---|---|---|
@@ -71,9 +71,9 @@ Group moves keep internal names unchanged (safe, #AP024) — still a proposal, n
 | `last_tor_workflow_enrollment_date` | Last TOR Workflow Enrollment Date | charter | TOR nurture-workflow bookkeeping; belongs with TOR persona |  |
 | `teacher_email_address` | Teacher Email Address | contactinformation | Danielle's live marketing-form field (15 fills) — not a duplicate | #AP028 |
 
-## Proposed move → `tutor` group (Tutors)
+## Moved → `tutor` group (Tutors) — EXECUTED 2026-08-10
 
-Group moves keep internal names unchanged (safe, #AP024) — still a proposal, not an action.
+Internal names unchanged (safe, #AP024). "Current group" shows the pre-move location for the audit trail.
 
 | Internal name | Label | Current group | Rationale | Decision |
 |---|---|---|---|---|
@@ -87,9 +87,9 @@ Group moves keep internal names unchanged (safe, #AP024) — still a proposal, n
 | `university_attended` | University Attended | new_tutors | Tutor credential | #AP024 |
 | `what_subjects_do_you_feel_the_most_qualified_to_tutor_` | What subjects do you feel the most qualified to tutor? | new_tutors | Tutor subjects (structured checkbox) | #AP024 |
 
-## Proposed move → `student` group (Student)
+## Moved → `student` group (Student) — EXECUTED 2026-08-10
 
-Group moves keep internal names unchanged (safe, #AP024) — still a proposal, not an action.
+Internal names unchanged (safe, #AP024). "Current group" shows the pre-move location for the audit trail.
 
 | Internal name | Label | Current group | Rationale | Decision |
 |---|---|---|---|---|

@@ -88,3 +88,440 @@ properties:
           label: "Tutors"
         - value: "Student"
           label: "Student"
+
+    # ── Consolidation keepers (approved by Roman 2026-08-10) ──
+    # Registry declarations for the agent property vocabulary (KEEPERS.md).
+    # Options intentionally omitted on enums: the PORTAL stays authoritative
+    # for option lists/labels (e.g. the master school list) — the additive
+    # sync then never adds or relabels options on these.
+    # — family —
+    - name: charter_school_family_
+      label: "Charter School Family?"
+      group: family
+      type: enumeration
+      fieldType: booleancheckbox
+    - name: teacher_of_record_name
+      label: "Teacher of Record Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: teacher_of_record_email_address
+      label: "Teacher of Record Email Address"
+      group: family
+      type: string
+      fieldType: text
+    - name: how_did_you_hear_about_us_
+      label: "How Did You Hear About Us?"
+      group: family
+      type: enumeration
+      fieldType: select
+    - name: referral_name
+      label: "Referral Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: parent_concerns_what_can_we_do_to_help_
+      label: "What's going on?"
+      group: family
+      type: string
+      fieldType: textarea
+    - name: what_is_your_child_s_current_grade_level_
+      label: "What grade is your child in?"
+      group: family
+      type: enumeration
+      fieldType: select
+    - name: parent_email
+      label: "Parent Email"
+      group: family
+      type: string
+      fieldType: text
+    - name: parent_first_name
+      label: "Parent First Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: parent_last_name
+      label: "Parent Last Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: parent_phone_number
+      label: "Parent Phone Number"
+      group: family
+      type: string
+      fieldType: text
+    - name: subject_need
+      label: "Subject Need"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: online_or_in_person
+      label: "Online or In Person Preference"
+      group: family
+      type: enumeration
+      fieldType: select
+    - name: student_school
+      label: "Student School"
+      group: family
+      type: string
+      fieldType: text
+    - name: student_additional_information
+      label: "What we can do to help"
+      group: family
+      type: string
+      fieldType: textarea
+    - name: student_full_name_clone_
+      label: "Student 2 Full Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: student_3_full_name
+      label: "Student 3 Full Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: student_4_full_name
+      label: "Student 4 Full Name"
+      group: family
+      type: string
+      fieldType: text
+    - name: monday_schedule_preference
+      label: "Monday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: tuesday_schedule_preference
+      label: "Tuesday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: wednesday_schedule_preference
+      label: "Wednesday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: thursday_schedule_preference
+      label: "Thursday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: friday_schedule_preference
+      label: "Friday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: saturday_schedule_preference
+      label: "Saturday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    - name: sunday_schedule_preference
+      label: "Sunday Schedule Preference"
+      group: family
+      type: enumeration
+      fieldType: radio
+    # — tor —
+    - name: educational_facillitator_teacher_of_record
+      label: "Educational Facillitator/Teacher of Record"
+      group: tor
+      type: enumeration
+      fieldType: booleancheckbox
+    - name: charter_school_teacher
+      label: "Charter School Teacher"
+      group: tor
+      type: enumeration
+      fieldType: select
+    - name: last_tor_workflow_enrollment_date
+      label: "Last TOR Workflow Enrollment Date"
+      group: tor
+      type: date
+      fieldType: date
+    - name: teacher_email_address
+      label: "Teacher Email Address"
+      group: tor
+      type: string
+      fieldType: text
+    # — tutor —
+    - name: a__pay_per_hour
+      label: "A+ Pay Per Hour"
+      group: tutor
+      type: number
+      fieldType: number
+    - name: resume
+      label: "Resume"
+      group: tutor
+      type: string
+      fieldType: file
+    - name: tutor_profile
+      label: "Tutor Profile"
+      group: tutor
+      type: string
+      fieldType: textarea
+    - name: online_in_person_
+      label: "Online or In-Person"
+      group: tutor
+      type: enumeration
+      fieldType: select
+    - name: select_days_for_availability
+      label: "Select Days for Availability"
+      group: tutor
+      type: enumeration
+      fieldType: checkbox
+    - name: what_subjects_do_you_feel_the_most_qualified_to_tutor_
+      label: "What subjects do you feel the most qualified to tutor?"
+      group: tutor
+      type: enumeration
+      fieldType: checkbox
+    - name: completed_tutor_training
+      label: "Completed Tutor Training"
+      group: tutor
+      type: bool
+      fieldType: booleancheckbox
+    - name: university_attended
+      label: "University Attended"
+      group: tutor
+      type: string
+      fieldType: text
+    - name: degree_received
+      label: "Degree Received"
+      group: tutor
+      type: string
+      fieldType: text
+    # — student —
+    - name: student_email_address
+      label: "Student Email Address"
+      group: student
+      type: string
+      fieldType: text
+    - name: student_last_name
+      label: "Student FIRST Name"
+      group: student
+      type: string
+      fieldType: text
+    - name: student_last_name_if_diff_from_parent
+      label: "Student Last Name"
+      group: student
+      type: string
+      fieldType: text
+    # — grade (program capture) —
+    - name: grade_level
+      label: "Grade Level"
+      group: contactinformation
+      type: string
+      fieldType: text
+    - name: spotlight_grade_level
+      label: "Spotlight Grade Level"
+      group: spotlight
+      type: enumeration
+      fieldType: select
+    - name: teacher_scholarship_nomination__student_1__student_grade_level
+      label: "Teacher Scholarship Nomination - Student 1 - Student Grade Level"
+      group: contactinformation
+      type: enumeration
+      fieldType: select
+    - name: teacher_scholarship_nomination__student_2__student_grade_level
+      label: "Teacher Scholarship Nomination - Student 2 - Student Grade Level"
+      group: contactinformation
+      type: enumeration
+      fieldType: select
+    - name: teacher_scholarship_nomination__student_3__student_grade_level
+      label: "Teacher Scholarship Nomination - Student 3 - Student Grade Level"
+      group: contactinformation
+      type: enumeration
+      fieldType: select
+
+  deals:
+    # ── Consolidation keepers (approved by Roman 2026-08-10) — see KEEPERS.md ──
+    # Deal TOR fields (teacher_of_record_name/email, tor_first/last_name) retire
+    # after the Teachworks low-balance alert replaces Monday.
+    - name: po_number
+      label: "PO Number"
+      group: charter_schools
+      type: string
+      fieldType: text
+    - name: number_of_hours_in_this_po
+      label: "Number of Hours in this PO"
+      group: dealinformation
+      type: number
+      fieldType: number
+    - name: invoice__
+      label: "Invoice #"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: a__slp_cap_invoice__
+      label: "A+/SLP/CAP Invoice #"
+      group: charter_schools
+      type: number
+      fieldType: number
+    - name: invoice_submitted_date
+      label: "Invoice Submitted Date"
+      group: deal_activity
+      type: date
+      fieldType: date
+    - name: lessons_fulfilled_date
+      label: "Expected Lessons Fulfilled Date"
+      group: charter_schools
+      type: date
+      fieldType: date
+    - name: start_of_tutoring_for_this_deal
+      label: "Start Date for Tutoring for this Deal"
+      group: deal_activity
+      type: date
+      fieldType: date
+    - name: date_of_last_lesson_in_this_deal
+      label: "Date of Last Lesson in this Deal"
+      group: dealinformation
+      type: date
+      fieldType: date
+    - name: reason_for_stopping
+      label: "Reason for Stopping"
+      group: dealinformation
+      type: enumeration
+      fieldType: select
+    - name: online__inperson__charter
+      label: "ONLINE, INPERSON, CHARTER"
+      group: dealinformation
+      type: enumeration
+      fieldType: select
+    - name: should_this_deal_be_posted_to_a_slack_channel_
+      label: "Should this deal be posted to a Slack Channel?"
+      group: custom_deal_properties
+      type: enumeration
+      fieldType: booleancheckbox
+    - name: school_name
+      label: "School Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: iem_student_id
+      label: "IEM Student ID"
+      group: charter
+      type: string
+      fieldType: text
+    - name: student_first_name
+      label: "Student First Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: student_last_name_if_diff_from_parent
+      label: "Student Last Name"
+      group: scheduling_information
+      type: string
+      fieldType: text
+    - name: student_grade
+      label: "Student Grade"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: student_school
+      label: "Student School"
+      group: charter
+      type: string
+      fieldType: text
+    - name: parent_email
+      label: "Parent Email"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: parent_phone
+      label: "Parent Phone"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: schedule_preferences
+      label: "Schedule Preferences"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: assigned_tutor
+      label: "Assigned Tutor"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: tutor_email
+      label: "Tutor Email"
+      group: tutor_info
+      type: string
+      fieldType: text
+    - name: tutor_match
+      label: "Tutor Match"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: aplus_contractor_pay
+      label: "APlus Contractor Pay"
+      group: tutor_info
+      type: number
+      fieldType: number
+    - name: teacher_of_record_name
+      label: "Teacher of Record Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: teacher_of_record_email
+      label: "Teacher of Record Email"
+      group: dealinformation
+      type: string
+      fieldType: text
+    - name: tor_first_name
+      label: "tor first name"
+      group: charter
+      type: string
+      fieldType: text
+    - name: tor_last_name
+      label: "tor last name"
+      group: charter
+      type: string
+      fieldType: text
+    - name: stripe_amount_paid
+      label: "Stripe Amount Paid"
+      group: pilibos_program
+      type: number
+      fieldType: number
+    - name: stripe_payment_intent
+      label: "Stripe Payment Intent"
+      group: pilibos_program
+      type: string
+      fieldType: text
+    - name: stripe_session_id
+      label: "Stripe Session ID"
+      group: pilibos_program
+      type: string
+      fieldType: text
+    - name: monday_schedule_preference
+      label: "Monday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+    - name: tuesday_schedule_preference
+      label: "Tuesday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+    - name: wednesday_schedule_preference
+      label: "Wednesday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+    - name: thursday_schedule_preference
+      label: "Thursday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+    - name: friday_schedule_preference
+      label: "Friday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+    - name: saturday_schedule_preference
+      label: "Saturday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+    - name: sunday_schedule_preference
+      label: "Sunday Schedule Preference"
+      group: scheduling_information
+      type: enumeration
+      fieldType: radio
+

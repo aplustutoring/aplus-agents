@@ -8,6 +8,29 @@ Newest entries first.
 
 ---
 
+## 2026-08-10 — Consolidation APPROVED + persona group moves executed
+
+**What:** Roman approved the consolidation proposal. Executed the 36 remaining
+persona group moves via `ops/hubspot-schema/consolidation/execute_group_moves.py`
+(idempotent, PATCH groupName only — names/types/options/data untouched);
+verified 41/41 keepers now sit in `family`/`tor`/`tutor`/`student`. Declared all
+86 keepers in `ops/hubspot-schema/properties.yml` (46 contacts + 38 deals +
+existing a_persona/tickets); enum options intentionally omitted so the portal
+stays authoritative for option lists (e.g. the master school list) —
+`create_properties.py --dry-run` confirms 0 creates, 86 in sync.
+
+**Why:** "approved" (Roman, 2026-08-10) on the committed proposal. NOT done:
+archives — all 113 retire candidates still require Roman's per-property
+"Used in" check first (locked rule). Also pending: dry-run shows `source_agent`
+wants 2 new registry options (fleet-retry, branch-hygiene) — pre-existing sync
+behavior, not run.
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/execute_group_moves.py` (new),
+proposal docs restamped APPROVED/EXECUTED.
+
+---
+
 ## 2026-08-10 — HubSpot property consolidation proposal (contacts + deals)
 
 **What:** Read-only audit of all 884 contact / 718 deal properties in portal

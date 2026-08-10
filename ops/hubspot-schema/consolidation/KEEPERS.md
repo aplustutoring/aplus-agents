@@ -2,6 +2,8 @@
 
 **86 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
 
+**Approved by Roman 2026-08-10.** Persona group moves executed; every keeper is declared in `ops/hubspot-schema/properties.yml` (registry). 
+
 Rules that travel with this list:
 - Agents ALWAYS read enumeration **labels**, never internal values (fleet rule; see mismatch list in contacts-proposal.md).
 - Family→TOR truth is the typeId-15 contact association; the stamped TOR text fields are legacy capture but still LIVE (#AP031, #AP029).

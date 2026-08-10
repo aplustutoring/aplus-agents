@@ -1,6 +1,6 @@
 # HubSpot Deal Property Consolidation — Proposal
 
-**Status: PROPOSAL — nothing in this document has been executed.** Roman approves; only then does anything move, sync, or archive. Archive (reversible) is always the proposal, never hard-delete (#AP rules as cited).
+**Status: APPROVED by Roman 2026-08-10.** Persona group moves EXECUTED same day (`execute_group_moves.py`, 41/41 verified in place); keeper set declared in `properties.yml`. RETIRE-CANDIDATEs remain **pending** — each needs Roman's per-property "Used in" check before any (reversible) archive; nothing has been archived. STORAGE-ONLY and KEEP-IN-PLACE require no action.
 
 718 total deal properties; **611 are `hubspotDefined`** (incl. all `hs_v2_*` stage timers) and out of scope. The 107 custom properties below are each assigned a disposition. `po_inbox.deal_property_map` in email/config.yaml references student_first_name, student_last_name_if_diff_from_parent, student_grade, student_school, parent_email, parent_phone — agent-load-bearing (locked rules 11-12).
 
