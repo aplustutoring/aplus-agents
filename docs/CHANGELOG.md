@@ -54,8 +54,17 @@ tool: `PO_REPLAY_MSG_IDS` env / `replay_msg_ids` workflow input reprocesses
 specific Gmail messages, bypassing guards — for backfilling under new rules
 (same pattern as deal-sync's FORCE_DEAL_ID).
 
+(4) Scheduler visibility (Roman, same session): every PO-created deal now sets
+`should_this_deal_be_posted_to_a_slack_channel_="true"` — the existing HubSpot
+workflow behind that checkbox posts the deal to the per-pipeline Slack channel.
+And the assigned scheduler (deal owner, A-L/M-Z) gets ONE direct DM per PO email
+listing the deal(s) created: "In Pre-Lesson now — get lessons scheduled to hit
+the 72-hr Post-Lesson target", with the pending-approval warning when it applies.
+Previously schedulers only saw deals appear in HubSpot; the sole Slack signal
+was the no-lessons alert in #email-agent.
+
 **Files:** `email/src/po_inbox.py`, `email/config.yaml`,
-`email/tests/test_po_inbox.py` (15 new tests; email suite 174 green),
+`email/tests/test_po_inbox.py` (18 new tests; email suite 177 green),
 `.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
 
 ---

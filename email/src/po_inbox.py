@@ -367,6 +367,30 @@ def _split_pos(po: dict) -> list[dict]:
     return [po]
 
 
+def _dm_scheduler(po: dict, created: list[dict], note_parts: list[str]) -> None:
+    """Direct DM to the assigned scheduler (the deal owner): a new PO deal means
+    lessons need scheduling — the 72-hr Pre→Post-Lesson clock starts now.
+    One DM per email, listing every deal it created (Roman, 2026-08-10)."""
+    from .router import scheduler_for_last_name
+    sched_key, _ = scheduler_for_last_name(po.get("student_last") or "")
+    sched = cfg()["staff"].get(sched_key, {})
+    if not sched.get("slack_user_id"):
+        return
+    student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
+    names = "; ".join(c["name"] for c in created)
+    pending = (" ⏳ PENDING school approval — confirm in the school portal before "
+               "lessons start." if any(c.get("pending") for c in created) else "")
+    try:
+        slack_client.dm(sched["slack_user_id"],
+                        f"🆕 {len(created)} new PO deal(s) assigned to you — {student} "
+                        f"({po.get('school') or 'school n/a'}): {names}. In Pre-Lesson now — "
+                        f"get lessons scheduled to hit the 72-hr Post-Lesson target.{pending}")
+        note_parts.append(f"👤 Scheduler {sched.get('name', sched_key)} DM'd directly "
+                          f"about the new deal(s).")
+    except Exception as e:  # noqa: BLE001 — a DM failure must never block the deal
+        print(f"  ⚠️  scheduler DM failed (non-fatal): {e}")
+
+
 def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                  msg: dict | None = None) -> None:
     """One deal per PO in the email (usually one; see _split_pos)."""
@@ -379,14 +403,19 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         # full flow now, flagged so Kath confirms approval in the school portal.
         note_parts.append("⏳ PO(s) PENDING school approval (order agreement) — confirm "
                           "approved in the school's ordering portal before service starts.")
+    created: list[dict] = []
     for i, sub in enumerate(subs):
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
                               f"extracted — fill on the deal manually.")
         # scheduling alert once per email, not once per PO month; seq_offset
         # staggers 'School N' across sibling deals created in the same email
-        _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0),
-                       msg=msg, seq_offset=i)
+        rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0),
+                             msg=msg, seq_offset=i)
+        if rec:
+            created.append(rec)
+    if created:
+        _dm_scheduler(po, created, note_parts)
 
 
 def _school_short(school: str) -> tuple[str, bool]:
@@ -645,8 +674,9 @@ def _find_parent_via_deals(po: dict):
 
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True, msg: dict | None = None,
-                   seq_offset: int = 0) -> None:
-    """Advance the matching Waiting-for-PO deal, or create one."""
+                   seq_offset: int = 0) -> dict | None:
+    """Advance the matching Waiting-for-PO deal, or create one. Returns
+    {name, pending} for a CREATED deal (drives the scheduler DM), else None."""
     pc = cfg()["po_inbox"]
     student = (po.get("student_last") or po.get("student_first") or "").strip()
     school = (po.get("school") or "").strip()
@@ -690,7 +720,10 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         sched_key, _ = scheduler_for_last_name(po.get("student_last") or "")
         sched = cfg()["staff"].get(sched_key, {})
         close_ms = int((now_la() + timedelta(days=30)).timestamp() * 1000)
-        extra = {"po_number": po_num}
+        # Slack routing flag: the HubSpot workflow behind this checkbox posts the
+        # deal to the right channel by pipeline (Roman, 2026-08-10).
+        extra = {"po_number": po_num,
+                 "should_this_deal_be_posted_to_a_slack_channel_": "true"}
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
         # Resolve the PARENT contact FIRST — the deal name leads with the parent
@@ -787,6 +820,8 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                                   f"{rec.get('action_taken', 'skipped')}.")
             except Exception as e:  # noqa: BLE001 — the 15-min sync will retry
                 print(f"  ⚠️  immediate TW sync failed (cron will retry): {e}")
+        return {"name": name, "pending": bool(po.get("pending_approval"))}
+    return None
 
 
 def _thread_already_handled(thread_id: str) -> bool:

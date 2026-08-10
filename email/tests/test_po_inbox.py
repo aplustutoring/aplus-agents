@@ -628,6 +628,7 @@ def test_multi_po_scheduling_alert_fires_once(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "upcoming_lessons_for_family", lambda e, sf: [])
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: None)   # scheduler DM is separate
     monkeypatch.setattr(po.slack_client, "post_message", lambda ch, t: posts.append(t))
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com", po_number="", pos=[
@@ -944,3 +945,47 @@ def test_skip_thread_respects_open_chase(monkeypatch):
                         lambda: {"TH-open": {"deal_id": "D9"}})
     assert po._skip_thread("TH-open") is False        # chase waiting → process
     assert po._skip_thread("TH-closed") is True       # no chase → stays closed
+
+
+# ── Slack routing flag + direct scheduler DM (Roman, 2026-08-10) ─────────────
+
+def test_slack_routing_flag_set_on_created_deal(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(), [])
+    # the HubSpot workflow behind this checkbox posts the deal to the
+    # pipeline's Slack channel
+    assert captured[0]["should_this_deal_be_posted_to_a_slack_channel_"] == "true"
+
+
+def test_scheduler_dm_once_per_email_with_pending_flag(monkeypatch):
+    dms = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    notes = []
+    po._handle_deal(_po(po_number="", pending_approval=True, pos=[
+        {"po_number": "A1", "amount": "100", "po_month": "2026-08"},
+        {"po_number": "A2", "amount": "100", "po_month": "2026-09"}]), notes)
+    # Diaz → A-L scheduler (Janelle); ONE DM for the whole email, not per deal
+    assert len(dms) == 1
+    assert dms[0][0] == po.cfg()["staff"]["janelle"]["slack_user_id"]
+    assert "2 new PO deal(s)" in dms[0][1] and "Post-Lesson" in dms[0][1]
+    assert "PENDING school approval" in dms[0][1]
+    assert any("Scheduler Janelle DM'd" in n for n in notes)
+
+
+def test_no_scheduler_dm_when_nothing_created(monkeypatch):
+    # duplicate PO → no deal → no scheduler DM (only the duplicate alert to Kath)
+    dms = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name",
+                        lambda t, p=None, s=None: [{"id": "X", "properties": {"dealname": "dup"}}])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not create")))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    po._handle_deal(_po(po_number="53779"), [])
+    assert len(dms) == 1 and "duplicate po" in dms[0][1].lower()
