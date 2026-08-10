@@ -32,12 +32,17 @@ PO_SYSTEM = (
     "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
     "include PDF/image attachments (the actual PO document) — read them; PO details "
     "usually live there, not in the body. "
-    "Respond with a SINGLE JSON object, no prose: {is_po (bool), school, student_first, "
+    "Respond with a SINGLE JSON object, no prose: {is_po (bool), pending_approval (bool), "
+    "school, student_first, "
     "student_last, grade, po_number, amount, hours, parent_first, parent_last, parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, po_month, level_up (bool), summary, "
     "draft_reply, confidence (0-1)}. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
-    "service. Invoice requests, invoicing follow-ups, payment reminders, statements, or "
+    "service. Order Agreements / Vendor Agreement Forms that list purchase orders for a "
+    "student (the OPS/iLEAD pattern) ARE POs even when the document is stamped 'THIS IS "
+    "NOT A PO' — set is_po=true AND pending_approval=true (the school still has to approve "
+    "them in its ordering portal); pending_approval=false for a normally issued PO. "
+    "Invoice requests, invoicing follow-ups, payment reminders, statements, or "
     "questions about EXISTING service are NOT new POs → is_po=false (still extract "
     "school/student/po_number/amount and summarize; these get a review ticket, no deal). "
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
@@ -313,7 +318,10 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
                        f"{po.get('po_month')}) — you'll be prompted when it's time." if month_end
                        else "Submission due date: PO month not stated — confirm the service month.")
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
-        body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual).\n"
+        pending_line = ("\n⏳ PO is PENDING school approval (order agreement) — confirm it is "
+                        "approved before submitting the invoice." if po.get("pending_approval") else "")
+        body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual)."
+                f"{pending_line}\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
                 f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
                 f"Hours: {po.get('hours') or 'n/a'}\n{submit_line}\n"
@@ -366,6 +374,11 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
     if len(subs) > 1:
         note_parts.append(f"📑 Multi-PO email: {len(subs)} POs → one deal each "
                           f"({', '.join(x['po_number'] for x in subs)}).")
+    if po.get("pending_approval"):
+        # Roman, 2026-08-10: "THIS IS NOT A PO" order agreements ARE POs —
+        # full flow now, flagged so Kath confirms approval in the school portal.
+        note_parts.append("⏳ PO(s) PENDING school approval (order agreement) — confirm "
+                          "approved in the school's ordering portal before service starts.")
     for i, sub in enumerate(subs):
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
@@ -789,10 +802,18 @@ def _thread_already_handled(thread_id: str) -> bool:
     return False
 
 
-def process_po_message(stub_id: str) -> dict | None:
+def _skip_thread(thread_id: str) -> bool:
+    """A thread with a processed REAL PO is closed — UNLESS a parent chase is
+    still waiting on it: the TOR's parent-info reply must get through."""
+    return _thread_already_handled(thread_id) and thread_id not in _open_chases()
+
+
+def process_po_message(stub_id: str, force: bool = False) -> dict | None:
+    """force=True (replay) bypasses the processed/thread guards — used to re-run
+    a message under new rules (e.g. order agreements now counting as POs)."""
     pc = cfg()["po_inbox"]
     m = gm.get_message(stub_id)
-    if audit.already_processed(f"gmail:{m['id']}") or _thread_already_handled(m["threadId"]):
+    if not force and (audit.already_processed(f"gmail:{m['id']}") or _skip_thread(m["threadId"])):
         return None
     attachments: list[dict] = []
     try:
@@ -897,7 +918,19 @@ def run() -> None:
         print("po_inbox.address not configured — skipping (see SETUP §7)")
         return
     import json as _json
+    import os
     from pathlib import Path
+    # Replay: PO_REPLAY_MSG_IDS="<gmail_id>,<gmail_id>" reprocesses specific
+    # messages ignoring the processed/thread guards (same pattern as the
+    # deal-sync FORCE_DEAL_ID tool) — for rule changes like OAs-are-POs.
+    for rid in [x.strip() for x in (os.environ.get("PO_REPLAY_MSG_IDS") or "").split(",")
+                if x.strip()]:
+        try:
+            print(f"po_inbox: REPLAY {rid}")
+            process_po_message(rid, force=True)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  replay error on {rid}: {e}", file=sys.stderr)
+            traceback.print_exc()
     cur_path = Path(__file__).resolve().parent.parent / "state" / "po_cursor.json"
     state = _json.loads(cur_path.read_text()) if cur_path.exists() else {}
     since = state.get("last_epoch")

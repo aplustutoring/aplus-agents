@@ -41,8 +41,22 @@ stripped ("PO7514044381" → "7514044381"; letters that are PART of the number,
 like Blue Ridge's "PF593736", are kept) before dedupe, the deal property, and
 the audit record.
 
+(3) Order agreements ARE POs (Roman, same session): OPS/iLEAD Vendor Agreement
+Forms stamped "THIS IS NOT A PO" now get the FULL PO flow (deals per PO number,
+invoice tasks, chase) with a new `pending_approval` flag — ticket + invoice task
+carry "⏳ PENDING school approval — confirm in the school's ordering portal".
+This partially supersedes the 2026-08-06 iLEAD thread-stays-open fix: OA threads
+now close as processed POs; the approved-PO email arriving later trips the
+po_number dedupe, which alerts Kath (that alert now doubles as the approval
+signal). Thread guard refined: a closed thread with an OPEN parent chase still
+processes replies (the TOR's parent-info answer must get through). NEW replay
+tool: `PO_REPLAY_MSG_IDS` env / `replay_msg_ids` workflow input reprocesses
+specific Gmail messages, bypassing guards — for backfilling under new rules
+(same pattern as deal-sync's FORCE_DEAL_ID).
+
 **Files:** `email/src/po_inbox.py`, `email/config.yaml`,
-`email/tests/test_po_inbox.py` (12 new tests; email suite 171 green).
+`email/tests/test_po_inbox.py` (15 new tests; email suite 174 green),
+`.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
 
 ---
 

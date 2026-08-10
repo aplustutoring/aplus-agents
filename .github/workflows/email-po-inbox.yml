@@ -20,6 +20,11 @@ on:
         required: false
         type: boolean
         default: false
+      replay_msg_ids:
+        description: "Comma-separated Gmail message ids to REPLAY (bypasses processed/thread guards)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -52,6 +57,7 @@ jobs:
           TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
           TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           DRY_RUN: ${{ inputs.dry_run }}
+          PO_REPLAY_MSG_IDS: ${{ inputs.replay_msg_ids }}
         run: python -m src.po_inbox
       - name: Commit state changes
         if: ${{ inputs.dry_run != true }}

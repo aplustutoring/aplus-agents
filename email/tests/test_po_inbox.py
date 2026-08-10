@@ -905,3 +905,42 @@ def test_po_prefix_stripped_before_dedupe_and_deal(monkeypatch):
     po._handle_deal(_po(po_number="PO7514044381"), notes)
     assert searched == ["7514044381"]      # dedupe uses the bare number
     assert created == ["7514044381"]       # property stamped without the prefix
+
+
+# ── "THIS IS NOT A PO" order agreements ARE POs (Roman, 2026-08-10) ──────────
+
+def test_prompt_treats_order_agreements_as_pos():
+    from src.po_inbox import PO_SYSTEM
+    assert "THIS IS" in PO_SYSTEM and "NOT A PO" in PO_SYSTEM
+    assert "pending_approval" in PO_SYSTEM
+
+
+def test_pending_approval_flagged_on_deal_and_task(monkeypatch):
+    created, tasks = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties":
+                                                    {"firstname": "Maria", "lastname": "Diaz"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
+                        tasks.append(body) or {"id": "T"})
+    notes = []
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", pending_approval=True, pos=[
+        {"po_number": "3114047368", "amount": "150", "po_month": "2026-08"},
+        {"po_number": "3114047369", "amount": "300", "po_month": "2026-09"}]), notes)
+    assert len(created) == 2                          # one deal per pending PO
+    assert any("PENDING school approval" in n for n in notes)
+    assert all("PENDING school approval" in b for b in tasks)
+
+
+# ── thread guard vs parent chase: the TOR's reply must get through ───────────
+
+def test_skip_thread_respects_open_chase(monkeypatch):
+    monkeypatch.setattr(po, "_thread_already_handled", lambda t: True)
+    monkeypatch.setattr(po, "_open_chases",
+                        lambda: {"TH-open": {"deal_id": "D9"}})
+    assert po._skip_thread("TH-open") is False        # chase waiting → process
+    assert po._skip_thread("TH-closed") is True       # no chase → stays closed
