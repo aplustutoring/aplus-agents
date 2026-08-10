@@ -1,6 +1,6 @@
 # HubSpot Deal Property Consolidation — Proposal
 
-**Status: APPROVED by Roman 2026-08-10.** Persona group moves EXECUTED same day (`execute_group_moves.py`, 41/41 verified in place); keeper set declared in `properties.yml`. RETIRE-CANDIDATEs remain **pending** — each needs Roman's per-property "Used in" check before any (reversible) archive; nothing has been archived. STORAGE-ONLY and KEEP-IN-PLACE require no action.
+**Status: APPROVED by Roman 2026-08-10 — executed.** Persona group moves done (`execute_group_moves.py`, 41/41 verified); keepers declared in `properties.yml`; archive pass run on Roman's "go" (see RETIRE-CANDIDATE section for per-property outcomes: ARCHIVED / BLOCKED / HOLD). Archives are reversible for 90 days via HubSpot's deleted-properties restore. STORAGE-ONLY and KEEP-IN-PLACE require no action.
 
 718 total deal properties; **611 are `hubspotDefined`** (incl. all `hs_v2_*` stage timers) and out of scope. The 107 custom properties below are each assigned a disposition. `po_inbox.deal_property_map` in email/config.yaml references student_first_name, student_last_name_if_diff_from_parent, student_grade, student_school, parent_email, parent_phone — agent-load-bearing (locked rules 11-12).
 
@@ -122,24 +122,24 @@ Data preserved, nothing reads or writes them going forward. No archive proposed 
 | `ip__sync_extension__external_source_account_id` | Source account ID | ip__sync_extension__sync_extension | Sync extension app plumbing |  |
 | `ip__sync_extension__external_source_app_id` | Source app ID | ip__sync_extension__sync_extension | Sync extension app plumbing |  |
 
-## RETIRE-CANDIDATE (14)
+## RETIRE-CANDIDATE (14) — archive pass run 2026-08-10
 
-Every row requires Roman's manual **"Used in"** check in the HubSpot UI (property → Used in: lists, workflows, forms, reports) before any archive. Archive is reversible; nothing is retired in this session (locked rule 10).
+On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 lists, and calculated-property formulas; audit-clean ones were archived (reversible, 90-day restore). HubSpot's own PROPERTY_USAGE validation blocked anything still referenced by a FORM (forms API not scannable with the current token scope). BLOCKED rows need the referencing workflow/list/form cleaned up first; HOLD rows await the multi-child data-model decision.
 
-| Internal name | Label | Current group | Fill count | Last def. update | Used-in checked | Rationale | Decision |
+| Internal name | Label | Current group | Fill count | Last def. update | Status (2026-08-10) | Rationale | Decision |
 |---|---|---|---|---|---|---|---|
-| `expected_1st_lesson_date` | Expected 1st Lesson Date | deal_activity | 574 | 2021-05-28 | ☐ | Legacy 2021 deal_activity field |  |
-| `first_name` | First Name | dealinformation | 2833 | 2021-04-08 | ☐ | Contact data duplicated onto deals (2020-21 webhook era) |  |
-| `home_city` | Home City | dealinformation | 1300 | 2020-07-31 | ☐ | Address on deal — belongs to contact |  |
-| `home_street_address` | Home Street Address | dealinformation | 860 | 2020-07-31 | ☐ | Address on deal — belongs to contact |  |
-| `home_zip` | Home Zip | dealinformation | 1072 | 2020-07-31 | ☐ | Address on deal — belongs to contact |  |
-| `how_did_you_hear_about_us_` | How did you hear about us? | custom_deal_properties | 0 | 2022-06-01 | ☐ | Attribution on deal — contact-level field is the keeper |  |
-| `is_the_student_preparing_for_the_non_sat_test_` | Is the student preparing for a NON SAT Test? | workflow_properties | 3726 | 2021-07-19 | ☐ | Legacy 2021 workflow flag |  |
-| `is_the_student_preparing_for_the_sat_` | Is the student preparing for the SAT? | workflow_properties | 3723 | 2021-07-19 | ☐ | Legacy 2021 workflow flag |  |
-| `last_name` | Last Name | dealinformation | 7232 | 2020-07-31 | ☐ | Contact data duplicated onto deals |  |
-| `message` | Message | dealinformation | 112 | 2022-02-10 | ☐ | Free-text from old lead webhook |  |
-| `payment_received` | Payment received | dealinformation | 61 | 2021-06-09 | ☐ | Legacy 2021 flag — Stripe/deal stages are truth now |  |
-| `student_email_address` | Student Email Address | dealinformation | 57 | 2024-01-09 | ☐ | Student email on deal — contact-level field is the keeper |  |
-| `subscription_type` | Subscription Type | custom_deal_properties | 0 | 2023-01-03 | ☐ | Legacy 2023 field |  |
-| `what_s_going_on_` | What's Going On? | dealinformation | 5119 | 2022-01-28 | ☐ | Old lead webhook capture — contact-level parent_concerns… is the live field |  |
+| `expected_1st_lesson_date` | Expected 1st Lesson Date | deal_activity | 574 | 2021-05-28 | BLOCKED — referenced by: wf3:Get Started Now - FORM SUBMISSION to Deal Create GOLD; wf4:Get Started Now - FORM SUBMISSION to Deal Create GOLD | Legacy 2021 deal_activity field |  |
+| `first_name` | First Name | dealinformation | 2833 | 2021-04-08 | BLOCKED — referenced by: wf3:Contact to Deal Properties; wf4:Contact to Deal Properties; wf4:Pipeline is "Charter Schools", deal stage is "Continued - Ou; wf4:Pipeline is "Gold Tutoring - Renewal", deal stage is "New Re… | Contact data duplicated onto deals (2020-21 webhook era) |  |
+| `home_city` | Home City | dealinformation | 1300 | 2020-07-31 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Address on deal — belongs to contact |  |
+| `home_street_address` | Home Street Address | dealinformation | 860 | 2020-07-31 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Address on deal — belongs to contact |  |
+| `home_zip` | Home Zip | dealinformation | 1072 | 2020-07-31 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Address on deal — belongs to contact |  |
+| `how_did_you_hear_about_us_` | How did you hear about us? | custom_deal_properties | 0 | 2022-06-01 | BLOCKED — referenced by: list:Burlo; list:Emliy; list:RBS; list:Referral… | Attribution on deal — contact-level field is the keeper |  |
+| `is_the_student_preparing_for_the_non_sat_test_` | Is the student preparing for a NON SAT Test? | workflow_properties | 3726 | 2021-07-19 | BLOCKED — referenced by: wf3:Get Started Now - CAP FORM SUBMISSION to DEAL; wf3:Julia Cap Contact Workflow post consult; wf4:Get Started Now - CAP FORM SUBMISSION to DEAL; wf4:Julia Cap Contact Workflow post consult | Legacy 2021 workflow flag |  |
+| `is_the_student_preparing_for_the_sat_` | Is the student preparing for the SAT? | workflow_properties | 3723 | 2021-07-19 | BLOCKED — referenced by: wf3:Get Started Now - CAP FORM SUBMISSION to DEAL; wf3:Julia Cap Contact Workflow post consult; wf4:Get Started Now - CAP FORM SUBMISSION to DEAL; wf4:Julia Cap Contact Workflow post consult | Legacy 2021 workflow flag |  |
+| `last_name` | Last Name | dealinformation | 7232 | 2020-07-31 | BLOCKED — referenced by: wf3:Contact to Deal Properties; wf4:Contact to Deal Properties; wf4:Pipeline is "Charter Schools", deal stage is "Continued - Ou; wf4:Pipeline is "Charter Schools", deal stage is "Pre-Lesson"… | Contact data duplicated onto deals |  |
+| `message` | Message | dealinformation | 112 | 2022-02-10 | BLOCKED — referenced by: wf3:Get Started Now - FORM SUBMISSION to Deal Create GOLD; wf3:New 20 off submission; wf3:SMS - Incoming 5th graders - Sent First week of August; wf3:SMS - New Year Check in… | Free-text from old lead webhook |  |
+| `payment_received` | Payment received | dealinformation | 61 | 2021-06-09 | BLOCKED — referenced by: wf4:Pipeline is "Charter Schools", deal stage is "Payment Receiv | Legacy 2021 flag — Stripe/deal stages are truth now |  |
+| `student_email_address` | Student Email Address | dealinformation | 57 | 2024-01-09 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Student email on deal — contact-level field is the keeper |  |
+| `subscription_type` | Subscription Type | custom_deal_properties | 0 | 2023-01-03 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Legacy 2023 field |  |
+| `what_s_going_on_` | What's Going On? | dealinformation | 5119 | 2022-01-28 | BLOCKED — referenced by: wf4:Pipeline is "Charter Schools", deal stage is "Pre-Lesson"; wf4:Pipeline is "Gold Tutoring", deal stage is "Pre-Lesson"; wf4:Pipeline is "In-Person", deal stage is "Pre-Lesson"; wf4:Pipeline is "Online Summer Boost", deal stage is "Pre-Lesson | Old lead webhook capture — contact-level parent_concerns… is the live field |  |
 

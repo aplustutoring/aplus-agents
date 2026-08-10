@@ -8,6 +8,27 @@ Newest entries first.
 
 ---
 
+## 2026-08-10 — Retire-candidate archive pass (Roman: "go")
+
+**What:** Registry sync run (`source_agent` +fleet-retry/+branch-hygiene). All
+113 retire candidates audited for usage against 342 workflows (v3+v4), 214
+lists, and calculated-property formulas (forms API not scannable — token lacks
+forms scope). Outcome: **30 ARCHIVED** (audit-clean; reversible 90 days),
+**35 BLOCKED** by live workflow/list references, **43 BLOCKED by HubSpot's own
+PROPERTY_USAGE validation** (in use by forms — incl. pre-approved
+`lead_ad_prop0`), **5 HOLD** (sibling fields, pending multi-child data-model
+decision). Per-property outcomes stamped into the proposal docs.
+
+**Why:** Roman's "go" on the remaining consolidation items. The API's
+delete-time usage check covered the forms gap, so nothing referenced anywhere
+was archived. Unblocking the 78 BLOCKED rows means cleaning up the referencing
+workflows/lists/forms first — most are dead flows (Diagnostic Testing, CAP,
+summer-2021 scheduling) that are themselves retirement candidates.
+
+**Files:** proposal docs (outcome column), `ops/hubspot-schema/consolidation/`.
+
+---
+
 ## 2026-08-10 — Consolidation APPROVED + persona group moves executed
 
 **What:** Roman approved the consolidation proposal. Executed the 36 remaining
