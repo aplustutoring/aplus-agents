@@ -236,6 +236,38 @@ po_inbox:
   # Verified against the portal 2026-07-31.
   levelup_pipeline_id: "88841552"
   levelup_stage_id: "164922249"    # its Pre-Lesson stage
+  # Deal naming (Roman, 2026-08-10): "Parent - Student - School N - YY/YY".
+  # N = the student's deal count at that school this school year + 1; the school
+  # year comes from the PO's service month (Aug-Dec = first year, Jan-Jul = second).
+  # Keys are matched case-insensitively as SUBSTRINGS of the extracted school name;
+  # an unmapped school uses the extracted name and the ticket flags the gap.
+  school_short_names:
+    taylion: "Taylion"
+    ilead: "iLead"
+    gorman: "Gorman"
+    heartwood: "Heartwood"
+    sage oak: "Sage Oak"
+    elite: "Elite"
+    visions: "Visions"
+    blue ridge: "Blue Ridge"
+    heartland: "Heartland"
+    suncoast: "Suncoast"
+    ocean grove: "Ocean Grove"
+    granite mountain: "Granite Mountain"
+    horizon: "Horizon"
+    epic: "Epic"
+    julian: "JCS"
+    jcs: "JCS"
+    harvest ridge: "Harvest Ridge"
+  # PO arrives with NO parent contact info and no unique HubSpot match → the deal
+  # is named "NEEDS PARENT - ..." and the agent DRAFTS a parent-info request to the
+  # TOR (else the sender) on the same thread — a human sends it (the agent never
+  # sends from this address). The TOR's reply auto-creates the Family contact
+  # (email + phone + persona), associates it to the deal, renames the deal, and
+  # triggers the Teachworks sync. No reply within the window → escalation DM.
+  parent_chase:
+    enabled: true
+    escalate_business_hours: 16   # 2 business days
   # ALWAYS-filled deal properties — INTERNAL names verified against the portal
   # 2026-07-31. Ticket flags anything the PO didn't state so a human fills it.
   deal_property_map:

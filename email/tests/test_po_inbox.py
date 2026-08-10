@@ -716,3 +716,167 @@ def test_prior_deal_narrowed_by_student_lastname(monkeypatch):
     notes = []
     po._handle_deal(_po(parent_email="", po_number=""), notes)
     assert calls == ["D-right"]          # narrowed to the lastname-matching deal only
+
+
+# ── deal naming: "Parent - Student - School N - YY/YY" (Roman, 2026-08-10) ───
+
+def test_school_year_tag():
+    assert po._school_year_tag({"po_month": "2026-08"}) == "26/27"
+    assert po._school_year_tag({"po_month": "2027-01"}) == "26/27"
+    assert po._school_year_tag({"po_month": "2027-07"}) == "26/27"
+    assert po._school_year_tag({"po_month": "2027-09"}) == "27/28"
+
+
+def test_deal_name_parent_student_school_seq_year(monkeypatch):
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C9"})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", parent_first="Maria", parent_last="Diaz",
+                        po_number="", po_month="2026-08"), notes)
+    assert created == ["Maria Diaz - Ana Diaz - iLead 1 - 26/27"]
+
+
+def test_deal_name_seq_counts_existing_school_year_deals(monkeypatch):
+    # student already has "iLead 1" this school year → the new deal is "iLead 2"
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name",
+                        lambda t, p=None, s=None: [_deal("D0", "Maria Diaz - Ana Diaz - iLead 1 - 26/27")])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties":
+                                                    {"firstname": "Maria", "lastname": "Diaz"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    notes = []
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", po_month="2026-09"), notes)
+    assert created == ["Maria Diaz - Ana Diaz - iLead 2 - 26/27"]
+
+
+def test_multi_po_email_seq_staggers(monkeypatch):
+    # 3 POs in one email → iLead 1 / 2 / 3 (search can't see sibling deals yet)
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties":
+                                                    {"firstname": "Maria", "lastname": "Diaz"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    notes = []
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
+        {"po_number": "A1", "amount": "100", "po_month": "2026-08"},
+        {"po_number": "A2", "amount": "100", "po_month": "2026-09"},
+        {"po_number": "A3", "amount": "100", "po_month": "2026-10"}]), notes)
+    assert created == ["Maria Diaz - Ana Diaz - iLead 1 - 26/27",
+                       "Maria Diaz - Ana Diaz - iLead 2 - 26/27",
+                       "Maria Diaz - Ana Diaz - iLead 3 - 26/27"]
+
+
+def test_unmapped_school_used_asis_and_flagged(monkeypatch):
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties":
+                                                    {"firstname": "Maria", "lastname": "Diaz"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    notes = []
+    po._handle_deal(_po(school="Zeta Academy", po_number="", parent_email="mom@x.com",
+                        po_month="2026-09"), notes)
+    assert created == ["Maria Diaz - Ana Diaz - Zeta Academy 1 - 26/27"]
+    assert any("no shorthand" in n for n in notes)
+
+
+# ── parent chase: missing parent info → draft to TOR → reply auto-resolves ───
+
+def test_missing_parent_names_deal_and_opens_chase(monkeypatch):
+    created, drafts, appended = [], [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D9"})
+    monkeypatch.setattr(po.gm, "create_draft_reply",
+                        lambda tid, to, subj, body, irt="": drafts.append((tid, to, body)) or {"id": "DR1"})
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    msg = {"threadId": "TH9", "sender": "Terri Tor <terri@school.org>",
+           "subject": "PO for Ana", "message_id_header": "<m1>"}
+    notes = []
+    po._handle_deal(_po(po_number="", po_month="2026-08",
+                        tor_email="terri@school.org", tor_first="Terri"), notes, msg=msg)
+    assert created and created[0] == "NEEDS PARENT - Ana Diaz - iLead 1 - 26/27"
+    assert drafts and drafts[0][0] == "TH9" and drafts[0][1] == "terri@school.org"
+    assert "full name" in drafts[0][2] and "Phone number" in drafts[0][2]
+    chases = [r for r in appended if r.get("action_taken") == "parent_chase_opened"]
+    assert chases and chases[0]["deal_id"] == "D9" and chases[0]["thread_id"] == "TH9"
+    assert chases[0]["pipeline"] == "907748"
+    assert any("DRAFTED" in n for n in notes)
+
+
+def test_no_chase_without_msg_context(monkeypatch):
+    # unit-scoped calls (no Gmail message) must not attempt a draft
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D9"})
+    monkeypatch.setattr(po.gm, "create_draft_reply",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no draft without msg")))
+    notes = []
+    po._handle_deal(_po(po_number=""), notes)
+    assert not any("DRAFTED" in n for n in notes)
+
+
+def test_parent_reply_resolves_chase(monkeypatch):
+    assoc, patches, synced, appended = [], [], [], []
+    chase = {"deal_id": "D9", "deal_name": "NEEDS PARENT - Ana Diaz - iLead 1 - 26/27",
+             "pipeline": "907748", "po_number": "4471", "thread_id": "TH9",
+             "tor_email": "terri@school.org"}
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: None if e == "mom@x.com" else {"id": "C-tor"})
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m_, p_, payload=None: patches.append((p_, payload)) or {})
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(dsy_mod, "sync_deal",
+                        lambda d, **k: synced.append(d) or {"action_taken": "tw_synced"})
+    notes = []
+    po._resolve_parent_chase(chase, {"parent_email": "Mom@X.com", "parent_first": "Maria",
+                                     "parent_last": "Diaz", "parent_phone": "555-2"}, notes)
+    assert assoc == [("D9", "C-mom")]
+    renames = [p for p in patches if (p[1] or {}).get("properties", {}).get("dealname")]
+    assert renames and renames[0][1]["properties"]["dealname"] == \
+        "Maria Diaz - Ana Diaz - iLead 1 - 26/27"
+    assert synced and synced[0]["id"] == "D9" and synced[0]["properties"]["po_number"] == "4471"
+    assert any(r.get("action_taken") == "parent_chase_resolved" for r in appended)
+    assert any("PARENT RESOLVED" in n for n in notes)
+    assert any("Family → TOR association created" in n for n in notes)  # #AP031 rides along
+
+
+def test_resolved_chase_thread_no_longer_open(monkeypatch):
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9"},
+            {"action_taken": "parent_chase_resolved", "thread_id": "TH9", "deal_id": "D9"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    assert po._open_chases() == {}
+
+
+def test_parent_chase_escalates_after_window(monkeypatch):
+    dms, appended = [], []
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "deal_name": "NEEDS PARENT - Ana Diaz - iLead 1 - 26/27",
+             "chase_to": "terri@school.org", "sla_due": "2026-08-01T10:00:00-07:00",
+             "timestamp": "2026-07-31T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append(t))
+    po._sweep_parent_chases()
+    assert dms and "NO parent info" in dms[0] and "terri@school.org" in dms[0]
+    assert appended and appended[0]["action_taken"] == "parent_chase_escalated"
+    # second sweep: already escalated → silent
+    recs.append(appended[0])
+    dms.clear()
+    po._sweep_parent_chases()
+    assert dms == []

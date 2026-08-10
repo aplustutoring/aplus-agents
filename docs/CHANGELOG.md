@@ -8,6 +8,39 @@ Newest entries first.
 
 ---
 
+## 2026-08-10 — PO deal naming convention + parent-chase flow (Roman: "implement")
+
+**What:** (1) PO-created deals are now named `Parent - Student - School N - YY/YY`
+(Roman's convention, e.g. "Alexandra Lauterio - Genevieve Lauterio - Taylion 1 -
+26/27"): N = the student's deal count at that school this school year + 1 (staggered
+across multi-PO emails), school year derived from the PO's service month (Aug–Dec =
+first year), school shorthand from new `po_inbox.school_short_names` config map
+(unmapped school → extracted name used + ticket flags the gap). Parent contact is
+now resolved BEFORE naming; the PO number moves out of the name entirely (the
+`po_number` property is canonical). Bonus: parent-led names pass deal_sync's
+`_contact_matches_dealname` check, which the old "School - Student - PO #" names
+failed. (2) NEW parent-chase flow: a PO with no parent info and no unique HubSpot
+match creates the deal as `NEEDS PARENT - ...` and DRAFTS a parent-info request
+(name + email + phone) to the TOR (else sender) on the same Gmail thread — human
+sends it (agent still never sends from charter@). The reply is caught on the open
+thread: Family contact auto-created (email + phone + `a_persona=Family`), associated
+to the deal, deal renamed to the real parent, family→TOR link synced (#AP031), and
+the Teachworks sync runs immediately — unblocking the whole downstream chain
+(TW family/student → scheduling → invoice hours) with zero manual data entry.
+No reply within `parent_chase.escalate_business_hours` (16 = 2 business days) →
+one escalation DM to Kath. The live Taylion deal 63551218500 was renamed to the
+new convention in-portal.
+
+**Why:** Roman (2026-08-10): the deal name must lead with the parent, and a missing
+parent blocks more than the name — the Teachworks sync keys the family on the deal's
+contact email, so every PO without parent info silently stalled TW creation,
+scheduling alerts, and invoice hour-tracking until someone chased it by hand.
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (10 new tests; email suite 169 green).
+
+---
+
 ## 2026-08-10 — Retire-candidate archive pass (Roman: "go")
 
 **What:** Registry sync run (`source_agent` +fleet-retry/+branch-hygiene). All
