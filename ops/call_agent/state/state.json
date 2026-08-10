@@ -166,9 +166,11 @@
     402836587,
     402873580,
     402852858,
-    402868969
+    402868969,
+    402883887,
+    402886895
   ],
-  "last_run_utc": "2026-08-10T21:59:53.860013+00:00",
+  "last_run_utc": "2026-08-10T22:51:21.753841+00:00",
   "pending_digest": [
     {
       "call_id": 402732931,
@@ -400,6 +402,161 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 402883887,
+      "number": "13109954550",
+      "time_pt": "3:18 PM",
+      "matched": true,
+      "contact_label": "Tom Nichols",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Tom Nichols called back about tutoring for his son (previously logged as Ben, 8th grade at Crossroads) who is now starting Algebra 2 and wants to get ahead. Roman explained the 1:1 online model with credentialed teachers, offered the free assessment, and clarified that in-person is only through 3rd grade. Roman walked through hourly ($95) and prepaid package pricing ($88/hr for 8, $83/20, $73/50, $68/100) and will email a pricing breakdown. Tom will think it over and follow up.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Tom the pricing breakdown (hourly and prepaid packages) for online tutoring",
+            "owner_hint": "Roman"
+          },
+          {
+            "item": "Follow up with Tom in a few days to see if he wants to schedule the free assessment",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing contact already in 'We Connected'; call was a pricing follow-up with no diagnostic booked, so status remains.",
+        "student_or_school_names_mentioned": [
+          "Ben",
+          "Crossroads Middle School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Tom called back re: son (Ben) who is now starting Algebra 2 at Crossroads in West LA and wants to get ahead. Asked about in-person at their home in West LA, but was informed in-person is only K-3; open to online. Tom is interested in the free assessment and will mull over pricing before getting back to us.",
+          "what_we_can_do_to_help": "Send Tom the pricing breakdown for hourly and prepaid online packages, offer to schedule the free 1.5-hour assessment for Ben in Algebra 2, and follow up in a few days to move toward booking.",
+          "student_first_name": null,
+          "student_last_name": "Nichols",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Tom called back re: son (Ben) who is now starting Algebra 2 at Crossroads in West LA and wants to get ahead. Asked about in-person at their home in West LA, but was informed in-person is only K-3; open to online. Tom is interested in the free assessment and will mull over pricing before getting back to us."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Tom the pricing breakdown for hourly and prepaid online packages, offer to schedule the free 1.5-hour assessment for Ben in Algebra 2, and follow up in a few days to move toward booking."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Nichols"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Tom the pricing breakdown (hourly and prepaid packages) for online tutoring",
+          38681249
+        ],
+        [
+          "Follow up with Tom in a few days to see if he wants to schedule the free assessment",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 402886895,
+      "number": "18182339156",
+      "time_pt": "3:32 PM",
+      "matched": true,
+      "contact_label": "Joy Bentley",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Joy Bentley called to check on the status of her tutor application. Roman (Drummond) confirmed her application was received and that A+ typically reviews within about a week. He noted she had also applied around October 2024, and clarified that online tutor hires are only for out-of-state applicants while California applicants are hired for in-person work. Joy said she's open to both and remains interested.",
+        "caller_type": "tutor applicant",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Review Joy Bentley's tutor application (submitted ~a week prior) and follow up with a decision",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Caller is a tutor applicant checking on her application status; A+ confirmed application received and under review.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Joy called to check status of her tutor application; noted she also applied around October 2024. Confirmed she's open to in-person (CA) tutoring and remains interested.",
+          "what_we_can_do_to_help": "Review her application within the standard ~1-week window and follow up with next steps regarding in-person tutoring opportunities in California.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Joy called to check status of her tutor application; noted she also applied around October 2024. Confirmed she's open to in-person (CA) tutoring and remains interested."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Review her application within the standard ~1-week window and follow up with next steps regarding in-person tutoring opportunities in California."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Tutors"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Review Joy Bentley's tutor application (submitted ~a week prior) and follow up with a decision",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
