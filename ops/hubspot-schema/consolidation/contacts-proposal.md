@@ -7,7 +7,7 @@
 Known label/internal mismatches (locked rule 9 — agents read LABELS, never internal values):
 - `student_last_name` → label **"Student FIRST Name"** (holds student 1 first name)
 - `what_is_your_child_s_current_grade_level_` → label **"What grade is your child in?"** (the canonical family grade ask)
-- `what_grade_is_your_child_in` → label **"Student Grade - FB"** (lead-ad capture — despite the friendlier internal name)
+- `what_grade_is_your_child_in` → label **"Student Grade - FB"** (lead-ad capture despite the friendlier internal name — superseded by the canonical grade property, Roman 2026-08-10)
 - `parent_concerns_what_can_we_do_to_help_` → label **"What's going on?"**
 - `student_additional_information` → label **"What we can do to help"**
 - `assessment_received` → label "Assessment Graded - Remote"; `assessment_uploaded` → label "Assessment Received - Remote" (swapped-looking pair)
@@ -18,13 +18,13 @@ Known label/internal mismatches (locked rule 9 — agents read LABELS, never int
 
 | Disposition | Count |
 |---|---|
-| Persona → family | 26 |
+| Persona → family | 25 |
 | Persona → tor | 4 |
 | Persona → tutor | 9 |
-| Persona → student | 1 |
-| KEEP-IN-PLACE | 188 |
+| Persona → student | 3 |
+| KEEP-IN-PLACE | 185 |
 | STORAGE-ONLY | 119 |
-| RETIRE-CANDIDATE | 97 |
+| RETIRE-CANDIDATE | 99 |
 | SYSTEM | 35 |
 | **Total custom** | **479** |
 
@@ -39,18 +39,18 @@ Group moves keep internal names unchanged (safe, #AP024) — still a proposal, n
 | `how_did_you_hear_about_us_` | How Did You Hear About Us? | contactinformation | Attribution; call agent fill_only write 【code: ops】 | #AP029 |
 | `monday_schedule_preference` | Monday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
 | `online_or_in_person` | Online or In Person Preference | a__custom_fields | Delivery preference; call agent overwrite 【code: ops】 | #AP029 |
-| `parent_concerns_what_can_we_do_to_help_` | What's going on? | contactinformation | Label "What's going on?" — intake-agent enriched (call agent log-append) 【code: ops】 | #AP029 |
+| `parent_concerns_what_can_we_do_to_help_` | What's going on? | family | DONE — moved by Roman 2026-08-10. Label "What's going on?" — intake-agent enriched (call agent log-append) 【code: ops】 | #AP029 |
 | `parent_email` | Parent Email | contactinformation | Parent identity | #AP029 |
 | `parent_first_name` | Parent First Name | contactinformation | Parent identity | #AP029 |
 | `parent_last_name` | Parent Last Name | contactinformation | Parent identity | #AP029 |
 | `parent_phone_number` | Parent Phone Number | contactinformation | Parent identity | #AP029 |
-| `payment_on_file_` | Payment on File? | contactinformation | Pay-type flag (best match for "pay type" keeper — judgment call) | #AP029 |
 | `referral_name` | Referral Name | referral_program | Referral attribution; call agent fill_only write 【code: ops】 | #AP029 |
 | `saturday_schedule_preference` | Saturday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
 | `student_3_full_name` | Student 3 Full Name | sibling | Teachworks family disambiguation (email/config.yaml) 【code: email】 |  |
 | `student_4_full_name` | Student 4 Full Name | sibling | Teachworks family disambiguation (email/config.yaml) 【code: email】 |  |
+| `student_additional_information` | What we can do to help | family | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Label "What we can do to help" — intake-agent enriched 【code: ops】 | #AP029 |
 | `student_full_name_clone_` | Student 2 Full Name | sibling | Label "Student 2 Full Name" — Teachworks family disambiguation (email/config.yaml) 【code: email】 |  |
-| `student_last_name` | Student FIRST Name | contactinformation | LABEL MISMATCH: label is "Student FIRST Name" — student 1 first name; Teachworks disambiguation list + call agent fill_only 【code: email, ops】 | #AP029 |
+| `student_school` | Student School | family | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Student school on intake; call agent overwrite; po_inbox deal map source 【code: email, marketing, ops】 | #AP029 |
 | `subject_need` | Subject Need | level-up_ilead | Subject asked on intake; call agent overwrite 【code: ops】 | #AP029 |
 | `sunday_schedule_preference` | Sunday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
 | `teacher_of_record_email_address` | Teacher of Record Email Address | charter | TOR auto-create trigger; read/written by tor_family scripts 【code: ops】 | #AP029 |
@@ -58,8 +58,7 @@ Group moves keep internal names unchanged (safe, #AP024) — still a proposal, n
 | `thursday_schedule_preference` | Thursday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
 | `tuesday_schedule_preference` | Tuesday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
 | `wednesday_schedule_preference` | Wednesday Schedule Preference | level-up_ilead | Per-day schedule preference (family keeper set) | #AP029 |
-| `what_grade_is_your_child_in` | Student Grade - FB | lead_ads | Named canonical in #AP027 — but portal label is "Student Grade - FB" (lead-ad capture); KEEP per locked rule, mismatch flagged for Roman | #AP027 |
-| `what_is_your_child_s_current_grade_level_` | What grade is your child in? | contactinformation | Label "What grade is your child in?" — canonical family grade ask; call agent overwrite target 【code: ops】 | #AP027 |
+| `what_is_your_child_s_current_grade_level_` | What grade is your child in? | contactinformation | CANONICAL student grade — the property agents use for grade level, always (Roman 2026-08-10); call agent overwrite target 【code: ops】 | #AP027 |
 
 ## Proposed move → `tor` group (Teacher of Record/EF/ES)
 
@@ -95,8 +94,10 @@ Group moves keep internal names unchanged (safe, #AP024) — still a proposal, n
 | Internal name | Label | Current group | Rationale | Decision |
 |---|---|---|---|---|
 | `student_email_address` | Student Email Address | contactinformation | Student contact point (distinct from parent email) | #AP024 |
+| `student_last_name` | Student FIRST Name | student | DONE — moved by Roman 2026-08-10. LABEL MISMATCH: label is "Student FIRST Name" — student 1 first name; Teachworks disambiguation + call agent fill_only 【code: email, ops】 | #AP029 |
+| `student_last_name_if_diff_from_parent` | Student Last Name | student | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Student last name; call agent fill_only 【code: email, ops, registry.yml】 | #AP029 |
 
-## KEEP-IN-PLACE (188)
+## KEEP-IN-PLACE (185)
 
 Stay exactly where they are. Programs stay grouped as programs, not personas (locked rule 6); form-bound and integration-owned fields are not touched.
 
@@ -228,10 +229,7 @@ Stay exactly where they are. Programs stay grouped as programs, not personas (lo
 | `stripe_amount_paid` | Stripe Amount Paid | pilibos_program | Pilibos program (live) |  |
 | `stripe_payment_intent` | Stripe Payment Intent | pilibos_program | Pilibos program (live) |  |
 | `stripe_session_id` | Stripe Session ID | pilibos_program | Pilibos program (live) |  |
-| `student_additional_information` | What we can do to help | form_fields | CAP `form_fields` group — dead business but form-bound; DO NOT TOUCH; future re-home candidate only 【code: ops】 |  |
 | `student_cell_phone` | Student Cell Phone | form_fields | CAP `form_fields` group — dead business but form-bound; DO NOT TOUCH; future re-home candidate only |  |
-| `student_last_name_if_diff_from_parent` | Student Last Name | form_fields | CAP `form_fields` group — dead business but form-bound; DO NOT TOUCH; future re-home candidate only 【code: email, ops, registry.yml】 |  |
-| `student_school` | Student School | form_fields | CAP `form_fields` group — dead business but form-bound; DO NOT TOUCH; future re-home candidate only 【code: email, marketing, ops】 |  |
 | `success_team_member_responsible` | Success Team Member Responsible | contactinformation | Active ops routing field (2025) |  |
 | `summer_2020_availability` | Summer 2020 Availability | form_fields | CAP `form_fields` group — dead business but form-bound; DO NOT TOUCH; future re-home candidate only |  |
 | `tags` | Tags | analyticsinformation | CallRail / Voice Assist integration-written (live) — integration-owned, agents read-only |  |
@@ -417,7 +415,7 @@ Data preserved, nothing reads or writes them going forward. No archive proposed 
 | `video_ask_transcription` | Video Ask Transcription | integrations | VideoAsk / misc integration remnants |  |
 | `videoasksource` | Videoask source | contactinformation | VideoAsk integration remnant |  |
 
-## RETIRE-CANDIDATE (97)
+## RETIRE-CANDIDATE (99)
 
 Every row requires Roman's manual **"Used in"** check in the HubSpot UI (property → Used in: lists, workflows, forms, reports) before any archive. Archive is reversible; nothing is retired in this session (locked rule 10).
 
@@ -480,6 +478,7 @@ Every row requires Roman's manual **"Used in"** check in the HubSpot UI (propert
 | `nps` | NPS | customer_group | 0 | 2021-05-24 | ☐ | Contact NPS number — scorecard NPS now sourced from Monday boards; verify Used-in (lists/reports) before archive |  |
 | `optional__please_attach_a_pdf_of_the_student_s_most_up_to_date_iep_or_504_plan_` | Optional: Please attach a PDF of the student's most up to date IEP or 504 Plan. | contactinformation | 4 | 2025-02-10 | ☐ | Legacy one-off field (see fill count / Used-in) |  |
 | `other_subject` | Other Subject | contactinformation | 0 | 2023-11-29 | ☐ | Legacy one-off field (see fill count / Used-in) |  |
+| `payment_on_file_` | Payment on File? | contactinformation | 270 | 2023-08-17 | ☐ | Roman 2026-08-10: disregard as pay-type keeper — legacy checkbox |  |
 | `pod_pay_per_hour` | SLP Pay Per Hour | new_tutors | 317 | 2022-05-18 | ☐ | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `qualified_lead_enroll_in_workflow` | Qualified Lead, enroll in Workflow | contactinformation | 70 | 2020-08-24 | ☐ | Legacy one-off field (see fill count / Used-in) |  |
 | `quoted_price_per_hour` | Quoted Price Per Hour | contactinformation | 328 | 2019-08-29 | ☐ | Legacy one-off field (see fill count / Used-in) |  |
@@ -514,6 +513,7 @@ Every row requires Roman's manual **"Used in"** check in the HubSpot UI (propert
 | `type_of_enrollment` | Type of Enrollment | conversioninformation | 0 | 2021-05-12 | ☐ | Legacy enrollment-type field |  |
 | `video_ask___pass_first_interview` | Video Ask - Pass First Interview | new_tutors | 794 | 2022-03-07 | ☐ | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `we_ve_waived_cancellation` | Are they aware of our cancellation policy | customer_group | 30 | 2023-07-17 | ☐ | Legacy ops flag (2021-23 era) |  |
+| `what_grade_is_your_child_in` | Student Grade - FB | lead_ads | 9 | 2021-06-23 | ☐ | Superseded — canonical grade is what_is_your_child_s_current_grade_level_ (Roman 2026-08-10); label "Student Grade - FB" (lead-ad capture) | #AP027 |
 | `what_kind_of_tutoring_are_you_looking_for` | What kind of tutoring are you looking for? | unused_properties | 0 | 2022-01-14 | ☐ | Group literally named unused_properties — 2021-22 quiz/intake leftovers |  |
 | `what_math_is_your_child_currently_working_on_` | What Math is Your Child Currently Working On? | unused_properties | 8 | 2022-01-14 | ☐ | Group literally named unused_properties — 2021-22 quiz/intake leftovers |  |
 | `when_can_we_reach_out_to_you_to_resume_` | When can we reach out to you to resume? Schedule Update | date_properties | 6 | 2021-05-26 | ☐ | Summer-2021 scheduling flow leftovers |  |

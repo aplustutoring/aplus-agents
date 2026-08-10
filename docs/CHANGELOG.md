@@ -29,6 +29,15 @@ deliberately untouched — keeper declarations land after approval.
 **Files:** `ops/hubspot-schema/consolidation/contacts-proposal.md`,
 `deals-proposal.md`, `KEEPERS.md`.
 
+**Addendum (same day, Roman's verdicts):** `what_is_your_child_s_current_grade_level_`
+is THE canonical student grade property — agents use it always; the other grade
+fields are program/form capture only. `what_grade_is_your_child_in` (9 fills) and
+`payment_on_file_` (270 fills) demoted to RETIRE-CANDIDATE. Roman executed the
+first group moves himself: `parent_concerns_what_can_we_do_to_help_`,
+`student_school`, `student_additional_information` → `family`;
+`student_last_name`, `student_last_name_if_diff_from_parent` → `student`
+(the latter three out of CAP form_fields). Keeper set now 86.
+
 ---
 
 ## 2026-08-06 — PO agent: parent resolved from the student's prior deal
