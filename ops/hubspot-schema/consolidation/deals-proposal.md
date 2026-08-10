@@ -1,0 +1,145 @@
+# HubSpot Deal Property Consolidation — Proposal
+
+**Status: PROPOSAL — nothing in this document has been executed.** Roman approves; only then does anything move, sync, or archive. Archive (reversible) is always the proposal, never hard-delete (#AP rules as cited).
+
+718 total deal properties; **611 are `hubspotDefined`** (incl. all `hs_v2_*` stage timers) and out of scope. The 107 custom properties below are each assigned a disposition. `po_inbox.deal_property_map` in email/config.yaml references student_first_name, student_last_name_if_diff_from_parent, student_grade, student_school, parent_email, parent_phone — agent-load-bearing (locked rules 11-12).
+
+Monday-sync dependency: deal TOR fields (`teacher_of_record_name`, `teacher_of_record_email`, `tor_first_name`, `tor_last_name`) are keepers **until** the Teachworks low-balance alert replaces Monday — then retire (per prior session).
+
+## Summary
+
+| Disposition | Count |
+|---|---|
+| KEEP-IN-PLACE | 83 |
+| STORAGE-ONLY | 10 |
+| RETIRE-CANDIDATE | 14 |
+| **Total custom** | **107** |
+
+## KEEP-IN-PLACE (83)
+
+Stay exactly where they are. Programs stay grouped as programs, not personas (locked rule 6); form-bound and integration-owned fields are not touched.
+
+| Internal name | Label | Current group | Rationale | Decision |
+|---|---|---|---|---|
+| `a__slp_cap_invoice__` | A+/SLP/CAP Invoice # | charter_schools | KEEPER: Invoice # variant (charter/SLP/CAP) |  |
+| `aplus_contractor_pay` | APlus Contractor Pay | tutor_info | KEEPER: Contractor pay (Monday sync) |  |
+| `assigned_tutor` | Assigned Tutor | dealinformation | KEEPER: Tutor match on deal |  |
+| `calendar_link_sent` | Teacher Scholarship Meeting Calendar Link Sent | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `contact_record_id` | Contact Record ID | dealinformation | Workflow plumbing (deal→contact pointer) — verify Used-in before any change |  |
+| `date_of_last_lesson_in_this_deal` | Date of Last Lesson in this Deal | dealinformation | KEEPER: Deal service window end |  |
+| `diagnostic_submitted_date` | Diagnostic Submitted Date | pilibos_program | Pilibos program (live) |  |
+| `do_you_want_your_student_to_receive_email_notifications_for_lesson_reminders_` | Do you want your student to receive email notifications for lesson reminders? | scheduling_information | Scheduling form field |  |
+| `family_consultation_status__teacher_scholarship_program` | Family Consultation Status - Teacher Scholarship Program | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `friday_schedule_preference` | Friday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `iem_student_id` | IEM Student ID | charter | KEEPER: IEM student id (charter ops) |  |
+| `invoice__` | Invoice # | dealinformation | KEEPER: Invoice # (Kath 2-step invoice flow) |  |
+| `invoice_submitted_date` | Invoice Submitted Date | deal_activity | KEEPER: STEP-2 close-loop stamp (invoice sweep reads) 【code: email, registry.yml】 |  |
+| `is_the_family_currently_being_tutored_by_us_` | Is the family currently being tutored by us? | charter_schools | Charter PO intake form field (2024, live) |  |
+| `lessons_fulfilled_date` | Expected Lessons Fulfilled Date | charter_schools | KEEPER: Invoice due-date stamp (po_inbox invoice_task.invoice_due_property) 【code: email, registry.yml】 |  |
+| `meeting_outcome` | Teacher Scholarship Meeting Outcome | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `monday_schedule_preference` | Monday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `nominating_teacher_first_name` | Nominating Teacher First Name | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `nomination_form_completed` | Teacher Scholarship Nomination Form Completed | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `nomination_form_sent` | Teacher Scholarship Nomination Form Sent | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `nomination_reason` | Nomination Reason | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `nominations_received` | Teacher Scholarship Nominations Received | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `number_of_hours_in_this_po` | Number of Hours in this PO | dealinformation | KEEPER: PO hours — invoice task + sweep 【code: email, registry.yml】 |  |
+| `online__inperson__charter` | ONLINE, INPERSON, CHARTER | dealinformation | KEEPER: Deal delivery segment |  |
+| `outcome` | Teacher Scholarship Outcome | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `parent_email` | Parent Email | dealinformation | KEEPER: po_inbox deal_property_map: parent_email 【code: email, registry.yml】 |  |
+| `parent_email_from_nomination` | Parent Email (from nomination) | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `parent_first_name` | Parent First Name | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `parent_last_name` | Parent Last Name | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `parent_phone` | Parent Phone | dealinformation | KEEPER: po_inbox deal_property_map: parent_phone 【code: email, registry.yml】 |  |
+| `pilibos_attend_afternoons` | Can Attend Afternoons (1 PM–4 PM) | pilibos_program | Pilibos program (live) |  |
+| `pilibos_attend_mornings` | Can Attend Mornings (9 AM–12 PM) | pilibos_program | Pilibos program (live) |  |
+| `pilibos_august_sat_acknowledged` | August 22 SAT Registration Acknowledged | pilibos_program | Pilibos program (live) |  |
+| `pilibos_cb_practice_score_report` | College Board Practice Test Score Report | pilibos_program | Pilibos program (live) |  |
+| `pilibos_diagnostic_math_score` | Diagnostic Math Score | pilibos_program | Pilibos program (live) |  |
+| `pilibos_diagnostic_received` | Diagnostic Received | pilibos_program | Pilibos program (live) |  |
+| `pilibos_diagnostic_rw_score` | Diagnostic R+W Score | pilibos_program | Pilibos program (live) |  |
+| `pilibos_diagnostic_score_report` | Diagnostic Score Report | pilibos_program | Pilibos program (live) |  |
+| `pilibos_group_id` | Group ID | pilibos_program | Pilibos program (live) |  |
+| `pilibos_psat_score_report` | PSAT October 2025 Score Report | pilibos_program | Pilibos program (live) |  |
+| `pilibos_student_email` | Student Email | pilibos_program | Pilibos program (live) |  |
+| `pilibos_student_first_name` | Student First Name | pilibos_program | Pilibos program (live) 【code: email】 |  |
+| `pilibos_student_last_name` | Student Last Name | pilibos_program | Pilibos program (live) |  |
+| `pilibos_student_phone` | Student Phone | pilibos_program | Pilibos program (live) |  |
+| `pilibos_terms_acknowledged` | Non-Refundable Terms Acknowledged | pilibos_program | Pilibos program (live) |  |
+| `pilibos_tier` | Program Tier | pilibos_program | Pilibos program (live) |  |
+| `pilibos_track_assignment` | Track Assignment | pilibos_program | Pilibos program (live) |  |
+| `po_number` | PO Number | charter_schools | KEEPER: PO identity — po_inbox dedup + invoice sweep key 【code: email, registry.yml】 |  |
+| `reason_for_stopping` | Reason for Stopping | dealinformation | KEEPER: Churn reason |  |
+| `saturday_schedule_preference` | Saturday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `schedule_preferences` | Schedule Preferences | dealinformation | KEEPER: Stamped on B2C deal create (email engine main.py) 【code: email】 |  |
+| `school_name` | School Name | dealinformation | KEEPER: School on deal |  |
+| `should_this_deal_be_posted_to_a_slack_channel_` | Should this deal be posted to a Slack Channel? | custom_deal_properties | KEEPER: Slack routing flag |  |
+| `slp_tutor_pay` | SLP Tutor Pay | tutor_info | Created with Monday-sync tutor batch 2025-11 — verify Used-in with aplus_contractor_pay |  |
+| `start_of_tutoring_for_this_deal` | Start Date for Tutoring for this Deal | deal_activity | KEEPER: Deal service window start |  |
+| `stripe_amount_paid` | Stripe Amount Paid | pilibos_program | KEEPER: Stripe payment truth (Pilibos flow) |  |
+| `stripe_payment_intent` | Stripe Payment Intent | pilibos_program | KEEPER: Stripe payment truth |  |
+| `stripe_session_id` | Stripe Session ID | pilibos_program | KEEPER: Stripe payment truth |  |
+| `student_assessment_pdf_upload` | Student Assessment PDF upload | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `student_first_name` | Student First Name | dealinformation | KEEPER: po_inbox deal_property_map: student_first 【code: email, ops, registry.yml】 |  |
+| `student_grade` | Student Grade | dealinformation | KEEPER: po_inbox deal_property_map: grade; also stamped on B2C deal create 【code: email, registry.yml】 |  |
+| `student_grade_level` | Student Grade Level | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `student_last_name_if_diff_from_parent` | Student Last Name | scheduling_information | KEEPER: po_inbox deal_property_map: student_last 【code: email, ops, registry.yml】 |  |
+| `student_school` | Student School | charter | KEEPER: po_inbox deal_property_map: school 【code: email, marketing, ops】 |  |
+| `subjects_needing_support` | Subject(s) Needing Support | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `sunday_schedule_preference` | Sunday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `teacher_form_submitted` | Teacher Form Submitted | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `teacher_has_nominated` | Teacher Has Nominated | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `teacher_of_record_email` | Teacher of Record Email | dealinformation | KEEPER: TOR on deal — Monday sync dependency; retire after Teachworks low-balance alert replaces Monday |  |
+| `teacher_of_record_name` | Teacher of Record Name | dealinformation | KEEPER: TOR on deal — Monday sync dependency; retire after Teachworks low-balance alert replaces Monday 【code: email, ops】 |  |
+| `teacher_scholarship_meeting_booked` | Teacher Scholarship Meeting Booked | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `teacher_scholarship_meeting_date` | Teacher Scholarship Meeting Date | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `thursday_schedule_preference` | Thursday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `tor_first_name` | tor first name | charter | KEEPER: TOR on deal (Monday sync batch 2025-11); same retire-after-Monday flag |  |
+| `tor_last_name` | tor last name | charter | KEEPER: TOR on deal (Monday sync batch 2025-11); same retire-after-Monday flag |  |
+| `tuesday_schedule_preference` | Tuesday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `tutor_email` | Tutor Email | tutor_info | KEEPER: Tutor match on deal (Monday sync) |  |
+| `tutor_match` | Tutor Match | dealinformation | KEEPER: Tutor match on deal |  |
+| `tutor_resignation_date` | tutor resignation date | tutor_info | Created with Monday-sync tutor batch 2025-11 |  |
+| `unresponsive_from_stage` | Teacher Scholarship Unresponsive From Stage | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `was_a_po_submitted_for_this_submission` | Was a PO submitted for this submission | dealinformation | Teacher Scholarship Nomination program on deals (live, Jul-Aug 2026) |  |
+| `wednesday_schedule_preference` | Wednesday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
+| `which_days_of_the_week_do_you_prefer_` | Which days of the week do you prefer? | scheduling_information | Scheduling form field (live) |  |
+
+## STORAGE-ONLY (10)
+
+Data preserved, nothing reads or writes them going forward. No archive proposed — they simply drop out of agent vocabulary.
+
+| Internal name | Label | Current group | Rationale | Decision |
+|---|---|---|---|---|
+| `ip__ecomm_bridge__abandoned_cart_url` | Abandoned cart URL | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__discount_amount` | Discount savings | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__ecomm_synced` | Ecommerce deal | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__order_number` | Order number | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__shipment_ids` | Shipment IDs | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__source_app_id` | Source app ID | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__source_store_id` | Source store | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__ecomm_bridge__tax_amount` | Tax price | ip__ecomm_bridge__ecomm_bridge | Ecomm bridge app plumbing |  |
+| `ip__sync_extension__external_source_account_id` | Source account ID | ip__sync_extension__sync_extension | Sync extension app plumbing |  |
+| `ip__sync_extension__external_source_app_id` | Source app ID | ip__sync_extension__sync_extension | Sync extension app plumbing |  |
+
+## RETIRE-CANDIDATE (14)
+
+Every row requires Roman's manual **"Used in"** check in the HubSpot UI (property → Used in: lists, workflows, forms, reports) before any archive. Archive is reversible; nothing is retired in this session (locked rule 10).
+
+| Internal name | Label | Current group | Fill count | Last def. update | Used-in checked | Rationale | Decision |
+|---|---|---|---|---|---|---|---|
+| `expected_1st_lesson_date` | Expected 1st Lesson Date | deal_activity | 574 | 2021-05-28 | ☐ | Legacy 2021 deal_activity field |  |
+| `first_name` | First Name | dealinformation | 2833 | 2021-04-08 | ☐ | Contact data duplicated onto deals (2020-21 webhook era) |  |
+| `home_city` | Home City | dealinformation | 1300 | 2020-07-31 | ☐ | Address on deal — belongs to contact |  |
+| `home_street_address` | Home Street Address | dealinformation | 860 | 2020-07-31 | ☐ | Address on deal — belongs to contact |  |
+| `home_zip` | Home Zip | dealinformation | 1072 | 2020-07-31 | ☐ | Address on deal — belongs to contact |  |
+| `how_did_you_hear_about_us_` | How did you hear about us? | custom_deal_properties | 0 | 2022-06-01 | ☐ | Attribution on deal — contact-level field is the keeper |  |
+| `is_the_student_preparing_for_the_non_sat_test_` | Is the student preparing for a NON SAT Test? | workflow_properties | 3726 | 2021-07-19 | ☐ | Legacy 2021 workflow flag |  |
+| `is_the_student_preparing_for_the_sat_` | Is the student preparing for the SAT? | workflow_properties | 3723 | 2021-07-19 | ☐ | Legacy 2021 workflow flag |  |
+| `last_name` | Last Name | dealinformation | 7232 | 2020-07-31 | ☐ | Contact data duplicated onto deals |  |
+| `message` | Message | dealinformation | 112 | 2022-02-10 | ☐ | Free-text from old lead webhook |  |
+| `payment_received` | Payment received | dealinformation | 61 | 2021-06-09 | ☐ | Legacy 2021 flag — Stripe/deal stages are truth now |  |
+| `student_email_address` | Student Email Address | dealinformation | 57 | 2024-01-09 | ☐ | Student email on deal — contact-level field is the keeper |  |
+| `subscription_type` | Subscription Type | custom_deal_properties | 0 | 2023-01-03 | ☐ | Legacy 2023 field |  |
+| `what_s_going_on_` | What's Going On? | dealinformation | 5119 | 2022-01-28 | ☐ | Old lead webhook capture — contact-level parent_concerns… is the live field |  |
+

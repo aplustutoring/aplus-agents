@@ -8,6 +8,29 @@ Newest entries first.
 
 ---
 
+## 2026-08-10 — HubSpot property consolidation proposal (contacts + deals)
+
+**What:** Read-only audit of all 884 contact / 718 deal properties in portal
+6312752; every custom property (479 contacts, 107 deals) assigned a proposed
+disposition in `ops/hubspot-schema/consolidation/` — persona-group move
+(family 26, tor 4, tutor 9, student 1), KEEP-IN-PLACE (188 / 83),
+STORAGE-ONLY (119 / 10), RETIRE-CANDIDATE (97 / 14, each with fill count +
+last-modified + a required manual "Used in" check), or SYSTEM (35 custom
+integration-written, excluded). `KEEPERS.md` distills the 88-property
+vocabulary agents should use. Rule 12 enforced: repo grepped for every
+internal name; code-referenced properties are keepers regardless of fill rate.
+
+**Why:** Finishes what the persona architecture (#AP024/#AP028/#AP029,
+commits 73837d3/f22fd07/60457fc) was built to enable — a single reviewable
+sorting of years of program-specific property sprawl. This session PROPOSES;
+Roman approves before anything moves, syncs, or archives. `properties.yml`
+deliberately untouched — keeper declarations land after approval.
+
+**Files:** `ops/hubspot-schema/consolidation/contacts-proposal.md`,
+`deals-proposal.md`, `KEEPERS.md`.
+
+---
+
 ## 2026-08-06 — PO agent: parent resolved from the student's prior deal
 
 **What:** POs typically omit parent info; Kath's manual fix — look the student
