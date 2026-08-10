@@ -159,9 +159,11 @@
     402686705,
     402701265,
     402739803,
-    402732931
+    402732931,
+    402757162,
+    402756641
   ],
-  "last_run_utc": "2026-08-10T18:05:02.689843+00:00",
+  "last_run_utc": "2026-08-10T19:18:41.735639+00:00",
   "pending_digest": [
     {
       "call_id": 402732931,
@@ -208,6 +210,114 @@
         [
           "Await callback/text from Daniel regarding availability; follow up again if no response",
           80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 402756641,
+      "number": "18189701144",
+      "time_pt": "11:07 AM",
+      "matched": true,
+      "contact_label": "Audrey Van Reuter",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring followed up with Audrey Van Reuter about tutoring for her son, who is enrolled in iLead Charter's homeschool program and struggling with learning to read (phonics/reading practice). Audrey wants to start after school begins on the 18th, preferring two 30-minute afternoon sessions per week around 3:00 PM, and plans to pay via charter instructional funds. Paola explained the $75/hour charter rate, the free trial process, and that A+ uses credentialed teachers. A free trial session was agreed for the week of the 18th-21st at ~3:00 PM, with a follow-up email and scheduling team outreach to come.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Audrey an email with rate information and next steps",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Hand off to scheduling team to match a reading/phonics tutor for an afternoon (~3:00 PM) free trial session between 8/18 and 8/21",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Share tutor profile with Audrey for review/approval before the trial session",
+            "owner_hint": null
+          },
+          {
+            "item": "Collect EF name and email from Audrey once she decides to move forward with the purchase order",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via iLead Charter instructional funds, so this is a charter-funded qualified lead.",
+        "student_or_school_names_mentioned": [
+          "iLead Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Son is enrolled in iLead Charter's homeschool program and is struggling with learning to read; mom wants help with phonics and reading practice. He attends a co-op, so tutoring must be in the afternoon (~3:00 PM). Family plans to pay via charter instructional funds once the PO is available.",
+          "what_we_can_do_to_help": "Set up a free trial with a credentialed reading/phonics teacher for two 30-minute afternoon sessions per week starting the week of 8/18-8/21 at ~3:00 PM. Send rate info ($75/hr charter rate), share tutor profile for approval, and coordinate with the EF once Audrey provides contact info to process the purchase order.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "iLead Charter",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Son is enrolled in iLead Charter's homeschool program and is struggling with learning to read; mom wants help with phonics and reading practice. He attends a co-op, so tutoring must be in the afternoon (~3:00 PM). Family plans to pay via charter instructional funds once the PO is available."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Set up a free trial with a credentialed reading/phonics teacher for two 30-minute afternoon sessions per week starting the week of 8/18-8/21 at ~3:00 PM. Send rate info ($75/hr charter rate), share tutor profile for approval, and coordinate with the EF once Audrey provides contact info to process the purchase order."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "iLead Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Audrey an email with rate information and next steps",
+          81494333
+        ],
+        [
+          "Hand off to scheduling team to match a reading/phonics tutor for an afternoon (~3:00 PM) free trial session between 8/18 and 8/21",
+          81494333
+        ],
+        [
+          "Share tutor profile with Audrey for review/approval before the trial session",
+          81494333
+        ],
+        [
+          "Collect EF name and email from Audrey once she decides to move forward with the purchase order",
+          81494333
         ]
       ],
       "ticket_id": null,
