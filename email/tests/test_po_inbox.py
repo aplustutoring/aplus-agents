@@ -880,3 +880,28 @@ def test_parent_chase_escalates_after_window(monkeypatch):
     dms.clear()
     po._sweep_parent_chases()
     assert dms == []
+
+
+def test_norm_po_number():
+    # Roman 2026-08-10: the number only, never a PO prefix
+    assert po._norm_po_number("PO7514044381") == "7514044381"
+    assert po._norm_po_number("PO 7514044381") == "7514044381"
+    assert po._norm_po_number("P.O. #7514044381") == "7514044381"
+    assert po._norm_po_number("po#7514044381") == "7514044381"
+    assert po._norm_po_number("7514044381") == "7514044381"
+    assert po._norm_po_number("PF593736") == "PF593736"   # letters IN the number stay
+    assert po._norm_po_number("") == ""
+    assert po._norm_po_number(None) == ""
+
+
+def test_po_prefix_stripped_before_dedupe_and_deal(monkeypatch):
+    searched, created = [], []
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: searched.append(n) or [])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        created.append(extra_props.get("po_number")) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(po_number="PO7514044381"), notes)
+    assert searched == ["7514044381"]      # dedupe uses the bare number
+    assert created == ["7514044381"]       # property stamped without the prefix

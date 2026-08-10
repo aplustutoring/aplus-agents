@@ -36,8 +36,13 @@ parent blocks more than the name — the Teachworks sync keys the family on the 
 contact email, so every PO without parent info silently stalled TW creation,
 scheduling alerts, and invoice hour-tracking until someone chased it by hand.
 
+Also: extracted PO numbers are normalized — a leading "PO"/"P.O.#" prefix is
+stripped ("PO7514044381" → "7514044381"; letters that are PART of the number,
+like Blue Ridge's "PF593736", are kept) before dedupe, the deal property, and
+the audit record.
+
 **Files:** `email/src/po_inbox.py`, `email/config.yaml`,
-`email/tests/test_po_inbox.py` (10 new tests; email suite 169 green).
+`email/tests/test_po_inbox.py` (12 new tests; email suite 171 green).
 
 ---
 

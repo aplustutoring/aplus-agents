@@ -330,6 +330,14 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
 
 
+def _norm_po_number(raw) -> str:
+    """'PO7514044381' / 'P.O. #7514044381' / 'PO 7514044381' → '7514044381'
+    (Roman, 2026-08-10: the number only, never a PO prefix). Letters that are
+    PART of the number (e.g. Blue Ridge's 'PF593736') are kept."""
+    s = str(raw or "").strip()
+    return re.sub(r"^\s*P\.?\s*O\.?\s*[#:\-]?\s*", "", s, flags=re.I).strip()
+
+
 def _split_pos(po: dict) -> list[dict]:
     """One deal per PO number (Roman, 2026-08-06: each PO number is its own
     deal, even when several arrive in one email — schools issue one per
@@ -340,11 +348,11 @@ def _split_pos(po: dict) -> list[dict]:
     subs = po.get("pos") if isinstance(po.get("pos"), list) else []
     subs = [x for x in subs if isinstance(x, dict) and (x.get("po_number") or "").strip()]
     if len(subs) >= 2:
-        return [{**po, "pos": None, "po_number": x["po_number"].strip(),
+        return [{**po, "pos": None, "po_number": _norm_po_number(x["po_number"]),
                  "amount": x.get("amount"), "hours": x.get("hours"),
                  "po_month": x.get("po_month") or po.get("po_month")} for x in subs]
-    nums = [n.strip() for n in re.split(r"[,;]|\band\b", str(po.get("po_number") or ""))
-            if n.strip()]
+    nums = [_norm_po_number(n) for n in re.split(r"[,;]|\band\b", str(po.get("po_number") or ""))
+            if _norm_po_number(n)]
     if len(nums) >= 2:
         return [{**po, "pos": None, "po_number": n, "amount": None, "hours": None,
                  "_split_amount_unknown": True} for n in nums]
@@ -634,7 +642,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         note_parts.append("💼 No student/school extracted — no deal action; review manually.")
         return
     # PO-number dedupe via the canonical po_number PROPERTY (then name as backstop).
-    po_num = (po.get("po_number") or "").strip()
+    po_num = _norm_po_number(po.get("po_number"))
     if po_num:
         dup = hs.find_deals_by_po_number(po_num) or hs.search_deals_by_name(po_num)
         if dup:
@@ -792,6 +800,11 @@ def process_po_message(stub_id: str) -> dict | None:
     except Exception as e:  # noqa: BLE001 — extraction proceeds on the body alone
         print(f"  ⚠️  attachment fetch failed (non-fatal): {e}")
     po = po_extract(m["body"], m["subject"], m["sender"], attachments)
+    po["po_number"] = _norm_po_number(po.get("po_number"))
+    if isinstance(po.get("pos"), list):
+        for x in po["pos"]:
+            if isinstance(x, dict) and x.get("po_number"):
+                x["po_number"] = _norm_po_number(x["po_number"])
     owner = cfg()["staff"][pc.get("owner", "kath")]
     record = {"message_id": f"gmail:{m['id']}", "thread_id": m["threadId"], "source": "po_inbox",
               "category": "new_po" if po.get("is_po") else "po_inbox_other",
