@@ -163,9 +163,12 @@
     402757162,
     402756641,
     402823113,
-    402836587
+    402836587,
+    402873580,
+    402852858,
+    402868969
   ],
-  "last_run_utc": "2026-08-10T21:03:14.194973+00:00",
+  "last_run_utc": "2026-08-10T21:59:53.860013+00:00",
   "pending_digest": [
     {
       "call_id": 402732931,
@@ -325,8 +328,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 402852858,
+      "number": "16125996990",
+      "time_pt": "2:01 PM",
+      "matched": true,
+      "contact_label": "Amanda Calof",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound call to Amanda Calof and reached voicemail. She left a message asking Amanda to confirm the subject focus for Sylvie's SAT prep and confirm the August 14th late-afternoon start so she can match a tutor. Janelle asked Amanda to reply via SMS or call back at 818-850-6284.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Amanda's response confirming SAT prep subject focus and August 14th late-afternoon start time for Sylvie; follow up if no reply",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Once confirmed, match an appropriate SAT tutor for Sylvie",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal for SAT tutoring; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Sylvie"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call from Janelle went to voicemail. Left message for Amanda to confirm SAT prep subject focus and the August 14th late-afternoon start for Sylvie so a tutor can be matched.",
+          "what_we_can_do_to_help": "Confirm SAT prep subject focus and August 14th late-afternoon schedule with Amanda, then match Sylvie with a suitable SAT tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call from Janelle went to voicemail. Left message for Amanda to confirm SAT prep subject focus and the August 14th late-afternoon start for Sylvie so a tutor can be matched."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm SAT prep subject focus and August 14th late-afternoon schedule with Amanda, then match Sylvie with a suitable SAT tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Amanda's response confirming SAT prep subject focus and August 14th late-afternoon start time for Sylvie; follow up if no reply",
+          80047202
+        ],
+        [
+          "Once confirmed, match an appropriate SAT tutor for Sylvie",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "17602781482",
+      "time_pt": "2:38 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
