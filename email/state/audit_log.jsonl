@@ -21391,3 +21391,5 @@
 {"ticket_id": "47493704877", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-11T21:11:05.554554+00:00"}
 {"ticket_id": "47452912998", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-08-11T21:11:05.956606+00:00"}
 {"ticket_id": "47452912998", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-11T22:10:01.110946+00:00"}
+{"message_id": "deal:63739916315", "source": "deal_sync", "deal_id": "63739916315", "deal_name": "Karina Fakheri - Michael", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2080741, "tw_action": "updated", "tw_student_created": "Michael", "action_taken": "tw_synced", "timestamp": "2026-08-11T22:25:20.344686+00:00"}
+{"message_id": "deal:63718116389", "source": "deal_sync", "deal_id": "63718116389", "deal_name": "Karina Fakheri - Daniel ", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2080741, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-11T22:25:25.897370+00:00"}
