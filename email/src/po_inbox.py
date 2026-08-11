@@ -855,9 +855,10 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         # Yes = THIS student has a lesson booked in Teachworks; No = nothing on
         # the calendar, period — they need the text (recent lessons don't excuse
         # it). Unverifiable → left unset and flagged (gap DM to Kath + Roman).
-        # ONE text per family: sibling deals of a multi-PO email (seq_offset>0)
-        # are stamped Yes so the texting workflow fires on the FIRST deal only
-        # (the Aly Daly 9-PO case must not mean 9 texts).
+        # ONE text per KID (Roman, 2026-08-11): a multi-PO email is always one
+        # student, so its sibling deals (seq_offset>0) are stamped Yes and the
+        # texting workflow fires on the FIRST deal only (9 POs ≠ 9 texts). A
+        # different kid's POs arrive in their own email → their own text.
         act = (_student_activity(parent_email_res, po.get("student_first") or "",
                                  tw_cache) if parent_email_res else None)
         tw_note = None
@@ -870,8 +871,8 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             extra["is_the_family_currently_being_tutored_by_us_"] = \
                 "Yes" if (tutored or seq_offset > 0) else "No"
             if not tutored and seq_offset > 0:
-                sup = ("📵 Sibling deals stamped 'Yes' on currently-tutored so the "
-                       "scheduling-text workflow fires ONCE per family, not per PO month.")
+                sup = ("📵 Same-student sibling deals stamped 'Yes' on currently-tutored "
+                       "so the scheduling-text workflow fires ONCE per kid, not per PO month.")
                 if sup not in note_parts:
                     note_parts.append(sup)
         upcoming = act.get("upcoming") if act else None

@@ -276,7 +276,8 @@ po_inbox:
   # "Is the family currently being tutored by us?" rule (Roman, 2026-08-11,
   # student-level, CALENDAR-ONLY): Yes = the PO's student has a lesson booked;
   # No = nothing on the calendar, period — the scheduling text goes out.
-  # Multi-PO emails: only the FIRST deal carries "No" (one text per family).
+  # ONE text per KID: a multi-PO email (always one student) stamps "No" only on
+  # its FIRST deal; each kid's own PO email gets its own text.
   # ALWAYS-filled deal properties — INTERNAL names verified against the portal
   # 2026-07-31. Ticket flags anything the PO didn't state so a human fills it.
   deal_property_map:

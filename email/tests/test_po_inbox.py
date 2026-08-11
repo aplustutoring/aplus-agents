@@ -1126,9 +1126,10 @@ def test_currently_tutored_calendar_only_recent_lessons_dont_count(monkeypatch):
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
 
 
-def test_multi_po_email_one_scheduling_text_only(monkeypatch):
-    # the Aly Daly case: 9 POs in one email must NOT mean 9 texts — only the
-    # first deal carries "No" (fires the text); siblings are stamped "Yes"
+def test_multi_po_email_one_scheduling_text_per_kid(monkeypatch):
+    # one text per KID: 9 POs in one email (always one student) must NOT mean
+    # 9 texts — only the first deal carries "No"; same-student siblings "Yes".
+    # A second kid's POs arrive in their own email → their own "No" → own text.
     captured = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
@@ -1144,7 +1145,7 @@ def test_multi_po_email_one_scheduling_text_only(monkeypatch):
         {"po_number": "A1", "amount": "100"}, {"po_number": "A2", "amount": "100"},
         {"po_number": "A3", "amount": "100"}]), notes)
     assert captured == ["No", "Yes", "Yes"]
-    assert any("ONCE per family" in n for n in notes)
+    assert any("ONCE per kid" in n for n in notes)
 
 
 def test_currently_tutored_no_when_inactive_or_unknown_student(monkeypatch):

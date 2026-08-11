@@ -87,8 +87,8 @@ in-session to its final form — student-level, CALENDAR-ONLY, stamped once at P
 time): **"Yes" = the PO's student has a lesson booked in Teachworks; "No" =
 nothing on the calendar, period — the text goes out (recent lessons don't excuse
 an empty calendar; a second kid with no lessons of their own is "No" even while
-the sibling is active). ONE text per family: on multi-PO emails only the FIRST
-deal carries "No", siblings are stamped "Yes" so the texting workflow can't fire
+the sibling is active). ONE text per KID: a multi-PO email is always one student — only its FIRST
+deal carries "No", same-student siblings are stamped "Yes" so the texting workflow cannot fire
 9 times for a 9-PO order agreement (the Aly Daly case). Unverifiable (no parent
 email / TW error) = left unset + 🚩 gap DM, never guessed; student absent from
 TW = confident "No".** Checked against the RESOLVED parent email (PO or contact
