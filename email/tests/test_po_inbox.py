@@ -1092,3 +1092,77 @@ def test_chase_escalation_dms_both(monkeypatch):
     ids = [d[0] for d in dms]
     assert po.cfg()["staff"]["kath"]["slack_user_id"] in ids
     assert po.cfg()["staff"]["roman"]["slack_user_id"] in ids
+
+
+# ── is_the_family_currently_being_tutored_by_us_ (gates scheduling texts) ────
+
+def test_currently_tutored_yes_when_upcoming_lessons(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family", lambda e, sf: [{"lesson_id": 1}])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="mom@x.com"), [])
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
+
+
+def test_currently_tutored_no_when_calendar_empty(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family", lambda e, sf: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="mom@x.com"), [])
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
+
+
+def test_currently_tutored_unverifiable_flags_not_guesses(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family",
+                        lambda e, sf: (_ for _ in ()).throw(RuntimeError("TW down")))
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com"), notes)
+    assert "is_the_family_currently_being_tutored_by_us_" not in captured[0]
+    gap = [n for n in notes if "Could not verify the Teachworks calendar" in n]
+    assert gap and gap[0] in po._gap_notes(notes)   # rides the missing-info DM
+
+
+def test_currently_tutored_uses_prior_deal_parent_email(monkeypatch):
+    # parent resolved from a prior deal (no email in the PO) → THAT email drives
+    # the calendar check and the property
+    captured, checked = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name",
+                        lambda t, p=None, s=None: [_deal("D-old", "Maria Diaz - Ana Diaz - iLead")])
+    monkeypatch.setattr(po.hs, "get_deal_contacts",
+                        lambda did: [_contact("C-mom", "maria@x.com", "Maria", "Diaz", "Family")])
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family",
+                        lambda e, sf: checked.append(e) or [{"lesson_id": 1}])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="", po_number=""), [])
+    assert checked == ["maria@x.com"]
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
+
+
+def test_tw_calendar_checked_once_per_multi_po_email(monkeypatch):
+    calls = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "upcoming_lessons_for_family",
+                        lambda e, sf: calls.append(e) or [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
+        {"po_number": "A1", "amount": "100"}, {"po_number": "A2", "amount": "100"},
+        {"po_number": "A3", "amount": "100"}]), [])
+    assert len(calls) == 1                         # memoized across the 3 deals

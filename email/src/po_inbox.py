@@ -145,17 +145,29 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
         note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
 
 
-def _no_lessons_alert(po: dict, deal_name: str, note_parts: list[str]) -> None:
+def _upcoming_lessons(email: str, student_first: str, cache: dict | None = None):
+    """Teachworks upcoming lessons for the family (memoized per run — multi-PO
+    emails share one lookup). None = could not check (no email / TW error);
+    the caller must treat None as UNKNOWN, never as a verified answer."""
+    key = (email or "").strip().lower()
+    if not key:
+        return None
+    cache = cache if cache is not None else {}
+    if key not in cache:
+        try:
+            cache[key] = tw.upcoming_lessons_for_family(key, student_first or "")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  calendar check failed: {e}")
+            cache[key] = None
+    return cache[key]
+
+
+def _no_lessons_alert(po: dict, deal_name: str, note_parts: list[str],
+                      upcoming=None) -> None:
     """New PO for a student with NOTHING on the Teachworks calendar → post to the
     Slack channel (scheduling needs to move). Student already has upcoming lessons →
-    stay quiet."""
-    p_email = (po.get("parent_email") or "").strip().lower()
-    upcoming = []
-    try:
-        if p_email:
-            upcoming = tw.upcoming_lessons_for_family(p_email, po.get("student_first") or "")
-    except Exception as e:  # noqa: BLE001
-        print(f"  ⚠️  calendar check failed (treating as no lessons): {e}")
+    stay quiet. `upcoming` is the precomputed _upcoming_lessons result (None =
+    unverifiable → alert anyway, better loud than silent)."""
     if upcoming:
         note_parts.append(f"🗓️ {len(upcoming)} upcoming lesson(s) already on the calendar — "
                           "no scheduling alert.")
@@ -450,6 +462,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         note_parts.append("⏳ PO(s) PENDING school approval (order agreement) — confirm "
                           "approved in the school's ordering portal before service starts.")
     created: list[dict] = []
+    tw_cache: dict = {}   # one Teachworks calendar lookup per family per email
     for i, sub in enumerate(subs):
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
@@ -457,7 +470,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         # scheduling alert once per email, not once per PO month; seq_offset
         # staggers 'School N' across sibling deals created in the same email
         rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0),
-                             msg=msg, seq_offset=i)
+                             msg=msg, seq_offset=i, tw_cache=tw_cache)
         if rec:
             created.append(rec)
     if created:
@@ -723,7 +736,7 @@ def _find_parent_via_deals(po: dict):
 
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True, msg: dict | None = None,
-                   seq_offset: int = 0) -> dict | None:
+                   seq_offset: int = 0, tw_cache: dict | None = None) -> dict | None:
     """Advance the matching Waiting-for-PO deal, or create one. Returns
     {name, pending} for a CREATED deal (drives the scheduler DM), else None."""
     pc = cfg()["po_inbox"]
@@ -784,8 +797,10 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         contact_id = None
         contact_bit = ""
         parent_name = ""
+        parent_email_res = ""   # the RESOLVED family email (PO or contact record)
         p_email = (po.get("parent_email") or "").strip().lower()
         if p_email:
+            parent_email_res = p_email
             try:
                 existing = hs.find_contact_by_email(p_email)
                 if existing:
@@ -812,6 +827,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                 contact_id = c.get("id")
                 parent_name = (f"{(c.get('properties') or {}).get('firstname', '')} "
                                f"{(c.get('properties') or {}).get('lastname', '')}").strip()
+                parent_email_res = ((c.get("properties") or {}).get("email") or "").lower()
                 contact_bit = (f"parent {parent_name or 'parent'} resolved from the "
                                f"student's prior deal '{dn}', ")
         if not contact_id:
@@ -824,6 +840,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                 contact_id = parents[0]["id"]
                 parent_name = (f"{parents[0]['properties'].get('firstname', '')} "
                                f"{parents[0]['properties'].get('lastname', '')}").strip()
+                parent_email_res = (parents[0]["properties"].get("email") or "").lower()
                 contact_bit = f"linked to family contact {parent_name}, "
         if not contact_id:
             contact_bit = ("NO parent contact info in the PO and no unique family match — "
@@ -831,6 +848,20 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                            "lands the contact is auto-created and associated, ")
         if contact_id and not parent_name and p_email:
             parent_name = p_email.split("@")[0]
+        # "Is the family currently being tutored by us?" gates the scheduling-text
+        # workflow (Roman, 2026-08-11): Yes = upcoming TW lessons (texts bypassed),
+        # No = nothing on the calendar (texts go out). Unverifiable → left unset
+        # and flagged (the gap DM tells Kath + Roman to set it by hand).
+        upcoming = _upcoming_lessons(parent_email_res, po.get("student_first") or "",
+                                     tw_cache) if parent_email_res else None
+        tw_note = None
+        if parent_email_res and upcoming is None:
+            tw_note = ("⚠️ Could not verify the Teachworks calendar — set 'Is the family "
+                       "currently being tutored by us?' on the deal manually (it gates "
+                       "scheduling texts).")
+        elif upcoming is not None:
+            extra["is_the_family_currently_being_tutored_by_us_"] = \
+                "Yes" if upcoming else "No"
         name = _deal_name(po, parent_name, note_parts, seq_offset)
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
         if po.get("level_up"):
@@ -850,6 +881,8 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
+        if tw_note:
+            note_parts.append(tw_note)
         _associate_tor(d.get("id"), po, note_parts, family_contact_id=contact_id)
         _stamp_deal_properties(d.get("id"), po, note_parts)
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
@@ -857,7 +890,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         if not contact_id:
             _open_parent_chase(d.get("id"), name, pipeline_id, po, msg, note_parts)
         if no_lessons_check:
-            _no_lessons_alert(po, name, note_parts)
+            _no_lessons_alert(po, name, note_parts, upcoming)
         # No waiting on the next cron: run the Teachworks sync for THIS deal now.
         if d.get("id") and d.get("id") != "DRYRUN":
             try:

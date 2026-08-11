@@ -81,9 +81,19 @@ any "do it manually" follow-up — now triggers a direct 🚩 DM to EVERYONE in 
 config `po_inbox.missing_info_dms` (kath + roman), with the gap list + ticket
 link, on top of the ticket flags. Parent-chase escalations also go to both.
 
+(7) `is_the_family_currently_being_tutored_by_us_` (Roman, 2026-08-11: gates the
+scheduling-text workflow): PO deals now stamp it — "Yes" when the family has
+upcoming Teachworks lessons at PO time (texts bypassed), "No" when the calendar
+is empty (texts go out). Checked against the RESOLVED parent email (PO or
+contact record), memoized per email; unverifiable → left unset + 🚩 gap DM
+(never guessed). The no-lessons scheduling alert now shares the same lookup, so
+it also works for parents resolved from prior deals. Backfilled: 12 iLEAD deals
+→ "No"; Taylion left for Kath/Janelle to set once booking is confirmed; Taylion
+dealtype corrected newbusiness → existingbusiness (Genevieve had a prior deal).
+
 **Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
-`email/config.yaml`, `email/tests/test_po_inbox.py` (26 new tests; email suite
-185 green), `.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
+`email/config.yaml`, `email/tests/test_po_inbox.py` (31 new tests; email suite
+190 green), `.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
 
 ---
 
