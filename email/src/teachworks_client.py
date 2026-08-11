@@ -150,6 +150,7 @@ def student_lesson_activity(email: str, student_first: str,
     since = (date.today() - timedelta(days=lookback_days)).isoformat()
     today = date.today().isoformat()
     found, recent, upcoming = False, 0, 0
+    upcoming_dates: list[str] = []
     for _acct, token in accounts().items():
         for cust in tw_get("customers", {"email": email.strip().lower()}, token=token):
             for s in tw_get("students", {"customer_id": cust.get("id")}, token=token):
@@ -162,9 +163,11 @@ def student_lesson_activity(email: str, student_first: str,
                     d = _safe_date(l.get("from_date")) or ""
                     if d >= today and "cancel" not in status:
                         upcoming += 1
+                        upcoming_dates.append(d)
                     elif "attend" in status or "complete" in status:
                         recent += 1
-    return {"found": found, "recent": recent, "upcoming": upcoming}
+    return {"found": found, "recent": recent, "upcoming": upcoming,
+            "upcoming_dates": upcoming_dates}
 
 
 def upcoming_lessons_for_family(email: str, student_first: str | None = None) -> list[dict]:

@@ -867,7 +867,17 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                        "currently being tutored by us?' on the deal manually (it gates "
                        "scheduling texts).")
         elif act is not None:
-            tutored = bool(act.get("upcoming"))
+            # MONTH-SCOPED (Roman, 2026-08-11): a new month's PO must text the
+            # family unless THAT month already has lessons booked — leftover
+            # current-month lessons don't cover September. PO month unknown →
+            # fall back to any-upcoming.
+            month_end = _po_month_end(po.get("po_month") or "")
+            if month_end is not None:
+                pref = month_end.strftime("%Y-%m")
+                tutored = any(str(d).startswith(pref)
+                              for d in act.get("upcoming_dates") or [])
+            else:
+                tutored = bool(act.get("upcoming"))
             extra["is_the_family_currently_being_tutored_by_us_"] = \
                 "Yes" if (tutored or seq_offset > 0) else "No"
             if not tutored and seq_offset > 0:

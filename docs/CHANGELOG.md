@@ -91,7 +91,7 @@ the sibling is active). ONE text per KID: a multi-PO email is always one student
 deal carries "No", same-student siblings are stamped "Yes" so the texting workflow cannot fire
 9 times for a 9-PO order agreement (the Aly Daly case). Unverifiable (no parent
 email / TW error) = left unset + 🚩 gap DM, never guessed; student absent from
-TW = confident "No".** Checked against the RESOLVED parent email (PO or contact
+TW = confident "No". MONTH-SCOPED: the check is against the PO's SERVICE MONTH — a September PO texts unless September itself has lessons booked (leftover August lessons do not count); month unparseable → any-upcoming fallback.** Checked against the RESOLVED parent email (PO or contact
 record) via new tw.student_lesson_activity(), memoized per email; the no-lessons
 scheduling alert shares the lookup, so it also works for parents resolved from
 prior deals. Backfilled accordingly: Isaac's + Evrsen's FIRST deals "No", their

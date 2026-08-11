@@ -1211,3 +1211,38 @@ def test_tw_calendar_checked_once_per_multi_po_email(monkeypatch):
         {"po_number": "A1", "amount": "100"}, {"po_number": "A2", "amount": "100"},
         {"po_number": "A3", "amount": "100"}]), [])
     assert len(calls) == 1                         # memoized across the 3 deals
+
+
+# ── month-scoped texting (Roman, 2026-08-11): each month's PO re-asks ────────
+
+def test_new_month_po_texts_despite_current_month_lessons(monkeypatch):
+    # Sept PO arrives mid-Aug; student still has Aug lessons booked but NOTHING
+    # in Sept → "No" → the scheduling text goes out for September
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30:
+                        {"found": True, "recent": 2, "upcoming": 2,
+                         "upcoming_dates": ["2026-08-20", "2026-08-27"]})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-09"), [])
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
+
+
+def test_po_month_already_booked_no_text(monkeypatch):
+    # September PO and September lessons are already on the calendar → "Yes"
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30:
+                        {"found": True, "recent": 0, "upcoming": 3,
+                         "upcoming_dates": ["2026-08-28", "2026-09-04", "2026-09-11"]})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-09"), [])
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
