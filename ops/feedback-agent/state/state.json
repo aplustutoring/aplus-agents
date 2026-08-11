@@ -12,7 +12,8 @@
     "Ev0BMKUUJN5V",
     "Ev0BN51MGMRA",
     "Ev0BNWA1V9HN",
-    "Ev0BN28QPX35"
+    "Ev0BN28QPX35",
+    "Ev0BQCHKCTLY"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -111,10 +112,44 @@
       "ticket": null,
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785877885162849"
+    },
+    {
+      "date": "2026-08-11",
+      "ts": "1786469746.855719",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-08-11-missing-linkedin-op-ed.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/63",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786469746855719"
     }
   ],
   "graduation": {
     "clean_merges": 1
   },
-  "pending_proposals": {}
+  "pending_proposals": {
+    "1786469746.855719": {
+      "agent": "content-build",
+      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
+      "correction_path": "corrections/content-build/2026-08-11-missing-linkedin-op-ed.md",
+      "branch": "fix/content-build-2026-08-11-855719",
+      "diagnosis": "The Saturday content-build produces a HubSpot blog draft but doesn't emit a companion LinkedIn op-ed variant for Roman, so the LinkedIn deliverable is silently missing. Most likely deliver-to-slack.py / content-build.py only package the blog artifact and there's no LinkedIn op-ed generation step wired into the pipeline.",
+      "fix_plan": [
+        "Confirm with Roman what 'Roman's op ed for LinkedIn' should be \u2014 a reformatted excerpt of the blog, a distinct short-form post, or a Roman-voiced variant \u2014 and where it should land (Slack draft, HubSpot, LinkedIn scheduler).",
+        "In marketing/scripts/b2b/content-build.py, add a LinkedIn op-ed generation step after the blog draft is produced, likely invoking a skill (e.g. skill:aplus-blog-longform in a linkedin-op-ed mode or a new skill) with Roman's byline/voice.",
+        "Update marketing/scripts/b2b/deliver-to-slack.py to attach/announce the LinkedIn op-ed alongside the blog draft so Danielle sees both artifacts each Saturday.",
+        "Add a QA check in build-qa-checklist.py that fails the run if the LinkedIn op-ed artifact is missing.",
+        "Backfill: manually generate the LinkedIn op-ed for the Aug 7, 2026 post 'What High-Dosage Tutoring Still Means\u2026' so Danielle isn't blocked this week."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-11T17:36:40.602314+00:00",
+      "reporter": "Danielle"
+    }
+  }
 }
