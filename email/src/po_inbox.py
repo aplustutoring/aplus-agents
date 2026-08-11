@@ -661,7 +661,6 @@ def _sweep_parent_chases() -> None:
     escalated = {r.get("deal_id") for r in audit._iter_records()
                  if r.get("action_taken") == "parent_chase_escalated"}
     now = now_la()
-    owner = cfg()["staff"].get(pc.get("owner", "kath"), {})
     for r in _open_chases().values():
         if r.get("deal_id") in escalated:
             continue
@@ -671,11 +670,15 @@ def _sweep_parent_chases() -> None:
             continue
         if now <= due:
             continue
-        slack_client.dm(owner.get("slack_user_id"),
-                        f"⏰ Still NO parent info for deal '{r.get('deal_name')}' — "
-                        f"asked {r.get('chase_to')} on {(r.get('timestamp') or '')[:10]} "
-                        f"with no reply. The Teachworks family can't be created until we "
-                        f"have the parent's name, email, and phone — chase by phone.")
+        # missing info still missing → both Kath AND Roman hear about it
+        for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
+            s = cfg()["staff"].get(key, {})
+            if s.get("slack_user_id"):
+                slack_client.dm(s["slack_user_id"],
+                                f"⏰ Still NO parent info for deal '{r.get('deal_name')}' — "
+                                f"asked {r.get('chase_to')} on {(r.get('timestamp') or '')[:10]} "
+                                f"with no reply. The Teachworks family can't be created until we "
+                                f"have the parent's name, email, and phone — chase by phone.")
         audit.append({"message_id": f"parent-chase-escalation:{r.get('deal_id')}",
                       "source": "po_inbox", "action_taken": "parent_chase_escalated",
                       "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id")})
@@ -883,6 +886,31 @@ def _thread_already_handled(thread_id: str) -> bool:
     return False
 
 
+def _gap_notes(note_parts: list[str]) -> list[str]:
+    """The notes that mean SOMETHING IS MISSING: fields the PO didn't state,
+    unmatched TOR/parent, failed uploads, any 'do it manually' follow-up."""
+    return [p for p in note_parts if p.startswith(("⚠️", "📨"))
+            or "manually" in p or "NEEDS PARENT" in p or "no shorthand" in p]
+
+
+def _notify_gaps(subject: str, note_parts: list[str], ticket_id=None) -> None:
+    """Roman, 2026-08-11: anything missing on PO intake is DM'd DIRECTLY to
+    Kath AND Roman (po_inbox.missing_info_dms) — never just a ticket line."""
+    gaps = _gap_notes(note_parts)
+    if not gaps:
+        return
+    msg = "🚩 MISSING INFO — " + subject + "\n" + "\n".join(f"• {g}" for g in gaps)
+    if ticket_id and ticket_id != "DRYRUN":
+        msg += f"\n{hs.ticket_url(ticket_id)}"
+    for key in cfg()["po_inbox"].get("missing_info_dms", ["kath", "roman"]):
+        s = cfg()["staff"].get(key, {})
+        if s.get("slack_user_id"):
+            try:
+                slack_client.dm(s["slack_user_id"], msg)
+            except Exception as e:  # noqa: BLE001 — alerting must not kill the run
+                print(f"  ⚠️  gap DM to {key} failed (non-fatal): {e}")
+
+
 def _skip_thread(thread_id: str) -> bool:
     """A thread with a processed REAL PO is closed — UNLESS a parent chase is
     still waiting on it: the TOR's parent-info reply must get through."""
@@ -986,6 +1014,7 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         ccs = cfg()["staff"].get(cc, {})
         if ccs.get("slack_user_id"):
             slack_client.dm(ccs["slack_user_id"], f"📋 [copy → {owner['name']}] 📦 {subject}")
+    _notify_gaps(subject, note_parts, record.get("ticket_id"))
 
     record["action_taken"] = "po_processed"
     audit.append(record)

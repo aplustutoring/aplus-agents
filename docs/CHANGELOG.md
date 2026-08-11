@@ -74,9 +74,16 @@ match now flags the ticket. Backfilled in-portal: Mary Nieves → Isaac's 3 deal
 Véronique Fabre → Evrsen's 9, Shauna Smith → Taylion, + 3 labeled family→TOR
 links (Jessica→Mary, Aly→Véronique, Alexandra→Shauna).
 
+(6) Missing-info alerting (Roman, 2026-08-11: "whenever something is missing it
+is vital to send Roman and Kath Slack messages"): any gap on PO intake — fields
+the PO didn't state, unmatched TOR/parent, NEEDS PARENT deals, failed uploads,
+any "do it manually" follow-up — now triggers a direct 🚩 DM to EVERYONE in new
+config `po_inbox.missing_info_dms` (kath + roman), with the gap list + ticket
+link, on top of the ticket flags. Parent-chase escalations also go to both.
+
 **Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
-`email/config.yaml`, `email/tests/test_po_inbox.py` (22 new tests; email suite
-181 green), `.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
+`email/config.yaml`, `email/tests/test_po_inbox.py` (26 new tests; email suite
+185 green), `.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
 
 ---
 

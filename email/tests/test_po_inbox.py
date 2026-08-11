@@ -1046,3 +1046,49 @@ def test_tor_name_only_ambiguous_flagged(monkeypatch):
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com", tor_first="Mary", tor_last="Smith"), notes)
     assert any("multiple matching TOR" in n for n in notes)
+
+
+# ── missing info → direct DM to Kath AND Roman (Roman, 2026-08-11) ───────────
+
+def test_gap_notes_filter():
+    notes = ["💼 Created deal 'X' in Charter pipeline",
+             "⚠️ Not in the PO: grade — fill on the deal manually.",
+             "📨 Parent-info request DRAFTED to tor@x.org — SEND it from Gmail Drafts",
+             "🧑‍🏫 TOR 'Mary Nieves' named in the PO without an email; no matching "
+             "TOR contacts in HubSpot — associate manually.",
+             "🔄 Teachworks sync ran immediately: tw_synced."]
+    gaps = po._gap_notes(notes)
+    assert len(gaps) == 3
+    assert not any("Created deal" in g or "Teachworks sync" in g for g in gaps)
+
+
+def test_notify_gaps_dms_kath_and_roman(monkeypatch):
+    dms = []
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    monkeypatch.setattr(po.hs, "ticket_url", lambda t: f"https://hs/{t}")
+    po._notify_gaps("new_po — Taylion (PO 1)", ["⚠️ Not in the PO: grade"], "T1")
+    ids = [d[0] for d in dms]
+    assert po.cfg()["staff"]["kath"]["slack_user_id"] in ids
+    assert po.cfg()["staff"]["roman"]["slack_user_id"] in ids
+    assert all("MISSING INFO" in d[1] and "https://hs/T1" in d[1] for d in dms)
+
+
+def test_notify_gaps_silent_when_clean(monkeypatch):
+    monkeypatch.setattr(po.slack_client, "dm",
+                        lambda u, t: (_ for _ in ()).throw(AssertionError("clean run must not DM")))
+    po._notify_gaps("s", ["💼 Created deal 'X'", "🔄 Teachworks sync ran immediately."], "T1")
+
+
+def test_chase_escalation_dms_both(monkeypatch):
+    dms = []
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "deal_name": "NEEDS PARENT - Ana Diaz - iLead 1 - 26/27",
+             "chase_to": "terri@school.org", "sla_due": "2026-08-01T10:00:00-07:00",
+             "timestamp": "2026-07-31T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: None)
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    po._sweep_parent_chases()
+    ids = [d[0] for d in dms]
+    assert po.cfg()["staff"]["kath"]["slack_user_id"] in ids
+    assert po.cfg()["staff"]["roman"]["slack_user_id"] in ids
