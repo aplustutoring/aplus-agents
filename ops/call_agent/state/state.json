@@ -178,9 +178,14 @@
     403246764,
     403277524,
     403278073,
-    403279215
+    403279215,
+    403300310,
+    403306350,
+    403311361,
+    403318945,
+    403321152
   ],
-  "last_run_utc": "2026-08-11T20:11:28.955581+00:00",
+  "last_run_utc": "2026-08-11T21:06:17.073144+00:00",
   "pending_digest": [
     {
       "call_id": 403172053,
@@ -254,8 +259,124 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 403311361,
+      "number": "17252911288",
+      "time_pt": "1:44 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound call to a Las Vegas, NV number attempting to reach a prospective family. The person who answered claimed to be from a 'subsidy department' and the exchange was confused and circular, with no productive conversation. Paola ended the call politely. This appears to be a bad/spam number, not a legitimate contact.",
+        "caller_type": "spam",
+        "intent": "other",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Flag the Las Vegas NV phone number as bad/non-responsive in the CRM",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Outbound call reached a confused/uncooperative party (claimed 'subsidy department') with no meaningful engagement; treat as bad number/spam.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound attempt to reach this contact went to a Las Vegas, NV number where the person who answered was confused, claimed to be from a 'subsidy department,' and no productive conversation occurred.",
+          "what_we_can_do_to_help": "Verify we have correct contact info for this family before further outreach; consider the number on file may be wrong or reassigned.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Flag the Las Vegas NV phone number as bad/non-responsive in the CRM",
+          81494333
+        ]
+      ],
+      "ticket_id": "47486391181",
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403321152,
+      "number": "14155332005",
+      "time_pt": "2:03 PM",
+      "matched": true,
+      "contact_label": "Tatjana Schlothauer",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Tatjana Schlothauer regarding tutoring for her daughter Isabella. The call went to voicemail, and Paola left a message inviting Tatjana to reach out if A+ can help. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Tatjana; consider another follow-up attempt if no response within a week",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail left; no contact made and current status ('Using Someone Else') should not be changed without new information from the family.",
+        "student_or_school_names_mentioned": [
+          "Isabella"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail following up on the family's earlier interest in AP exam tutoring for Isabella. No response yet from Tatjana.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail following up on the family's earlier interest in AP exam tutoring for Isabella. No response yet from Tatjana."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Tatjana; consider another follow-up attempt if no response within a week",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18188052160",
+      "time_pt": "1:25 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
