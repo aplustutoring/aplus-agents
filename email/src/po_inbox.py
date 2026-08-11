@@ -145,17 +145,19 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
         note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
 
 
-def _upcoming_lessons(email: str, student_first: str, cache: dict | None = None):
-    """Teachworks upcoming lessons for the family (memoized per run — multi-PO
-    emails share one lookup). None = could not check (no email / TW error);
-    the caller must treat None as UNKNOWN, never as a verified answer."""
-    key = (email or "").strip().lower()
-    if not key:
+def _student_activity(email: str, student_first: str, cache: dict | None = None):
+    """The PO student's Teachworks lesson signal {found, recent, upcoming},
+    memoized per run (multi-PO emails share one lookup). None = could NOT check
+    (no email / TW error) — the caller must treat None as UNKNOWN, never as a
+    verified answer. Lookback window: po_inbox.currently_tutored_lookback_days."""
+    key = ((email or "").strip().lower(), (student_first or "").strip().lower())
+    if not key[0] or not key[1]:
         return None
     cache = cache if cache is not None else {}
     if key not in cache:
         try:
-            cache[key] = tw.upcoming_lessons_for_family(key, student_first or "")
+            days = int(cfg()["po_inbox"].get("currently_tutored_lookback_days", 30))
+            cache[key] = tw.student_lesson_activity(key[0], student_first, lookback_days=days)
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  calendar check failed: {e}")
             cache[key] = None
@@ -166,10 +168,10 @@ def _no_lessons_alert(po: dict, deal_name: str, note_parts: list[str],
                       upcoming=None) -> None:
     """New PO for a student with NOTHING on the Teachworks calendar → post to the
     Slack channel (scheduling needs to move). Student already has upcoming lessons →
-    stay quiet. `upcoming` is the precomputed _upcoming_lessons result (None =
+    stay quiet. `upcoming` is the precomputed upcoming-lesson COUNT (None =
     unverifiable → alert anyway, better loud than silent)."""
     if upcoming:
-        note_parts.append(f"🗓️ {len(upcoming)} upcoming lesson(s) already on the calendar — "
+        note_parts.append(f"🗓️ {upcoming} upcoming lesson(s) already on the calendar — "
                           "no scheduling alert.")
         return
     channel = (cfg()["po_inbox"].get("no_lessons_channel")
@@ -849,19 +851,21 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         if contact_id and not parent_name and p_email:
             parent_name = p_email.split("@")[0]
         # "Is the family currently being tutored by us?" gates the scheduling-text
-        # workflow (Roman, 2026-08-11): Yes = upcoming TW lessons (texts bypassed),
-        # No = nothing on the calendar (texts go out). Unverifiable → left unset
-        # and flagged (the gap DM tells Kath + Roman to set it by hand).
-        upcoming = _upcoming_lessons(parent_email_res, po.get("student_first") or "",
-                                     tw_cache) if parent_email_res else None
+        # workflow. THE RULE (Roman, 2026-08-11, student-level): Yes = THIS student
+        # had an attended lesson in the last 30 days OR has a lesson booked;
+        # No = neither (including not in Teachworks at all). Unverifiable → left
+        # unset and flagged (the gap DM tells Kath + Roman to set it by hand).
+        act = (_student_activity(parent_email_res, po.get("student_first") or "",
+                                 tw_cache) if parent_email_res else None)
         tw_note = None
-        if parent_email_res and upcoming is None:
+        if parent_email_res and act is None:
             tw_note = ("⚠️ Could not verify the Teachworks calendar — set 'Is the family "
                        "currently being tutored by us?' on the deal manually (it gates "
                        "scheduling texts).")
-        elif upcoming is not None:
-            extra["is_the_family_currently_being_tutored_by_us_"] = \
-                "Yes" if upcoming else "No"
+        elif act is not None:
+            tutored = bool(act.get("recent") or act.get("upcoming"))
+            extra["is_the_family_currently_being_tutored_by_us_"] = "Yes" if tutored else "No"
+        upcoming = act.get("upcoming") if act else None
         name = _deal_name(po, parent_name, note_parts, seq_offset)
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
         if po.get("level_up"):

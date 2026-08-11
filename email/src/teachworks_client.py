@@ -11,7 +11,7 @@ classifier — never full lesson rows or attendance histories.
 from __future__ import annotations
 
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import requests
 
@@ -132,6 +132,39 @@ def _safe_date(value) -> str | None:
     if not value:
         return None
     return str(value)[:10]
+
+
+def student_lesson_activity(email: str, student_first: str,
+                            lookback_days: int = 30) -> dict:
+    """THIS student's lesson signal, both accounts, keyed by the parent's email:
+    {found, recent, upcoming} — `recent` = attended/completed lessons within
+    `lookback_days`, `upcoming` = future not-cancelled lessons. found=False when
+    the family or the named student isn't in Teachworks at all (a confident
+    'not currently tutored', NOT an error — API errors raise to the caller).
+
+    Drives is_the_family_currently_being_tutored_by_us_ (Roman, 2026-08-11):
+    Yes = recent OR upcoming lessons for the PO's student; No otherwise."""
+    sf = (student_first or "").strip().lower()
+    if not email or not sf:
+        return {"found": False, "recent": 0, "upcoming": 0}
+    since = (date.today() - timedelta(days=lookback_days)).isoformat()
+    today = date.today().isoformat()
+    found, recent, upcoming = False, 0, 0
+    for _acct, token in accounts().items():
+        for cust in tw_get("customers", {"email": email.strip().lower()}, token=token):
+            for s in tw_get("students", {"customer_id": cust.get("id")}, token=token):
+                if (s.get("first_name") or "").strip().lower() != sf:
+                    continue
+                found = True
+                for l in tw_get("lessons", {"student_id": s["id"],
+                                            "from_date[gte]": since}, token=token):
+                    status = str(l.get("status", "")).lower()
+                    d = _safe_date(l.get("from_date")) or ""
+                    if d >= today and "cancel" not in status:
+                        upcoming += 1
+                    elif "attend" in status or "complete" in status:
+                        recent += 1
+    return {"found": found, "recent": recent, "upcoming": upcoming}
 
 
 def upcoming_lessons_for_family(email: str, student_first: str | None = None) -> list[dict]:

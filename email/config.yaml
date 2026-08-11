@@ -273,6 +273,10 @@ po_inbox:
   # of the ticket flags (Roman, 2026-08-11: "whenever something is missing it is
   # vital to send Roman and Kath Slack messages").
   missing_info_dms: [kath, roman]
+  # "Is the family currently being tutored by us?" rule (Roman, 2026-08-11,
+  # student-level): Yes = the PO's student had an attended lesson within this
+  # many days OR has a lesson booked; No = neither. Gates scheduling texts.
+  currently_tutored_lookback_days: 30
   # ALWAYS-filled deal properties — INTERNAL names verified against the portal
   # 2026-07-31. Ticket flags anything the PO didn't state so a human fills it.
   deal_property_map:
