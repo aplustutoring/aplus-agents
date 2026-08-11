@@ -186,9 +186,12 @@
     403321152,
     403331837,
     403330181,
-    403334374
+    403334374,
+    403352845,
+    403354539,
+    403352144
   ],
-  "last_run_utc": "2026-08-11T22:06:04.290125+00:00",
+  "last_run_utc": "2026-08-11T23:04:36.573503+00:00",
   "pending_digest": [
     {
       "call_id": 403172053,
@@ -541,6 +544,133 @@
       "tasks_created": [
         [
           "Continue follow-up attempts with Blanca Perez to schedule tutoring for Joseph",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403352845,
+      "number": "14153619796",
+      "time_pt": "3:32 PM",
+      "matched": true,
+      "contact_label": "Christin Chi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Christin Chi called to cancel her daughter Lily's 4:30 tutoring session with Shay today because Lily is feeling sick. Janelle confirmed the session on file and said she would notify Shay of the cancellation. Christin acknowledged the session fee would not be refunded. Call ended cordially.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Notify tutor Shay that Lily's 4:30 today session is cancelled due to illness",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer actively receiving tutoring \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Lily",
+          "Shay"
+        ],
+        "record_updates": {
+          "whats_going_on": "Christin called to cancel Lily's 4:30 tutoring session today with Shay because Lily is sick. Understands the session fee is non-refundable.",
+          "what_we_can_do_to_help": "Notify Shay of the cancellation and reschedule Lily's next session once she's feeling better.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Christin called to cancel Lily's 4:30 tutoring session today with Shay because Lily is sick. Understands the session fee is non-refundable."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Notify Shay of the cancellation and reschedule Lily's next session once she's feeling better."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Notify tutor Shay that Lily's 4:30 today session is cancelled due to illness",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 403352144,
+      "number": "13105677628",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Nicole Pifko",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Nicole Pifko to follow up on a meeting that had been booked for today. Nicole did not answer; a child briefly picked up and said mom would call back. Paola left a voicemail asking Nicole to let her know a good time to reconnect.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Nicole's callback to reschedule the missed meeting; if no response, attempt another follow-up.",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Existing prospective family already at 'We Connected'; left a voicemail so no change warranted.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Follow-up call from Paola regarding today's scheduled meeting. Nicole did not answer; a child answered briefly and said mom would call back. Voicemail left requesting a good time to reconnect.",
+          "what_we_can_do_to_help": "Reconnect with Nicole to reschedule the missed meeting and continue moving forward with tutoring plans for Whitney.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call from Paola regarding today's scheduled meeting. Nicole did not answer; a child answered briefly and said mom would call back. Voicemail left requesting a good time to reconnect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reconnect with Nicole to reschedule the missed meeting and continue moving forward with tutoring plans for Whitney."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Nicole's callback to reschedule the missed meeting; if no response, attempt another follow-up.",
           81494333
         ]
       ],
