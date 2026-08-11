@@ -82,17 +82,22 @@ config `po_inbox.missing_info_dms` (kath + roman), with the gap list + ticket
 link, on top of the ticket flags. Parent-chase escalations also go to both.
 
 (7) `is_the_family_currently_being_tutored_by_us_` (Roman, 2026-08-11: gates the
-scheduling-text workflow). THE RULE (locked with Roman same day, student-level,
-stamped once at PO time): **"Yes" = the PO's student had an attended lesson in
-the last 30 days OR has a lesson booked in Teachworks; "No" = neither (including
-student not in TW at all — a confident No). Unverifiable (no parent email / TW
-error) = left unset + 🚩 gap DM, never guessed.** Lookback configurable via
-po_inbox.currently_tutored_lookback_days. Checked against the RESOLVED parent
-email (PO or contact record) via new tw.student_lesson_activity(), memoized per
-email; the no-lessons scheduling alert shares the lookup, so it also works for
-parents resolved from prior deals. Backfilled: 12 iLEAD deals → "No"; Taylion
-left for Kath/Janelle to set once booking is confirmed; Taylion dealtype
-corrected newbusiness → existingbusiness (Genevieve had a prior deal).
+scheduling-text workflow). THE RULE (locked with Roman same day; amended twice
+in-session to its final form — student-level, CALENDAR-ONLY, stamped once at PO
+time): **"Yes" = the PO's student has a lesson booked in Teachworks; "No" =
+nothing on the calendar, period — the text goes out (recent lessons don't excuse
+an empty calendar; a second kid with no lessons of their own is "No" even while
+the sibling is active). ONE text per family: on multi-PO emails only the FIRST
+deal carries "No", siblings are stamped "Yes" so the texting workflow can't fire
+9 times for a 9-PO order agreement (the Aly Daly case). Unverifiable (no parent
+email / TW error) = left unset + 🚩 gap DM, never guessed; student absent from
+TW = confident "No".** Checked against the RESOLVED parent email (PO or contact
+record) via new tw.student_lesson_activity(), memoized per email; the no-lessons
+scheduling alert shares the lookup, so it also works for parents resolved from
+prior deals. Backfilled accordingly: Isaac's + Evrsen's FIRST deals "No", their
+10 sibling deals corrected to "Yes"; Taylion left for Kath/Janelle to set once
+booking is confirmed; Taylion dealtype corrected newbusiness → existingbusiness
+(Genevieve had a prior deal).
 
 **Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
 `email/config.yaml`, `email/src/teachworks_client.py`, `email/tests/test_po_inbox.py` (32 new tests; email suite

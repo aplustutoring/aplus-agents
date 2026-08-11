@@ -1111,9 +1111,9 @@ def test_currently_tutored_yes_when_upcoming_lessons(monkeypatch):
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
 
 
-def test_currently_tutored_yes_on_recent_lessons_alone(monkeypatch):
-    # taught within the lookback window but nothing booked yet (gap between PO
-    # months) → still a current family; texts stay bypassed
+def test_currently_tutored_calendar_only_recent_lessons_dont_count(monkeypatch):
+    # Roman: nothing on the calendar, PERIOD → they need the text — lessons
+    # taught last week don't excuse an empty calendar
     captured = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
@@ -1123,7 +1123,28 @@ def test_currently_tutored_yes_on_recent_lessons_alone(monkeypatch):
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
     po._handle_deal(_po(parent_email="mom@x.com"), [])
-    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
+
+
+def test_multi_po_email_one_scheduling_text_only(monkeypatch):
+    # the Aly Daly case: 9 POs in one email must NOT mean 9 texts — only the
+    # first deal carries "No" (fires the text); siblings are stamped "Yes"
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30: {"found": True, "recent": 0, "upcoming": 0})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props["is_the_family_currently_being_tutored_by_us_"])
+                        or {"id": "D"})
+    notes = []
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
+        {"po_number": "A1", "amount": "100"}, {"po_number": "A2", "amount": "100"},
+        {"po_number": "A3", "amount": "100"}]), notes)
+    assert captured == ["No", "Yes", "Yes"]
+    assert any("ONCE per family" in n for n in notes)
 
 
 def test_currently_tutored_no_when_inactive_or_unknown_student(monkeypatch):
