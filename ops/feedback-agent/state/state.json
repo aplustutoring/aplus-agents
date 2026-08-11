@@ -14,7 +14,8 @@
     "Ev0BNWA1V9HN",
     "Ev0BN28QPX35",
     "Ev0BQCHKCTLY",
-    "Ev0BPNEFFW0Z"
+    "Ev0BPNEFFW0Z",
+    "Ev0BPLGNF12N"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -131,7 +132,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 1
+    "clean_merges": 2
   },
   "pending_proposals": {}
 }
