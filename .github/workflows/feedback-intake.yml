@@ -65,6 +65,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0     # branches for correction PRs need real history
+          # CURRENT main, not the dispatch-time SHA: a Slack retry lands as a
+          # second dispatch pinned to a stale commit — after the concurrency
+          # wait it would read a state.json that predates the first run's
+          # processed-mark and file the report twice (PRs #63/#64, 2026-08-11).
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
