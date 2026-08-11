@@ -8,6 +8,25 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — Booth properties for Sage Oak BTSC 2026 (PR #65)
+
+**What:** Declared 4 new contact properties in the registry for the photo
+booth: `aplus_event_tag` (multi-checkbox, one option `sage_oak_btsc_2026`;
+future events APPEND options), `aplus_booth_goal` (banner text), `aplus_booth_delivery`
+(Email/Print/Both dropdown), `aplus_marketing_consent` (Yes/No dropdown).
+Added a new `events` contact property group — booth attendees can be any
+persona, so none of the 5 persona groups fit. Registry-only change:
+`create_properties.py` runs only after the PR merges; then verify in portal
+6312752 and add the 4 to KEEPERS.md.
+
+**Why:** Booth capture tools need declared properties (registry rule: never
+create ad hoc); event attendance is designed as one multi-select tag property
+so each future event is an appended option, not a new property.
+
+**Files:** `ops/hubspot-schema/properties.yml`.
+
+---
+
 ## 2026-08-10 — PO deal naming convention + parent-chase flow (Roman: "implement")
 
 **What:** (1) PO-created deals are now named `Parent - Student - School N - YY/YY`
