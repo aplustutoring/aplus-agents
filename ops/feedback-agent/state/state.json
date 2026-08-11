@@ -15,6 +15,7 @@
     "Ev0BN28QPX35",
     "Ev0BQCHKCTLY",
     "Ev0BPNEFFW0Z",
+    "Ev0BPLGNF12N",
     "Ev0BPLGNF12N"
   ],
   "awaiting": {
@@ -127,12 +128,12 @@
       "correction_path": "corrections/content-build/2026-08-11-missing-linkedin-op-ed.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/63",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786469746855719"
     }
   ],
   "graduation": {
-    "clean_merges": 2
+    "clean_merges": 3
   },
   "pending_proposals": {}
 }
