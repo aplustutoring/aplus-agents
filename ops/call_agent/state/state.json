@@ -183,9 +183,12 @@
     403306350,
     403311361,
     403318945,
-    403321152
+    403321152,
+    403331837,
+    403330181,
+    403334374
   ],
-  "last_run_utc": "2026-08-11T21:06:17.073144+00:00",
+  "last_run_utc": "2026-08-11T22:06:04.290125+00:00",
   "pending_digest": [
     {
       "call_id": 403172053,
@@ -363,6 +366,181 @@
       "tasks_created": [
         [
           "Await callback from Tatjana; consider another follow-up attempt if no response within a week",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403331837,
+      "number": "12137844179",
+      "time_pt": "2:28 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "An inbound caller asked if anyone at A+ Tutoring speaks Russian. Janelle did not, but attempted to transfer the call to Roman, who apparently speaks Russian. The transcript cuts off just as the caller and Roman begin connecting, so the substance of the inquiry (likely a tutoring question) was not captured here.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm Roman successfully connected with the Russian-speaking caller and capture the details of her inquiry (likely tutoring need) for CRM follow-up.",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Call was too garbled/incomplete to classify \u2014 caller was transferred to a Russian speaker (Roman) before any substantive inquiry was captured in this transcript.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Russian-speaking caller phoned in and asked to speak with someone in Russian. Janelle transferred the call to Roman; the substance of the inquiry was not captured on the English portion of the call.",
+          "what_we_can_do_to_help": "Roman to follow up in Russian to learn what the caller needs and log the family's tutoring details into the CRM.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm Roman successfully connected with the Russian-speaking caller and capture the details of her inquiry (likely tutoring need) for CRM follow-up.",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 403330181,
+      "number": "18082828769",
+      "time_pt": "2:25 PM",
+      "matched": true,
+      "contact_label": "Shannon Troy",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Shannon Troy regarding tutoring for her son Atlas. The call went to voicemail; Paola left a message asking Shannon to call back to continue the conversation about tutoring sessions. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Shannon's callback; if no response, attempt another follow-up contact",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing prospective family already at 'QTL - Diagnostic Sent'; voicemail left with no new info to change status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back at a convenient time.",
+          "what_we_can_do_to_help": "Continue follow-up outreach until we reach Shannon to move forward with tutoring plan and pricing decision for Atlas.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back at a convenient time."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach until we reach Shannon to move forward with tutoring plan and pricing decision for Atlas."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Shannon's callback; if no response, attempt another follow-up contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403334374,
+      "number": "18188261069",
+      "time_pt": "2:36 PM",
+      "matched": true,
+      "contact_label": "Blanca Perez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Blanca Perez, who had previously reached out about tutoring for her son Joseph. The call went to voicemail and Paola left a brief message asking Blanca to return the call at her convenience. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue follow-up attempts with Blanca Perez to schedule tutoring for Joseph",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing open deal / prior inquiry; voicemail left with no new info, so status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail following up on Blanca's prior tutoring inquiry for her son. No return contact yet.",
+          "what_we_can_do_to_help": "Awaiting callback from Blanca to schedule sessions; continue follow-up outreach.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail following up on Blanca's prior tutoring inquiry for her son. No return contact yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Awaiting callback from Blanca to schedule sessions; continue follow-up outreach."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue follow-up attempts with Blanca Perez to schedule tutoring for Joseph",
           81494333
         ]
       ],
