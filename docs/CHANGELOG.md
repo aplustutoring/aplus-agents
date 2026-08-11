@@ -15,7 +15,9 @@ booth: `aplus_event_tag` (multi-checkbox, one option `sage_oak_btsc_2026`;
 future events APPEND options), `aplus_booth_goal` (banner text), `aplus_booth_delivery`
 (Email/Print/Both dropdown), `aplus_marketing_consent` (Yes/No dropdown).
 Added a new `events` contact property group — booth attendees can be any
-persona, so none of the 5 persona groups fit. Registry-only change:
+persona, so none of the 5 persona groups fit. LOCKED by Roman 2026-08-11:
+the `events` group + the event-tag append pattern (one multi-select property,
+future events append options) — decision-log number pending. Registry-only change:
 `create_properties.py` runs only after the PR merges; then verify in portal
 6312752 and add the 4 to KEEPERS.md.
 
