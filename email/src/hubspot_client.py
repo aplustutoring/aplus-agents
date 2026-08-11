@@ -173,6 +173,27 @@ def find_contact_by_email(email: str, properties: list | None = None) -> dict | 
     return results[0] if results else None
 
 
+TOR_LEAD_STATUS = "Charter School Teacher TOR/EF"
+
+
+def find_tor_contacts_by_lastname(lastname: str) -> list[dict]:
+    """Existing TOR-flagged contacts by last name — the pool for the NAME-only
+    TOR fallback (OPS/iLEAD PDFs name the TOR without an email). Lookup only;
+    a contact counts as a TOR via lead status OR the TOR persona."""
+    if not lastname:
+        return []
+    name_f = {"propertyName": "lastname", "operator": "EQ", "value": lastname}
+    body = {"filterGroups": [
+        {"filters": [name_f, {"propertyName": "hs_lead_status", "operator": "EQ",
+                              "value": TOR_LEAD_STATUS}]},
+        {"filters": [name_f, {"propertyName": "a_persona", "operator": "EQ",
+                              "value": "Teacher of Record/EF/ES"}]},
+    ], "properties": ["email", "firstname", "lastname", "a_persona", "hs_lead_status"],
+        "limit": 10}
+    res = _write("POST", "/crm/v3/objects/contacts/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
+
+
 def find_contacts_by_lastname(lastname: str) -> list[dict]:
     if not lastname:
         return []

@@ -989,3 +989,60 @@ def test_no_scheduler_dm_when_nothing_created(monkeypatch):
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
     po._handle_deal(_po(po_number="53779"), [])
     assert len(dms) == 1 and "duplicate po" in dms[0][1].lower()
+
+
+# ── TOR name-only fallback (Roman, 2026-08-10): OPS PDFs omit the email ──────
+
+def test_fold_name_accent_insensitive():
+    assert po._fold_name("Véronique") == po._fold_name("Veronique")
+    assert po._fold_name("  MARY ") == "mary"
+
+
+def test_tor_name_only_unique_match_associates(monkeypatch):
+    assoc, linked = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C-mom", "properties":
+                                                    {"firstname": "Maria", "lastname": "Diaz"}})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname",
+                        lambda ln: [{"id": "C-tor", "properties":
+                                     {"firstname": "Véronique", "lastname": "Fabre",
+                                      "email": "veronique.gaeta@ileadexploration.org"}}])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
+    monkeypatch.setattr(po.hs, "associate_contacts",
+                        lambda f, t, type_id=15, category="USER_DEFINED":
+                        linked.append((f, t)) or {"id": "A1"})
+    notes = []
+    # extractor gives the unaccented spelling from the PDF; portal stores Véronique
+    po._handle_deal(_po(parent_email="mom@x.com",
+                        tor_first="Veronique", tor_last="Fabre"), notes)
+    assert assoc == [("D66", "C-tor")]
+    assert linked == [("C-mom", "C-tor")]          # #AP031 family→TOR rides along
+    assert any("matched by NAME" in n for n in notes)
+
+
+def test_tor_name_only_no_match_flagged_not_silent(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda *a: (_ for _ in ()).throw(AssertionError("must not associate")))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", tor_first="Mary", tor_last="Nieves"), notes)
+    assert any("associate manually" in n and "Mary Nieves" in n for n in notes)
+
+
+def test_tor_name_only_ambiguous_flagged(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname",
+                        lambda ln: [{"id": "T1", "properties": {"firstname": "Mary"}},
+                                    {"id": "T2", "properties": {"firstname": "Mary"}}])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda *a: (_ for _ in ()).throw(AssertionError("ambiguous must not associate")))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", tor_first="Mary", tor_last="Smith"), notes)
+    assert any("multiple matching TOR" in n for n in notes)

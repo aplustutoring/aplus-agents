@@ -215,6 +215,30 @@ def _sync_family_tor(family_id, tor_id, tor_label: str, note_parts: list[str]) -
         note_parts.append("🔗 Family→TOR association sync failed — link manually (#AP031).")
 
 
+def _fold_name(s: str) -> str:
+    """Accent-insensitive comparison key ('Véronique' == 'Veronique')."""
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFKD", s or "")
+                   if not unicodedata.combining(c)).strip().lower()
+
+
+def _tor_by_name(first: str, last: str) -> list[dict]:
+    """Existing TOR contacts matching a bare name from the PO. Last name via
+    HubSpot search (TOR-flagged only), first name compared accent-insensitively
+    here — the portal stores 'Véronique', the PDF says 'Veronique'."""
+    if not (last or "").strip():
+        return []
+    try:
+        cands = hs.find_tor_contacts_by_lastname(last.strip())
+    except Exception:  # noqa: BLE001 — fallback lookup is best-effort
+        return []
+    ff = _fold_name(first)
+    if not ff:
+        return cands
+    return [c for c in cands
+            if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+
+
 def _associate_tor(deal_id, po: dict, note_parts: list[str],
                    family_contact_id=None) -> None:
     """Associate the Teacher of Record's contact to the deal (find-or-create by
@@ -225,29 +249,51 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
     TOR lookup order: primary email, then secondary email (some TORs' school
     address is a HubSpot secondary email; creating on a primary-only miss
     would duplicate them). Contacts created here are stamped with the TOR
-    persona + lead status."""
+    persona + lead status.
+
+    NAME-only fallback (Roman, 2026-08-10): OPS/iLEAD PDFs name the TOR without
+    an email — a UNIQUE match among existing TOR-flagged contacts is associated
+    (lookup only, never created from a bare name); anything else is flagged on
+    the ticket instead of skipping silently."""
     t_email = (po.get("tor_email") or "").strip().lower()
     p_email = (po.get("parent_email") or "").strip().lower()
-    if not t_email or t_email == p_email or not deal_id or deal_id == "DRYRUN":
+    t_name = f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
+    if not deal_id or deal_id == "DRYRUN" or (t_email and t_email == p_email) \
+            or not (t_email or t_name):
         return
     try:
-        tor = hs.find_contact_by_email(t_email)
-        if not tor:
-            tor = hs.find_contact_by_secondary_email(t_email)
-            if tor:
-                note_parts.append(f"🧑‍🏫 TOR matched via SECONDARY email {t_email} "
-                                  f"(primary is different) — no duplicate created.")
-        if not tor:
-            tor = hs.create_contact(t_email, po.get("tor_first") or None,
-                                    po.get("tor_last") or None,
-                                    extra_props=TOR_CREATE_PROPS)
-            note_parts.append(f"🧑‍🏫 CREATED TOR contact <{t_email}> (persona + lead "
-                              f"status stamped) — if this teacher already exists under "
-                              f"a personal email, merge manually.")
+        tor = None
+        if t_email:
+            tor = hs.find_contact_by_email(t_email)
+            if not tor:
+                tor = hs.find_contact_by_secondary_email(t_email)
+                if tor:
+                    note_parts.append(f"🧑‍🏫 TOR matched via SECONDARY email {t_email} "
+                                      f"(primary is different) — no duplicate created.")
+            if not tor:
+                tor = hs.create_contact(t_email, po.get("tor_first") or None,
+                                        po.get("tor_last") or None,
+                                        extra_props=TOR_CREATE_PROPS)
+                note_parts.append(f"🧑‍🏫 CREATED TOR contact <{t_email}> (persona + lead "
+                                  f"status stamped) — if this teacher already exists under "
+                                  f"a personal email, merge manually.")
+        else:
+            matches = _tor_by_name(po.get("tor_first") or "", po.get("tor_last") or "")
+            if len(matches) == 1:
+                tor = matches[0]
+                note_parts.append(f"🧑‍🏫 TOR {t_name} matched by NAME (PO had no email) → "
+                                  f"existing TOR contact "
+                                  f"<{(tor.get('properties') or {}).get('email', '?')}>.")
+            else:
+                note_parts.append(f"🧑‍🏫 TOR '{t_name}' named in the PO without an email; "
+                                  f"{'multiple' if matches else 'no'} matching TOR "
+                                  f"contacts in HubSpot — associate manually.")
+                return
         if tor and tor.get("id") not in (None, "DRYRUN"):
             hs.associate_contact_to_deal(deal_id, tor["id"])
+            display = t_email or (tor.get("properties") or {}).get("email") or "no email"
             note_parts.append(f"🧑‍🏫 TOR {po.get('tor_first', '')} {po.get('tor_last', '')} "
-                              f"<{t_email}> associated to the deal.")
+                              f"<{display}> associated to the deal.")
             # #AP031 family→TOR sync: family id from the create path when known,
             # else resolved by the PO's parent email (lookup only, never create).
             fam_id = family_contact_id

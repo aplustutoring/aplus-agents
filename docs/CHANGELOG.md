@@ -63,9 +63,20 @@ the 72-hr Post-Lesson target", with the pending-approval warning when it applies
 Previously schedulers only saw deals appear in HubSpot; the sole Slack signal
 was the no-lessons alert in #email-agent.
 
-**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
-`email/tests/test_po_inbox.py` (18 new tests; email suite 177 green),
-`.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
+(5) TOR name-only fallback (Roman, same session — "why weren't TORs associated?"):
+OPS/iLEAD PDFs name the TOR without an email, and the TOR association keyed only
+on email, skipping SILENTLY. Now a bare TOR name is looked up among existing
+TOR-flagged contacts (lead status "Charter School Teacher TOR/EF" OR the TOR
+persona), last name via search + first name compared accent-insensitively
+('Véronique' portal vs 'Veronique' PDF); a UNIQUE match is associated (+#AP031
+family→TOR link) — lookup only, never created from a bare name; no/ambiguous
+match now flags the ticket. Backfilled in-portal: Mary Nieves → Isaac's 3 deals,
+Véronique Fabre → Evrsen's 9, Shauna Smith → Taylion, + 3 labeled family→TOR
+links (Jessica→Mary, Aly→Véronique, Alexandra→Shauna).
+
+**Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_inbox.py` (22 new tests; email suite
+181 green), `.github/workflows/email-po-inbox.yml` (replay_msg_ids input).
 
 ---
 
