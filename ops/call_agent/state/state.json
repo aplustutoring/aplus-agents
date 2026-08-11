@@ -171,10 +171,87 @@
     402886895,
     402921846,
     402922025,
-    402924949
+    402924949,
+    403167971,
+    403186327,
+    403172053
   ],
-  "last_run_utc": "2026-08-11T16:04:00.252095+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-11T17:14:11.808792+00:00",
+  "pending_digest": [
+    {
+      "call_id": 403172053,
+      "number": "13108941830",
+      "time_pt": "9:45 AM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Hope Mclendon about package renewal for her daughter Luna. Hope confirmed her husband will call this week to renew Luna's package and add her 5-year-old, Ocean. Yesterday's canceled lesson will be made up this Wednesday (Luna already has a lesson that day, adding one hour), and regular schedule resumes next week.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Reschedule Luna's canceled lesson to this Wednesday (add one hour to her existing Wednesday session)",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Await husband's call this week regarding package renewal for Luna and adding Ocean (age 5)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active deal/service; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Luna",
+          "Ocean"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda reached Hope about package renewal. Hope confirmed her husband will call this week to renew Luna's package and also add Ocean, their 5-year-old. Yesterday's lesson was canceled; Hope agreed to add that hour onto Luna's existing Wednesday lesson this week, with regular schedule resuming next week.",
+          "what_we_can_do_to_help": "Add the canceled lesson hour onto Luna's Wednesday session this week, hold renewal discussion for husband's call later this week, and be ready to enroll Ocean (age 5) alongside Luna's renewal.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda reached Hope about package renewal. Hope confirmed her husband will call this week to renew Luna's package and also add Ocean, their 5-year-old. Yesterday's lesson was canceled; Hope agreed to add that hour onto Luna's existing Wednesday lesson this week, with regular schedule resuming next week."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Add the canceled lesson hour onto Luna's Wednesday session this week, hold renewal discussion for husband's call later this week, and be ready to enroll Ocean (age 5) alongside Luna's renewal."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Reschedule Luna's canceled lesson to this Wednesday (add one hour to her existing Wednesday session)",
+          86868539
+        ],
+        [
+          "Await husband's call this week regarding package renewal for Luna and adding Ocean (age 5)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }

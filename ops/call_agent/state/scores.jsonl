@@ -76,3 +76,4 @@
 {"call_id": 402852858, "date_pt": "2026-08-10", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 4, "U3": 4, "U5": 3}}
 {"call_id": 402883887, "date_pt": "2026-08-10", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 2.2, "scores": {"U1": 2, "U2": 3, "U3": 3, "U4": 1, "U5": 2, "S1": 2, "S2": 3, "S3": 3, "S4": 1}}
 {"call_id": 402886895, "date_pt": "2026-08-10", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 2.6, "scores": {"U1": 2, "U2": 3, "U3": 3, "U4": 2, "U5": 3}}
+{"call_id": 403172053, "date_pt": "2026-08-11", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 4.0, "scores": {"U1": 4, "U2": 5, "U3": 4, "U5": 3, "V2": 4}}
