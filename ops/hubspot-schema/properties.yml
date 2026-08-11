@@ -30,6 +30,8 @@ groups:
       label: Tutors
     - name: student
       label: Student
+    - name: events
+      label: Events
 
 properties:
   tickets:
@@ -329,6 +331,59 @@ properties:
       group: contactinformation
       type: enumeration
       fieldType: select
+
+    # ── Events (booth capture) ──
+    # First consumer: Sage Oak BTSC 2026 photo booth. aplus_event_tag is the
+    # cross-event attendance marker — future events APPEND options here (the
+    # sync is additive, so relabel/removal never happens from this file).
+    - name: aplus_event_tag
+      label: "Event Tag"
+      group: events
+      type: enumeration
+      fieldType: checkbox   # multi-select: a contact can attend more than one event
+      description: >-
+        Which A+ events this contact attended. Set by event capture tools
+        (photo booth, check-in), not humans. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: sage_oak_btsc_2026
+          label: "Sage Oak BTSC 2026"
+    - name: aplus_booth_goal
+      label: "Booth Photo Banner"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        Banner text the attendee chose on their booth photo. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+    - name: aplus_booth_delivery
+      label: "Booth Photo Delivery"
+      group: events
+      type: enumeration
+      fieldType: select
+      description: >-
+        How the attendee wants their booth photo delivered. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: email
+          label: "Email"
+        - value: print
+          label: "Print"
+        - value: both
+          label: "Both"
+    - name: aplus_marketing_consent
+      label: "Booth Marketing Consent"
+      group: events
+      type: enumeration
+      fieldType: select
+      description: >-
+        Opted into A+ resources at the booth. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
 
   deals:
     # ── Consolidation keepers (approved by Roman 2026-08-10) — see KEEPERS.md ──
