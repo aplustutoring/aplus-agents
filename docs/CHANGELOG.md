@@ -35,6 +35,29 @@ needs Roman's web-app redeploy — not done.
 
 ---
 
+## 2026-08-11 — Sage Oak booth backend DEPLOYED (Roman's worker.js/index.html)
+
+**What:** New `booth/` directory: Cloudflare Worker `sage-oak-booth`
+(worker.js — `/submit` upserts the HubSpot contact with the 4 events-group
+props from PR #65 and emails the framed photo via Resend) + kiosk front-end
+(index.html — attract → banner → camera → form → delivery, client-side photo
+composite) + wrangler.toml + README. DEPLOYED live:
+Worker `https://sage-oak-booth.nameless-mountain-bafa.workers.dev` (secrets
+HUBSPOT_TOKEN + RESEND_API_KEY set via wrangler), Pages
+`https://sage-oak-booth.pages.dev`; CONFIG.WORKER_URL and ALLOWED_ORIGIN
+cross-wired; smoke-tested (CORS preflight, input validation, Pages 200).
+Sender is `photos@wetutorathome.com` — that's the Resend-verified domain
+(aplustutoring.com is NOT verified there; Roman verified wetutorathome.com
+in-session).
+
+**Why:** Sage Oak BTSC 2026 event capture — booth attendees become HubSpot
+contacts (event-tagged, consent recorded) with zero manual entry.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`booth/README.md`.
+
+---
+
 ## 2026-08-11 — Concurrency rule: branch work in worktrees (Roman: "lfg")
 
 **What:** New mandatory rule in `CLAUDE.md`: sessions doing branch/PR work use
