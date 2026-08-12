@@ -1,6 +1,6 @@
 # KEEPERS — the property vocabulary agents use
 
-**90 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
+**81 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
 
 **Approved by Roman 2026-08-10.** Persona group moves executed; every keeper is declared in `ops/hubspot-schema/properties.yml` (registry). 
 
@@ -8,6 +8,7 @@ Rules that travel with this list:
 - Agents ALWAYS read enumeration **labels**, never internal values (fleet rule; see mismatch list in contacts-proposal.md).
 - Family→TOR truth is the typeId-15 contact association; the stamped TOR text fields are legacy capture but still LIVE (#AP031, #AP029).
 - Multi-select `a_persona` is read FIRST by every agent (#AP024, #AP030).
+- 2026-08-11 (Roman): contact-side per-day `*_schedule_preference`, `degree_received`, `university_attended` un-kept and archived/queued for archive — the DEAL-side per-day schedule preferences remain keepers.
 - **Student grade level: agents use `what_is_your_child_s_current_grade_level_` — always** (Roman 2026-08-10). The other grade fields below are program/form capture, never the agent read/write target.
 
 ## Master
@@ -16,14 +17,12 @@ Rules that travel with this list:
 |---|---|---|---|
 | `a_persona` | A+ PERSONA | 5-persona switch, multi-select — read first, always | #AP024/#AP030 |
 
-## Family (25)
+## Family (18)
 
 | Internal name | Label | Why | Decision |
 |---|---|---|---|
 | `charter_school_family_` | Charter School Family? | Gates the TOR ask on intake; read by tor_family scripts | #AP029 |
-| `friday_schedule_preference` | Friday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
 | `how_did_you_hear_about_us_` | How Did You Hear About Us? | Attribution; call agent fill_only write | #AP029 |
-| `monday_schedule_preference` | Monday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
 | `online_or_in_person` | Online or In Person Preference | Delivery preference; call agent overwrite | #AP029 |
 | `parent_concerns_what_can_we_do_to_help_` | What's going on? | DONE — moved by Roman 2026-08-10. Label "What's going on?" — intake-agent enriched (call agent log-append) | #AP029 |
 | `parent_email` | Parent Email | Parent identity | #AP029 |
@@ -31,19 +30,14 @@ Rules that travel with this list:
 | `parent_last_name` | Parent Last Name | Parent identity | #AP029 |
 | `parent_phone_number` | Parent Phone Number | Parent identity | #AP029 |
 | `referral_name` | Referral Name | Referral attribution; call agent fill_only write | #AP029 |
-| `saturday_schedule_preference` | Saturday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
 | `student_3_full_name` | Student 3 Full Name | Teachworks family disambiguation (email/config.yaml) |  |
 | `student_4_full_name` | Student 4 Full Name | Teachworks family disambiguation (email/config.yaml) |  |
 | `student_additional_information` | What we can do to help | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Label "What we can do to help" — intake-agent enriched | #AP029 |
 | `student_full_name_clone_` | Student 2 Full Name | Label "Student 2 Full Name" — Teachworks family disambiguation (email/config.yaml) |  |
 | `student_school` | Student School | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Student school on intake; call agent overwrite; po_inbox deal map source | #AP029 |
 | `subject_need` | Subject Need | Subject asked on intake; call agent overwrite | #AP029 |
-| `sunday_schedule_preference` | Sunday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
 | `teacher_of_record_email_address` | Teacher of Record Email Address | TOR auto-create trigger; read/written by tor_family scripts | #AP029 |
 | `teacher_of_record_name` | Teacher of Record Name | Family's pointer to their teacher — legacy intake capture, superseded by typeId-15 association but still LIVE and load-bearing (auto-create trigger) | #AP029 |
-| `thursday_schedule_preference` | Thursday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
-| `tuesday_schedule_preference` | Tuesday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
-| `wednesday_schedule_preference` | Wednesday Schedule Preference | Per-day schedule preference (family keeper set) | #AP029 |
 | `what_is_your_child_s_current_grade_level_` | What grade is your child in? | CANONICAL student grade — the property agents use for grade level, always (Roman 2026-08-10); call agent overwrite target | #AP027 |
 
 ## Teacher of Record/EF/ES (4)
@@ -57,18 +51,16 @@ Rules that travel with this list:
 
 *(conditional display: `charter_school_teacher` shows when `educational_facillitator_teacher_of_record` = Yes — #AP028)*
 
-## Tutors (9)
+## Tutors (7)
 
 | Internal name | Label | Why | Decision |
 |---|---|---|---|
 | `a__pay_per_hour` | A+ Pay Per Hour | Tutor pay rate — core tutor record | #AP024 |
 | `completed_tutor_training` | Completed Tutor Training | Onboarding status (active 2026) | #AP024 |
-| `degree_received` | Degree Received | Tutor credential | #AP024 |
 | `online_in_person_` | Online or In-Person | Tutor delivery mode | #AP024 |
 | `resume` | Resume | Tutor resume file (recruiting form) | #AP024 |
 | `select_days_for_availability` | Select Days for Availability | Tutor availability | #AP024 |
 | `tutor_profile` | Tutor Profile | Tutor bio used for matching/intro | #AP024 |
-| `university_attended` | University Attended | Tutor credential | #AP024 |
 | `what_subjects_do_you_feel_the_most_qualified_to_tutor_` | What subjects do you feel the most qualified to tutor? | Tutor subjects (structured checkbox) | #AP024 |
 
 ## Student (3)

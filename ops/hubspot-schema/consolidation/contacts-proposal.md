@@ -2,6 +2,13 @@
 
 **Status: APPROVED by Roman 2026-08-10 — executed.** Persona group moves done (`execute_group_moves.py`, 41/41 verified); keepers declared in `properties.yml`; archive pass run on Roman's "go" (see RETIRE-CANDIDATE section for per-property outcomes: ARCHIVED / BLOCKED / HOLD). Archives are reversible for 90 days via HubSpot's deleted-properties restore. STORAGE-ONLY and KEEP-IN-PLACE require no action.
 
+**2026-08-11 order (Roman): Level-Up iLead scheduling + tutor credentials un-kept.**
+`degree_received` + `university_attended` ARCHIVED. The 7 contact-side per-day
+`*_schedule_preference` fields, `tutoring_frequency`, `when_would_you_like_the_tutoring_to_start`,
+`which_days_of_the_week_do_you_prefer_` are queued for archive but BLOCKED by two forms
+(`0-10a7465d…7f48`, `0-529c7788…7a66` — the iLead intake forms); delete those forms and they clear.
+Deal-side per-day schedule preferences are untouched keepers. Registry + KEEPERS.md updated (90→81).
+
 884 total contact properties in portal 6312752; **405 are `hubspotDefined` (HubSpot system) and out of scope**. The 479 custom properties below are each assigned a disposition. Properties referenced by agent code are marked 【code: …】 and are keepers regardless of fill rate (locked rule 12).
 
 Known label/internal mismatches (locked rule 9 — agents read LABELS, never internal values):

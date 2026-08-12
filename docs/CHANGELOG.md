@@ -8,6 +8,27 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — Low-fill review round 1: iLead scheduling + tutor credentials un-kept (Roman)
+
+**What:** Roman's picks from low-fill-review.md: the whole Level-Up iLead
+scheduling set (7 contact per-day *_schedule_preference — previously #AP029
+family keepers, now un-kept; tutoring_frequency; when_would_you_like_the_
+tutoring_to_start; which_days_of_the_week_do_you_prefer_) + degree_received +
+university_attended. Outcome: degree_received + university_attended ARCHIVED;
+the 10 scheduling fields BLOCKED by two iLead intake forms (0-10a7465d…7f48,
+0-529c7788…7a66) — they archive the moment those forms are deleted (needs
+forms scope or UI). DEAL-side per-day preferences remain keepers. Removed the
+9 un-kept contact declarations from properties.yml (51→42 contacts);
+KEEPERS.md 90→81.
+
+**Why:** Roman 2026-08-11: "all level up ilead scheduling can be archived,
+that whole group. degree received archive, university archive."
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/{KEEPERS,contacts-proposal,low-fill-review}.md`.
+
+---
+
 ## 2026-08-11 — QuickBooks refs archived + low-fill review list (Roman's orders)
 
 **What:** (1) "Archive all quickbooks references": the only two QBO assets in

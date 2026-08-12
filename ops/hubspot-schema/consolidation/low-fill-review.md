@@ -1,6 +1,6 @@
 # Low-fill contact properties — review list (Roman, requested 2026-08-11)
 
-Every LIVE custom contact property with **fewer than 150 contacts** holding a value (378 of 454 live custom properties). Grouped by current disposition so the signal is the middle buckets: KEEP-IN-PLACE / STORAGE-ONLY rows here are properties the consolidation kept that are nearly empty — tick ☑ anything you want moved to RETIRE. Keepers are listed FYI (low fill does not unmake a keeper — several are new-program or code-referenced fields).
+Every LIVE custom contact property with **fewer than 150 contacts** holding a value (378 of 454 live custom properties). Reviewed rolling — 2026-08-11 outcomes so far: level-up_ilead scheduling set + degree_received + university_attended ordered archived (2 done, 10 form-blocked, see contacts-proposal header). Grouped by current disposition so the signal is the middle buckets: KEEP-IN-PLACE / STORAGE-ONLY rows here are properties the consolidation kept that are nearly empty — tick ☑ anything you want moved to RETIRE. Keepers are listed FYI (low fill does not unmake a keeper — several are new-program or code-referenced fields).
 
 | Bucket | Count |
 |---|---|

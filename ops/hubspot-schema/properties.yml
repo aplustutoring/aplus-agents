@@ -187,41 +187,6 @@ properties:
       group: family
       type: string
       fieldType: text
-    - name: monday_schedule_preference
-      label: "Monday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
-    - name: tuesday_schedule_preference
-      label: "Tuesday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
-    - name: wednesday_schedule_preference
-      label: "Wednesday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
-    - name: thursday_schedule_preference
-      label: "Thursday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
-    - name: friday_schedule_preference
-      label: "Friday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
-    - name: saturday_schedule_preference
-      label: "Saturday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
-    - name: sunday_schedule_preference
-      label: "Sunday Schedule Preference"
-      group: family
-      type: enumeration
-      fieldType: radio
     # — tor —
     - name: educational_facillitator_teacher_of_record
       label: "Educational Facillitator/Teacher of Record"
@@ -279,16 +244,6 @@ properties:
       group: tutor
       type: bool
       fieldType: booleancheckbox
-    - name: university_attended
-      label: "University Attended"
-      group: tutor
-      type: string
-      fieldType: text
-    - name: degree_received
-      label: "Degree Received"
-      group: tutor
-      type: string
-      fieldType: text
     # — student —
     - name: student_email_address
       label: "Student Email Address"
