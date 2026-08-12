@@ -74,8 +74,9 @@ export default {
         phone: phone || "",
         aplus_event_tag: eventTag || "sage_oak_btsc_2026",
         aplus_booth_goal: goal || "",
-        // Dropdowns: write per property contract (labels for delivery, true/false values for consent)
-        aplus_booth_delivery: { email: "Email", print: "Print", both: "Both", text: "Text" }[delivery] || "",
+        // Enum writes take INTERNAL VALUES, not labels (the fleet "read
+        // labels" rule is about reading). Values match properties.yml.
+        aplus_booth_delivery: ["email", "print", "both", "text"].includes(delivery) ? delivery : "",
         aplus_marketing_consent: marketingConsent ? "true" : "false",
       });
     } catch (e) {
