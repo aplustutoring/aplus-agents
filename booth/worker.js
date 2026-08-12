@@ -190,7 +190,7 @@ async function sendPhotoEmail(env, { email, firstName, photo }) {
           <img src="https://sage-oak-booth.pages.dev/logo.png" alt="A+ Tutoring" width="110" style="display:block;margin:0 0 18px;">
           <p style="font-size:13px;letter-spacing:2px;color:#46603F;font-weight:bold;margin:0 0 12px;">SAGE OAK \u00B7 BACK TO SCHOOL 2026</p>
           <h1 style="color:#2E4030;font-size:26px;margin:0 0 16px;">Hi ${escapeHtml(name)}, your photo is attached!</h1>
-          <p style="color:#1E281C;font-size:16px;line-height:1.6;">Thanks for stopping by the A+ Tutoring booth. Here's to an amazing school year ahead.</p>
+          <p style="color:#1E281C;font-size:16px;line-height:1.6;">Thanks for stopping by the A+ Tutoring booth. Here's to an amazing 2026&ndash;2027 school year ahead.</p>
           <p style="color:#1E281C;font-size:16px;line-height:1.6;">A+ Tutoring partners with Sage Oak to provide one-on-one tutoring and intervention programs for your students &mdash; often at no cost through enrichment funds.</p>
           <p style="margin:28px 0;">
             <a href="https://wetutorathome.com/home-school-tutoring" style="background:#E2A33B;color:#1E281C;font-weight:bold;text-decoration:none;padding:14px 28px;border-radius:999px;display:inline-block;">Learn how it works</a>
