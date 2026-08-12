@@ -14,8 +14,9 @@ Retiring the properties requires retiring or editing what references them, in th
 |---|---|
 | DELETE (dead program / dated blast / splinter list) | 25 |
 | EDIT (live automation — remove only the dead-property reference) | 43 |
-| KEEP (confirmed live — Roman 2026-08-11) | 4 |
-| VERIFY (needs a human call before anything) | 15 |
+| KEEP (confirmed live — Roman 2026-08-11) | 3 |
+| ARCHIVED 2026-08-11 (QuickBooks refs, on Roman's order) | 2 |
+| VERIFY (needs a human call before anything) | 14 |
 | **Referencing automations total** | **87** |
 | Blocking forms (IDs below — names need the forms scope) | 43 |
 
@@ -31,9 +32,11 @@ Retiring the properties requires retiring or editing what references them, in th
 3. **QBO — RESOLVED context (Roman 2026-08-11): there is NO QBO automation.** Kath marks
    invoices in Teachworks, Claude cowork records payments in Teachworks, and QBO is synced
    manually. The `Ready for Onboarding to QBO` list + `Is the online tutor ready for
-   onboarding` flow are the manual tutor-onboarding queue → KEEP (their two properties stay).
-   The `Quickbooks` workflow stays VERIFY only for what it does with `c:time` — likely an
-   EDIT to drop that one reference.
+   onboarding` flow was read as the manual tutor-onboarding queue — then Roman ordered
+   "archive all quickbooks references" (2026-08-11): the `Quickbooks` workflow (323730202)
+   and the `Ready for Onboarding to QBO` list (1176) are DELETED, backups in
+   `ops/fleet-health/audit/backups/2026-08-11-quickbooks/`. The onboarding FLOW itself
+   (not QBO-named) still stands with its two properties — in the low-fill review list.
 
 ## Referencing workflows & lists (87)
 
@@ -108,11 +111,11 @@ this authoritatively.
 | QTL Workflow - Charter School 2.0 | workflow | ON | `d:how_did_you_hear_about_us_` | **EDIT** | Live qualified-lead flow — drop the dead-field ref, keep |
 | Qualified Tutoring Lead Workflow - Diagnostic Sent | workflow | ON | `c:assessment_received`, `c:assessment_sent`, `c:assessment_uploaded`, `c:time` | **DELETE** | QTL diagnostic branch — assessment era, dead |
 | Quality Charter, CFGC, RTI | workflow | ON | `c:start_date_for_tutoring_for_this_deal` | **EDIT** | Live QC flow — same |
-| Quickbooks | workflow | ON | `c:time` | **VERIFY** | QBO sync is manual (Roman 2026-08-11) so this flow is at most a notifier — confirm what it does with `time`, then EDIT that ref out or DELETE |
+| Quickbooks | workflow | — | `c:time` | **ARCHIVED 2026-08-11** | Roman: "archive all quickbooks references" — flow 323730202 deleted, backup in ops/fleet-health/audit/backups/2026-08-11-quickbooks/ |
 | RBS | list | — | `d:how_did_you_hear_about_us_` | **DELETE** | Attribution splinter list |
 | REFERRAL PROGRAM - NEW TEACHERS | workflow | ON | `c:how_did_you_hear_about_this_opportunity_with_a_tutoring`, `c:tutor_referral___referred_by___name`, `d:how_did_you_hear_about_us_` | **VERIFY** | Referral program may be live (referral_name is a keeper) — these reference the old referred_by fields; if program is live, EDIT to drop the dead fields |
 | REFERRAL PROGRAM NEW FAMILIES | workflow | ON | `c:referral___referred_by___name`, `d:how_did_you_hear_about_us_` | **VERIFY** | Referral program may be live (referral_name is a keeper) — these reference the old referred_by fields; if program is live, EDIT to drop the dead fields |
-| Ready for Onboarding to QBO | list | — | `c:is_the_online_tutor_ready_for_onboarding` | **KEEP** | Roman 2026-08-11: the manual QBO tutor-onboarding queue |
+| Ready for Onboarding to QBO | list | — | `c:is_the_online_tutor_ready_for_onboarding` | **ARCHIVED 2026-08-11** | Roman: "archive all quickbooks references" — list 1176 deleted, backup in the same folder |
 | Referral | list | — | `d:how_did_you_hear_about_us_` | **VERIFY** | Attribution list — tied to referral program status |
 | Resume after Stopped for Summer | list | — | `c:actively_tutoring` | **DELETE** | Summer-2021 era segment list |
 | Royal | list | — | `c:how_did_you_hear_about_us___cloned__original_` | **DELETE** | Attribution splinter list |

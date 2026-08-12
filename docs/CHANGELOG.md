@@ -8,6 +8,27 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — QuickBooks refs archived + low-fill review list (Roman's orders)
+
+**What:** (1) "Archive all quickbooks references": the only two QBO assets in
+the portal scan — workflow `Quickbooks` (323730202, was ON) and list `Ready
+for Onboarding to QBO` (1176) — backed up to
+`ops/fleet-health/audit/backups/2026-08-11-quickbooks/` and DELETED
+(HubSpot-restorable ~90 days). (2) "All properties with under 150 contacts
+presented for review": counted fills for all 454 live custom contact
+properties; 378 are under 150 — organized by disposition in NEW
+`ops/hubspot-schema/consolidation/low-fill-review.md` (22 keepers FYI /
+168 keep-in-place / 112 storage-only / 52 already-retire / 4 new booth props /
+20 system) with a tick-box column for Roman's archive picks.
+
+**Why:** Roman 2026-08-11, verbatim orders. QBO context: no automation — Kath
+marks invoices in TW, Claude cowork records payments in TW, manual QBO sync.
+
+**Files:** `ops/hubspot-schema/consolidation/{automation-purge-proposal,low-fill-review}.md`,
+`ops/fleet-health/audit/backups/2026-08-11-quickbooks/` (new).
+
+---
+
 ## 2026-08-11 — Feedback-agent dedupe fix + automation purge proposal
 
 **What:** (1) Fixed the feedback agent double-filing reports: Slack retries land
