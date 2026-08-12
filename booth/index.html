@@ -305,8 +305,8 @@ const CONFIG = {
     <div class="deliver-card" data-delivery="print">
       <div class="d-icon">&#128424;</div><div class="d-label">Print it</div><div class="d-sub">Take one for your desk</div>
     </div>
-    <div class="deliver-card" data-delivery="both">
-      <div class="d-icon">&#10024;</div><div class="d-label">Both!</div><div class="d-sub">Email + print</div>
+    <div class="deliver-card" data-delivery="all">
+      <div class="d-icon">&#10024;</div><div class="d-label">All 3!</div><div class="d-sub">Email + text + print</div>
     </div>
   </div>
 </div>
@@ -516,7 +516,7 @@ const CONFIG = {
   // ---------- Delivery ----------
   document.querySelectorAll(".deliver-card").forEach(card=>{
     card.addEventListener("click",()=>{
-      if(card.dataset.delivery==="text" && !state.contact.phone){
+      if((card.dataset.delivery==="text"||card.dataset.delivery==="all") && !state.contact.phone){
         const err=$("form-error");
         err.textContent="Add your phone number and we'll text it to you.";
         err.style.display="block";
@@ -530,9 +530,9 @@ const CONFIG = {
 
   async function submitAll(){
     show("sending");
-    const wantsEmail = state.delivery==="email"||state.delivery==="both";
-    const wantsText  = state.delivery==="text";
-    const wantsPrint = state.delivery==="print"||state.delivery==="both";
+    const wantsEmail = state.delivery==="email"||state.delivery==="all";
+    const wantsText  = state.delivery==="text" ||state.delivery==="all";
+    const wantsPrint = state.delivery==="print"||state.delivery==="all";
 
     // Print immediately (doesn't depend on network)
     if(wantsPrint){

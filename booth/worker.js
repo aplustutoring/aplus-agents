@@ -76,7 +76,7 @@ export default {
         aplus_booth_goal: goal || "",
         // Enum writes take INTERNAL VALUES, not labels (the fleet "read
         // labels" rule is about reading). Values match properties.yml.
-        aplus_booth_delivery: ["email", "print", "both", "text"].includes(delivery) ? delivery : "",
+        aplus_booth_delivery: ["email", "print", "both", "text", "all"].includes(delivery) ? delivery : "",
         aplus_marketing_consent: marketingConsent ? "true" : "false",
       });
     } catch (e) {

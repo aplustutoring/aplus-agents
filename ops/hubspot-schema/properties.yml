@@ -370,9 +370,11 @@ properties:
         - value: print
           label: "Print"
         - value: both
-          label: "Both"
+          label: "Both"    # legacy (pre-Text); booth now sends "all"
         - value: text
           label: "Text"
+        - value: all
+          label: "All"     # email + text + print
     - name: aplus_marketing_consent
       label: "Booth Marketing Consent"
       group: events
