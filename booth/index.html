@@ -108,12 +108,12 @@
   #screen-camera{background:var(--oak-deep);padding:0;}
   .cam-stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
   #video{
-    height:78%;aspect-ratio:4/5;object-fit:cover;border-radius:24px;
+    height:78%;aspect-ratio:1080/1420;object-fit:cover;border-radius:24px;
     transform:scaleX(-1);background:#000;
   }
   .cam-frame{
     position:absolute;pointer-events:none;border:6px solid var(--cream);border-radius:24px;
-    height:78%;aspect-ratio:4/5;
+    height:78%;aspect-ratio:1080/1420;
   }
   .cam-goal-chip{
     position:absolute;bottom:11%;left:50%;transform:translateX(-50%);
@@ -293,11 +293,14 @@ const CONFIG = {
     <div class="deliver-card" data-delivery="email">
       <div class="d-icon">&#9993;</div><div class="d-label">Email it</div><div class="d-sub">In your inbox in seconds</div>
     </div>
+    <div class="deliver-card" data-delivery="text">
+      <div class="d-icon">&#128172;</div><div class="d-label">Text it</div><div class="d-sub">Straight to your phone</div>
+    </div>
     <div class="deliver-card" data-delivery="print">
       <div class="d-icon">&#128424;</div><div class="d-label">Print it</div><div class="d-sub">Take one for your desk</div>
     </div>
     <div class="deliver-card" data-delivery="both">
-      <div class="d-icon">&#10024;</div><div class="d-label">Both!</div><div class="d-sub">Why choose?</div>
+      <div class="d-icon">&#10024;</div><div class="d-label">Both!</div><div class="d-sub">Email + print</div>
     </div>
   </div>
 </div>
@@ -412,13 +415,13 @@ const CONFIG = {
 
   function capture(){
     const video=$("video");
-    const W=1200, H=1500;                       // 4:5 output
+    const W=1200, H=1800;                       // 2:3 output — matches 2x3" and 4x6" photo paper
     const canvas=document.createElement("canvas");
     canvas.width=W; canvas.height=H;
     const ctx=canvas.getContext("2d");
 
     // Photo (mirrored to match preview), cover-cropped into upper area
-    const photoTop=130, photoH=1180, photoPad=60;
+    const photoTop=130, photoH=1420, photoPad=60;
     const pw=W-photoPad*2;
     const vr=video.videoWidth/video.videoHeight, tr=pw/photoH;
     let sw,sh,sx,sy;
@@ -491,6 +494,13 @@ const CONFIG = {
   // ---------- Delivery ----------
   document.querySelectorAll(".deliver-card").forEach(card=>{
     card.addEventListener("click",()=>{
+      if(card.dataset.delivery==="text" && !state.contact.phone){
+        const err=$("form-error");
+        err.textContent="Add your phone number and we'll text it to you.";
+        err.style.display="block";
+        show("form");
+        return;
+      }
       state.delivery=card.dataset.delivery;
       submitAll();
     });
@@ -499,6 +509,7 @@ const CONFIG = {
   async function submitAll(){
     show("sending");
     const wantsEmail = state.delivery==="email"||state.delivery==="both";
+    const wantsText  = state.delivery==="text";
     const wantsPrint = state.delivery==="print"||state.delivery==="both";
 
     // Print immediately (doesn't depend on network)
@@ -517,6 +528,7 @@ const CONFIG = {
           goal:state.goal,
           delivery:state.delivery,
           sendEmail:wantsEmail,
+          sendText:wantsText,
           eventTag:CONFIG.EVENT_TAG,
           photo:state.photoDataUrl
         })
@@ -526,8 +538,9 @@ const CONFIG = {
 
     const first=state.contact.firstName||"friend";
     let msg;
-    if(wantsEmail && sendOk) msg=`Check your inbox, ${first} \u2014 your photo is on its way.`;
-    else if(wantsEmail && !sendOk) msg=`We saved your info, ${first} \u2014 if the photo doesn't arrive, grab us at the table and we'll resend it.`;
+    if(wantsText && sendOk) msg=`Check your phone, ${first} \u2014 your photo is on its way.`;
+    else if(wantsEmail && sendOk) msg=`Check your inbox, ${first} \u2014 your photo is on its way.`;
+    else if((wantsEmail||wantsText) && !sendOk) msg=`We saved your info, ${first} \u2014 if the photo doesn't arrive, grab us at the table and we'll resend it.`;
     else msg=`Enjoy your print, ${first}!`;
     $("done-msg").textContent=msg;
     show("done");

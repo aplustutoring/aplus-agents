@@ -35,7 +35,32 @@ needs Roman's web-app redeploy — not done.
 
 ---
 
-## 2026-08-11 — Sage Oak booth backend DEPLOYED (Roman's worker.js/index.html)
+## 2026-08-11 — Booth round 2: branding, TOR audience, JustCall texts, email logging
+
+**What:** (1) Logos: Sage Oak pennant + white A+ on attract, color A+ in the
+email. (2) All outbound links → wetutorathome.com/home-school-tutoring
+(aplustutoring.com is NOT ours — email CTA, SMS body, photo-frame footer).
+(3) TOR audience (Roman: attendees are homeschool charter TORs, not parents):
+teacher-facing copy pitching one-on-one tutoring + intervention programs, and
+booth-CREATED contacts stamped a_persona="Teacher of Record/EF/ES" +
+hs_lead_status="Charter School Teacher TOR/EF" (create-only, mirrors
+po_inbox TOR_CREATE_PROPS; existing contacts never overwritten). (4) NEW
+"Text it" delivery via JustCall MMS from the main A+ line +18188506284:
+photo stored in Workers KV (7-day TTL, UUID keys) and served publicly at
+<worker>/photo/<uuid> as the media_url; JUSTCALL_API_KEY/SECRET set as Worker
+secrets; `aplus_booth_delivery` gained option Text(text) — declared in
+properties.yml and synced (R2 skipped: not enabled on the account, KV needs
+nothing). (5) Booth photo emails logged to the contact's HubSpot timeline
+via engagements API (assoc 198; write scope verified create+delete). (6)
+Photo canvas 1200×1500 (4:5) → 1200×1800 (2:3) to fit Roman's 2x3" portable
+printer (also fits 4x6); camera preview ratio matched.
+
+**Why:** Event capture should classify TORs correctly for the fleet, deliver
+photos the way teachers actually want them, and leave a full trail (email on
+timeline) in HubSpot.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`ops/hubspot-schema/properties.yml`.
 
 **What:** New `booth/` directory: Cloudflare Worker `sage-oak-booth`
 (worker.js — `/submit` upserts the HubSpot contact with the 4 events-group

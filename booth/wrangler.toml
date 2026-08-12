@@ -8,6 +8,16 @@ RESEND_FROM = "A+ Tutoring <photos@wetutorathome.com>"
 # Set to the deployed Pages URL after `wrangler pages project create sage-oak-booth`
 ALLOWED_ORIGIN = "https://sage-oak-booth.pages.dev"
 
+# JustCall MMS delivery: photos land in KV (7-day TTL) and are served
+# publicly at <worker>/photo/<uuid>.jpg for the media_url.
+JUSTCALL_FROM = "+18188506284"   # Main A+ line (MMS-capable, verified 2026-08-11)
+
+[[kv_namespaces]]
+binding = "PHOTOS"
+id = "38b24fd52f064143a0273d9f43a85a3c"
+
 # Secrets (never in this file — set via CLI):
 #   wrangler secret put HUBSPOT_TOKEN
 #   wrangler secret put RESEND_API_KEY
+#   wrangler secret put JUSTCALL_API_KEY
+#   wrangler secret put JUSTCALL_API_SECRET
