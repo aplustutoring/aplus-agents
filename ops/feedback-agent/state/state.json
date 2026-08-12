@@ -16,18 +16,14 @@
     "Ev0BQCHKCTLY",
     "Ev0BPNEFFW0Z",
     "Ev0BPLGNF12N",
-    "Ev0BPV9EHW2D"
+    "Ev0BPV9EHW2D",
+    "Ev0BPTBT6MB4"
   ],
   "awaiting": {
     "1785537854.599709": {
       "user": "U05NA7UMSSV",
       "text": "status *Sent using* <@U0AKFN28V1U>",
       "asked_utc": "2026-07-31T22:44:47.124156+00:00"
-    },
-    "1786554388.265099": {
-      "user": "U05NMABF3B2",
-      "text": "Hello! Low balance alerts go to Paola",
-      "asked_utc": "2026-08-12T17:09:22.508441+00:00"
     }
   },
   "reports": [
@@ -135,10 +131,43 @@
       "ticket": null,
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786469746855719"
+    },
+    {
+      "date": "2026-08-12",
+      "ts": "1786554388.265099",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "call-agent",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/call-agent/2026-08-12-low-balance-alerts-route-paola-only.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/67",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786554388265099?thread_ts=1786554388.265099&cid=C0BL05MCJ4B"
     }
   ],
   "graduation": {
     "clean_merges": 3
   },
-  "pending_proposals": {}
+  "pending_proposals": {
+    "1786554388.265099": {
+      "agent": "call-agent",
+      "agent_label": "Call agent \u2014 daily digest (~5:30 PM PT)",
+      "correction_path": "corrections/call-agent/2026-08-12-low-balance-alerts-route-paola-only.md",
+      "branch": "fix/call-agent-2026-08-12-265099",
+      "diagnosis": "Danielle is redirecting low-balance alert routing to Paola. This is about billing/balance alerts, which don't appear to be produced by the call agent \u2014 that agent handles call summaries, coaching, and negative-sentiment tickets. The report was likely misclassified onto call-agent.",
+      "fix_plan": [
+        "Confirm with Roman which agent actually sends low-balance alerts (likely a billing/finance agent, not call-agent) \u2014 the routing change belongs there, not in ops/call_agent/.",
+        "Once the correct agent is identified, update its config/recipient mapping to route low-balance alerts to Paola (Slack handle + email).",
+        "If no such agent exists yet, file this as a routing-rule note for whoever owns balance monitoring.",
+        "Leave ops/call_agent/config.yml untouched \u2014 no call-agent code path handles balance alerts."
+      ],
+      "risk": "low",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
+      "reporter": "Danielle"
+    }
+  }
 }
