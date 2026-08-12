@@ -119,10 +119,19 @@ async function upsertContact(env, properties) {
     return { action: "updated", id };
   }
 
+  // Booth attendees are Sage Oak TORs. Persona/lead-status stamped ONLY on
+  // contacts this Worker CREATES (a_persona is multi-select; existing
+  // contacts are never overwritten) — same doctrine as email/src/po_inbox.py.
+  const createProps = {
+    ...properties,
+    a_persona: "Teacher of Record/EF/ES",
+    hs_lead_status: "Charter School Teacher TOR/EF",
+  };
+
   const crt = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
     method: "POST",
     headers,
-    body: JSON.stringify({ properties }),
+    body: JSON.stringify({ properties: createProps }),
   });
   if (!crt.ok) throw new Error(`HubSpot create ${crt.status}: ${await crt.text()}`);
   const created = await crt.json();
