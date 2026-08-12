@@ -201,9 +201,11 @@
     403654638,
     403664055,
     403685678,
-    403708434
+    403708434,
+    403790865,
+    403792041
   ],
-  "last_run_utc": "2026-08-12T20:19:01.034339+00:00",
+  "last_run_utc": "2026-08-12T21:22:04.319997+00:00",
   "pending_digest": [
     {
       "call_id": 403654638,
@@ -421,6 +423,96 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 403792041,
+      "number": "16617898905",
+      "time_pt": "2:14 PM",
+      "matched": true,
+      "contact_label": "Carla Sagua",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ returned Carla Sagua's missed call. Carla wanted to resume tutoring with Fred for her son Christian now that the new school year has started, and requested increasing frequency to twice a week. They tentatively agreed on Tuesdays and Thursdays at 12pm, pending Fred's availability and receipt of the PO. Yolanda will confirm times via text and begin scheduling once the PO is received.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm Tuesday/Thursday 12pm availability with tutor Fred",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Send Carla a confirmation text once Fred's availability is confirmed",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Begin scheduling sessions with Fred once the PO comes in",
+            "owner_hint": null
+          },
+          {
+            "item": "Notify Christian's teacher of the schedule (Carla will handle on her end after confirmation)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer resuming service with previous tutor; status owned by deal pipeline (OPEN_DEAL).",
+        "student_or_school_names_mentioned": [
+          "Christian",
+          "Gorman Learning Center",
+          "Fred"
+        ],
+        "record_updates": {
+          "whats_going_on": "Carla returned our call to resume tutoring for Christian with Fred for the new school year. She wants to increase to twice a week, tentatively Tuesdays and Thursdays at 12pm, feeling once a week wasn't enough.",
+          "what_we_can_do_to_help": "Confirm Tues/Thurs 12pm availability with Fred, text Carla to confirm, and begin scheduling twice-weekly sessions once the charter PO is received.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Carla returned our call to resume tutoring for Christian with Fred for the new school year. She wants to increase to twice a week, tentatively Tuesdays and Thursdays at 12pm, feeling once a week wasn't enough."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Tues/Thurs 12pm availability with Fred, text Carla to confirm, and begin scheduling twice-weekly sessions once the charter PO is received."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm Tuesday/Thursday 12pm availability with tutor Fred",
+          86868539
+        ],
+        [
+          "Send Carla a confirmation text once Fred's availability is confirmed",
+          86868539
+        ],
+        [
+          "Begin scheduling sessions with Fred once the PO comes in",
+          81494333
+        ],
+        [
+          "Notify Christian's teacher of the schedule (Carla will handle on her end after confirmation)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
