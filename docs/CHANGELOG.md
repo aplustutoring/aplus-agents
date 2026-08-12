@@ -8,6 +8,33 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — Feedback-agent dedupe fix + automation purge proposal
+
+**What:** (1) Fixed the feedback agent double-filing reports: Slack retries land
+as second dispatches pinned to a stale commit, so the retry run read a
+state.json without the first run's processed-mark (root cause of duplicate PRs
+#63/#64 for Danielle's LinkedIn-op-ed report; `Ev0BPLGNF12N` appeared twice in
+state.processed). Fix: `ref: main` on checkout in feedback-intake/-digest/-fix
+(close-loop already had it) — the concurrency group already serializes runs, so
+the second run now sees fresh state and the existing event_id dedupe catches
+the retry. Removed the orphan duplicate correction file (#64's) + doubled state
+entry. (2) NEW `ops/hubspot-schema/consolidation/automation-purge-proposal.md`:
+the 87 workflows/lists + 43 forms + 8 misc blockers holding up the 78 blocked
+retire candidates, each with DELETE (25) / EDIT (43) / VERIFY (19) verdicts,
+3 high-risk callouts (TW-sync Zapier path, SMS deal-token stack, Quickbooks),
+a text-scan accuracy caveat for generic names, and an authoritative
+delete-probe step. PROPOSAL — pending Roman.
+
+**Why:** Roman: "do 1 and 2" (feedback-agent diagnosis + purge proposal).
+Optional relay hardening (CacheService dedupe in apps-script.gs) offered but
+needs Roman's web-app redeploy — not done.
+
+**Files:** `.github/workflows/feedback-{intake,digest,fix}.yml`,
+`corrections/content-build/` (dup removed), `ops/feedback-agent/state/state.json`,
+`ops/hubspot-schema/consolidation/automation-purge-proposal.md` (new).
+
+---
+
 ## 2026-08-11 — Concurrency rule: branch work in worktrees (Roman: "lfg")
 
 **What:** New mandatory rule in `CLAUDE.md`: sessions doing branch/PR work use
