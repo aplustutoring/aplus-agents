@@ -461,24 +461,24 @@ const CONFIG = {
       ctx.drawImage(LOGOS.aplus, W-64-w, 36, w, h);
     }
     ctx.fillStyle="#2E4030"; ctx.textAlign="center";
-    ctx.font="700 30px 'Bricolage Grotesque','Nunito Sans',sans-serif";
-    ctx.fillText("SAGE OAK \u00B7 BACK TO SCHOOL 2026", W/2, 90);
-    ctx.font="700 24px 'Nunito Sans',sans-serif";
+    ctx.font="700 38px 'Bricolage Grotesque','Nunito Sans',sans-serif";
+    ctx.fillText("SAGE OAK \u00B7 BACK TO SCHOOL", W/2, 88);
+    ctx.font="700 30px 'Nunito Sans',sans-serif";
     ctx.fillStyle="#46603F";
-    ctx.fillText("2026–2027 School Year · with A+ Tutoring", W/2, 128);
+    ctx.fillText("2026–2027 School Year · with A+ Tutoring", W/2, 132);
 
     // Goal banner
     const bannerY=photoTop+photoH+58;
     ctx.fillStyle="#E2A33B";
     roundRect(ctx, W/2-460, bannerY-46, 920, 78, 39); ctx.fill();
     ctx.fillStyle="#1E281C";
-    ctx.font="800 38px 'Bricolage Grotesque','Nunito Sans',sans-serif";
-    ctx.fillText(state.goal, W/2, bannerY+8);
+    ctx.font="800 46px 'Bricolage Grotesque','Nunito Sans',sans-serif";
+    ctx.fillText(state.goal, W/2, bannerY+10);
 
     // Footer credit
     ctx.fillStyle="#46603F";
-    ctx.font="700 26px 'Nunito Sans',sans-serif";
-    ctx.fillText("Powered by A+ Tutoring \u00B7 wetutorathome.com", W/2, H-58);
+    ctx.font="700 32px 'Nunito Sans',sans-serif";
+    ctx.fillText("Powered by A+ Tutoring \u00B7 wetutorathome.com", W/2, H-54);
 
     state.photoDataUrl=canvas.toDataURL("image/jpeg",0.88);
     $("review-img").src=state.photoDataUrl;
