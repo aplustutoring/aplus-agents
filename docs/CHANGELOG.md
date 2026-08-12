@@ -8,6 +8,21 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — Concurrency rule: branch work in worktrees (Roman: "lfg")
+
+**What:** New mandatory rule in `CLAUDE.md`: sessions doing branch/PR work use
+a git worktree; never create/commit branches directly in the shared main
+checkout.
+
+**Why:** Two concurrent sessions collided today — a po_inbox commit from one
+session landed on the other's PR branch (this one, #65) and the branch had to
+be rebuilt by hand. Worktrees isolate each session's working tree while
+sharing history.
+
+**Files:** `CLAUDE.md`.
+
+---
+
 ## 2026-08-11 — Booth properties for Sage Oak BTSC 2026 (PR #65)
 
 **What:** Declared 4 new contact properties in the registry for the photo

@@ -8,6 +8,14 @@ At the end of ANY session that changes agent behavior, schema, skills, or proces
 4. Before ending, output a 10-line handoff summary Roman can paste into Claude chat.
 This keeps Claude-in-chat and Claude Code synchronized — the repo is the shared memory.
 
+## Concurrency rule (mandatory — locked by Roman 2026-08-11)
+Multiple Claude sessions share this checkout. Any session doing branch/PR work
+must use a git worktree (EnterWorktree, or `git worktree add`); never create or
+commit to a branch directly in the main checkout. Direct commits to `main` in
+the main checkout are allowed only when that is the session's sole task surface.
+(Why: on 2026-08-11 two concurrent sessions collided — one session's po_inbox
+commit landed on the other's PR branch and had to be untangled by hand.)
+
 ## Key context for any session
 - HubSpot property registry: `ops/hubspot-schema/properties.yml` is the source of truth,
   synced to portal 6312752 by `create_properties.py` (additive only). Declare new
