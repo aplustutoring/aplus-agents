@@ -1365,3 +1365,54 @@ def test_fractional_hours_computed(monkeypatch):
                         captured.append(extra_props) or {"id": "D1"})
     po._handle_deal(_po(hours="", rate="75", amount="112.50"), [])
     assert captured[0]["number_of_hours_in_this_po"] == "1.5"
+
+
+# ── TOR name + email stamped on the deal (Roman, 2026-08-12) ─────────────────
+
+def test_tor_name_and_email_stamped_on_deal(monkeypatch):
+    patches = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None: patches.append((path, payload)) or {})
+    po._handle_deal(_po(tor_first="Mary", tor_last="Nieves",
+                        tor_email="mary.nieves@ilead.org", parent_email="mom@x.com"), [])
+    stamp = [x for x in patches if x[0] == "/crm/v3/objects/deals/D22"
+             and "teacher_of_record_name" in (x[1] or {}).get("properties", {})]
+    assert stamp
+    props = stamp[0][1]["properties"]
+    assert props["teacher_of_record_name"] == "Mary Nieves"
+    assert props["teacher_of_record_email"] == "mary.nieves@ilead.org"
+
+
+def test_name_matched_tor_email_backfills_deal_stamp(monkeypatch):
+    # PO names the TOR without an email → the matched contact's email is
+    # resolved and lands on teacher_of_record_email anyway
+    patches = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname",
+                        lambda ln: [{"id": "C-tor", "properties":
+                                     {"firstname": "Mary", "lastname": "Nieves",
+                                      "email": "mary.nieves@ileadexploration.org"}}])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None: patches.append((path, payload)) or {})
+    po._handle_deal(_po(tor_first="Mary", tor_last="Nieves", tor_email="",
+                        parent_email="mom@x.com"), [])
+    stamp = [x for x in patches if "teacher_of_record_email" in (x[1] or {}).get("properties", {})]
+    assert stamp
+    assert stamp[0][1]["properties"]["teacher_of_record_email"] == \
+        "mary.nieves@ileadexploration.org"
+
+
+def test_missing_tor_flagged_for_manual_fill(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
+    notes = []
+    po._handle_deal(_po(), notes)   # no TOR in the PO at all
+    missing = [n for n in notes if "Not in the PO" in n]
+    assert missing and "tor_name" in missing[0] and "tor_email" in missing[0]

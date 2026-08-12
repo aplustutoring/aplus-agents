@@ -133,7 +133,9 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
     pmap = cfg()["po_inbox"].get("deal_property_map") or {}
     values = {"student_first": po.get("student_first"), "student_last": po.get("student_last"),
               "grade": po.get("grade"), "school": po.get("school"),
-              "parent_email": po.get("parent_email"), "parent_phone": po.get("parent_phone")}
+              "parent_email": po.get("parent_email"), "parent_phone": po.get("parent_phone"),
+              "tor_name": f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip(),
+              "tor_email": po.get("tor_email")}
     props = {pmap[k]: v for k, v in values.items() if pmap.get(k) and v}
     if not props or not deal_id or deal_id == "DRYRUN":
         missing = [k for k, v in values.items() if not v]
@@ -331,9 +333,12 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
             matches = _tor_by_name(po.get("tor_first") or "", po.get("tor_last") or "")
             if len(matches) == 1:
                 tor = matches[0]
+                resolved = ((tor.get("properties") or {}).get("email") or "").strip().lower()
+                if resolved:
+                    # feeds the teacher_of_record_email deal stamp downstream
+                    po["tor_email"] = resolved
                 note_parts.append(f"🧑‍🏫 TOR {t_name} matched by NAME (PO had no email) → "
-                                  f"existing TOR contact "
-                                  f"<{(tor.get('properties') or {}).get('email', '?')}>.")
+                                  f"existing TOR contact <{resolved or '?'}>.")
             else:
                 note_parts.append(f"🧑‍🏫 TOR '{t_name}' named in the PO without an email; "
                                   f"{'multiple' if matches else 'no'} matching TOR "

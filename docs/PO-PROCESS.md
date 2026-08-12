@@ -71,6 +71,8 @@ invoice hour-tracking.
 | `student_grade` | 3 | From the PO. |
 | `student_school` | iCC1 for iLEAD Hybrid Exploration | From the PO (full extracted name). |
 | `parent_email` / `parent_phone` | — | From the PO when stated; also stamped when a parent-chase reply resolves them. Missing → ticket flag + 🚩 DM. |
+| `teacher_of_record_name` | Mary Nieves | The TOR named in the PO/email. Missing → ticket flag + 🚩 DM. |
+| `teacher_of_record_email` | mary.nieves@… | From the PO; PO has only the name → the email is **resolved from the matched TOR contact** and stamped anyway. |
 | `lessons_fulfilled_date` | Aug 31 | **Last day of the PO's service month** — the invoice due date. Prefilled by the agent; Kath confirms (see Stage 5). |
 | `invoice__` (Invoice #) | *Kath fills* | The Teachworks invoice number, after she creates the invoice (Stage 5). |
 | `invoice_submitted_date` | *Kath fills* | When she submits the invoice to the school (Stage 6). Clears the deal from the unbilled sweep. |

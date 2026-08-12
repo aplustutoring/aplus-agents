@@ -287,6 +287,8 @@ po_inbox:
     school: "student_school"
     parent_email: "parent_email"
     parent_phone: "parent_phone"
+    tor_name: "teacher_of_record_name"     # "Name of the TOR for the student on this PO"
+    tor_email: "teacher_of_record_email"   # PO email, or resolved from the matched TOR contact
   # New PO + student has NO upcoming Teachworks lessons → post here (scheduling
   # nudge). Students already on the calendar stay quiet. Empty = #email-agent.
   no_lessons_channel: ""

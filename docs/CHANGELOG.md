@@ -8,6 +8,27 @@ Newest entries first.
 
 ---
 
+## 2026-08-12 — TOR name + email stamped on PO deals
+
+**What:** PO deals now stamp `teacher_of_record_name` + `teacher_of_record_email`
+(the deal properties built for exactly this) via the deal_property_map. Bonus:
+when the PO names the TOR without an email and the name-match fallback finds
+the contact, the RESOLVED email is stamped on the deal anyway. Both fields flag
+on the ticket + 🚩 DM when the PO omits the TOR entirely. Backfilled today's 13
+live deals (Mary Nieves ×3, Véronique Fabre ×9, Shauna Smith ×1). Note: the
+deal-level TEXT fields are convenience copies for filters/reports — the
+contact-to-contact "Teacher of Record" association (#AP031) remains the source
+of truth. PO-PROCESS.md property table updated.
+
+**Why:** Roman (2026-08-12): "we need to make sure we have the teacher of
+record name and email address extracted from PO as well." Extraction already
+existed; the deal-level stamps did not.
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (suite 205 green), `docs/PO-PROCESS.md`.
+
+---
+
 ## 2026-08-11 — Low-fill review round 1: iLead scheduling + tutor credentials un-kept (Roman)
 
 **What:** Roman's picks from low-fill-review.md: the whole Level-Up iLead
