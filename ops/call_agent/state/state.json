@@ -190,9 +190,14 @@
     403352845,
     403354539,
     403352144,
-    403358594
+    403358594,
+    403383681,
+    403385784,
+    403380080,
+    403382150,
+    403383210
   ],
-  "last_run_utc": "2026-08-12T00:01:15.480252+00:00",
+  "last_run_utc": "2026-08-12T01:27:45.146413+00:00",
   "pending_digest": [
     {
       "call_id": 403172053,
@@ -678,6 +683,122 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 403380080,
+      "number": "12136030449",
+      "time_pt": "5:28 PM",
+      "matched": true,
+      "contact_label": "Anicia Gardner",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Anicia Gardner regarding her earlier inquiry about middle school math tutoring for her daughter Jamalyah. The call went to voicemail; Paola left a message asking Anicia to return the call when convenient. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Anicia; try another follow-up attempt if no response in a few days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound follow-up went to voicemail; no live conversation occurred, so existing 'We Connected' status stands.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message inviting Anicia to call back to continue discussing tutoring for her family.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Left a message inviting Anicia to call back to continue discussing tutoring for her family."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Anicia; try another follow-up attempt if no response in a few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403382150,
+      "number": "13104021914",
+      "time_pt": "5:38 PM",
+      "matched": true,
+      "contact_label": "Dennis Hemphill",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Dennis Hemphill regarding tutoring for his son Dash. The call went to voicemail; Paola left a message asking Dennis to call back when convenient to discuss whether he's still interested in tutoring services. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Dennis; if no response, attempt another follow-up contact",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation with the parent, so no new qualification information was gathered to change status.",
+        "student_or_school_names_mentioned": [
+          "Dash"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail following up with Dennis to see if he is still interested in tutoring for Dash. Awaiting callback.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail following up with Dennis to see if he is still interested in tutoring for Dash. Awaiting callback."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Dennis; if no response, attempt another follow-up contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -690,6 +811,11 @@
       "number": "18026249013",
       "time_pt": "3:57 PM",
       "reason": "no transcript"
+    },
+    {
+      "number": "17474947620",
+      "time_pt": "5:44 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
