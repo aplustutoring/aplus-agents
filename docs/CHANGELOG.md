@@ -84,6 +84,34 @@ so each future event is an appended option, not a new property.
 
 ---
 
+## 2026-08-11 — SMS workflow audited: property routes (never suppresses) + schedule stamp
+
+**What:** Audited SMS flow 1603217415 ("Charter Traditional SMS New Deal
+Created", contact-based) end-to-end via the automation API. Findings: BOTH
+branches of `is_the_family_currently_being_tutored_by_us_` send the
+schedule-confirmation texts — "No" only adds an internal staff email + delay
+first; texts are per-CONTACT enrollment (re-armed when the flow clears
+`contact_level_deal_stage`), so frequency is structurally one text pair per kid
+per PO event, never daily. Two fixes from that: (1) REVERTED the sibling-deal
+"Yes" suppression (texts were never per-deal; the flow fetches ONE associated
+deal, so a lying sibling could skip the staff alert) — every deal now carries
+the true month-scoped value; the 10 sibling deals in-portal reset to "No".
+(2) The SMS inserts `{{schedule_preferences}}` from the DEAL — PO deals never
+had it, so charter texts ended in a BLANK. The agent now stamps it at PO time
+with the student's live TW schedule ("Wednesdays 3:30 PM with Sarah Lee"),
+derived from upcoming lessons, else the recent-lesson pattern (new
+upcoming_lessons/recent_lessons detail in tw.student_lesson_activity);
+nothing derivable → 🚩 gap DM instead of a half-written text.
+
+**Why:** Roman shared the live SMS workflow; reading it showed the property's
+real semantics (routing, not suppression) and the blank-schedule content bug.
+Roman: "yessssss. fix the schedule. i agree with it all."
+
+**Files:** `email/src/po_inbox.py`, `email/src/teachworks_client.py`,
+`email/tests/test_po_inbox.py` (suite 198 green).
+
+---
+
 ## 2026-08-10 — PO deal naming convention + parent-chase flow (Roman: "implement")
 
 **What:** (1) PO-created deals are now named `Parent - Student - School N - YY/YY`
