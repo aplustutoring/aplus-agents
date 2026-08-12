@@ -15,13 +15,19 @@
     "Ev0BN28QPX35",
     "Ev0BQCHKCTLY",
     "Ev0BPNEFFW0Z",
-    "Ev0BPLGNF12N"
+    "Ev0BPLGNF12N",
+    "Ev0BPV9EHW2D"
   ],
   "awaiting": {
     "1785537854.599709": {
       "user": "U05NA7UMSSV",
       "text": "status *Sent using* <@U0AKFN28V1U>",
       "asked_utc": "2026-07-31T22:44:47.124156+00:00"
+    },
+    "1786554388.265099": {
+      "user": "U05NMABF3B2",
+      "text": "Hello! Low balance alerts go to Paola",
+      "asked_utc": "2026-08-12T17:09:22.508441+00:00"
     }
   },
   "reports": [
