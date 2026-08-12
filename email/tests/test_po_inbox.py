@@ -1314,3 +1314,54 @@ def test_po_month_already_booked_no_text(monkeypatch):
                         captured.append(extra_props) or {"id": "D1"})
     po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-09"), [])
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
+
+
+# ── PO hours computed from amount ÷ rate (Roman, 2026-08-11) ─────────────────
+
+def test_hours_computed_from_amount_and_rate(monkeypatch):
+    captured, tasks = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
+                        tasks.append(body) or {"id": "T"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="75", amount="150"), notes)
+    assert captured[0]["number_of_hours_in_this_po"] == "2"
+    assert any("Hours computed" in n and "$150 ÷ $75/hr = 2 hrs" in n for n in notes)
+    assert tasks and "Hours: 2 @ $75/hr" in tasks[0]
+    assert "Invoice #" in tasks[0] and "Expected Lessons Fulfilled Date" in tasks[0]
+
+
+def test_hours_stated_never_overwritten(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(hours="10", rate="75", amount="150"), [])
+    assert captured[0]["number_of_hours_in_this_po"] == "10"
+
+
+def test_no_rate_no_computation(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="", amount="150"), notes)
+    assert "number_of_hours_in_this_po" not in captured[0]
+    assert not any("Hours computed" in n for n in notes)
+
+
+def test_fractional_hours_computed(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(hours="", rate="75", amount="112.50"), [])
+    assert captured[0]["number_of_hours_in_this_po"] == "1.5"

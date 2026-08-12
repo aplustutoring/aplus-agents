@@ -126,6 +126,26 @@ so each future event is an appended option, not a new property.
 
 ---
 
+## 2026-08-11 — PO hours computed from rate + Kath's invoice fields + PO-PROCESS.md
+
+**What:** (1) Extractor now pulls the PO's HOURLY RATE; when hours aren't
+stated, they're computed (amount ÷ rate, e.g. $150 ÷ $75/hr = 2, fractional ok)
+and noted on the ticket — stated hours are never overwritten. (2) Kath's
+convert-to-invoice task now explicitly instructs filling `invoice__` (Invoice #)
+with the TW invoice number and confirming `lessons_fulfilled_date` (prefilled
+to the end of the PO month = the invoice due date). (3) NEW `docs/PO-PROCESS.md`:
+the complete PO-receipt reference — every stage, every property with its
+decision rule, and the human ownership table. Keep it in sync with po_inbox.py.
+
+**Why:** Roman (2026-08-11): "for PO hours, you might have to calculate. but
+our rate will be in the po. kath also has to fill out the properties of
+invoice number and invoice due date" + asked for the guided walkthrough.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 202 green), `docs/PO-PROCESS.md` (new).
+
+---
+
 ## 2026-08-11 — SMS workflow audited: property routes (never suppresses) + schedule stamp
 
 **What:** Audited SMS flow 1603217415 ("Charter Traditional SMS New Deal

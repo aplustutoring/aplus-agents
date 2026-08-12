@@ -34,9 +34,13 @@ PO_SYSTEM = (
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), pending_approval (bool), "
     "school, student_first, "
-    "student_last, grade, po_number, amount, hours, parent_first, parent_last, parent_email, "
+    "student_last, grade, po_number, amount, rate, hours, parent_first, parent_last, "
+    "parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, po_month, level_up (bool), summary, "
     "draft_reply, confidence (0-1)}. "
+    "rate = the HOURLY RATE stated in the PO (number only, e.g. 75). hours = the hours "
+    "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
+    "we compute it. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Order Agreements / Vendor Agreement Forms that list purchase orders for a "
     "student (the OPS/iLEAD pattern) ARE POs even when the document is stamped 'THIS IS "
@@ -412,11 +416,16 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
         pending_line = ("\n⏳ PO is PENDING school approval (order agreement) — confirm it is "
                         "approved before submitting the invoice." if po.get("pending_approval") else "")
+        rate_bit = f" @ ${po.get('rate')}/hr" if po.get("rate") else ""
         body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual)."
                 f"{pending_line}\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
                 f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
-                f"Hours: {po.get('hours') or 'n/a'}\n{submit_line}\n"
+                f"Hours: {po.get('hours') or 'n/a'}{rate_bit}\n"
+                f"{submit_line}\n"
+                f"THEN fill on the HubSpot deal: 'Invoice #' (the TW invoice number) and "
+                f"confirm 'Expected Lessons Fulfilled Date' (prefilled to the end of the "
+                f"PO month — that's the invoice due date).\n"
                 f"HubSpot deal id: {deal_id}. The PO PDF is attached to the deal; the family/"
                 f"student are created in Teachworks by the deal sync.")
         hs.create_task(f"Convert PO to TW invoice — {student} ({po.get('school') or '?'}, "
@@ -780,6 +789,18 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
     if not token:
         note_parts.append("💼 No student/school extracted — no deal action; review manually.")
         return
+    # PO hours: schools often state only amount + hourly rate — compute them
+    # (Roman, 2026-08-11: "you might have to calculate; our rate will be in the PO").
+    if not po.get("hours"):
+        try:
+            amt = float(str(po.get("amount") or "").replace(",", "") or 0)
+            rate = float(str(po.get("rate") or "").replace(",", "") or 0)
+            if amt > 0 and rate > 0:
+                po["hours"] = f"{amt / rate:g}"
+                note_parts.append(f"🧮 Hours computed from the PO: ${amt:g} ÷ "
+                                  f"${rate:g}/hr = {po['hours']} hrs.")
+        except (TypeError, ValueError):
+            pass
     # PO-number dedupe via the canonical po_number PROPERTY (then name as backstop).
     po_num = _norm_po_number(po.get("po_number"))
     if po_num:
