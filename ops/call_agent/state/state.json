@@ -197,10 +197,150 @@
     403382150,
     403383210,
     403634522,
-    403648755
+    403648755,
+    403654638,
+    403664055
   ],
-  "last_run_utc": "2026-08-12T17:14:16.661189+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-12T18:10:42.364003+00:00",
+  "pending_digest": [
+    {
+      "call_id": 403654638,
+      "number": "13104631221",
+      "time_pt": "10:21 AM",
+      "matched": true,
+      "contact_label": "Aly Daly",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Aly Daly to follow up on scheduling for her son Everson's math and Italian tutoring. Aly said she'd have the schedule figured out in the next 24-48 hours. Janelle informed her that the previous math tutor (Alstjen) is unavailable and she'll need to source a new math tutor, and is also checking availability with Cynthia (likely the Italian tutor). Call ended cordially with Janelle to follow up once Aly confirms scheduling.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Aly in 24-48 hours to collect Everson's preferred tutoring schedule",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Source a new math tutor for Everson since Alstjen is unavailable",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Confirm Cynthia's availability for Italian tutoring and coordinate schedule",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal receiving tutoring services; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Everson"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call re: scheduling for Everson's math and Italian tutoring. Aly will confirm preferred schedule within 24-48 hours.",
+          "what_we_can_do_to_help": "Need to source a new math tutor (Alstjen unavailable) and confirm Cynthia's availability for Italian. Coordinate schedule with Aly once she confirms preferences.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call re: scheduling for Everson's math and Italian tutoring. Aly will confirm preferred schedule within 24-48 hours."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Need to source a new math tutor (Alstjen unavailable) and confirm Cynthia's availability for Italian. Coordinate schedule with Aly once she confirms preferences."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Aly in 24-48 hours to collect Everson's preferred tutoring schedule",
+          80047202
+        ],
+        [
+          "Source a new math tutor for Everson since Alstjen is unavailable",
+          80047202
+        ],
+        [
+          "Confirm Cynthia's availability for Italian tutoring and coordinate schedule",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403664055,
+      "number": "18189120914",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Tasame Savathasuk",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Tasame Savathasuk, an existing customer whose sons are working with tutors Aisha and Sonia. The call went to voicemail; Paola left a message asking Tasame to reach out to discuss how tutoring is going. No response or new information was gathered.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Tasame; if no response, try again in a few days to check in on tutoring progress with Aisha and Sonia",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal already receiving tutoring; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola called to check in on how tutoring is going with Aisha and Sonia; reached voicemail and left a message asking Tasame to call back when he has time to connect.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called to check in on how tutoring is going with Aisha and Sonia; reached voicemail and left a message asking Tasame to call back when he has time to connect."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Tasame; if no response, try again in a few days to check in on tutoring progress with Aisha and Sonia",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
