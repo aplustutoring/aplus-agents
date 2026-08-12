@@ -199,9 +199,11 @@
     403634522,
     403648755,
     403654638,
-    403664055
+    403664055,
+    403685678,
+    403708434
   ],
-  "last_run_utc": "2026-08-12T18:10:42.364003+00:00",
+  "last_run_utc": "2026-08-12T19:28:36.505907+00:00",
   "pending_digest": [
     {
       "call_id": 403654638,
@@ -339,6 +341,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 403685678,
+      "number": "13102000502",
+      "time_pt": "11:11 AM",
+      "matched": true,
+      "contact_label": "Karine Shahar",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Karine Shahar, an existing A+ customer and mother of student Noa, called while traveling because texts to our number weren't going through and Noa had trouble with a session link. She resent Noa the second email and provided Noa's phone number so we can contact her directly. Karine asked that we CC Noa on all future session reminders since Karine is a single mom traveling and can't manage all communications herself. Yolanda confirmed we have Noa's email on file and agreed to loop her in going forward.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add Noa to the CC list on all future session reminders and confirmations",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Confirm Noa successfully joined her session after using the resent link",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Investigate why texts to our number aren't reaching Karine while she's traveling",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) calling about logistics for current tutoring service; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Noa"
+        ],
+        "record_updates": {
+          "whats_going_on": "Karine called while traveling \u2014 session link wasn't working for Noa and texts to our number aren't going through for her. She resent Noa the second email and provided Noa's phone number so we can reach her directly.",
+          "what_we_can_do_to_help": "Start CC'ing Noa on all session reminders/confirmations going forward (Karine is a single mom and traveling, can't always relay info). Confirm Noa was able to join after the resent link, and troubleshoot the texting issue.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Karine called while traveling \u2014 session link wasn't working for Noa and texts to our number aren't going through for her. She resent Noa the second email and provided Noa's phone number so we can reach her directly."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Start CC'ing Noa on all session reminders/confirmations going forward (Karine is a single mom and traveling, can't always relay info). Confirm Noa was able to join after the resent link, and troubleshoot the texting issue."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add Noa to the CC list on all future session reminders and confirmations",
+          86868539
+        ],
+        [
+          "Confirm Noa successfully joined her session after using the resent link",
+          86868539
+        ],
+        [
+          "Investigate why texts to our number aren't reaching Karine while she's traveling",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
