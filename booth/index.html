@@ -62,7 +62,13 @@
   .ac-tr{top:12px;right:12px;border-left:none;border-bottom:none;border-radius:0 22px 0 0;}
   .ac-bl{bottom:12px;left:12px;border-right:none;border-top:none;border-radius:0 0 0 22px;}
   .ac-br{bottom:12px;right:12px;border-left:none;border-top:none;border-radius:0 0 22px 0;}
-  .attract-brands{position:absolute;bottom:44px;left:0;right:0;text-align:center;font-weight:700;font-size:15px;color:var(--sage-soft);letter-spacing:.06em;}
+  .attract-brands{
+    position:absolute;bottom:38px;left:0;right:0;
+    display:flex;align-items:center;justify-content:center;gap:20px;
+    font-weight:700;font-size:15px;color:var(--sage-soft);letter-spacing:.06em;
+  }
+  .attract-brands img{height:92px;width:auto;display:block;}
+  .attract-brands .brand-x{color:var(--gold);font-size:20px;font-weight:800;}
 
   /* ---------- Shared chrome ---------- */
   .step-eyebrow{
@@ -218,7 +224,11 @@ const CONFIG = {
   <h1>Snap your <em>back-to-school</em> photo</h1>
   <div class="attract-sub">Free keepsake photo &mdash; emailed or printed on the spot</div>
   <button class="attract-cta">Tap to start</button>
-  <div class="attract-brands">SAGE OAK CHARTER SCHOOLS &nbsp;&times;&nbsp; A+ TUTORING</div>
+  <div class="attract-brands">
+    <span>SAGE OAK CHARTER SCHOOLS</span>
+    <span class="brand-x">&times;</span>
+    <img src="logo-white.png" alt="A+ Tutoring">
+  </div>
 </div>
 
 <!-- ============ GOAL SELECT ============ -->
@@ -443,7 +453,7 @@ const CONFIG = {
     // Footer credit
     ctx.fillStyle="#46603F";
     ctx.font="700 26px 'Nunito Sans',sans-serif";
-    ctx.fillText("Powered by A+ Tutoring \u00B7 aplustutoring.com", W/2, H-58);
+    ctx.fillText("Powered by A+ Tutoring \u00B7 wetutorathome.com", W/2, H-58);
 
     state.photoDataUrl=canvas.toDataURL("image/jpeg",0.88);
     $("review-img").src=state.photoDataUrl;
