@@ -204,9 +204,10 @@
     403708434,
     403790865,
     403792041,
-    403802704
+    403802704,
+    403825916
   ],
-  "last_run_utc": "2026-08-12T22:12:10.637639+00:00",
+  "last_run_utc": "2026-08-12T23:04:10.034189+00:00",
   "pending_digest": [
     {
       "call_id": 403654638,
@@ -508,6 +509,68 @@
         ],
         [
           "Notify Christian's teacher of the schedule (Carla will handle on her end after confirmation)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 403825916,
+      "number": "18186422559",
+      "time_pt": "4:00 PM",
+      "matched": true,
+      "contact_label": "Hellen Cresor",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Hellen Cresor to follow up on a meeting that was booked for today. The call went to voicemail and Paola left a message asking Hellen to let her know a good time to connect. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up again with Hellen to reschedule the missed booked meeting",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail; no live conversation occurred and current status (Meeting Booked) is owned by the pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola called Hellen to follow up on today's booked meeting but reached voicemail. Left a message asking Hellen to share a good time to reconnect.",
+          "what_we_can_do_to_help": "Continue outreach to reschedule the missed meeting and re-engage Hellen about tutoring needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Hellen to follow up on today's booked meeting but reached voicemail. Left a message asking Hellen to share a good time to reconnect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach to reschedule the missed meeting and re-engage Hellen about tutoring needs."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up again with Hellen to reschedule the missed booked meeting",
           81494333
         ]
       ],
