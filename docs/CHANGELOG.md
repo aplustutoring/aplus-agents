@@ -59,9 +59,11 @@ future events APPEND options), `aplus_booth_goal` (banner text), `aplus_booth_de
 Added a new `events` contact property group — booth attendees can be any
 persona, so none of the 5 persona groups fit. LOCKED by Roman 2026-08-11:
 the `events` group + the event-tag append pattern (one multi-select property,
-future events append options) — decision-log number pending. Registry-only change:
-`create_properties.py` runs only after the PR merges; then verify in portal
-6312752 and add the 4 to KEEPERS.md.
+future events append options) — decision-log number pending. POST-MERGE
+EXECUTED same day (Roman: "run"): PR #65 squash-merged, `create_properties.py`
+run (4 created / 0 updated / 87 already in sync), all 4 verified live in
+portal 6312752 by independent API read (labels, group, options correct),
+KEEPERS.md +Events section (86→90).
 
 **Why:** Booth capture tools need declared properties (registry rule: never
 create ad hoc); event attendance is designed as one multi-select tag property
