@@ -1,0 +1,49 @@
+{
+ "list": {
+  "listId": "1176",
+  "listVersion": 1,
+  "createdAt": "2022-11-10T23:00:36.551Z",
+  "updatedAt": "2024-05-21T13:38:23.112Z",
+  "filtersUpdatedAt": "2022-11-10T23:00:36.551Z",
+  "processingStatus": "COMPLETE",
+  "createdById": "7738815",
+  "processingType": "DYNAMIC",
+  "objectTypeId": "0-1",
+  "name": "Ready for Onboarding to QBO",
+  "filterBranch": {
+   "filterBranches": [
+    {
+     "filterBranches": [],
+     "filters": [
+      {
+       "property": "is_the_online_tutor_ready_for_onboarding",
+       "operation": {
+        "operator": "IS_ANY_OF",
+        "includeObjectsWithNoValueSet": false,
+        "values": [
+         "Yes"
+        ],
+        "operationType": "ENUMERATION"
+       },
+       "filterType": "PROPERTY"
+      }
+     ],
+     "filterBranchType": "AND",
+     "filterBranchOperator": "AND"
+    }
+   ],
+   "filters": [],
+   "filterBranchType": "OR",
+   "filterBranchOperator": "OR"
+  },
+  "size": 32,
+  "listPermissions": {
+   "teamsWithEditAccess": [],
+   "usersWithEditAccess": []
+  },
+  "membershipSettings": {
+   "membershipTeamId": null,
+   "includeUnassigned": null
+  }
+ }
+}

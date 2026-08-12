@@ -84,3 +84,8 @@
 {"call_id": 403334374, "date_pt": "2026-08-11", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 5, "U3": 4, "U5": 2, "S4": 2}}
 {"call_id": 403352845, "date_pt": "2026-08-11", "agent": "Janelle Alinea", "direction": "incoming", "overall": 3.8, "scores": {"U1": 5, "U2": 4, "U3": 4, "U5": 3, "V1": 4, "V2": 3}}
 {"call_id": 403352144, "date_pt": "2026-08-11", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.5, "scores": {"U1": 4, "U3": 4, "U5": 3, "S4": 3}}
+{"call_id": 403380080, "date_pt": "2026-08-11", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 403382150, "date_pt": "2026-08-11", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 403654638, "date_pt": "2026-08-12", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 4, "U2": 4, "U3": 3, "U5": 3, "V1": 3, "V2": 2}}
+{"call_id": 403664055, "date_pt": "2026-08-12", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 4, "U3": 4, "U5": 2}}
+{"call_id": 403685678, "date_pt": "2026-08-12", "agent": "Yolanda Rico", "direction": "incoming", "overall": 2.4, "scores": {"U1": 2, "U2": 4, "U3": 3, "U4": 2, "U5": 2, "V1": 3, "V2": 1}}

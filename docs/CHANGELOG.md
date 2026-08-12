@@ -8,6 +8,48 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — Low-fill review round 1: iLead scheduling + tutor credentials un-kept (Roman)
+
+**What:** Roman's picks from low-fill-review.md: the whole Level-Up iLead
+scheduling set (7 contact per-day *_schedule_preference — previously #AP029
+family keepers, now un-kept; tutoring_frequency; when_would_you_like_the_
+tutoring_to_start; which_days_of_the_week_do_you_prefer_) + degree_received +
+university_attended. Outcome: degree_received + university_attended ARCHIVED;
+the 10 scheduling fields BLOCKED by two iLead intake forms (0-10a7465d…7f48,
+0-529c7788…7a66) — they archive the moment those forms are deleted (needs
+forms scope or UI). DEAL-side per-day preferences remain keepers. Removed the
+9 un-kept contact declarations from properties.yml (51→42 contacts);
+KEEPERS.md 90→81.
+
+**Why:** Roman 2026-08-11: "all level up ilead scheduling can be archived,
+that whole group. degree received archive, university archive."
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/{KEEPERS,contacts-proposal,low-fill-review}.md`.
+
+---
+
+## 2026-08-11 — QuickBooks refs archived + low-fill review list (Roman's orders)
+
+**What:** (1) "Archive all quickbooks references": the only two QBO assets in
+the portal scan — workflow `Quickbooks` (323730202, was ON) and list `Ready
+for Onboarding to QBO` (1176) — backed up to
+`ops/fleet-health/audit/backups/2026-08-11-quickbooks/` and DELETED
+(HubSpot-restorable ~90 days). (2) "All properties with under 150 contacts
+presented for review": counted fills for all 454 live custom contact
+properties; 378 are under 150 — organized by disposition in NEW
+`ops/hubspot-schema/consolidation/low-fill-review.md` (22 keepers FYI /
+168 keep-in-place / 112 storage-only / 52 already-retire / 4 new booth props /
+20 system) with a tick-box column for Roman's archive picks.
+
+**Why:** Roman 2026-08-11, verbatim orders. QBO context: no automation — Kath
+marks invoices in TW, Claude cowork records payments in TW, manual QBO sync.
+
+**Files:** `ops/hubspot-schema/consolidation/{automation-purge-proposal,low-fill-review}.md`,
+`ops/fleet-health/audit/backups/2026-08-11-quickbooks/` (new).
+
+---
+
 ## 2026-08-11 — Feedback-agent dedupe fix + automation purge proposal
 
 **What:** (1) Fixed the feedback agent double-filing reports: Slack retries land
@@ -32,6 +74,17 @@ needs Roman's web-app redeploy — not done.
 **Files:** `.github/workflows/feedback-{intake,digest,fix}.yml`,
 `corrections/content-build/` (dup removed), `ops/feedback-agent/state/state.json`,
 `ops/hubspot-schema/consolidation/automation-purge-proposal.md` (new).
+
+**Addendum (Roman's answers, same day):** callout 1 RESOLVED — `Non Charter/A+
+Sync to TW` is the LIVE path putting Gold + Free Trial deals into A+ Teachworks
+(deal_sync covers charter POs only): flow KEEP; `sync_to_teachworks_` and
+`sync_to_teachworks_slp` reclassified KEEP-IN-PLACE (only `_cap` still retires,
+with the CAP flows). Callout 3 context: NO QBO automation exists — Kath marks
+invoices in TW, Claude cowork records payments in TW, QBO synced manually; the
+`Ready for Onboarding to QBO` list + onboarding flow are the manual queue
+(KEEP; `is_the_online_tutor_ready_for_onboarding` + `business_license_on_file`
+reclassified KEEP-IN-PLACE). Contacts: KEEP-IN-PLACE 185→189,
+RETIRE-CANDIDATE 99→95. Verdicts now: 25 DELETE / 43 EDIT / 4 KEEP / 15 VERIFY.
 
 ---
 
@@ -146,6 +199,54 @@ create ad hoc); event attendance is designed as one multi-select tag property
 so each future event is an appended option, not a new property.
 
 **Files:** `ops/hubspot-schema/properties.yml`.
+
+---
+
+## 2026-08-11 — PO hours computed from rate + Kath's invoice fields + PO-PROCESS.md
+
+**What:** (1) Extractor now pulls the PO's HOURLY RATE; when hours aren't
+stated, they're computed (amount ÷ rate, e.g. $150 ÷ $75/hr = 2, fractional ok)
+and noted on the ticket — stated hours are never overwritten. (2) Kath's
+convert-to-invoice task now explicitly instructs filling `invoice__` (Invoice #)
+with the TW invoice number and confirming `lessons_fulfilled_date` (prefilled
+to the end of the PO month = the invoice due date). (3) NEW `docs/PO-PROCESS.md`:
+the complete PO-receipt reference — every stage, every property with its
+decision rule, and the human ownership table. Keep it in sync with po_inbox.py.
+
+**Why:** Roman (2026-08-11): "for PO hours, you might have to calculate. but
+our rate will be in the po. kath also has to fill out the properties of
+invoice number and invoice due date" + asked for the guided walkthrough.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 202 green), `docs/PO-PROCESS.md` (new).
+
+---
+
+## 2026-08-11 — SMS workflow audited: property routes (never suppresses) + schedule stamp
+
+**What:** Audited SMS flow 1603217415 ("Charter Traditional SMS New Deal
+Created", contact-based) end-to-end via the automation API. Findings: BOTH
+branches of `is_the_family_currently_being_tutored_by_us_` send the
+schedule-confirmation texts — "No" only adds an internal staff email + delay
+first; texts are per-CONTACT enrollment (re-armed when the flow clears
+`contact_level_deal_stage`), so frequency is structurally one text pair per kid
+per PO event, never daily. Two fixes from that: (1) REVERTED the sibling-deal
+"Yes" suppression (texts were never per-deal; the flow fetches ONE associated
+deal, so a lying sibling could skip the staff alert) — every deal now carries
+the true month-scoped value; the 10 sibling deals in-portal reset to "No".
+(2) The SMS inserts `{{schedule_preferences}}` from the DEAL — PO deals never
+had it, so charter texts ended in a BLANK. The agent now stamps it at PO time
+with the student's live TW schedule ("Wednesdays 3:30 PM with Sarah Lee"),
+derived from upcoming lessons, else the recent-lesson pattern (new
+upcoming_lessons/recent_lessons detail in tw.student_lesson_activity);
+nothing derivable → 🚩 gap DM instead of a half-written text.
+
+**Why:** Roman shared the live SMS workflow; reading it showed the property's
+real semantics (routing, not suppression) and the blank-schedule content bug.
+Roman: "yessssss. fix the schedule. i agree with it all."
+
+**Files:** `email/src/po_inbox.py`, `email/src/teachworks_client.py`,
+`email/tests/test_po_inbox.py` (suite 198 green).
 
 ---
 

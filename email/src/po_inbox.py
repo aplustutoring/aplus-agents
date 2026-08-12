@@ -34,9 +34,13 @@ PO_SYSTEM = (
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), pending_approval (bool), "
     "school, student_first, "
-    "student_last, grade, po_number, amount, hours, parent_first, parent_last, parent_email, "
+    "student_last, grade, po_number, amount, rate, hours, parent_first, parent_last, "
+    "parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, po_month, level_up (bool), summary, "
     "draft_reply, confidence (0-1)}. "
+    "rate = the HOURLY RATE stated in the PO (number only, e.g. 75). hours = the hours "
+    "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
+    "we compute it. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Order Agreements / Vendor Agreement Forms that list purchase orders for a "
     "student (the OPS/iLEAD pattern) ARE POs even when the document is stamped 'THIS IS "
@@ -143,6 +147,38 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
     missing = [k for k, v in values.items() if not v]
     if missing:
         note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
+
+
+def _fmt_time(hhmm: str) -> str:
+    """'15:30' → '3:30 PM'; anything unparseable comes back as-is."""
+    try:
+        h, m = (hhmm or "").split(":")
+        h = int(h)
+        return f"{(h - 1) % 12 + 1}:{m} {'PM' if h >= 12 else 'AM'}"
+    except (ValueError, AttributeError):
+        return hhmm or ""
+
+
+def _schedule_text(lessons: list[dict]) -> str:
+    """Human schedule line for the SMS from lesson slots — grouped into
+    recurring (weekday, time, tutor) patterns, most frequent first:
+    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'."""
+    from collections import Counter
+    from datetime import date as _date
+    slots: Counter = Counter()
+    for l in lessons or []:
+        try:
+            wd = _date.fromisoformat(str(l.get("date"))[:10]).strftime("%A")
+        except ValueError:
+            continue
+        slots[(wd, (l.get("time") or "").strip(), (l.get("tutor") or "").strip())] += 1
+    parts = []
+    for (wd, t, tut), _n in slots.most_common(4):
+        bit = wd + "s" + (f" {_fmt_time(t)}" if t else "")
+        if tut:
+            bit += f" with {tut}"
+        parts.append(bit)
+    return ", ".join(parts)
 
 
 def _student_activity(email: str, student_first: str, cache: dict | None = None):
@@ -380,11 +416,16 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
         pending_line = ("\n⏳ PO is PENDING school approval (order agreement) — confirm it is "
                         "approved before submitting the invoice." if po.get("pending_approval") else "")
+        rate_bit = f" @ ${po.get('rate')}/hr" if po.get("rate") else ""
         body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual)."
                 f"{pending_line}\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
                 f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
-                f"Hours: {po.get('hours') or 'n/a'}\n{submit_line}\n"
+                f"Hours: {po.get('hours') or 'n/a'}{rate_bit}\n"
+                f"{submit_line}\n"
+                f"THEN fill on the HubSpot deal: 'Invoice #' (the TW invoice number) and "
+                f"confirm 'Expected Lessons Fulfilled Date' (prefilled to the end of the "
+                f"PO month — that's the invoice due date).\n"
                 f"HubSpot deal id: {deal_id}. The PO PDF is attached to the deal; the family/"
                 f"student are created in Teachworks by the deal sync.")
         hs.create_task(f"Convert PO to TW invoice — {student} ({po.get('school') or '?'}, "
@@ -748,6 +789,18 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
     if not token:
         note_parts.append("💼 No student/school extracted — no deal action; review manually.")
         return
+    # PO hours: schools often state only amount + hourly rate — compute them
+    # (Roman, 2026-08-11: "you might have to calculate; our rate will be in the PO").
+    if not po.get("hours"):
+        try:
+            amt = float(str(po.get("amount") or "").replace(",", "") or 0)
+            rate = float(str(po.get("rate") or "").replace(",", "") or 0)
+            if amt > 0 and rate > 0:
+                po["hours"] = f"{amt / rate:g}"
+                note_parts.append(f"🧮 Hours computed from the PO: ${amt:g} ÷ "
+                                  f"${rate:g}/hr = {po['hours']} hrs.")
+        except (TypeError, ValueError):
+            pass
     # PO-number dedupe via the canonical po_number PROPERTY (then name as backstop).
     po_num = _norm_po_number(po.get("po_number"))
     if po_num:
@@ -850,27 +903,23 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                            "lands the contact is auto-created and associated, ")
         if contact_id and not parent_name and p_email:
             parent_name = p_email.split("@")[0]
-        # "Is the family currently being tutored by us?" gates the scheduling-text
-        # workflow. THE RULE (Roman, 2026-08-11, student-level, CALENDAR-ONLY):
-        # Yes = THIS student has a lesson booked in Teachworks; No = nothing on
-        # the calendar, period — they need the text (recent lessons don't excuse
-        # it). Unverifiable → left unset and flagged (gap DM to Kath + Roman).
-        # ONE text per KID (Roman, 2026-08-11): a multi-PO email is always one
-        # student, so its sibling deals (seq_offset>0) are stamped Yes and the
-        # texting workflow fires on the FIRST deal only (9 POs ≠ 9 texts). A
-        # different kid's POs arrive in their own email → their own text.
+        # "Is the family currently being tutored by us?" ROUTES the SMS workflow
+        # (verified against flow 1603217415, 2026-08-11): BOTH values text the
+        # family a schedule-confirmation; "No" additionally alerts staff by
+        # internal email first. Text frequency is safe at the workflow level —
+        # it's contact-based, one enrollment at a time, re-armed per PO event.
+        # THE RULE (Roman, student-level, MONTH-SCOPED, true value on EVERY
+        # deal): Yes = THIS student has a lesson booked in the PO's service
+        # month (month unknown → any upcoming); No = that month is unbooked.
+        # Unverifiable → left unset and flagged (gap DM to Kath + Roman).
         act = (_student_activity(parent_email_res, po.get("student_first") or "",
                                  tw_cache) if parent_email_res else None)
         tw_note = None
         if parent_email_res and act is None:
             tw_note = ("⚠️ Could not verify the Teachworks calendar — set 'Is the family "
-                       "currently being tutored by us?' on the deal manually (it gates "
+                       "currently being tutored by us?' on the deal manually (it routes "
                        "scheduling texts).")
         elif act is not None:
-            # MONTH-SCOPED (Roman, 2026-08-11): a new month's PO must text the
-            # family unless THAT month already has lessons booked — leftover
-            # current-month lessons don't cover September. PO month unknown →
-            # fall back to any-upcoming.
             month_end = _po_month_end(po.get("po_month") or "")
             if month_end is not None:
                 pref = month_end.strftime("%Y-%m")
@@ -879,12 +928,19 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             else:
                 tutored = bool(act.get("upcoming"))
             extra["is_the_family_currently_being_tutored_by_us_"] = \
-                "Yes" if (tutored or seq_offset > 0) else "No"
-            if not tutored and seq_offset > 0:
-                sup = ("📵 Same-student sibling deals stamped 'Yes' on currently-tutored "
-                       "so the scheduling-text workflow fires ONCE per kid, not per PO month.")
-                if sup not in note_parts:
-                    note_parts.append(sup)
+                "Yes" if tutored else "No"
+            # The SMS reads {{schedule_preferences}} off the DEAL — PO deals never
+            # had it, so charter texts ended "...still works for you: " BLANK.
+            # Stamp the student's live TW schedule (upcoming slots, else the
+            # recent pattern); nothing derivable → gap DM, text needs a human.
+            sched_pref = (_schedule_text(act.get("upcoming_lessons") or [])
+                          or _schedule_text(act.get("recent_lessons") or []))
+            if sched_pref:
+                extra["schedule_preferences"] = sched_pref
+            else:
+                tw_note = ("⚠️ No TW schedule to put in the SMS "
+                           "(schedule_preferences blank) — the confirmation text "
+                           "will be incomplete; set the schedule manually.")
         upcoming = act.get("upcoming") if act else None
         name = _deal_name(po, parent_name, note_parts, seq_offset)
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]

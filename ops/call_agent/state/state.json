@@ -190,43 +190,57 @@
     403352845,
     403354539,
     403352144,
-    403358594
+    403358594,
+    403383681,
+    403385784,
+    403380080,
+    403382150,
+    403383210,
+    403634522,
+    403648755,
+    403654638,
+    403664055,
+    403685678,
+    403708434
   ],
-  "last_run_utc": "2026-08-12T00:01:15.480252+00:00",
+  "last_run_utc": "2026-08-12T19:28:36.505907+00:00",
   "pending_digest": [
     {
-      "call_id": 403172053,
-      "number": "13108941830",
-      "time_pt": "9:45 AM",
+      "call_id": 403654638,
+      "number": "13104631221",
+      "time_pt": "10:21 AM",
       "matched": true,
-      "contact_label": "Hope Mclendon",
+      "contact_label": "Aly Daly",
       "no_next_step": false,
       "summary": {
-        "summary": "Yolanda from A+ Tutoring called Hope Mclendon about package renewal for her daughter Luna. Hope confirmed her husband will call this week to renew Luna's package and add her 5-year-old, Ocean. Yesterday's canceled lesson will be made up this Wednesday (Luna already has a lesson that day, adding one hour), and regular schedule resumes next week.",
+        "summary": "Janelle from A+ Tutoring called Aly Daly to follow up on scheduling for her son Everson's math and Italian tutoring. Aly said she'd have the schedule figured out in the next 24-48 hours. Janelle informed her that the previous math tutor (Alstjen) is unavailable and she'll need to source a new math tutor, and is also checking availability with Cynthia (likely the Italian tutor). Call ended cordially with Janelle to follow up once Aly confirms scheduling.",
         "caller_type": "parent",
         "intent": "scheduling",
-        "sentiment": "positive",
+        "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Reschedule Luna's canceled lesson to this Wednesday (add one hour to her existing Wednesday session)",
-            "owner_hint": "Yolanda"
+            "item": "Follow up with Aly in 24-48 hours to collect Everson's preferred tutoring schedule",
+            "owner_hint": "Janelle"
           },
           {
-            "item": "Await husband's call this week regarding package renewal for Luna and adding Ocean (age 5)",
-            "owner_hint": null
+            "item": "Source a new math tutor for Everson since Alstjen is unavailable",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Confirm Cynthia's availability for Italian tutoring and coordinate schedule",
+            "owner_hint": "Janelle"
           }
         ],
         "follow_up_needed": true,
-        "next_step_scheduled": true,
+        "next_step_scheduled": false,
         "lead_status": "no_change",
-        "lead_status_reason": "Existing customer with an active deal/service; status owned by deal pipeline.",
+        "lead_status_reason": "Existing customer with an open deal receiving tutoring services; status owned by deal pipeline.",
         "student_or_school_names_mentioned": [
-          "Luna",
-          "Ocean"
+          "Everson"
         ],
         "record_updates": {
-          "whats_going_on": "Yolanda reached Hope about package renewal. Hope confirmed her husband will call this week to renew Luna's package and also add Ocean, their 5-year-old. Yesterday's lesson was canceled; Hope agreed to add that hour onto Luna's existing Wednesday lesson this week, with regular schedule resuming next week.",
-          "what_we_can_do_to_help": "Add the canceled lesson hour onto Luna's Wednesday session this week, hold renewal discussion for husband's call later this week, and be ready to enroll Ocean (age 5) alongside Luna's renewal.",
+          "whats_going_on": "Follow-up call re: scheduling for Everson's math and Italian tutoring. Aly will confirm preferred schedule within 24-48 hours.",
+          "what_we_can_do_to_help": "Need to source a new math tutor (Alstjen unavailable) and confirm Cynthia's availability for Italian. Coordinate schedule with Aly once she confirms preferences.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -244,23 +258,27 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Yolanda reached Hope about package renewal. Hope confirmed her husband will call this week to renew Luna's package and also add Ocean, their 5-year-old. Yesterday's lesson was canceled; Hope agreed to add that hour onto Luna's existing Wednesday lesson this week, with regular schedule resuming next week."
+          "Follow-up call re: scheduling for Everson's math and Italian tutoring. Aly will confirm preferred schedule within 24-48 hours."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Add the canceled lesson hour onto Luna's Wednesday session this week, hold renewal discussion for husband's call later this week, and be ready to enroll Ocean (age 5) alongside Luna's renewal."
+          "Need to source a new math tutor (Alstjen unavailable) and confirm Cynthia's availability for Italian. Coordinate schedule with Aly once she confirms preferences."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Reschedule Luna's canceled lesson to this Wednesday (add one hour to her existing Wednesday session)",
-          86868539
+          "Follow up with Aly in 24-48 hours to collect Everson's preferred tutoring schedule",
+          80047202
         ],
         [
-          "Await husband's call this week regarding package renewal for Luna and adding Ocean (age 5)",
-          81494333
+          "Source a new math tutor for Everson since Alstjen is unavailable",
+          80047202
+        ],
+        [
+          "Confirm Cynthia's availability for Italian tutoring and coordinate schedule",
+          80047202
         ]
       ],
       "ticket_id": null,
@@ -268,83 +286,30 @@
       "direction": "outgoing"
     },
     {
-      "call_id": 403311361,
-      "number": "17252911288",
-      "time_pt": "1:44 PM",
-      "matched": false,
-      "contact_label": null,
+      "call_id": 403664055,
+      "number": "18189120914",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Tasame Savathasuk",
       "no_next_step": false,
       "summary": {
-        "summary": "Paola from A+ Tutoring made an outbound call to a Las Vegas, NV number attempting to reach a prospective family. The person who answered claimed to be from a 'subsidy department' and the exchange was confused and circular, with no productive conversation. Paola ended the call politely. This appears to be a bad/spam number, not a legitimate contact.",
-        "caller_type": "spam",
-        "intent": "other",
-        "sentiment": "negative",
-        "action_items": [
-          {
-            "item": "Flag the Las Vegas NV phone number as bad/non-responsive in the CRM",
-            "owner_hint": null
-          }
-        ],
-        "follow_up_needed": false,
-        "next_step_scheduled": true,
-        "lead_status": "UNQUALIFIED",
-        "lead_status_reason": "Outbound call reached a confused/uncooperative party (claimed 'subsidy department') with no meaningful engagement; treat as bad number/spam.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Outbound attempt to reach this contact went to a Las Vegas, NV number where the person who answered was confused, claimed to be from a 'subsidy department,' and no productive conversation occurred.",
-          "what_we_can_do_to_help": "Verify we have correct contact info for this family before further outreach; consider the number on file may be wrong or reassigned.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Flag the Las Vegas NV phone number as bad/non-responsive in the CRM",
-          81494333
-        ]
-      ],
-      "ticket_id": "47486391181",
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 403321152,
-      "number": "14155332005",
-      "time_pt": "2:03 PM",
-      "matched": true,
-      "contact_label": "Tatjana Schlothauer",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Tatjana Schlothauer regarding tutoring for her daughter Isabella. The call went to voicemail, and Paola left a message inviting Tatjana to reach out if A+ can help. No new information was obtained.",
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Tasame Savathasuk, an existing customer whose sons are working with tutors Aisha and Sonia. The call went to voicemail; Paola left a message asking Tasame to reach out to discuss how tutoring is going. No response or new information was gathered.",
         "caller_type": "parent",
-        "intent": "new inquiry",
+        "intent": "other",
         "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Await callback from Tatjana; consider another follow-up attempt if no response within a week",
+            "item": "Await callback from Tasame; if no response, try again in a few days to check in on tutoring progress with Aisha and Sonia",
             "owner_hint": "Paola"
           }
         ],
         "follow_up_needed": true,
-        "next_step_scheduled": false,
+        "next_step_scheduled": true,
         "lead_status": "no_change",
-        "lead_status_reason": "Voicemail left; no contact made and current status ('Using Someone Else') should not be changed without new information from the family.",
-        "student_or_school_names_mentioned": [
-          "Isabella"
-        ],
+        "lead_status_reason": "Existing customer with an open deal already receiving tutoring; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
         "record_updates": {
-          "whats_going_on": "Paola left a voicemail following up on the family's earlier interest in AP exam tutoring for Isabella. No response yet from Tatjana.",
+          "whats_going_on": "Paola called to check in on how tutoring is going with Aisha and Sonia; reached voicemail and left a message asking Tasame to call back when he has time to connect.",
           "what_we_can_do_to_help": null,
           "student_first_name": null,
           "student_last_name": null,
@@ -363,13 +328,13 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Paola left a voicemail following up on the family's earlier interest in AP exam tutoring for Isabella. No response yet from Tatjana."
+          "Paola called to check in on how tutoring is going with Aisha and Sonia; reached voicemail and left a message asking Tasame to call back when he has time to connect."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Await callback from Tatjana; consider another follow-up attempt if no response within a week",
+          "Await callback from Tasame; if no response, try again in a few days to check in on tutoring progress with Aisha and Sonia",
           81494333
         ]
       ],
@@ -378,209 +343,41 @@
       "direction": "outgoing"
     },
     {
-      "call_id": 403331837,
-      "number": "12137844179",
-      "time_pt": "2:28 PM",
-      "matched": false,
-      "contact_label": null,
+      "call_id": 403685678,
+      "number": "13102000502",
+      "time_pt": "11:11 AM",
+      "matched": true,
+      "contact_label": "Karine Shahar",
       "no_next_step": false,
       "summary": {
-        "summary": "An inbound caller asked if anyone at A+ Tutoring speaks Russian. Janelle did not, but attempted to transfer the call to Roman, who apparently speaks Russian. The transcript cuts off just as the caller and Roman begin connecting, so the substance of the inquiry (likely a tutoring question) was not captured here.",
-        "caller_type": "other",
-        "intent": "other",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Confirm Roman successfully connected with the Russian-speaking caller and capture the details of her inquiry (likely tutoring need) for CRM follow-up.",
-            "owner_hint": "Roman"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "lead_status": "no_change",
-        "lead_status_reason": "Call was too garbled/incomplete to classify \u2014 caller was transferred to a Russian speaker (Roman) before any substantive inquiry was captured in this transcript.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Russian-speaking caller phoned in and asked to speak with someone in Russian. Janelle transferred the call to Roman; the substance of the inquiry was not captured on the English portion of the call.",
-          "what_we_can_do_to_help": "Roman to follow up in Russian to learn what the caller needs and log the family's tutoring details into the CRM.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Confirm Roman successfully connected with the Russian-speaking caller and capture the details of her inquiry (likely tutoring need) for CRM follow-up.",
-          38681249
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 403330181,
-      "number": "18082828769",
-      "time_pt": "2:25 PM",
-      "matched": true,
-      "contact_label": "Shannon Troy",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Shannon Troy regarding tutoring for her son Atlas. The call went to voicemail; Paola left a message asking Shannon to call back to continue the conversation about tutoring sessions. No new information was gathered.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await Shannon's callback; if no response, attempt another follow-up contact",
-            "owner_hint": "Paola"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing prospective family already at 'QTL - Diagnostic Sent'; voicemail left with no new info to change status.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back at a convenient time.",
-          "what_we_can_do_to_help": "Continue follow-up outreach until we reach Shannon to move forward with tutoring plan and pricing decision for Atlas.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back at a convenient time."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Continue follow-up outreach until we reach Shannon to move forward with tutoring plan and pricing decision for Atlas."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await Shannon's callback; if no response, attempt another follow-up contact",
-          81494333
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 403334374,
-      "number": "18188261069",
-      "time_pt": "2:36 PM",
-      "matched": true,
-      "contact_label": "Blanca Perez",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Blanca Perez, who had previously reached out about tutoring for her son Joseph. The call went to voicemail and Paola left a brief message asking Blanca to return the call at her convenience. No new information was gathered.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Continue follow-up attempts with Blanca Perez to schedule tutoring for Joseph",
-            "owner_hint": "Paola"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing open deal / prior inquiry; voicemail left with no new info, so status is owned by the deal pipeline.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Paola left a voicemail following up on Blanca's prior tutoring inquiry for her son. No return contact yet.",
-          "what_we_can_do_to_help": "Awaiting callback from Blanca to schedule sessions; continue follow-up outreach.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Paola left a voicemail following up on Blanca's prior tutoring inquiry for her son. No return contact yet."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Awaiting callback from Blanca to schedule sessions; continue follow-up outreach."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Continue follow-up attempts with Blanca Perez to schedule tutoring for Joseph",
-          81494333
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 403352845,
-      "number": "14153619796",
-      "time_pt": "3:32 PM",
-      "matched": true,
-      "contact_label": "Christin Chi",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Christin Chi called to cancel her daughter Lily's 4:30 tutoring session with Shay today because Lily is feeling sick. Janelle confirmed the session on file and said she would notify Shay of the cancellation. Christin acknowledged the session fee would not be refunded. Call ended cordially.",
+        "summary": "Karine Shahar, an existing A+ customer and mother of student Noa, called while traveling because texts to our number weren't going through and Noa had trouble with a session link. She resent Noa the second email and provided Noa's phone number so we can contact her directly. Karine asked that we CC Noa on all future session reminders since Karine is a single mom traveling and can't manage all communications herself. Yolanda confirmed we have Noa's email on file and agreed to loop her in going forward.",
         "caller_type": "parent",
         "intent": "scheduling",
-        "sentiment": "neutral",
+        "sentiment": "positive",
         "action_items": [
           {
-            "item": "Notify tutor Shay that Lily's 4:30 today session is cancelled due to illness",
-            "owner_hint": "Janelle"
+            "item": "Add Noa to the CC list on all future session reminders and confirmations",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Confirm Noa successfully joined her session after using the resent link",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Investigate why texts to our number aren't reaching Karine while she's traveling",
+            "owner_hint": null
           }
         ],
         "follow_up_needed": true,
         "next_step_scheduled": true,
         "lead_status": "no_change",
-        "lead_status_reason": "Existing/past customer actively receiving tutoring \u2014 status is owned by the deal pipeline.",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) calling about logistics for current tutoring service; status owned by deal pipeline.",
         "student_or_school_names_mentioned": [
-          "Lily",
-          "Shay"
+          "Noa"
         ],
         "record_updates": {
-          "whats_going_on": "Christin called to cancel Lily's 4:30 tutoring session today with Shay because Lily is sick. Understands the session fee is non-refundable.",
-          "what_we_can_do_to_help": "Notify Shay of the cancellation and reschedule Lily's next session once she's feeling better.",
+          "whats_going_on": "Karine called while traveling \u2014 session link wasn't working for Noa and texts to our number aren't going through for her. She resent Noa the second email and provided Noa's phone number so we can reach her directly.",
+          "what_we_can_do_to_help": "Start CC'ing Noa on all session reminders/confirmations going forward (Karine is a single mom and traveling, can't always relay info). Confirm Noa was able to join after the resent link, and troubleshoot the texting issue.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -598,99 +395,34 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Christin called to cancel Lily's 4:30 tutoring session today with Shay because Lily is sick. Understands the session fee is non-refundable."
+          "Karine called while traveling \u2014 session link wasn't working for Noa and texts to our number aren't going through for her. She resent Noa the second email and provided Noa's phone number so we can reach her directly."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Notify Shay of the cancellation and reschedule Lily's next session once she's feeling better."
+          "Start CC'ing Noa on all session reminders/confirmations going forward (Karine is a single mom and traveling, can't always relay info). Confirm Noa was able to join after the resent link, and troubleshoot the texting issue."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Notify tutor Shay that Lily's 4:30 today session is cancelled due to illness",
-          80047202
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 403352144,
-      "number": "13105677628",
-      "time_pt": "3:30 PM",
-      "matched": true,
-      "contact_label": "Nicole Pifko",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Paola from A+ Tutoring called Nicole Pifko to follow up on a meeting that had been booked for today. Nicole did not answer; a child briefly picked up and said mom would call back. Paola left a voicemail asking Nicole to let her know a good time to reconnect.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await Nicole's callback to reschedule the missed meeting; if no response, attempt another follow-up.",
-            "owner_hint": "Paola"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "lead_status": "We Connected",
-        "lead_status_reason": "Existing prospective family already at 'We Connected'; left a voicemail so no change warranted.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Follow-up call from Paola regarding today's scheduled meeting. Nicole did not answer; a child answered briefly and said mom would call back. Voicemail left requesting a good time to reconnect.",
-          "what_we_can_do_to_help": "Reconnect with Nicole to reschedule the missed meeting and continue moving forward with tutoring plans for Whitney.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Follow-up call from Paola regarding today's scheduled meeting. Nicole did not answer; a child answered briefly and said mom would call back. Voicemail left requesting a good time to reconnect."
+          "Add Noa to the CC list on all future session reminders and confirmations",
+          86868539
         ],
         [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Reconnect with Nicole to reschedule the missed meeting and continue moving forward with tutoring plans for Whitney."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
+          "Confirm Noa successfully joined her session after using the resent link",
+          86868539
+        ],
         [
-          "Await Nicole's callback to reschedule the missed meeting; if no response, attempt another follow-up.",
+          "Investigate why texts to our number aren't reaching Karine while she's traveling",
           81494333
         ]
       ],
       "ticket_id": null,
       "coached": true,
-      "direction": "outgoing"
+      "direction": "incoming"
     }
   ],
-  "pending_skipped": [
-    {
-      "number": "18188052160",
-      "time_pt": "1:25 PM",
-      "reason": "hang-up"
-    },
-    {
-      "number": "18026249013",
-      "time_pt": "3:57 PM",
-      "reason": "no transcript"
-    }
-  ],
+  "pending_skipped": [],
   "pending_failures": []
 }

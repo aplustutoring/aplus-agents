@@ -1126,10 +1126,10 @@ def test_currently_tutored_calendar_only_recent_lessons_dont_count(monkeypatch):
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
 
 
-def test_multi_po_email_one_scheduling_text_per_kid(monkeypatch):
-    # one text per KID: 9 POs in one email (always one student) must NOT mean
-    # 9 texts — only the first deal carries "No"; same-student siblings "Yes".
-    # A second kid's POs arrive in their own email → their own "No" → own text.
+def test_multi_po_email_every_deal_gets_true_value(monkeypatch):
+    # SMS workflow 1603217415 is CONTACT-based (one enrollment per PO event),
+    # so per-deal suppression is pointless — and it fetches ONE associated deal,
+    # so a lying sibling could skip the staff alert. Every deal carries truth.
     captured = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
@@ -1140,12 +1140,80 @@ def test_multi_po_email_one_scheduling_text_per_kid(monkeypatch):
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props["is_the_family_currently_being_tutored_by_us_"])
                         or {"id": "D"})
-    notes = []
     po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
         {"po_number": "A1", "amount": "100"}, {"po_number": "A2", "amount": "100"},
-        {"po_number": "A3", "amount": "100"}]), notes)
-    assert captured == ["No", "Yes", "Yes"]
-    assert any("ONCE per kid" in n for n in notes)
+        {"po_number": "A3", "amount": "100"}]), [])
+    assert captured == ["No", "No", "No"]
+
+
+# ── schedule_preferences stamp: the SMS must never end in a blank ────────────
+
+def test_schedule_stamped_from_upcoming_lessons(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30:
+                        {"found": True, "recent": 0, "upcoming": 2,
+                         "upcoming_dates": ["2026-08-12", "2026-08-19"],
+                         "upcoming_lessons": [
+                             {"date": "2026-08-12", "time": "15:30", "tutor": "Sarah Lee"},
+                             {"date": "2026-08-19", "time": "15:30", "tutor": "Sarah Lee"}]})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-08"), [])
+    assert captured[0]["schedule_preferences"] == "Wednesdays 3:30 PM with Sarah Lee"
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
+
+
+def test_schedule_falls_back_to_recent_pattern(monkeypatch):
+    # nothing booked (new month) but the student's recent rhythm is known →
+    # the SMS confirms THAT pattern instead of ending in a blank
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30:
+                        {"found": True, "recent": 2, "upcoming": 0, "upcoming_dates": [],
+                         "upcoming_lessons": [],
+                         "recent_lessons": [
+                             {"date": "2026-08-04", "time": "16:00", "tutor": "Olsjon"},
+                             {"date": "2026-08-11", "time": "16:00", "tutor": "Olsjon"}]})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-09"), [])
+    assert captured[0]["schedule_preferences"] == "Tuesdays 4:00 PM with Olsjon"
+    assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
+
+
+def test_no_schedule_derivable_flags_gap(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30: {"found": False, "recent": 0, "upcoming": 0})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com"), notes)
+    assert "schedule_preferences" not in captured[0]
+    gap = [n for n in notes if "schedule_preferences blank" in n]
+    assert gap and gap[0] in po._gap_notes(notes)
+
+
+def test_schedule_text_formatting():
+    assert po._fmt_time("15:30") == "3:30 PM"
+    assert po._fmt_time("09:05") == "9:05 AM"
+    assert po._fmt_time("00:15") == "12:15 AM"
+    assert po._fmt_time("12:00") == "12:00 PM"
+    lessons = [{"date": "2026-08-12", "time": "15:30", "tutor": "Sarah"},
+               {"date": "2026-08-19", "time": "15:30", "tutor": "Sarah"},
+               {"date": "2026-08-14", "time": "10:00", "tutor": ""}]
+    assert po._schedule_text(lessons) == "Wednesdays 3:30 PM with Sarah, Fridays 10:00 AM"
+    assert po._schedule_text([]) == ""
 
 
 def test_currently_tutored_no_when_inactive_or_unknown_student(monkeypatch):
@@ -1246,3 +1314,54 @@ def test_po_month_already_booked_no_text(monkeypatch):
                         captured.append(extra_props) or {"id": "D1"})
     po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-09"), [])
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
+
+
+# ── PO hours computed from amount ÷ rate (Roman, 2026-08-11) ─────────────────
+
+def test_hours_computed_from_amount_and_rate(monkeypatch):
+    captured, tasks = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda subj, body, owner, due, priority="MEDIUM", contact_id=None:
+                        tasks.append(body) or {"id": "T"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="75", amount="150"), notes)
+    assert captured[0]["number_of_hours_in_this_po"] == "2"
+    assert any("Hours computed" in n and "$150 ÷ $75/hr = 2 hrs" in n for n in notes)
+    assert tasks and "Hours: 2 @ $75/hr" in tasks[0]
+    assert "Invoice #" in tasks[0] and "Expected Lessons Fulfilled Date" in tasks[0]
+
+
+def test_hours_stated_never_overwritten(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(hours="10", rate="75", amount="150"), [])
+    assert captured[0]["number_of_hours_in_this_po"] == "10"
+
+
+def test_no_rate_no_computation(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="", amount="150"), notes)
+    assert "number_of_hours_in_this_po" not in captured[0]
+    assert not any("Hours computed" in n for n in notes)
+
+
+def test_fractional_hours_computed(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(hours="", rate="75", amount="112.50"), [])
+    assert captured[0]["number_of_hours_in_this_po"] == "1.5"

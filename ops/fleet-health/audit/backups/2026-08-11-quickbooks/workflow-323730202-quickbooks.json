@@ -1,0 +1,93 @@
+{
+ "id": "323730202",
+ "isEnabled": true,
+ "objectTypeId": "0-101",
+ "flowType": "WORKFLOW",
+ "revisionId": "8",
+ "name": "Quickbooks",
+ "description": "Delays 24 hours before creating a QuickBooks sales receipt for contacts with a one-time payment type.",
+ "createdAt": "2023-02-03T20:50:47.307Z",
+ "updatedAt": "2026-08-06T01:10:02.793Z",
+ "startActionId": "2",
+ "nextAvailableActionId": "3",
+ "actions": [
+  {
+   "actionId": "2",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-1",
+   "fields": {
+    "delta": "1440",
+    "time_unit": "MINUTES"
+   },
+   "type": "SINGLE_CONNECTION"
+  }
+ ],
+ "enrollmentCriteria": {
+  "shouldReEnroll": true,
+  "listFilterBranch": {
+   "filterBranches": [
+    {
+     "filterBranches": [],
+     "filters": [
+      {
+       "property": "hs_payment_type",
+       "operation": {
+        "operator": "IS_ANY_OF",
+        "includeObjectsWithNoValueSet": false,
+        "values": [
+         "one_time_or_initial"
+        ],
+        "operationType": "ENUMERATION"
+       },
+       "filterType": "PROPERTY"
+      }
+     ],
+     "filterBranchType": "AND",
+     "filterBranchOperator": "AND"
+    }
+   ],
+   "filters": [],
+   "filterBranchType": "OR",
+   "filterBranchOperator": "OR"
+  },
+  "unEnrollObjectsNotMeetingCriteria": false,
+  "reEnrollmentTriggersFilterBranches": [
+   {
+    "filterBranches": [],
+    "filters": [
+     {
+      "property": "hs_name",
+      "operation": {
+       "operator": "IS_EQUAL_TO",
+       "includeObjectsWithNoValueSet": false,
+       "value": "hs_payment_type",
+       "operationType": "STRING"
+      },
+      "filterType": "PROPERTY"
+     },
+     {
+      "property": "hs_value",
+      "operation": {
+       "operator": "IS_ANY_OF",
+       "includeObjectsWithNoValueSet": false,
+       "values": [
+        "one_time_or_initial"
+       ],
+       "operationType": "ENUMERATION"
+      },
+      "filterType": "PROPERTY"
+     }
+    ],
+    "filterBranchType": "AND",
+    "filterBranchOperator": "AND"
+   }
+  ],
+  "type": "LIST_BASED"
+ },
+ "timeWindows": [],
+ "blockedDates": [],
+ "customProperties": {},
+ "dataSources": [],
+ "crmObjectCreationStatus": "COMPLETE",
+ "type": "PLATFORM_FLOW"
+}
