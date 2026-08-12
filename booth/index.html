@@ -31,10 +31,16 @@
   .screen{
     position:fixed;inset:0;
     display:none;
-    flex-direction:column;align-items:center;justify-content:center;
+    flex-direction:column;align-items:center;
     padding:40px;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
   .screen.active{display:flex;}
+  /* Center content when it fits; scroll (instead of clipping) when it doesn't.
+     justify-content:center clips the top of overflowing flex content — the
+     grow-pseudo trick centers without that failure mode. */
+  .screen::before,.screen::after{content:"";flex:1 0 0;}
+  .screen > *{flex-shrink:0;}
   h1,h2,.display{font-family:'Bricolage Grotesque','Nunito Sans',sans-serif;}
 
   /* ---------- Attract ---------- */
