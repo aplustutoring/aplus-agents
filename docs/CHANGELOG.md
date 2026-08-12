@@ -33,6 +33,17 @@ needs Roman's web-app redeploy — not done.
 `corrections/content-build/` (dup removed), `ops/feedback-agent/state/state.json`,
 `ops/hubspot-schema/consolidation/automation-purge-proposal.md` (new).
 
+**Addendum (Roman's answers, same day):** callout 1 RESOLVED — `Non Charter/A+
+Sync to TW` is the LIVE path putting Gold + Free Trial deals into A+ Teachworks
+(deal_sync covers charter POs only): flow KEEP; `sync_to_teachworks_` and
+`sync_to_teachworks_slp` reclassified KEEP-IN-PLACE (only `_cap` still retires,
+with the CAP flows). Callout 3 context: NO QBO automation exists — Kath marks
+invoices in TW, Claude cowork records payments in TW, QBO synced manually; the
+`Ready for Onboarding to QBO` list + onboarding flow are the manual queue
+(KEEP; `is_the_online_tutor_ready_for_onboarding` + `business_license_on_file`
+reclassified KEEP-IN-PLACE). Contacts: KEEP-IN-PLACE 185→189,
+RETIRE-CANDIDATE 99→95. Verdicts now: 25 DELETE / 43 EDIT / 4 KEEP / 15 VERIFY.
+
 ---
 
 ## 2026-08-11 — Concurrency rule: branch work in worktrees (Roman: "lfg")

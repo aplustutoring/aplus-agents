@@ -14,18 +14,26 @@ Retiring the properties requires retiring or editing what references them, in th
 |---|---|
 | DELETE (dead program / dated blast / splinter list) | 25 |
 | EDIT (live automation — remove only the dead-property reference) | 43 |
-| VERIFY (needs a human call before anything) | 19 |
+| KEEP (confirmed live — Roman 2026-08-11) | 4 |
+| VERIFY (needs a human call before anything) | 15 |
 | **Referencing automations total** | **87** |
 | Blocking forms (IDs below — names need the forms scope) | 43 |
 
 **High-risk callouts (read these three first):**
-1. **`Non Charter/A+ Sync to TW`** — the old Zapier Teachworks-create trigger. If deal_sync
-   (LIVE 2026-08-03) fully replaced it, this + the three `sync_to_teachworks_*` flags retire
-   together. If not, touching it breaks TW customer creation. Confirm before anything.
+1. ~~`Non Charter/A+ Sync to TW`~~ **RESOLVED (Roman 2026-08-11): KEEP.** This is the LIVE
+   path putting Gold and Free Trial deals into A+ Teachworks — deal_sync covers charter POs
+   only. `sync_to_teachworks_` (A+/Gold+FreeTrial) and `sync_to_teachworks_slp` (In-Person)
+   are live automation triggers, reclassified KEEP-IN-PLACE; only `sync_to_teachworks_cap`
+   still retires (with the CAP flows).
 2. **`Contact to Deal Properties` + the SMS stage flows** — deal `first_name`/`last_name`/
    `message`/`what_s_going_on_` are dead as *data* but live as *SMS template tokens*. The swap
    (deal tokens -> contact tokens) has to land before those four deal properties can retire.
-3. **`Quickbooks` / `Ready for Onboarding to QBO`** — finance plumbing; Kath confirms.
+3. **QBO — RESOLVED context (Roman 2026-08-11): there is NO QBO automation.** Kath marks
+   invoices in Teachworks, Claude cowork records payments in Teachworks, and QBO is synced
+   manually. The `Ready for Onboarding to QBO` list + `Is the online tutor ready for
+   onboarding` flow are the manual tutor-onboarding queue → KEEP (their two properties stay).
+   The `Quickbooks` workflow stays VERIFY only for what it does with `c:time` — likely an
+   EDIT to drop that one reference.
 
 ## Referencing workflows & lists (87)
 
@@ -46,7 +54,7 @@ this authoritatively.
 | Avatar to Persona | workflow | ON | `c:avatar` | **DELETE** | Superseded by a_persona (#AP024) — the old avatar mapping |
 | Bonus Paid | list | — | `c:has_bonus_been_paid_out_` | **DELETE** | Stale ops list (has_bonus_been_paid_out_) |
 | Burlo | list | — | `d:how_did_you_hear_about_us_` | **DELETE** | Attribution splinter list off the cloned how-did-you-hear dup |
-| Business License on File | list | — | `c:business_license_on_file` | **VERIFY** | Tutor-compliance list — confirm with Mandy |
+| Business License on File | list | — | `c:business_license_on_file` | **KEEP** | Tutor-compliance queue alongside the QBO onboarding pair (Roman 2026-08-11 context) |
 | Charter Traditional SMS New Deal Created  | workflow | ON | `c:schedule_preference` | **EDIT** | Live new-deal SMS — templates use deal message/what_s_going_on_/first_name; swap tokens to contact/live fields, keep the workflow |
 | Contact to Deal Properties | workflow | ON | `d:first_name`, `d:last_name` | **VERIFY** | Live copier feeding deal first_name/last_name — SMS flows template off them; replace tokens with contact properties, then delete, or keep the stack as-is |
 | Copy Deal Start Date Property to Contact Property | workflow | ON | `c:start_date_for_tutoring_for_this_deal` | **VERIFY** | THE writer of contact start_date_for_tutoring_for_this_deal — delete both together or keep both |
@@ -63,14 +71,14 @@ this authoritatively.
 | Gold and In person SMS New Deal Created gold and in person | workflow | ON | `c:schedule_preference`, `d:message` | **EDIT** | Live new-deal SMS — templates use deal message/what_s_going_on_/first_name; swap tokens to contact/live fields, keep the workflow |
 | How Did You Hear About Us Copied | workflow | ON | `c:how_did_you_hear_about_us___cloned__original_`, `d:how_did_you_hear_about_us_` | **DELETE** | Copies into the *_cloned__original_ dup — pure legacy plumbing |
 | In- Person - Quality Check New  Until Renew | workflow | ON | `c:start_date_for_tutoring_for_this_deal`, `d:message` | **EDIT** | Live QC reminder flow — remove the start_date_for_tutoring_for_this_deal reference (or keep the property) |
-| Is the online tutor ready for onboarding | workflow | ON | `c:business_license_on_file`, `c:is_the_online_tutor_ready_for_onboarding` | **VERIFY** | Tutor-onboarding flow + list pair — if onboarding now runs elsewhere, DELETE both |
+| Is the online tutor ready for onboarding | workflow | ON | `c:business_license_on_file`, `c:is_the_online_tutor_ready_for_onboarding` | **KEEP** | Roman 2026-08-11: QBO is manual — this pair is the tutor-onboarding queue. Both properties reclassified KEEP-IN-PLACE |
 | Julia Cap Contact Workflow post consult | workflow | ON | `c:sync_to_teachworks_cap`, `d:is_the_student_preparing_for_the_non_sat_test_`, `d:is_the_student_preparing_for_the_sat_` | **DELETE** | CAP is a dead business (locked rule 6) |
 | Lead Pipe Line - Ads - Free Lesson | workflow | ON | `c:time`, `d:how_did_you_hear_about_us_` | **EDIT** | Live lead routing — remove full_name/time refs, keep |
 | Lead Pipe Line - Online | workflow | ON | `c:full_name`, `c:time` | **EDIT** | Live lead routing — remove full_name/time refs, keep |
 | Making active deal Customers with More than 1 deal Returning | workflow | ON | `d:how_did_you_hear_about_us_` | **EDIT** | Live returning-customer flagger — drop dead ref, keep |
 | New 20 off submission | workflow | ON | `d:how_did_you_hear_about_us_`, `d:message` | **DELETE** | 2022 promo flow |
 | New Tutors as Tutor Prospect | workflow | ON | `d:how_did_you_hear_about_us_` | **EDIT** | Live tutor recruiting — drop dead refs (myers-briggs-era fields), keep |
-| Non Charter/A+ Sync to TW | workflow | ON | `c:sync_to_teachworks_` | **VERIFY** | Sets sync_to_teachworks_ → old Zapier TW-create path. deal_sync (LIVE 2026-08-03) may have replaced it — confirm before touching, this is the riskiest one |
+| Non Charter/A+ Sync to TW | workflow | ON | `c:sync_to_teachworks_` | **KEEP** | Roman 2026-08-11: LIVE — puts Gold + Free Trial deals into A+ Teachworks (deal_sync covers charter POs only). Property reclassified KEEP-IN-PLACE |
 | Pilibos — Send welcome emails on payment to Parents | workflow | ON | `d:message` | **EDIT** | LIVE Pilibos program — drop the dead-field ref only |
 | Pipeline is "CFGC", deal stage is "Package Used Up" | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "CFGC", deal stage is "Post-Lesson" | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
@@ -79,32 +87,32 @@ this authoritatively.
 | Pipeline is "Charter Schools", deal stage is "Package Fulfil | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "Charter Schools", deal stage is "Payment Receiv | workflow | ON | `d:payment_received` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "Charter Schools", deal stage is "Post Lesson" | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
-| Pipeline is "Charter Schools", deal stage is "Pre-Lesson" | workflow | ON | `c:sync_to_teachworks_`, `d:last_name`, `d:what_s_going_on_` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
+| Pipeline is "Charter Schools", deal stage is "Pre-Lesson" | workflow | ON | `c:sync_to_teachworks_`, `d:last_name`, `d:what_s_going_on_` | **EDIT** | Live stage engine — the sync_to_teachworks flag it sets is LIVE (keep that); strip only the other dead refs |
 | Pipeline is "College Access Plus", deal stage is "Decision D | workflow | ON | `c:actively_counseling`, `c:decision_day` | **DELETE** | CAP stage automation — dead business |
 | Pipeline is "College Access Plus", deal stage is "Did Not Us | workflow | ON | `c:actively_counseling`, `c:time` | **DELETE** | CAP stage automation — dead business |
 | Pipeline is "College Access Plus", deal stage is "Payment Re | workflow | ON | `c:actively_counseling`, `c:sync_to_teachworks_cap` | **DELETE** | CAP stage automation — dead business |
-| Pipeline is "Free Trial", deal stage is "Pre-Lesson"  | workflow | ON | `c:schedule_preference`, `c:sync_to_teachworks_` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
+| Pipeline is "Free Trial", deal stage is "Pre-Lesson"  | workflow | ON | `c:schedule_preference`, `c:sync_to_teachworks_` | **EDIT** | Live stage engine — the sync_to_teachworks flag it sets is LIVE (keep that); strip only the other dead refs |
 | Pipeline is "Gold Tutoring - Renewal", deal stage is "New Re | workflow | ON | `d:first_name`, `d:last_name` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "Gold Tutoring", deal stage is "Post Lesson"  | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
-| Pipeline is "Gold Tutoring", deal stage is "Pre-Lesson" | workflow | ON | `c:sync_to_teachworks_`, `d:what_s_going_on_` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
+| Pipeline is "Gold Tutoring", deal stage is "Pre-Lesson" | workflow | ON | `c:sync_to_teachworks_`, `d:what_s_going_on_` | **EDIT** | Live stage engine — the sync_to_teachworks flag it sets is LIVE (keep that); strip only the other dead refs |
 | Pipeline is "Gold Tutoring", deal stage is "Renewed" | workflow | ON | `d:last_name` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "Gold Tutoring", deal stage is "Stopped For Now" | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
-| Pipeline is "In-Person Summer Boost", deal stage is "Pre-Les | workflow | ON | `c:schedule_preference`, `c:sync_to_teachworks_slp` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
-| Pipeline is "In-Person", deal stage is "Pre-Lesson" | workflow | ON | `c:sync_to_teachworks_slp`, `d:last_name`, `d:what_s_going_on_` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
+| Pipeline is "In-Person Summer Boost", deal stage is "Pre-Les | workflow | ON | `c:schedule_preference`, `c:sync_to_teachworks_slp` | **EDIT** | Live stage engine — the sync_to_teachworks flag it sets is LIVE (keep that); strip only the other dead refs |
+| Pipeline is "In-Person", deal stage is "Pre-Lesson" | workflow | ON | `c:sync_to_teachworks_slp`, `d:last_name`, `d:what_s_going_on_` | **EDIT** | Live stage engine — the sync_to_teachworks flag it sets is LIVE (keep that); strip only the other dead refs |
 | Pipeline is "In-Person", deal stage is "Stopped for Now" | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "New Tutor", deal stage is "Pass Background Chec | workflow | ON | `d:message` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
-| Pipeline is "Online Summer Boost", deal stage is "Pre-Lesson | workflow | ON | `c:sync_to_teachworks_`, `d:last_name`, `d:what_s_going_on_` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
+| Pipeline is "Online Summer Boost", deal stage is "Pre-Lesson | workflow | ON | `c:sync_to_teachworks_`, `d:last_name`, `d:what_s_going_on_` | **EDIT** | Live stage engine — the sync_to_teachworks flag it sets is LIVE (keep that); strip only the other dead refs |
 | Pipeline is "SAT Tutoring", deal stage is "Post-Lesson" | workflow | ON | `c:actively_tutoring` | **EDIT** | Live stage engine (SMS/flags per stage) — remove dead-property references, keep the workflow |
 | Pipeline is "SAT Tutoring", deal stage is "Pre-Lesson" | workflow | off | `c:sync_to_teachworks_` | **DELETE** | Already disabled |
 | QTL New Customer  v2 - 10/2025 | workflow | ON | `d:how_did_you_hear_about_us_` | **EDIT** | Live qualified-lead flow — drop the dead-field ref, keep |
 | QTL Workflow - Charter School 2.0 | workflow | ON | `d:how_did_you_hear_about_us_` | **EDIT** | Live qualified-lead flow — drop the dead-field ref, keep |
 | Qualified Tutoring Lead Workflow - Diagnostic Sent | workflow | ON | `c:assessment_received`, `c:assessment_sent`, `c:assessment_uploaded`, `c:time` | **DELETE** | QTL diagnostic branch — assessment era, dead |
 | Quality Charter, CFGC, RTI | workflow | ON | `c:start_date_for_tutoring_for_this_deal` | **EDIT** | Live QC flow — same |
-| Quickbooks | workflow | ON | `c:time` | **VERIFY** | Finance plumbing — do not touch without confirming with Kath |
+| Quickbooks | workflow | ON | `c:time` | **VERIFY** | QBO sync is manual (Roman 2026-08-11) so this flow is at most a notifier — confirm what it does with `time`, then EDIT that ref out or DELETE |
 | RBS | list | — | `d:how_did_you_hear_about_us_` | **DELETE** | Attribution splinter list |
 | REFERRAL PROGRAM - NEW TEACHERS | workflow | ON | `c:how_did_you_hear_about_this_opportunity_with_a_tutoring`, `c:tutor_referral___referred_by___name`, `d:how_did_you_hear_about_us_` | **VERIFY** | Referral program may be live (referral_name is a keeper) — these reference the old referred_by fields; if program is live, EDIT to drop the dead fields |
 | REFERRAL PROGRAM NEW FAMILIES | workflow | ON | `c:referral___referred_by___name`, `d:how_did_you_hear_about_us_` | **VERIFY** | Referral program may be live (referral_name is a keeper) — these reference the old referred_by fields; if program is live, EDIT to drop the dead fields |
-| Ready for Onboarding to QBO | list | — | `c:is_the_online_tutor_ready_for_onboarding` | **VERIFY** | QBO onboarding list — finance/ops, confirm with Kath |
+| Ready for Onboarding to QBO | list | — | `c:is_the_online_tutor_ready_for_onboarding` | **KEEP** | Roman 2026-08-11: the manual QBO tutor-onboarding queue |
 | Referral | list | — | `d:how_did_you_hear_about_us_` | **VERIFY** | Attribution list — tied to referral program status |
 | Resume after Stopped for Summer | list | — | `c:actively_tutoring` | **DELETE** | Summer-2021 era segment list |
 | Royal | list | — | `c:how_did_you_hear_about_us___cloned__original_` | **DELETE** | Attribution splinter list |

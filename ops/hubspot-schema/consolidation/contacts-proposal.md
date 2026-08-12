@@ -22,9 +22,9 @@ Known label/internal mismatches (locked rule 9 — agents read LABELS, never int
 | Persona → tor | 4 |
 | Persona → tutor | 9 |
 | Persona → student | 3 |
-| KEEP-IN-PLACE | 185 |
+| KEEP-IN-PLACE | 189 |
 | STORAGE-ONLY | 119 |
-| RETIRE-CANDIDATE | 99 |
+| RETIRE-CANDIDATE | 95 |
 | SYSTEM | 35 |
 | **Total custom** | **479** |
 
@@ -97,7 +97,7 @@ Internal names unchanged (safe, #AP024). "Current group" shows the pre-move loca
 | `student_last_name` | Student FIRST Name | student | DONE — moved by Roman 2026-08-10. LABEL MISMATCH: label is "Student FIRST Name" — student 1 first name; Teachworks disambiguation + call agent fill_only 【code: email, ops】 | #AP029 |
 | `student_last_name_if_diff_from_parent` | Student Last Name | student | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Student last name; call agent fill_only 【code: email, ops, registry.yml】 | #AP029 |
 
-## KEEP-IN-PLACE (185)
+## KEEP-IN-PLACE (189)
 
 Stay exactly where they are. Programs stay grouped as programs, not personas (locked rule 6); form-bound and integration-owned fields are not touched.
 
@@ -288,6 +288,10 @@ Stay exactly where they are. Programs stay grouped as programs, not personas (lo
 | `what_is_the_student_s_measurable__academic_goal_for_the_requested_hours_of_tutoring_` | What is the student's measurable, academic goal for the requested hours of tutoring? | contactinformation | Charter/IEM intake form field (2025 batch, live charter program) |  |
 | `when_would_you_like_the_tutoring_to_start` | When would you like the tutoring to start | level-up_ilead | Live get-started form field |  |
 | `which_days_of_the_week_do_you_prefer_` | Which days of the week do you prefer? | level-up_ilead | Live get-started form field (structured days) |  |
+| `sync_to_teachworks_` | Sync to TeachWorks A+ | contactinformation | LIVE TW-sync trigger — Gold + Free Trial deals into the A+ Teachworks account (Roman 2026-08-11); deal_sync covers charter POs only — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
+| `sync_to_teachworks_slp` | Sync to Teachworks - SLP | contactinformation | LIVE TW-sync trigger for In-Person/SLP pipelines (set by the Pre-Lesson stage flows) — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
+| `is_the_online_tutor_ready_for_onboarding` | Is the Online Tutor Ready for Onboarding | new_tutors | Manual QBO tutor-onboarding queue (Roman 2026-08-11: QBO has no automation — this flow+list pair IS the queue) — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
+| `business_license_on_file` | Business License on File | new_tutors | Tutor-compliance queue alongside the QBO onboarding pair — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
 
 ## STORAGE-ONLY (119)
 
@@ -415,7 +419,7 @@ Data preserved, nothing reads or writes them going forward. No archive proposed 
 | `video_ask_transcription` | Video Ask Transcription | integrations | VideoAsk / misc integration remnants |  |
 | `videoasksource` | Videoask source | contactinformation | VideoAsk integration remnant |  |
 
-## RETIRE-CANDIDATE (99) — archive pass run 2026-08-10
+## RETIRE-CANDIDATE (95) — archive pass run 2026-08-10
 
 On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 lists, and calculated-property formulas; audit-clean ones were archived (reversible, 90-day restore). HubSpot's own PROPERTY_USAGE validation blocked anything still referenced by a FORM (forms API not scannable with the current token scope). BLOCKED rows need the referencing workflow/list/form cleaned up first; HOLD rows await the multi-child data-model decision.
 
@@ -434,7 +438,6 @@ On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 
 | `assessment_uploaded` | Assessment Received - Remote | customer_group | 380 | 2021-12-22 | BLOCKED — referenced by: wf3:Diagnostic Testing - Remote; wf3:Qualified Tutoring Lead Workflow - Diagnostic Sent; wf3:Student Diagnostic Test Upload; wf4:Diagnostic Testing - Remote… | Legacy ops flag (2021-23 era) |  |
 | `avatar` | Avatar | customer_group | 107 | 2021-07-06 | BLOCKED — referenced by: wf3:Avatar to Persona; wf4:Avatar to Persona | Legacy ops flag (2021-23 era) |  |
 | `bombas_coupon_code` | Bombas Coupon Code | customer_group | 86 | 2021-07-06 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Legacy ops flag (2021-23 era) |  |
-| `business_license_on_file` | Business License on File | new_tutors | 24 | 2022-05-18 | BLOCKED — referenced by: list:Business License on File; wf3:Is the online tutor ready for onboarding; wf4:Is the online tutor ready for onboarding | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `cancelled_covid19` | CANCELLED-COVID19 | unused_properties | 61 | 2021-02-12 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Group literally named unused_properties — 2021-22 quiz/intake leftovers |  |
 | `college_test_prep` | Which Test Are You Leaning Towards Taking? | unused_properties | 3 | 2022-01-14 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Group literally named unused_properties — 2021-22 quiz/intake leftovers |  |
 | `contact_created_by_1st_edit` | Contact Last Edited By | contactinformation | 2707 | 2023-09-09 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Legacy one-off field (see fill count / Used-in) |  |
@@ -466,7 +469,6 @@ On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 
 | `if_selected_when_are_you_available_to_start_tutoring_` | If selected, when are you available to start tutoring? | new_tutors | 1073 | 2021-07-06 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `if_you_have_taken_the_myers_briggs_personality_test__what_is_your_personality_type__4_letters_` | If you have taken the Myers-Briggs Personality Test, what is your personality type (4 Letters) | new_tutors | 0 | 2022-07-19 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `internal___in_person_only_or_open_to_online_preference` | Internal - In-Person Only or Open to Online Preference | contactinformation | 1 | 2022-11-28 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Legacy one-off field (see fill count / Used-in) |  |
-| `is_the_online_tutor_ready_for_onboarding` | Is the Online Tutor Ready for Onboarding | new_tutors | 32 | 2022-05-17 | BLOCKED — referenced by: list:Ready for Onboarding to QBO; wf3:Is the online tutor ready for onboarding; wf4:Is the online tutor ready for onboarding | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `is_there_anything_specific_that_you_would_like_the_student_to_be_working_on_with_the_tutor_` | Is there anything specific that you would like the student to be working on with the tutor? | contactinformation | 52 | 2025-01-13 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Legacy one-off field (see fill count / Used-in) |  |
 | `lead_ad_prop0` | What grade is your child in - lead ad | lead_ads | 2 | 2021-06-23 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Dead lead-ad capture — Roman already approved retire | approved |
 | `left_a_review_` | Left a review? | customer_group | 27 | 2021-07-06 | BLOCKED — referenced by: wf3:Video Ask Testimonial Responses; wf4:Video Ask Testimonial Responses | Legacy ops flag (2021-23 era) |  |
@@ -500,9 +502,7 @@ On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 
 | `student_3_school` | Student 3 School | sibling | 20 | 2019-09-05 | HOLD — pending multi-child data-model decision (#AP027) | Sibling school — pending multi-child data-model decision | #AP027 |
 | `student_4_school` | Student 4 School | sibling | 2 | 2019-09-05 | HOLD — pending multi-child data-model decision (#AP027) | Sibling school — pending multi-child data-model decision | #AP027 |
 | `subject_preference` | Subject Preference | contactinformation | 0 | 2023-11-29 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Legacy one-off field (see fill count / Used-in) |  |
-| `sync_to_teachworks_` | Sync to TeachWorks A+ | contactinformation | 1941 | 2020-08-14 | BLOCKED — referenced by: wf4:Non Charter/A+ Sync to TW; wf4:Pipeline is "Charter Schools", deal stage is "Pre-Lesson"; wf4:Pipeline is "Free Trial", deal stage is "Pre-Lesson" ; wf4:Pipeline is "Gold Tutoring", deal stage is "Pre-Lesson"… | Legacy one-off field (see fill count / Used-in) |  |
 | `sync_to_teachworks_cap` | Sync to TeachWorks CAP | contactinformation | 68 | 2021-05-20 | BLOCKED — referenced by: wf3:Get Started Now - CAP FORM SUBMISSION to DEAL; wf3:Julia Cap Contact Workflow post consult; wf4:Get Started Now - CAP FORM SUBMISSION to DEAL; wf4:Julia Cap Contact Workflow post consult… | Legacy one-off field (see fill count / Used-in) |  |
-| `sync_to_teachworks_slp` | Sync to Teachworks - SLP | contactinformation | 751 | 2020-08-14 | BLOCKED — referenced by: wf4:Pipeline is "In-Person Summer Boost", deal stage is "Pre-Les; wf4:Pipeline is "In-Person", deal stage is "Pre-Lesson" | Legacy one-off field (see fill count / Used-in) |  |
 | `time` | Time | contactinformation | 0 | 2023-11-02 | BLOCKED — referenced by: wf4:Lead Pipe Line - Ads - Free Lesson; wf4:Lead Pipe Line - Online; wf4:Pipeline is "College Access Plus", deal stage is "Did Not Us; wf4:Qualified Tutoring Lead Workflow - Diagnostic Sent… | Legacy one-off field (see fill count / Used-in) |  |
 | `trigger_sales_sequence` | Trigger Sales Sequence | unused_properties | 34 | 2021-02-12 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Group literally named unused_properties — 2021-22 quiz/intake leftovers |  |
 | `tutor_matches` | Tutor Matches | contactinformation | 447 | 2019-09-09 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Legacy one-off field (see fill count / Used-in) |  |
