@@ -35,6 +35,34 @@ needs Roman's web-app redeploy — not done.
 
 ---
 
+## 2026-08-11 — Booth round 3: enum-write bugfix, frame design, delivery=All
+
+**What:** (1) CRITICAL FIX: worker.js wrote enum LABELS ("Print") where the
+HubSpot API takes internal VALUES ("print") — every booth submission failed
+the contact upsert silently while photos still delivered (the fleet "read
+labels" rule is about reading, not writing). Verified fixed end-to-end:
+test contact created with all 6 props + TOR persona, then archived.
+(2) Email timeline logging verified live: test submission → 1 email
+engagement on the contact (subject/SENT), then archived. BCC workaround
+declined — sender isn't a HubSpot user so BCC logging would misattribute;
+API logging is deterministic. (3) Frame redesign: both logos in the header
+band, fun banners ("Best. Year. Ever. ✨" etc.), 2026–2027 school year on
+frame/attract/email, type sized for 2x3" prints (~600dpi: old 24-30px text
+printed at ~3pt). (4) Delivery "Both" → "All 3!" (email+text+print);
+aplus_booth_delivery += all (synced; "both" kept legacy). (5) Screens
+scroll when content overflows (kiosk overflow:hidden clipped the 4-card
+delivery screen with no way to reach the rest). (6) Photo retention is
+DOCUMENTED as ephemeral: email=attachment only, text=KV 7-day TTL,
+print=nothing. Archive-all option proposed to Roman, not yet approved.
+
+**Why:** The event capture chain (contact + persona + timeline email) is the
+point of the booth; the silent enum failure was defeating exactly that.
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`.
+
+---
+
 ## 2026-08-11 — Booth round 2: branding, TOR audience, JustCall texts, email logging
 
 **What:** (1) Logos: Sage Oak pennant + white A+ on attract, color A+ in the
