@@ -21447,3 +21447,5 @@
 {"ticket_id": "47511724143", "category": "school_partner", "owner": "danielle", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-12T21:11:21.083336+00:00"}
 {"ticket_id": "47507201062", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-12T21:11:21.598076+00:00"}
 {"ticket_id": "47521959966", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-12T21:11:22.090941+00:00"}
+{"message_id": "deal:63765783111", "source": "deal_sync", "deal_id": "63765783111", "deal_name": "test 5", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2111275, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-12T21:29:07.845424+00:00"}
+{"message_id": "deal:63817915280", "source": "deal_sync", "deal_id": "63817915280", "deal_name": "Alpha TEST \u2013 Teacher Scholarship", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2115342, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-12T21:29:09.310052+00:00"}
