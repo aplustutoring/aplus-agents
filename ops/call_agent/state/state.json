@@ -216,9 +216,13 @@
     404143450,
     404146540,
     404149014,
-    404171995
+    404171995,
+    404221773,
+    404224927,
+    404229214,
+    404234848
   ],
-  "last_run_utc": "2026-08-13T20:06:54.316180+00:00",
+  "last_run_utc": "2026-08-13T21:04:55.894621+00:00",
   "pending_digest": [
     {
       "call_id": 404110408,
@@ -391,6 +395,279 @@
       "tasks_created": [
         [
           "Follow up with Lindsey Owens to reschedule the booked meeting she missed",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404221773,
+      "number": "14156527156",
+      "time_pt": "1:09 PM",
+      "matched": true,
+      "contact_label": "Dorothy Lo",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound check-in call to Dorothy Lo, an existing customer, to see how Ella's sessions with tutor Fidea are going. Dorothy shared that the first session went fine, and though yesterday's session had connection issues, they rescheduled for Saturday. Dorothy sounded positive and will monitor how Saturday's session goes.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Dorothy after Saturday's rescheduled session to confirm it went smoothly",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer already in active tutoring; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Ella",
+          "Fidea"
+        ],
+        "record_updates": {
+          "whats_going_on": "Check-in call: first session with tutor Fidea went fine. Second session had technical/connection issues on the tutor's end, so it was rescheduled to Saturday. Dorothy will see how Saturday goes.",
+          "what_we_can_do_to_help": "Follow up after Saturday's session to confirm connection issues are resolved and Ella is comfortable with Fidea.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Check-in call: first session with tutor Fidea went fine. Second session had technical/connection issues on the tutor's end, so it was rescheduled to Saturday. Dorothy will see how Saturday goes."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Follow up after Saturday's session to confirm connection issues are resolved and Ella is comfortable with Fidea."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Dorothy after Saturday's rescheduled session to confirm it went smoothly",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404224927,
+      "number": "13105604510",
+      "time_pt": "1:15 PM",
+      "matched": true,
+      "contact_label": "Wireless Caller",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound check-in call from Bella (Paola) at A+ Tutoring to a family regarding ongoing tutoring sessions with tutor Sonia for student Bajala. Call went to voicemail; Bella left a message asking the family to call back to confirm sessions are going well.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from family regarding Bajala's tutoring sessions with Sonia; try again if no response in a few days",
+            "owner_hint": "Bella"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Family is an existing tutoring customer (active sessions with tutor Sonia); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Bajala",
+          "Sonia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Bella left a voicemail checking in on Bajala's ongoing tutoring sessions with tutor Sonia to make sure everything is going well.",
+          "what_we_can_do_to_help": "Follow up again if we don't hear back; confirm sessions with Sonia are meeting the family's expectations and address any concerns.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Bella left a voicemail checking in on Bajala's ongoing tutoring sessions with tutor Sonia to make sure everything is going well."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Follow up again if we don't hear back; confirm sessions with Sonia are meeting the family's expectations and address any concerns."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from family regarding Bajala's tutoring sessions with Sonia; try again if no response in a few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404229214,
+      "number": "19493758364",
+      "time_pt": "1:21 PM",
+      "matched": true,
+      "contact_label": "Nikita Brixey",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Nikita Brixey to check in on London's ongoing tutoring sessions. Nikita said things are going okay overall, but noted the tutor had rescheduled the first two sessions at the last minute; she has since spoken with the tutor who assured her it won't happen again. Nikita also mentioned she ordered four more sessions and the PO should be coming through soon. Paola confirmed A+ will monitor the scheduling issue and reach out via text once the PO is received to schedule the additional hours.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Monitor the assigned tutor's scheduling/reliability with the Brixey family to ensure no further last-minute reschedules",
+            "owner_hint": null
+          },
+          {
+            "item": "Watch for incoming PO for four additional sessions from Heartland Charter, then text Nikita to confirm receipt and schedule the hours",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer receiving tutoring; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "London",
+          "Heartland Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Check-in call: London's tutoring is going okay overall. Parent flagged that the tutor rescheduled the first two sessions within an hour of the start time, but has since spoken with the tutor who committed it won't be an issue going forward. Parent has ordered four more sessions and the PO should arrive soon.",
+          "what_we_can_do_to_help": "Keep an eye on the tutor's scheduling consistency to prevent further last-minute reschedules. Once the PO for the four additional sessions is received, text Nikita to confirm and schedule the hours.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Check-in call: London's tutoring is going okay overall. Parent flagged that the tutor rescheduled the first two sessions within an hour of the start time, but has since spoken with the tutor who committed it won't be an issue going forward. Parent has ordered four more sessions and the PO should arrive soon."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Keep an eye on the tutor's scheduling consistency to prevent further last-minute reschedules. Once the PO for the four additional sessions is received, text Nikita to confirm and schedule the hours."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Monitor the assigned tutor's scheduling/reliability with the Brixey family to ensure no further last-minute reschedules",
+          81494333
+        ],
+        [
+          "Watch for incoming PO for four additional sessions from Heartland Charter, then text Nikita to confirm receipt and schedule the hours",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404234848,
+      "number": "19175627042",
+      "time_pt": "1:29 PM",
+      "matched": true,
+      "contact_label": "Conor Dougherty",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Conor Dougherty for a check-in on his daughter Callie's tutoring with Alexander. Conor reported things are going well \u2014 Callie likes the tutor and scheduling has been flexible \u2014 and asked about adding writing support as a separate session. Paola said she'd loop in scheduling and Conor will discuss with Callie before moving forward. Conor rated A+ an 8-9, noting Zoom attention challenges since LAUSD removed Chromebooks.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Notify scheduling team that Conor is interested in adding writing support sessions for Callie and be ready to propose a writing tutor/eval once he confirms",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer already receiving tutoring \u2014 status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Callie",
+          "LAUSD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Check-in call with Conor: Callie's math tutoring with Alexander is going well \u2014 she likes him and scheduling has been flexible around soccer/activities. Conor is interested in adding writing support as a separate track and will discuss with Callie before confirming. He rated A+ an 8-9, noting Zoom attention is a challenge (she tends to doodle/fidget on-screen), especially now that LAUSD has removed Chromebooks and she does less screen-based work at school.",
+          "what_we_can_do_to_help": "Loop scheduling in on the writing request and, once Conor confirms, propose a tutor and evaluation approach for a separate writing session. Continue math tutoring with Alexander focused on complex word problems, and keep an eye on engagement given the Zoom attention challenges.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Check-in call with Conor: Callie's math tutoring with Alexander is going well \u2014 she likes him and scheduling has been flexible around soccer/activities. Conor is interested in adding writing support as a separate track and will discuss with Callie before confirming. He rated A+ an 8-9, noting Zoom attention is a challenge (she tends to doodle/fidget on-screen), especially now that LAUSD has removed Chromebooks and she does less screen-based work at school."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Loop scheduling in on the writing request and, once Conor confirms, propose a tutor and evaluation approach for a separate writing session. Continue math tutoring with Alexander focused on complex word problems, and keep an eye on engagement given the Zoom attention challenges."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Notify scheduling team that Conor is interested in adding writing support sessions for Callie and be ready to propose a writing tutor/eval once he confirms",
           81494333
         ]
       ],
