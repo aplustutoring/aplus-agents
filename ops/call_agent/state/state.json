@@ -210,10 +210,129 @@
     403827087,
     403835557,
     403851154,
-    404045539
+    404045539,
+    404110408,
+    404110825
   ],
-  "last_run_utc": "2026-08-13T16:02:31.626752+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-13T17:14:28.933706+00:00",
+  "pending_digest": [
+    {
+      "call_id": 404110408,
+      "number": "14242638136",
+      "time_pt": "9:53 AM",
+      "matched": true,
+      "contact_label": "Wireless Caller",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Meklit Mulat called seeking in-person tutoring for her 6th-grade son Foreign, who attends Sage Oak charter school and has autism and ADHD with attention challenges. She needs ELA (writing/comprehension at ~3rd grade level) and math (multiplication/division, ~3rd grade level) support at ZIP 90045. Paola quoted $75/hr online charter rate and $130/hr in-person, and said she would check tutor availability in the area and email pricing plus a match confirmation.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check in-person tutor availability in ZIP 90045 for ELA and math, ideally with experience supporting students with autism/ADHD/attention needs",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Email Meklit the rate sheet ($75/hr online charter, $130/hr in-person)",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Follow up via email once a matching tutor is confirmed to schedule sessions",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Family pays through Sage Oak charter school instructional funds, so they qualify as a charter-funded lead.",
+        "student_or_school_names_mentioned": [
+          "Foreign Mulat",
+          "Sage Oak"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mom Meklit called seeking in-person tutoring for her 6th-grade son Foreign (autism, ADHD, attention is biggest hurdle) in ZIP 90045. He needs ELA (reading is on grade level but writing/comprehension around 3rd grade) and math (working on multiplication/division, ~3rd grade). Family uses Sage Oak charter school funds.",
+          "what_we_can_do_to_help": "Check tutor availability in 90045 for a tutor experienced with autism/ADHD and attention support; offer in-person sessions at home ($130/hr) with built-in movement breaks (e.g., trampoline breaks every 15-20 min), or online charter rate at $75/hr. Send rates and match confirmation by email.",
+          "student_first_name": "Foreign",
+          "student_last_name": "Mulat",
+          "grade_level": "6",
+          "student_school": "Sage Oak",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mom Meklit called seeking in-person tutoring for her 6th-grade son Foreign (autism, ADHD, attention is biggest hurdle) in ZIP 90045. He needs ELA (reading is on grade level but writing/comprehension around 3rd grade) and math (working on multiplication/division, ~3rd grade). Family uses Sage Oak charter school funds."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check tutor availability in 90045 for a tutor experienced with autism/ADHD and attention support; offer in-person sessions at home ($130/hr) with built-in movement breaks (e.g., trampoline breaks every 15-20 min), or online charter rate at $75/hr. Send rates and match confirmation by email."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Foreign"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Mulat"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "6"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Sage Oak"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in-person tutor availability in ZIP 90045 for ELA and math, ideally with experience supporting students with autism/ADHD/attention needs",
+          81494333
+        ],
+        [
+          "Email Meklit the rate sheet ($75/hr online charter, $130/hr in-person)",
+          81494333
+        ],
+        [
+          "Follow up via email once a matching tutor is confirmed to schedule sessions",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "19093042924",
