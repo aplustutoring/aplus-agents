@@ -8,6 +8,25 @@ Newest entries first.
 
 ---
 
+## 2026-08-13 — Charter renewal gap analysis (one-off report, schedulable)
+
+**What:** New read-only report script `scripts/charter_gap_analysis.py` +
+manual workflow `.github/workflows/charter-gap-analysis.yml` (workflow_dispatch;
+xlsx uploaded as a 7-day run artifact — Teachworks tokens live only in Actions
+secrets, so the run happens in CI). Charter families with a 25/26 deal but no
+26/27 renewal, enriched with Teachworks invoice history across both accounts.
+5 charter pipelines (907748, 72281989, 88841552, 5119061, 1066195), deals since
+2025-08-01; school-staff contacts excluded by email domain (student.* subdomains
+stay family); RENEWED = deal created ≥2026-06-01 OR "26/27" in dealname.
+**WHY:** 26/27 renewal season — Roman needed the call/win-back list ranked by
+actual invoiced value, plus the deal-but-never-invoiced and TW-no-charter-deal
+hygiene queues. First run 2026-08-13: 439 families → 13 renewed / 426 gap
+(396 with invoices: 10 Hot, 386 Win-back; 30 never invoiced; 278 mismatches).
+Sanity-matched Roman's expected ~439/~11/~428. Caveat: 3 of the 13 "renewed"
+are late 25/26 POs created after Jun 1 (date rule, not a 26/27 dealname).
+**Files:** scripts/charter_gap_analysis.py, .github/workflows/charter-gap-analysis.yml
+(temporary push trigger on the feature branch — drop after merge).
+
 ## 2026-08-12 — Zie Rojas PO: net-payout misread + dropped correction + TOR variant (3 fixes)
 
 **What:** Roman caught the Zie Rojas deals at $140/$280 when the PO he was
