@@ -1277,13 +1277,11 @@ def apply_record_updates(contact, updates, call_date_pt):
 
 
 def _resolve_owner(owner_hint, cfg):
-    """owner_hint ('Roman', 'have Paola call...') -> HubSpot owner id."""
-    owners = cfg["hubspot"]["owners"]
-    hint = (owner_hint or "").lower()
-    for name, oid in owners.items():
-        if name in hint:
-            return oid
-    return owners[cfg["hubspot"]["default_task_owner"]]
+    """ALL follow-up tasks go to default_task_owner (Paola) regardless of who
+    the call names — Roman's line rings first on sales calls, but Paola does
+    100% of follow-up (Roman, 2026-08-13). owner_hint is still captured in
+    the summary/digest for context; it just never routes the task."""
+    return cfg["hubspot"]["owners"][cfg["hubspot"]["default_task_owner"]]
 
 
 def create_task(contact_id, subject, body, owner_id, due_utc, priority="MEDIUM"):

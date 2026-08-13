@@ -15,7 +15,9 @@ call's native AI transcript, and turns each call into CRM actions:
   tutor applicants → Tutors; spam/vendors → Unqualified. Existing/past
   customers → no change (the deal pipeline owns their status). Changes are
   applied every call (Claude's judgment wins) and surfaced in the digest.
-- **Action items → HubSpot Tasks** with owner + due date (default owner Paola)
+- **Action items → HubSpot Tasks** with due date, ALL assigned to Paola
+  (`default_task_owner`) — she does 100% of follow-up (Roman 2026-08-13);
+  `owner_hint` is context only, never routing
 - **Missed-call alerts (conversion guard)** — inbound missed/abandoned/
   voicemail calls on ANY account line fire an immediate Slack alert + a
   same-day HIGH call-back task on the next poll. Metadata only (caller,
@@ -220,9 +222,10 @@ for multi-run-per-day schedules; the next digest-posting run flushes them).
    `school` is a FB-Ads field — the real one is `student_school`. Enum option
    values for grade/subject/modality/source are pinned in `call_agent.py` and
    validated before writing.
-6. **Tasks & tickets** — each action item becomes a HubSpot Task (owner from
-   the caller's `owner_hint`, mapped via `config.yml → hubspot.owners`
-   [roman/paola/janelle], default Paola; due next business day). Negative
+6. **Tasks & tickets** — each action item becomes a HubSpot Task assigned to
+   `config.yml → hubspot.default_task_owner` (Paola — she does 100% of
+   follow-up, Roman 2026-08-13; the summary's `owner_hint` is kept as context
+   but never routes the task); due next business day. Negative
    sentiment or complaint intent → HIGH ticket (Support Pipeline → "Working
    on it", source PHONE, owner Roman) + companion check-in task due in 2
    business days + immediate alert to `slack.alert_channel`.
