@@ -45,11 +45,17 @@ def _family_email(deal: dict) -> str:
     return ""
 
 
-def _invoices_for(email: str) -> list[dict]:
+def _invoices_for(email: str, parent_first: str = "", parent_last: str = "") -> list[dict]:
+    """All invoices across every customer record for the family — email match
+    plus name match (duplicate/inactive TW customers, the Aly Daly case)."""
     out = []
     for acct, token in tw.accounts().items():
         try:
-            for cust in tw.tw_get("customers", {"email": email}, token=token):
+            for cust in tw.customers_for_family(email, parent_last, parent_first,
+                                                token=token):
+                print(f"   TW customer {cust.get('id')} [{acct}] "
+                      f"{cust.get('first_name', '')} {cust.get('last_name', '')} "
+                      f"<{cust.get('email', '')}> status={cust.get('status')}")
                 for inv in tw.tw_get("invoices", {"customer_id": cust.get("id")},
                                      token=token):
                     out.append({"acct": acct,
@@ -74,7 +80,10 @@ def main() -> None:
         em = _family_email(d)
         by_family[em or "(no family contact)"].append(d)
         if em and em not in fam_cache:
-            fam_cache[em] = _invoices_for(em)
+            parent = ((d.get("properties") or {}).get("dealname") or "").split(" - ")[0].split()
+            fam_cache[em] = _invoices_for(em,
+                                          parent[0] if parent else "",
+                                          " ".join(parent[1:]) if len(parent) > 1 else "")
 
     missing = 0
     for em, ds in by_family.items():

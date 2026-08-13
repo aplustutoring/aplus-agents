@@ -128,6 +128,45 @@ def find_customer_by_email(email: str, token: str | None = None) -> dict | None:
     return None
 
 
+def customers_for_family(email: str, last_name: str = "", first_name: str = "",
+                         token: str | None = None) -> list[dict]:
+    """EVERY customer record for a family in one account — email match PLUS
+    name match, deduped, ACTIVE records first. Teachworks carries duplicate
+    customers (the Aly Daly case, 2026-08-12: an inactive dupe owned the email
+    while the live record held the invoices/students) — email-only lookups can
+    land on the empty dupe and report a real family as inactive. Name filters
+    are re-checked client-side in case the API ignores unknown params."""
+    seen: set = set()
+    out: list[dict] = []
+    queries: list = []
+    if (email or "").strip():
+        queries.append(({"email": email.strip().lower()}, None))
+    ln = (last_name or "").strip()
+    if ln:
+        q = {"last_name": ln}
+        fn = (first_name or "").strip()
+        if fn:
+            q["first_name"] = fn
+        queries.append((q, (fn.lower(), ln.lower())))
+    for params, name_check in queries:
+        try:
+            for c in tw_get("customers", params, token=token):
+                if name_check:
+                    fn_c, ln_c = name_check
+                    if (c.get("last_name") or "").strip().lower() != ln_c:
+                        continue
+                    if fn_c and (c.get("first_name") or "").strip().lower() != fn_c:
+                        continue
+                if c.get("id") in seen:
+                    continue
+                seen.add(c.get("id"))
+                out.append(c)
+        except Exception:  # noqa: BLE001 — a failed variant must not kill the lookup
+            continue
+    out.sort(key=lambda c: 0 if str(c.get("status") or "").lower().startswith("activ") else 1)
+    return out
+
+
 def _safe_date(value) -> str | None:
     if not value:
         return None
@@ -135,7 +174,8 @@ def _safe_date(value) -> str | None:
 
 
 def student_lesson_activity(email: str, student_first: str,
-                            lookback_days: int = 30) -> dict:
+                            lookback_days: int = 30,
+                            parent_first: str = "", parent_last: str = "") -> dict:
     """THIS student's lesson signal, both accounts, keyed by the parent's email:
     {found, recent, upcoming} — `recent` = attended/completed lessons within
     `lookback_days`, `upcoming` = future not-cancelled lessons. found=False when
@@ -154,7 +194,9 @@ def student_lesson_activity(email: str, student_first: str,
     upcoming_lessons: list[dict] = []
     recent_lessons: list[dict] = []
     for _acct, token in accounts().items():
-        for cust in tw_get("customers", {"email": email.strip().lower()}, token=token):
+        # customers_for_family, not a bare email match — duplicate/inactive
+        # customer records would otherwise hide the student (Aly Daly case)
+        for cust in customers_for_family(email, parent_last, parent_first, token=token):
             for s in tw_get("students", {"customer_id": cust.get("id")}, token=token):
                 if (s.get("first_name") or "").strip().lower() != sf:
                     continue

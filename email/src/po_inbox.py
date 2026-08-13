@@ -183,19 +183,25 @@ def _schedule_text(lessons: list[dict]) -> str:
     return ", ".join(parts)
 
 
-def _student_activity(email: str, student_first: str, cache: dict | None = None):
+def _student_activity(email: str, student_first: str, cache: dict | None = None,
+                      parent_name: str = ""):
     """The PO student's Teachworks lesson signal {found, recent, upcoming},
     memoized per run (multi-PO emails share one lookup). None = could NOT check
     (no email / TW error) — the caller must treat None as UNKNOWN, never as a
-    verified answer. Lookback window: po_inbox.currently_tutored_lookback_days."""
+    verified answer. The parent's name rides along so the TW lookup survives
+    duplicate/inactive customer records that own the email (Aly Daly case)."""
     key = ((email or "").strip().lower(), (student_first or "").strip().lower())
     if not key[0] or not key[1]:
         return None
     cache = cache if cache is not None else {}
     if key not in cache:
+        p_parts = (parent_name or "").strip().split()
         try:
             days = int(cfg()["po_inbox"].get("currently_tutored_lookback_days", 30))
-            cache[key] = tw.student_lesson_activity(key[0], student_first, lookback_days=days)
+            cache[key] = tw.student_lesson_activity(
+                key[0], student_first, lookback_days=days,
+                parent_first=p_parts[0] if p_parts else "",
+                parent_last=" ".join(p_parts[1:]) if len(p_parts) > 1 else "")
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  calendar check failed: {e}")
             cache[key] = None
@@ -929,7 +935,8 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         # month (month unknown → any upcoming); No = that month is unbooked.
         # Unverifiable → left unset and flagged (gap DM to Kath + Roman).
         act = (_student_activity(parent_email_res, po.get("student_first") or "",
-                                 tw_cache) if parent_email_res else None)
+                                 tw_cache, parent_name=parent_name)
+               if parent_email_res else None)
         tw_note = None
         if parent_email_res and act is None:
             tw_note = ("⚠️ Could not verify the Teachworks calendar — set 'Is the family "

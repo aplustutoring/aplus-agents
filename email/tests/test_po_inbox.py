@@ -433,7 +433,7 @@ def test_no_upcoming_lessons_posts_to_channel(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": True, "recent": 0, "upcoming": 0})
+                        lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 0, "upcoming": 0})
     monkeypatch.setattr(po.slack_client, "post_message", lambda ch, t: posts.append((ch, t)))
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com"), notes)
@@ -446,7 +446,7 @@ def test_upcoming_lessons_no_channel_post(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": True, "recent": 1, "upcoming": 2})
+                        lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 1, "upcoming": 2})
     monkeypatch.setattr(po.slack_client, "post_message",
                         lambda *a: (_ for _ in ()).throw(AssertionError("must not post")))
     notes = []
@@ -629,7 +629,7 @@ def test_multi_po_scheduling_alert_fires_once(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": True, "recent": 0, "upcoming": 0})
+                        lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 0, "upcoming": 0})
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: None)   # scheduler DM is separate
     monkeypatch.setattr(po.slack_client, "post_message", lambda ch, t: posts.append(t))
     notes = []
@@ -1103,7 +1103,7 @@ def test_currently_tutored_yes_when_upcoming_lessons(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": True, "recent": 0, "upcoming": 1})
+                        lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 0, "upcoming": 1})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
@@ -1118,7 +1118,7 @@ def test_currently_tutored_calendar_only_recent_lessons_dont_count(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": True, "recent": 3, "upcoming": 0})
+                        lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 3, "upcoming": 0})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
@@ -1135,7 +1135,7 @@ def test_multi_po_email_every_deal_gets_true_value(monkeypatch):
     monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": True, "recent": 0, "upcoming": 0})
+                        lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 0, "upcoming": 0})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props["is_the_family_currently_being_tutored_by_us_"])
@@ -1153,7 +1153,7 @@ def test_schedule_stamped_from_upcoming_lessons(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30:
+                        lambda e, sf, lookback_days=30, **kw:
                         {"found": True, "recent": 0, "upcoming": 2,
                          "upcoming_dates": ["2026-08-12", "2026-08-19"],
                          "upcoming_lessons": [
@@ -1174,7 +1174,7 @@ def test_schedule_falls_back_to_recent_pattern(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30:
+                        lambda e, sf, lookback_days=30, **kw:
                         {"found": True, "recent": 2, "upcoming": 0, "upcoming_dates": [],
                          "upcoming_lessons": [],
                          "recent_lessons": [
@@ -1193,7 +1193,7 @@ def test_no_schedule_derivable_flags_gap(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": False, "recent": 0, "upcoming": 0})
+                        lambda e, sf, lookback_days=30, **kw: {"found": False, "recent": 0, "upcoming": 0})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
@@ -1223,7 +1223,7 @@ def test_currently_tutored_no_when_inactive_or_unknown_student(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: {"found": False, "recent": 0, "upcoming": 0})
+                        lambda e, sf, lookback_days=30, **kw: {"found": False, "recent": 0, "upcoming": 0})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
@@ -1236,7 +1236,7 @@ def test_currently_tutored_unverifiable_flags_not_guesses(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30: (_ for _ in ()).throw(RuntimeError("TW down")))
+                        lambda e, sf, lookback_days=30, **kw: (_ for _ in ()).throw(RuntimeError("TW down")))
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
@@ -1256,7 +1256,7 @@ def test_currently_tutored_uses_prior_deal_parent_email(monkeypatch):
     monkeypatch.setattr(po.hs, "get_deal_contacts",
                         lambda did: [_contact("C-mom", "maria@x.com", "Maria", "Diaz", "Family")])
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30:
+                        lambda e, sf, lookback_days=30, **kw:
                         checked.append(e) or {"found": True, "recent": 2, "upcoming": 1})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
@@ -1272,7 +1272,7 @@ def test_tw_calendar_checked_once_per_multi_po_email(monkeypatch):
     monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30:
+                        lambda e, sf, lookback_days=30, **kw:
                         calls.append(e) or {"found": True, "recent": 0, "upcoming": 0})
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
     po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
@@ -1290,7 +1290,7 @@ def test_new_month_po_texts_despite_current_month_lessons(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30:
+                        lambda e, sf, lookback_days=30, **kw:
                         {"found": True, "recent": 2, "upcoming": 2,
                          "upcoming_dates": ["2026-08-20", "2026-08-27"]})
     monkeypatch.setattr(po.hs, "create_deal",
@@ -1306,7 +1306,7 @@ def test_po_month_already_booked_no_text(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
-                        lambda e, sf, lookback_days=30:
+                        lambda e, sf, lookback_days=30, **kw:
                         {"found": True, "recent": 0, "upcoming": 3,
                          "upcoming_dates": ["2026-08-28", "2026-09-04", "2026-09-11"]})
     monkeypatch.setattr(po.hs, "create_deal",
