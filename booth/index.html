@@ -161,6 +161,13 @@
   .field input:focus{outline:none;border-color:var(--oak-mid);}
   .field-row{display:flex;gap:16px;}
   .field-row .field{flex:1;}
+  .role-row{display:flex;gap:12px;}
+  .role-pill{
+    flex:1;padding:16px 8px;text-align:center;cursor:pointer;
+    background:var(--white);border:3px solid var(--sage-soft);border-radius:16px;
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:var(--ink);
+  }
+  .role-pill.selected{border-color:var(--gold);background:#FBF3E2;box-shadow:0 0 0 2px var(--gold);}
   .consent{display:flex;gap:14px;align-items:flex-start;font-size:16px;font-weight:600;color:var(--oak-mid);line-height:1.4;margin-top:4px;}
   .consent input{width:26px;height:26px;margin-top:2px;flex-shrink:0;}
   #form-error{color:#A33B2E;font-weight:800;font-size:16px;display:none;text-align:center;}
@@ -281,6 +288,13 @@ const CONFIG = {
     </div>
     <div class="field"><label for="f-email">Email</label><input id="f-email" type="email" inputmode="email" required></div>
     <div class="field"><label for="f-phone">Phone (optional)</label><input id="f-phone" type="tel" inputmode="tel"></div>
+    <div class="field"><label>I am a&hellip;</label>
+      <div class="role-row" id="role-row">
+        <div class="role-pill" data-role="teacher">Teacher</div>
+        <div class="role-pill" data-role="administrator">Administrator</div>
+        <div class="role-pill" data-role="support_staff">Support Staff</div>
+      </div>
+    </div>
     <label class="consent">
       <input type="checkbox" id="f-consent">
       <span>Send my photo + A+ can reach out about tutoring for my students &#128248;</span>
@@ -360,8 +374,9 @@ const CONFIG = {
 
   function fullReset(){
     state.goal=null; state.photoDataUrl=null; state.contact=null; state.delivery=null;
+    selectedRole=null;
     $("lead-form").reset();
-    document.querySelectorAll(".goal-card").forEach(c=>c.classList.remove("selected"));
+    document.querySelectorAll(".goal-card,.role-pill").forEach(c=>c.classList.remove("selected"));
     $("btn-goal-next").disabled=true;
     show("attract");
   }
@@ -495,19 +510,32 @@ const CONFIG = {
   $("btn-keep").addEventListener("click",()=>show("form"));
 
   // ---------- Form ----------
+  let selectedRole=null;
+  document.querySelectorAll(".role-pill").forEach(p=>{
+    p.addEventListener("click",()=>{
+      document.querySelectorAll(".role-pill").forEach(x=>x.classList.remove("selected"));
+      p.classList.add("selected"); selectedRole=p.dataset.role;
+    });
+  });
   $("lead-form").addEventListener("submit", e=>{
     e.preventDefault();
+    const err=$("form-error");
     const email=$("f-email").value.trim();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-      const err=$("form-error"); err.textContent="Please double-check that email address."; err.style.display="block";
+      err.textContent="Please double-check that email address."; err.style.display="block";
       return;
     }
-    $("form-error").style.display="none";
+    if(!selectedRole){
+      err.textContent="Pick your role so we know who we met!"; err.style.display="block";
+      return;
+    }
+    err.style.display="none";
     state.contact={
       firstName:$("f-first").value.trim(),
       lastName:$("f-last").value.trim(),
       email,
       phone:$("f-phone").value.trim(),
+      role:selectedRole,
       marketingConsent:$("f-consent").checked
     };
     show("delivery");
@@ -548,6 +576,7 @@ const CONFIG = {
         body:JSON.stringify({
           ...state.contact,
           goal:state.goal,
+          role:state.contact.role,
           delivery:state.delivery,
           sendEmail:wantsEmail,
           sendText:wantsText,

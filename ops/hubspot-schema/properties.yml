@@ -330,6 +330,22 @@ properties:
           label: "Text"
         - value: all
           label: "All"     # email + text + print
+    - name: aplus_event_role
+      label: "Event Role"
+      group: events
+      type: enumeration
+      fieldType: select
+      description: >-
+        Attendee's self-identified role at the event, for segmentation.
+        Set by event capture tools. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: administrator
+          label: "Administrator"
+        - value: teacher
+          label: "Teacher"
+        - value: support_staff
+          label: "Support Staff"
     - name: aplus_marketing_consent
       label: "Booth Marketing Consent"
       group: events

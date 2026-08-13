@@ -55,7 +55,7 @@ export default {
       return json({ error: "Invalid JSON" }, 400, env);
     }
 
-    const { firstName, lastName, email, phone, marketingConsent, goal, delivery, sendEmail, sendText, eventTag, photo } = body;
+    const { firstName, lastName, email, phone, marketingConsent, goal, role, delivery, sendEmail, sendText, eventTag, photo } = body;
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: "Valid email required" }, 400, env);
     }
@@ -77,8 +77,9 @@ export default {
         // Enum writes take INTERNAL VALUES, not labels (the fleet "read
         // labels" rule is about reading). Values match properties.yml.
         aplus_booth_delivery: ["email", "print", "both", "text", "all"].includes(delivery) ? delivery : "",
+        aplus_event_role: ["administrator", "teacher", "support_staff"].includes(role) ? role : "",
         aplus_marketing_consent: marketingConsent ? "true" : "false",
-      });
+      }, role);
     } catch (e) {
       results.hubspot = { error: String(e) };
     }
@@ -121,7 +122,17 @@ function json(obj, status, env) {
   });
 }
 
-async function upsertContact(env, properties) {
+// Create-only persona stamp by self-identified role (existing contacts are
+// never overwritten — a_persona is multi-select; po_inbox doctrine).
+// teacher → TOR persona + TOR lead status; administrator → Decision Maker;
+// support_staff → no stamp; missing role (legacy clients) → teacher default.
+const ROLE_CREATE_PROPS = {
+  teacher: { a_persona: "Teacher of Record/EF/ES", hs_lead_status: "Charter School Teacher TOR/EF" },
+  administrator: { a_persona: "Decision Maker/Director" },
+  support_staff: {},
+};
+
+async function upsertContact(env, properties, role) {
   const headers = {
     Authorization: `Bearer ${env.HUBSPOT_TOKEN}`,
     "Content-Type": "application/json",
@@ -151,13 +162,9 @@ async function upsertContact(env, properties) {
     return { action: "updated", id };
   }
 
-  // Booth attendees are Sage Oak TORs. Persona/lead-status stamped ONLY on
-  // contacts this Worker CREATES (a_persona is multi-select; existing
-  // contacts are never overwritten) — same doctrine as email/src/po_inbox.py.
   const createProps = {
     ...properties,
-    a_persona: "Teacher of Record/EF/ES",
-    hs_lead_status: "Charter School Teacher TOR/EF",
+    ...(ROLE_CREATE_PROPS[role] || ROLE_CREATE_PROPS.teacher),
   };
 
   const crt = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
