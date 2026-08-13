@@ -10,16 +10,20 @@ Newest entries first.
 
 ## 2026-08-12 — Zie Rojas PO: net-payout misread + dropped correction + TOR variant (3 fixes)
 
-**What:** Roman caught the Zie Rojas deals at $140/$280 when the PO says
-$150/$300. Root causes + fixes: (1) OPS OAs show BOTH the PO value and the
-vendor payout net of the platform fee (140/150 = 93.3%) — the extractor took
-the payout column; prompt now demands the PO value/'Total Cost', never net.
-(2) The school's follow-up correction email was SILENTLY SKIPPED (closed-thread
-guard) — closed PO threads are no longer skipped: replies process and get a
-"↩️ PO-thread reply" labeled ticket; cursor rewound to 19:30Z to catch the
-dropped correction. (3) TOR 'Christina Mondolo' didn't link because the portal
-has 'ChristinE' — name fallback now accepts a UNIQUE last-name match in the
-TOR pool on first-name variants. Portal: both deals corrected to $150/$300,
+**What:** Roman caught the Zie Rojas deals at $140/$280 when the PO he was
+reading says $150/$300. TRUE root cause (recovered replies told the story):
+the extractor read the OA CORRECTLY — iLEAD issued the POs at the old $70/hr
+rate (140/280 = 2h/4h @ 70); Kath had already replied asking iLEAD to REISSUE
+at $75/hr (=150/300), and Christina Mondolo acknowledged — but BOTH replies
+were SILENTLY SKIPPED by the closed-thread guard, so nobody downstream saw the
+rate dispute. Fixes: (1) closed PO threads are no longer skipped — replies
+process (is_po replies trip the duplicate alert; others get a "↩️ PO-thread
+reply" ticket); cursor rewound to 19:30Z and both dropped replies recovered as
+tickets 47559984489 + 47563508797. (2) TOR 'Christina Mondolo' didn't link
+because the portal contact is 'ChristinE' — name fallback now accepts a UNIQUE
+last-name match in the TOR pool on first-name variants (her reply confirmed
+christina.mondolo@ileadexploration.org). (3) Prompt guardrail added anyway:
+use the PO value/'Total Cost', never a net-of-fee payout figure. Portal: both deals corrected to $150/$300,
 Christine Mondolo associated (+family→TOR label, TOR fields stamped), Kath's
 two tasks rewritten with AMOUNT CORRECTED flags. Also: teachworks
 customers_for_family() (email + name match, active first) — the Aly Daly
