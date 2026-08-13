@@ -1470,3 +1470,65 @@ def test_multi_po_seq_base_counted_once(monkeypatch):
         {"po_number": "A3", "amount": "100", "po_month": "2026-10"}]), [])
     seqs = [n.split(" - ")[2] for n in created]
     assert seqs == ["iLead 1", "iLead 2", "iLead 3"]   # contiguous, no gaps
+
+
+# ── TOR self-healing (Mary Nieves SMS incident, 2026-08-13) ──────────────────
+
+def test_tor_flipped_status_healed_on_touch(monkeypatch):
+    patches = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None:
+                        {"id": "C-mom"} if e == "mom@x.com" else
+                        {"id": "C-tor", "properties": {"email": e, "firstname": "Mary",
+                                                       "lastname": "Nieves",
+                                                       "a_persona": "",
+                                                       "hs_lead_status": "OPEN_DEAL"}})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None: patches.append((path, payload)) or {})
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com", tor_email="mary@ilead.org"), notes)
+    heal = [x for x in patches if x[0] == "/crm/v3/objects/contacts/C-tor"]
+    assert heal
+    fixed = heal[0][1]["properties"]
+    assert fixed["hs_lead_status"] == "Charter School Teacher TOR/EF"
+    assert fixed["a_persona"] == "Teacher of Record/EF/ES"
+    assert any("TOR contact healed" in n for n in notes)
+
+
+def test_dual_role_tor_family_status_untouched(monkeypatch):
+    # a TOR who is ALSO a Family customer keeps their customer lead status —
+    # only the missing persona would be appended (here it's present → no PATCH)
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None:
+                        {"id": "C-mom"} if e == "mom@x.com" else
+                        {"id": "C-tor", "properties": {"email": e,
+                                                       "a_persona": "Family;Teacher of Record/EF/ES",
+                                                       "hs_lead_status": "OPEN_DEAL"}})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None:
+                        (_ for _ in ()).throw(AssertionError("dual-role must not be patched"))
+                        if "contacts/C-tor" in path else {})
+    po._handle_deal(_po(parent_email="mom@x.com", tor_email="dual@x.org"), [])
+
+
+def test_healthy_tor_not_patched(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None:
+                        {"id": "C-mom"} if e == "mom@x.com" else
+                        {"id": "C-tor", "properties": {"email": e,
+                                                       "a_persona": "Teacher of Record/EF/ES",
+                                                       "hs_lead_status": "Charter School Teacher TOR/EF"}})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None:
+                        (_ for _ in ()).throw(AssertionError("healthy TOR must not be patched"))
+                        if "contacts/C-tor" in path else {})
+    po._handle_deal(_po(parent_email="mom@x.com", tor_email="ok@x.org"), [])

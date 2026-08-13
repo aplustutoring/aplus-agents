@@ -8,6 +8,33 @@ Newest entries first.
 
 ---
 
+## 2026-08-13 — TOR got the parent SMS (Mary Nieves) — persona-gated texting
+
+**What:** Mary Nieves (TOR) received the parent schedule-confirmation SMS.
+Chain: the agent now attaches TORs to deals AT CREATION → deal flow 1608222821
+stamps contact_level_deal_stage on ALL associated contacts (no persona filter)
+→ SMS flow 1603217415 enrolled her. Worse, deal flow 64686392 (Charter
+Pre-Lesson) had ALREADY flipped her hs_lead_status to OPEN_DEAL — so a
+status-based exclusion could never have saved her, and the flip also silently
+broke the TOR name-matching pool. Fixes (all executed): (1) a_persona
+"Teacher of Record/EF/ES" backfilled onto 1,170 of 1,203 TOR-status contacts
+(append-only) — the persona is now the un-corruptible teacher marker.
+(2) SMS flow 1603217415 enrollment now excludes a_persona containing the TOR
+persona (revision 41, verified; unenroll-on-criteria ejects mid-flow slips).
+(3) Agent self-healing: whenever po_inbox touches a TOR contact it re-asserts
+persona + lead status (skipping dual-role Family+TOR contacts). Mary's lead
+status restored in-portal. NOT changed: deal flows 1608222821/64686392 still
+stamp/flip all associated contacts (their action type can't filter targets) —
+harmless for texting now; the status flips on TORs heal on next agent touch.
+
+**Why:** Roman 2026-08-13: "mary nieves received the sms ont the parent...
+what do we do to make sure this doesnt happen in future."
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py` (suite 211
+green); HubSpot: flow 1603217415 rev 41, 1,170 contact persona backfills.
+
+---
+
 ## 2026-08-12 — Zie Rojas PO: net-payout misread + dropped correction + TOR variant (3 fixes)
 
 **What:** Roman caught the Zie Rojas deals at $140/$280 when the PO he was
