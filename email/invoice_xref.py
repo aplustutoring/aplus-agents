@@ -16,7 +16,7 @@ from collections import defaultdict
 
 from src import hubspot_client as hs, teachworks_client as tw
 
-AFTER_MS = 1786406400000   # 2026-08-07T00:00:00Z — the new-pipeline era
+AFTER_MS = 1786060800000   # 2026-08-07T00:00:00Z — the new-pipeline era
 
 
 def _recent_po_deals() -> list[dict]:
