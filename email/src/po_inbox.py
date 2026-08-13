@@ -511,6 +511,7 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                           "approved in the school's ordering portal before service starts.")
     created: list[dict] = []
     tw_cache: dict = {}   # one Teachworks calendar lookup per family per email
+    seq_cache: dict = {}  # 'School N' base counted ONCE per email (no double-count)
     for i, sub in enumerate(subs):
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
@@ -518,7 +519,8 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         # scheduling alert once per email, not once per PO month; seq_offset
         # staggers 'School N' across sibling deals created in the same email
         rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0),
-                             msg=msg, seq_offset=i, tw_cache=tw_cache)
+                             msg=msg, seq_offset=i, tw_cache=tw_cache,
+                             seq_cache=seq_cache)
         if rec:
             created.append(rec)
     if created:
@@ -564,15 +566,23 @@ def _next_school_seq(po: dict, short: str, year_tag: str) -> int:
 
 
 def _deal_name(po: dict, parent_name: str, note_parts: list[str],
-               seq_offset: int = 0) -> str:
+               seq_offset: int = 0, seq_cache: dict | None = None) -> str:
     """Roman's convention (2026-08-10): 'Parent - Student - School N - YY/YY'.
     Parent unresolved → 'NEEDS PARENT - ...' until the chase flow fills it in.
-    seq_offset staggers N across the deals of one multi-PO email (the HubSpot
-    search index won't see sibling deals created milliseconds earlier)."""
+    seq_offset staggers N across the deals of one multi-PO email; the BASE
+    count is searched ONCE per email (seq_cache) — re-searching per sibling
+    double-counts as the index catches up (the Zackarias 1,2,4,7,9 bug)."""
     short, mapped = _school_short(po.get("school") or "")
     year = _school_year_tag(po)
     student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip()
-    seq = _next_school_seq(po, short, year) + seq_offset
+    key = (short.lower(), year)
+    if seq_cache is not None and key in seq_cache:
+        base = seq_cache[key]
+    else:
+        base = _next_school_seq(po, short, year)
+        if seq_cache is not None:
+            seq_cache[key] = base
+    seq = base + seq_offset
     if short and not mapped:
         note_parts.append(f"🏫 School '{short}' has no shorthand — add it to "
                           f"po_inbox.school_short_names in config.yaml.")
@@ -784,7 +794,8 @@ def _find_parent_via_deals(po: dict):
 
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True, msg: dict | None = None,
-                   seq_offset: int = 0, tw_cache: dict | None = None) -> dict | None:
+                   seq_offset: int = 0, tw_cache: dict | None = None,
+                   seq_cache: dict | None = None) -> dict | None:
     """Advance the matching Waiting-for-PO deal, or create one. Returns
     {name, pending} for a CREATED deal (drives the scheduler DM), else None."""
     pc = cfg()["po_inbox"]
@@ -947,7 +958,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                            "(schedule_preferences blank) — the confirmation text "
                            "will be incomplete; set the schedule manually.")
         upcoming = act.get("upcoming") if act else None
-        name = _deal_name(po, parent_name, note_parts, seq_offset)
+        name = _deal_name(po, parent_name, note_parts, seq_offset, seq_cache)
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
         if po.get("level_up"):
             if pc.get("levelup_pipeline_id"):

@@ -1416,3 +1416,31 @@ def test_missing_tor_flagged_for_manual_fill(monkeypatch):
     po._handle_deal(_po(), notes)   # no TOR in the PO at all
     missing = [n for n in notes if "Not in the PO" in n]
     assert missing and "tor_name" in missing[0] and "tor_email" in missing[0]
+
+
+def test_multi_po_seq_base_counted_once(monkeypatch):
+    # the Zackarias 1,2,4,7,9 bug: the search index catches up mid-run and
+    # re-counting per sibling inflates N — the base must be searched ONCE
+    calls = {"n": 0}
+    def growing_index(t, p=None, s=None):
+        if t != "Zack":          # only the student-name seq search sees the index
+            return []
+        out = [_deal(f"D{i}", f"Mari - Zack - iLead {i + 1} - 26/27")
+               for i in range(calls["n"])]
+        calls["n"] += 1          # each later search finds one more just-created sibling
+        return out
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", growing_index)
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties":
+                                                    {"firstname": "Mari", "lastname": "Barajas"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    po._handle_deal(_po(student_first="Zack", student_last="Barajas",
+                        po_number="", parent_email="mom@x.com", pos=[
+        {"po_number": "A1", "amount": "100", "po_month": "2026-08"},
+        {"po_number": "A2", "amount": "100", "po_month": "2026-09"},
+        {"po_number": "A3", "amount": "100", "po_month": "2026-10"}]), [])
+    seqs = [n.split(" - ")[2] for n in created]
+    assert seqs == ["iLead 1", "iLead 2", "iLead 3"]   # contiguous, no gaps

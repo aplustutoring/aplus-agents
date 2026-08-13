@@ -8,6 +8,29 @@ Newest entries first.
 
 ---
 
+## 2026-08-12 — Missed 8/10 iLEAD PO recovered + seq double-count fix
+
+**What:** Kath flagged a PO from 8/10 that never became deals. Found it: an OPS
+order agreement (5 POs, 3114057042–46, Zackarias Barajas / Mari Barajas,
+phonics w/ Fidal Williams, $1,630.38 total) arrived 8/10 09:45 PT — ~4 hours
+BEFORE the OAs-are-POs rule deployed, and the evening replay list only covered
+the two older iLEAD emails. Replayed via replay_msg_ids → 5 deals created with
+the full current pipeline (TOR Mary Nieves name-matched WITH resolved email,
+parent attached, pending flag, tutored=No, invoice tasks). Audit of every other
+po_inbox record since 8/9 confirmed nothing else was missed. Also fixed the
+bug the replay exposed: 'School N' came out 1,2,4,7,9 because the base count
+was re-searched per sibling while the index caught up — the base is now
+searched ONCE per email (seq_cache) and offsets applied locally; the three
+misnumbered deals were renamed to iLead 3/4/5 in-portal.
+
+**Why:** Kath's report (via Roman): "a PO came in on 8.10 that we never
+caught." Root cause was rule-deployment timing, not a pipeline gap.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 206 green).
+
+---
+
 ## 2026-08-12 — TOR name + email stamped on PO deals
 
 **What:** PO deals now stamp `teacher_of_record_name` + `teacher_of_record_email`
