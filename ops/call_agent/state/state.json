@@ -212,9 +212,12 @@
     403851154,
     404045539,
     404110408,
-    404110825
+    404110825,
+    404143450,
+    404146540,
+    404149014
   ],
-  "last_run_utc": "2026-08-13T17:14:28.933706+00:00",
+  "last_run_utc": "2026-08-13T18:11:02.487262+00:00",
   "pending_digest": [
     {
       "call_id": 404110408,
@@ -331,12 +334,79 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 404146540,
+      "number": "14094975825",
+      "time_pt": "11:00 AM",
+      "matched": true,
+      "contact_label": "Lindsey Owens",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound call to Lindsey Owens for a scheduled meeting today, but the call went to voicemail. Paola left a message asking Lindsey to call back to reschedule/connect. No conversation took place.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Lindsey Owens to reschedule the booked meeting she missed",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Lindsey did not answer; only a voicemail was left, so no new information to change status. Current status 'Meeting Booked' remains until re-contact.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Attempted outbound call to Lindsey for her booked meeting today; reached voicemail. Left a message asking her to call back to reconnect.",
+          "what_we_can_do_to_help": "Reschedule the meeting once Lindsey returns the call so we can discuss her tutoring needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Attempted outbound call to Lindsey for her booked meeting today; reached voicemail. Left a message asking her to call back to reconnect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reschedule the meeting once Lindsey returns the call so we can discuss her tutoring needs."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Lindsey Owens to reschedule the booked meeting she missed",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "19093042924",
       "time_pt": "8:16 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "14094975825",
+      "time_pt": "11:05 AM",
       "reason": "hang-up"
     }
   ],
