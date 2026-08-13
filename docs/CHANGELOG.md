@@ -88,6 +88,29 @@ RETIRE-CANDIDATE 99→95. Verdicts now: 25 DELETE / 43 EDIT / 4 KEEP / 15 VERIFY
 
 ---
 
+## 2026-08-12 — Booth: role picker + attendee list + short consent
+
+**What:** (1) NEW `aplus_event_role` (events group, dropdown
+Administrator/Teacher/Support Staff), declared + synced; required pill picker
+on the booth form. Role now drives the create-only persona stamp:
+teacher→TOR persona+lead status, administrator→Decision Maker/Director,
+support_staff→no stamp, missing→teacher default (verified e2e). (2) NEW
+ACTIVE list 3103 "Sage Oak BTSC 2026 — Booth Attendees" on
+aplus_event_tag=sage_oak_btsc_2026 — auto-enrolls all booth contacts;
+future events get one list per appended tag option. Enrollment verified
+(<30s); team test runs (Roman/Emily/Hugh Jazz/Danielle) already enrolled,
+personas behaved per doctrine. (3) Consent copy shortened (Roman):
+"Send my photo + A+ can reach out about tutoring for my students 📸".
+
+**Why:** Roman 2026-08-12: role segmentation + "every contact that submits
+this photo booth ends up on a hubspot list."
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md` (81→82).
+
+---
+
 ## 2026-08-11 — Booth round 3: enum-write bugfix, frame design, delivery=All
 
 **What:** (1) CRITICAL FIX: worker.js wrote enum LABELS ("Print") where the
