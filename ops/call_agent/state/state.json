@@ -205,9 +205,12 @@
     403790865,
     403792041,
     403802704,
-    403825916
+    403825916,
+    403829385,
+    403827087,
+    403835557
   ],
-  "last_run_utc": "2026-08-12T23:04:10.034189+00:00",
+  "last_run_utc": "2026-08-12T23:59:31.433995+00:00",
   "pending_digest": [
     {
       "call_id": 403654638,
@@ -577,8 +580,123 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 403835557,
+      "number": "18186422559",
+      "time_pt": "4:26 PM",
+      "matched": true,
+      "contact_label": "Hellen Cresor",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Hellen Cresor to follow up on her tutoring inquiry for her twins, Tegan (2nd grade) and Paxton (3rd grade, accelerated), both homeschooled through Excel Academy (a charter). Hellen wants in-person tutoring to fill gaps from virtual learning and challenge both students, ideally back-to-back sessions with the same tutor. Paola explained rates ($130/hr in-person, $75/hr online for charter families), the PO process, and offered a free online trial. Next steps: Paola will check tutor availability in Hellen's ZIP code and email pricing/info.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check tutor availability in Hellen's ZIP code for a tutor who can cover both 2nd and 3rd grade back-to-back in-person sessions",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Send Hellen the pricing and program information via email",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once Hellen confirms, coordinate with Excel Academy teacher(s) to obtain PO and set up sessions",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family uses charter-school instructional funds through Excel Academy to pay for tutoring.",
+        "student_or_school_names_mentioned": [
+          "Tegan",
+          "Paxton",
+          "Excel Academy",
+          "Sage Oak",
+          "Code Ninjas"
+        ],
+        "record_updates": {
+          "whats_going_on": "Twins Tegan (entering 2nd grade) and Paxton (entering 3rd grade, accelerated one year in kindergarten) are starting the year homeschooled through Excel Academy (previously Sage Oak), doing virtual classes Tue-Thu mornings. Neither is behind \u2014 family wants tutoring to fill gaps from online learning, provide guidance, and challenge them, especially Paxton who has testing in January. Kids respond well to play-based, concept-focused tutoring rather than worksheet drilling.",
+          "what_we_can_do_to_help": "Connected with Hellen; checking tutor availability in her ZIP for a single tutor who can do back-to-back in-person sessions for both kids. Sending pricing info via email ($130/hr in-person, $75/hr online charter rate) and will coordinate with Excel Academy teacher for PO once family confirms. Free online trial offered as an option.",
+          "student_first_name": null,
+          "student_last_name": "Cresor",
+          "grade_level": null,
+          "student_school": "Excel Academy",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Twins Tegan (entering 2nd grade) and Paxton (entering 3rd grade, accelerated one year in kindergarten) are starting the year homeschooled through Excel Academy (previously Sage Oak), doing virtual classes Tue-Thu mornings. Neither is behind \u2014 family wants tutoring to fill gaps from online learning, provide guidance, and challenge them, especially Paxton who has testing in January. Kids respond well to play-based, concept-focused tutoring rather than worksheet drilling."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Connected with Hellen; checking tutor availability in her ZIP for a single tutor who can do back-to-back in-person sessions for both kids. Sending pricing info via email ($130/hr in-person, $75/hr online charter rate) and will coordinate with Excel Academy teacher for PO once family confirms. Free online trial offered as an option."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Cresor"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Excel Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check tutor availability in Hellen's ZIP code for a tutor who can cover both 2nd and 3rd grade back-to-back in-person sessions",
+          81494333
+        ],
+        [
+          "Send Hellen the pricing and program information via email",
+          81494333
+        ],
+        [
+          "Once Hellen confirms, coordinate with Excel Academy teacher(s) to obtain PO and set up sessions",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18186422559",
+      "time_pt": "4:05 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
