@@ -220,9 +220,12 @@
     404221773,
     404224927,
     404229214,
-    404234848
+    404234848,
+    404256245,
+    404260002,
+    404260237
   ],
-  "last_run_utc": "2026-08-13T21:04:55.894621+00:00",
+  "last_run_utc": "2026-08-13T22:04:46.619503+00:00",
   "pending_digest": [
     {
       "call_id": 404110408,
@@ -674,6 +677,95 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 404260002,
+      "number": "18185993303",
+      "time_pt": "2:23 PM",
+      "matched": true,
+      "contact_label": "Sherman Oaks Ca",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Craig, a parent in Encino, called A+ Tutoring looking for in-home math tutoring for his 5th grade son who attends Lanai (Elementary). Roman answered but was picking up his own kids and asked to call back. They agreed Roman would call Craig back in about 30 minutes.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Roman to call Craig back in ~30 minutes to discuss in-home math tutoring for his 5th grader at Lanai",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Wait - correcting: this is a prospective family inquiry we briefly spoke with; need is standard math tutoring (no diagnostic/test prep indicated) and no charter funding mentioned, so We Connected.",
+        "student_or_school_names_mentioned": [
+          "Lanai"
+        ],
+        "record_updates": {
+          "whats_going_on": "Craig called seeking in-home math tutoring for his 5th grade son who attends Lanai (Elementary) in Encino. Roman was picking up his own kids and could not talk; agreed to call Craig back in about 30 minutes.",
+          "what_we_can_do_to_help": "Provide in-home math tutoring in Encino for a 5th grader. Roman to call back within ~30 minutes to gather more details and propose next steps.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": "Lanai",
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Craig called seeking in-home math tutoring for his 5th grade son who attends Lanai (Elementary) in Encino. Roman was picking up his own kids and could not talk; agreed to call Craig back in about 30 minutes."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide in-home math tutoring in Encino for a 5th grader. Roman to call back within ~30 minutes to gather more details and propose next steps."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Lanai"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Roman to call Craig back in ~30 minutes to discuss in-home math tutoring for his 5th grader at Lanai",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
