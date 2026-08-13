@@ -223,9 +223,15 @@
     404234848,
     404256245,
     404260002,
-    404260237
+    404260237,
+    404274301,
+    404280341,
+    404286588,
+    404275039,
+    404282315,
+    404281590
   ],
-  "last_run_utc": "2026-08-13T22:04:46.619503+00:00",
+  "last_run_utc": "2026-08-13T23:04:11.895353+00:00",
   "pending_digest": [
     {
       "call_id": 404110408,
@@ -766,6 +772,300 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 404280341,
+      "number": "18056039809",
+      "time_pt": "3:23 PM",
+      "matched": true,
+      "contact_label": "Karen Mercer",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Karen Mercer, a charter school TOR/EF from iLead Exploration, called Roman to arrange tutoring through charter funds for a 10th-grade student, Cruz Vouneoznos (parent August), who is behind in pre-algebra. Roman explained pricing ($75/hr) and the recommended high-dose model (3x/week, 45 min). Karen will speak with the family shortly and either have them call A+ or she'll submit the PO. She also shared positive feedback that A+ tutor helped her student Madeline Bragg pass algebra with an A.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Await call from the Vouneoznos family (parent August, student Cruz, 10th grade pre-algebra) or a PO from Karen; if neither comes, follow up with Karen",
+            "owner_hint": "Roman"
+          },
+          {
+            "item": "Look up Madeline Bragg in the system and nominate her for a Spotlight Award ($25 gift card) for passing algebra with an A",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Karen is a charter school TOR/EF (already correctly set); she is facilitating enrollment for a different family (Vouneoznos), not a status change for her record.",
+        "student_or_school_names_mentioned": [
+          "Cruz Vouneoznos",
+          "August Vouneoznos",
+          "Madeline Bragg",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Karen (TOR/EF at iLead Exploration) is referring a new family: 10th grader Cruz Vouneoznos (parent August) who is behind in math \u2014 last passed 7th grade math, has been in pre-algebra without passing, and dropped math last year. Karen also shared great feedback that our tutor helped her student Madeline Bragg pass algebra with an A.",
+          "what_we_can_do_to_help": "Provide charter-funded tutoring for Cruz on pre-algebra foundations (fractions, decimals, percents) using the high-dose model (3x/week, 45 min) at $75/hr. Karen will either send a PO or have the family call us; also nominate Madeline Bragg for a Spotlight Award.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Karen (TOR/EF at iLead Exploration) is referring a new family: 10th grader Cruz Vouneoznos (parent August) who is behind in math \u2014 last passed 7th grade math, has been in pre-algebra without passing, and dropped math last year. Karen also shared great feedback that our tutor helped her student Madeline Bragg pass algebra with an A."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide charter-funded tutoring for Cruz on pre-algebra foundations (fractions, decimals, percents) using the high-dose model (3x/week, 45 min) at $75/hr. Karen will either send a PO or have the family call us; also nominate Madeline Bragg for a Spotlight Award."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await call from the Vouneoznos family (parent August, student Cruz, 10th grade pre-algebra) or a PO from Karen; if neither comes, follow up with Karen",
+          38681249
+        ],
+        [
+          "Look up Madeline Bragg in the system and nominate her for a Spotlight Award ($25 gift card) for passing algebra with an A",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 404275039,
+      "number": "18185993303",
+      "time_pt": "3:06 PM",
+      "matched": true,
+      "contact_label": "Sherman Oaks Ca",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman from A+ Tutoring placed an outbound callback to Craig regarding in-home math tutoring for his 5th grade son at Lanai Elementary. The call went to voicemail; Roman left a message asking Craig to call back when he has a chance. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Craig's return call; if no response, attempt another outreach to discuss tutoring needs and next steps.",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family inquiry; previously connected. Keep as We Connected since call went to voicemail and no new qualifying info was gathered.",
+        "student_or_school_names_mentioned": [
+          "Craig",
+          "Lanai"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roman called Craig back and reached voicemail; left a message asking Craig to return the call when available.",
+          "what_we_can_do_to_help": "Continue attempts to reach Craig to gather details on his 5th grader's math tutoring needs and schedule an in-home start in Encino.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roman called Craig back and reached voicemail; left a message asking Craig to return the call when available."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempts to reach Craig to gather details on his 5th grader's math tutoring needs and schedule an in-home start in Encino."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Craig's return call; if no response, attempt another outreach to discuss tutoring needs and next steps.",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404282315,
+      "number": "14152143224",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Nicole Vance",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Nicole Vance to follow up on her tutoring inquiry for her daughter, who is entering 3rd grade at St. Patrick's Catholic School. Nicole explained her daughter isn't significantly struggling but needs extra support in math and reading comprehension as material gets harder. Paola explained the online ($95/hr) and in-person ($130/hr) options, session structure, and package discounts. Nicole asked Paola to email pricing details, which she agreed to review before deciding whether to move forward.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Nicole the rates and package information for online and in-person tutoring",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Await Nicole's email reply to confirm whether she wants to move forward",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "We Connected",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [
+          "St. Patrick's Catholic School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Nicole's daughter is entering 3rd grade at St. Patrick's Catholic School and is doing okay overall, but math has gotten harder this year and she could also use help with reading comprehension. Mom wants extra academic support alongside her private school work.",
+          "what_we_can_do_to_help": "Provided overview of online ($95/hr) and in-person ($130/hr) 1:1 tutoring, session flexibility, and package discounts. Paola is emailing rates and packages; family will review and reply via email if they want to move forward.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "3",
+          "student_school": "St. Patrick's Catholic School",
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Nicole's daughter is entering 3rd grade at St. Patrick's Catholic School and is doing okay overall, but math has gotten harder this year and she could also use help with reading comprehension. Mom wants extra academic support alongside her private school work."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provided overview of online ($95/hr) and in-person ($130/hr) 1:1 tutoring, session flexibility, and package discounts. Paola is emailing rates and packages; family will review and reply via email if they want to move forward."
+        ],
+        [
+          "student_school",
+          "St. Patrick\u2019s Catholic School",
+          "St. Patrick's Catholic School"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Nicole the rates and package information for online and in-person tutoring",
+          81494333
+        ],
+        [
+          "Await Nicole's email reply to confirm whether she wants to move forward",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404281590,
+      "number": "16785993000",
+      "time_pt": "3:31 PM",
+      "matched": true,
+      "contact_label": "Ningning Shi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring left a voicemail for Ningning Shi following up on text messages about an available tutor for Sarah. She asked Ningning to confirm so she could schedule a trial lesson for tomorrow at 5pm ET / 2pm PT. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Ningning's confirmation via call or text to schedule the trial lesson tomorrow at 2pm PT / 5pm ET",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "If no response, follow up again to lock in the trial lesson time",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer already in an open deal for Sarah's tutoring; status owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Sarah"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda left a voicemail for Ningning following up on texts about an available tutor for Sarah, awaiting confirmation to schedule a trial lesson.",
+          "what_we_can_do_to_help": "Once Ningning confirms, schedule Sarah's trial lesson tomorrow at 2pm PT / 5pm ET with the proposed tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda left a voicemail for Ningning following up on texts about an available tutor for Sarah, awaiting confirmation to schedule a trial lesson."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once Ningning confirms, schedule Sarah's trial lesson tomorrow at 2pm PT / 5pm ET with the proposed tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Ningning's confirmation via call or text to schedule the trial lesson tomorrow at 2pm PT / 5pm ET",
+          86868539
+        ],
+        [
+          "If no response, follow up again to lock in the trial lesson time",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
