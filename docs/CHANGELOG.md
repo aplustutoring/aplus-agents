@@ -8,6 +8,32 @@ Newest entries first.
 
 ---
 
+## 2026-08-12 — Zie Rojas PO: net-payout misread + dropped correction + TOR variant (3 fixes)
+
+**What:** Roman caught the Zie Rojas deals at $140/$280 when the PO says
+$150/$300. Root causes + fixes: (1) OPS OAs show BOTH the PO value and the
+vendor payout net of the platform fee (140/150 = 93.3%) — the extractor took
+the payout column; prompt now demands the PO value/'Total Cost', never net.
+(2) The school's follow-up correction email was SILENTLY SKIPPED (closed-thread
+guard) — closed PO threads are no longer skipped: replies process and get a
+"↩️ PO-thread reply" labeled ticket; cursor rewound to 19:30Z to catch the
+dropped correction. (3) TOR 'Christina Mondolo' didn't link because the portal
+has 'ChristinE' — name fallback now accepts a UNIQUE last-name match in the
+TOR pool on first-name variants. Portal: both deals corrected to $150/$300,
+Christine Mondolo associated (+family→TOR label, TOR fields stamped), Kath's
+two tasks rewritten with AMOUNT CORRECTED flags. Also: teachworks
+customers_for_family() (email + name match, active first) — the Aly Daly
+inactive-dupe case; wired into calendar/schedule lookups and invoice_xref.
+
+**Why:** Roman 2026-08-12: PO says 150; "there was a follow up email that came
+from school with correct amount. but why is the teacher not tied to the deal?"
+
+**Files:** `email/src/po_inbox.py`, `email/src/teachworks_client.py`,
+`email/invoice_xref.py`, `email/tests/test_po_inbox.py` (suite 208 green),
+`email/state/po_cursor.json` (rewound).
+
+---
+
 ## 2026-08-12 — Missed 8/10 iLEAD PO recovered + seq double-count fix
 
 **What:** Kath flagged a PO from 8/10 that never became deals. Found it: an OPS

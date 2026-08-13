@@ -941,12 +941,38 @@ def test_pending_approval_flagged_on_deal_and_task(monkeypatch):
 
 # ── thread guard vs parent chase: the TOR's reply must get through ───────────
 
-def test_skip_thread_respects_open_chase(monkeypatch):
+def test_closed_thread_detection(monkeypatch):
+    # closed threads are LABELED now, never skipped (the Zie Rojas amount
+    # correction was silently dropped by the old skip, 2026-08-12)
     monkeypatch.setattr(po, "_thread_already_handled", lambda t: True)
     monkeypatch.setattr(po, "_open_chases",
                         lambda: {"TH-open": {"deal_id": "D9"}})
-    assert po._skip_thread("TH-open") is False        # chase waiting → process
-    assert po._skip_thread("TH-closed") is True       # no chase → stays closed
+    assert po._closed_thread("TH-open") is False       # chase waiting
+    assert po._closed_thread("TH-closed") is True      # closed → gets labeled
+
+
+def test_tor_first_name_variant_unique_lastname_matches(monkeypatch):
+    # PO says 'Christina', portal has 'Christine' — unique last-name match
+    # within the TOR pool wins anyway (the Mondolo case)
+    assoc = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname",
+                        lambda ln: [{"id": "C-tor", "properties":
+                                     {"firstname": "Christine", "lastname": "Mondolo",
+                                      "email": "christina.mondolo@ileadexploration.org"}}])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append(c))
+    notes = []
+    po._handle_deal(_po(parent_email="mom@x.com",
+                        tor_first="Christina", tor_last="Mondolo"), notes)
+    assert assoc == ["C-tor"]
+    assert any("matched by NAME" in n for n in notes)
+
+
+def test_gross_po_value_in_prompt():
+    from src.po_inbox import PO_SYSTEM
+    assert "NEVER the net payout" in PO_SYSTEM
 
 
 # ── Slack routing flag + direct scheduler DM (Roman, 2026-08-10) ─────────────

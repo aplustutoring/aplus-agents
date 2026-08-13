@@ -41,6 +41,10 @@ PO_SYSTEM = (
     "rate = the HOURLY RATE stated in the PO (number only, e.g. 75). hours = the hours "
     "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
     "we compute it. "
+    "amount = the PO/authorization VALUE — what we invoice the school. OPS/iLEAD forms "
+    "often show BOTH the PO value AND a smaller vendor payout net of the platform fee "
+    "(e.g. Value 150.00 but payout 140.00): ALWAYS use the PO value / 'Total Cost' "
+    "figures, NEVER the net payout — for the top-level amount and every pos[] entry. "
     "is_po=true ONLY for a NEW purchase order / funding authorization that starts or adds "
     "service. Order Agreements / Vendor Agreement Forms that list purchase orders for a "
     "student (the OPS/iLEAD pattern) ARE POs even when the document is stamped 'THIS IS "
@@ -293,8 +297,14 @@ def _tor_by_name(first: str, last: str) -> list[dict]:
     ff = _fold_name(first)
     if not ff:
         return cands
-    return [c for c in cands
-            if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+    exact = [c for c in cands
+             if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+    if exact:
+        return exact
+    # First-name VARIANT (PO said 'Christina', portal has 'Christine'): a
+    # UNIQUE last-name match within the TOR-flagged pool is trusted anyway;
+    # multiple candidates still fall through to the manual flag.
+    return cands if len(cands) == 1 else []
 
 
 def _associate_tor(deal_id, po: dict, note_parts: list[str],
@@ -1047,19 +1057,22 @@ def _notify_gaps(subject: str, note_parts: list[str], ticket_id=None) -> None:
                 print(f"  ⚠️  gap DM to {key} failed (non-fatal): {e}")
 
 
-def _skip_thread(thread_id: str) -> bool:
-    """A thread with a processed REAL PO is closed — UNLESS a parent chase is
-    still waiting on it: the TOR's parent-info reply must get through."""
+def _closed_thread(thread_id: str) -> bool:
+    """A thread whose REAL PO was already processed (and no parent chase is
+    waiting on it). Replies on closed threads are NOT skipped — schools send
+    corrections there (the Zie Rojas amount correction, 2026-08-12, was
+    silently dropped by the old skip) — they're processed and labeled."""
     return _thread_already_handled(thread_id) and thread_id not in _open_chases()
 
 
 def process_po_message(stub_id: str, force: bool = False) -> dict | None:
-    """force=True (replay) bypasses the processed/thread guards — used to re-run
-    a message under new rules (e.g. order agreements now counting as POs)."""
+    """force=True (replay) bypasses the processed guard — used to re-run a
+    message under new rules (e.g. order agreements now counting as POs)."""
     pc = cfg()["po_inbox"]
     m = gm.get_message(stub_id)
-    if not force and (audit.already_processed(f"gmail:{m['id']}") or _skip_thread(m["threadId"])):
+    if not force and audit.already_processed(f"gmail:{m['id']}"):
         return None
+    closed_thread = _closed_thread(m["threadId"])
     attachments: list[dict] = []
     try:
         attachments = gm.get_attachments(m["id"])
@@ -1099,6 +1112,10 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
     subject = (f"new_po — {po.get('school') or m['sender'][:40]}"
                + (f" (PO {po['po_number']})" if po.get("po_number") else "")) if po.get("is_po") \
               else f"po_inbox review — {m['subject'][:50]}"
+    if closed_thread and not po.get("is_po"):
+        subject = f"PO-thread reply — {m['subject'][:50]}"
+        note_parts.insert(0, "↩️ Reply on an ALREADY-PROCESSED PO thread — check it for "
+                             "corrections or updates to the existing deal(s).")
     desc = (f"From PO inbox ({pc['address']}).\nFrom: {m['sender']}\nSubject: {m['subject']}\n"
             f"School: {po.get('school')} | Student: {po.get('student_first')} {po.get('student_last')} | "
             f"PO#: {po.get('po_number')} | Amount: {po.get('amount')} | Hours: {po.get('hours')}\n"
