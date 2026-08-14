@@ -42,10 +42,17 @@ Tried in order; the first hit wins:
 2. **The student's prior deal** → its non-TOR contact, if unique.
 3. **Unique family-contact match** by student name.
 4. **Nothing** → the deal is born `NEEDS PARENT - …` and the **parent chase**
-   starts: a request for the parent's name/email/phone is drafted to the TOR
-   (else the sender) on the same thread — a human sends it (the agent never
-   sends from charter@). The reply auto-creates the contact, renames the deal,
-   and fires the Teachworks sync. Silent for 2 business days → escalation DM.
+   starts. Before drafting, the agent checks the TOR's recent **call-agent
+   summaries** — a phone call may already hold the answer (flagged on the
+   ticket). The request (parent name/email/phone) is drafted to the TOR — as a
+   **fresh email** when the PO came from a portal robot (never addressed to
+   noreply); one draft per recipient even for multi-student certificates. A
+   human sends it (the agent never sends from charter@). Drafts carry the
+   Gmail label `A+ Agent/Draft Pending` + the HubSpot BCC; the agent detects
+   the send (unsent after 4 business hours → 🚩 nag), the reply auto-creates
+   the contact, renames the deal, fires the Teachworks sync, and arms the
+   family's SMS. Open chases also **self-resolve** if the family contact
+   appears on its own. No reply 2 business days after the SEND → escalation DM.
 
 Why it matters: the Teachworks sync keys the family on the deal's parent
 contact email — no parent contact means no TW family, no scheduling, no
