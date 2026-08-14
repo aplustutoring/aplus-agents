@@ -744,7 +744,9 @@ def _validate_summary(d):
 
 # ─── Coaching (rubric scoring) ────────────────────────────────────────────────
 
-RUBRIC_DIMENSIONS = ["U1", "U2", "U3", "U4", "U5", "S1", "S2", "S3", "S4", "V1", "V2"]
+RUBRIC_DIMENSIONS = ["U1", "U2", "U3", "U4", "U5",
+                     "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8",
+                     "V1", "V2"]
 
 COACHING_PROMPT = """You are a supportive call coach for A+ Tutoring, reviewing \
 a call handled by {agent_name} ({direction_desc}). Score the call against the rubric \
@@ -861,7 +863,9 @@ RUBRIC_DIM_LABELS = {
     "U3": "Call control & structure", "U4": "Information capture & verification",
     "U5": "Next steps & ownership",
     "S1": "Discovery depth", "S2": "Program fit & value",
-    "S3": "Pricing confidence", "S4": "Advance (the close)",
+    "S3": "Pricing discipline (visual, never aloud)", "S4": "Advance (the close)",
+    "S5": "Student's name used", "S6": "School question (silent qualifier)",
+    "S7": "TOR capture (charter)", "S8": "Free trial earned",
     "V1": "Ownership & recovery", "V2": "Confirmation of resolution",
 }
 
@@ -880,7 +884,7 @@ def build_coaching_note(agent_name, time_pt, summary, card):
     parts = [
         f"<p><b>[Call Agent] Call quality evaluation — {esc(agent_name or 'unknown')}"
         f" · {esc(time_pt)} · overall {card['overall']}/5</b><br>"
-        f"Rubric v1 (ops/call_agent/rubric.md) · intent: {esc(summary['intent'])}"
+        f"Rubric v2 (ops/call_agent/rubric.md) · intent: {esc(summary['intent'])}"
         f" · sentiment: {esc(summary['sentiment'])}</p>",
         "<p><b>Scores</b></p><ul>" + "".join(rows) + "</ul>",
     ]

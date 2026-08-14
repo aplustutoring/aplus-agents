@@ -28,15 +28,17 @@ that read prices aloud dropped S3 5→1 and 3→1 as intended.
 money-last, pricing is visual and never read aloud). The journey map is now
 repo-canonical so agents and sessions score/behave against one source of truth.
 
-**Known limitation (proposed follow-ups, NOT executed — Roman to approve):**
-`call_agent.py` hard-codes the dimension enum (`RUBRIC_DIMENSIONS`, scoring
-schema, `RUBRIC_DIM_LABELS`), so production scoring will silently ignore S5–S8
-until those three spots learn the new IDs; also, 15-dimension scorecards can
-overflow `config.yml` `claude.max_tokens: 2000` (observed truncated JSON on
-call 404301001 during the dry-run; 4000 worked).
+**Follow-ups (approved by Roman same session, executed):** `call_agent.py`
+hard-coded the dimension enum, so S5–S8 would have been silently unscored in
+production — `RUBRIC_DIMENSIONS` extended to 15 dims (the scoring schema
+references it), `RUBRIC_DIM_LABELS` updated (S3 renamed, S5–S8 added), Note
+header now says "Rubric v2". `config.yml` `claude.max_tokens` 2000 → 4000
+(15-dimension scorecards overflowed 2000 — truncated JSON on call 404301001
+in the dry-run; 4000 verified).
 
 **Files:** `knowledge/CUSTOMER_JOURNEY.md` (new), `knowledge/README.md`,
-`ops/call_agent/rubric.md`.
+`ops/call_agent/rubric.md`, `ops/call_agent/call_agent.py`,
+`ops/call_agent/config.yml`.
 
 ---
 

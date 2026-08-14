@@ -80,7 +80,9 @@ missed_calls:
 claude:
   # Repo-standard model (matches marketing/scripts/*).
   model: "claude-opus-4-7"
-  max_tokens: 2000
+  # 4000: rubric v2's 15-dimension scorecards overflow 2000 (truncated JSON
+  # observed on the 2026-08-13 dry-run rescore, call 404301001).
+  max_tokens: 4000
   # Cost guard: transcripts longer than this are truncated before summarization
   # (truncation is noted in the summary metadata + digest line).
   max_transcript_chars: 50000
