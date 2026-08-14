@@ -1,6 +1,6 @@
 # KEEPERS — the property vocabulary agents use
 
-**81 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
+**80 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
 
 **Approved by Roman 2026-08-10.** Persona group moves executed; every keeper is declared in `ops/hubspot-schema/properties.yml` (registry). 
 
@@ -8,6 +8,8 @@ Rules that travel with this list:
 - Agents ALWAYS read enumeration **labels**, never internal values (fleet rule; see mismatch list in contacts-proposal.md).
 - Family→TOR truth is the typeId-15 contact association; the stamped TOR text fields are legacy capture but still LIVE (#AP031, #AP029).
 - Multi-select `a_persona` is read FIRST by every agent (#AP024, #AP030).
+- 2026-08-11 (Roman): ONE student per contact record — the multi-child model is the A+ persona system, sibling fields retire. The three sibling full-name fields still listed under Family are pending an email-agent config change (Teachworks disambiguation reads them), then they archive too.
+- 2026-08-11 (Roman): `teacher_email_address` un-kept — `teacher_of_record_email_address` is THE teacher-email property (archive blocked by TSN Workflow 3b until repointed).
 - 2026-08-11 (Roman): contact-side per-day `*_schedule_preference`, `degree_received`, `university_attended` un-kept and archived/queued for archive — the DEAL-side per-day schedule preferences remain keepers.
 - **Student grade level: agents use `what_is_your_child_s_current_grade_level_` — always** (Roman 2026-08-10). The other grade fields below are program/form capture, never the agent read/write target.
 
@@ -40,14 +42,13 @@ Rules that travel with this list:
 | `teacher_of_record_name` | Teacher of Record Name | Family's pointer to their teacher — legacy intake capture, superseded by typeId-15 association but still LIVE and load-bearing (auto-create trigger) | #AP029 |
 | `what_is_your_child_s_current_grade_level_` | What grade is your child in? | CANONICAL student grade — the property agents use for grade level, always (Roman 2026-08-10); call agent overwrite target | #AP027 |
 
-## Teacher of Record/EF/ES (4)
+## Teacher of Record/EF/ES (3)
 
 | Internal name | Label | Why | Decision |
 |---|---|---|---|
 | `charter_school_teacher` | Charter School Teacher | School dropdown = master school list; shows when TOR flag = Yes | #AP028 |
 | `educational_facillitator_teacher_of_record` | Educational Facillitator/Teacher of Record | Yes/No TOR flag; conditional display drives school dropdown | #AP028 |
 | `last_tor_workflow_enrollment_date` | Last TOR Workflow Enrollment Date | TOR nurture-workflow bookkeeping; belongs with TOR persona |  |
-| `teacher_email_address` | Teacher Email Address | Danielle's live marketing-form field (15 fills) — not a duplicate | #AP028 |
 
 *(conditional display: `charter_school_teacher` shows when `educational_facillitator_teacher_of_record` = Yes — #AP028)*
 

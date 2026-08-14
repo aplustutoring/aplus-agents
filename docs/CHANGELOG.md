@@ -8,6 +8,32 @@ Newest entries first.
 
 ---
 
+## 2026-08-11 — iLead purge completed + one-student decision + teacher-email verdict (Roman)
+
+**What:** Forms scope added → the two iLead intake forms ("Level up - Ilead",
+"A+ Tutoring x iLEAD Tiered Support") backed up + archived, all 10 blocked
+iLead scheduling properties archived, empty `level-up_ilead` group DELETED.
+Roman decisions, same session: (1) ONE student per contact record — the plan
+is the A+ persona system; sibling fields retire: `sibling_school`,
+`student_3`, `student_3_school`, `student_4_school` ARCHIVED;
+`sibling_current_grade_level` BLOCKED by 3 live Get Started Now forms (field
+must be edited out of the forms). (2) `teacher_email_address` un-kept —
+`teacher_of_record_email_address` is the teacher-email property; archive
+BLOCKED by live TSN Workflow 3b (repoint first). (3)
+`student_last_name_if_diff_from_parent` confirmed staying. Registry 42→41
+contacts; KEEPERS 81→80. Pending code change before the last sibling fields
+go: email/config.yaml teachworks.student_name_properties reads
+student_full_name_clone_/student_3_full_name/student_4_full_name.
+
+**Why:** Roman's verdicts on the low-fill review, 2026-08-11. Decision-log
+entries pending: one-student model; canonical teacher-email property.
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md`,
+`ops/fleet-health/audit/backups/2026-08-11-ilead-forms/` (new).
+
+---
+
 ## 2026-08-13 — call_agent: Roman-answered calls hand follow-up to Paola
 
 **What:** (refined same-day: first pass forced Paola on ALL tasks; Roman

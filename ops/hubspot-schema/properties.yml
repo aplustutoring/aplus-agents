@@ -203,11 +203,6 @@ properties:
       group: tor
       type: date
       fieldType: date
-    - name: teacher_email_address
-      label: "Teacher Email Address"
-      group: tor
-      type: string
-      fieldType: text
     # — tutor —
     - name: a__pay_per_hour
       label: "A+ Pay Per Hour"
