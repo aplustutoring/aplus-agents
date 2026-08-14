@@ -8,6 +8,45 @@ Newest entries first.
 
 ---
 
+## 2026-08-13 — Charter renewal gap analysis (one-off report, schedulable)
+
+**What:** New read-only report script `scripts/charter_gap_analysis.py` +
+manual workflow `.github/workflows/charter-gap-analysis.yml` (workflow_dispatch;
+xlsx uploaded as a 7-day run artifact — Teachworks tokens live only in Actions
+secrets, so the run happens in CI). Charter families with a 25/26 deal but no
+26/27 renewal, enriched with Teachworks invoice history across both accounts.
+5 charter pipelines (907748, 72281989, 88841552, 5119061, 1066195), deals since
+2025-08-01; school-staff contacts excluded by email domain (student.* subdomains
+stay family); RENEWED = deal created ≥2026-08-01 OR "26/27" in dealname
+(cutoff tightened same day from 2026-06-01 — late spring 25/26 POs were
+counting as renewals; Roman 2026-08-13).
+**WHY:** 26/27 renewal season — Roman needed the call/win-back list ranked by
+actual invoiced value, plus the deal-but-never-invoiced and TW-no-charter-deal
+hygiene queues. First run 2026-08-13: 439 families → 13 renewed / 426 gap
+(396 with invoices: 10 Hot, 386 Win-back; 30 never invoiced; 278 mismatches).
+Corrected re-run same day (cutoff Aug 1): 439 families → 10 renewed / 429 gap
+(399 with invoices: 12 Hot, 387 Win-back; 30 never invoiced; 278 mismatches).
+HubSpot static list "Charter 26/27 Gap Families" (listId 3104) built from the
+corrected gap set — all 429 contacts — with marketability audit: 378 fully
+clean, 42 not marketing contacts, 4 opted out, 4 hard bounced, 1 no email.
+Follow-up: the 42 were set as marketing contacts (helper list "Charter 26/27
+Gap - Upgrade to Marketing", listId 3105; done via portal UI bulk action —
+hs_marketable_status is API-read-only and the private app lacked crm.import;
+Roman added the crm.import scope later that day — verified working, so future
+status flips can use an UPDATE-only import with marketableContactImport=true).
+Marketing tier after: 9,751/12,000. Reachable gap now 420/429.
+**Files:** scripts/charter_gap_analysis.py, .github/workflows/charter-gap-analysis.yml
+(temporary branch push trigger dropped at merge).
+**Merge note:** a PARALLEL implementation of the same script landed on main
+from another session (e20a8ec script + bfb0a07 charter-gap-tw-fetch.yml,
+list name "Charter Re-Engagement 26/27 - Gap Families (Aug 2026)" — never
+executed, no such list in the portal, no changelog entry). Superseded at merge
+by this branch's executed version; charter-gap-tw-fetch.yml removed (it calls
+a --fetch-teachworks flag only the superseded script had). Restore from
+e20a8ec/bfb0a07 if anything from it is wanted.
+
+---
+
 ## 2026-08-11 — iLead purge completed + one-student decision + teacher-email verdict (Roman)
 
 **What:** Forms scope added → the two iLead intake forms ("Level up - Ilead",

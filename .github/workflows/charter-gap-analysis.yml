@@ -1,0 +1,32 @@
+name: Charter gap analysis (read-only)
+
+# Manual report: charter families with a 25/26 deal but no 26/27 renewal,
+# enriched with Teachworks invoice history. Writes nothing to HubSpot or
+# Teachworks — the xlsx is uploaded as a run artifact.
+# See scripts/charter_gap_analysis.py.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv openpyxl
+      - name: Run gap analysis
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+        run: python scripts/charter_gap_analysis.py --out charter_gap_analysis.xlsx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: charter-gap-analysis
+          path: charter_gap_analysis.xlsx
+          retention-days: 7
