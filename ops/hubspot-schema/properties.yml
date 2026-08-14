@@ -79,6 +79,11 @@ properties:
         Contact asked not to receive SMS (STOP reply or verbal request).
         Honored by ops/messenger (bulk SMS skips these). Set manually until
         the STOP-reply ingestion phase lands.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: a_persona
       label: "A+ PERSONA"
       group: master
