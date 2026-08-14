@@ -464,11 +464,6 @@ properties:
       group: dealinformation
       type: string
       fieldType: text
-    - name: last_tutor_name
-      label: "Last Tutor Name"
-      group: dealinformation
-      type: string
-      fieldType: text
     - name: tutor_email
       label: "Tutor Email"
       group: tutor_info
