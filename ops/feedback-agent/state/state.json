@@ -17,7 +17,8 @@
     "Ev0BPNEFFW0Z",
     "Ev0BPLGNF12N",
     "Ev0BPV9EHW2D",
-    "Ev0BPTBT6MB4"
+    "Ev0BPTBT6MB4",
+    "Ev0BQ5R9TD0B"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -146,6 +147,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786554388265099?thread_ts=1786554388.265099&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-14",
+      "ts": "1786733741.882079",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "UNKNOWN",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/UNKNOWN/2026-08-14-scheduling-tutor-applicant-routing-rules.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/74",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786733741882079"
     }
   ],
   "graduation": {
