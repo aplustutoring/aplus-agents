@@ -1,0 +1,36 @@
+name: TW invoice status by list (read-only)
+
+# Manual report: every Teachworks invoice (with payment STATUS) for the
+# contacts on a HubSpot list. Writes nothing — results are in the run log.
+# See scripts/tw_invoice_status.py.
+on:
+  workflow_dispatch:
+    inputs:
+      list_id:
+        description: "HubSpot list id (e.g. 3107)"
+        required: true
+      since:
+        description: "Invoice window start"
+        default: "2025-08-01"
+
+permissions:
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv
+      - name: Invoice status
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+        run: >
+          python scripts/tw_invoice_status.py
+          --list-id "${{ inputs.list_id }}" --since "${{ inputs.since }}"
