@@ -1,0 +1,25 @@
+# Charter 26/27 re-engagement launch config (see CAMPAIGN-2026-08-17.md).
+# DISARMED until Roman approves copy + workflows exist. monday-launch.yml
+# only enrolls when armed: true AND today (PT) == launch_date.
+armed: false
+launch_date: "2026-08-17"
+timezone: America/Los_Angeles
+
+# workflow_id empty = segment skipped. Filled once the HubSpot workflows are
+# built from the approved copy drafts (templates/campaign-2026-08-17/).
+enrollments:
+  - segment: families_hot
+    list_id: 3107
+    workflow_id: ""
+  - segment: families_winback
+    list_id: 3108
+    workflow_id: ""
+  - segment: families_never_started
+    list_id: 3109
+    workflow_id: ""
+  - segment: tors_worked_with_us
+    list_id: 3110
+    workflow_id: ""
+  - segment: tors_new_outreach
+    list_id: 3111
+    workflow_id: ""

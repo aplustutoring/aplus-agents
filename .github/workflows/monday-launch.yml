@@ -1,0 +1,40 @@
+name: Campaign launch (Monday enrollments)
+
+# One-shot launcher for ops/messenger/campaign.yml: enrolls each segment
+# list into its HubSpot workflow. The cron fires every day at 9 AM PT but
+# enroll.py exits unless campaign.yml is armed AND today == launch_date —
+# arming is a deliberate config change in a PR. Manual dispatch available
+# for a supervised launch or a dry-run.
+on:
+  schedule:
+    - cron: "0 16 * * *"   # 09:00 PDT / 08:00 PST daily; gated in enroll.py
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type LAUNCH to enroll for real (blank = dry run)'
+        default: ""
+      force:
+        description: "Skip armed/launch-date gates (manual supervised run)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv PyYAML
+      - name: Enroll segments
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+        run: >
+          python ops/messenger/enroll.py
+          --confirm "${{ github.event_name == 'schedule' && 'LAUNCH' || inputs.confirm }}"
+          ${{ github.event_name == 'workflow_dispatch' && inputs.force && '--force' || '' }}
