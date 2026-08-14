@@ -233,14 +233,197 @@
     404289792,
     404301001,
     404317261,
-    404504375
+    404504375,
+    404616352,
+    404618369,
+    404623431,
+    404635614
   ],
-  "last_run_utc": "2026-08-14T19:15:31.364054+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-14T20:04:01.526962+00:00",
+  "pending_digest": [
+    {
+      "call_id": 404618369,
+      "number": "19514486024",
+      "time_pt": "12:20 PM",
+      "matched": true,
+      "contact_label": "Angie Meza",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Angie Meza to follow up on her prior inquiry about tutoring for her son Aramis. Angie answered but said she was in the middle of something and would call back. No substantive conversation occurred.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up call to Angie Meza later to continue the tutoring conversation for Aramis",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Angie Meza is the mom of Aramis (9th grade, VAAS in Granada Hills) \u2014 prior inquiry for in-person 1:1 tutoring in ELA/Math with a male tutor, Mon/Wed/Fri (baseball Tues/Thurs). Roman already emailed pricing and she's price-shopping. Paola called today but Angie was busy and asked to call back; she was polite, not annoyed. She now expects us to try again. When you reach her, open with: 'Hi Angie, this is [name] from A+ Tutoring following up from earlier \u2014 is now a better time to talk about getting Aramis started?' Then confirm she got Roman's pricing email and see if she's ready to move forward or has questions.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Brief call \u2014 Angie asked to be called back before any substantive discussion. Existing 'We Connected' status remains accurate.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Outbound follow-up] Paola called Angie to follow up on the tutoring inquiry for Aramis. Angie answered but was in the middle of something and asked to be called back. No new details discussed.",
+          "what_we_can_do_to_help": "Retry the follow-up call at a better time to continue the conversation about starting in-home tutoring for Aramis and check on the pricing Roman sent.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound follow-up] Paola called Angie to follow up on the tutoring inquiry for Aramis. Angie answered but was in the middle of something and asked to be called back. No new details discussed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry the follow-up call at a better time to continue the conversation about starting in-home tutoring for Aramis and check on the pricing Roman sent."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up call to Angie Meza later to continue the tutoring conversation for Aramis",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404623431,
+      "number": "14243583591",
+      "time_pt": "12:30 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound call to a Torrance, CA number after receiving a missed call from this contact. The call went to voicemail and Paola left a brief message inviting them to call back at a good time. No information about the caller, their student, or their needs was obtained.",
+        "caller_type": "other",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from the Torrance contact; if no response in a few days, attempt another outreach",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "This was an outbound callback attempt by Paola to a Torrance, CA number that had left us a missed call. It went to voicemail and Paola left a friendly message asking them to call back at a good time. We know nothing yet about the caller, student, or need. If they call back, open with: 'Hi, this is [name] with A+ Tutoring returning your call \u2014 thanks for reaching out! Can you tell me a little about what you're looking for and who we'd be tutoring?' Then capture parent name, student name/grade/school, subject need, and modality.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no contact made and no information gathered to classify this lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound callback attempt to a Torrance, CA number that had left us a missed call. Reached voicemail; Paola left a message inviting them to call back.",
+          "what_we_can_do_to_help": "Wait for return call, then gather student info and inquiry details. If no response, try another outreach attempt.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from the Torrance contact; if no response in a few days, attempt another outreach",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 404635614,
+      "number": "12136030449",
+      "time_pt": "12:55 PM",
+      "matched": true,
+      "contact_label": "Anicia Gardner",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Anicia Gardner regarding prior interest in tutoring. The call went to voicemail; Paola left a brief message inviting Anicia to call back to connect and wishing her a nice weekend. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with Anicia Gardner if no callback is received in the next few days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Anicia Gardner (parent of Jamalyah, 7th grade at Woodland Hills Academy) following up on prior tutoring interest \u2014 middle school math support was previously noted. No callback time was set. Anicia now expects a return call from A+ if she calls back, or another outreach attempt from us. If following up, open with: 'Hi Anicia, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we wanted to check in about tutoring support for Jamalyah in middle school math.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound voicemail with no contact made; prior status 'Using Someone Else' should not be changed based on an unanswered call.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message inviting Anicia to call back when it's a good time to connect about tutoring for her family.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Left a message inviting Anicia to call back when it's a good time to connect about tutoring for her family."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with Anicia Gardner if no callback is received in the next few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18189638016",
       "time_pt": "8:47 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "17472797832",
+      "time_pt": "12:16 PM",
       "reason": "hang-up"
     }
   ],
