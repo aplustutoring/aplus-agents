@@ -8,19 +8,25 @@ Newest entries first.
 
 ---
 
-## 2026-08-13 — call_agent: ALL follow-up tasks now assigned to Paola
+## 2026-08-13 — call_agent: Roman-answered calls hand follow-up to Paola
 
-**What:** `_resolve_owner()` no longer maps the summary's `owner_hint` to a
-HubSpot owner — every action-item task goes to `default_task_owner` (Paola)
-unconditionally. `owner_hint` is still captured in the summary/state for
-digest context; it just never routes. Config/README comments updated to
-record the routing rule.
+**What:** (refined same-day: first pass forced Paola on ALL tasks; Roman
+narrowed it to his own calls + handoff context.) Two changes:
+(1) `_resolve_owner()` — when JustCall `agent_name` shows ROMAN answered,
+the task owner is forced to `default_task_owner` (Paola), `owner_hint`
+ignored; other answerers keep hint routing with Paola default.
+(2) New `handoff_note` field in the summary schema/prompt — a Claude-written
+brief for the teammate who wasn't on the call (what was promised, pricing
+quoted, names, timing, suggested opener). Tasks from Roman-answered calls
+(action items AND the no-next-step guard task) open with a handoff block:
+"HANDOFF — Roman spoke with this caller on <date>; follow-up is assigned to
+Paola." + the brief.
 
-**Why:** Roman 2026-08-13: sales calls ring Roman first and overflow to
-Paola, but Paola does 100% of follow-up. The hint mapping was assigning
-tasks to whoever was named on the call — e.g. both Karen Mercer call tasks
-(404280341, 2026-08-13) landed on Roman because he answered and said "I'll
-look that up."
+**Why:** Roman 2026-08-13: sales calls ring Roman first, overflow to Paola,
+and Paola does 100% of follow-up — but the hint mapping assigned tasks to
+whoever was named on the call (both Karen Mercer call tasks, 404280341,
+landed on Roman because he answered). Paola also needs enough context to
+pick up a conversation she wasn't part of — hence the handoff brief.
 
 **Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/config.yml`,
 `ops/call_agent/README.md`.

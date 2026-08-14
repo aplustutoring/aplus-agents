@@ -572,6 +572,13 @@ record, creates follow-up tasks, and feeds a daily ops digest.
    prospective-family and school-partnership calls; for every other caller
    type (existing customers, vendors, tutors, spam) set true so no flag is
    raised.
+7. Write handoff_note — a short brief for a teammate who was NOT on this call
+   and will handle the follow-up: who called and their tone, what was
+   discussed and PROMISED (pricing quoted, program/model recommended,
+   dates/timing agreed), student/parent/school names, what the caller now
+   expects to happen, and a suggested opener for the follow-up contact.
+   Write it as instructions to the teammate ("Karen expects...", "open
+   with..."). Null when follow_up_needed is false.
 
 CURRENT RECORD (HubSpot contact):
 {record_json}
@@ -610,6 +617,7 @@ SUMMARY_SCHEMA = {
         },
         "follow_up_needed": {"type": "boolean"},
         "next_step_scheduled": {"type": "boolean"},
+        "handoff_note": _NULLABLE_STR,
         "lead_status": {"type": "string", "enum": LEAD_STATUS_OPTIONS},
         "lead_status_reason": {"type": "string"},
         "student_or_school_names_mentioned": {
@@ -637,9 +645,9 @@ SUMMARY_SCHEMA = {
         },
     },
     "required": ["summary", "caller_type", "intent", "sentiment", "action_items",
-                 "follow_up_needed", "next_step_scheduled", "lead_status",
-                 "lead_status_reason", "student_or_school_names_mentioned",
-                 "record_updates"],
+                 "follow_up_needed", "next_step_scheduled", "handoff_note",
+                 "lead_status", "lead_status_reason",
+                 "student_or_school_names_mentioned", "record_updates"],
     "additionalProperties": False,
 }
 
@@ -720,6 +728,8 @@ def _validate_summary(d):
     d["action_items"] = items
     d["follow_up_needed"] = bool(d["follow_up_needed"])
     d["next_step_scheduled"] = bool(d.get("next_step_scheduled", True))
+    hn = d.get("handoff_note")
+    d["handoff_note"] = str(hn).strip() or None if isinstance(hn, str) else None
     if not isinstance(d["student_or_school_names_mentioned"], list):
         d["student_or_school_names_mentioned"] = []
     d["student_or_school_names_mentioned"] = [str(x) for x in d["student_or_school_names_mentioned"]]
@@ -1276,12 +1286,21 @@ def apply_record_updates(contact, updates, call_date_pt):
     return applied, skipped
 
 
-def _resolve_owner(owner_hint, cfg):
-    """ALL follow-up tasks go to default_task_owner (Paola) regardless of who
-    the call names — Roman's line rings first on sales calls, but Paola does
-    100% of follow-up (Roman, 2026-08-13). owner_hint is still captured in
-    the summary/digest for context; it just never routes the task."""
-    return cfg["hubspot"]["owners"][cfg["hubspot"]["default_task_owner"]]
+def _resolve_owner(owner_hint, cfg, answered_by=None):
+    """Task owner for a follow-up.
+    Calls ROMAN answered hand off to default_task_owner (Paola) no matter who
+    the call named — sales calls ring Roman first, but Paola does 100% of
+    follow-up (Roman 2026-08-13); the task body carries a handoff block.
+    Other answerers: owner_hint ('have Janelle call...') -> owner id,
+    else default_task_owner."""
+    owners = cfg["hubspot"]["owners"]
+    if (answered_by or "").strip().lower().startswith("roman"):
+        return owners[cfg["hubspot"]["default_task_owner"]]
+    hint = (owner_hint or "").lower()
+    for name, oid in owners.items():
+        if name in hint:
+            return oid
+    return owners[cfg["hubspot"]["default_task_owner"]]
 
 
 def create_task(contact_id, subject, body, owner_id, due_utc, priority="MEDIUM"):
@@ -1533,6 +1552,20 @@ def process_call(call, cfg, dry_run, now_utc):
                     and not summary["next_step_scheduled"])
     applied, skipped_updates, tasks_created, ticket_id = [], [], [], None
 
+    # Handoff routing (Roman 2026-08-13): sales calls ring Roman first, but
+    # Paola does 100% of follow-up. When Roman answered, every task goes to
+    # Paola and its body opens with a handoff block: who spoke to the family
+    # + the model's handoff brief (what was promised, names, timing, opener).
+    answered_by = call.get("agent_name") or (call.get("agent") or {}).get("name") or ""
+    roman_answered = answered_by.strip().lower().startswith("roman")
+    handoff_block = ""
+    if roman_answered:
+        handoff_block = (f"HANDOFF — Roman spoke with this caller on {call_date_pt}; "
+                         f"follow-up is assigned to Paola.\n")
+        if summary.get("handoff_note"):
+            handoff_block += f"{summary['handoff_note']}\n"
+        handoff_block += "\n"
+
     if dry_run:
         if contact:
             log.info(f"  call {cid}: DRY RUN — would log call to contact {contact['id']} "
@@ -1542,8 +1575,9 @@ def process_call(call, cfg, dry_run, now_utc):
                          f"'{status_label(summary['lead_status'])}' "
                          f"({summary['lead_status_reason']})")
         for it in summary["action_items"]:
-            oid = _resolve_owner(it["owner_hint"], cfg)
-            log.info(f"  call {cid}: DRY RUN — would create Task '{it['item']}' (owner {oid})")
+            oid = _resolve_owner(it["owner_hint"], cfg, answered_by)
+            log.info(f"  call {cid}: DRY RUN — would create Task '{it['item']}' (owner {oid}"
+                     f"{', Roman-answered handoff' if roman_answered else ''})")
         if is_negative:
             log.info(f"  call {cid}: DRY RUN — would create HIGH ticket + check-in task "
                      f"+ alert to {cfg['slack']['alert_channel'] or '(alert_channel unset)'}")
@@ -1572,15 +1606,16 @@ def process_call(call, cfg, dry_run, now_utc):
             log.info(f"  call {cid}: no HubSpot contact for {number} — digest triage "
                      f"(auto-create disabled in v1)")
 
-        # Action items -> HubSpot Tasks (owner from hint, default Paola).
+        # Action items -> HubSpot Tasks (Roman-answered calls hand off to
+        # Paola with a handoff block; otherwise owner from hint, default Paola).
         due = next_business_day(now_utc, cfg["hubspot"]["task_due_business_days"])
         for it in summary["action_items"]:
-            oid = _resolve_owner(it["owner_hint"], cfg)
+            oid = _resolve_owner(it["owner_hint"], cfg, answered_by)
             task_id = create_task(
                 contact["id"] if contact else None,
                 it["item"][:250],
                 f"[Call Agent] From inbound call {call_date_pt} ({contact_label or fmt_phone(number)} · {fmt_phone(number)}).\n\n"
-                f"{summary['summary']}",
+                f"{handoff_block}{summary['summary']}",
                 oid, due,
                 priority="HIGH" if is_negative else "MEDIUM",
             )
@@ -1602,8 +1637,8 @@ def process_call(call, cfg, dry_run, now_utc):
                 f"Book next step with {contact_label or fmt_phone(number)} ({fmt_phone(number)}) — none set on call",
                 f"[Call Agent] New-inquiry call ended without a concrete next "
                 f"step (assessment / first session / scheduled callback). Call "
-                f"back TODAY and lock one in.\n\n{summary['summary']}",
-                _resolve_owner(None, cfg), now_utc, priority="HIGH")
+                f"back TODAY and lock one in.\n\n{handoff_block}{summary['summary']}",
+                _resolve_owner(None, cfg, answered_by), now_utc, priority="HIGH")
             log.info(f"  call {cid}: no next step booked — same-day HIGH task created")
 
     # Coaching: rubric score, posted to the private coaching channel.
