@@ -241,7 +241,9 @@ def main():
             sys.exit('SMS template must contain an opt-out line (e.g. "Reply STOP to opt out").')
         from_number = CFG["sms"]["numbers"][args.sms_from]
 
-        sendable, skipped = [], {"opted_out": 0, "no_phone": 0, "bad_phone": 0}
+        needed_tokens = set(TOKEN_RE.findall(template))
+        sendable, skipped = [], {"opted_out": 0, "no_phone": 0, "bad_phone": 0,
+                                 "missing_merge_field": 0}
         for c in contacts:
             if c.get(SMS_OPT_OUT_PROP) == "true":
                 skipped["opted_out"] += 1
@@ -252,6 +254,11 @@ def main():
             e164 = normalize_phone(c["phone"])
             if not e164:
                 skipped["bad_phone"] += 1
+                continue
+            # never send broken copy: every token the template uses must have
+            # a value on the contact (e.g. the gap families with no tutor)
+            if any(not c.get(t) for t in needed_tokens):
+                skipped["missing_merge_field"] += 1
                 continue
             sendable.append((c, e164, render(template, c)))
 
