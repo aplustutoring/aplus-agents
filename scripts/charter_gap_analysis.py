@@ -56,7 +56,9 @@ HS_BASE = "https://api.hubapi.com"
 TW_BASE = "https://api.teachworks.com/v1"
 
 SINCE = "2025-08-01"            # window start for deals and invoices
-RENEWAL_CUTOFF = "2026-06-01"   # deals created on/after this date = 26/27 renewal
+RENEWAL_CUTOFF = "2026-08-01"   # deals created on/after this date = 26/27 renewal
+                                # (was 2026-06-01; tightened 2026-08-13 — late
+                                # spring 25/26 POs were counting as renewals)
 RENEWAL_NAME_RE = re.compile(r"26\s*[/\-]\s*27")
 HOT_DAYS = 90                   # last invoice within this many days = "Hot"
 
