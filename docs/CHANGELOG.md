@@ -67,9 +67,17 @@ fallback (customer_first_name/customer_last_name when the customer record is
 missing). Base run stays read-only.
 **WHY:** Roman 2026-08-14: win-back outreach personalization — "your student
 X's tutor was Y" needs the last tutor on the contact record.
+**Run results (2026-08-14, run 31769645948):** MATCH RATE 389/429 gap
+families got a tutor name (91%) — every matched-with-invoices family that had
+a completed lesson. Import 78996473 DONE; full verify: 389/429 list-3104
+contacts carry BOTH last_tutor_name and student_first_name. The 40 without:
+30 never-invoiced (no TW match) + 10 invoiced but no completed lesson in
+window. NOTE: tutor names are stored in Teachworks "Last, First" order
+(e.g. "James, Kelly") — flip before using in mail-merge, or ask this session
+to normalize and re-stamp.
 **Files:** scripts/charter_gap_analysis.py,
 .github/workflows/charter-gap-analysis.yml,
-ops/hubspot-schema/properties.yml (+1 property).
+ops/hubspot-schema/properties.yml (+2 contact properties).
 
 ---
 
