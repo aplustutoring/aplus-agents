@@ -6,11 +6,6 @@ name: Charter gap analysis (read-only)
 # See scripts/charter_gap_analysis.py.
 on:
   workflow_dispatch:
-  # Temporary: lets the one-off run trigger from the feature branch, since
-  # workflow_dispatch only works once the file is on the default branch.
-  # Safe to drop after merge.
-  push:
-    branches: [worktree-charter-gap-analysis]
 
 permissions:
   contents: read
