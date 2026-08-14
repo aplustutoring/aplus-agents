@@ -31,6 +31,23 @@ templates/campaign-2026-08-17/}, .github/workflows/monday-launch.yml.
 
 ---
 
+## 2026-08-14 — EOS knowledge ingested from Monday (knowledge/eos/)
+
+**What:** New `knowledge/eos/README.md` — synced snapshot of the FY2027 Annual
+Goals (16k package hours / 900 students / 2 intervention programs / 75%
+retention / 100% tutors scored / 70 referral families) and Q1 FY2027 Rocks by
+seat, with Monday board ids (Goals 18419427040, Rocks 18421156386, L10
+Scorecard 18402267902, L10 Agenda, Data Review Protocol) and usage guidance:
+seats map to config roles:, work should cite the Rock/Goal it serves, the ops
+scorecard sync feeds the L10 Scorecard, Monday stays source of truth.
+
+**Why:** Roman: "do our agents have our EOS knowledge?" — they had none;
+"check in monday.com you will find our goals for the year and our rocks."
+
+**Files:** `knowledge/eos/README.md` (new).
+
+---
+
 ## 2026-08-14 — NEW ENGINE: bulk messenger (on-demand email/SMS to lists)
 
 **What:** `ops/messenger/` — on-demand bulk email + SMS to a HubSpot list,
@@ -57,6 +74,27 @@ sends stay human-clicked in HubSpot for now; SMS number routing map.
 (+sms_opt_out).
 
 ---
+## 2026-08-14 — Accountability chart: roles resolve to people at config load (Roman)
+
+**What:** New `roles:` block in email/config.yaml — the EOS-style seat map
+(visionary/roman, operations/emily, scheduling_lead/mandy, scheduler_a_l/janelle,
+scheduler_m_z/yolanda, charter_admin/kath, sales/danielle, charter_sales/paola).
+Every functional key now names a SEAT (routing owners, scheduler_split,
+escalation level2/3, recipients, cc, missing_info_dms, charter_sales, internal
+fallback); cfg() resolves roles → staff keys at load time so all consumers and
+tests keep seeing resolved people, and config.staff() resolves either form.
+Hardcoded "paola" in main.py's pre-deal routing → charter_sales seat. Team
+change = edit `roles:`, nothing else. Claude-to-Roman comms keep using NAMES
+(memory rule). Seat titles are inferred from function — Roman to correct
+against the real accountability chart.
+
+**Why:** Roman: "lets give all team members a role title and that way its
+never tied to anyones name... if a team member moves or leaves or gets added
+i just have to add it for you."
+
+**Files:** `email/config.yaml`, `email/src/config.py`, `email/src/main.py`,
+`email/src/po_inbox.py`, `email/tests/{test_invoice_sweep,test_hourly_update,
+test_po_inbox}.py` (suite 227 green).
 
 ## 2026-08-14 — Parent-chase: CHARTER SALES notified at 24h (Roman; role, not name)
 

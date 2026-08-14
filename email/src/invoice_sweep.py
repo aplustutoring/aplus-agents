@@ -19,7 +19,7 @@ from datetime import datetime
 
 from . import audit, hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import now_la
-from .config import cfg
+from .config import cfg, staff
 from .po_inbox import _po_month_end
 
 _MONTHS = {m: i + 1 for i, m in enumerate(
@@ -105,7 +105,7 @@ def run_sweep(force: bool = False) -> None:
         return
     due_prop = (sw.get("invoice_due_property")
                 or cfg()["po_inbox"].get("invoice_task", {}).get("invoice_due_property") or "")
-    owner = cfg()["staff"].get(sw.get("owner", "kath"), {})
+    owner = staff(sw.get("owner", "kath"))
     active_patterns = cfg().get("deal_automation", {}).get(
         "active_stage_patterns", ["pre-lesson", "post-lesson", "in program"])
     token = tw.accounts().get("online")
@@ -157,7 +157,7 @@ def run_sweep(force: bool = False) -> None:
                         f"then set invoice_submitted_date and move the deal to Invoice Submitted.")
         cc = cfg().get("notify", {}).get("cc_owner_dms_to")
         if cc and cc != sw.get("owner", "kath"):
-            ccs = cfg()["staff"].get(cc, {})
+            ccs = staff(cc)
             if ccs.get("slack_user_id"):
                 slack_client.dm(ccs["slack_user_id"],
                                 f"📋 [copy → {owner.get('name', 'Kath')}] 🧾 invoice prompt: {dealname} — {reason}")

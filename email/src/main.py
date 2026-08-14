@@ -19,7 +19,7 @@ from types import SimpleNamespace
 from . import audit, hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
-from .config import DRY_RUN, ROOT, cfg, require
+from .config import DRY_RUN, ROOT, cfg, require, staff
 from .router import resolve
 
 DOC_RECEIPT = "tutor_document"  # the only category permitted to send an outbound MESSAGE
@@ -197,7 +197,7 @@ def _cancellation_followup(family_cid, family_email, owner_id, hs_priority, stud
     due = _followup_due_date(now_la().date())
     due_dt = datetime.combine(due, time(9, 0), tzinfo=LA)
     assign = cf.get("assign_to", "owner")
-    task_owner = owner_id if assign == "owner" else (cfg()["staff"].get(assign, {}) or {}).get("hubspot_owner_id")
+    task_owner = owner_id if assign == "owner" else (staff(assign) or {}).get("hubspot_owner_id")
     student = student_first or "your student"
     sample = (ROOT / "templates" / "reengagement.md").read_text().strip().replace("{student}", student)
     ctype = result.get("cancellation_type") or "cancellation"
@@ -227,7 +227,7 @@ def _notify_owner(decision, text: str) -> None:
         slack_client.dm(decision.owner["slack_user_id"], text)
     cc_key = cfg().get("notify", {}).get("cc_owner_dms_to")
     if cc_key and cc_key != decision.owner_key:
-        cc = cfg()["staff"].get(cc_key, {})
+        cc = staff(cc_key)
         if cc.get("slack_user_id"):
             owner_name = (decision.owner or {}).get("name") or decision.owner_key or "unassigned"
             slack_client.dm(cc["slack_user_id"], f"📋 [copy → {owner_name}] {text}")
@@ -308,7 +308,7 @@ def _handle_followup(thread_id: str, message: dict, prior: dict, result: dict,
         record["draft_posted"] = False
 
     # DM the ticket's owner that the customer replied.
-    owner = cfg()["staff"].get(owner_key) if owner_key else None
+    owner = (staff(owner_key) or None) if owner_key else None
     contact_name = email.split("@")[0] if email else "unknown"
     reopen_bit = " (re-opened)" if reopened else ""
     _notify_owner(SimpleNamespace(owner=owner, owner_key=owner_key),
@@ -370,9 +370,12 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             and (hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
             and not hs_enrich.get("associated_deals")
             and not tw_enrich.get("teachworks_match")):
-        decision.owner_key = "paola"
-        decision.owner = cfg()["staff"].get("paola")
-        decision.notes.append("pre-deal lead (no deal, no Teachworks account) — Paola owns until deal creation")
+        role_key = cfg().get("roles", {}).get("charter_sales", "charter_sales")
+        decision.owner_key = role_key
+        decision.owner = (staff(role_key) or None)
+        decision.notes.append("pre-deal lead (no deal, no Teachworks account) — "
+                              f"{staff('charter_sales').get('name', 'charter sales')} "
+                              "owns until deal creation")
         predeal_intake = True
 
     # #4 Internal staff email → route to the teammate it's addressed to ("Hi Kath" → Kath)
@@ -384,7 +387,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         staff = cfg()["staff"]
         key = next((k for k, s in staff.items()
                     if rcpt and (s.get("name", "").lower() == rcpt or k == rcpt)), None)
-        key = key or icfg.get("fallback", "roman")
+        key = key or icfg.get("fallback", "visionary")
         decision.owner_key, decision.owner, decision.review = key, staff.get(key), False
         internal_routed = True
 

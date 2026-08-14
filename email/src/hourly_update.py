@@ -11,7 +11,7 @@ from datetime import date, datetime, time, timedelta
 
 from . import audit, slack_client
 from .business_hours import LA, now_la
-from .config import DRY_RUN, cfg
+from .config import DRY_RUN, cfg, staff
 from .daily_summary import gather_today
 
 
@@ -75,7 +75,7 @@ def run() -> None:
         f"_Today so far: {m['total']} triaged · {m['junk']} junk · {m['escalations']} escalations_"
     )
     print(text)
-    rid = cfg()["staff"].get(hu.get("recipient", "roman"), {}).get("slack_user_id")
+    rid = staff(hu.get("recipient", "roman")).get("slack_user_id")
     slack_client.dm(rid, text)
     print("=== hourly update sent ===")
 

@@ -29,6 +29,7 @@ def test_skips_outside_business_hours(monkeypatch):
     _prep(monkeypatch)
     sent = []
     monkeypatch.setattr(hu, "cfg", lambda: _cfg())
+    monkeypatch.setattr(hu, "staff", lambda k: _cfg()["staff"].get(k, {}))
     monkeypatch.setattr(hu, "now_la", lambda: dt.datetime(2026, 6, 10, 7, 0, tzinfo=LA))  # 7am
     monkeypatch.setattr(hu.slack_client, "dm", lambda u, t: sent.append(t))
     hu.run()
@@ -39,6 +40,7 @@ def test_sends_in_window(monkeypatch):
     _prep(monkeypatch)
     sent = []
     monkeypatch.setattr(hu, "cfg", lambda: _cfg())
+    monkeypatch.setattr(hu, "staff", lambda k: _cfg()["staff"].get(k, {}))
     monkeypatch.setattr(hu, "now_la", lambda: dt.datetime(2026, 6, 10, 12, 0, tzinfo=LA))  # Wed noon
     monkeypatch.setattr(hu, "recent_items", lambda h=1: ["scheduling → yolanda"])
     monkeypatch.setattr(hu, "gather_today", lambda: {"total": 3, "junk": 1, "escalations": 0})
