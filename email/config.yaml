@@ -272,6 +272,7 @@ po_inbox:
     enabled: true
     escalate_business_hours: 16        # 2 business days AFTER the draft is SENT
     draft_unsent_nag_business_hours: 4 # draft still in Gmail Drafts → 🚩 nag
+    notify_paola_after_hours: 24       # info still missing 24h after the email → Paola too
   # Pending order-agreement POs with no approval signal (duplicate alert =
   # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
   pending_sweep_business_hours: 16

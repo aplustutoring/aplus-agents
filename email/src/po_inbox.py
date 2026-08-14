@@ -914,25 +914,49 @@ def _sweep_parent_chases() -> None:
     """Chase past its window with no reply → one escalation DM to the owner
     (chase by phone). Never re-pings a deal."""
     pc = cfg()["po_inbox"]
-    if not pc.get("parent_chase", {}).get("enabled"):
+    ch = pc.get("parent_chase", {})
+    if not ch.get("enabled"):
         return
-    sent, escalated = {}, set()
+    sent, escalated, paola_pinged = {}, set(), set()
     for r in audit._iter_records():
         a = r.get("action_taken")
         if a == "parent_chase_sent":
             sent[str(r.get("deal_id"))] = r
         elif a == "parent_chase_escalated":
             escalated.add(str(r.get("deal_id")))
+        elif a == "parent_chase_paola_notified":
+            paola_pinged.add(str(r.get("deal_id")))
     now = now_la()
     for r in (c for lst in _open_chases().values() for c in lst):
         did = str(r.get("deal_id"))
-        if did in escalated:
-            continue
         # a chase whose draft was never SENT must not blame the TOR for not
         # replying — the unsent-draft nag (_sweep_chase_drafts) covers that.
         # Legacy chases without a draft_id fall back to the opened clock.
         s = sent.get(did)
         if not s and r.get("draft_id"):
+            continue
+        # Roman, 2026-08-14: family contact info still missing 24 HOURS after
+        # the email went out → Paola (follow-up owner) is notified too, ahead
+        # of the Kath+Roman escalation.
+        if did not in paola_pinged:
+            try:
+                anchor = datetime.fromisoformat((s or r).get("timestamp") or "")
+            except (TypeError, ValueError):
+                anchor = None
+            hrs = float(ch.get("notify_paola_after_hours", 24))
+            if anchor and now > anchor + timedelta(hours=hrs):
+                paola = cfg()["staff"].get("paola", {})
+                if paola.get("slack_user_id"):
+                    slack_client.dm(paola["slack_user_id"],
+                                    f"👨‍👩‍👧 Family contact info STILL MISSING {int(hrs)}h "
+                                    f"after our email — deal '{r.get('deal_name')}' "
+                                    f"(student {r.get('student')}, asked {r.get('chase_to')}). "
+                                    f"Please follow up with the TOR/school directly.")
+                audit.append({"message_id": f"parent-chase-paola:{did}",
+                              "source": "po_inbox",
+                              "action_taken": "parent_chase_paola_notified",
+                              "deal_id": did, "thread_id": r.get("thread_id")})
+        if did in escalated:
             continue
         try:
             due = datetime.fromisoformat((s or r)["sla_due"])

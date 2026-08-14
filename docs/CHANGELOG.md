@@ -8,6 +8,21 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — Parent-chase: Paola notified at 24h (Roman)
+
+**What:** Family contact info still missing 24 HOURS (calendar, configurable
+`parent_chase.notify_paola_after_hours`) after the chase email was SENT →
+Paola (follow-up owner) gets a DM to chase the TOR/school directly — ahead of
+the existing Kath+Roman escalation at 2 business days. Once per chase
+(parent_chase_paola_notified); unsent drafts never trigger it (the send is the
+anchor; legacy no-draft-id chases anchor on open).
+
+**Why:** Roman: "If a family is missing contact info for longer than 24 hours
+after an email Paola must be notified too."
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (suite 227 green).
+
 ## 2026-08-14 — Draft guidelines: humans only, tracked, context-aware (Roman: "yes")
 
 **What:** 14-day audit found 55 drafts/512 emails, 21 of them po_inbox warm

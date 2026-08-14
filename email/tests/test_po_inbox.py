@@ -876,10 +876,13 @@ def test_parent_chase_escalates_after_window(monkeypatch):
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append(t))
     po._sweep_parent_chases()
-    assert dms and "NO parent info" in dms[0] and "terri@school.org" in dms[0]
-    assert appended and appended[0]["action_taken"] == "parent_chase_escalated"
-    # second sweep: already escalated → silent
-    recs.append(appended[0])
+    # legacy chase (no draft_id) past both windows → Paola ping + escalation
+    assert any("NO parent info" in t and "terri@school.org" in t for t in dms)
+    assert any("STILL MISSING" in t for t in dms)
+    acts = [a.get("action_taken") for a in appended]
+    assert "parent_chase_escalated" in acts and "parent_chase_paola_notified" in acts
+    # second sweep: already escalated + pinged → silent
+    recs.extend(appended)
     dms.clear()
     po._sweep_parent_chases()
     assert dms == []
@@ -1751,4 +1754,40 @@ def test_unsent_chase_never_escalates_tor(monkeypatch):
     monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
     monkeypatch.setattr(po.slack_client, "dm",
                         lambda u, t: (_ for _ in ()).throw(AssertionError("unsent must not escalate")))
+    po._sweep_parent_chases()
+
+
+def test_paola_notified_24h_after_sent_email(monkeypatch):
+    dms, appended = [], []
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "deal_name": "NEEDS PARENT - Kruz Vouniozos - iLead 1 - 26/27",
+             "student": "Kruz Vouniozos", "chase_to": "karen@ilead.org",
+             "draft_id": "DR9", "sla_due": "2026-09-20T10:00:00-07:00",
+             "timestamp": "2026-08-01T10:00:00+00:00"},
+            {"action_taken": "parent_chase_sent", "deal_id": "D9", "thread_id": "TH9",
+             "draft_id": "DR9", "sla_due": "2026-09-20T10:00:00-07:00",
+             "timestamp": "2026-08-01T12:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    po._sweep_parent_chases()
+    # >24h since send, escalation window (Sep) not yet reached → ONLY Paola
+    assert len(dms) == 1
+    assert dms[0][0] == po.cfg()["staff"]["paola"]["slack_user_id"]
+    assert "STILL MISSING 24h" in dms[0][1] and "Kruz Vouniozos" in dms[0][1]
+    assert appended[-1]["action_taken"] == "parent_chase_paola_notified"
+    # second sweep: already pinged → silent
+    recs.append(appended[-1]); dms.clear()
+    po._sweep_parent_chases()
+    assert dms == []
+
+
+def test_paola_not_notified_before_send(monkeypatch):
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "deal_name": "X", "student": "S T", "chase_to": "t@x.org",
+             "draft_id": "DR9", "sla_due": "2026-09-20T10:00:00-07:00",
+             "timestamp": "2026-08-01T10:00:00+00:00"}]   # opened long ago, never sent
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.slack_client, "dm",
+                        lambda u, t: (_ for _ in ()).throw(AssertionError("unsent → no Paola ping")))
     po._sweep_parent_chases()
