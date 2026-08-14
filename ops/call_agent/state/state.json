@@ -229,9 +229,11 @@
     404286588,
     404275039,
     404282315,
-    404281590
+    404281590,
+    404289792,
+    404301001
   ],
-  "last_run_utc": "2026-08-13T23:04:11.895353+00:00",
+  "last_run_utc": "2026-08-14T00:00:33.380612+00:00",
   "pending_digest": [
     {
       "call_id": 404110408,
@@ -1066,6 +1068,98 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 404301001,
+      "number": "13104671752",
+      "time_pt": "4:38 PM",
+      "matched": true,
+      "contact_label": "Talya Friedman",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Talya Friedman (returning customer) to follow up on her email inquiry for tutoring for her 5th grade daughter Kaylie. Talya wants an in-person female tutor, strong in math but able to cover math/ELA/science using SBAC prep books, ~60 min sessions, ideally Wednesdays/Thursdays afternoons or Saturday mornings, starting early September. She wants to review tutor profiles before committing and emphasized wanting a patient, flexible, engaging tutor (referenced past tutor April Stewart as the ideal). Paola will have the scheduling team reach out with a tutor match.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out later today or tomorrow morning to confirm details and share tutor profile(s) for review before committing",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Find in-person female tutor match for Kaylie \u2014 strong in math, able to cover ELA and science using SBAC prep books, patient/flexible/engaging, available Wed/Thu afternoons or Saturday mornings",
+            "owner_hint": "Scheduling team"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "lead_status": "no_change",
+        "lead_status_reason": "Talya is a past customer (older daughter Sofi previously tutored) re-engaging for younger daughter Kaylie; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kaylie",
+          "Sofi",
+          "April Stewart",
+          "Shawani"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning family \u2014 Talya is seeking an in-person tutor for 5th grader Kaylie. Wants ~1 hr sessions using the SBAC 5th grade prep books she already owns (math, ELA, and possibly science), with math as the strongest emphasis. Prefers Wed/Thu afternoons or Saturday mornings; hoping to start early September. Referenced former A+ tutor April Stewart as the ideal fit.",
+          "what_we_can_do_to_help": "Match Kaylie with an in-person, female tutor who is strong in math but well-rounded (ELA/science), patient, engaging, flexible with scheduling, and willing to work through the SBAC prep books. Send tutor profile(s) to Talya for review/veto before scheduling. Online free trial offered but declined \u2014 family wants in-person only.",
+          "student_first_name": "Kaylie",
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": "I'm a returning customer",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family \u2014 Talya is seeking an in-person tutor for 5th grader Kaylie. Wants ~1 hr sessions using the SBAC 5th grade prep books she already owns (math, ELA, and possibly science), with math as the strongest emphasis. Prefers Wed/Thu afternoons or Saturday mornings; hoping to start early September. Referenced former A+ tutor April Stewart as the ideal fit."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Kaylie with an in-person, female tutor who is strong in math but well-rounded (ELA/science), patient, engaging, flexible with scheduling, and willing to work through the SBAC prep books. Send tutor profile(s) to Talya for review/veto before scheduling. Online free trial offered but declined \u2014 family wants in-person only."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Kaylie Charnelle",
+          "Kaylie",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out later today or tomorrow morning to confirm details and share tutor profile(s) for review before committing",
+          81494333
+        ],
+        [
+          "Find in-person female tutor match for Kaylie \u2014 strong in math, able to cover ELA and science using SBAC prep books, patient/flexible/engaging, available Wed/Thu afternoons or Saturday mornings",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1077,6 +1171,11 @@
     {
       "number": "14094975825",
       "time_pt": "11:05 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "19093042919",
+      "time_pt": "4:07 PM",
       "reason": "hang-up"
     }
   ],
