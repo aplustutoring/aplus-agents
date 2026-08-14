@@ -8,6 +8,29 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — Charter 26/27 launch scaffolding (Monday 08-17, DISARMED)
+
+**What:** Segmented Monday-morning campaign per Roman ("families from charter
+schools where we worked with them last year, and some where we didn't...
+teachers who we worked with last year, or didn't"). 5 NEW static lists built
+from gap list 3104 + Family→TOR associations (typeId 15): 3107 Families-Hot
+(12), 3108 Families-Win-back (387), 3109 Families-Never-Started (30), 3110
+TORs-Worked-With-Us (163), 3111 TORs-New-Outreach (8). 329/429 gap families
+have a TOR association (100 without — hygiene queue candidate). Campaign
+program: ops/messenger/CAMPAIGN-2026-08-17.md (cadence: Day 0 email, Day 3
+follow-up, Day 7 CHARTER SALES task, goal-exit on renewal/reply); 5 copy
+drafts in ops/messenger/templates/campaign-2026-08-17/ (HubSpot tokens;
+never-started segment deliberately token-free). Launch rail:
+ops/messenger/enroll.py + monday-launch.yml (daily 9 AM PT cron, exits unless
+campaign.yml armed: true AND today == launch_date 2026-08-17; enrollment via
+automation v2 per-contact endpoint). **DISARMED — blocked on Roman:** copy
+approval, base branded email id (or "plain"), workflow build go (ids →
+campaign.yml), armed flip.
+**Files:** ops/messenger/{CAMPAIGN-2026-08-17.md,enroll.py,campaign.yml,
+templates/campaign-2026-08-17/}, .github/workflows/monday-launch.yml.
+
+---
+
 ## 2026-08-14 — EOS knowledge ingested from Monday (knowledge/eos/)
 
 **What:** New `knowledge/eos/README.md` — synced snapshot of the FY2027 Annual
@@ -22,6 +45,8 @@ scorecard sync feeds the L10 Scorecard, Monday stays source of truth.
 "check in monday.com you will find our goals for the year and our rocks."
 
 **Files:** `knowledge/eos/README.md` (new).
+
+---
 
 ## 2026-08-14 — NEW ENGINE: bulk messenger (on-demand email/SMS to lists)
 
