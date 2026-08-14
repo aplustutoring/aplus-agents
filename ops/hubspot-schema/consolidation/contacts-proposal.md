@@ -29,9 +29,9 @@ Known label/internal mismatches (locked rule 9 — agents read LABELS, never int
 | Persona → tor | 4 |
 | Persona → tutor | 9 |
 | Persona → student | 3 |
-| KEEP-IN-PLACE | 189 |
+| KEEP-IN-PLACE | 190 |
 | STORAGE-ONLY | 119 |
-| RETIRE-CANDIDATE | 95 |
+| RETIRE-CANDIDATE | 94 |
 | SYSTEM | 35 |
 | **Total custom** | **479** |
 
@@ -104,7 +104,7 @@ Internal names unchanged (safe, #AP024). "Current group" shows the pre-move loca
 | `student_last_name` | Student FIRST Name | student | DONE — moved by Roman 2026-08-10. LABEL MISMATCH: label is "Student FIRST Name" — student 1 first name; Teachworks disambiguation + call agent fill_only 【code: email, ops】 | #AP029 |
 | `student_last_name_if_diff_from_parent` | Student Last Name | student | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Student last name; call agent fill_only 【code: email, ops, registry.yml】 | #AP029 |
 
-## KEEP-IN-PLACE (189)
+## KEEP-IN-PLACE (190)
 
 Stay exactly where they are. Programs stay grouped as programs, not personas (locked rule 6); form-bound and integration-owned fields are not touched.
 
@@ -299,6 +299,7 @@ Stay exactly where they are. Programs stay grouped as programs, not personas (lo
 | `sync_to_teachworks_slp` | Sync to Teachworks - SLP | contactinformation | LIVE TW-sync trigger for In-Person/SLP pipelines (set by the Pre-Lesson stage flows) — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
 | `is_the_online_tutor_ready_for_onboarding` | Is the Online Tutor Ready for Onboarding | new_tutors | Manual QBO tutor-onboarding queue (Roman 2026-08-11: QBO has no automation — this flow+list pair IS the queue) — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
 | `business_license_on_file` | Business License on File | new_tutors | Tutor-compliance queue alongside the QBO onboarding pair — reclassified from RETIRE-CANDIDATE 2026-08-11 | |
+| `sibling_current_grade_level` | Student 2 current grade level | sibling | KEPT (Roman 2026-08-11): on the LIVE main consultation form (Get Started Now Full Length, last submission 2026-07-23) — form-bound keep despite the one-student model; drops when the form is next revised | |
 
 ## STORAGE-ONLY (119)
 
@@ -426,7 +427,7 @@ Data preserved, nothing reads or writes them going forward. No archive proposed 
 | `video_ask_transcription` | Video Ask Transcription | integrations | VideoAsk / misc integration remnants |  |
 | `videoasksource` | Videoask source | contactinformation | VideoAsk integration remnant |  |
 
-## RETIRE-CANDIDATE (95) — archive pass run 2026-08-10
+## RETIRE-CANDIDATE (94) — archive pass run 2026-08-10
 
 On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 lists, and calculated-property formulas; audit-clean ones were archived (reversible, 90-day restore). HubSpot's own PROPERTY_USAGE validation blocked anything still referenced by a FORM (forms API not scannable with the current token scope). BLOCKED rows need the referencing workflow/list/form cleaned up first; HOLD rows await the multi-child data-model decision.
 
@@ -500,7 +501,6 @@ On Roman's "go": every candidate was audited against 342 workflows (v3+v4), 214 
 | `science_subjects` | Science Subjects | unused_properties | 3 | 2022-01-14 | BLOCKED — in use by FORM(s); HubSpot refused delete. Detach/delete the form first. | Group literally named unused_properties — 2021-22 quiz/intake leftovers |  |
 | `sequence_for_fall` | Sequence for Fall | contactinformation | 28 | 2020-09-03 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Legacy one-off field (see fill count / Used-in) |  |
 | `service_level` | Service Level | contactinformation | 347 | 2019-09-06 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Legacy one-off field (see fill count / Used-in) |  |
-| `sibling_current_grade_level` | Student 2 current grade level | sibling | 403 | 2026-04-09 | HOLD — pending multi-child data-model decision (#AP027) | Sibling grade — pending multi-child data-model decision | #AP027 |
 | `sibling_school` | Student 2 School | sibling | 210 | 2019-09-05 | HOLD — pending multi-child data-model decision (#AP027) | Sibling school — pending multi-child data-model decision | #AP027 |
 | `slack_message_intro` | Slack Message Intro | new_tutors | 80 | 2023-10-19 | **ARCHIVED 2026-08-10** (audit clean: 342 workflows, 214 lists, formulas; HubSpot usage-check passed) | Tutor-recruiting leftover not in the tutor keeper set |  |
 | `start_date_for_tutoring_for_this_deal` | Start Date for Tutoring for the most current deal | date_properties | 1554 | 2025-08-22 | BLOCKED — referenced by: wf3:Free Trial - Quality Check; wf3:Gold - Quality Check New  Until Renew; wf3:In- Person - Quality Check New  Until Renew; wf3:Quality Charter, CFGC, RTI… | Summer-2021 scheduling flow leftovers |  |
