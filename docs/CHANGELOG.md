@@ -8,6 +8,32 @@ Newest entries first.
 
 ---
 
+## 2026-08-13 — Charter re-engagement gap analysis + static list (Roman)
+
+**What:** New reusable `scripts/charter_gap_analysis.py`: pulls charter deals
+(5 pipelines, created since 2025-08-01) + associated contacts from HubSpot,
+excludes school-staff email domains (student.* subdomains stay family),
+classifies RENEWED (deal created ≥ 2026-06-01 OR "26/27" in dealname) vs GAP,
+merges against Teachworks invoices (email match, name fallback), writes
+`~/Desktop/charter_gap_analysis.xlsx` (4 tabs) + non-marketable CSV, and
+creates HubSpot static list "Charter Re-Engagement 26/27 - Gap Families
+(Aug 2026)" (id 3106, 426 members verified). Run results 2026-08-13:
+439 families / 13 renewed / 426 gap — matched Roman's expected ~439/~11/~428.
+TEACHWORKS_API_KEY only lives in Actions secrets, so a new manual workflow
+`charter-gap-tw-fetch.yml` runs the read-only Teachworks fetch stage and hands
+the JSON back as an artifact (`--fetch-teachworks` / `--tw-json` split).
+One-off run, structured for weekly scheduling later (`--start`,
+`--renewal-cutoff`, `--renewal-token`, `--skip-list`, `--list-only` flags).
+
+**Why:** Charter re-engagement email going out tomorrow AM needs the gap-family
+list + prioritized call-down sheet; repo keeps the script as the reusable
+engine for a weekly cadence.
+
+**Files:** `scripts/charter_gap_analysis.py` (new),
+`.github/workflows/charter-gap-tw-fetch.yml` (new), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-13 — Charter renewal gap analysis (one-off report, schedulable)
 
 **What:** New read-only report script `scripts/charter_gap_analysis.py` +
