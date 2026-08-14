@@ -18,8 +18,10 @@ is the A+ persona system; sibling fields retire: `sibling_school`,
 `student_3`, `student_3_school`, `student_4_school` ARCHIVED;
 `sibling_current_grade_level` BLOCKED by 3 live Get Started Now forms (field
 must be edited out of the forms). (2) `teacher_email_address` un-kept —
-`teacher_of_record_email_address` is the teacher-email property; archive
-BLOCKED by live TSN Workflow 3b (repoint first). (3)
+`teacher_of_record_email_address` is the teacher-email property; Roman then
+redirected (same day): NOT archived — it is a Spotlight field: moved to group
+`spotlight`, relabeled "Spotlight Teacher Email Address" per the Spotlight
+nomenclature (live TSN Workflow 3b still reads it — flagged). (3)
 `student_last_name_if_diff_from_parent` confirmed staying. Registry 42→41
 contacts; KEEPERS 81→80. Pending code change before the last sibling fields
 go: email/config.yaml teachworks.student_name_properties reads

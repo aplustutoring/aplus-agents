@@ -9,7 +9,7 @@ Rules that travel with this list:
 - Family→TOR truth is the typeId-15 contact association; the stamped TOR text fields are legacy capture but still LIVE (#AP031, #AP029).
 - Multi-select `a_persona` is read FIRST by every agent (#AP024, #AP030).
 - 2026-08-11 (Roman): ONE student per contact record — the multi-child model is the A+ persona system, sibling fields retire. The three sibling full-name fields still listed under Family are pending an email-agent config change (Teachworks disambiguation reads them), then they archive too.
-- 2026-08-11 (Roman): `teacher_email_address` un-kept — `teacher_of_record_email_address` is THE teacher-email property (archive blocked by TSN Workflow 3b until repointed).
+- 2026-08-11 (Roman): `teacher_of_record_email_address` is THE teacher-email property. `teacher_email_address` is NOT a persona keeper — reassigned to the Spotlight program (group `spotlight`, label "Spotlight Teacher Email Address"); note TSN Workflow 3b still reads it.
 - 2026-08-11 (Roman): contact-side per-day `*_schedule_preference`, `degree_received`, `university_attended` un-kept and archived/queued for archive — the DEAL-side per-day schedule preferences remain keepers.
 - **Student grade level: agents use `what_is_your_child_s_current_grade_level_` — always** (Roman 2026-08-10). The other grade fields below are program/form capture, never the agent read/write target.
 
