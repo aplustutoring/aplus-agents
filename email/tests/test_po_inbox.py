@@ -803,7 +803,7 @@ def test_missing_parent_names_deal_and_opens_chase(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D9"})
     monkeypatch.setattr(po.gm, "create_draft_reply",
-                        lambda tid, to, subj, body, irt="": drafts.append((tid, to, body)) or {"id": "DR1"})
+                        lambda tid, to, subj, body, irt="", **kw: drafts.append((tid, to, body)) or {"id": "DR1"})
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
     msg = {"threadId": "TH9", "sender": "Terri Tor <terri@school.org>",
            "subject": "PO for Ana", "message_id_header": "<m1>"}
@@ -1545,7 +1545,12 @@ def test_multi_student_certificate_per_student_deals(monkeypatch):
                         lambda name, pl, st, amt=None, **k:
                         created.append(name) or {"id": f"D{len(created)}"})
     monkeypatch.setattr(po.gm, "create_draft_reply",
-                        lambda tid, to, subj, body, irt="": drafts.append((to, body)) or {"id": "DR"})
+                        lambda tid, to, subj, body, irt="", **kw: drafts.append((to, body)) or {"id": "DR"})
+    # TOR ≠ sender → the chase goes out as a FRESH email, not a reply
+    monkeypatch.setattr(po.gm, "create_draft",
+                        lambda to, subj, body, bcc="": drafts.append((to, body)) or
+                        {"id": "DR-F", "message": {"id": "M1", "threadId": "TH-NEW"}})
+    monkeypatch.setattr(po.gm, "apply_labels", lambda mid, names: None)
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
     msg = {"threadId": "TH-H", "sender": "Procurify <no@procurify.com>",
            "subject": "CERTIFICATE", "message_id_header": "<h1>"}
@@ -1643,3 +1648,107 @@ def test_sla_sweep_sees_po_tickets(monkeypatch):
                                        "owner": "kath", "category": "new_po"}]))
     tickets = sw._latest_tickets()
     assert "T1" in tickets                     # PO tickets now enter the escalation chain
+
+
+# ── draft guidelines (Roman, 2026-08-14): humans only, tracked, context-aware ─
+
+def test_noreply_addresses_never_get_chase_drafts(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D9"})
+    monkeypatch.setattr(po.gm, "create_draft",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no draft to robots")))
+    monkeypatch.setattr(po.gm, "create_draft_reply",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no draft to robots")))
+    msg = {"threadId": "TH-R", "sender": "OPS <noreply@ops-online.com>",
+           "subject": "PO", "message_id_header": "<m>"}
+    notes = []
+    po._handle_deal(_po(po_number="", tor_email=""), notes, msg=msg)
+    assert any("No HUMAN recipient" in n for n in notes)
+    assert any(n in po._gap_notes(notes) for n in notes if "No HUMAN recipient" in n)
+
+
+def test_human_addr_guard():
+    assert po._human_addr("karen.mercer@ileadexploration.org") is True
+    assert po._human_addr("noreply@ops-online.com") is False
+    assert po._human_addr("no-reply@x.com") is False
+    assert po._human_addr("notifications@mailer.procurify.com") is False
+    assert po._human_addr("donotreply@school.org") is False
+    assert po._human_addr("") is False
+
+
+def test_chase_call_context_flags_ticket(monkeypatch):
+    drafts = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D9"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C-tor"})
+    monkeypatch.setattr(po.hs, "recent_calls_for_contact",
+                        lambda cid, since, limit=3:
+                        [{"properties": {"hs_call_title": "Inbound call — school partnership",
+                                         "hs_call_body": "[Call Agent] Karen mentioned parent August",
+                                         "hs_timestamp": "2026-08-13T22:23:24Z"}}])
+    monkeypatch.setattr(po.gm, "create_draft",
+                        lambda to, subj, body, bcc="": drafts.append(body) or
+                        {"id": "DR", "message": {"id": "M1", "threadId": "TH-N"}})
+    monkeypatch.setattr(po.gm, "apply_labels", lambda mid, names: None)
+    msg = {"threadId": "TH-C", "sender": "OPS <noreply@ops-online.com>",
+           "subject": "PO", "message_id_header": "<m>"}
+    notes = []
+    po._handle_deal(_po(po_number="", tor_email="karen.mercer@ileadexploration.org",
+                        tor_first="Karen", tor_last="Mercer"), notes, msg=msg)
+    assert any("recent call may ALREADY have this info" in n for n in notes)
+    assert drafts and "may already have come up on a recent call" in drafts[0]
+
+
+def test_chase_self_resolve_sweep(monkeypatch):
+    resolved = []
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "student": "Kruz Vouniozos", "pipeline": "907748",
+             "sla_due": "2026-09-01T10:00:00-07:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: [{"id": "C-aug", "properties":
+                                         {"email": "august12v@gmail.com",
+                                          "firstname": "August", "lastname": "Vouniozos"}}])
+    monkeypatch.setattr(po, "_resolve_parent_chase",
+                        lambda chase, p_, notes: resolved.append(p_["parent_email"]))
+    po._sweep_chase_self_resolve()
+    assert resolved == ["august12v@gmail.com"]
+
+
+def test_unsent_draft_nags_and_sent_starts_clock(monkeypatch):
+    dms, appended = [], []
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "deal_name": "NEEDS PARENT - X - iLead 1 - 26/27", "student": "X Y",
+             "chase_to": "tor@x.org", "draft_id": "DR9",
+             "sla_due": "2026-09-01T10:00:00-07:00",
+             "timestamp": "2026-08-01T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append(t))
+    # draft still sitting there → nag
+    monkeypatch.setattr(po.gm, "get_draft", lambda did: {"id": did})
+    po._sweep_chase_drafts()
+    assert dms and "STILL SITTING in Gmail Drafts" in dms[0]
+    assert appended[-1]["action_taken"] == "parent_chase_draft_nag"
+    # draft gone → sent record with a fresh reply clock
+    dms.clear(); appended.clear()
+    monkeypatch.setattr(po.gm, "get_draft", lambda did: None)
+    po._sweep_chase_drafts()
+    assert appended and appended[0]["action_taken"] == "parent_chase_sent"
+    assert appended[0]["deal_id"] == "D9" and appended[0]["sla_due"]
+
+
+def test_unsent_chase_never_escalates_tor(monkeypatch):
+    # chase has a draft_id but no sent record → the TOR never got the email;
+    # the escalation sweep must stay silent (draft nag handles it)
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH9", "deal_id": "D9",
+             "deal_name": "X", "chase_to": "tor@x.org", "draft_id": "DR9",
+             "sla_due": "2026-08-01T10:00:00-07:00",
+             "timestamp": "2026-07-31T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.slack_client, "dm",
+                        lambda u, t: (_ for _ in ()).throw(AssertionError("unsent must not escalate")))
+    po._sweep_parent_chases()

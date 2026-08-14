@@ -72,9 +72,12 @@ PO_SYSTEM = (
     "name/address from the PO (schools reject invoices with a wrong Bill To); empty if "
     "not stated. "
     "draft_reply rules: if is_po → ALWAYS empty string (we never reply to purchase "
-    "orders). For non-PO emails that warrant a human reply → a short warm draft (first "
-    "person plural, no em dashes, signed 'A+ Tutoring Team'); empty for automated "
-    "notifications and spam. If the email is NOT PO-related (spam, misc), set "
+    "orders). Draft ONLY when a NAMED HUMAN directly asked A+ a question or requested "
+    "an action needing a written reply. ALWAYS empty for: mass/bulk notices, "
+    "welcome/onboarding confirmations, compliance broadcasts, DocuSign/portal/system "
+    "notifications, auto-acknowledgments, payment confirmations, newsletters, spam, and "
+    "anything from a noreply/notifications address. When drafting: short and warm, first "
+    "person plural, no em dashes, signed 'A+ Tutoring Team'. If the email is NOT PO-related (spam, misc), set "
     "is_po=false and summarize what it is."
 )
 
@@ -660,6 +663,39 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str],
                                   school_bit, year] if x)
 
 
+_NOREPLY_RE = re.compile(r"no-?reply|do-?not-?reply|notifications?@|@mailer\.", re.I)
+
+
+def _human_addr(addr: str) -> bool:
+    """Robot mailboxes are never draft recipients — a reply to noreply@ is a
+    dead letter that silently kills the chase."""
+    return bool((addr or "").strip()) and not _NOREPLY_RE.search(addr)
+
+
+def _recent_call_context(tor_email: str) -> dict | None:
+    """The call agent logs Claude summaries of every call as HubSpot Call
+    engagements. Before chasing a TOR by email, look at their recent calls —
+    the answer may already be in a phone conversation (the Karen Mercer case:
+    the parent's name was on her contact an hour before the chase drafted)."""
+    if not tor_email:
+        return None
+    try:
+        tor = hs.find_contact_by_email(tor_email)
+        if not tor or tor.get("id") in (None, "DRYRUN"):
+            return None
+        since = int((now_la() - timedelta(days=21)).timestamp() * 1000)
+        for c in hs.recent_calls_for_contact(tor["id"], since):
+            p = c.get("properties") or {}
+            body = p.get("hs_call_body") or ""
+            if "[Call Agent]" in body:
+                return {"title": p.get("hs_call_title") or "call",
+                        "date": str(p.get("hs_timestamp") or "")[:10],
+                        "snippet": body[:400]}
+    except Exception as e:  # noqa: BLE001 — context lookup is best-effort
+        print(f"  ⚠️  call-context lookup failed (non-fatal): {e}")
+    return None
+
+
 def _open_chases() -> dict:
     """thread_id → LIST of parent chases still awaiting a reply (a multi-family
     certificate opens several chases on one thread — the Heartland case)."""
@@ -687,16 +723,21 @@ def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) ->
     ch = cfg()["po_inbox"].get("parent_chase", {})
     if not ch.get("enabled") or not msg or not queue:
         return
+    sender_m = re.search(r"<([^>]+)>", msg.get("sender") or "")
+    sender_addr = (sender_m.group(1) if sender_m else (msg.get("sender") or "")).strip().lower()
     by_to: dict = {}
     for deal_id, deal_name, pipeline_id, po in queue:
         if not deal_id or deal_id == "DRYRUN":
             continue
+        # recipient ladder: PO's TOR email → human sender. Robot addresses are
+        # NEVER recipients — no human to ask means no draft, loud flag instead.
         to_addr = (po.get("tor_email") or "").strip()
+        if not _human_addr(to_addr):
+            to_addr = sender_addr if _human_addr(sender_addr) else ""
         if not to_addr:
-            m = re.search(r"<([^>]+)>", msg.get("sender") or "")
-            to_addr = m.group(1) if m else (msg.get("sender") or "")
-        if not to_addr:
-            note_parts.append("📨 No TOR/sender address to ask for parent info — chase manually.")
+            note_parts.append("📨 No HUMAN recipient for the parent-info request "
+                              "(sender is a noreply robot, no TOR email) — find the "
+                              "school contact and chase manually.")
             continue
         by_to.setdefault(to_addr, []).append((deal_id, deal_name, pipeline_id, po))
     for to_addr, items in by_to.items():
@@ -709,6 +750,10 @@ def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) ->
         first = items[0][3]
         greeting = f"Hi {first.get('tor_first')}".strip() if first.get("tor_first") else "Hi"
         plural = len(students) > 1
+        # what did a recent phone call already tell us? (Karen Mercer case)
+        ctx = _recent_call_context(to_addr)
+        ctx_line = ("\n\nP.S. Some of this may already have come up on a recent call "
+                    "with our team - if so, apologies for the double-ask." if ctx else "")
         body = (f"{greeting},\n\n"
                 f"Thank you for the purchase order for {student_line}. To get scheduling "
                 f"set up we still need the parent/guardian contact information for "
@@ -717,16 +762,33 @@ def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) ->
                 f"  - Email address\n"
                 f"  - Phone number\n\n"
                 f"Could you reply with those when you have a moment? We'll take it "
-                f"from there.\n\n"
+                f"from there.{ctx_line}\n\n"
                 f"A+ Tutoring Team")
+        bcc = (cfg().get("hubspot", {}) or {}).get("bcc_log_address") or ""
+        short, _m = _school_short(first.get("school") or "")
         try:
-            gm.create_draft_reply(msg["threadId"], to_addr, msg.get("subject") or "",
-                                  body, msg.get("message_id_header", ""))
+            if to_addr.lower() != sender_addr:
+                # fresh thread — a clean email to the TOR, not a reply quoting
+                # a portal robot; replies land on the NEW thread
+                draft = gm.create_draft(
+                    to_addr, f"Parent contact info needed — {student_line}"
+                             f" ({short or 'charter'})", body, bcc=bcc)
+            else:
+                draft = gm.create_draft_reply(msg["threadId"], to_addr,
+                                              msg.get("subject") or "", body,
+                                              msg.get("message_id_header", ""), bcc=bcc)
         except Exception as e:  # noqa: BLE001 — chase failure must not block the deal
             print(f"  ⚠️  parent-chase draft failed (non-fatal): {e}")
             note_parts.append(f"📨 Could not draft the parent-info request to {to_addr} "
                               f"— ask manually.")
             continue
+        d_msg = (draft or {}).get("message") or {}
+        chase_thread = d_msg.get("threadId") or msg["threadId"]
+        try:
+            if d_msg.get("id"):
+                gm.apply_labels(d_msg["id"], ["A+ Agent/Draft Pending"])
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  draft label failed (non-fatal): {e}")
         due = add_business_hours(now_la(), int(ch.get("escalate_business_hours", 16)))
         for deal_id, deal_name, pipeline_id, po in items:
             student = (f"{po.get('student_first', '')} "
@@ -735,13 +797,18 @@ def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) ->
                           "action_taken": "parent_chase_opened", "deal_id": deal_id,
                           "deal_name": deal_name, "pipeline": pipeline_id,
                           "po_number": (po.get("po_number") or "").strip(),
-                          "thread_id": msg["threadId"], "student": student,
+                          "thread_id": chase_thread, "student": student,
                           "school": po.get("school") or "",
                           "tor_email": (po.get("tor_email") or "").strip().lower(),
-                          "chase_to": to_addr, "sla_due": due.isoformat()})
+                          "chase_to": to_addr, "draft_id": (draft or {}).get("id"),
+                          "sla_due": due.isoformat()})
         note_parts.append(f"📨 Parent-info request DRAFTED to {to_addr} for "
                           f"{student_line} — SEND it from Gmail Drafts; the reply "
                           f"auto-creates the contact and unblocks Teachworks.")
+        if ctx:
+            note_parts.append(f"📞 A recent call may ALREADY have this info: "
+                              f"\"{ctx['title']}\" ({ctx['date']}) on the TOR's record — "
+                              f"check it before sending the draft.")
 
 
 def _resolve_parent_chases(chases: list, po: dict, note_parts: list[str]) -> None:
@@ -849,23 +916,35 @@ def _sweep_parent_chases() -> None:
     pc = cfg()["po_inbox"]
     if not pc.get("parent_chase", {}).get("enabled"):
         return
-    escalated = {r.get("deal_id") for r in audit._iter_records()
-                 if r.get("action_taken") == "parent_chase_escalated"}
+    sent, escalated = {}, set()
+    for r in audit._iter_records():
+        a = r.get("action_taken")
+        if a == "parent_chase_sent":
+            sent[str(r.get("deal_id"))] = r
+        elif a == "parent_chase_escalated":
+            escalated.add(str(r.get("deal_id")))
     now = now_la()
     for r in (c for lst in _open_chases().values() for c in lst):
-        if r.get("deal_id") in escalated:
+        did = str(r.get("deal_id"))
+        if did in escalated:
+            continue
+        # a chase whose draft was never SENT must not blame the TOR for not
+        # replying — the unsent-draft nag (_sweep_chase_drafts) covers that.
+        # Legacy chases without a draft_id fall back to the opened clock.
+        s = sent.get(did)
+        if not s and r.get("draft_id"):
             continue
         try:
-            due = datetime.fromisoformat(r["sla_due"])
+            due = datetime.fromisoformat((s or r)["sla_due"])
         except (KeyError, TypeError, ValueError):
             continue
         if now <= due:
             continue
         # missing info still missing → both Kath AND Roman hear about it
         for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
-            s = cfg()["staff"].get(key, {})
-            if s.get("slack_user_id"):
-                slack_client.dm(s["slack_user_id"],
+            st = cfg()["staff"].get(key, {})
+            if st.get("slack_user_id"):
+                slack_client.dm(st["slack_user_id"],
                                 f"⏰ Still NO parent info for deal '{r.get('deal_name')}' — "
                                 f"asked {r.get('chase_to')} on {(r.get('timestamp') or '')[:10]} "
                                 f"with no reply. The Teachworks family can't be created until we "
@@ -873,6 +952,82 @@ def _sweep_parent_chases() -> None:
         audit.append({"message_id": f"parent-chase-escalation:{r.get('deal_id')}",
                       "source": "po_inbox", "action_taken": "parent_chase_escalated",
                       "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id")})
+
+
+def _sweep_chase_drafts() -> None:
+    """Draft accountability: a chase draft that VANISHED from Drafts was sent —
+    log parent_chase_sent (starting the TOR's reply clock) and flip the Gmail
+    label. One still SITTING in Drafts past the nag window → 🚩 to Kath+Roman."""
+    pc = cfg()["po_inbox"]
+    ch = pc.get("parent_chase", {})
+    if not ch.get("enabled"):
+        return
+    sent_ids, nagged = set(), set()
+    for r in audit._iter_records():
+        if r.get("action_taken") == "parent_chase_sent":
+            sent_ids.add(str(r.get("deal_id")))
+        elif r.get("action_taken") == "parent_chase_draft_nag":
+            nagged.add(r.get("draft_id"))
+    now = now_la()
+    seen_drafts: dict = {}
+    for r in (c for lst in _open_chases().values() for c in lst):
+        did, draft_id = str(r.get("deal_id")), r.get("draft_id")
+        if not draft_id or did in sent_ids:
+            continue
+        if draft_id not in seen_drafts:
+            seen_drafts[draft_id] = gm.get_draft(draft_id)
+        if seen_drafts[draft_id] is None:      # gone from Drafts → it was sent
+            due = add_business_hours(now, int(ch.get("escalate_business_hours", 16)))
+            audit.append({"message_id": f"parent-chase-sent:{did}", "source": "po_inbox",
+                          "action_taken": "parent_chase_sent", "deal_id": did,
+                          "thread_id": r.get("thread_id"), "draft_id": draft_id,
+                          "sla_due": due.isoformat()})
+            continue
+        if draft_id in nagged:
+            continue
+        try:
+            opened = datetime.fromisoformat(r.get("timestamp") or "")
+        except (TypeError, ValueError):
+            continue
+        if now > add_business_hours(opened,
+                                    int(ch.get("draft_unsent_nag_business_hours", 4))):
+            for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
+                st = cfg()["staff"].get(key, {})
+                if st.get("slack_user_id"):
+                    slack_client.dm(st["slack_user_id"],
+                                    f"📨 The parent-info draft to {r.get('chase_to')} "
+                                    f"('{r.get('deal_name')}') is STILL SITTING in Gmail "
+                                    f"Drafts — send it or the chase goes nowhere.")
+            audit.append({"message_id": f"parent-chase-draft-nag:{draft_id}",
+                          "source": "po_inbox", "action_taken": "parent_chase_draft_nag",
+                          "draft_id": draft_id, "deal_id": did})
+
+
+def _sweep_chase_self_resolve() -> None:
+    """Open chases re-check HubSpot each run: the family may have appeared on
+    its own (called in, intake form) — the August Vouniozos case, where the
+    contact existed hours before anyone read the TOR's reply."""
+    for r in (c for lst in _open_chases().values() for c in lst):
+        parts = (r.get("student") or "").split()
+        if len(parts) < 2:
+            continue
+        try:
+            parents = hs.find_family_contact(parts[0], " ".join(parts[1:]))
+        except Exception:  # noqa: BLE001
+            continue
+        if len(parents) != 1:
+            continue
+        props = parents[0].get("properties") or {}
+        em = (props.get("email") or "").strip()
+        if not em:
+            continue
+        notes: list[str] = []
+        _resolve_parent_chase(r, {"parent_email": em,
+                                  "parent_first": props.get("firstname"),
+                                  "parent_last": props.get("lastname"),
+                                  "parent_phone": props.get("phone")}, notes)
+        for n in notes:
+            print(f"  🔁 self-resolve: {n}")
 
 
 def _sweep_pending_pos() -> None:
@@ -1313,8 +1468,17 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         try:
             sender_addr = re.search(r"<([^>]+)>", m["sender"])
             to_addr = sender_addr.group(1) if sender_addr else m["sender"]
-            gm.create_draft_reply(m["threadId"], to_addr, m["subject"], draft,
-                                  m.get("message_id_header", ""))
+            if not _human_addr(to_addr):
+                raise ValueError(f"robot recipient {to_addr} — no draft")
+            bcc = (cfg().get("hubspot", {}) or {}).get("bcc_log_address") or ""
+            d = gm.create_draft_reply(m["threadId"], to_addr, m["subject"], draft,
+                                      m.get("message_id_header", ""), bcc=bcc)
+            dm_id = ((d or {}).get("message") or {}).get("id")
+            if dm_id:
+                try:
+                    gm.apply_labels(dm_id, ["A+ Agent/Draft Pending"])
+                except Exception as le:  # noqa: BLE001
+                    print(f"  ⚠️  draft label failed (non-fatal): {le}")
             record["draft_posted"] = True
         except Exception as e:  # noqa: BLE001
             record["draft_posted"] = False
@@ -1392,6 +1556,14 @@ def run() -> None:
         _sweep_pending_pos()
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  pending-PO sweep failed (non-fatal): {e}")
+    try:
+        _sweep_chase_drafts()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  chase-draft sweep failed (non-fatal): {e}")
+    try:
+        _sweep_chase_self_resolve()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  chase self-resolve sweep failed (non-fatal): {e}")
     if not DRY_RUN:
         cur_path.write_text(_json.dumps({"last_epoch": newest}))
 

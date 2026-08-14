@@ -8,6 +8,40 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — Draft guidelines: humans only, tracked, context-aware (Roman: "yes")
+
+**What:** 14-day audit found 55 drafts/512 emails, 21 of them po_inbox warm
+replies to vendor-admin mail nobody sends. Six-part fix, all live: (1) extractor
+drafts ONLY when a named human asked A+ something — never for mass notices,
+onboarding confirmations, DocuSign/portal notices, auto-acks. (2) Robot
+recipients banned (`noreply/donotreply/notifications@/mailer.*`) for chase AND
+reply drafts — no human to write to → 📨 gap note → 🚩 DM instead. (3) Chase
+drafts to a TOR who wasn't the sender go out as FRESH emails ("Parent contact
+info needed — Student (School)") — no more replies quoting portal robots;
+chase records track the NEW thread so replies still auto-resolve. (4) Every
+agent draft: Gmail label `A+ Agent/Draft Pending`, HubSpot BCC
+(hubspot.bcc_log_address — verify on first real send) so sends log to contact
+timelines; NEW _sweep_chase_drafts detects the draft leaving Drafts →
+parent_chase_sent (TOR reply clock starts AT SEND, and unsent chases never
+escalate the TOR) / still sitting after 4 business hours → 🚩 nag. (5) Call-
+context check before chasing: recent [Call Agent] engagements on the TOR's
+contact surface on the ticket ("a recent call may ALREADY have this info") and
+add a P.S. to the draft — built after the Karen Mercer case (parent's name was
+on her contact an hour before the chase drafted). (6) _sweep_chase_self_resolve:
+open chases re-check HubSpot for a newly appeared family contact each run — the
+August Vouniozos case (family called in; contact existed before anyone read a
+reply) now closes itself. ALSO: Kruz Vouniozos chases resolved by hand via
+call context (deals renamed to August Vouniozos, parent attached+stamped,
+family→TOR to Karen Mercer, SMS armed); guidelines DM'd to Paola + Danielle.
+
+**Why:** Roman: excessive drafts; noreply senders; "is it in any way possible
+that this agent has already checked the transcript... from last call" — it
+couldn't; now it does.
+
+**Files:** `email/src/po_inbox.py`, `email/src/gmail_client.py`,
+`email/src/hubspot_client.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (suite 225 green).
+
 ## 2026-08-14 — PO improvement batch (Roman: "lets go") — 5 changes
 
 **What:** (1) SMS flow 1603217415 rev 42: second OR-branch enrolls contacts

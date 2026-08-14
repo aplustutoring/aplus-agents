@@ -452,6 +452,20 @@ def create_contact(email: str, firstname: str | None = None, lastname: str | Non
     return _write("POST", "/crm/v3/objects/contacts", {"properties": props})
 
 
+def recent_calls_for_contact(contact_id, since_ms: int, limit: int = 3) -> list[dict]:
+    """Recent Call engagements on a contact (the call agent logs transcripts/
+    summaries here) — lets the PO agent check what a phone call already told us
+    before chasing the same info by email."""
+    body = {"filterGroups": [{"filters": [
+        {"propertyName": "associations.contact", "operator": "EQ", "value": str(contact_id)},
+        {"propertyName": "hs_timestamp", "operator": "GTE", "value": str(since_ms)}]}],
+        "properties": ["hs_call_title", "hs_call_body", "hs_timestamp"],
+        "sorts": [{"propertyName": "hs_timestamp", "direction": "DESCENDING"}],
+        "limit": limit}
+    res = _write("POST", "/crm/v3/objects/calls/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
+
+
 def get_deal_contacts(deal_id: str) -> list[dict]:
     """Contacts associated to a deal, with the properties needed to tell the
     family contact from the TOR (parent resolution for POs that omit parent

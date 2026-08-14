@@ -158,13 +158,37 @@ def apply_labels(msg_id: str, names: list[str]) -> None:
 
 
 def create_draft_reply(thread_id: str, to_addr: str, subject: str, body: str,
-                       in_reply_to: str = "") -> dict:
-    """A REAL Gmail draft on the thread — sits in Drafts until a human sends it."""
+                       in_reply_to: str = "", bcc: str = "") -> dict:
+    """A REAL Gmail draft on the thread — sits in Drafts until a human sends it.
+    bcc: the HubSpot log address, so the send lands on the contact timeline."""
     mime = MIMEText(body)
     mime["To"] = to_addr
     mime["Subject"] = subject if subject.lower().startswith("re:") else f"Re: {subject}"
+    if bcc:
+        mime["Bcc"] = bcc
     if in_reply_to:
         mime["In-Reply-To"] = in_reply_to
         mime["References"] = in_reply_to
     raw = base64.urlsafe_b64encode(mime.as_bytes()).decode()
     return _post("/drafts", {"message": {"threadId": thread_id, "raw": raw}})
+
+
+def create_draft(to_addr: str, subject: str, body: str, bcc: str = "") -> dict:
+    """A fresh-thread Gmail draft (outreach that should NOT quote a robot
+    notification thread — e.g. parent-info requests to a TOR). Returns the
+    draft resource; message.threadId is the NEW thread replies will land on."""
+    mime = MIMEText(body)
+    mime["To"] = to_addr
+    mime["Subject"] = subject
+    if bcc:
+        mime["Bcc"] = bcc
+    raw = base64.urlsafe_b64encode(mime.as_bytes()).decode()
+    return _post("/drafts", {"message": {"raw": raw}})
+
+
+def get_draft(draft_id: str) -> dict | None:
+    """The draft, or None once it's been sent/discarded (404)."""
+    try:
+        return _get(f"/drafts/{draft_id}")
+    except Exception:  # noqa: BLE001 — 404 = no longer a draft
+        return None
