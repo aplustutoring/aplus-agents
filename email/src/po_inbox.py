@@ -917,15 +917,15 @@ def _sweep_parent_chases() -> None:
     ch = pc.get("parent_chase", {})
     if not ch.get("enabled"):
         return
-    sent, escalated, paola_pinged = {}, set(), set()
+    sent, escalated, sales_pinged = {}, set(), set()
     for r in audit._iter_records():
         a = r.get("action_taken")
         if a == "parent_chase_sent":
             sent[str(r.get("deal_id"))] = r
         elif a == "parent_chase_escalated":
             escalated.add(str(r.get("deal_id")))
-        elif a == "parent_chase_paola_notified":
-            paola_pinged.add(str(r.get("deal_id")))
+        elif a in ("parent_chase_sales_notified", "parent_chase_paola_notified"):
+            sales_pinged.add(str(r.get("deal_id")))
     now = now_la()
     for r in (c for lst in _open_chases().values() for c in lst):
         did = str(r.get("deal_id"))
@@ -936,25 +936,26 @@ def _sweep_parent_chases() -> None:
         if not s and r.get("draft_id"):
             continue
         # Roman, 2026-08-14: family contact info still missing 24 HOURS after
-        # the email went out → Paola (follow-up owner) is notified too, ahead
-        # of the Kath+Roman escalation.
-        if did not in paola_pinged:
+        # the email went out → CHARTER SALES (role, mapped in config — never a
+        # person's name in code) is notified too, ahead of the escalation.
+        if did not in sales_pinged:
             try:
                 anchor = datetime.fromisoformat((s or r).get("timestamp") or "")
             except (TypeError, ValueError):
                 anchor = None
-            hrs = float(ch.get("notify_paola_after_hours", 24))
+            hrs = float(ch.get("notify_charter_sales_after_hours",
+                               ch.get("notify_paola_after_hours", 24)))
             if anchor and now > anchor + timedelta(hours=hrs):
-                paola = cfg()["staff"].get("paola", {})
-                if paola.get("slack_user_id"):
-                    slack_client.dm(paola["slack_user_id"],
+                sales = cfg()["staff"].get(pc.get("charter_sales", ""), {})
+                if sales.get("slack_user_id"):
+                    slack_client.dm(sales["slack_user_id"],
                                     f"👨‍👩‍👧 Family contact info STILL MISSING {int(hrs)}h "
                                     f"after our email — deal '{r.get('deal_name')}' "
                                     f"(student {r.get('student')}, asked {r.get('chase_to')}). "
                                     f"Please follow up with the TOR/school directly.")
-                audit.append({"message_id": f"parent-chase-paola:{did}",
+                audit.append({"message_id": f"parent-chase-sales:{did}",
                               "source": "po_inbox",
-                              "action_taken": "parent_chase_paola_notified",
+                              "action_taken": "parent_chase_sales_notified",
                               "deal_id": did, "thread_id": r.get("thread_id")})
         if did in escalated:
             continue

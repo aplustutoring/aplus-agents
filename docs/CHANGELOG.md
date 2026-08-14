@@ -8,17 +8,22 @@ Newest entries first.
 
 ---
 
-## 2026-08-14 — Parent-chase: Paola notified at 24h (Roman)
+## 2026-08-14 — Parent-chase: CHARTER SALES notified at 24h (Roman; role, not name)
 
 **What:** Family contact info still missing 24 HOURS (calendar, configurable
-`parent_chase.notify_paola_after_hours`) after the chase email was SENT →
-Paola (follow-up owner) gets a DM to chase the TOR/school directly — ahead of
-the existing Kath+Roman escalation at 2 business days. Once per chase
-(parent_chase_paola_notified); unsent drafts never trigger it (the send is the
-anchor; legacy no-draft-id chases anchor on open).
+`parent_chase.notify_charter_sales_after_hours`) after the chase email was
+SENT → the CHARTER SALES role gets a DM to chase the TOR/school directly —
+ahead of the existing Kath+Roman escalation at 2 business days. Once per chase
+(parent_chase_sales_notified); unsent drafts never trigger it (the send is the
+anchor). NEW RULE (Roman, same session): functional config keys and audit
+actions name ROLES, never people — new `po_inbox.charter_sales: paola` role
+map; change the person in config, never in code. First-pass person-named key
+(notify_paola_after_hours / parent_chase_paola_notified) renamed same day,
+legacy names still honored on read.
 
 **Why:** Roman: "If a family is missing contact info for longer than 24 hours
-after an email Paola must be notified too."
+after an email Paola must be notified too" + "make sure that no properties are
+named after people. notify charter sales instead of paola."
 
 **Files:** `email/src/po_inbox.py`, `email/config.yaml`,
 `email/tests/test_po_inbox.py` (suite 227 green).
