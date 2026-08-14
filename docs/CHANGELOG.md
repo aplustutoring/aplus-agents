@@ -18,10 +18,18 @@ Last Tutor / Student First / Last Lesson; match rate printed. New OPT-IN
 write stage (--write-props / workflow input write_props): stamps
 `last_tutor_name` + `student_first_name` onto list-3104 gap contacts via an
 UPDATE-only email-keyed import (crm.import scope — added by Roman 2026-08-13).
-`last_tutor_name` newly declared in ops/hubspot-schema/properties.yml
-(dealinformation group); `student_first_name` was ALREADY in the registry —
-not re-declared, values are overwritten by the import where they differ from
-intake capture. **Also reconciles the script fork:** ece98a0 (parallel
+BOTH `last_tutor_name` and `student_first_name` newly declared as CONTACT
+properties (group family) in ops/hubspot-schema/properties.yml. Registry trap
+hit on the way: the pre-existing `student_first_name` at line ~407 is a DEAL
+property (dealinformation) — the first declaration attempt landed in the
+deals: section and created a stray empty deals/last_tutor_name (archived
+immediately, no values ever written). The deal-level student_first_name is
+untouched; the contact-level one is its counterpart.
+**Duplicate-list flag for Roman:** the parallel session's run created static
+list 3106 "Charter Re-Engagement 26/27 - Gap Families (Aug 2026)" (426
+members, pre-correction cutoff). List 3104 (429, corrected cutoff) is
+canonical per Roman's instructions; 3106 is a duplicate awaiting his
+keep/delete call. **Also reconciles the script fork:** ece98a0 (parallel
 session) had overwritten the executed PR-#68 version on main; this change
 re-bases on the executed version and absorbs ece98a0's invoice-level name
 fallback (customer_first_name/customer_last_name when the customer record is

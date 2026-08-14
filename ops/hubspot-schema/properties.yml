@@ -102,6 +102,26 @@ properties:
       group: family
       type: enumeration
       fieldType: booleancheckbox
+    - name: last_tutor_name
+      label: "Last Tutor Name"
+      group: family
+      type: string
+      fieldType: text
+      description: >-
+        Tutor on the family's most recent COMPLETED Teachworks lesson.
+        Stamped by scripts/charter_gap_analysis.py --write-props (charter
+        win-back personalization). Distinct from the deal-level
+        assigned_tutor intake field.
+    - name: student_first_name
+      label: "Student First Name"
+      group: family
+      type: string
+      fieldType: text
+      description: >-
+        Student on the family's most recent COMPLETED Teachworks lesson.
+        Stamped alongside last_tutor_name. NOTE: a deal property with the
+        same name exists (dealinformation intake capture) — this is the
+        contact-level counterpart.
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
