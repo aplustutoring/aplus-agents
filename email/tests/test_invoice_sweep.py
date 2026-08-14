@@ -28,6 +28,11 @@ def _deal(did="D1", name="Lara Perkins - Nomi (Jan) 25/26", hours="10"):
 def _wire(monkeypatch, deals, used, processed=False):
     dms = []
     monkeypatch.setattr(isw, "cfg", _cfg)
+    # role-aware resolver reads the real config; route it through the fake too
+    monkeypatch.setattr(isw, "staff",
+                        lambda k: _cfg().get("staff", {}).get(
+                            k, _cfg().get("staff", {}).get(
+                                (_cfg().get("roles") or {}).get(k, ""), {})))
     monkeypatch.setattr(isw.audit, "already_processed", lambda k: processed)
     monkeypatch.setattr(isw.audit, "append", lambda r: None)
     monkeypatch.setattr(isw, "_find_po_deals", lambda p, d: deals)

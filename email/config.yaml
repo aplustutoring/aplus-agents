@@ -63,17 +63,17 @@ slack:
 
 # Daily end-of-day summary, DM'd at 6 PM PT every day.
 daily_summary:
-  recipient: roman        # staff key whose slack_user_id gets the DM
+  recipient: visionary        # staff key whose slack_user_id gets the DM
   also_channel: false     # set true to also post it in #email-agent
 
 # CC a staffer on every owner notification (shows the owner's NAME). Empty = off.
 notify:
-  cc_owner_dms_to: roman
+  cc_owner_dms_to: visionary
 
 # Launch-monitoring: hourly rollup DM during business hours, auto-stops after `until`.
 hourly_update:
   enabled: true
-  recipient: roman
+  recipient: visionary
   until: "2026-06-24"        # 2 weeks; no-op after this date
   business_hours_only: true  # 9am-6pm PT, Mon-Fri only
 
@@ -110,6 +110,19 @@ staff:
   emily:    { name: "Emily",    hubspot_owner_id: "39191217",  slack_user_id: "U05MXK1MC5Q" }  # Operations — 2x-breach escalation
   roman:    { name: "Roman",    hubspot_owner_id: "38681249",  slack_user_id: "U05NA7UMSSV" }  # Director
 
+# ── Accountability chart (EOS seats) ─────────────────────────────
+# Functional config references ROLES; this block maps seat → person.
+# Team change = edit here, nothing else. (Roman, 2026-08-14)
+roles:
+  visionary: roman          # Director / owner
+  operations: emily         # ops; last-resort escalation
+  scheduling_lead: mandy    # watches the schedulers; Stuck queue
+  scheduler_a_l: janelle
+  scheduler_m_z: yolanda
+  charter_admin: kath       # PO → invoice, tickets, billing
+  sales: danielle           # partnerships / school partners / biz dev
+  charter_sales: paola      # family follow-up / sales support
+
 # ── Routing table (LOCKED) ───────────────────────────────────────
 # owner: a staff key above, or the special token "assigned_scheduler" /
 # "scheduler_split" meaning resolve by student last name (A-L→janelle, M-Z→yolanda).
@@ -119,23 +132,23 @@ routing:
   reschedule:          { owner: scheduler_split,   sla_hours: 1.5, draft: true,  priority: high }   # save — push a time fast
   scheduling:          { owner: scheduler_split,   sla_hours: 1.5, draft: true,  priority: normal } # new booking / availability
   cancellation:        { owner: scheduler_split,   sla_hours: 1.5, draft: true,  priority: high }
-  tutor_issue:         { owner: mandy,             sla_hours: 1.5, draft: false, priority: high }    # retention — a switch saves it
-  complaint:           { owner: mandy,             sla_hours: 1.5, draft: false, priority: high }
-  payment_dispute:     { owner: mandy,             sla_hours: 1.5, draft: false, priority: high }
-  school_partner:      { owner: danielle,          sla_hours: 1.5, draft: true,  priority: high }
-  business_dev:        { owner: danielle,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
-  tor_inquiry:         { owner: paola,             sla_hours: 1.5, draft: true,  priority: normal }
-  new_po:              { owner: paola,             sla_hours: 1.5, draft: true,  priority: normal }
-  tutor_document:      { owner: kath,              sla_hours: 1.5, draft: true,  priority: low }
-  recruitment:         { owner: mandy,             sla_hours: 1.5, draft: true,  priority: low }
-  charter_newsletter:  { owner: danielle,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
+  tutor_issue:         { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }    # retention — a switch saves it
+  complaint:           { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }
+  payment_dispute:     { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }
+  school_partner:      { owner: sales,          sla_hours: 1.5, draft: true,  priority: high }
+  business_dev:        { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
+  tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
+  new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
+  tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
+  recruitment:         { owner: scheduling_lead,             sla_hours: 1.5, draft: true,  priority: low }
+  charter_newsletter:  { owner: sales,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
   junk:                { owner: null,              sla_hours: null, draft: false, auto_archive: true }
-  unknown:             { owner: mandy,             sla_hours: 4,   draft: false, review: true }  # Mandy owns the Stuck queue
+  unknown:             { owner: scheduling_lead,             sla_hours: 4,   draft: false, review: true }  # Mandy owns the Stuck queue
 
 # Last-name split boundary for scheduling/cancellation.
 scheduler_split:
-  a_to_l: janelle   # last name initial A-L
-  m_to_z: yolanda   # last name initial M-Z
+  a_to_l: scheduler_a_l   # last name initial A-L
+  m_to_z: scheduler_m_z   # last name initial M-Z
 
 # Cancellation re-engagement follow-up: on a cancellation, schedule a task with a sample
 # re-engagement email, due the sooner of +`days` or `by_date` (summer pauses → re-contact
@@ -205,7 +218,7 @@ deal_sync:
   invoice_sweep:
     enabled: true
     hour_pt: 9
-    owner: kath
+    owner: charter_admin
 
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
@@ -229,7 +242,7 @@ b2c_deal:
 # agent never sends from this address. Procedure: TEAM_PLAYBOOK.md §Charter PO inbox.
 po_inbox:
   address: "charter@wetutorathome.com"
-  owner: kath
+  owner: charter_admin
   deal_pipeline_id: "907748"   # Charter Schools - Traditional Vendor Funds
   waiting_for_po_stage: ""     # stage retired 2026-06-11 (deals moved to Stopped) — POs now CREATE deals
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
@@ -278,12 +291,11 @@ po_inbox:
   pending_sweep_business_hours: 16
   # ROLE mapping — functional keys name roles, never people (Roman 2026-08-14);
   # change the person here, not in code.
-  charter_sales: paola
   # ANYTHING missing on PO intake (fields not in the PO, unmatched TOR/parent,
   # manual follow-ups, failed uploads) → a direct 🚩 DM to EACH of these, on top
   # of the ticket flags (Roman, 2026-08-11: "whenever something is missing it is
   # vital to send Roman and Kath Slack messages").
-  missing_info_dms: [kath, roman]
+  missing_info_dms: [charter_admin, visionary]
   # "Is the family currently being tutored by us?" rule (Roman, 2026-08-11,
   # student-level, CALENDAR-ONLY): Yes = the PO's student has a lesson booked;
   # No = nothing on the calendar, period — the scheduling text goes out.
@@ -308,7 +320,7 @@ po_inbox:
   # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.
   invoice_task:
     enabled: true
-    owner: kath
+    owner: charter_admin
     due_business_hours: 8    # STEP 1 is same-day: convert the PO to a TW invoice on receipt
     # STEP 2 (submitting to the school's ops system) is due at the END of the PO's
     # service month — stamped on lessons_fulfilled_date ("Expected Lessons Fulfilled
@@ -344,8 +356,8 @@ thresholds:
 # owners). 3x → level3 (last resort) + ticket moved to Stuck. level2 is skipped if the
 # supervisor is already the owner (no double-ping).
 escalation:
-  level2: mandy   # watches the schedulers
-  level3: emily   # last resort
+  level2: scheduling_lead   # watches the schedulers
+  level3: operations   # last resort
 
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]

@@ -1773,7 +1773,7 @@ def test_charter_sales_notified_24h_after_sent_email(monkeypatch):
     po._sweep_parent_chases()
     # >24h since send, escalation window (Sep) not yet reached → ONLY Paola
     assert len(dms) == 1
-    assert dms[0][0] == po.cfg()["staff"][po.cfg()["po_inbox"]["charter_sales"]]["slack_user_id"]
+    assert dms[0][0] == po.cfg()["staff"][po.cfg()["roles"]["charter_sales"]]["slack_user_id"]
     assert "STILL MISSING 24h" in dms[0][1] and "Kruz Vouniozos" in dms[0][1]
     assert appended[-1]["action_taken"] == "parent_chase_sales_notified"
     # second sweep: already pinged → silent

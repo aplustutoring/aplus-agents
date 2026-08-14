@@ -12,7 +12,7 @@ from datetime import datetime
 
 from . import audit, slack_client
 from .business_hours import LA, now_la
-from .config import DRY_RUN, cfg
+from .config import DRY_RUN, cfg, staff
 
 
 def gather_today() -> dict:
@@ -193,7 +193,7 @@ def run() -> None:
         print(f"  ⚠️  ticket EOD section failed (non-fatal): {e}")
     print(text)
     ds = cfg().get("daily_summary", {})
-    recipient = cfg()["staff"].get(ds.get("recipient", "roman"), {})
+    recipient = staff(ds.get("recipient", "roman"))
     slack_client.dm(recipient.get("slack_user_id", ""), text)
     if ds.get("also_channel"):
         slack_client.post_message(cfg()["slack"]["digest_channel"], text)

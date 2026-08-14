@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from . import hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import now_la
-from .config import cfg
+from .config import cfg, staff
 
 
 def _todays_po_deals() -> list[dict]:
@@ -79,7 +79,7 @@ def _covered(deal: dict, invoices: list[dict], claimed: set) -> bool:
 
 
 def run() -> None:
-    roman = cfg()["staff"].get("roman", {})
+    roman = staff("roman")
     day = now_la().strftime("%a %b %-d")
     deals = _todays_po_deals()
     if not deals:

@@ -26,7 +26,7 @@ from datetime import datetime, timedelta, timezone
 from . import audit, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
-from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg
+from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 
 PO_SYSTEM = (
     "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
@@ -466,7 +466,7 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
                           {"properties": {prop: month_end.strftime("%Y-%m-%d")}})
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  invoice-due deal property failed (non-fatal): {e}")
-        owner = cfg()["staff"].get(ic.get("owner", "kath"), {})
+        owner = staff(ic.get("owner", "kath"))
         due = add_business_hours(now_la(), int(ic.get("due_business_hours", 8)))
         submit_line = (f"Submit to the school's ops system by: "
                        f"{month_end.strftime('%b %-d, %Y')} (end of PO month "
@@ -542,7 +542,7 @@ def _dm_scheduler(po: dict, created: list[dict], note_parts: list[str]) -> None:
     One DM per email, listing every deal it created (Roman, 2026-08-10)."""
     from .router import scheduler_for_last_name
     sched_key, _ = scheduler_for_last_name(po.get("student_last") or "")
-    sched = cfg()["staff"].get(sched_key, {})
+    sched = staff(sched_key)
     if not sched.get("slack_user_id"):
         return
     student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
@@ -946,7 +946,7 @@ def _sweep_parent_chases() -> None:
             hrs = float(ch.get("notify_charter_sales_after_hours",
                                ch.get("notify_paola_after_hours", 24)))
             if anchor and now > anchor + timedelta(hours=hrs):
-                sales = cfg()["staff"].get(pc.get("charter_sales", ""), {})
+                sales = staff(pc.get("charter_sales") or "charter_sales")
                 if sales.get("slack_user_id"):
                     slack_client.dm(sales["slack_user_id"],
                                     f"👨‍👩‍👧 Family contact info STILL MISSING {int(hrs)}h "
@@ -967,7 +967,7 @@ def _sweep_parent_chases() -> None:
             continue
         # missing info still missing → both Kath AND Roman hear about it
         for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
-            st = cfg()["staff"].get(key, {})
+            st = staff(key)
             if st.get("slack_user_id"):
                 slack_client.dm(st["slack_user_id"],
                                 f"⏰ Still NO parent info for deal '{r.get('deal_name')}' — "
@@ -1017,7 +1017,7 @@ def _sweep_chase_drafts() -> None:
         if now > add_business_hours(opened,
                                     int(ch.get("draft_unsent_nag_business_hours", 4))):
             for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
-                st = cfg()["staff"].get(key, {})
+                st = staff(key)
                 if st.get("slack_user_id"):
                     slack_client.dm(st["slack_user_id"],
                                     f"📨 The parent-info draft to {r.get('chase_to')} "
@@ -1080,7 +1080,7 @@ def _sweep_pending_pos() -> None:
         if now <= due:
             continue
         for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
-            s = cfg()["staff"].get(key, {})
+            s = staff(key)
             if s.get("slack_user_id"):
                 slack_client.dm(s["slack_user_id"],
                                 f"⏳ PO {r.get('po_number')} ('{r.get('deal_name')}') is "
@@ -1163,7 +1163,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         if dup:
             dn = (dup[0].get("properties") or {}).get("dealname", "?")
             note_parts.append(f"💼 DUPLICATE PO {po_num} ('{dn}') — no new deal; Kath alerted.")
-            owner = cfg()["staff"].get(pc.get("owner", "kath"), {})
+            owner = staff(pc.get("owner", "kath"))
             slack_client.dm(owner.get("slack_user_id"),
                             f"🚨 URGENT — duplicate PO received: PO {po_num} already has deal "
                             f"'{dn}'. Check whether the school re-sent it or this is a second "
@@ -1195,7 +1195,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         from .business_hours import now_la
         from .router import scheduler_for_last_name
         sched_key, _ = scheduler_for_last_name(po.get("student_last") or "")
-        sched = cfg()["staff"].get(sched_key, {})
+        sched = staff(sched_key)
         close_ms = int((now_la() + timedelta(days=30)).timestamp() * 1000)
         # Slack routing flag: the HubSpot workflow behind this checkbox posts the
         # deal to the right channel by pipeline (Roman, 2026-08-10).
@@ -1391,7 +1391,7 @@ def _notify_gaps(subject: str, note_parts: list[str], ticket_id=None) -> None:
     if ticket_id and ticket_id != "DRYRUN":
         msg += f"\n{hs.ticket_url(ticket_id)}"
     for key in cfg()["po_inbox"].get("missing_info_dms", ["kath", "roman"]):
-        s = cfg()["staff"].get(key, {})
+        s = staff(key)
         if s.get("slack_user_id"):
             try:
                 slack_client.dm(s["slack_user_id"], msg)
@@ -1426,7 +1426,7 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         for x in po["pos"]:
             if isinstance(x, dict) and x.get("po_number"):
                 x["po_number"] = _norm_po_number(x["po_number"])
-    owner = cfg()["staff"][pc.get("owner", "kath")]
+    owner = staff(pc.get("owner", "kath"))
     record = {"message_id": f"gmail:{m['id']}", "thread_id": m["threadId"], "source": "po_inbox",
               "category": "new_po" if po.get("is_po") else "po_inbox_other",
               "confidence": po.get("confidence"), "owner": pc.get("owner", "kath"),
@@ -1515,7 +1515,7 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
                     f"{hs.ticket_url(record['ticket_id']) if record.get('ticket_id') else ''}")
     cc = cfg().get("notify", {}).get("cc_owner_dms_to")
     if cc and cc != pc.get("owner"):
-        ccs = cfg()["staff"].get(cc, {})
+        ccs = staff(cc)
         if ccs.get("slack_user_id"):
             slack_client.dm(ccs["slack_user_id"], f"📋 [copy → {owner['name']}] 📦 {subject}")
     _notify_gaps(subject, note_parts, record.get("ticket_id"))

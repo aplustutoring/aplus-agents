@@ -30,11 +30,48 @@ MONDAY_TOKEN = os.getenv("MONDAY_TOKEN", "")
 GOOGLE_SHEETS_CREDS = os.getenv("GOOGLE_SHEETS_CREDS", "")
 
 
+# Accountability-chart resolution (Roman, 2026-08-14): config.yaml names ROLES
+# in these keys; at load time each role resolves to its staff key via the
+# roles: block, so every consumer keeps working with resolved people.
+_ROLE_KEYS = {"owner", "recipient", "assign_to", "cc_owner_dms_to", "fallback",
+              "level2", "level3", "a_to_l", "m_to_z", "charter_sales"}
+_ROLE_LIST_KEYS = {"missing_info_dms"}
+
+
+def _resolve_roles(node, roles: dict) -> None:
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k in _ROLE_KEYS and isinstance(v, str) and v in roles:
+                node[k] = roles[v]
+            elif k in _ROLE_LIST_KEYS and isinstance(v, list):
+                node[k] = [roles.get(x, x) for x in v]
+            else:
+                _resolve_roles(v, roles)
+    elif isinstance(node, list):
+        for v in node:
+            _resolve_roles(v, roles)
+
+
 @lru_cache(maxsize=1)
 def cfg() -> dict:
-    """Parsed config.yaml (cached)."""
+    """Parsed config.yaml (cached), with role seats resolved to staff keys."""
     with open(ROOT / "config.yaml") as f:
-        return yaml.safe_load(f)
+        c = yaml.safe_load(f)
+    _resolve_roles(c, c.get("roles") or {})
+    return c
+
+
+def staff(key: str) -> dict:
+    """Resolve a ROLE title (accountability-chart seat: charter_admin,
+    scheduler_a_l, visionary, …) OR a legacy staff key to the staff record.
+    Functional config names ROLES, never people (Roman, 2026-08-14) — the
+    roles: block maps seat → person; the staff: block is the only place
+    names live. Team change = edit roles:, nothing else."""
+    c = cfg()
+    st = c.get("staff") or {}
+    if key in st:
+        return st[key] or {}
+    return st.get((c.get("roles") or {}).get(key, ""), {}) or {}
 
 
 def google_creds_dict():
