@@ -1,0 +1,64 @@
+name: Bulk messenger
+
+# On-demand bulk email/SMS to a HubSpot list (BULK ONLY — refuses < min_bulk
+# recipients). Approval-first: dry_run defaults true; a live run additionally
+# requires typing SEND in the confirm input. Email = clone + retarget a
+# HubSpot marketing email, left as DRAFT (send happens in HubSpot). SMS =
+# JustCall from the sales/conference number. See ops/messenger/README.md.
+on:
+  workflow_dispatch:
+    inputs:
+      list_id:
+        description: "HubSpot list id (e.g. 3104)"
+        required: true
+      channel:
+        description: "email | sms | both"
+        type: choice
+        options: [email, sms, both]
+        required: true
+      sms_template:
+        description: "Template path under ops/messenger/ (sms channel)"
+        default: "templates/charter_win_back.txt"
+      sms_from:
+        description: "From number"
+        type: choice
+        options: [sales, conference]
+        default: sales
+      email_template_id:
+        description: "HubSpot marketing email id to clone (email channel)"
+        default: ""
+      dry_run:
+        description: "Preview only — no draft created, no SMS sent"
+        type: boolean
+        default: true
+      confirm:
+        description: 'Type SEND to allow a live run'
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv PyYAML
+      - name: Run messenger
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+        run: >
+          python ops/messenger/messenger.py
+          --list-id "${{ inputs.list_id }}"
+          --channel "${{ inputs.channel }}"
+          --sms-template "${{ inputs.sms_template }}"
+          --sms-from "${{ inputs.sms_from }}"
+          --email-template-id "${{ inputs.email_template_id }}"
+          ${{ !inputs.dry_run && '--live' || '' }}
+          --confirm "${{ inputs.confirm }}"

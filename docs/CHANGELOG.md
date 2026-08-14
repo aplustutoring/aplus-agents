@@ -8,6 +8,33 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — NEW ENGINE: bulk messenger (on-demand email/SMS to lists)
+
+**What:** `ops/messenger/` — on-demand bulk email + SMS to a HubSpot list,
+per Roman's rail decisions: EMAIL via HubSpot marketing email (agent clones an
+in-portal template, retargets the clone at the list, leaves it DRAFT with a
+review link — Roman clicks Send, HubSpot suppression applies; personalization
+via native contact tokens incl. student_first_name / last_tutor_name); SMS via
+JustCall with from-number routing (sales +18185736644, conference
++18188506284), rendered per-contact from repo templates. Guardrails: BULK
+ONLY (min_bulk 25, refuses 1:1), dry-run default + live requires
+confirm=SEND, sms_opt_out contacts skipped (NEW contact property, group
+master), STOP line required in every SMS template, 9:00–20:00 PT quiet hours,
+E.164 normalization. Trigger: workflow_dispatch (messenger.yml); the Slack
+front door + JustCall STOP-reply ingestion are phase 2 (README).
+First template: templates/charter_win_back.txt (uses first-name-only
+last_tutor_name). Registry: new `bulk-messenger` entry (status manual).
+**WHY:** Roman 2026-08-14: "we need to have a programmed agent that can send
+out custom email and text messaging to customers whenever called upon. only
+for bulk options." Rail + trigger choices confirmed by Roman same day.
+**Decision-log candidates (pending Roman):** bulk-only threshold (25); email
+sends stay human-clicked in HubSpot for now; SMS number routing map.
+**Files:** ops/messenger/{messenger.py,config.yml,README.md,templates/},
+.github/workflows/messenger.yml, registry.yml, ops/hubspot-schema/properties.yml
+(+sms_opt_out).
+
+---
+
 ## 2026-08-14 — Parent-chase: Paola notified at 24h (Roman)
 
 **What:** Family contact info still missing 24 HOURS (calendar, configurable
