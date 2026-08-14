@@ -70,6 +70,15 @@ properties:
           label: "Unregistered automation"
 
   contacts:
+    - name: sms_opt_out
+      label: "SMS Opt Out"
+      group: master
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        Contact asked not to receive SMS (STOP reply or verbal request).
+        Honored by ops/messenger (bulk SMS skips these). Set manually until
+        the STOP-reply ingestion phase lands.
     - name: a_persona
       label: "A+ PERSONA"
       group: master

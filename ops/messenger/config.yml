@@ -1,0 +1,16 @@
+# Bulk messenger config (Roman's rail decisions, 2026-08-14).
+portal_id: "6312752"
+
+# BULK ONLY: refuse runs targeting fewer recipients than this.
+min_bulk: 25
+
+sms:
+  # JustCall from-number routing (Roman 2026-08-14).
+  numbers:
+    sales: "+18185736644"
+    conference: "+18188506284"
+  timezone: America/Los_Angeles
+  # Live SMS only between these hours (24h, PT) — TCPA-safe window.
+  send_window_start: 9
+  send_window_end: 20
+  per_send_delay_s: 0.5

@@ -555,3 +555,28 @@ agents:
       unmerged for a week; a CallRail matching fix sat unpushed locally for
       16 days). Companion LOCAL mode (--local) runs from Roman's Mac crontab
       daily — Actions cannot see never-pushed local commits.
+
+  - id: bulk-messenger
+    name: Bulk messenger (on-demand email/SMS to a HubSpot list)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: workflow_dispatch
+      workflow: .github/workflows/messenger.yml
+    entrypoint: ops/messenger/messenger.py
+    reads:
+      - HubSpot                             # list memberships + contact merge props
+    writes:
+      - HubSpot                             # DRAFT marketing-email clone (email channel)
+      - JustCall                            # outbound SMS (sms channel, live only)
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET"
+      - ops/messenger/config.yml
+      - ops/messenger/templates/
+    notes: >
+      BULK ONLY (min_bulk 25) — refuses 1:1 sends. Approval-first: dry-run
+      default; live needs confirm=SEND. Email = clone+retarget an in-portal
+      marketing email, left as DRAFT (Roman clicks Send; HubSpot suppression
+      applies). SMS = JustCall, sales/conference number routing, sms_opt_out
+      + STOP-line + 9-20 PT quiet-hours guardrails. Built 2026-08-14; Slack
+      front door + STOP ingestion are phase 2 (see ops/messenger/README.md).
