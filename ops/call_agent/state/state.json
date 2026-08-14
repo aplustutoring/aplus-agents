@@ -241,9 +241,10 @@
     404667996,
     404667016,
     404688065,
-    404689835
+    404689835,
+    404700296
   ],
-  "last_run_utc": "2026-08-14T22:54:06.693307+00:00",
+  "last_run_utc": "2026-08-14T23:26:28.487129+00:00",
   "pending_digest": [
     {
       "call_id": 404618369,
@@ -514,6 +515,80 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 404700296,
+      "number": "17473222827",
+      "time_pt": "4:22 PM",
+      "matched": true,
+      "contact_label": "August Vouniozos",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring made an outbound follow-up call to August Vouniozos and reached voicemail. She left a message asking August to reply with scheduling preferences for Kruz's tutoring so we can begin matching a tutor. She confirmed we received the PO for three 45-minute sessions per week. No response yet \u2014 awaiting callback.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await August's reply with scheduling preferences; if no response in a few days, follow up again via call/text/email",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Once schedule preferences are received, begin matching Kruz with a tutor for 3x/week 45-min sessions",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Existing customer \u2014 August Vouniozos, parent of Kruz (10th grade, iLEAD, needs Pre-Algebra + ELA). PO received for 3x/week, 45-min sessions. Yolanda left a voicemail today asking for scheduling preferences so we can match a tutor. August now expects us to line up a tutor once he replies with preferred days/times. If he calls back, open with: 'Hi August, thanks for getting back to us \u2014 we just need your preferred days and times for Kruz's three weekly 45-minute sessions so we can match him with a tutor and get started.' If no reply in a couple days, try a follow-up text/email.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal and PO already received; scheduling status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kruz",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Left voicemail for August following up on SMS requesting scheduling preferences for Kruz's tutoring. PO received for 3 sessions/week at 45 minutes each; awaiting parent's preferred days/times before matching a tutor.",
+          "what_we_can_do_to_help": "Once August provides scheduling preferences, match Kruz with a tutor and begin the 3x/week 45-min sessions for Pre-Algebra and ELA support.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Left voicemail for August following up on SMS requesting scheduling preferences for Kruz's tutoring. PO received for 3 sessions/week at 45 minutes each; awaiting parent's preferred days/times before matching a tutor."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once August provides scheduling preferences, match Kruz with a tutor and begin the 3x/week 45-min sessions for Pre-Algebra and ELA support."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await August's reply with scheduling preferences; if no response in a few days, follow up again via call/text/email",
+          86868539
+        ],
+        [
+          "Once schedule preferences are received, begin matching Kruz with a tutor for 3x/week 45-min sessions",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
