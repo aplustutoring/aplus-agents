@@ -8,6 +8,38 @@ Newest entries first.
 
 ---
 
+## 2026-08-13 — Journey map seeded + call rubric v2 (doctrine alignment) [#AP0__ pending]
+
+**What:** (1) Seeded `knowledge/CUSTOMER_JOURNEY.md` with Roman's master
+customer-journey map (v2, from the 2026-06-11 working session; only edit: the
+Storage line now points at `knowledge/` instead of the stale `docs/` path) and
+named it the fleet's canonical journey map in `knowledge/README.md`. (2)
+Rewrote `ops/call_agent/rubric.md` to v2: S3 INVERTED (5 = pricing deferred to
+the emailed graphic with a committed follow-up; 1 = prices read aloud — v1
+rewarded exactly what doctrine forbids); added S5 (student's name early+often),
+S6 ("what school do you go to currently" silent qualifier), S7 (TOR capture on
+charter calls), S8 (free trial only AFTER an objection). Coach-not-critic tone
+block and quote-anchored output format kept. `call_agent.py` untouched per
+instruction. (3) Dry-run rescore of the last 10 scored calls against v2 (no
+Slack/HubSpot writes): average overall 3.31 → 3.39 (Δ +0.08); the two calls
+that read prices aloud dropped S3 5→1 and 3→1 as intended.
+
+**Why:** Rubric v1 contradicted locked consultation doctrine (trust-first/
+money-last, pricing is visual and never read aloud). The journey map is now
+repo-canonical so agents and sessions score/behave against one source of truth.
+
+**Known limitation (proposed follow-ups, NOT executed — Roman to approve):**
+`call_agent.py` hard-codes the dimension enum (`RUBRIC_DIMENSIONS`, scoring
+schema, `RUBRIC_DIM_LABELS`), so production scoring will silently ignore S5–S8
+until those three spots learn the new IDs; also, 15-dimension scorecards can
+overflow `config.yml` `claude.max_tokens: 2000` (observed truncated JSON on
+call 404301001 during the dry-run; 4000 worked).
+
+**Files:** `knowledge/CUSTOMER_JOURNEY.md` (new), `knowledge/README.md`,
+`ops/call_agent/rubric.md`.
+
+---
+
 ## 2026-08-13 — TOR got the parent SMS (Mary Nieves) — persona-gated texting
 
 **What:** Mary Nieves (TOR) received the parent schedule-confirmation SMS.

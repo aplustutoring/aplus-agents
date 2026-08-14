@@ -1,9 +1,16 @@
-# A+ Tutoring — Inbound Call Quality Rubric v1
+# A+ Tutoring — Inbound Call Quality Rubric v2
 
 Used by the call agent to score answered inbound calls **for coaching purposes**.
 This file is loaded into the scoring prompt at runtime — edit the anchors and
 weights here; no code changes needed. Scores are internal (private coaching
 channel only) and are never written to the family's HubSpot record.
+
+v2 aligns the rubric with the locked consultation doctrine in
+`knowledge/CUSTOMER_JOURNEY.md` (trust-first/money-last): pricing is NEVER
+read aloud (S3 inverted from v1), the student's name is used early and often
+(S5), "what school do you guys go to currently" is the silent qualifier (S6),
+TOR is captured on charter calls (S7), and the free trial is an earned close,
+never an opener (S8).
 
 Scoring: each dimension 1–5 against the anchors below, or N/A when the
 dimension doesn't apply to the call. Overall = average of scored dimensions.
@@ -51,17 +58,50 @@ dimension doesn't apply to the call. Overall = average of scored dimensions.
 - **3** — Accurate but generic program description
 - **1** — Confusing, wrong, or no explanation of how A+ helps
 
-### S3. Pricing confidence
-- **5** — States pricing/structure clearly and without hedging, OR intentionally defers with a stated reason and a committed follow-up
-- **3** — Mentions pricing vaguely, audibly uncomfortable, or promises it later with no commitment
-- **1** — Avoids pricing after the caller asked
-- N/A when pricing genuinely didn't belong in the call
+### S3. Pricing discipline (visual, never aloud)
+Pricing is visual — nobody absorbs prices auditorily. The play is always:
+"Let me email you a graphic and we'll go over it together" (text it if they
+won't give an email). Reading prices aloud is a scored fail.
+- **5** — No numbers spoken. Deferred to the emailed pricing graphic with a committed follow-up (when it's being sent, and what happens next)
+- **3** — Deferred to the graphic but with no committed follow-up ("I'll send you something"), or hedged/apologetic about not quoting
+- **1** — Read prices aloud on the call (even partially, even with a graphic promised)
+- N/A when pricing genuinely didn't come up and didn't belong in the call
 
 ### S4. Advance (the close)
 - **5** — Call ends with a scheduled commitment: assessment booked, diagnostics sent with a return plan, or a specific follow-up date/time
 - **3** — Soft advance ("look it over and call us back") — momentum left with the caller
 - **1** — No advance; interested caller leaves with nothing to do
 - N/A for non-inquiry calls
+
+### S5. Student's name — captured early, used often
+Stop saying "your child" — say "Marcus."
+- **5** — Asked for the student's first name early and used it naturally throughout (discovery, presentation, close)
+- **3** — Got the name but rarely used it; long stretches of "your child" / "your son"
+- **1** — Never asked for or never used the student's name
+- N/A for non-inquiry calls
+
+### S6. The school question (silent qualifier)
+"What school do you guys go to currently?" determines charter-vs-private and
+vendor status without ever feeling like a money question.
+- **5** — Asked the school question naturally in flow, then worked the right fork (charter: social proof + tenure + "who's your teacher of record?"; private: area/modality)
+- **3** — Learned the school incidentally or asked late; fork not worked
+- **1** — Never established what school the student attends
+- N/A for non-inquiry calls
+
+### S7. TOR capture (charter calls)
+The joint TOR email is the non-negotiable charter close move.
+- **5** — Captured the teacher of record's name AND email at the close, set up the joint email / next step with the TOR
+- **3** — TOR mentioned or name captured, but no email / no joint-email setup
+- **1** — Charter family identified, call ends with no TOR information
+- N/A for non-charter calls
+
+### S8. Free trial — earned, never an opener
+Unprompted = desperation; after a stated objection = confidence. (Private:
+beats doubt/online hesitation. Charter: tiebreaker vs a competing vendor.)
+- **5** — No unprompted offer; when an objection surfaced, the trial was deployed as the put-our-money-where-our-mouth-is close
+- **3** — Offered before any real objection surfaced (but not as an opener), or an objection surfaced that the trial could have cleared and it was never deployed
+- **1** — Led with the free trial as an opener / used it as a first-resort pitch
+- N/A when no objection surfaced and no trial was discussed
 
 ## Service-call dimensions (intent = scheduling / billing / complaint)
 
