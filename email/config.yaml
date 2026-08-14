@@ -2,6 +2,9 @@
 # Fill the `id` placeholders during SETUP.md (HubSpot owner IDs + Slack member IDs).
 
 hubspot:
+  # Auto-BCC'd on every agent-created draft: HubSpot logs the send on the
+  # recipient's contact timeline (verify on first real send — portal-specific).
+  bcc_log_address: "6312752@bcc.hubspot.com"
   portal_id: 6312752
   # Conversations inbox to poll = admin@wetutorathome.com ("Inbox").
   inbox_id: "565493"
@@ -267,7 +270,9 @@ po_inbox:
   # triggers the Teachworks sync. No reply within the window → escalation DM.
   parent_chase:
     enabled: true
-    escalate_business_hours: 16   # 2 business days
+    escalate_business_hours: 16        # 2 business days AFTER the draft is SENT
+    draft_unsent_nag_business_hours: 4 # draft still in Gmail Drafts → 🚩 nag
+    notify_paola_after_hours: 24       # info still missing 24h after the email → Paola too
   # Pending order-agreement POs with no approval signal (duplicate alert =
   # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
   pending_sweep_business_hours: 16
