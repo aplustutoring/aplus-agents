@@ -63,7 +63,12 @@ PO_SYSTEM = (
     "numbers — schools often issue one per service month), ALSO return pos: an array "
     "[{po_number, amount, hours, po_month}, ...] with one entry per PO, each carrying "
     "ITS OWN amount/hours/month from the document; the top-level student/school/"
-    "parent/TOR fields are shared. Omit pos for single-PO emails. school_bill_to = the school's exact billing "
+    "parent/TOR fields are shared. Omit pos for single-PO emails. "
+    "If ONE certificate/PO covers MULTIPLE STUDENTS (Heartland/Procurify-style service "
+    "certificates), return pos with one entry PER STUDENT (per month when months "
+    "differ) — each entry ALSO carries its own student_first, student_last, grade, and "
+    "parent_* when stated per family; synthesize unique po_number values as "
+    "'<PO>-<StudentFirstLast>' when the certificate has one number for all students. school_bill_to = the school's exact billing "
     "name/address from the PO (schools reject invoices with a wrong Bill To); empty if "
     "not stated. "
     "draft_reply rules: if is_po → ALWAYS empty string (we never reply to purchase "
@@ -508,9 +513,18 @@ def _split_pos(po: dict) -> list[dict]:
     subs = po.get("pos") if isinstance(po.get("pos"), list) else []
     subs = [x for x in subs if isinstance(x, dict) and (x.get("po_number") or "").strip()]
     if len(subs) >= 2:
-        return [{**po, "pos": None, "po_number": _norm_po_number(x["po_number"]),
-                 "amount": x.get("amount"), "hours": x.get("hours"),
-                 "po_month": x.get("po_month") or po.get("po_month")} for x in subs]
+        out = []
+        for x in subs:
+            sub = {**po, "pos": None, "po_number": _norm_po_number(x["po_number"]),
+                   "amount": x.get("amount"), "hours": x.get("hours"),
+                   "po_month": x.get("po_month") or po.get("po_month")}
+            # multi-STUDENT certificates: per-entry student/parent fields win
+            for k in ("student_first", "student_last", "grade", "parent_first",
+                      "parent_last", "parent_email", "parent_phone", "rate"):
+                if str(x.get(k) or "").strip():
+                    sub[k] = x[k]
+            out.append(sub)
+        return out
     nums = [_norm_po_number(n) for n in re.split(r"[,;]|\band\b", str(po.get("po_number") or ""))
             if _norm_po_number(n)]
     if len(nums) >= 2:
@@ -558,17 +572,24 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
     created: list[dict] = []
     tw_cache: dict = {}   # one Teachworks calendar lookup per family per email
     seq_cache: dict = {}  # 'School N' base counted ONCE per email (no double-count)
-    for i, sub in enumerate(subs):
+    chase_queue: list = []  # (deal_id, deal_name, pipeline_id, po) needing a parent
+    stu_seen: dict = {}   # multi-STUDENT certificates: offsets count per student
+    for sub in subs:
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
                               f"extracted — fill on the deal manually.")
-        # scheduling alert once per email, not once per PO month; seq_offset
-        # staggers 'School N' across sibling deals created in the same email
-        rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(i == 0),
-                             msg=msg, seq_offset=i, tw_cache=tw_cache,
-                             seq_cache=seq_cache)
+        skey = ((sub.get("student_first") or "").strip().lower(),
+                (sub.get("student_last") or "").strip().lower())
+        off = stu_seen.get(skey, 0)
+        stu_seen[skey] = off + 1
+        # scheduling alert once per STUDENT, not once per PO month; seq_offset
+        # staggers 'School N' across the same student's deals in this email
+        rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(off == 0),
+                             msg=msg, seq_offset=off, tw_cache=tw_cache,
+                             seq_cache=seq_cache, chase_queue=chase_queue)
         if rec:
             created.append(rec)
+    _open_parent_chases(chase_queue, msg, note_parts)
     if created:
         _dm_scheduler(po, created, note_parts)
 
@@ -621,7 +642,9 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str],
     short, mapped = _school_short(po.get("school") or "")
     year = _school_year_tag(po)
     student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip()
-    key = (short.lower(), year)
+    # keyed per STUDENT too — a multi-student certificate numbers each kid's
+    # deals from their own count, not a shared one
+    key = (short.lower(), year, (po.get("student_first") or "").strip().lower())
     if seq_cache is not None and key in seq_cache:
         base = seq_cache[key]
     else:
@@ -638,61 +661,99 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str],
 
 
 def _open_chases() -> dict:
-    """thread_id → latest parent chase still awaiting the TOR's reply."""
+    """thread_id → LIST of parent chases still awaiting a reply (a multi-family
+    certificate opens several chases on one thread — the Heartland case)."""
     opened, resolved = {}, set()
     for r in audit._iter_records():
         if r.get("action_taken") == "parent_chase_opened" and r.get("thread_id"):
-            opened[r["thread_id"]] = r
+            opened[str(r.get("deal_id"))] = r
         elif r.get("action_taken") == "parent_chase_resolved":
-            resolved.add(r.get("thread_id"))
-    return {t: r for t, r in opened.items() if t not in resolved}
+            resolved.add(str(r.get("deal_id")))
+    out: dict = {}
+    for did, r in opened.items():
+        if did not in resolved:
+            out.setdefault(r["thread_id"], []).append(r)
+    return out
 
 
-def _open_parent_chase(deal_id, deal_name: str, pipeline_id: str, po: dict,
-                       msg: dict | None, note_parts: list[str]) -> None:
+def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) -> None:
     """Parent info missing → the deal (and everything downstream: Teachworks
     family/student, scheduling, invoice hours) is blocked. Chase it: DRAFT a
     parent-info request (name + email + phone) to the TOR — else the sender —
-    on the same thread. A human sends the draft (this agent never sends from
-    charter@); the reply is caught by _resolve_parent_chase."""
+    on the same thread. ONE draft per recipient per email, listing every
+    student (the Heartland certificate produced 5 identical drafts to the same
+    TOR — never again). A human sends the draft; replies are caught by
+    _resolve_parent_chases."""
     ch = cfg()["po_inbox"].get("parent_chase", {})
-    if not ch.get("enabled") or not msg or not deal_id or deal_id == "DRYRUN":
+    if not ch.get("enabled") or not msg or not queue:
         return
-    to_addr = (po.get("tor_email") or "").strip()
-    if not to_addr:
-        m = re.search(r"<([^>]+)>", msg.get("sender") or "")
-        to_addr = m.group(1) if m else (msg.get("sender") or "")
-    if not to_addr:
-        note_parts.append("📨 No TOR/sender address to ask for parent info — chase manually.")
-        return
-    student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "the student"
-    greeting = f"Hi {po.get('tor_first')}".strip() if po.get("tor_first") else "Hi"
-    body = (f"{greeting},\n\n"
-            f"Thank you for the purchase order for {student}. To get scheduling set up "
-            f"we still need the parent/guardian's contact information:\n\n"
-            f"  - Parent/guardian full name\n"
-            f"  - Email address\n"
-            f"  - Phone number\n\n"
-            f"Could you reply with those when you have a moment? We'll take it from there.\n\n"
-            f"A+ Tutoring Team")
-    try:
-        gm.create_draft_reply(msg["threadId"], to_addr, msg.get("subject") or "",
-                              body, msg.get("message_id_header", ""))
-    except Exception as e:  # noqa: BLE001 — chase failure must not block the deal
-        print(f"  ⚠️  parent-chase draft failed (non-fatal): {e}")
-        note_parts.append(f"📨 Could not draft the parent-info request to {to_addr} — ask manually.")
-        return
-    due = add_business_hours(now_la(), int(ch.get("escalate_business_hours", 16)))
-    audit.append({"message_id": f"parent-chase:{deal_id}", "source": "po_inbox",
-                  "action_taken": "parent_chase_opened", "deal_id": deal_id,
-                  "deal_name": deal_name, "pipeline": pipeline_id,
-                  "po_number": (po.get("po_number") or "").strip(),
-                  "thread_id": msg["threadId"], "student": student,
-                  "school": po.get("school") or "",
-                  "tor_email": (po.get("tor_email") or "").strip().lower(),
-                  "chase_to": to_addr, "sla_due": due.isoformat()})
-    note_parts.append(f"📨 Parent-info request DRAFTED to {to_addr} — SEND it from Gmail "
-                      f"Drafts; the reply auto-creates the contact and unblocks Teachworks.")
+    by_to: dict = {}
+    for deal_id, deal_name, pipeline_id, po in queue:
+        if not deal_id or deal_id == "DRYRUN":
+            continue
+        to_addr = (po.get("tor_email") or "").strip()
+        if not to_addr:
+            m = re.search(r"<([^>]+)>", msg.get("sender") or "")
+            to_addr = m.group(1) if m else (msg.get("sender") or "")
+        if not to_addr:
+            note_parts.append("📨 No TOR/sender address to ask for parent info — chase manually.")
+            continue
+        by_to.setdefault(to_addr, []).append((deal_id, deal_name, pipeline_id, po))
+    for to_addr, items in by_to.items():
+        students = []
+        for _d, _n, _p, po in items:
+            s = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip()
+            if s and s not in students:
+                students.append(s)
+        student_line = ", ".join(students) or "the student"
+        first = items[0][3]
+        greeting = f"Hi {first.get('tor_first')}".strip() if first.get("tor_first") else "Hi"
+        plural = len(students) > 1
+        body = (f"{greeting},\n\n"
+                f"Thank you for the purchase order for {student_line}. To get scheduling "
+                f"set up we still need the parent/guardian contact information for "
+                f"{'each family' if plural else 'the family'}:\n\n"
+                f"  - Parent/guardian full name\n"
+                f"  - Email address\n"
+                f"  - Phone number\n\n"
+                f"Could you reply with those when you have a moment? We'll take it "
+                f"from there.\n\n"
+                f"A+ Tutoring Team")
+        try:
+            gm.create_draft_reply(msg["threadId"], to_addr, msg.get("subject") or "",
+                                  body, msg.get("message_id_header", ""))
+        except Exception as e:  # noqa: BLE001 — chase failure must not block the deal
+            print(f"  ⚠️  parent-chase draft failed (non-fatal): {e}")
+            note_parts.append(f"📨 Could not draft the parent-info request to {to_addr} "
+                              f"— ask manually.")
+            continue
+        due = add_business_hours(now_la(), int(ch.get("escalate_business_hours", 16)))
+        for deal_id, deal_name, pipeline_id, po in items:
+            student = (f"{po.get('student_first', '')} "
+                       f"{po.get('student_last', '')}").strip() or "the student"
+            audit.append({"message_id": f"parent-chase:{deal_id}", "source": "po_inbox",
+                          "action_taken": "parent_chase_opened", "deal_id": deal_id,
+                          "deal_name": deal_name, "pipeline": pipeline_id,
+                          "po_number": (po.get("po_number") or "").strip(),
+                          "thread_id": msg["threadId"], "student": student,
+                          "school": po.get("school") or "",
+                          "tor_email": (po.get("tor_email") or "").strip().lower(),
+                          "chase_to": to_addr, "sla_due": due.isoformat()})
+        note_parts.append(f"📨 Parent-info request DRAFTED to {to_addr} for "
+                          f"{student_line} — SEND it from Gmail Drafts; the reply "
+                          f"auto-creates the contact and unblocks Teachworks.")
+
+
+def _resolve_parent_chases(chases: list, po: dict, note_parts: list[str]) -> None:
+    """A reply with parent info against a thread's OPEN chases. Multi-family
+    threads (Heartland): resolve only the chases whose student the reply names;
+    no student named → resolve them all (single-family threads, e.g. one kid's
+    multi-month POs, are the common case and want exactly that)."""
+    sf = (po.get("student_first") or "").strip().lower()
+    targets = [c for c in chases
+               if sf and sf in (c.get("student") or "").lower()] or chases
+    for chase in targets:
+        _resolve_parent_chase(chase, po, note_parts)
 
 
 def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
@@ -753,6 +814,19 @@ def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
         audit.append({"message_id": f"parent-chase-resolved:{deal_id}", "source": "po_inbox",
                       "action_taken": "parent_chase_resolved", "deal_id": deal_id,
                       "thread_id": chase.get("thread_id"), "parent_email": p_email})
+        # Arm the scheduling SMS for the just-attached parent: the deal-side
+        # stamper fired at creation when NO parent existed, so this contact never
+        # got contact_level_deal_stage and the family never got their text
+        # (Roman batch, 2026-08-14). Charter Trad only — that's the SMS flow's
+        # trigger value.
+        if (chase.get("pipeline") or "") == cfg()["po_inbox"].get("deal_pipeline_id"):
+            try:
+                hs._write("PATCH", f"/crm/v3/objects/contacts/{cid}",
+                          {"properties": {"contact_level_deal_stage":
+                                          "Pre-Lesson (Charter Traditional)"}})
+                note_parts.append("💬 Scheduling-text workflow armed for the parent.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  SMS arm failed (non-fatal): {e}")
         try:
             from . import deal_sync
             rec = deal_sync.sync_deal({"id": deal_id, "properties": {
@@ -778,7 +852,7 @@ def _sweep_parent_chases() -> None:
     escalated = {r.get("deal_id") for r in audit._iter_records()
                  if r.get("action_taken") == "parent_chase_escalated"}
     now = now_la()
-    for r in _open_chases().values():
+    for r in (c for lst in _open_chases().values() for c in lst):
         if r.get("deal_id") in escalated:
             continue
         try:
@@ -799,6 +873,44 @@ def _sweep_parent_chases() -> None:
         audit.append({"message_id": f"parent-chase-escalation:{r.get('deal_id')}",
                       "source": "po_inbox", "action_taken": "parent_chase_escalated",
                       "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id")})
+
+
+def _sweep_pending_pos() -> None:
+    """Pending order-agreement POs with no approval signal past the window →
+    one nag to Kath + Roman (the duplicate alert on the re-issued/approved PO
+    confirms them; portal-only approvals need the human check this prompts)."""
+    opened, confirmed, reminded = {}, set(), set()
+    for r in audit._iter_records():
+        act = r.get("action_taken")
+        if act == "pending_po_opened" and r.get("deal_id"):
+            opened[str(r["deal_id"])] = r
+        elif act == "pending_po_confirmed":
+            confirmed.add((r.get("po_number") or "").strip())
+        elif act == "pending_po_reminded":
+            reminded.add(str(r.get("deal_id")))
+    now = now_la()
+    pc = cfg()["po_inbox"]
+    for did, r in opened.items():
+        if did in reminded or (r.get("po_number") or "").strip() in confirmed:
+            continue
+        try:
+            due = datetime.fromisoformat(r["sla_due"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if now <= due:
+            continue
+        for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
+            s = cfg()["staff"].get(key, {})
+            if s.get("slack_user_id"):
+                slack_client.dm(s["slack_user_id"],
+                                f"⏳ PO {r.get('po_number')} ('{r.get('deal_name')}') is "
+                                f"still PENDING school approval with no approval signal "
+                                f"since {(r.get('timestamp') or '')[:10]} — check the "
+                                f"school's ordering portal; no service or invoice until "
+                                f"it's approved.")
+        audit.append({"message_id": f"pending-po-reminder:{did}", "source": "po_inbox",
+                      "action_taken": "pending_po_reminded", "deal_id": did,
+                      "po_number": (r.get("po_number") or "").strip()})
 
 
 def _find_parent_via_deals(po: dict):
@@ -841,7 +953,8 @@ def _find_parent_via_deals(po: dict):
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True, msg: dict | None = None,
                    seq_offset: int = 0, tw_cache: dict | None = None,
-                   seq_cache: dict | None = None) -> dict | None:
+                   seq_cache: dict | None = None,
+                   chase_queue: list | None = None) -> dict | None:
     """Advance the matching Waiting-for-PO deal, or create one. Returns
     {name, pending} for a CREATED deal (drives the scheduler DM), else None."""
     pc = cfg()["po_inbox"]
@@ -875,6 +988,11 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                             f"🚨 URGENT — duplicate PO received: PO {po_num} already has deal "
                             f"'{dn}'. Check whether the school re-sent it or this is a second "
                             f"authorization before doing anything.")
+            # the approved PO re-arriving IS the approval signal — close the
+            # pending-approval sweep for this PO number
+            audit.append({"message_id": f"pending-po-confirmed:{po_num}",
+                          "source": "po_inbox", "action_taken": "pending_po_confirmed",
+                          "po_number": po_num, "deal_name": dn})
             return
     waiting = (hs.search_deals_by_name(token, pc["deal_pipeline_id"], pc["waiting_for_po_stage"])
                if pc.get("waiting_for_po_stage") else [])   # stage retired → always create
@@ -1031,7 +1149,21 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         _attach_po_to_deal(d.get("id"), attachments or [], po, note_parts)
         _invoice_task(d.get("id"), po, note_parts)
         if not contact_id:
-            _open_parent_chase(d.get("id"), name, pipeline_id, po, msg, note_parts)
+            if chase_queue is not None:
+                chase_queue.append((d.get("id"), name, pipeline_id, po))
+            else:
+                _open_parent_chases([(d.get("id"), name, pipeline_id, po)],
+                                    msg, note_parts)
+        if po.get("pending_approval") and d.get("id") and d.get("id") != "DRYRUN":
+            # pending-approval follow-up sweep: track the open pending PO; the
+            # duplicate alert (approved PO re-arriving) confirms it, the sweep
+            # nags after the window (Roman batch, 2026-08-14)
+            audit.append({"message_id": f"pending-po:{d.get('id')}", "source": "po_inbox",
+                          "action_taken": "pending_po_opened", "deal_id": d.get("id"),
+                          "deal_name": name, "po_number": po_num,
+                          "sla_due": add_business_hours(
+                              now_la(), int(pc.get("pending_sweep_business_hours", 16))
+                          ).isoformat()})
         if no_lessons_check:
             _no_lessons_alert(po, name, note_parts, upcoming)
         # No waiting on the next cron: run the Teachworks sync for THIS deal now.
@@ -1130,11 +1262,11 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         labels = [pc["label_processed"]] + ([f"School/{po['school'][:40]}"] if po.get("school") else [])
     else:
         labels = [pc["label_review"]]
-        # A reply on a thread with an open parent chase that carries the parent's
-        # info → auto-create the contact and unblock the waiting deal.
-        chase = _open_chases().get(m["threadId"])
-        if chase and (po.get("parent_email") or "").strip():
-            _resolve_parent_chase(chase, po, note_parts)
+        # A reply on a thread with open parent chases that carries the parent's
+        # info → auto-create the contact and unblock the waiting deal(s).
+        chases = _open_chases().get(m["threadId"]) or []
+        if chases and (po.get("parent_email") or "").strip():
+            _resolve_parent_chases(chases, po, note_parts)
             record["category"] = "parent_info_reply"
         note_parts.append(f"Not a PO: {po.get('summary','')[:200]}")
 
@@ -1256,6 +1388,10 @@ def run() -> None:
         _sweep_parent_chases()
     except Exception as e:  # noqa: BLE001 — the sweep must never kill the run
         print(f"  ⚠️  parent-chase sweep failed (non-fatal): {e}")
+    try:
+        _sweep_pending_pos()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  pending-PO sweep failed (non-fatal): {e}")
     if not DRY_RUN:
         cur_path.write_text(_json.dumps({"last_epoch": newest}))
 

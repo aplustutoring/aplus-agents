@@ -1532,3 +1532,114 @@ def test_healthy_tor_not_patched(monkeypatch):
                         (_ for _ in ()).throw(AssertionError("healthy TOR must not be patched"))
                         if "contacts/C-tor" in path else {})
     po._handle_deal(_po(parent_email="mom@x.com", tor_email="ok@x.org"), [])
+
+
+# ── 2026-08-14 batch: multi-student certs, chase batching, pending sweep ─────
+
+def test_multi_student_certificate_per_student_deals(monkeypatch):
+    created, drafts, appended = [], [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k:
+                        created.append(name) or {"id": f"D{len(created)}"})
+    monkeypatch.setattr(po.gm, "create_draft_reply",
+                        lambda tid, to, subj, body, irt="": drafts.append((to, body)) or {"id": "DR"})
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    msg = {"threadId": "TH-H", "sender": "Procurify <no@procurify.com>",
+           "subject": "CERTIFICATE", "message_id_header": "<h1>"}
+    po._handle_deal(_po(student_first="", student_last="", po_number="",
+                        tor_first="Kristy", tor_last="Doyal",
+                        tor_email="kristydoyal@gmail.com", po_month="2026-09", pos=[
+        {"po_number": "PF1-CooperDoyal", "amount": "300", "hours": "4",
+         "student_first": "Cooper", "student_last": "Doyal"},
+        {"po_number": "PF1-CharlotteCzaja", "amount": "300", "hours": "4",
+         "student_first": "Charlotte", "student_last": "Czaja"},
+        {"po_number": "PF1-RayvenHolloway", "amount": "600", "hours": "8",
+         "student_first": "Rayven", "student_last": "Holloway"}]), [], msg=msg)
+    # per-student naming + per-student seq (each kid starts at 1)
+    assert created == ["NEEDS PARENT - Cooper Doyal - iLead 1 - 26/27",
+                       "NEEDS PARENT - Charlotte Czaja - iLead 1 - 26/27",
+                       "NEEDS PARENT - Rayven Holloway - iLead 1 - 26/27"]
+    # ONE draft to the TOR listing every student — not three identical drafts
+    assert len(drafts) == 1 and drafts[0][0] == "kristydoyal@gmail.com"
+    assert all(s in drafts[0][1] for s in ("Cooper Doyal", "Charlotte Czaja",
+                                           "Rayven Holloway"))
+    chases = [r for r in appended if r.get("action_taken") == "parent_chase_opened"]
+    assert len(chases) == 3                              # one chase record per deal
+
+
+def test_reply_resolves_only_named_students_chases(monkeypatch):
+    resolved = []
+    monkeypatch.setattr(po, "_resolve_parent_chase",
+                        lambda chase, p_, notes: resolved.append(chase.get("student")))
+    chases = [{"student": "Cooper Doyal"}, {"student": "Charlotte Czaja"},
+              {"student": "Emmalyn Czaja"}]
+    po._resolve_parent_chases(chases, {"student_first": "Charlotte"}, [])
+    assert resolved == ["Charlotte Czaja"]
+    resolved.clear()
+    po._resolve_parent_chases(chases, {"student_first": ""}, [])   # no student named
+    assert len(resolved) == 3                                      # resolve all
+
+
+def test_chase_resolution_arms_parent_sms(monkeypatch):
+    patches = []
+    chase = {"deal_id": "D9", "deal_name": "NEEDS PARENT - Ana Diaz - iLead 1 - 26/27",
+             "pipeline": "907748", "po_number": "4471", "thread_id": "TH9"}
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m_, p_, payload=None: patches.append((p_, payload)) or {})
+    monkeypatch.setattr(po.audit, "append", lambda r: None)
+    monkeypatch.setattr(dsy_mod, "sync_deal", lambda d, **k: {"action_taken": "tw_synced"})
+    notes = []
+    po._resolve_parent_chase(chase, {"parent_email": "mom@x.com", "parent_first": "Maria",
+                                     "parent_last": "Diaz"}, notes)
+    arm = [x for x in patches if x[0] == "/crm/v3/objects/contacts/C-mom"
+           and "contact_level_deal_stage" in (x[1] or {}).get("properties", {})]
+    assert arm and arm[0][1]["properties"]["contact_level_deal_stage"] == \
+        "Pre-Lesson (Charter Traditional)"
+    assert any("Scheduling-text workflow armed" in n for n in notes)
+
+
+def test_pending_sweep_nags_then_stays_quiet(monkeypatch):
+    dms, appended = [], []
+    recs = [{"action_taken": "pending_po_opened", "deal_id": "D1",
+             "deal_name": "X - Y - iLead 1 - 26/27", "po_number": "111",
+             "sla_due": "2026-08-01T10:00:00-07:00",
+             "timestamp": "2026-07-31T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    po._sweep_pending_pos()
+    assert len(dms) == 2                       # kath + roman
+    assert all("PENDING school approval" in t for _u, t in dms)
+    assert appended and appended[0]["action_taken"] == "pending_po_reminded"
+    # already reminded → silent
+    recs.append(appended[0]); dms.clear()
+    po._sweep_pending_pos()
+    assert dms == []
+
+
+def test_pending_sweep_confirmed_by_duplicate_is_silent(monkeypatch):
+    recs = [{"action_taken": "pending_po_opened", "deal_id": "D1",
+             "deal_name": "X", "po_number": "111",
+             "sla_due": "2026-08-01T10:00:00-07:00"},
+            {"action_taken": "pending_po_confirmed", "po_number": "111"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.slack_client, "dm",
+                        lambda u, t: (_ for _ in ()).throw(AssertionError("confirmed → no nag")))
+    po._sweep_pending_pos()
+
+
+def test_sla_sweep_sees_po_tickets(monkeypatch):
+    from src import sla_sweep as sw
+    monkeypatch.setattr(sw.audit, "_iter_records",
+                        lambda: iter([{"action_taken": "po_processed", "ticket_id": "T1",
+                                       "sla_due": "2026-08-07T16:36:59-07:00",
+                                       "owner": "kath", "category": "new_po"}]))
+    tickets = sw._latest_tickets()
+    assert "T1" in tickets                     # PO tickets now enter the escalation chain

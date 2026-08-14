@@ -8,6 +8,37 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — PO improvement batch (Roman: "lets go") — 5 changes
+
+**What:** (1) SMS flow 1603217415 rev 42: second OR-branch enrolls contacts
+whose a_persona includes Family even when they also carry the TOR persona —
+dual-role parents (Kristy Doyal) get their scheduling texts; pure teachers stay
+blocked. (2) SLA sweep now tracks PO-inbox tickets (po_processed records carry
+ticket_id + sla_due) — PO ticket breaches finally escalate (the silent Taylion
+breach can't recur). (3) Chase-resolved parents get their SMS: on resolution
+the agent stamps contact_level_deal_stage = "Pre-Lesson (Charter Traditional)"
+on the new parent contact, arming the texting flow that fired at deal creation
+when no parent existed (Charter Trad only). (4) Pending-approval sweep: order-
+agreement deals log pending_po_opened; the duplicate alert (approved PO
+re-arriving) logs pending_po_confirmed; unconfirmed past 16 business hours →
+ONE ⏳ nag to missing_info_dms (kath+roman) + pending_po_reminded. (5) Multi-
+student certificates codified (yesterday's Heartland run needed hand-cleanup):
+extractor returns per-student pos[] entries (student/grade/parent per family,
+synthesized '<PO>-<StudentName>' numbers), _split_pos merges them, seq numbers
+per student, scheduling alert per student, and the parent chase sends ONE draft
+per recipient listing all students (was 5 identical drafts to the same TOR)
+with per-deal chase records; replies resolve the chases whose student they
+name (multi-family threads), else all (single-family multi-month).
+
+**Why:** Roman's approved batch, triggered by the Kristy Doyal dual-persona PO
+and the Heartland 5-student certificate.
+
+**Files:** `email/src/po_inbox.py`, `email/src/sla_sweep.py`,
+`email/config.yaml`, `email/tests/test_po_inbox.py` (suite 219 green);
+HubSpot flow 1603217415 rev 42.
+
+---
+
 ## 2026-08-14 — Charter gap: tutor/student enrichment + property stamping (Roman)
 
 **What:** `scripts/charter_gap_analysis.py` extended — Step 3b pulls each

@@ -268,6 +268,9 @@ po_inbox:
   parent_chase:
     enabled: true
     escalate_business_hours: 16   # 2 business days
+  # Pending order-agreement POs with no approval signal (duplicate alert =
+  # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
+  pending_sweep_business_hours: 16
   # ANYTHING missing on PO intake (fields not in the PO, unmatched TOR/parent,
   # manual follow-ups, failed uploads) → a direct 🚩 DM to EACH of these, on top
   # of the ticket flags (Roman, 2026-08-11: "whenever something is missing it is
