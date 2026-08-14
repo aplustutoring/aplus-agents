@@ -59,6 +59,32 @@ pick up a conversation she wasn't part of — hence the handoff brief.
 
 ---
 
+## 2026-08-13 — Verified 69-deal invoice backfill EXECUTED + PO day report
+
+**What:** (1) The parked $17.5k backlog closed with VERIFICATION instead of
+blind stamping: new email/invoice_backfill.py (+ tw-invoice-backfill workflow)
+matched each swept deal to a Teachworks invoice (family + amount, service-month
+due preferred, one claim per invoice, Paid/Approved/Sent only) — **64/69
+verified & stamped** (invoice_submitted_date = service-month end, Invoice #,
+Invoice Submitted stage; Jamie Holloway's date hand-corrected to 2026-08-13,
+its "(Aug) 25/26" name tag is a year off). **5 EXCEPTIONS for Kath**: Christina
+Duran/Talia Visions ×2 ($495) + Myra Garcia/Jason Gorman ($67) have NO TW
+invoice (possible genuinely-unbilled); Katherine Perez ×2 ($1,200) have no
+family contact on the deal (can't verify). (2) NEW daily report (Roman):
+email/src/po_daily_report.py + 6 PM PT weekday cron DMs Roman the day's PO
+deal count/value ⇄ how many already have TW invoices (Invoice # stamp or
+amount-matched invoice dated on/after the deal), misses named.
+
+**Why:** Roman: "yes" to verified backfill; "at the end of each day i get a
+slack message that tells me the value of the POs that came in and corresponds
+them to how many teachworks invoices created."
+
+**Files:** `email/invoice_backfill.py` (new), `email/src/po_daily_report.py`
+(new), `.github/workflows/{tw-invoice-backfill,email-po-daily-report}.yml`
+(new), `email/tests/test_daily_summary.py` (suite 213 green).
+
+---
+
 ## 2026-08-13 — TOR got the parent SMS (Mary Nieves) — persona-gated texting
 
 **What:** Mary Nieves (TOR) received the parent schedule-confirmation SMS.
