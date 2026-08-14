@@ -239,9 +239,11 @@
     404623431,
     404635614,
     404667996,
-    404667016
+    404667016,
+    404688065,
+    404689835
   ],
-  "last_run_utc": "2026-08-14T21:53:48.622174+00:00",
+  "last_run_utc": "2026-08-14T22:29:25.426360+00:00",
   "pending_digest": [
     {
       "call_id": 404618369,
@@ -415,6 +417,103 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 404689835,
+      "number": "12132605347",
+      "time_pt": "3:19 PM",
+      "matched": true,
+      "contact_label": "Naveh  Hall",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Naveh Hall called to ask if A+ Tutoring is on Excel Academy's approved vendor list for her three kids (Salome-4th, Kaleb-3rd, Joshua-2nd) who are starting the homeschool charter in two weeks. Roman (owner) confirmed A+ is approved, explained the one-on-one online high-dosage model (45-min sessions, frequency over duration), and noted an initial teacher evaluation would set the plan. Naveh said she'll talk to their teacher of record, Lindsey Osterman, and get back to A+. She declined to share an email for now but confirmed her phone number.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Wait for Naveh (or TOR Lindsey Osterman at Excel Academy) to send enrollment/session link; then schedule initial evaluations for Salome, Kaleb, and Joshua",
+            "owner_hint": "Roman"
+          },
+          {
+            "item": "Follow up by phone in ~1-2 weeks if we don't hear back, since Naveh declined email contact",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Naveh Hall (warm, engaged parent) called about her three kids \u2014 Salome (entering 4th), Kaleb (3rd), and Joshua (2nd) \u2014 who start at Excel Academy homeschool charter in ~2 weeks. Roman confirmed we're on Excel's approved vendor list and explained our 1:1 online high-dosage model (45-min sessions, frequency > duration) and that we'd do an initial teacher evaluation before proposing a plan. TOR is Lindsey Osterman. Naveh wanted all three kids tutored but understood it would be individual 1:1. She declined email for now \u2014 contact by phone only at 213-260-5347. She said she'd talk to Lindsey Osterman and circle back. Open with: 'Hi Naveh, this is ___ from A+ \u2014 Roman filled me in on your call. Wanted to check in on where things stand with Lindsey Osterman at Excel so we can get Salome, Kaleb, and Joshua set up with evaluations whenever you're ready.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family paying via Excel Academy charter instructional funds; confirmed on Excel's approved vendor list.",
+        "student_or_school_names_mentioned": [
+          "Salome Hall",
+          "Kaleb Hall",
+          "Joshua Hall",
+          "Excel Academy",
+          "Lindsey Osterman"
+        ],
+        "record_updates": {
+          "whats_going_on": "Naveh called \u2014 her three kids (Salome entering 4th, Kaleb 3rd, Joshua 2nd) are starting Excel Academy homeschool charter in ~2 weeks. She wants tutoring for all three and confirmed we're on Excel's approved vendor list. TOR is Lindsey Osterman.",
+          "what_we_can_do_to_help": "Once Lindsey Osterman (TOR at Excel) sends the enrollment link, schedule initial teacher evaluations for all three kids to establish starting points (reading fluency/comprehension, math facts) and propose a 1:1 online high-dosage plan (45-min sessions, multiple times/week). Naveh declined email \u2014 contact by phone only at 213-260-5347.",
+          "student_first_name": null,
+          "student_last_name": "Hall",
+          "grade_level": null,
+          "student_school": "Excel Academy",
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Naveh called \u2014 her three kids (Salome entering 4th, Kaleb 3rd, Joshua 2nd) are starting Excel Academy homeschool charter in ~2 weeks. She wants tutoring for all three and confirmed we're on Excel's approved vendor list. TOR is Lindsey Osterman."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once Lindsey Osterman (TOR at Excel) sends the enrollment link, schedule initial teacher evaluations for all three kids to establish starting points (reading fluency/comprehension, math facts) and propose a 1:1 online high-dosage plan (45-min sessions, multiple times/week). Naveh declined email \u2014 contact by phone only at 213-260-5347."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Hall"
+        ],
+        [
+          "student_school",
+          "Excel",
+          "Excel Academy"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Naveh (or TOR Lindsey Osterman at Excel Academy) to send enrollment/session link; then schedule initial evaluations for Salome, Kaleb, and Joshua",
+          81494333
+        ],
+        [
+          "Follow up by phone in ~1-2 weeks if we don't hear back, since Naveh declined email contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
