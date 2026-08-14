@@ -31,7 +31,9 @@ corrected gap set — all 429 contacts — with marketability audit: 378 fully
 clean, 42 not marketing contacts, 4 opted out, 4 hard bounced, 1 no email.
 Follow-up: the 42 were set as marketing contacts (helper list "Charter 26/27
 Gap - Upgrade to Marketing", listId 3105; done via portal UI bulk action —
-hs_marketable_status is API-read-only and the private app lacks crm.import).
+hs_marketable_status is API-read-only and the private app lacked crm.import;
+Roman added the crm.import scope later that day — verified working, so future
+status flips can use an UPDATE-only import with marketableContactImport=true).
 Marketing tier after: 9,751/12,000. Reachable gap now 420/429.
 **Files:** scripts/charter_gap_analysis.py, .github/workflows/charter-gap-analysis.yml
 (temporary push trigger on the feature branch — drop after merge).
