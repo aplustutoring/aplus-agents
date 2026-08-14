@@ -72,9 +72,9 @@ families got a tutor name (91%) — every matched-with-invoices family that had
 a completed lesson. Import 78996473 DONE; full verify: 389/429 list-3104
 contacts carry BOTH last_tutor_name and student_first_name. The 40 without:
 30 never-invoiced (no TW match) + 10 invoiced but no completed lesson in
-window. NOTE: tutor names are stored in Teachworks "Last, First" order
-(e.g. "James, Kelly") — flip before using in mail-merge, or ask this session
-to normalize and re-stamp.
+window. Same-day follow-up (Roman: "tutors first name only no last names"):
+last_tutor_name now holds the tutor's FIRST NAME only (parsed from
+Teachworks "Last, First"); all 389 re-stamped.
 **Files:** scripts/charter_gap_analysis.py,
 .github/workflows/charter-gap-analysis.yml,
 ops/hubspot-schema/properties.yml (+2 contact properties).

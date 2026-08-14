@@ -297,6 +297,16 @@ def fetch_tw_families():
     return list(merged.values())
 
 
+def tutor_first_name(raw):
+    """Tutor FIRST name only (Roman 2026-08-14: customer-facing, no last
+    names). Teachworks employee_name is 'Last, First'; plain 'First Last'
+    falls back to the first token."""
+    raw = (raw or "").strip()
+    if "," in raw:
+        return raw.split(",", 1)[1].strip()
+    return raw.split(" ")[0] if raw else ""
+
+
 def fetch_last_lessons(families):
     """For each TW family, the most recent completed lesson since SINCE:
     {"lesson_date", "tutor", "student_first"} stored on the family dict as
@@ -318,7 +328,7 @@ def fetch_last_lessons(families):
                     d = str(l.get("from_date") or "")[:10]
                     if not best or d > best["lesson_date"]:
                         best = {"lesson_date": d,
-                                "tutor": (l.get("employee_name") or "").strip(),
+                                "tutor": tutor_first_name(l.get("employee_name")),
                                 "student_first": (s.get("first_name") or "").strip()}
         if best:
             f["last_lesson"] = best
