@@ -1,0 +1,37 @@
+name: TW invoice-submitted backfill (verified)
+
+# One-off: verify the 2026-08-07..09 sweep backlog against Teachworks invoices
+# and stamp invoice_submitted_date + Invoice Submitted stage on verified deals.
+# apply=false (default) is a dry-run report. See email/invoice_backfill.py.
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Write the stamps (false = dry-run report)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Backfill
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          APPLY: ${{ inputs.apply == true && '1' || '' }}
+        run: python -m invoice_backfill
