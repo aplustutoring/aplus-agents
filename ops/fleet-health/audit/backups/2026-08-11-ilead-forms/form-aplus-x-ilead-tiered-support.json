@@ -1,0 +1,523 @@
+{
+ "id": "10a7465d-5352-4280-9e23-b65887427f48",
+ "name": "A+ Tutoring x iLEAD Tiered Support",
+ "createdAt": "2023-12-22T19:35:22.697Z",
+ "updatedAt": "2024-03-04T22:00:32.381Z",
+ "archived": false,
+ "fieldGroups": [
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "richText": "<h1 style=\"font-size: 18px; text-align: center;\"><span style=\"color: #3574e3;\"><strong>A+ Tutoring x iLEAD <br><span style=\"color: #ef5829;\">Tutoring <span style=\"background-color: transparent; text-decoration: none; vertical-align: baseline;\">Schedule Preference Survey<br><span style=\"color: #3574e3;\">Tutoring will begin the week of March 11, 2024</span><br></span></span></strong></span></h1>"
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "student_last_name",
+     "label": "Student FIRST Name",
+     "required": true,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "student_last_name_if_diff_from_parent",
+     "label": "Student LAST Name",
+     "required": true,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "firstname",
+     "label": "Parent First Name",
+     "required": true,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "lastname",
+     "label": "Parent Last Name",
+     "required": true,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "phone",
+     "label": "Parent Phone Number",
+     "required": true,
+     "hidden": false,
+     "useCountryCodeSelect": false,
+     "validation": {
+      "minAllowedDigits": 7,
+      "maxAllowedDigits": 20
+     },
+     "fieldType": "phone"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "email",
+     "label": "Parent Email",
+     "required": true,
+     "hidden": false,
+     "validation": {
+      "blockedEmailDomains": [],
+      "useDefaultBlockList": false
+     },
+     "fieldType": "email"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "what_is_your_child_s_current_grade_level_",
+     "label": "What grade is your child in?",
+     "required": true,
+     "hidden": false,
+     "options": [
+      {
+       "label": "Kindergarten",
+       "value": "Kindergarten",
+       "description": "",
+       "displayOrder": 2
+      },
+      {
+       "label": "1",
+       "value": "1",
+       "description": "",
+       "displayOrder": 3
+      },
+      {
+       "label": "2",
+       "value": "2",
+       "description": "",
+       "displayOrder": 4
+      },
+      {
+       "label": "3",
+       "value": "3",
+       "description": "",
+       "displayOrder": 5
+      },
+      {
+       "label": "4",
+       "value": "4",
+       "description": "",
+       "displayOrder": 6
+      },
+      {
+       "label": "5",
+       "value": "5",
+       "description": "",
+       "displayOrder": 7
+      },
+      {
+       "label": "6",
+       "value": "6",
+       "description": "",
+       "displayOrder": 8
+      },
+      {
+       "label": "7",
+       "value": "7",
+       "description": "",
+       "displayOrder": 9
+      },
+      {
+       "label": "8",
+       "value": "8",
+       "description": "",
+       "displayOrder": 10
+      }
+     ],
+     "fieldType": "dropdown"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "do_you_want_your_student_to_receive_email_notifications_for_lesson_reminders_",
+     "label": "Do you want your student to receive email notifications for lesson reminders? ",
+     "description": "Optional: Add student email for notifications; parent emails will always receive lesson reminders.",
+     "required": false,
+     "hidden": false,
+     "dependentFields": [
+      {
+       "dependentCondition": {
+        "operator": "eq",
+        "values": [
+         "true"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "student_email_address",
+        "label": "Student Email Address",
+        "required": false,
+        "hidden": false,
+        "fieldType": "single_line_text"
+       }
+      }
+     ],
+     "fieldType": "single_checkbox"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "which_days_of_the_week_do_you_prefer_",
+     "label": "Which days of the week do you prefer?",
+     "required": true,
+     "hidden": false,
+     "dependentFields": [
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Monday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "monday_schedule_preference",
+        "label": "Monday Schedule Preference ",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Tuesday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "tuesday_schedule_preference",
+        "label": "Tuesday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Wednesday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "wednesday_schedule_preference",
+        "label": "Wednesday Schedule Preference ",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Thursday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "thursday_schedule_preference",
+        "label": "Thursday Schedule Preference ",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Friday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "friday_schedule_preference",
+        "label": "Friday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Saturday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "saturday_schedule_preference",
+        "label": "Saturday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Sunday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "sunday_schedule_preference",
+        "label": "Sunday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      }
+     ],
+     "options": [
+      {
+       "label": "Monday",
+       "value": "Monday",
+       "description": "",
+       "displayOrder": -1
+      },
+      {
+       "label": "Tuesday",
+       "value": "Tuesday",
+       "description": "",
+       "displayOrder": -1
+      },
+      {
+       "label": "Wednesday",
+       "value": "Wednesday",
+       "description": "",
+       "displayOrder": -1
+      },
+      {
+       "label": "Thursday",
+       "value": "Thursday",
+       "description": "",
+       "displayOrder": -1
+      },
+      {
+       "label": "Friday",
+       "value": "Friday",
+       "description": "",
+       "displayOrder": -1
+      },
+      {
+       "label": "Saturday",
+       "value": "Saturday",
+       "description": "",
+       "displayOrder": -1
+      },
+      {
+       "label": "Sunday",
+       "value": "Sunday",
+       "description": "",
+       "displayOrder": -1
+      }
+     ],
+     "fieldType": "multiple_checkboxes"
+    }
+   ]
+  }
+ ],
+ "configuration": {
+  "language": "en",
+  "cloneable": true,
+  "postSubmitAction": {
+   "type": "thank_you",
+   "value": "<h3 style=\"text-align: center;\">Thank-you for submitting the survey!</h3>\n<h3 style=\"text-align: center;\">We will reach out to you shortly with schedule and tutoring details.</h3>\n<h3 style=\"text-align: center;\">Please contact A+ Tutoring's Student Success Specialist, Danielle Brodetsky at (818) 573-6644 or <a href=\"mailto:danielle@wetutorathome.com\">danielle@wetutorathome.com</a> if you have any questions! \ud83d\ude00</h3>"
+  },
+  "editable": true,
+  "archivable": true,
+  "recaptchaEnabled": false,
+  "notifyContactOwner": false,
+  "notifyRecipients": [
+   "46811240"
+  ],
+  "createNewContactForNewEmail": false,
+  "prePopulateKnownValues": true,
+  "allowLinkToResetKnownValues": false,
+  "embedType": "V3"
+ },
+ "displayOptions": {
+  "renderRawHtml": false,
+  "theme": "round",
+  "submitButtonText": "Submit",
+  "style": {
+   "fontFamily": "helvetica",
+   "backgroundWidth": "100%",
+   "labelTextColor": "#17569a",
+   "labelTextSize": "14px",
+   "helpTextColor": "#516383DE",
+   "helpTextSize": "11px",
+   "legalConsentTextColor": "#33475B",
+   "legalConsentTextSize": "14px",
+   "submitColor": "#f1582a",
+   "submitAlignment": "center",
+   "submitFontColor": "#ffffff",
+   "submitSize": "12px"
+  },
+  "cssClass": "hs-form stacked"
+ },
+ "legalConsentOptions": {
+  "type": "none"
+ },
+ "formType": "hubspot"
+}

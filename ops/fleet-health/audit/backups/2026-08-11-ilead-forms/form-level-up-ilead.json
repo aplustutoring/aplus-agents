@@ -1,0 +1,609 @@
+{
+ "id": "529c7788-7bf1-4a8b-97f9-cfb6d18c7a66",
+ "name": "Level up - Ilead",
+ "createdAt": "2023-11-01T20:58:53.203Z",
+ "updatedAt": "2023-12-23T00:26:18.437Z",
+ "archived": false,
+ "fieldGroups": [
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "firstname",
+     "label": "First name",
+     "required": false,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    },
+    {
+     "objectTypeId": "0-1",
+     "name": "lastname",
+     "label": "Last name",
+     "required": true,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "phone",
+     "label": "Phone number",
+     "required": true,
+     "hidden": false,
+     "useCountryCodeSelect": true,
+     "validation": {
+      "minAllowedDigits": 7,
+      "maxAllowedDigits": 20
+     },
+     "fieldType": "phone"
+    },
+    {
+     "objectTypeId": "0-1",
+     "name": "email",
+     "label": "Email",
+     "required": true,
+     "hidden": false,
+     "validation": {
+      "blockedEmailDomains": [],
+      "useDefaultBlockList": false
+     },
+     "fieldType": "email"
+    },
+    {
+     "objectTypeId": "0-1",
+     "name": "teacher_of_record_name",
+     "label": "Teacher of Record Name",
+     "required": true,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "student_last_name",
+     "label": "Student FIRST Name",
+     "required": false,
+     "hidden": false,
+     "fieldType": "single_line_text"
+    },
+    {
+     "objectTypeId": "0-1",
+     "name": "what_is_your_child_s_current_grade_level_",
+     "label": "What grade is your child in?",
+     "required": true,
+     "hidden": false,
+     "options": [
+      {
+       "label": "Pre-K",
+       "value": "Pre-K",
+       "description": "",
+       "displayOrder": 0
+      },
+      {
+       "label": "TK",
+       "value": "TK",
+       "description": "",
+       "displayOrder": 1
+      },
+      {
+       "label": "Kindergarten",
+       "value": "Kindergarten",
+       "description": "",
+       "displayOrder": 2
+      },
+      {
+       "label": "1",
+       "value": "1",
+       "description": "",
+       "displayOrder": 3
+      },
+      {
+       "label": "2",
+       "value": "2",
+       "description": "",
+       "displayOrder": 4
+      },
+      {
+       "label": "3",
+       "value": "3",
+       "description": "",
+       "displayOrder": 5
+      },
+      {
+       "label": "4",
+       "value": "4",
+       "description": "",
+       "displayOrder": 6
+      },
+      {
+       "label": "5",
+       "value": "5",
+       "description": "",
+       "displayOrder": 7
+      },
+      {
+       "label": "6",
+       "value": "6",
+       "description": "",
+       "displayOrder": 8
+      },
+      {
+       "label": "7",
+       "value": "7",
+       "description": "",
+       "displayOrder": 9
+      },
+      {
+       "label": "8",
+       "value": "8",
+       "description": "",
+       "displayOrder": 10
+      },
+      {
+       "label": "9",
+       "value": "9",
+       "description": "",
+       "displayOrder": 11
+      },
+      {
+       "label": "10",
+       "value": "10",
+       "description": "",
+       "displayOrder": 12
+      },
+      {
+       "label": "11",
+       "value": "11",
+       "description": "",
+       "displayOrder": 13
+      },
+      {
+       "label": "12",
+       "value": "12",
+       "description": "",
+       "displayOrder": 14
+      },
+      {
+       "label": "Graduated/College",
+       "value": "Graduated/College",
+       "description": "",
+       "displayOrder": 15
+      }
+     ],
+     "fieldType": "dropdown"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "tutoring_frequency",
+     "label": "Tutoring Frequency",
+     "required": true,
+     "hidden": false,
+     "options": [
+      {
+       "label": "Once a week",
+       "value": "Once a week",
+       "description": "",
+       "displayOrder": 0
+      },
+      {
+       "label": "Twice a week",
+       "value": "Twice a week",
+       "description": "",
+       "displayOrder": 1
+      },
+      {
+       "label": "3+ times a week",
+       "value": "3+ times a week",
+       "description": "",
+       "displayOrder": 2
+      }
+     ],
+     "fieldType": "radio"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "subject_need",
+     "label": "Subject Need",
+     "required": true,
+     "hidden": false,
+     "dependentFields": [
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Other"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "parent_concerns_what_can_we_do_to_help_",
+        "label": "What&#x27;s going on?",
+        "required": false,
+        "hidden": false,
+        "fieldType": "multi_line_text"
+       }
+      }
+     ],
+     "options": [
+      {
+       "label": "English Language Arts",
+       "value": "English Language Arts",
+       "description": "",
+       "displayOrder": 0
+      },
+      {
+       "label": "Math",
+       "value": "Math",
+       "description": "",
+       "displayOrder": 1
+      },
+      {
+       "label": "Both",
+       "value": "Both",
+       "description": "",
+       "displayOrder": 2
+      },
+      {
+       "label": "Other",
+       "value": "Other",
+       "description": "",
+       "displayOrder": 3
+      }
+     ],
+     "fieldType": "radio"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "which_days_of_the_week_do_you_prefer_",
+     "label": "Which days of the week do you prefer?",
+     "required": true,
+     "hidden": false,
+     "dependentFields": [
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Monday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "monday_schedule_preference",
+        "label": "Monday Schedule Preference ",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Tuesday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "tuesday_schedule_preference",
+        "label": "Tuesday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Wednesday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "wednesday_schedule_preference",
+        "label": "Wednesday Schedule Preference ",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Thursday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "thursday_schedule_preference",
+        "label": "Thursday Schedule Preference ",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Friday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "friday_schedule_preference",
+        "label": "Friday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Saturday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "saturday_schedule_preference",
+        "label": "Saturday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      },
+      {
+       "dependentCondition": {
+        "operator": "set_any",
+        "values": [
+         "Sunday"
+        ]
+       },
+       "dependentField": {
+        "objectTypeId": "0-1",
+        "name": "sunday_schedule_preference",
+        "label": "Sunday Schedule Preference",
+        "required": false,
+        "hidden": false,
+        "options": [
+         {
+          "label": "9AM-12PM",
+          "value": "9AM-12PM",
+          "description": "",
+          "displayOrder": 0
+         },
+         {
+          "label": "12PM-3PM",
+          "value": "12PM-3PM",
+          "description": "",
+          "displayOrder": 1
+         }
+        ],
+        "fieldType": "radio"
+       }
+      }
+     ],
+     "options": [
+      {
+       "label": "Monday",
+       "value": "Monday",
+       "description": "",
+       "displayOrder": 0
+      },
+      {
+       "label": "Tuesday",
+       "value": "Tuesday",
+       "description": "",
+       "displayOrder": 1
+      },
+      {
+       "label": "Wednesday",
+       "value": "Wednesday",
+       "description": "",
+       "displayOrder": 2
+      },
+      {
+       "label": "Thursday",
+       "value": "Thursday",
+       "description": "",
+       "displayOrder": 3
+      },
+      {
+       "label": "Friday",
+       "value": "Friday",
+       "description": "",
+       "displayOrder": 4
+      },
+      {
+       "label": "Saturday",
+       "value": "Saturday",
+       "description": "",
+       "displayOrder": 5
+      },
+      {
+       "label": "Sunday",
+       "value": "Sunday",
+       "description": "",
+       "displayOrder": 6
+      }
+     ],
+     "fieldType": "multiple_checkboxes"
+    }
+   ]
+  },
+  {
+   "groupType": "default_group",
+   "richTextType": "text",
+   "fields": [
+    {
+     "objectTypeId": "0-1",
+     "name": "when_would_you_like_the_tutoring_to_start",
+     "label": "When would you like the tutoring to start",
+     "required": true,
+     "hidden": false,
+     "fieldType": "datepicker"
+    }
+   ]
+  }
+ ],
+ "configuration": {
+  "language": "en",
+  "cloneable": true,
+  "postSubmitAction": {
+   "type": "thank_you",
+   "value": "Thanks for submitting the form."
+  },
+  "editable": true,
+  "archivable": true,
+  "recaptchaEnabled": false,
+  "notifyContactOwner": false,
+  "notifyRecipients": [
+   "7738815"
+  ],
+  "createNewContactForNewEmail": false,
+  "prePopulateKnownValues": true,
+  "allowLinkToResetKnownValues": false,
+  "embedType": "V3"
+ },
+ "displayOptions": {
+  "renderRawHtml": false,
+  "theme": "default_style",
+  "submitButtonText": "Submit",
+  "style": {
+   "fontFamily": "helvetica",
+   "backgroundWidth": "100%",
+   "labelTextColor": "#17569a",
+   "labelTextSize": "14px",
+   "helpTextColor": "#516383DE",
+   "helpTextSize": "11px",
+   "legalConsentTextColor": "#33475B",
+   "legalConsentTextSize": "14px",
+   "submitColor": "#f1582a",
+   "submitAlignment": "center",
+   "submitFontColor": "#ffffff",
+   "submitSize": "12px"
+  },
+  "cssClass": "hs-form stacked"
+ },
+ "legalConsentOptions": {
+  "type": "none"
+ },
+ "formType": "hubspot"
+}

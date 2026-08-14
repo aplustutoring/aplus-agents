@@ -77,3 +77,25 @@ def test_ticket_eod_format(monkeypatch):
     assert "created 3 · closed 2" in text and "Fri: created 5 · closed 4" in text
     assert "New since Fri (incl. weekend) (1)" in text and "scheduling → yolanda" in text
     assert "Carried over" in text and "unknown → mandy [Stuck]" in text
+
+
+# ── PO day report coverage logic ─────────────────────────────────────────────
+
+def test_po_report_covered_logic():
+    from src import po_daily_report as pr
+    claimed = set()
+    deal = {"properties": {"amount": "300", "createdate": "2026-08-13T16:00:00Z",
+                           "invoice__": ""}}
+    invs = [{"id": 1, "date": "2026-08-13", "total": 300.0},
+            {"id": 2, "date": "2026-08-01", "total": 300.0}]   # too old
+    assert pr._covered(deal, invs, claimed) is True
+    assert claimed == {1}                                       # claimed once
+    deal2 = {"properties": {"amount": "300", "createdate": "2026-08-13T16:00:00Z"}}
+    assert pr._covered(deal2, invs, claimed) is False           # 1 taken, 2 too old
+
+
+def test_po_report_invoice_number_stamp_counts():
+    from src import po_daily_report as pr
+    deal = {"properties": {"amount": "150", "invoice__": "54999",
+                           "createdate": "2026-08-13T16:00:00Z"}}
+    assert pr._covered(deal, [], set()) is True

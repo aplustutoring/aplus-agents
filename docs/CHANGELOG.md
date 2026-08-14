@@ -36,7 +36,122 @@ Roman added the crm.import scope later that day — verified working, so future
 status flips can use an UPDATE-only import with marketableContactImport=true).
 Marketing tier after: 9,751/12,000. Reachable gap now 420/429.
 **Files:** scripts/charter_gap_analysis.py, .github/workflows/charter-gap-analysis.yml
-(temporary push trigger on the feature branch — drop after merge).
+(temporary branch push trigger dropped at merge).
+**Merge note:** a PARALLEL implementation of the same script landed on main
+from another session (e20a8ec script + bfb0a07 charter-gap-tw-fetch.yml,
+list name "Charter Re-Engagement 26/27 - Gap Families (Aug 2026)" — never
+executed, no such list in the portal, no changelog entry). Superseded at merge
+by this branch's executed version; charter-gap-tw-fetch.yml removed (it calls
+a --fetch-teachworks flag only the superseded script had). Restore from
+e20a8ec/bfb0a07 if anything from it is wanted.
+
+---
+
+## 2026-08-11 — iLead purge completed + one-student decision + teacher-email verdict (Roman)
+
+**What:** Forms scope added → the two iLead intake forms ("Level up - Ilead",
+"A+ Tutoring x iLEAD Tiered Support") backed up + archived, all 10 blocked
+iLead scheduling properties archived, empty `level-up_ilead` group DELETED.
+Roman decisions, same session: (1) ONE student per contact record — the plan
+is the A+ persona system; sibling fields retire: `sibling_school`,
+`student_3`, `student_3_school`, `student_4_school` ARCHIVED;
+`sibling_current_grade_level` BLOCKED by 3 live Get Started Now forms (field
+must be edited out of the forms). (2) `teacher_email_address` un-kept —
+`teacher_of_record_email_address` is the teacher-email property; Roman then
+redirected (same day): NOT archived — it is a Spotlight field: moved to group
+`spotlight`, relabeled "Spotlight Teacher Email Address" per the Spotlight
+nomenclature (live TSN Workflow 3b still reads it — flagged). (3)
+`student_last_name_if_diff_from_parent` confirmed staying. Registry 42→41
+contacts; KEEPERS 81→80. Pending code change before the last sibling fields
+go: email/config.yaml teachworks.student_name_properties reads
+student_full_name_clone_/student_3_full_name/student_4_full_name.
+
+**Why:** Roman's verdicts on the low-fill review, 2026-08-11. Decision-log
+entries pending: one-student model; canonical teacher-email property.
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md`,
+`ops/fleet-health/audit/backups/2026-08-11-ilead-forms/` (new).
+
+---
+
+## 2026-08-13 — call_agent: Roman-answered calls hand follow-up to Paola
+
+**What:** (refined same-day: first pass forced Paola on ALL tasks; Roman
+narrowed it to his own calls + handoff context.) Two changes:
+(1) `_resolve_owner()` — when JustCall `agent_name` shows ROMAN answered,
+the task owner is forced to `default_task_owner` (Paola), `owner_hint`
+ignored; other answerers keep hint routing with Paola default.
+(2) New `handoff_note` field in the summary schema/prompt — a Claude-written
+brief for the teammate who wasn't on the call (what was promised, pricing
+quoted, names, timing, suggested opener). Tasks from Roman-answered calls
+(action items AND the no-next-step guard task) open with a handoff block:
+"HANDOFF — Roman spoke with this caller on <date>; follow-up is assigned to
+Paola." + the brief.
+
+**Why:** Roman 2026-08-13: sales calls ring Roman first, overflow to Paola,
+and Paola does 100% of follow-up — but the hint mapping assigned tasks to
+whoever was named on the call (both Karen Mercer call tasks, 404280341,
+landed on Roman because he answered). Paola also needs enough context to
+pick up a conversation she wasn't part of — hence the handoff brief.
+
+**Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/config.yml`,
+`ops/call_agent/README.md`.
+
+---
+
+## 2026-08-13 — Verified 69-deal invoice backfill EXECUTED + PO day report
+
+**What:** (1) The parked $17.5k backlog closed with VERIFICATION instead of
+blind stamping: new email/invoice_backfill.py (+ tw-invoice-backfill workflow)
+matched each swept deal to a Teachworks invoice (family + amount, service-month
+due preferred, one claim per invoice, Paid/Approved/Sent only) — **64/69
+verified & stamped** (invoice_submitted_date = service-month end, Invoice #,
+Invoice Submitted stage; Jamie Holloway's date hand-corrected to 2026-08-13,
+its "(Aug) 25/26" name tag is a year off). **5 EXCEPTIONS for Kath**: Christina
+Duran/Talia Visions ×2 ($495) + Myra Garcia/Jason Gorman ($67) have NO TW
+invoice (possible genuinely-unbilled); Katherine Perez ×2 ($1,200) have no
+family contact on the deal (can't verify). (2) NEW daily report (Roman):
+email/src/po_daily_report.py + 6 PM PT weekday cron DMs Roman the day's PO
+deal count/value ⇄ how many already have TW invoices (Invoice # stamp or
+amount-matched invoice dated on/after the deal), misses named.
+
+**Why:** Roman: "yes" to verified backfill; "at the end of each day i get a
+slack message that tells me the value of the POs that came in and corresponds
+them to how many teachworks invoices created."
+
+**Files:** `email/invoice_backfill.py` (new), `email/src/po_daily_report.py`
+(new), `.github/workflows/{tw-invoice-backfill,email-po-daily-report}.yml`
+(new), `email/tests/test_daily_summary.py` (suite 213 green).
+
+---
+
+## 2026-08-13 — TOR got the parent SMS (Mary Nieves) — persona-gated texting
+
+**What:** Mary Nieves (TOR) received the parent schedule-confirmation SMS.
+Chain: the agent now attaches TORs to deals AT CREATION → deal flow 1608222821
+stamps contact_level_deal_stage on ALL associated contacts (no persona filter)
+→ SMS flow 1603217415 enrolled her. Worse, deal flow 64686392 (Charter
+Pre-Lesson) had ALREADY flipped her hs_lead_status to OPEN_DEAL — so a
+status-based exclusion could never have saved her, and the flip also silently
+broke the TOR name-matching pool. Fixes (all executed): (1) a_persona
+"Teacher of Record/EF/ES" backfilled onto 1,170 of 1,203 TOR-status contacts
+(append-only) — the persona is now the un-corruptible teacher marker.
+(2) SMS flow 1603217415 enrollment now excludes a_persona containing the TOR
+persona (revision 41, verified; unenroll-on-criteria ejects mid-flow slips).
+(3) Agent self-healing: whenever po_inbox touches a TOR contact it re-asserts
+persona + lead status (skipping dual-role Family+TOR contacts). Mary's lead
+status restored in-portal. NOT changed: deal flows 1608222821/64686392 still
+stamp/flip all associated contacts (their action type can't filter targets) —
+harmless for texting now; the status flips on TORs heal on next agent touch.
+
+**Why:** Roman 2026-08-13: "mary nieves received the sms ont the parent...
+what do we do to make sure this doesnt happen in future."
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py` (suite 211
+green); HubSpot: flow 1603217415 rev 41, 1,170 contact persona backfills.
+
+---
 
 ## 2026-08-12 — Zie Rojas PO: net-payout misread + dropped correction + TOR variant (3 fixes)
 

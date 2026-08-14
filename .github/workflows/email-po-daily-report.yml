@@ -1,0 +1,35 @@
+name: Email — PO day report (6 PM PT)
+
+# End-of-day DM to Roman: value of today's POs ⇄ Teachworks invoices created.
+# See email/src/po_daily_report.py.
+env:
+  TZ: America/Los_Angeles
+
+on:
+  schedule:
+    - cron: "0 1 * * 2-6"   # 01:00 UTC Tue–Sat = 6 PM PT Mon–Fri (PDT)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: PO day report
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: python -m src.po_daily_report

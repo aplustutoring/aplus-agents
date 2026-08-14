@@ -307,6 +307,33 @@ def _tor_by_name(first: str, last: str) -> list[dict]:
     return cands if len(cands) == 1 else []
 
 
+def _heal_tor_contact(tor: dict, note_parts: list[str]) -> None:
+    """Deal automations flip TOR lead status to customer values when a teacher
+    lands on a deal (OPEN_DEAL — the Mary Nieves SMS incident, 2026-08-13).
+    Whenever the agent touches a TOR contact it re-asserts the TOR persona
+    (append-only) and lead status, so the teacher marker never decays. Skips
+    dual-role contacts (persona also Family) — their status is legitimately
+    customer-driven."""
+    props = tor.get("properties") or {}
+    if not props or tor.get("id") in (None, "DRYRUN"):
+        return
+    vals = [v for v in (props.get("a_persona") or "").split(";") if v]
+    fixes = {}
+    if TOR_CREATE_PROPS["a_persona"] not in vals:
+        fixes["a_persona"] = ";".join(vals + [TOR_CREATE_PROPS["a_persona"]])
+    if "hs_lead_status" in props and "Family" not in vals \
+            and props.get("hs_lead_status") != hs.TOR_LEAD_STATUS:
+        fixes["hs_lead_status"] = hs.TOR_LEAD_STATUS
+    if not fixes:
+        return
+    try:
+        hs._write("PATCH", f"/crm/v3/objects/contacts/{tor['id']}", {"properties": fixes})
+        note_parts.append(f"🧑‍🏫 TOR contact healed ({', '.join(fixes)} re-asserted — "
+                          f"deal automations flip these).")
+    except Exception as e:  # noqa: BLE001 — healing is best-effort
+        print(f"  ⚠️  TOR heal failed (non-fatal): {e}")
+
+
 def _associate_tor(deal_id, po: dict, note_parts: list[str],
                    family_contact_id=None) -> None:
     """Associate the Teacher of Record's contact to the deal (find-or-create by
@@ -332,7 +359,9 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
     try:
         tor = None
         if t_email:
-            tor = hs.find_contact_by_email(t_email)
+            tor = hs.find_contact_by_email(
+                t_email, properties=["email", "firstname", "lastname",
+                                     "a_persona", "hs_lead_status"])
             if not tor:
                 tor = hs.find_contact_by_secondary_email(t_email)
                 if tor:
@@ -361,6 +390,7 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
                                   f"contacts in HubSpot — associate manually.")
                 return
         if tor and tor.get("id") not in (None, "DRYRUN"):
+            _heal_tor_contact(tor, note_parts)
             hs.associate_contact_to_deal(deal_id, tor["id"])
             display = t_email or (tor.get("properties") or {}).get("email") or "no email"
             note_parts.append(f"🧑‍🏫 TOR {po.get('tor_first', '')} {po.get('tor_last', '')} "
