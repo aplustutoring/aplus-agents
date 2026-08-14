@@ -8,6 +8,21 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — EOS knowledge ingested from Monday (knowledge/eos/)
+
+**What:** New `knowledge/eos/README.md` — synced snapshot of the FY2027 Annual
+Goals (16k package hours / 900 students / 2 intervention programs / 75%
+retention / 100% tutors scored / 70 referral families) and Q1 FY2027 Rocks by
+seat, with Monday board ids (Goals 18419427040, Rocks 18421156386, L10
+Scorecard 18402267902, L10 Agenda, Data Review Protocol) and usage guidance:
+seats map to config roles:, work should cite the Rock/Goal it serves, the ops
+scorecard sync feeds the L10 Scorecard, Monday stays source of truth.
+
+**Why:** Roman: "do our agents have our EOS knowledge?" — they had none;
+"check in monday.com you will find our goals for the year and our rocks."
+
+**Files:** `knowledge/eos/README.md` (new).
+
 ## 2026-08-14 — NEW ENGINE: bulk messenger (on-demand email/SMS to lists)
 
 **What:** `ops/messenger/` — on-demand bulk email + SMS to a HubSpot list,
