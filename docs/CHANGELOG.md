@@ -24,7 +24,12 @@ hit on the way: the pre-existing `student_first_name` at line ~407 is a DEAL
 property (dealinformation) — the first declaration attempt landed in the
 deals: section and created a stray empty deals/last_tutor_name (archived
 immediately, no values ever written). The deal-level student_first_name is
-untouched; the contact-level one is its counterpart. **Also reconciles the script fork:** ece98a0 (parallel
+untouched; the contact-level one is its counterpart.
+**Duplicate-list flag for Roman:** the parallel session's run created static
+list 3106 "Charter Re-Engagement 26/27 - Gap Families (Aug 2026)" (426
+members, pre-correction cutoff). List 3104 (429, corrected cutoff) is
+canonical per Roman's instructions; 3106 is a duplicate awaiting his
+keep/delete call. **Also reconciles the script fork:** ece98a0 (parallel
 session) had overwritten the executed PR-#68 version on main; this change
 re-bases on the executed version and absorbs ece98a0's invoice-level name
 fallback (customer_first_name/customer_last_name when the customer record is
@@ -110,8 +115,9 @@ iLead scheduling properties archived, empty `level-up_ilead` group DELETED.
 Roman decisions, same session: (1) ONE student per contact record — the plan
 is the A+ persona system; sibling fields retire: `sibling_school`,
 `student_3`, `student_3_school`, `student_4_school` ARCHIVED;
-`sibling_current_grade_level` BLOCKED by 3 live Get Started Now forms (field
-must be edited out of the forms). (2) `teacher_email_address` un-kept —
+`sibling_current_grade_level` KEPT (Roman, same day: "if it's in the main
+consultation form definitely keep it" — submissions API shows Get Started Now
+Full Length live, last submission 2026-07-23). (2) `teacher_email_address` un-kept —
 `teacher_of_record_email_address` is the teacher-email property; Roman then
 redirected (same day): NOT archived — it is a Spotlight field: moved to group
 `spotlight`, relabeled "Spotlight Teacher Email Address" per the Spotlight
