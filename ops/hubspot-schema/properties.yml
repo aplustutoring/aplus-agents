@@ -108,10 +108,11 @@ properties:
       type: string
       fieldType: text
       description: >-
-        Tutor on the family's most recent COMPLETED Teachworks lesson.
-        Stamped by scripts/charter_gap_analysis.py --write-props (charter
-        win-back personalization). Distinct from the deal-level
-        assigned_tutor intake field.
+        FIRST NAME of the tutor on the family's most recent COMPLETED
+        Teachworks lesson (customer-facing — no last names, Roman
+        2026-08-14). Stamped by scripts/charter_gap_analysis.py
+        --write-props (charter win-back personalization). Distinct from
+        the deal-level assigned_tutor intake field.
     - name: student_first_name
       label: "Student First Name"
       group: family
