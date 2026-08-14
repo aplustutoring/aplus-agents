@@ -7,19 +7,14 @@ timezone: America/Los_Angeles
 
 # workflow_id empty = segment skipped. Filled once the HubSpot workflows are
 # built from the approved copy drafts (templates/campaign-2026-08-17/).
+# Roman 2026-08-14: audience is DEAL-BASED — every gap family (list 3104),
+# split ONLY by whether we can personalize (student+tutor stamped). The finer
+# Hot/Win-back/Never-Started lists (3107-3109) and TOR lists (3110-3111) stay
+# in the portal for later waves but are NOT part of Monday.
 enrollments:
-  - segment: families_hot
-    list_id: 3107
+  - segment: monday_personalized     # 389 families, student+tutor tokens
+    list_id: 3112
     workflow_id: ""
-  - segment: families_winback
-    list_id: 3108
-    workflow_id: ""
-  - segment: families_never_started
-    list_id: 3109
-    workflow_id: ""
-  - segment: tors_worked_with_us
-    list_id: 3110
-    workflow_id: ""
-  - segment: tors_new_outreach
-    list_id: 3111
+  - segment: monday_generic          # 40 families, no lesson data — token-free copy
+    list_id: 3113
     workflow_id: ""
