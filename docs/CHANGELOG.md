@@ -8,6 +8,32 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — Charter gap: tutor/student enrichment + property stamping (Roman)
+
+**What:** `scripts/charter_gap_analysis.py` extended — Step 3b pulls each
+matched gap family's most recent COMPLETED Teachworks lesson (per-customer
+students → per-student lessons, the proven email-client query pattern, both
+accounts) and captures tutor name + student first name; new Tab-1 columns
+Last Tutor / Student First / Last Lesson; match rate printed. New OPT-IN
+write stage (--write-props / workflow input write_props): stamps
+`last_tutor_name` + `student_first_name` onto list-3104 gap contacts via an
+UPDATE-only email-keyed import (crm.import scope — added by Roman 2026-08-13).
+`last_tutor_name` newly declared in ops/hubspot-schema/properties.yml
+(dealinformation group); `student_first_name` was ALREADY in the registry —
+not re-declared, values are overwritten by the import where they differ from
+intake capture. **Also reconciles the script fork:** ece98a0 (parallel
+session) had overwritten the executed PR-#68 version on main; this change
+re-bases on the executed version and absorbs ece98a0's invoice-level name
+fallback (customer_first_name/customer_last_name when the customer record is
+missing). Base run stays read-only.
+**WHY:** Roman 2026-08-14: win-back outreach personalization — "your student
+X's tutor was Y" needs the last tutor on the contact record.
+**Files:** scripts/charter_gap_analysis.py,
+.github/workflows/charter-gap-analysis.yml,
+ops/hubspot-schema/properties.yml (+1 property).
+
+---
+
 ## 2026-08-13 — Charter re-engagement gap analysis + static list (Roman)
 
 **What:** New reusable `scripts/charter_gap_analysis.py`: pulls charter deals
