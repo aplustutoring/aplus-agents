@@ -13,7 +13,12 @@
       "roman_take": "Conviction angle \u2014 \"The middle school reading cliff isn't a mystery. We've known the fix for a decade. What's missing is the discipline to fund and staff it as an ongoing intervention, not a summer bolt-on.\"",
       "danielle_take": "Implementation angle \u2014 What A+ actually sees in NWEA MAP progress-monitoring for our LTEL students in grades 6-8, and why the \"lowest-performing falling further behind\" pattern breaks when small-group frequency crosses 3x/week.",
       "redundancy_max_similarity": 0.41703581232058473,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-15T08:34:47.579113-07:00",
+      "post_date": "2026-08-17",
+      "bundle_dir": "aplus-content/2026-08-17-middle-school-reading-cliff-nwea",
+      "hubspot_post_id": "219534406547"
     },
     {
       "slot": 2,
@@ -30,7 +35,12 @@
       "roman_take": "The NCB moratorium lifting is the biggest structural shift in California charter policy in five years, and the schools moving fastest (like iLEAD) will define what \"intervention\" looks like in hybrid models \u2014 most vendors aren't ready for that.",
       "danielle_take": "When you launch a new site with three delivery models under one charter, your Title I/III intervention plan has to work across all three from day one \u2014 here's what iLEAD-caliber partners get right about that from the start. ---",
       "redundancy_max_similarity": 0.6467280907630905,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-15T09:07:11.448809-07:00",
+      "post_date": "2026-08-19",
+      "bundle_dir": "aplus-content/2026-08-19-ilead-flex-lancaster-hybrid-charter",
+      "hubspot_post_id": "219535377264"
     },
     {
       "slot": 3,
@@ -48,7 +58,12 @@
       "roman_take": "Conviction angle \u2014 the reason A+ never chased the national-scale venture-backed model was because that model was structurally unable to deliver the outcomes charters actually need; the shutdown is a receipt.",
       "danielle_take": "Implementation angle \u2014 a practical checklist for charter directors evaluating replacement providers this fall, drawn from what NSSA calls out as the missing rigor (dosage, consistency, measurable reclassification/proficiency gains).",
       "redundancy_max_similarity": 0.45032498868264365,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-15T09:29:05.477251-07:00",
+      "post_date": "2026-08-21",
+      "bundle_dir": "aplus-content/2026-08-21-varsity-tutors-schools-shutdown-evidence",
+      "hubspot_post_id": "219533664349"
     }
   ],
   "slack": {
