@@ -245,10 +245,206 @@
     404700296,
     404703992,
     404706624,
-    405032659
+    405032659,
+    405096820,
+    405098511,
+    405113929
   ],
-  "last_run_utc": "2026-08-17T16:47:34.788989+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-17T17:31:11.535075+00:00",
+  "pending_digest": [
+    {
+      "call_id": 405096820,
+      "number": "12132357422",
+      "time_pt": "9:49 AM",
+      "matched": true,
+      "contact_label": "Sumaya Hossian",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Sumaya Hossian called to ask about tutoring services for her incoming 5th grade daughter Ariana, who is homeschooled through Compass Charter. Roman explained A+ offers only online 1:1 tutoring for charter students (in-person is TK-2 only), recommended 2-3x/week 45-min sessions, and offered a free trial. Sumaya was disappointed there's no in-person option but asked Roman to email pricing, which he did. She said she'd review and call back.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send pricing email to Sumaya (completed on call) and follow up in a few days since she prefers in-person and may not call back",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sumaya Hossian (parent, polite but slightly hesitant) called for info on services for her 5th grade daughter Ariana, homeschooled through Compass Charter. Her EF/TOR is Christina Campalas. Roman explained we're online-only for charter families (in-person is TK-2), suggested 2-3x/week 45-min sessions in ELA and math, and offered a free trial. Pricing email was sent during the call. Sumaya was disappointed we don't offer in-person for 5th grade and said she'd review and call back \u2014 she may not, so follow up in ~3-5 days. Open with: 'Hi Sumaya, this is ___ from A+ Tutoring following up on the pricing Roman sent \u2014 did you get a chance to look it over, and can we get Ariana set up with that free trial session?' Reinforce that our online tutors are credentialed teachers and the trial is no-risk.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays through Compass Charter instructional funds.",
+        "student_or_school_names_mentioned": [
+          "Ariana Hossian",
+          "Sumaya Hossian",
+          "Compass Charter",
+          "Christina Campalas"
+        ],
+        "record_updates": {
+          "whats_going_on": "Sumaya called for info on tutoring for her incoming 5th grader Ariana, homeschooled through Compass Charter. EF/TOR is Christina Campalas. Wanted in-person but we're online-only for charter students in 5th grade. She'll review pricing and call back.",
+          "what_we_can_do_to_help": "Offer 1:1 online tutoring alternating math and ELA, 2-3x/week 45-min sessions with a credentialed teacher; start with a free trial session. Pricing was emailed during the call.",
+          "student_first_name": "Ariana",
+          "student_last_name": "Hossain",
+          "grade_level": "5",
+          "student_school": "Compass Charter",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Sumaya called for info on tutoring for her incoming 5th grader Ariana, homeschooled through Compass Charter. EF/TOR is Christina Campalas. Wanted in-person but we're online-only for charter students in 5th grade. She'll review pricing and call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Offer 1:1 online tutoring alternating math and ELA, 2-3x/week 45-min sessions with a credentialed teacher; start with a free trial session. Pricing was emailed during the call."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Hossain"
+        ],
+        [
+          "student_school",
+          "Compas",
+          "Compass Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Arianna",
+          "Ariana",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send pricing email to Sumaya (completed on call) and follow up in a few days since she prefers in-person and may not call back",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405098511,
+      "number": "17147574769",
+      "time_pt": "9:52 AM",
+      "matched": true,
+      "contact_label": "Leeanne Gonzales",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Leeanne Gonzales called to ask A+ Tutoring's charter rate so she can complete iLEAD Exploration's service request form for geometry tutoring for her 10th-grade daughter Giada Di Nardo. Paola quoted $75/hour and $64/45-min session, and confirmed the family can start at 1 or 2 hours per week and add hours later via a new PO. Paola will email vendor info and pricing to Leeanne, and once the PO comes in the scheduling team will reach out. Friendly, productive call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Leeanne A+ Tutoring vendor info and rates ($75/hr, $64/45-min) so she can list us on the iLEAD service request form",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Watch for the PO from iLEAD Exploration for Giada Di Nardo (Geometry, 10th) and hand off to scheduling once received",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Leeanne Gonzales (mom, warm and easy to work with) called to get our charter rate so she can submit iLEAD Exploration's service request form for her 10th grader Giada Di Nardo, who needs Geometry help. Paola quoted $75/hr and $64/45-min, and told her she can start with 1 hr/week ($75) or 2 hrs/week ($150) and add hours later via a new PO. Leeanne expects an email from us with vendor info + rates for her to attach to the service form; after that she'll submit it and we'll get a PO from iLEAD. Once PO arrives, scheduling should reach out for availability. Suggested opener: \"Hi Leeanne, following up from your call with Paola \u2014 here's our vendor info and pricing for Giada's Geometry tutoring so you can finish the iLEAD service request form.\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Charter-funded family (iLEAD Exploration) actively pursuing PO for tutoring \u2014 remains QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "Giada Di Nardo",
+          "Leeanne Gonzales",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Leeanne called to confirm A+ Tutoring's charter rate so she can complete iLEAD Exploration's service request form for Giada's Geometry tutoring. She's deciding between 1 hr/week ($75) and 2 hrs/week ($150) and understands she can add hours later via a new PO.",
+          "what_we_can_do_to_help": "Send Leeanne our vendor info and rates by email so she can list A+ on the service form, then wait for the PO from iLEAD Exploration. Once received, scheduling will reach out to set Giada's Geometry sessions.",
+          "student_first_name": "Giada",
+          "student_last_name": "Di Nardo",
+          "grade_level": "10",
+          "student_school": "iLEAD Exploration",
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Leeanne called to confirm A+ Tutoring's charter rate so she can complete iLEAD Exploration's service request form for Giada's Geometry tutoring. She's deciding between 1 hr/week ($75) and 2 hrs/week ($150) and understands she can add hours later via a new PO."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Leeanne our vendor info and rates by email so she can list A+ on the service form, then wait for the PO from iLEAD Exploration. Once received, scheduling will reach out to set Giada's Geometry sessions."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Di Nardo"
+        ],
+        [
+          "student_school",
+          "iLEAD",
+          "iLEAD Exploration"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Giada Di Nardo",
+          "Giada",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Email Leeanne A+ Tutoring vendor info and rates ($75/hr, $64/45-min) so she can list us on the iLEAD service request form",
+          81494333
+        ],
+        [
+          "Watch for the PO from iLEAD Exploration for Giada Di Nardo (Geometry, 10th) and hand off to scheduling once received",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18188536269",
