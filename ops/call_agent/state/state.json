@@ -262,9 +262,10 @@
     405248563,
     405251744,
     405241588,
-    405249840
+    405249840,
+    405268645
   ],
-  "last_run_utc": "2026-08-17T22:01:06.778566+00:00",
+  "last_run_utc": "2026-08-17T22:43:06.474070+00:00",
   "pending_digest": [
     {
       "call_id": 405096820,
@@ -746,6 +747,91 @@
         [
           "If no response in a few days, follow up again with Susanna about renewal",
           80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405268645,
+      "number": "15136232289",
+      "time_pt": "3:05 PM",
+      "matched": true,
+      "contact_label": "Tina Votel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Tina Votel to follow up on her inquiry about online tutoring for her 11th-grade daughter Katelyn, who attends Bishop Fenwick (Catholic school, not charter) and misses school multiple times a year for travel. Tina wants a tutor who can coordinate with Katelyn's teacher and cover assignments, likely in math and possibly history. Paola explained the online tutoring model ($95/hr, package discounts, no expiration, hours usable across subjects) and offered to include the teacher on lesson-update emails. Tina asked for pricing info by email so she can review it with her husband before deciding.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Tina the tutoring package pricing and program information so she can review with her husband",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once Tina confirms, source a tutor match for Katelyn (11th grade, math and possibly history, online, aligned with Bishop Fenwick curriculum)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Tina Votel (warm, friendly) is a prospective parent for her 11th-grade daughter Katelyn at Bishop Fenwick (Catholic school, NOT charter). Katelyn travels several times a year (2 days this week, ~2 weeks in September, a couple weeks in winter) and Tina wants online tutoring to keep her from falling behind \u2014 likely math, possibly history. Paola quoted $95/hr online, explained package discounts, no expiration on hours, hours usable across subjects, and that we can loop in Katelyn's teacher on lesson-update emails and work from teacher/family materials. Paola promised to email pricing/packages so Tina can review with her husband. Tina expects the pricing email next; she'll confirm via email or text when ready, and we can start a tutor search within 1-2 days of confirmation. Suggested opener: \"Hi Tina, this is [name] following up on the packages Paola sent \u2014 happy to answer any questions you and your husband had and get Katelyn matched with a tutor before her next trip.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective parent, not charter, no diagnostic needed \u2014 standard curriculum support.",
+        "student_or_school_names_mentioned": [
+          "Katelyn",
+          "Tina Votel",
+          "Bishop Fenwick"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with Tina; confirmed Katelyn is in 11th grade at Bishop Fenwick (Catholic school, not charter). She just started school Wednesday and will miss two days this week, ~2 weeks in September, and a couple weeks in winter due to travel. Tina wants online support to keep her on pace, likely in math and possibly history.",
+          "what_we_can_do_to_help": "Provide online tutoring at $95/hr with package discounts (no expiration, hours usable across any subject). Tutor can follow Katelyn's curriculum, work from teacher/family-provided materials, and loop her teacher into lesson-update emails. Paola is sending package info; once Tina and her husband confirm, we can source a tutor match within 1-2 days.",
+          "student_first_name": "Katelyn",
+          "student_last_name": null,
+          "grade_level": "11",
+          "student_school": "Bishop Fenwick",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with Tina; confirmed Katelyn is in 11th grade at Bishop Fenwick (Catholic school, not charter). She just started school Wednesday and will miss two days this week, ~2 weeks in September, and a couple weeks in winter due to travel. Tina wants online support to keep her on pace, likely in math and possibly history."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide online tutoring at $95/hr with package discounts (no expiration, hours usable across any subject). Tutor can follow Katelyn's curriculum, work from teacher/family-provided materials, and loop her teacher into lesson-update emails. Paola is sending package info; once Tina and her husband confirm, we can source a tutor match within 1-2 days."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Tina the tutoring package pricing and program information so she can review with her husband",
+          81494333
+        ],
+        [
+          "Once Tina confirms, source a tutor match for Katelyn (11th grade, math and possibly history, online, aligned with Bishop Fenwick curriculum)",
+          81494333
         ]
       ],
       "ticket_id": null,
