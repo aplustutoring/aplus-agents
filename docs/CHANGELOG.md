@@ -8,6 +8,34 @@ Newest entries first.
 
 ---
 
+## 2026-08-14 — Agent-property labeling rule + TOR/DM hygiene (Roman)
+
+**What:** (1) NEW RULE: every property an agent writes carries the `[Agent] `
+label prefix + "AGENT PROPERTY — written by <script>" description (CLAUDE.md
++ registry header comment). Applied: last_tutor_name, student_first_name,
+sms_opt_out relabeled in-portal (sync never relabels) and in properties.yml.
+(2) TOR persona hygiene: 77 non-marketing TOR contacts set as marketing via
+import; **155 hard-bounced TOR contacts ARCHIVED** (backup with associations
+in ops/fleet-health/audit/backups/2026-08-14-bounced-tors/; recycle-bin
+90 days); one bounced contact kept — Cynthia Rachel (IEM) — because she is
+now a Decision Maker (needs a fresh email). (3) Decision Maker/Director
+persona: 17 real school DMs now tagged — Covil, Hetrick, Rachel (IEM);
+Chapin, Budke, Barlow, Joy, Kim, Rogers (iLEAD); Smith (Compass), Jorgensen
+(Elite), Brackett (Forest), Sutton (Harvest Ridge), Corioso (Pacific
+Coast), King (Sage Oak), Woodard (Taylion), Houchin (VIEDU). Title-based
+sweep deliberately EXCLUDED 38 non-school "directors" (vendors, media).
+Pending Roman: 5 Sage Oak mock contacts (nameless 2026-03-24 records +
+Courtney Gibson) to delete — the other 28 Sage Oak contacts are real TORs
+with live deals; DMs still missing for Compass/Heartland/Gorman/Blue Ridge/
+Pacific Charters/Granite Mountain/Heartwood/Suncoast.
+**Also flagged for Monday copy:** 81/389 personalized gap families have >1
+student in last year's deals — one-student template undersells them
+(decision pending: split list vs multi-student variant).
+**Files:** CLAUDE.md, ops/hubspot-schema/properties.yml,
+ops/fleet-health/audit/backups/2026-08-14-bounced-tors/.
+
+---
+
 ## 2026-08-14 — Charter 26/27 launch scaffolding (Monday 08-17, DISARMED)
 
 **What:** Segmented Monday-morning campaign per Roman ("families from charter

@@ -70,15 +70,20 @@ properties:
           label: "Unregistered automation"
 
   contacts:
+    # ── LABEL CONVENTION (Roman 2026-08-14): every property an AGENT writes
+    # carries the "[Agent] " label prefix + a description naming the writer,
+    # so humans in the portal can tell agent-maintained fields from intake
+    # capture at a glance. Applies to new declarations; existing agent props
+    # were relabeled in-portal the same day (sync never relabels).
     - name: sms_opt_out
-      label: "SMS Opt Out"
+      label: "[Agent] SMS Opt Out"
       group: master
       type: enumeration
       fieldType: booleancheckbox
       description: >-
+        AGENT PROPERTY — read by ops/messenger (bulk SMS skips these);
+        set by the STOP-reply ingestion once it lands, manual until then.
         Contact asked not to receive SMS (STOP reply or verbal request).
-        Honored by ops/messenger (bulk SMS skips these). Set manually until
-        the STOP-reply ingestion phase lands.
       options:
         - value: "true"
           label: "Yes"
@@ -117,26 +122,27 @@ properties:
       type: enumeration
       fieldType: booleancheckbox
     - name: last_tutor_name
-      label: "Last Tutor Name"
+      label: "[Agent] Last Tutor Name"
       group: family
       type: string
       fieldType: text
       description: >-
-        FIRST NAME of the tutor on the family's most recent COMPLETED
-        Teachworks lesson (customer-facing — no last names, Roman
-        2026-08-14). Stamped by scripts/charter_gap_analysis.py
-        --write-props (charter win-back personalization). Distinct from
-        the deal-level assigned_tutor intake field.
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py
+        (--write-props), do not edit by hand. FIRST NAME of the tutor on
+        the family's most recent COMPLETED Teachworks lesson
+        (customer-facing — no last names, Roman 2026-08-14). Distinct
+        from the deal-level assigned_tutor intake field.
     - name: student_first_name
-      label: "Student First Name"
+      label: "[Agent] Student First Name"
       group: family
       type: string
       fieldType: text
       description: >-
-        Student on the family's most recent COMPLETED Teachworks lesson.
-        Stamped alongside last_tutor_name. NOTE: a deal property with the
-        same name exists (dealinformation intake capture) — this is the
-        contact-level counterpart.
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py
+        alongside last_tutor_name, do not edit by hand. Student on the
+        family's most recent COMPLETED Teachworks lesson. NOTE: a deal
+        property with the same name exists (dealinformation intake
+        capture) — this is the contact-level counterpart.
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
