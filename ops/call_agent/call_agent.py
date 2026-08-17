@@ -426,8 +426,8 @@ LEAD_STATUS_OPTIONS = [
     "We Connected",                  # QTL - NEW: prospective family we spoke with
     "QTL - Charter",                 # charter family paying with charter funds
     "QTL - Diagnostic Sent",         # test prep / must evaluate first
-    "Teacher in a School",           # school personnel
-    "Charter School Teacher TOR/EF", # charter TOR/EF facilitating a family
+    "Teacher in a School",           # label "Decision Maker/Director": school leadership/staff
+    "Charter School Teacher TOR/EF", # label "Teacher of Record/EF/ES": charter TOR/EF facilitating a family
     "Tutor-Active",                  # tutor applicant
     "UNQUALIFIED",                   # spam / vendor / dead opportunity
     "no_change",
@@ -444,7 +444,9 @@ LEAD_STATUS_LABELS = {
     "OPEN_DEAL": "Open deal",
     "Using Someone Else": "Check Back Quarterly",
     "UNQUALIFIED": "Dead Opportunity/Unqualified",
-    "Teacher in a School": "School Personnel",
+    # 2026-08-17 (Roman): non-family lead-status labels = persona names.
+    "Teacher in a School": "Decision Maker/Director",
+    "Charter School Teacher TOR/EF": "Teacher of Record/EF/ES",
     "Tutor-Active": "Tutors",
 }
 

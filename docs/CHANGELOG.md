@@ -8,6 +8,45 @@ Newest entries first.
 
 ---
 
+## 2026-08-17 — Lead status: unhidden, funnel-ordered, persona-labeled + Meeting Booked hard-wired
+
+**What:** (1) `hs_lead_status` had 14 of 17 options HIDDEN (unknown when/who —
+property updatedAt stale at 2024-09). Roman: "I don't want anything hidden" →
+all 17 unhidden (backup `ops/fleet-health/audit/backups/2026-08-11-hs_lead_
+status-before-unhide.json`). (2) Options reordered to the funnel Roman
+described: New (Inbox) → Attempting to Contact → Meeting Booked → QTL-NEW /
+QTL-Charter / QTL-Diagnostic Sent → Open deal → Past Customer / Check Back
+Quarterly / Dead Opportunity; then the persona labels; then leftovers.
+(3) LOCKED rule (Roman): for non-family personas the lead-status LABEL = the
+persona name. Two label renames (internal values unchanged, so no workflow or
+agent breaks): `Charter School Teacher TOR/EF` → label "Teacher of Record/EF/ES";
+`Teacher in a School` ("School Personnel") → label "Decision Maker/Director".
+Call agent LEAD_STATUS_LABELS + README updated. (4) Meeting Booked was a manual
+gap (Paola set it by hand; nurtures kept chasing booked families) → NEW
+event-based workflow 1868302723 "Lead funnel — Meeting Booked (Paola consult)
+→ lead status": trigger = HubSpot meeting booked with title containing
+"Tutoring Call w/" (Paola's meetings-link consults; excludes Spotlight/TSN
+meetings), sets hs_lead_status = Meeting Booked; ENABLED. Cloned from the
+Spotlight #5 pattern. (5) Nurture exit: added a second OR-goal
+"lead status = Meeting Booked" to `Lead Pipe Line - Online` (50818589) so
+booked families drop out of the New/Attempting chase. The same goal edit on
+`Lead Pipe Line - Ads - Free Lesson` (149937308) FAILED via API (500 on
+round-trip PUT — custom-code actions) → flow untouched, **needs a 30-second UI
+edit: Settings → Goal → add "Lead status is any of Meeting Booked"**.
+
+**Why:** Roman 2026-08-17 walkthrough of the funnel: form → New + text/email
+push to book → Attempting to Contact + "inbox is full" email → Meeting Booked
+(Paola's new manual step) → QTL after consult. Also surfaced: 10,064 of 11,115
+contacts have NO a_persona; lead status is doing identity duty for them
+(Tutors 1,249 / Student 191 / School Personnel 97 / CBQ 4,453 = families).
+Persona backfill-from-status proposed, NOT run — Roman to approve. 25 Decision
+Makers still carry the TOR status value — pending Roman's call.
+
+**Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/README.md`,
+`ops/fleet-health/audit/backups/2026-08-17-*` (flow snapshots + created flow).
+
+---
+
 ## 2026-08-14 — Agent-property labeling rule + TOR/DM hygiene (Roman)
 
 **What:** (1) NEW RULE: every property an agent writes carries the `[Agent] `

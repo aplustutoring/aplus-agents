@@ -11,7 +11,7 @@ call's native AI transcript, and turns each call into CRM actions:
 - **Lead status** — Claude assigns `hs_lead_status` per call (portal option
   VALUES, e.g. `We Connected` = "QTL - NEW"): prospective families →
   QTL - NEW / QTL - Charter (charter funds) / QTL - Diagnostic Sent (test
-  prep or evaluate-first); school staff → School Personnel or Charter TOR/EF;
+  prep or evaluate-first); school staff → Decision Maker/Director or Teacher of Record/EF/ES (lead-status labels = persona names, 2026-08-17);
   tutor applicants → Tutors; spam/vendors → Unqualified. Existing/past
   customers → no change (the deal pipeline owns their status). Changes are
   applied every call (Claude's judgment wins) and surfaced in the digest.

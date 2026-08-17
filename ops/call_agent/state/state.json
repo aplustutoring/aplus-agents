@@ -251,9 +251,16 @@
     405113929,
     405132752,
     405171448,
-    405167964
+    405167964,
+    405176052,
+    405176478,
+    405188914,
+    405185752,
+    405190461,
+    405201840,
+    405231119
   ],
-  "last_run_utc": "2026-08-17T18:58:50.619702+00:00",
+  "last_run_utc": "2026-08-17T20:45:19.669852+00:00",
   "pending_digest": [
     {
       "call_id": 405096820,
@@ -504,6 +511,163 @@
         [
           "Yolanda to attempt Hope again to lock in Luna's renewal and Ocean's enrollment",
           86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405185752,
+      "number": "18303997337",
+      "time_pt": "12:19 PM",
+      "matched": true,
+      "contact_label": "Jamie Holloway",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring's scheduling team called Jamie Holloway to follow up on Rayven's September purchase order and to discuss adding sessions beyond the current Monday/Tuesday schedule. The call was intercepted by Google Call Assist; Jamie was unavailable. Janelle left a callback number (818-850-6284) and asked Jamie to reply by phone or SMS with additional scheduling availability.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Jamie's callback/SMS with additional availability beyond Monday/Tuesday for Rayven's sessions",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "If no response today, follow up again with Jamie regarding the September PO scheduling",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) with an active September purchase order \u2014 status owned by deal pipeline, not to be demoted.",
+        "student_or_school_names_mentioned": [
+          "Rayven",
+          "Jamie Holloway"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound scheduling call to Jamie for Rayven's September purchase order. Google Call Assist intercepted; Jamie unavailable. Janelle left a voicemail asking for additional availability beyond current Mon/Tues schedule and provided callback number 818-850-6284 for call or SMS.",
+          "what_we_can_do_to_help": "Expand Rayven's weekly schedule beyond Mondays and Tuesdays once Jamie confirms additional availability, so the September PO hours can be fully utilized.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound scheduling call to Jamie for Rayven's September purchase order. Google Call Assist intercepted; Jamie unavailable. Janelle left a voicemail asking for additional availability beyond current Mon/Tues schedule and provided callback number 818-850-6284 for call or SMS."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Expand Rayven's weekly schedule beyond Mondays and Tuesdays once Jamie confirms additional availability, so the September PO hours can be fully utilized."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Jamie's callback/SMS with additional availability beyond Monday/Tuesday for Rayven's sessions",
+          80047202
+        ],
+        [
+          "If no response today, follow up again with Jamie regarding the September PO scheduling",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405190461,
+      "number": "13104631221",
+      "time_pt": "12:28 PM",
+      "matched": true,
+      "contact_label": "Aly Daly",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound call to Aly Daly to confirm whether her son Everson could start math tutoring tomorrow (Tuesday) at 9am with tutor Jonathan. The call went to Aly's voicemail, so Janelle left a message asking Aly to confirm via callback or SMS. Janelle indicated she would try again later today if no response.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Janelle to attempt another outbound call to Aly later today if no reply received",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Confirm Jonathan's availability to start Tuesday at 9am for Everson's math tutoring",
+            "owner_hint": null
+          },
+          {
+            "item": "Watch for SMS or callback reply from Aly confirming the Tuesday 9am start",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Aly Daly (existing/returning customer, parent of Everson) did not pick up \u2014 Janelle left a voicemail proposing that Everson start math tutoring tomorrow (Tuesday) at 9am with Jonathan (this replaces the previously unavailable Alstjen). Aly was asked to call back or reply via SMS. Italian tutoring with Cynthia is still pending separate scheduling confirmation. If Aly calls back, open with: 'Hi Aly, thanks for getting back to us \u2014 just wanted to confirm Everson for math with Jonathan tomorrow at 9am, and also touch base on the Italian schedule with Cynthia.' If no reply by end of day, Janelle plans to try again.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal \u2014 scheduling call for active tutoring engagement; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Everson",
+          "Jonathan",
+          "Aly Daly"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Left voicemail for Aly proposing Everson start math tutoring Tuesday at 9am with new tutor Jonathan. Awaiting Aly's callback or SMS reply to confirm.",
+          "what_we_can_do_to_help": "[outbound call] Hold the Tuesday 9am slot with Jonathan pending Aly's confirmation; Janelle to retry contact later today if no response. Still need to coordinate Italian scheduling with Cynthia separately.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Left voicemail for Aly proposing Everson start math tutoring Tuesday at 9am with new tutor Jonathan. Awaiting Aly's callback or SMS reply to confirm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Hold the Tuesday 9am slot with Jonathan pending Aly's confirmation; Janelle to retry contact later today if no response. Still need to coordinate Italian scheduling with Cynthia separately."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Janelle to attempt another outbound call to Aly later today if no reply received",
+          80047202
+        ],
+        [
+          "Confirm Jonathan's availability to start Tuesday at 9am for Everson's math tutoring",
+          81494333
+        ],
+        [
+          "Watch for SMS or callback reply from Aly confirming the Tuesday 9am start",
+          81494333
         ]
       ],
       "ticket_id": null,
