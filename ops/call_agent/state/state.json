@@ -249,9 +249,11 @@
     405096820,
     405098511,
     405113929,
-    405132752
+    405132752,
+    405171448,
+    405167964
   ],
-  "last_run_utc": "2026-08-17T18:04:28.981589+00:00",
+  "last_run_utc": "2026-08-17T18:58:50.619702+00:00",
   "pending_digest": [
     {
       "call_id": 405096820,
@@ -444,6 +446,69 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 405167964,
+      "number": "13108941830",
+      "time_pt": "11:50 AM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring placed an outbound call to Hope Mclendon to follow up on Luna's package renewal and Ocean's potential enrollment. The call was intercepted by Hope's call-screening service, and Hope was unavailable. No additional message was left beyond identifying herself. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to attempt Hope again to lock in Luna's renewal and Ocean's enrollment",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an active deal pipeline; status is owned by the deal and should not be demoted.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda placed another follow-up call to Hope regarding Luna's renewal and Ocean's enrollment; reached the call-screening service and Hope was unavailable. Yolanda identified herself but did not leave an additional message beyond the name/reason prompt.",
+          "what_we_can_do_to_help": "Continue attempting to reach Hope (call and/or SMS) to lock in Luna's renewal plan and Ocean's enrollment.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda placed another follow-up call to Hope regarding Luna's renewal and Ocean's enrollment; reached the call-screening service and Hope was unavailable. Yolanda identified herself but did not leave an additional message beyond the name/reason prompt."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempting to reach Hope (call and/or SMS) to lock in Luna's renewal plan and Ocean's enrollment."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to attempt Hope again to lock in Luna's renewal and Ocean's enrollment",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
