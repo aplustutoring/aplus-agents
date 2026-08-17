@@ -8,6 +8,31 @@ Newest entries first.
 
 ---
 
+## 2026-08-17 — INCIDENT: chase self-resolve renamed 5 Heartland deals to "Pilibos Student"
+
+**What:** Roman: "how come heartland deals were named pilibos?" Property
+history: integration 39943154 (our app) at 2026-08-14 19:35Z — the po_inbox
+`_sweep_chase_self_resolve` shipped that day. Root cause: the Heartland chases
+were opened BEFORE the multi-student fix, so their audit records carried the
+placeholder student "the student"; the sweep searched family contacts for it,
+found exactly one match — Roman's TEST contact "Pilibos Student"
+(roman+001@wetutorathome.com) — and "resolved" all five chases against deals
+Kath had already fixed by hand: renamed them from the audit's STALE
+"NEEDS PARENT - Heartland N" to "Pilibos Student - Heartland N" and attached
+the test contact. Repaired in-portal: five names restored (Kristy Doyal /
+Angela Czaja ×3 / Jamie Holloway), test contact detached from all five (real
+parents untouched). Code guards: (1) placeholder student strings never
+searched; (2) the deal must STILL say NEEDS PARENT in the LIVE portal (human-
+fixed deals just close their chase, touching nothing); (3) internal-domain
+(@wetutorathome.com) contacts never auto-attached; (4) resolution renames
+from the LIVE deal name, never the audit copy. 4 regression tests.
+
+**Why:** Wrote automation that trusted its own stale bookkeeping over the
+portal and treated a placeholder as data. Both fixed at the root.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 231 green).
+
 ## 2026-08-17 — Charter Monday launch: 6-way family segmentation + student names (Roman)
 
 **What:** Roman: "split list as segmented as you can make them" (after
