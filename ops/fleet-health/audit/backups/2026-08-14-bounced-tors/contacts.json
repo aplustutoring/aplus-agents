@@ -1,0 +1,3964 @@
+[
+ {
+  "id": "105701",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2020-03-10T00:39:24.283Z",
+   "email": "maura.sweeney@ileadexploration.org",
+   "firstname": "Maura",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "105701",
+   "jobtitle": "VCI Coordinator",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Sweeney",
+   "student_school": null
+  },
+  "createdAt": "2020-03-10T00:39:24.283Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/105701",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679501",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2020-10-16T18:12:21.706Z",
+   "email": "sthomas@compasscharters.org",
+   "firstname": "Stephanie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679501",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Thomas",
+   "student_school": "Los Feliz ES"
+  },
+  "createdAt": "2020-10-16T18:12:21.706Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679501",
+  "associations": {
+   "contact": [],
+   "deal": [
+    {
+     "toObjectId": 3298062130,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "465851",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2020-12-15T21:30:05.325Z",
+   "email": "sstothers@excelacademy.education",
+   "firstname": "Sandy",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "465851",
+   "jobtitle": "Teacher of Record",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Stothers",
+   "student_school": null
+  },
+  "createdAt": "2020-12-15T21:30:05.325Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/465851",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "776151",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2021-05-04T01:37:56.436Z",
+   "email": "dawnel.mitchell@theblueridgeacademy.com",
+   "firstname": "Dawnel",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "776151",
+   "jobtitle": "Community Connections Specialist, Whittier",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Mitchell",
+   "student_school": null
+  },
+  "createdAt": "2021-05-04T01:37:56.436Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/776151",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "788051",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2021-05-07T23:05:36.218Z",
+   "email": "cainvoices@epiccharterschools.org",
+   "firstname": "Epic",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "788051",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Charter Schools",
+   "student_school": null
+  },
+  "createdAt": "2021-05-07T23:05:36.218Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/788051",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "946051",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2021-07-07T15:26:07.599Z",
+   "email": "caren.sipka@theblueridgeacademy.com",
+   "firstname": "Caren",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "946051",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Sipka",
+   "student_school": null
+  },
+  "createdAt": "2021-07-07T15:26:07.599Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/946051",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "1080651",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2021-09-01T21:43:20.152Z",
+   "email": "kastind@excelacademy.education",
+   "firstname": "Kastin",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "1080651",
+   "jobtitle": "Community & Provider Relations Coordinator",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "D.",
+   "student_school": null
+  },
+  "createdAt": "2021-09-01T21:43:20.152Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/1080651",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "1124351",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2021-09-16T22:49:51.916Z",
+   "email": "abigail.zepeda@theblueridgeacademy.com",
+   "firstname": "Abigail",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "1124351",
+   "jobtitle": "Enrichment Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Zepeda",
+   "student_school": null
+  },
+  "createdAt": "2021-09-16T22:49:51.916Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/1124351",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "1663251",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2022-03-16T00:38:53.497Z",
+   "email": "fernanda.reza@scholars.compasscharters.org",
+   "firstname": "Fernanda",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "1663251",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Reza-Garcia",
+   "student_school": "Compass Charter"
+  },
+  "createdAt": "2022-03-16T00:38:53.497Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/1663251",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786653",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2022-04-29T14:51:58.457Z",
+   "email": "ttaylor@ieminc.org",
+   "firstname": "Tracey",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3786653",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Taylor",
+   "student_school": null
+  },
+  "createdAt": "2022-04-29T14:51:58.457Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786653",
+  "associations": {
+   "contact": [],
+   "deal": [
+    {
+     "toObjectId": 8801869457,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "2228101",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2022-10-12T17:35:04.351Z",
+   "email": "danielle.kimbrel@ileadexploration.org",
+   "firstname": "Ilead",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "2228101",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Hybrid dba iLEAD California Charters 1",
+   "student_school": null
+  },
+  "createdAt": "2022-10-12T17:35:04.351Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/2228101",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "2285301",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2022-10-28T20:52:25.966Z",
+   "email": "joss.cano@granitemountainschool.com",
+   "firstname": "Joss",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "2285301",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Cano",
+   "student_school": null
+  },
+  "createdAt": "2022-10-28T20:52:25.966Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/2285301",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "2683301",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-03-01T02:01:07.783Z",
+   "email": "ian.miller@ileadonline.org",
+   "firstname": "Ian",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "2683301",
+   "jobtitle": "Coach/Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Miller",
+   "student_school": null
+  },
+  "createdAt": "2023-03-01T02:01:07.783Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/2683301",
+  "associations": {
+   "contact": [
+    {
+     "toObjectId": 2683201,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ],
+   "deal": []
+  }
+ },
+ {
+  "id": "2880801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-04-25T23:26:55.532Z",
+   "email": "terri.reyes@ileadexploration.org",
+   "firstname": "Terri",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "2880801",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:14.121Z",
+   "lastname": "Reyes",
+   "student_school": null
+  },
+  "createdAt": "2023-04-25T23:26:55.532Z",
+  "updatedAt": "2026-08-13T19:41:14.121Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/2880801",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3033651",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-06-02T20:34:13.243Z",
+   "email": "trina.kaler@epiccharterschools.org",
+   "firstname": "Trina",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3033651",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Kaler",
+   "student_school": null
+  },
+  "createdAt": "2023-06-02T20:34:13.243Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3033651",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3609501",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-06T19:00:09.896Z",
+   "email": "abanks@hcs.k12.ca.us",
+   "firstname": "Amanda",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3609501",
+   "jobtitle": "Supervising Teacher, High School Academy",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Banks",
+   "student_school": null
+  },
+  "createdAt": "2023-11-06T19:00:09.896Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3609501",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652451",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.279Z",
+   "email": "amanda.buchheit@ileadexploration.org",
+   "firstname": "Amanda",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652451",
+   "jobtitle": "Speech Services Coordinator/AT Assessor",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Buchheit",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.279Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652451",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.282Z",
+   "email": "ashley.gonzales@ileadexploration.org",
+   "firstname": "Ashley",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652801",
+   "jobtitle": "Moderate/Severe Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Gonzales",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.282Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652801",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653001",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.282Z",
+   "email": "desiree.howden@ileadexploration.org",
+   "firstname": "Desiree",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653001",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Howden",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.282Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653001",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653451",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.285Z",
+   "email": "marilyn.kirchner-sanchez@ileadexploration.org",
+   "firstname": "Marilyn",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653451",
+   "jobtitle": "Vendor Support",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Kirchner-Sanchez",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.285Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653451",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652552",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.288Z",
+   "email": "erika.hope@ileadexploration.org",
+   "firstname": "Erika",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652552",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Hope",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.288Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652552",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653751",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.289Z",
+   "email": "jolie.mcdonald@ileadexploration.org",
+   "firstname": "Jolie",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3653751",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "McDonald",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.289Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653751",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.290Z",
+   "email": "lisa.choo@ileadexploration.org",
+   "firstname": "Lisa",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653801",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Choo",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.290Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653801",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652253",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.294Z",
+   "email": "robin.kure@ileadexploration.org",
+   "firstname": "Robin",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652253",
+   "jobtitle": "Student Support Coordinator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Kure",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.294Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652253",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3654201",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.294Z",
+   "email": "susie.hemsley@ileadexploration.org",
+   "firstname": "Susie",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3654201",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Hemsley",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.294Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3654201",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652453",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.302Z",
+   "email": "caylen.hartwell@ileadexploration.org",
+   "firstname": "Caylen",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652453",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Hartwell",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.302Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652453",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3654301",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.302Z",
+   "email": "tonya.smith@ileadexploration.org",
+   "firstname": "Tonya",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3654301",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Smith",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.302Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3654301",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3654601",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.304Z",
+   "email": "robyn.williams@ileadexploration.org",
+   "firstname": "Robyn",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3654601",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Williams",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.304Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3654601",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3654651",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.304Z",
+   "email": "hannah.belcher@ileadexploration.org",
+   "firstname": "Hannah",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3654651",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:15.459Z",
+   "lastname": "Belcher",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.304Z",
+  "updatedAt": "2026-08-13T19:41:15.459Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3654651",
+  "associations": {
+   "contact": [
+    {
+     "toObjectId": 105667142488,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 116190294158,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ],
+   "deal": []
+  }
+ },
+ {
+  "id": "3654103",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.354Z",
+   "email": "roxy.yanko@ileadexploration.org",
+   "firstname": "Roxy",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3654103",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Yanko",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.354Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3654103",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3655102",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.354Z",
+   "email": "andrea.lacey@ileadexploration.org",
+   "firstname": "Andrea",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3655102",
+   "jobtitle": "Student Engagement Coordinator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Lacey",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.354Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3655102",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3655402",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.354Z",
+   "email": "sophia.delacruz@ileadexploration.org",
+   "firstname": "Sophia",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3655402",
+   "jobtitle": "Care Team",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "DeLaCruz",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.354Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3655402",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652554",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.355Z",
+   "email": "sara.grexton@ileadexploration.org",
+   "firstname": "Sara",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652554",
+   "jobtitle": "High School English",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Grexton",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.355Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652554",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653503",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.355Z",
+   "email": "rend.golden@ileadexploration.org",
+   "firstname": "Rend",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653503",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Golden",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.355Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653503",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653253",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.361Z",
+   "email": "jorgia.kelleher@ileadexploration.org",
+   "firstname": "Jorgia",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653253",
+   "jobtitle": "Educational Facilitator, English SET Support",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Kelleher",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.361Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653253",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652753",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.362Z",
+   "email": "sarah.rough@ileadlancaster.org",
+   "firstname": "Sarah",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652753",
+   "jobtitle": "Exploration (Home Study) Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Rough",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.362Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652753",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3654553",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.368Z",
+   "email": "rebecca.jones@ileadexploration.org",
+   "firstname": "Becca",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3654553",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Jones",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.368Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3654553",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3655702",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.368Z",
+   "email": "kimberly.zhe@ileadexploration.org",
+   "firstname": "Kimberly",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3655702",
+   "jobtitle": "Student Support Coordinator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Zhe",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.368Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3655702",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653452",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.385Z",
+   "email": "rachel.pyle@ileadexploration.org",
+   "firstname": "Rachel",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653452",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Pyle",
+   "student_school": "iLEAD"
+  },
+  "createdAt": "2023-11-17T21:48:08.385Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653452",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3655801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.388Z",
+   "email": "rachel.hoggan@ileadexploration.org",
+   "firstname": "Rachel",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3655801",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Hoggan",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.388Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3655801",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3652754",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.391Z",
+   "email": "daisy.deckmyn@ileadexploration.org",
+   "firstname": "Daisy",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3652754",
+   "jobtitle": "High School Chemistry",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Deckmyn",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.391Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3652754",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3653256",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.394Z",
+   "email": "tessa.hopkins@ileadexploration.org",
+   "firstname": "Tessa",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3653256",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:16.782Z",
+   "lastname": "Hopkins",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.394Z",
+  "updatedAt": "2026-08-13T19:41:16.782Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3653256",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3655254",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-17T21:48:08.550Z",
+   "email": "melissa.ortiz@ileadexploration.org",
+   "firstname": "Melissa",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3655254",
+   "jobtitle": "Educational Facilitator",
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Ortiz",
+   "student_school": null
+  },
+  "createdAt": "2023-11-17T21:48:08.550Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3655254",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3678901",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.310Z",
+   "email": "jwalters@compasscharters.org",
+   "firstname": "Julie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3678901",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Walters",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.310Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3678901",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3678951",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.335Z",
+   "email": "dhouck@compasscharters.org",
+   "firstname": "Denise",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3678951",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Houck",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.335Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3678951",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679001",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.337Z",
+   "email": "aforte@compasscharters.org",
+   "firstname": "Allison",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679001",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Forte",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.337Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679001",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679051",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.338Z",
+   "email": "eloney@compasscharters.org",
+   "firstname": "Elizabeth",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679051",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Loney",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.338Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679051",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679101",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.339Z",
+   "email": "scarpenter@compasscharters.org",
+   "firstname": "Shannon",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679101",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Carpenter",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.339Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679101",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679201",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.340Z",
+   "email": "atatumlaetsch@compasscharters.org",
+   "firstname": "Ashlee",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679201",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Tatum-Laetsch",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.340Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679201",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679251",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.340Z",
+   "email": "kpardo@compasscharters.org",
+   "firstname": "Kelli",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679251",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Pardo",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.340Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679251",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679301",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.341Z",
+   "email": "msmith@compasscharters.org",
+   "firstname": "Melissa",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679301",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Smith",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.341Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679301",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679351",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.341Z",
+   "email": "elarkins@compasscharters.org",
+   "firstname": "Erin",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679351",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Larkins",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.341Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679351",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679401",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.342Z",
+   "email": "cbackus@compasscharters.org",
+   "firstname": "Courtney",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679401",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Backus",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.342Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679401",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679551",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.342Z",
+   "email": "jmcinerney@compasscharters.org",
+   "firstname": "Jennifer",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679551",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "McInerney",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.342Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679551",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679451",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.343Z",
+   "email": "twilson@compasscharters.org",
+   "firstname": "Tracy",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679451",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Wilson",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.343Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679451",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679601",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.343Z",
+   "email": "vcurtis@compasscharters.org",
+   "firstname": "Victoria",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679601",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Curtis",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.343Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679601",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679751",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.367Z",
+   "email": "aklipa@compasscharters.org",
+   "firstname": "Ashley",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679751",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Klipa",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.367Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679751",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679651",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.368Z",
+   "email": "jleon@compasscharters.org",
+   "firstname": "Jennifer",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679651",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Leon",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.368Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679651",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679701",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.368Z",
+   "email": "kpentz@compasscharters.org",
+   "firstname": "Kelly",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679701",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Pentz",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.368Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679701",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.369Z",
+   "email": "twilliams@compasscharters.org",
+   "firstname": "Taylor",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679801",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Williams",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.369Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679801",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679851",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.370Z",
+   "email": "hcummins@compasscharters.org",
+   "firstname": "Hilary",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679851",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Cummins",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.370Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679851",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679402",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.385Z",
+   "email": "tberman@compasscharters.org",
+   "firstname": "Tamara",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679402",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Berman",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.385Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679402",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679901",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.385Z",
+   "email": "ngolden@compasscharters.org",
+   "firstname": "Nicole",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679901",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Golden",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.385Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679901",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679951",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.385Z",
+   "email": "kbarker@compasscharters.org",
+   "firstname": "Karina",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679951",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Barker",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.385Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679951",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679002",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.386Z",
+   "email": "djones@compasscharters.org",
+   "firstname": "Dena",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679002",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Jones",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.386Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679002",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680001",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.386Z",
+   "email": "hmcclellan@compasscharters.org",
+   "firstname": "Heather",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680001",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "McClellan",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.386Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680001",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679352",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.387Z",
+   "email": "lvining@compasscharters.org",
+   "firstname": "Lindsey",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679352",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Vining",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.387Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679352",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679702",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.387Z",
+   "email": "mmontes@compasscharters.org",
+   "firstname": "Michelle",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679702",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Montes",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.387Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679702",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3678902",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.388Z",
+   "email": "cfisher@compasscharters.org",
+   "firstname": "Carie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3678902",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Fisher",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.388Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3678902",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679353",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.388Z",
+   "email": "kgast@compasscharters.org",
+   "firstname": "Kristen",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679353",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Gast",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.388Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679353",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680051",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.388Z",
+   "email": "ccarpenter@compasscharters.org",
+   "firstname": "Christine",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680051",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Carpenter",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.388Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680051",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680101",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.389Z",
+   "email": "spatterson@compasscharters.org",
+   "firstname": "Sue",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680101",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Patterson",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.389Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680101",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680151",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.389Z",
+   "email": "sleonard@compasscharters.org",
+   "firstname": "Susie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680151",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Leonard",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.389Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680151",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680201",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.411Z",
+   "email": "shart@compasscharters.org",
+   "firstname": "Shelley",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680201",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Hart",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.411Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680201",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680351",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.414Z",
+   "email": "ajacobson@compasscharters.org",
+   "firstname": "Amanda",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680351",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Jacobson",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.414Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680351",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680401",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.414Z",
+   "email": "tkravatz@compasscharters.org",
+   "firstname": "Tanya",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680401",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Kravatz",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.414Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680401",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680251",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.415Z",
+   "email": "kdamico@compasscharters.org",
+   "firstname": "Kathy",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680251",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "D\u2019Amico",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.415Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680251",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680301",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.415Z",
+   "email": "nhigginbotham@compasscharters.org",
+   "firstname": "Nicole",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680301",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Higginbotham",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.415Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680301",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679403",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.437Z",
+   "email": "kjohnson@compasscharters.org",
+   "firstname": "Karen",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679403",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Johnson",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.437Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679403",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679802",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.437Z",
+   "email": "spierson@compasscharters.org",
+   "firstname": "Shannon",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679802",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Pierson",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.437Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679802",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680352",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.439Z",
+   "email": "aoswood@compasscharters.org",
+   "firstname": "Alyssa",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680352",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Oswood",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.439Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680352",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680451",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.439Z",
+   "email": "nhughey@compasscharters.org",
+   "firstname": "Nicole",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680451",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Hughey",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.439Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680451",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680501",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.440Z",
+   "email": "schristoph@compasscharters.org",
+   "firstname": "Sarah",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680501",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Christoph",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.440Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680501",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680302",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.442Z",
+   "email": "kkirkpatrick@compasscharters.org",
+   "firstname": "Kristie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680302",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Kirkpatrick",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.442Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680302",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680601",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.445Z",
+   "email": "skimbellauth@compasscharters.org",
+   "firstname": "Shannon",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680601",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Kimbell-Auth",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.445Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680601",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680651",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.467Z",
+   "email": "jvargas@compasscharters.org",
+   "firstname": "Jennifer",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680651",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Vargas",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.467Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680651",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679652",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.487Z",
+   "email": "mlarkin@compasscharters.org",
+   "firstname": "Molly",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679652",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Larkin",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.487Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679652",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680751",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.494Z",
+   "email": "hgasca@compasscharters.org",
+   "firstname": "Heidi",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680751",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Gasca",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.494Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680751",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679302",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.495Z",
+   "email": "rpruitt@compasscharters.org",
+   "firstname": "Rachel",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679302",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Pruitt",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.495Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679302",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680701",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.495Z",
+   "email": "tjarvis@compasscharters.org",
+   "firstname": "Tiffany",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680701",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Jarvis",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.495Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680701",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.495Z",
+   "email": "kkluge@compasscharters.org",
+   "firstname": "Kirsten",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680801",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Kluge",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.495Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680801",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679003",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.497Z",
+   "email": "mdrennan@compasscharters.org",
+   "firstname": "Marie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679003",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Drennan",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.497Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679003",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679303",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.804Z",
+   "email": "bdupont@compasscharters.org",
+   "firstname": "Brianna",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679303",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "DuPont",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.804Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679303",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680402",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.804Z",
+   "email": "kcabral@compasscharters.org",
+   "firstname": "Katie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680402",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Cabral",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.804Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680402",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680802",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.804Z",
+   "email": "lthompson@compasscharters.org",
+   "firstname": "Lorie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680802",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Thompson",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.804Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680802",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680901",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.804Z",
+   "email": "ccrawford@compasscharters.org",
+   "firstname": "Corrina",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680901",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Crawford",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.804Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680901",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3679404",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.805Z",
+   "email": "jhopper@compasscharters.org",
+   "firstname": "Jessica",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3679404",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Hopper",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.805Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3679404",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3680851",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-11-28T00:34:51.805Z",
+   "email": "swebb@compasscharters.org",
+   "firstname": "Suzanne",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3680851",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "Webb",
+   "student_school": null
+  },
+  "createdAt": "2023-11-28T00:34:51.805Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3680851",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3720901",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-05T00:22:49.298Z",
+   "email": "rmckee@compasscharters.org",
+   "firstname": "Rachel",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3720901",
+   "jobtitle": "Supervising Teacher",
+   "lastmodifieddate": "2026-08-13T19:41:18.109Z",
+   "lastname": "McKee",
+   "student_school": null
+  },
+  "createdAt": "2023-12-05T00:22:49.298Z",
+  "updatedAt": "2026-08-13T19:41:18.109Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3720901",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3722951",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-05T00:22:49.494Z",
+   "email": "knorthcote@compasscharters.org",
+   "firstname": "Kate",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3722951",
+   "jobtitle": "Supervising Teacher",
+   "lastmodifieddate": "2026-08-13T19:41:19.441Z",
+   "lastname": "Northcote",
+   "student_school": null
+  },
+  "createdAt": "2023-12-05T00:22:49.494Z",
+  "updatedAt": "2026-08-13T19:41:19.441Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3722951",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3750801",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-12T21:10:35.187Z",
+   "email": "bfeeneysherry@ieminc.org",
+   "firstname": "Brigid",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3750801",
+   "jobtitle": "Education Specialist Advisor",
+   "lastmodifieddate": "2026-08-13T19:41:19.441Z",
+   "lastname": "Feeney",
+   "student_school": null
+  },
+  "createdAt": "2023-12-12T21:10:35.187Z",
+  "updatedAt": "2026-08-13T19:41:19.441Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3750801",
+  "associations": {
+   "contact": [
+    {
+     "toObjectId": 98564184484,
+     "associationTypes": [
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ],
+   "deal": [
+    {
+     "toObjectId": 43660687671,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 43663061522,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 47416408125,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 47537249295,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 47539046981,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 47539355005,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 47539478667,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 55035046204,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 55035108269,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "3785757",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T20:34:26.829Z",
+   "email": "walpi@ieminc.org",
+   "firstname": "Wendy",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3785757",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:19.441Z",
+   "lastname": "Alpi",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T20:34:26.829Z",
+  "updatedAt": "2026-08-13T19:41:19.441Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3785757",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786451",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.412Z",
+   "email": "bbradley@ieminc.org",
+   "firstname": "Becky",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3786451",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:19.441Z",
+   "lastname": "Bradley",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.412Z",
+  "updatedAt": "2026-08-13T19:41:19.441Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786451",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786701",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.474Z",
+   "email": "lgraywolff@ieminc.org",
+   "firstname": "Lauren",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3786701",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:19.441Z",
+   "lastname": "Gray-Wolff",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.474Z",
+  "updatedAt": "2026-08-13T19:41:19.441Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786701",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786903",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.526Z",
+   "email": "kmoon@ieminc.org",
+   "firstname": "Karinna",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3786903",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Moon",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.526Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786903",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3787551",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.526Z",
+   "email": "aolton@ieminc.org",
+   "firstname": "Angela",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3787551",
+   "jobtitle": "SPED - Resource Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Olton",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.526Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3787551",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788151",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.553Z",
+   "email": "lmurray@ieminc.org",
+   "firstname": "Leah",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3788151",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Murray",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.553Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788151",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788251",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.553Z",
+   "email": "mbush@ieminc.org",
+   "firstname": "Michael",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3788251",
+   "jobtitle": "Class Based Instructor, Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Bush",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.553Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788251",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3787652",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.555Z",
+   "email": "sjackson@ieminc.org",
+   "firstname": "Sara",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3787652",
+   "jobtitle": "Online Substitute Teacher, Class Based Instructor",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Jackson",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.555Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3787652",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788351",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.556Z",
+   "email": "skelley@ieminc.org",
+   "firstname": "Shannon",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3788351",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Kelley",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.556Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788351",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788951",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.582Z",
+   "email": "jbautista@ieminc.org",
+   "firstname": "Jamie",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3788951",
+   "jobtitle": "SPED - Program Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Quirino Bautista",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.582Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788951",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788352",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.583Z",
+   "email": "mbooth@ieminc.org",
+   "firstname": "Michelle",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3788352",
+   "jobtitle": "Education Specialist, School Counselor",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Booth",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.583Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788352",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789101",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.583Z",
+   "email": "jkruger@ieminc.org",
+   "firstname": "Jillian",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3789101",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Kruger",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.583Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789101",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789451",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.610Z",
+   "email": "hgevertz@ieminc.org",
+   "firstname": "Hollie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3789451",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Gevertz",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.610Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789451",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786953",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.612Z",
+   "email": "kmorris@ieminc.org",
+   "firstname": "Karen",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3786953",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Morris-Parisi",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.612Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786953",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789501",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.612Z",
+   "email": "rposadas@ieminc.org",
+   "firstname": "Rachel",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3789501",
+   "jobtitle": "SPED - Resource Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Posadas",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.612Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789501",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788602",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.616Z",
+   "email": "sspectorfranson@ieminc.org",
+   "firstname": "Stacey",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3788602",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:20.737Z",
+   "lastname": "Spector Franson",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.616Z",
+  "updatedAt": "2026-08-13T19:41:20.737Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788602",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789002",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.621Z",
+   "email": "aziadeh@ieminc.org",
+   "firstname": "Alisha",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3789002",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Ziadeh",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.621Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789002",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788553",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.622Z",
+   "email": "ndaedler@ieminc.org",
+   "firstname": "Natalie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3788553",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Daedler",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.622Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788553",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789352",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.712Z",
+   "email": "twalker@ieminc.org",
+   "firstname": "Tammy",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3789352",
+   "jobtitle": "EL Instructor",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Walker",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.712Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789352",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788605",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.719Z",
+   "email": "hgallo@ieminc.org",
+   "firstname": "Holly",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3788605",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Gallo",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.719Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788605",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3787703",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.723Z",
+   "email": "sjakobsen@ieminc.org",
+   "firstname": "Sheila",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3787703",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Jakobsen",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.723Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3787703",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788503",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.726Z",
+   "email": "lsundean@ieminc.org",
+   "firstname": "Lorie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3788503",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Sundean",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.726Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788503",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786454",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.873Z",
+   "email": "ssampson@ieminc.org",
+   "firstname": "Susi",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3786454",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Sampson",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.873Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786454",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786604",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.874Z",
+   "email": "athoma@ieminc.org",
+   "firstname": "Allison",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3786604",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Thoma",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.874Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786604",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788954",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.883Z",
+   "email": "critchie@ieminc.org",
+   "firstname": "Clinton",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3788954",
+   "jobtitle": "SPED - Resource Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Ritchie",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.883Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788954",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786954",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.884Z",
+   "email": "gselby@ieminc.org",
+   "firstname": "Gail",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3786954",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Selby",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.884Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786954",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3786805",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.925Z",
+   "email": "mclark@ieminc.org",
+   "firstname": "Misty",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3786805",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Clark",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.925Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3786805",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3787802",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.925Z",
+   "email": "athomas@ieminc.org",
+   "firstname": "Aiko",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3787802",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Thomas",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.925Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3787802",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3787154",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.979Z",
+   "email": "dromero@ieminc.org",
+   "firstname": "Diana",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3787154",
+   "jobtitle": "SPED - Resource Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Romero",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.979Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3787154",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789702",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.981Z",
+   "email": "rdavis@ieminc.org",
+   "firstname": "Rebecca",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3789702",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Davis",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.981Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789702",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3787754",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.985Z",
+   "email": "sschapiro@ieminc.org",
+   "firstname": "Seth",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3787754",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:22.048Z",
+   "lastname": "Schapiro",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.985Z",
+  "updatedAt": "2026-08-13T19:41:22.048Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3787754",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789703",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:12.990Z",
+   "email": "shartje@ieminc.org",
+   "firstname": "Samira",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3789703",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:23.349Z",
+   "lastname": "Hartje",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:12.990Z",
+  "updatedAt": "2026-08-13T19:41:23.349Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789703",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788054",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:13.078Z",
+   "email": "mredalen@ieminc.org",
+   "firstname": "Michele",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3788054",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:23.349Z",
+   "lastname": "Redalen",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:13.078Z",
+  "updatedAt": "2026-08-13T19:41:23.349Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788054",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3789204",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:13.161Z",
+   "email": "lphillips@ieminc.org",
+   "firstname": "Lisa",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3789204",
+   "jobtitle": "Education Specialist, Assessment Coordinator",
+   "lastmodifieddate": "2026-08-13T19:41:23.349Z",
+   "lastname": "Phillips",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:13.161Z",
+  "updatedAt": "2026-08-13T19:41:23.349Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3789204",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3788456",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2023-12-26T23:39:15.231Z",
+   "email": "aeckels@ieminc.org",
+   "firstname": "E",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "3788456",
+   "jobtitle": "Education Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:23.349Z",
+   "lastname": "Eckels",
+   "student_school": null
+  },
+  "createdAt": "2023-12-26T23:39:15.231Z",
+  "updatedAt": "2026-08-13T19:41:23.349Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3788456",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3950101",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2024-02-12T23:12:43.422Z",
+   "email": "jletherer@sageoak.education",
+   "firstname": "Janine",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3950101",
+   "jobtitle": "Personalized Learning Teacher",
+   "lastmodifieddate": "2026-08-13T02:00:23.927Z",
+   "lastname": "Letherer",
+   "student_school": "Sage Oak"
+  },
+  "createdAt": "2024-02-12T23:12:43.422Z",
+  "updatedAt": "2026-08-13T02:00:23.927Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3950101",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "3952851",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2024-02-14T03:36:06.353Z",
+   "email": "cottonwood-invoicing@cottonwoodk12.org",
+   "firstname": "Cottonwood",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "3952851",
+   "jobtitle": "Specialist",
+   "lastmodifieddate": "2026-08-13T19:41:24.621Z",
+   "lastname": "Invoicing",
+   "student_school": null
+  },
+  "createdAt": "2024-02-14T03:36:06.353Z",
+  "updatedAt": "2026-08-13T19:41:24.621Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/3952851",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "7697608354",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2024-03-29T21:35:59.577Z",
+   "email": "hharre@ileadexploration.org",
+   "firstname": "Hannah",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "7697608354",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:24.621Z",
+   "lastname": "Harrell",
+   "student_school": null
+  },
+  "createdAt": "2024-03-29T21:35:59.577Z",
+  "updatedAt": "2026-08-13T19:41:24.621Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/7697608354",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "40015170629",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2024-07-17T18:25:07.578Z",
+   "email": "shunter@jcs-inc.org",
+   "firstname": "Stacey",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "40015170629",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:24.621Z",
+   "lastname": "Hunter",
+   "student_school": null
+  },
+  "createdAt": "2024-07-17T18:25:07.578Z",
+  "updatedAt": "2026-08-13T19:41:24.621Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/40015170629",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "57924331351",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2024-09-13T23:43:18.829Z",
+   "email": "vvosburg@eliteacademic.com",
+   "firstname": "Vanessa",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "57924331351",
+   "jobtitle": "6-12 Virtual Teacher of Record",
+   "lastmodifieddate": "2026-08-13T19:41:24.621Z",
+   "lastname": "Vosburg",
+   "student_school": null
+  },
+  "createdAt": "2024-09-13T23:43:18.829Z",
+  "updatedAt": "2026-08-13T19:41:24.621Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/57924331351",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "96916559448",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-02-04T18:48:02.503Z",
+   "email": "torshoff@eliteacademic.com",
+   "firstname": "Tasha",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "96916559448",
+   "jobtitle": "Educator",
+   "lastmodifieddate": "2026-08-13T19:41:26.035Z",
+   "lastname": "Orshoff",
+   "student_school": null
+  },
+  "createdAt": "2025-02-04T18:48:02.503Z",
+  "updatedAt": "2026-08-13T19:41:26.035Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/96916559448",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "115072601908",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-04-18T17:47:43.299Z",
+   "email": "dawnell.oliver@granitemountainschool.com",
+   "firstname": "Dawnell",
+   "hs_email_hard_bounce_reason_enum": "OTHER",
+   "hs_object_id": "115072601908",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:26.035Z",
+   "lastname": "Oliver",
+   "student_school": null
+  },
+  "createdAt": "2025-04-18T17:47:43.299Z",
+  "updatedAt": "2026-08-13T19:41:26.035Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/115072601908",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "121519151651",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-05-13T23:18:32.601Z",
+   "email": "erosa@ileadexploration.org",
+   "firstname": "Ezekiel",
+   "hs_email_hard_bounce_reason_enum": "POLICY",
+   "hs_object_id": "121519151651",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:26.035Z",
+   "lastname": "Rosales",
+   "student_school": null
+  },
+  "createdAt": "2025-05-13T23:18:32.601Z",
+  "updatedAt": "2026-08-13T19:41:26.035Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/121519151651",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "152930682895",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-09-04T19:17:48.662Z",
+   "email": "bernadette.vierira@pacificcharters.org",
+   "firstname": "Bernadette",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "152930682895",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:26.035Z",
+   "lastname": "Vieira",
+   "student_school": null
+  },
+  "createdAt": "2025-09-04T19:17:48.662Z",
+  "updatedAt": "2026-08-13T19:41:26.035Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/152930682895",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "201043394720",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-09-30T21:11:35.399Z",
+   "email": "celina.sedillo@gormanlc.org",
+   "firstname": "Celina",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "201043394720",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:26.035Z",
+   "lastname": "Sedillo",
+   "student_school": null
+  },
+  "createdAt": "2025-09-30T21:11:35.399Z",
+  "updatedAt": "2026-08-13T19:41:26.035Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/201043394720",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "174442159628",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-11-12T22:18:40.431Z",
+   "email": "asmith-@ileadexploration.org",
+   "firstname": null,
+   "hs_email_hard_bounce_reason_enum": "POLICY",
+   "hs_object_id": "174442159628",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:27.312Z",
+   "lastname": null,
+   "student_school": null
+  },
+  "createdAt": "2025-11-12T22:18:40.431Z",
+  "updatedAt": "2026-08-13T19:41:27.312Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/174442159628",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "177531351970",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2025-11-21T23:37:14.889Z",
+   "email": "janna@heartwoodcharterschool.org",
+   "firstname": "Janna",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "177531351970",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:27.312Z",
+   "lastname": "Morbitz",
+   "student_school": null
+  },
+  "createdAt": "2025-11-21T23:37:14.889Z",
+  "updatedAt": "2026-08-13T19:41:27.312Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/177531351970",
+  "associations": {
+   "contact": [
+    {
+     "toObjectId": 3745901,
+     "associationTypes": [
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ],
+   "deal": [
+    {
+     "toObjectId": 49779256589,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 49908659200,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 53441988922,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 53451289448,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "193434873630",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-01-15T22:05:27.115Z",
+   "email": "breanna.yockey@ileadav.org",
+   "firstname": "Breanna",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "193434873630",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-14T01:44:05.138Z",
+   "lastname": "Yockey",
+   "student_school": null
+  },
+  "createdAt": "2026-01-15T22:05:27.115Z",
+  "updatedAt": "2026-08-14T01:44:05.138Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/193434873630",
+  "associations": {
+   "contact": [
+    {
+     "toObjectId": 162480310821,
+     "associationTypes": [
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ],
+   "deal": [
+    {
+     "toObjectId": 45666837568,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 60019265190,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 60019885162,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "196802489114",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-01-27T20:08:02.442Z",
+   "email": "gpackler@eliteacademic.com",
+   "firstname": "Gary",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "196802489114",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:27.312Z",
+   "lastname": "Packler",
+   "student_school": null
+  },
+  "createdAt": "2026-01-27T20:08:02.442Z",
+  "updatedAt": "2026-08-13T19:41:27.312Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/196802489114",
+  "associations": {
+   "contact": [
+    {
+     "toObjectId": 70257724457,
+     "associationTypes": [
+      {
+       "category": "USER_DEFINED",
+       "typeId": 14,
+       "label": "Family",
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      },
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 449,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ],
+   "deal": [
+    {
+     "toObjectId": 52218486361,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 55031168259,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    },
+    {
+     "toObjectId": 56570008328,
+     "associationTypes": [
+      {
+       "category": "HUBSPOT_DEFINED",
+       "typeId": 4,
+       "label": null,
+       "fromObjectTypeId": null,
+       "toObjectTypeId": null
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "211340462711",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-03-25T00:27:23.988Z",
+   "email": "krahmaan@gormanlc.org",
+   "firstname": null,
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "211340462711",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:27.312Z",
+   "lastname": null,
+   "student_school": null
+  },
+  "createdAt": "2026-03-25T00:27:23.988Z",
+  "updatedAt": "2026-08-13T19:41:27.312Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/211340462711",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "212824045397",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-03-31T17:41:54.965Z",
+   "email": "alegonz@ileadexploration.org",
+   "firstname": "Alexa",
+   "hs_email_hard_bounce_reason_enum": "POLICY",
+   "hs_object_id": "212824045397",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:27.312Z",
+   "lastname": "Gonzalez",
+   "student_school": null
+  },
+  "createdAt": "2026-03-31T17:41:54.965Z",
+  "updatedAt": "2026-08-13T19:41:27.312Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/212824045397",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "214629621164",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-04-09T21:36:15.157Z",
+   "email": "liz.sdun@pacificcharters.org",
+   "firstname": null,
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "214629621164",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:28.805Z",
+   "lastname": null,
+   "student_school": null
+  },
+  "createdAt": "2026-04-09T21:36:15.157Z",
+  "updatedAt": "2026-08-13T19:41:28.805Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/214629621164",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "217003852080",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-04-21T23:36:23.093Z",
+   "email": "anni.bahadarian@theblueridgeacademy.com",
+   "firstname": "Annie",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "217003852080",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:28.805Z",
+   "lastname": "Bahadarian",
+   "student_school": null
+  },
+  "createdAt": "2026-04-21T23:36:23.093Z",
+  "updatedAt": "2026-08-13T19:41:28.805Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/217003852080",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ },
+ {
+  "id": "232761740079",
+  "properties": {
+   "a_persona": "Teacher of Record/EF/ES",
+   "createdate": "2026-07-01T17:41:53.122Z",
+   "email": "communitypartnerrealtions@pacificcharters.org",
+   "firstname": "Pacific Charters Institute",
+   "hs_email_hard_bounce_reason_enum": "UNKNOWN_USER",
+   "hs_object_id": "232761740079",
+   "jobtitle": null,
+   "lastmodifieddate": "2026-08-13T19:41:28.805Z",
+   "lastname": null,
+   "student_school": null
+  },
+  "createdAt": "2026-07-01T17:41:53.122Z",
+  "updatedAt": "2026-08-13T19:41:28.805Z",
+  "archived": false,
+  "url": "https://app.hubspot.com/contacts/6312752/record/0-1/232761740079",
+  "associations": {
+   "contact": [],
+   "deal": []
+  }
+ }
+]
