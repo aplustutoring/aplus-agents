@@ -108,3 +108,8 @@
 {"call_id": 404623431, "date_pt": "2026-08-14", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
 {"call_id": 404635614, "date_pt": "2026-08-14", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
 {"call_id": 404689835, "date_pt": "2026-08-14", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 3.0, "scores": {"U1": 2, "U2": 4, "U3": 4, "U4": 3, "U5": 2, "S1": 3, "S2": 4, "S4": 2}}
+{"call_id": 404700296, "date_pt": "2026-08-14", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 4.0, "scores": {"U1": 5, "U3": 4, "U5": 3}}
+{"call_id": 404706624, "date_pt": "2026-08-14", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.5, "scores": {"U1": 4, "U3": 3, "U5": 4, "V1": 3}}
+{"call_id": 405096820, "date_pt": "2026-08-17", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 3.1, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 4, "U5": 2, "S1": 3, "S2": 3, "S3": 3, "S4": 2}}
+{"call_id": 405098511, "date_pt": "2026-08-17", "agent": "Paola Sarmiento", "direction": "incoming", "overall": 3.4, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 4, "U5": 4, "S1": 2, "S2": 2, "S3": 5, "S4": 3}}
+{"call_id": 405167964, "date_pt": "2026-08-17", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 2.0, "scores": {"U1": 3, "U3": 2, "U5": 1}}
