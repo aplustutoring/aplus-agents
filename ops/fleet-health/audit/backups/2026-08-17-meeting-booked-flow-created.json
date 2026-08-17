@@ -1,0 +1,64 @@
+{
+ "id": "1868302723",
+ "isEnabled": false,
+ "flowType": "WORKFLOW",
+ "revisionId": "1",
+ "name": "Lead funnel \u2014 Meeting Booked (Paola consult) \u2192 lead status",
+ "description": "Fleet-managed (aplus-agents, 2026-08-17). When a family books a 'Tutoring Call w/ ... and Paola' via her HubSpot meetings link, set hs_lead_status = Meeting Booked. Cloned from 'Student Spotlight \u2014 Meeting Booked Status (#5)'. Funnel: New \u2192 Attempting to Contact \u2192 Meeting Booked \u2192 QTL \u2192 Open deal. The New/Attempting nurtures (Lead Pipe Line - Online / Ads) should carry a goal of lead status = Meeting Booked so booked families stop being chased.",
+ "createdAt": "2026-08-17T20:30:05.439Z",
+ "updatedAt": "2026-08-17T20:30:05.439Z",
+ "startActionId": "1",
+ "nextAvailableActionId": "2",
+ "actions": [
+  {
+   "actionId": "1",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "fields": {
+    "property_name": "hs_lead_status",
+    "value": {
+     "staticValue": "Meeting Booked",
+     "type": "STATIC_VALUE"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  }
+ ],
+ "enrollmentCriteria": {
+  "shouldReEnroll": true,
+  "eventFilterBranches": [
+   {
+    "filterBranches": [],
+    "filters": [
+     {
+      "property": "hs_meeting_title",
+      "operation": {
+       "operator": "CONTAINS",
+       "includeObjectsWithNoValueSet": false,
+       "values": [
+        "Tutoring Call w/"
+       ],
+       "operationType": "MULTISTRING"
+      },
+      "filterType": "PROPERTY"
+     }
+    ],
+    "eventTypeId": "4-1720599",
+    "operator": "HAS_COMPLETED",
+    "filterBranchType": "UNIFIED_EVENTS",
+    "filterBranchOperator": "AND"
+   }
+  ],
+  "listMembershipFilterBranches": [],
+  "type": "EVENT_BASED"
+ },
+ "timeWindows": [],
+ "blockedDates": [],
+ "customProperties": {},
+ "dataSources": [],
+ "crmObjectCreationStatus": "PENDING",
+ "suppressionListIds": [],
+ "canEnrollFromSalesforce": false,
+ "type": "CONTACT_FLOW",
+ "objectTypeId": "0-1"
+}
