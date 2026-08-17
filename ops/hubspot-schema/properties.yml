@@ -143,6 +143,25 @@ properties:
         family's most recent COMPLETED Teachworks lesson. NOTE: a deal
         property with the same name exists (dealinformation intake
         capture) — this is the contact-level counterpart.
+    - name: student_names
+      label: "[Agent] Student Names"
+      group: family
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py, do not
+        edit by hand. ALL students named across the family's charter deals
+        since Aug 2025, formatted for prose ("Brooke, Haven & Lillie"), so
+        multi-student families get every child named in outreach.
+    - name: student_count
+      label: "[Agent] Student Count"
+      group: family
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py, do not
+        edit by hand. Number of distinct students across the family's charter
+        deals since Aug 2025 (drives 1-vs-multi segmentation).
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
