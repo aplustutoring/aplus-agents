@@ -11,10 +11,31 @@ timezone: America/Los_Angeles
 # split ONLY by whether we can personalize (student+tutor stamped). The finer
 # Hot/Win-back/Never-Started lists (3107-3109) and TOR lists (3110-3111) stay
 # in the portal for later waves but are NOT part of Monday.
+# Roman 2026-08-17: "split list as segmented as you can make them" —
+# recency × student-count × personalization (scripts/charter_gap_segments.py).
+# Lists 3112/3113 (2-way split) superseded; kept in portal, not enrolled.
 enrollments:
-  - segment: monday_personalized     # 389 families, student+tutor tokens
-    list_id: 3112
+  - segment: hot_1                   # 9  — student+tutor tokens
+    list_id: 3138
     workflow_id: ""
-  - segment: monday_generic          # 40 families, no lesson data — token-free copy
-    list_id: 3113
+    template: families_hot.md
+  - segment: hot_multi               # 3  — {{student_names}} + tutors
+    list_id: 3140
     workflow_id: ""
+    template: families_hot_multi.md
+  - segment: winback_1               # 299 — student+tutor tokens
+    list_id: 3136
+    workflow_id: ""
+    template: families_winback.md
+  - segment: winback_multi           # 78 — {{student_names}} + tutors
+    list_id: 3135
+    workflow_id: ""
+    template: families_winback_multi.md
+  - segment: never_started           # 30 — token-free
+    list_id: 3137
+    workflow_id: ""
+    template: families_never_started.md
+  - segment: no_lesson_data          # 10 — invoiced, no completed lesson; token-free
+    list_id: 3139
+    workflow_id: ""
+    template: families_no_lesson_data.md

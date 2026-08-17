@@ -8,6 +8,27 @@ Newest entries first.
 
 ---
 
+## 2026-08-17 — Charter Monday launch: 6-way family segmentation + student names (Roman)
+
+**What:** Roman: "split list as segmented as you can make them" (after
+catching that 1-student copy undersold multi-student families — 81 of 389).
+New `scripts/charter_gap_segments.py`: derives EVERY student per family from
+charter deal titles since 2025-08-01, stamps NEW contact props `student_names`
+("Brooke, Haven & Lillie") + `student_count` ([Agent]-labeled, registry +2,
+UPDATE-only import — 419 stamped), and builds 6 static lists = recency ×
+student-count × personalization: 3138 Hot-1 (9), 3140 Hot-Multi (3),
+3136 Win-back-1 (299), 3135 Win-back-Multi (78), 3137 Never Started (30),
+3139 No Lesson Data (10) — sums to the 429 gap families. campaign.yml
+re-wired to the six (2-way lists 3112/3113 superseded, kept). New copy
+drafts: families_winback_multi / families_hot_multi / families_no_lesson_data
+(multi variants use {{student_names}} and "their tutors" — no single-tutor
+token, since siblings often had different tutors). Still DISARMED.
+**Files:** scripts/charter_gap_segments.py (new), ops/hubspot-schema/
+properties.yml, ops/messenger/campaign.yml, ops/messenger/templates/
+campaign-2026-08-17/ (+3).
+
+---
+
 ## 2026-08-17 — Lead status: unhidden, funnel-ordered, persona-labeled + Meeting Booked hard-wired
 
 **What:** (1) `hs_lead_status` had 14 of 17 options HIDDEN (unknown when/who —
