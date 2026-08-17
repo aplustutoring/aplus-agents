@@ -258,9 +258,13 @@
     405185752,
     405190461,
     405201840,
-    405231119
+    405231119,
+    405248563,
+    405251744,
+    405241588,
+    405249840
   ],
-  "last_run_utc": "2026-08-17T20:45:19.669852+00:00",
+  "last_run_utc": "2026-08-17T21:30:32.550179+00:00",
   "pending_digest": [
     {
       "call_id": 405096820,
@@ -673,6 +677,80 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 405249840,
+      "number": "13233692493",
+      "time_pt": "2:18 PM",
+      "matched": true,
+      "contact_label": "Susanna Gukasov",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound check-in call to existing customer Susanna Gukasov and reached voicemail. Janelle left a message asking if Susanna would like to renew her package to a 20-hour or 50-hour option and provided a callback number (818-850-6284) and text option. No response was obtained on this call.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Susanna's callback or text response regarding package renewal (20-hour or 50-hour option)",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "If no response in a few days, follow up again with Susanna about renewal",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Janelle left a voicemail for Susanna Gukasov (existing customer, parent of Seda, 6th grade at Beckford Ave Elementary \u2014 math tutoring) pitching renewal to either a 20-hour or 50-hour package. Susanna hasn't responded yet; she has Janelle's direct line (818-850-6284) and the option to text. If she calls/texts back, open with: 'Hi Susanna, thanks for getting back to me \u2014 did you have a chance to think about which renewal option works best for Seda, the 20-hour or the 50-hour?' Be ready to talk pricing and scheduling for continuing math concept support.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; renewal outreach is handled in the deal pipeline, so contact lead status should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Seda",
+          "Susanna Gukasov"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound check-in call from Janelle \u2014 reached voicemail. Susanna's current package is winding down and she's being offered renewal options.",
+          "what_we_can_do_to_help": "Offer Susanna a renewal package (20-hour or 50-hour option) to continue Seda's math tutoring. Awaiting her callback or text reply.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound check-in call from Janelle \u2014 reached voicemail. Susanna's current package is winding down and she's being offered renewal options."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Offer Susanna a renewal package (20-hour or 50-hour option) to continue Seda's math tutoring. Awaiting her callback or text reply."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Susanna's callback or text response regarding package renewal (20-hour or 50-hour option)",
+          80047202
+        ],
+        [
+          "If no response in a few days, follow up again with Susanna about renewal",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -680,6 +758,11 @@
       "number": "18188536269",
       "time_pt": "8:15 AM",
       "reason": "no transcript"
+    },
+    {
+      "number": "16612815611",
+      "time_pt": "2:00 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
