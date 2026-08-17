@@ -21,6 +21,9 @@ commit landed on the other's PR branch and had to be untangled by hand.)
   synced to portal 6312752 by `create_properties.py` (additive only). Declare new
   properties there; never create them ad hoc.
 - Enumeration rule: agents ALWAYS read option LABELS, never internal values.
+- Agent-property labeling (Roman 2026-08-14): any property an agent WRITES gets the
+  `[Agent] ` label prefix and a description starting "AGENT PROPERTY — written by <script>".
+  Humans must be able to tell agent-maintained fields from intake capture at a glance.
 - Contact model: 5-persona system via `a_persona` (multi-select checkbox in the `master`
   group): Decision Maker/Director, Teacher of Record/EF/ES, Family, Tutors, Student.
 - Family→TOR relationships are contact-to-contact associations with the paired label
