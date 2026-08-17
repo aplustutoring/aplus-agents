@@ -244,10 +244,17 @@
     404689835,
     404700296,
     404703992,
-    404706624
+    404706624,
+    405032659
   ],
-  "last_run_utc": "2026-08-17T16:00:18.357350+00:00",
+  "last_run_utc": "2026-08-17T16:47:34.788989+00:00",
   "pending_digest": [],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18188536269",
+      "time_pt": "8:15 AM",
+      "reason": "no transcript"
+    }
+  ],
   "pending_failures": []
 }
