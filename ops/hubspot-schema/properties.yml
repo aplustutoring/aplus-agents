@@ -143,6 +143,21 @@ properties:
         family's most recent COMPLETED Teachworks lesson. NOTE: a deal
         property with the same name exists (dealinformation intake
         capture) — this is the contact-level counterpart.
+    - name: last_tutor_active
+      label: "[Agent] Last Tutor Active"
+      group: family
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by scripts/tw_tutor_active_check.py, do not
+        edit by hand. Whether the tutor in last_tutor_name is still an ACTIVE
+        Teachworks employee (both accounts). Outreach must NOT name an
+        inactive tutor (Roman 2026-08-17: "Ruth does not tutor with us").
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: student_names
       label: "[Agent] Student Names"
       group: family
