@@ -275,9 +275,16 @@
     405456316,
     405470198,
     405342775,
-    405528532
+    405528532,
+    405539711,
+    405539935,
+    405543852,
+    405547873,
+    405534586,
+    405543836,
+    405549408
   ],
-  "last_run_utc": "2026-08-18T16:49:20.995798+00:00",
+  "last_run_utc": "2026-08-18T17:32:37.597020+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -458,6 +465,272 @@
         ],
         [
           "Note Eva's 504 plan (focus challenges, anxiety) for the assigned tutor and be open to trying 30-min sessions if 45-min doesn't fit",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405543852,
+      "number": "18184261039",
+      "time_pt": "10:09 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Mrs. Senna (wife of Michael Senna) called to ask about next steps after her daughter Nicholina completed the diagnostic assessment A+ had sent. Paola located the record and explained that Nicholina needs to upload the completed assessment and book a results call via the link in the assessment email, ideally for next week so Roman can review it beforehand. The caller confirmed she has the links and will proceed. No concrete next step was scheduled on this call \u2014 the family still needs to book the results call themselves.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for Nicholina Senna's completed diagnostic upload and results-call booking; if not received in a few days, follow up with the family",
+            "owner_hint": null
+          },
+          {
+            "item": "Roman to review Nicholina's diagnostic once uploaded and lead the results call",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Mrs. Senna (Michael Senna's wife) called in friendly and cooperative to ask what's next after daughter Nicholina completed the diagnostic. Paola told her to upload the assessment and use the link in the original assessment email to book a results call for next week with Roman, who will then recommend the best path forward. She said she has the links and will do it herself, but nothing is booked yet. If we don't see the upload/booking in the next few days, reach out \u2014 open with: 'Hi, just checking in on Nicholina's diagnostic \u2014 happy to resend the upload and results-call booking link if it's easier.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family in the diagnostic phase \u2014 assessment was sent and is being processed, results call pending.",
+        "student_or_school_names_mentioned": [
+          "Nicholina Senna",
+          "Michael Senna"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mrs. Senna called to confirm daughter Nicholina has completed the diagnostic assessment and asked about next steps. Family is in the diagnostic phase and ready to move toward a results call with Roman.",
+          "what_we_can_do_to_help": "Have Nicholina's family upload the completed diagnostic and book a results call for next week via the link in the assessment email. Roman will review the assessment and recommend a tutoring plan on that call.",
+          "student_first_name": "Nicholina",
+          "student_last_name": "Senna",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Nicholina Senna's completed diagnostic upload and results-call booking; if not received in a few days, follow up with the family",
+          81494333
+        ],
+        [
+          "Roman to review Nicholina's diagnostic once uploaded and lead the results call",
+          38681249
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405534586,
+      "number": "16785993000",
+      "time_pt": "9:38 AM",
+      "matched": true,
+      "contact_label": "Ningning Shi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring placed an outbound follow-up call to Ningning Shi and reached voicemail. She left a message following up on the SMS thread about a newly proposed tutor for Sarah and asked Ningning to call or text back to confirm scheduling. No answer or new information was obtained on this call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Ningning's callback or SMS reply to confirm scheduling the trial lesson with the proposed tutor for Sarah",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "If no response in a day, follow up again via SMS on the existing thread",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ningning is an existing family with an open deal for her 9th-grade daughter Sarah (Honors Biology support). Yolanda already offered a specific tutor via SMS and proposed a trial lesson (previously targeted for 2pm PT / 5pm ET). This outbound call went to voicemail; Yolanda left a message asking Ningning to call back or reply on the SMS thread to confirm. Ningning now expects to hear back / respond via text. If she calls in, open with: 'Hi Ningning, thanks for getting back to us \u2014 are you ready to lock in Sarah's trial lesson with the tutor we proposed?' and be ready to schedule on the spot.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family with an open deal in the pipeline; status is owned by the deal, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Sarah"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda left a voicemail for Ningning following up on the SMS-offered tutor for Sarah, asking her to call or text back to confirm scheduling the trial lesson. No response yet.",
+          "what_we_can_do_to_help": "Continue following up via SMS on the existing thread; once Ningning confirms, book Sarah's trial lesson with the proposed Honors Biology tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda left a voicemail for Ningning following up on the SMS-offered tutor for Sarah, asking her to call or text back to confirm scheduling the trial lesson. No response yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue following up via SMS on the existing thread; once Ningning confirms, book Sarah's trial lesson with the proposed Honors Biology tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Ningning's callback or SMS reply to confirm scheduling the trial lesson with the proposed tutor for Sarah",
+          86868539
+        ],
+        [
+          "If no response in a day, follow up again via SMS on the existing thread",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405543836,
+      "number": "18182624420",
+      "time_pt": "10:07 AM",
+      "matched": true,
+      "contact_label": "Yana Naumova",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Roman (A+ Tutoring) to Yana Naumova, an existing/returning customer. The transcript is largely unintelligible with fragmented references to community college and high school classes. No clear outcome or next step was established from the audible content.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Re-attempt contact with Yana Naumova \u2014 prior call was garbled/unclear; confirm what she needs regarding community college vs. high school class question",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roman placed an outbound call to Yana Naumova (returning customer, daughters Masha and Diana, previously discussed diagnostics for science academy). The call was mostly unintelligible \u2014 audio issues and fragmented speech. Roman mentioned something about community college vs. a high school class. No clear next step was set. Yana is a returning customer so treat warmly. Suggested opener: 'Hi Yana, it's A+ Tutoring following up \u2014 our last call had a bad connection. Can you tell me again what you're looking for help with for Masha and Diana?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Yana is a returning customer with an active deal (Meeting Booked); do not demote status from the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call \u2014 audio was very poor and most of the conversation was unintelligible. Roman appeared to reference community college vs. a high school class, but no clear need or outcome was captured.",
+          "what_we_can_do_to_help": "Re-attempt contact with Yana to clarify what she needs regarding her daughters' classes (community college vs. high school) and confirm any diagnostic/tutoring next steps.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call \u2014 audio was very poor and most of the conversation was unintelligible. Roman appeared to reference community college vs. a high school class, but no clear need or outcome was captured."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-attempt contact with Yana to clarify what she needs regarding her daughters' classes (community college vs. high school) and confirm any diagnostic/tutoring next steps."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Re-attempt contact with Yana Naumova \u2014 prior call was garbled/unclear; confirm what she needs regarding community college vs. high school class question",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405549408,
+      "number": "13106008229",
+      "time_pt": "10:28 AM",
+      "matched": true,
+      "contact_label": "Alison Turner",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Alison Turner regarding Hudson's HSPT diagnostic and tutoring interest. The call went to voicemail and Paola left a message asking Alison to call back to reconnect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Alison; if no response in a few days, try another follow-up (call/email/text) about the HSPT diagnostic and next steps",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Alison Turner (mom of Hudson, going into 8th at Laurel Hall, prepping for the December HSPT for Notre Dame). Alison had previously been sent the HSPT diagnostic and we're waiting for her to return it/schedule 1:1 online test prep to complement Hudson's Notre Dame group class starting in October. No callback time was set. If she calls back, open with: \"Hi Alison, this is [name] at A+ Tutoring returning Paola's message \u2014 just wanted to check in on Hudson's HSPT diagnostic and figure out the best time to get his 1:1 prep started before the December test.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 did not actually connect with Alison, so keep existing QTL - Diagnostic Sent status.",
+        "student_or_school_names_mentioned": [
+          "Hudson",
+          "Laurel Hall",
+          "Notre Dame"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola left a voicemail following up on Hudson's HSPT diagnostic and tutoring interest. Awaiting callback from Alison.",
+          "what_we_can_do_to_help": "Continue follow-up outreach (call/email/text) to get Hudson's HSPT diagnostic returned and 1:1 online test prep scheduled before the December HSPT.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola left a voicemail following up on Hudson's HSPT diagnostic and tutoring interest. Awaiting callback from Alison."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach (call/email/text) to get Hudson's HSPT diagnostic returned and 1:1 online test prep scheduled before the December HSPT."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Alison; if no response in a few days, try another follow-up (call/email/text) about the HSPT diagnostic and next steps",
           81494333
         ]
       ],
