@@ -291,9 +291,15 @@
     405612156,
     405616508,
     405629251,
-    405629267
+    405629267,
+    405645307,
+    405647682,
+    405649179,
+    405653727,
+    405653795,
+    405658576
   ],
-  "last_run_utc": "2026-08-18T19:59:16.411523+00:00",
+  "last_run_utc": "2026-08-18T20:34:09.466394+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -1085,6 +1091,247 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 405645307,
+      "number": "13104028006",
+      "time_pt": "1:09 PM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Pete Flores called from the parking lot near Ventura and Sherman Oaks trying to locate our in-person tutoring office. He asked if we were up the stairs and mentioned he was looking to be added to the tutoring system. Before Janelle could gather details, he said he found the location and ended the call. No student details, subject, or scheduling was discussed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "If Pete comes inside, greet him and capture full intake details (student name, grade, school, subject need, modality) since none were gathered on the call.",
+            "owner_hint": null
+          },
+          {
+            "item": "If he doesn't walk in within the day, call 310-402-8006 back to follow up on his tutoring inquiry.",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Pete Flores (310-402-8006) called from our parking lot at Ventura & Sherman Oaks looking for the in-person location and said he wanted to be added to the tutoring system. Tone was casual/rushed \u2014 he hung up saying he found the office before we could get any details. No student info, grade, subject, or modality was captured, and nothing was promised. If he walks in, greet him and do a full intake; if he doesn't appear, call him back. Suggested opener: 'Hi Pete, this is ___ from A+ Tutoring \u2014 you called earlier looking for our office. Did you find us okay, and can I learn a bit about the student you'd like to get set up with tutoring?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family who briefly connected but shared no student details or need; defaulting to We Connected.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Pete called from the parking lot at Ventura & Sherman Oaks looking for our in-person office; said he wanted to be added to the tutoring system. He found the location and hung up before sharing any student details.",
+          "what_we_can_do_to_help": "If he walks in, do a full intake to learn about his student and needs; otherwise call 310-402-8006 back to gather details and start an inquiry.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Pete called from the parking lot at Ventura & Sherman Oaks looking for our in-person office; said he wanted to be added to the tutoring system. He found the location and hung up before sharing any student details."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "If he walks in, do a full intake to learn about his student and needs; otherwise call 310-402-8006 back to gather details and start an inquiry."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "If Pete comes inside, greet him and capture full intake details (student name, grade, school, subject need, modality) since none were gathered on the call.",
+          81494333
+        ],
+        [
+          "If he doesn't walk in within the day, call 310-402-8006 back to follow up on his tutoring inquiry.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405647682,
+      "number": "13104028006",
+      "time_pt": "1:11 PM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Demelco called the number on file (310-402-8006) trying to find A+'s in-person Studio City office (Ventura Blvd, Suite 207) for help with an upcoming chemistry class. Amanda/Yolanda confirmed the address and suite, said staff should be there, and offered to text the location. Demelco was going to knock at 207; Yolanda asked him to let her know if he got in so she could alert the on-site team. No student intake details beyond 'chemistry' were captured.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Alert the Studio City Suite 207 on-site staff that Demelco is at the door looking for chemistry tutoring help and to let him in",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Text the Studio City office address/suite info to 310-402-8006",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "If Demelco doesn't make it inside, call 310-402-8006 back to do a full intake (student name, grade, school, chemistry-specific needs, timing)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Demelco called the main line trying to physically find our Studio City office (Ventura Blvd, Suite 207) \u2014 he was already standing outside and the door appeared locked. He's looking for tutoring help with an upcoming chemistry class (sounds like it could be for himself or a student \u2014 not clarified). Tone was patient but a little confused. Yolanda confirmed the suite, said staff should be there, offered to text the location, and asked him to report back once he got in. He now expects (a) someone to open the door / greet him at Suite 207, and (b) a text with the address. If he doesn't walk in successfully, call 310-402-8006 back and open with: 'Hi Demelco, this is ___ from A+ Tutoring following up \u2014 were you able to get into our Studio City office? I want to make sure we get you set up for that chemistry help.' Then run a full intake (who the student is, grade, school, what chemistry course, timeline).",
+        "lead_status": "no_change",
+        "lead_status_reason": "Record is already 'We Connected' from the prior 2026-08-18 call about the same walk-in inquiry; this call is a continuation and no new qualifying info (charter funding, diagnostic need) surfaced to change the status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Caller (gave name as Demelco) called back from 310-402-8006 while standing outside Suite 207 on Ventura Blvd in Studio City \u2014 door appeared locked. He's seeking tutoring help for an upcoming chemistry class. No student name, grade, or school captured yet.",
+          "what_we_can_do_to_help": "Ping the Studio City Suite 207 team to open up and greet Demelco, and text him the address. If he doesn't get inside, call 310-402-8006 back and run a full intake focused on the chemistry need (who the student is, course level, school, timeline).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Caller (gave name as Demelco) called back from 310-402-8006 while standing outside Suite 207 on Ventura Blvd in Studio City \u2014 door appeared locked. He's seeking tutoring help for an upcoming chemistry class. No student name, grade, or school captured yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Ping the Studio City Suite 207 team to open up and greet Demelco, and text him the address. If he doesn't get inside, call 310-402-8006 back and run a full intake focused on the chemistry need (who the student is, course level, school, timeline)."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Alert the Studio City Suite 207 on-site staff that Demelco is at the door looking for chemistry tutoring help and to let him in",
+          86868539
+        ],
+        [
+          "Text the Studio City office address/suite info to 310-402-8006",
+          86868539
+        ],
+        [
+          "If Demelco doesn't make it inside, call 310-402-8006 back to do a full intake (student name, grade, school, chemistry-specific needs, timing)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405649179,
+      "number": "13104028006",
+      "time_pt": "1:15 PM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Pete Flores (310-402-8006) called back after visiting our Studio City office and finding the door locked with no staff available. Janelle offered to reach the office person, but Pete said he was no longer interested in pursuing tutoring with us and hung up. This is the second failed in-person visit today; the lead is effectively lost due to the office being closed/unattended.",
+        "caller_type": "parent",
+        "intent": "complaint",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Escalate to management that Pete Flores (310-402-8006) walked away from the inquiry because no one was at the Studio City Suite 207 office when he visited \u2014 investigate why the office was unstaffed/locked today.",
+            "owner_hint": null
+          },
+          {
+            "item": "Optional recovery: attempt one goodwill callback to 310-402-8006 to apologize for the missed visit and see if he'll reconsider; do not pressure.",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Pete Flores (310-402-8006) called in frustrated after driving to our Studio City Suite 207 office and finding it locked with no staff \u2014 this is his second attempt today. He told Janelle he is NOT going to move forward with A+ and hung up before sharing any student details. Tone was curt/disappointed, not hostile. He is not expecting a callback. If we attempt recovery, open with: 'Pete, this is [name] from A+ Tutoring \u2014 I'm so sorry you drove out to our Studio City office twice today and no one was there to help you. That's on us. I'd love to make it right if you're open to it.' Also please loop in management about why Suite 207 was unattended.",
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Caller explicitly withdrew ('I'm not going to be going with you guys') after a poor in-person experience \u2014 no longer a prospective lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Call] Pete called back after arriving at the Studio City office and finding the door locked with no one available. He said he is no longer interested in pursuing tutoring with A+ and ended the call before sharing any student details. Second failed in-person visit today.",
+          "what_we_can_do_to_help": "[Call] Escalate internally about Suite 207 being unstaffed/locked during business hours today \u2014 this cost us the lead. Optional: one apologetic goodwill callback to 310-402-8006 to try to recover, but do not pressure; he clearly disengaged.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Pete called back after arriving at the Studio City office and finding the door locked with no one available. He said he is no longer interested in pursuing tutoring with A+ and ended the call before sharing any student details. Second failed in-person visit today."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Escalate internally about Suite 207 being unstaffed/locked during business hours today \u2014 this cost us the lead. Optional: one apologetic goodwill callback to 310-402-8006 to try to recover, but do not pressure; he clearly disengaged."
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Escalate to management that Pete Flores (310-402-8006) walked away from the inquiry because no one was at the Studio City Suite 207 office when he visited \u2014 investigate why the office was unstaffed/locked today.",
+          81494333
+        ],
+        [
+          "Optional recovery: attempt one goodwill callback to 310-402-8006 to apologize for the missed visit and see if he'll reconsider; do not pressure.",
+          81494333
+        ]
+      ],
+      "ticket_id": "47795502005",
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
