@@ -7,7 +7,7 @@
 # lead status = OPEN_DEAL). Emails are AUTOMATED_DRAFT until Roman's final
 # review; enroll.py publishes both + enables the workflow at launch.
 # The six full segments below stay workflow_id-less until pilot results land.
-armed: false          # ← Roman flips to true tonight after reviewing the emails
+armed: true           # Roman 2026-08-18 2:10 PM PT: "lets arm and land now"
 launch_date: "2026-08-18"
 timezone: America/Los_Angeles
 pilot:
