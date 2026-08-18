@@ -266,10 +266,205 @@
     405268645,
     405278643,
     405278965,
-    405307453
+    405307453,
+    405334130,
+    405428256,
+    405436892,
+    405437133,
+    405449667,
+    405456316,
+    405470198,
+    405342775
   ],
-  "last_run_utc": "2026-08-18T03:09:39.010213+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-18T15:36:38.030935+00:00",
+  "pending_digest": [
+    {
+      "call_id": 405334130,
+      "number": "18184612243",
+      "time_pt": "8:09 PM",
+      "matched": true,
+      "contact_label": "Buki Famosa",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Buki Famosa called A+ Tutoring looking for a tutor for her 12th-grade daughter and asked about services and pricing. Roman answered but was in an area with poor cell service and asked to call her back in 10-15 minutes. Buki agreed and gave her name. No substantive discovery or pricing conversation happened on this call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Roman to call Buki back in 10-15 minutes to discuss services, pricing, and her 12th-grade daughter's tutoring needs",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Buki Famosa (existing HubSpot contact, previously inquired via Instagram about statistics/anatomy homework support for her 12th-grade daughter Eva at Burbank HS) called back asking about our services and pricing. Roman couldn't take the call \u2014 bad cell service \u2014 and promised to call her back in ~10-15 minutes. She was polite and agreeable. She has NOT yet been told pricing or program details on this call. When you call her back, open with: 'Hi Buki, this is Roman from A+ Tutoring calling you back as promised \u2014 thanks for your patience.' Then do proper discovery (confirm daughter is still Eva, 12th grade at Burbank HS, subjects \u2014 record shows statistics and anatomy homework support, confirm online vs in-person, timing/frequency) before quoting. She specifically asked how much we charge and how we work, so be ready to walk her through the model and pricing after discovery.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in an OPEN_DEAL stage (owned by deal pipeline); this brief callback request doesn't change qualification and shouldn't demote the deal status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Buki called back inquiring about services and pricing for her 12th-grade daughter. Roman was in a bad-service area and asked to call her back in 10-15 minutes; she agreed.",
+          "what_we_can_do_to_help": "Roman to call Buki back within 15 minutes to complete discovery (confirm student, subjects, modality, schedule) and walk her through how we work and pricing.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Buki called back inquiring about services and pricing for her 12th-grade daughter. Roman was in a bad-service area and asked to call her back in 10-15 minutes; she agreed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman to call Buki back within 15 minutes to complete discovery (confirm student, subjects, modality, schedule) and walk her through how we work and pricing."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Roman to call Buki back in 10-15 minutes to discuss services, pricing, and her 12th-grade daughter's tutoring needs",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405342775,
+      "number": "18184612243",
+      "time_pt": "8:46 PM",
+      "matched": true,
+      "contact_label": "Buki Famosa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Roman called Buki Famosa back to complete discovery for her 12th-grade daughter Eva at Burbank HS, who needs homework/test support in AP Statistics and Anatomy/Physiology. Roman walked through pricing ($95/hr or prepaid packages), recommended the 20-hour Prep package at $83/hr ($1,660), and Buki agreed to purchase it. They scheduled a first session for tomorrow, then ongoing Mon/Wed/Fri at 4:30pm, 45-minute sessions (open to trying 30-min based on Eva's 504 plan and focus/anxiety needs). Roman confirmed a scheduling text and payment link would go out; Buki is expecting both tomorrow morning.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Buki a scheduling confirmation text tomorrow morning for tomorrow's first session and ongoing M/W/F 4:30pm slots",
+            "owner_hint": "Roman's team / scheduling"
+          },
+          {
+            "item": "Match Eva with a tutor for AP Statistics and Anatomy/Physiology, ready to start tomorrow",
+            "owner_hint": null
+          },
+          {
+            "item": "Send tutor profile + package selection/payment link (20-hour Prep package) to Buki",
+            "owner_hint": null
+          },
+          {
+            "item": "Note Eva's 504 plan (focus challenges, anxiety) for the assigned tutor and be open to trying 30-min sessions if 45-min doesn't fit",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Buki Famosa (warm, engaged, ready to buy) just committed to the 20-hour Prep package ($83/hr, $1,660) for her 12th-grade daughter Eva at Burbank HS. Eva needs help with AP Statistics (test this Wednesday) and Anatomy/Physiology \u2014 homework support, test prep, and executive-function/motivation help. Eva has a 504 plan (focus challenges, anxiety). Roman promised: (1) a first session TOMORROW (mom will tell Eva in the morning), (2) ongoing schedule Mon/Wed/Fri after 4:30pm, 45-min sessions with openness to trying 30-min if that fits Eva better, (3) a scheduling text from our team tomorrow morning, and (4) an email with the tutor's profile and a payment link for the 20-hour package. Also flagged SAT plan: Eva sitting in October and November. Open with: \"Hi Buki, following up on your call with Roman last night \u2014 here's Eva's tutor and the payment link for the 20-hour Prep package, and let's confirm tomorrow's first session time.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with in depth; not a charter family and no diagnostic needed \u2014 Buki committed to a package and scheduled sessions.",
+        "student_or_school_names_mentioned": [
+          "Eva Famosa",
+          "Buki Famosa",
+          "Burbank High School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roman connected with Buki for full discovery on 12th-grader Eva (Burbank HS). Eva needs homework support, test prep, and executive-function/motivation help in AP Statistics (test this Wednesday) and Anatomy/Physiology. Eva has a 504 plan with focus challenges and anxiety. SAT planned for October and November.",
+          "what_we_can_do_to_help": "Buki purchased the 20-hour Prep package ($83/hr, $1,660). First session scheduled for tomorrow, then ongoing Mon/Wed/Fri after 4:30pm, 45-min sessions (open to 30-min if better fit for Eva). Team to send scheduling text tomorrow AM plus tutor profile and payment link. Tutor should be briefed on Eva's 504 plan.",
+          "student_first_name": "Eva",
+          "student_last_name": "Famosa",
+          "grade_level": "12",
+          "student_school": "Burbank High School",
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": "Google Search",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roman connected with Buki for full discovery on 12th-grader Eva (Burbank HS). Eva needs homework support, test prep, and executive-function/motivation help in AP Statistics (test this Wednesday) and Anatomy/Physiology. Eva has a 504 plan with focus challenges and anxiety. SAT planned for October and November."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Buki purchased the 20-hour Prep package ($83/hr, $1,660). First session scheduled for tomorrow, then ongoing Mon/Wed/Fri after 4:30pm, 45-min sessions (open to 30-min if better fit for Eva). Team to send scheduling text tomorrow AM plus tutor profile and payment link. Tutor should be briefed on Eva's 504 plan."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Famosa"
+        ],
+        [
+          "student_school",
+          "Burbank HS",
+          "Burbank High School"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "how_did_you_hear",
+          "Instagram",
+          "Google Search",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send Buki a scheduling confirmation text tomorrow morning for tomorrow's first session and ongoing M/W/F 4:30pm slots",
+          81494333
+        ],
+        [
+          "Match Eva with a tutor for AP Statistics and Anatomy/Physiology, ready to start tomorrow",
+          81494333
+        ],
+        [
+          "Send tutor profile + package selection/payment link (20-hour Prep package) to Buki",
+          81494333
+        ],
+        [
+          "Note Eva's 504 plan (focus challenges, anxiety) for the assigned tutor and be open to trying 30-min sessions if 45-min doesn't fit",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
