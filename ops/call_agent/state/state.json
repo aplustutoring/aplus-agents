@@ -301,9 +301,14 @@
     405661869,
     405674681,
     405662691,
-    405666132
+    405666132,
+    405682602,
+    405681782,
+    405686209,
+    405688497,
+    405689304
   ],
-  "last_run_utc": "2026-08-18T21:02:04.925935+00:00",
+  "last_run_utc": "2026-08-18T21:40:11.138662+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -1468,12 +1473,186 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 405682602,
+      "number": "16264232383",
+      "time_pt": "2:12 PM",
+      "matched": true,
+      "contact_label": "Briana Ramirez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Briana Ramirez, a returning A+ family, called to re-enroll her son (previously tutored) now that he is homeschooled through iLead charter. She wants in-person tutoring in West Covina for both reading and math, ideally twice a week each, funded by charter instructional funds. Yolanda quoted $130/hr in-person, $108/hr at the 20-hour package ($2,160 for ~10 weeks), and $75/hr online for charter families. Briana said the 20-hour in-person package is over budget right now since they already purchased books; Yolanda offered to text her to work out a plan.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Text Briana to work out a package/pricing option that fits her charter fund budget for in-person reading + math tutoring",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Check tutor availability in West Covina who can cover both ELA (reading) and math",
+            "owner_hint": null
+          },
+          {
+            "item": "Confirm iLead charter fund balance/allotment options with Briana and structure a package accordingly",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Briana Ramirez (returning A+ family, warm and eager) called to restart tutoring for her son, now homeschooled through iLead charter. She wants IN-PERSON in West Covina, reading + math, ideally 2x/week each, funded by charter. Quoted: $130/hr in-person standard, $108/hr at 20-hr package (~$2,160, ~10 weeks), $75/hr online charter rate. She said 20-hr in-person is over her current charter fund budget (already spent some on books) and online didn't work for her son previously \u2014 he needs 1:1 in-person. Yolanda promised to TEXT her to figure out a workable package. Also need to check West Covina in-person tutor availability (could be 1\u20132 week lead time) who can do both ELA and math. Open with: \"Hi Briana, this is ___ from A+ following up on your call with Yolanda \u2014 I've been looking at in-person options in West Covina that fit your iLead funds for reading and math, want to walk through a couple of package ideas?\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Returning customer with an OPEN_DEAL \u2014 status is owned by the deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Terry Williams",
+          "iLead"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning family \u2014 son (previously tutored at A+) is now homeschooled through iLead charter. Mom wants to restart tutoring for READING and MATH, ideally 2x/week each. Online didn't work last time; he needs 1:1 in-person. Family is in West Covina.",
+          "what_we_can_do_to_help": "Quoted in-person: $130/hr standard, $108/hr at 20-hr package ($2,160, ~10 weeks); online charter rate $75/hr. 20-hr in-person is over current charter fund budget. Yolanda to text Briana to structure a package that fits available iLead funds; need to source an in-person tutor in West Covina who covers both ELA and math (1\u20132 week lead time possible).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "iLead (homeschool/charter)",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family \u2014 son (previously tutored at A+) is now homeschooled through iLead charter. Mom wants to restart tutoring for READING and MATH, ideally 2x/week each. Online didn't work last time; he needs 1:1 in-person. Family is in West Covina."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted in-person: $130/hr standard, $108/hr at 20-hr package ($2,160, ~10 weeks); online charter rate $75/hr. 20-hr in-person is over current charter fund budget. Yolanda to text Briana to structure a package that fits available iLead funds; need to source an in-person tutor in West Covina who covers both ELA and math (1\u20132 week lead time possible)."
+        ],
+        [
+          "student_school",
+          "ILEAD",
+          "iLead (homeschool/charter)"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Briana to work out a package/pricing option that fits her charter fund budget for in-person reading + math tutoring",
+          86868539
+        ],
+        [
+          "Check tutor availability in West Covina who can cover both ELA (reading) and math",
+          81494333
+        ],
+        [
+          "Confirm iLead charter fund balance/allotment options with Briana and structure a package accordingly",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405681782,
+      "number": "18186422559",
+      "time_pt": "2:15 PM",
+      "matched": true,
+      "contact_label": "Hellen Cresor",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Hellen Cresor regarding tutoring for her twins Tegan and Paxton. The call went to voicemail; Paola left a message asking Hellen to call back at a convenient time. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with Hellen if she doesn't return the voicemail within a few days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Hellen Cresor following up on tutoring interest for her twins Tegan (2nd) and Paxton (3rd) at Excel Academy (charter, QTL - Charter status). No callback time was agreed. Hellen expects a call back at some point but has not responded yet. If she calls back, open with: 'Hi Hellen, thanks for getting back to us \u2014 I wanted to follow up on tutoring for Tegan and Paxton and figure out next steps for getting them started with an in-person tutor.' Reference her prior interest in in-person, play-based tutoring in ELA/Math, and Paxton's January testing.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound follow-up went to voicemail; no new info to change existing QTL - Charter status.",
+        "student_or_school_names_mentioned": [
+          "Tegan",
+          "Paxton",
+          "Excel Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola left a voicemail for Hellen following up on tutoring interest for Tegan and Paxton; awaiting callback.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola left a voicemail for Hellen following up on tutoring interest for Tegan and Paxton; awaiting callback."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with Hellen if she doesn't return the voicemail within a few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "19092134868",
       "time_pt": "11:38 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18182964016",
+      "time_pt": "2:25 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18188385534",
+      "time_pt": "2:30 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "16265408413",
+      "time_pt": "2:32 PM",
       "reason": "hang-up"
     }
   ],
