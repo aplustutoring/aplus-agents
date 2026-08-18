@@ -1,0 +1,32 @@
+name: Email — draft feedback weekly (Fri 4 PM PT)
+
+# Tier-2 report: how many agent drafts the team sent as-is vs edited/rewritten/
+# discarded this week, with example edits. See email/src/draft_feedback.py.
+env:
+  TZ: America/Los_Angeles
+
+on:
+  schedule:
+    - cron: "0 23 * * 5"   # 23:00 UTC Fri = 4 PM PT (PDT)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Weekly draft report
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: python -m src.draft_feedback --weekly

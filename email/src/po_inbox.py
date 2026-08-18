@@ -23,7 +23,7 @@ import sys
 import traceback
 from datetime import datetime, timedelta, timezone
 
-from . import audit, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
@@ -101,7 +101,8 @@ def po_extract(body: str, subject: str, sender: str,
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
     c = cfg()["classifier"]
     msg = client.messages.create(
-        model=c["model"], max_tokens=c["max_tokens"], system=PO_SYSTEM,
+        model=c["model"], max_tokens=c["max_tokens"],
+        system=PO_SYSTEM + draft_feedback.style_rules_prompt(),
         messages=[{"role": "user",
                    "content": _content_blocks(body, subject, sender, attachments or [])}],
     )
@@ -784,6 +785,8 @@ def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) ->
             continue
         d_msg = (draft or {}).get("message") or {}
         chase_thread = d_msg.get("threadId") or msg["threadId"]
+        draft_feedback.register(draft, "parent_chase", body, to_addr, "po_inbox",
+                                thread_id=chase_thread, meta={"students": student_line})
         try:
             if d_msg.get("id"):
                 gm.apply_labels(d_msg["id"], ["A+ Agent/Draft Pending"])
@@ -830,9 +833,18 @@ def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
     sync NOW — the whole downstream chain unblocks with zero manual data entry."""
     deal_id = chase.get("deal_id")
     p_email = (po.get("parent_email") or "").strip().lower()
-    if not deal_id or not p_email:
+    if not deal_id or not p_email or _internal_email(p_email):
         return
     try:
+        # rename from the LIVE deal name, never the audit's stale copy — a
+        # human may have fixed it since (Pilibos incident, 2026-08-14)
+        try:
+            live = hs._get(f"/crm/v3/objects/deals/{deal_id}", {"properties": "dealname"})
+            live_name = (live.get("properties") or {}).get("dealname") or ""
+        except Exception:  # noqa: BLE001
+            live_name = ""
+        if live_name:
+            chase = {**chase, "deal_name": live_name}
         c = hs.find_contact_by_email(p_email)
         created = False
         if not c:
@@ -1028,13 +1040,50 @@ def _sweep_chase_drafts() -> None:
                           "draft_id": draft_id, "deal_id": did})
 
 
+_PLACEHOLDER_STUDENTS = {"the student", "student", "n/a", "unknown", ""}
+
+
+def _internal_email(email: str) -> bool:
+    dom = (cfg().get("internal", {}) or {}).get("domain", "wetutorathome.com")
+    return (email or "").strip().lower().endswith(f"@{dom}")
+
+
+def _deal_still_needs_parent(deal_id) -> bool:
+    """LIVE check: only a deal still named 'NEEDS PARENT - …' is a candidate
+    for auto-resolution. Kath fixes deals by hand; the audit's stale
+    deal_name must never outrank the portal (the 2026-08-14 'Pilibos
+    Student' incident — five hand-fixed Heartland deals were renamed to a
+    test contact by this sweep)."""
+    try:
+        d = hs._get(f"/crm/v3/objects/deals/{deal_id}", {"properties": "dealname"})
+    except Exception:  # noqa: BLE001
+        return False
+    return "NEEDS PARENT" in ((d.get("properties") or {}).get("dealname") or "")
+
+
 def _sweep_chase_self_resolve() -> None:
     """Open chases re-check HubSpot each run: the family may have appeared on
     its own (called in, intake form) — the August Vouniozos case, where the
-    contact existed hours before anyone read the TOR's reply."""
+    contact existed hours before anyone read the TOR's reply.
+
+    Guards (post-incident): (1) a REAL student name — placeholders like
+    'the student' are never searched; (2) the deal must STILL say NEEDS
+    PARENT in the portal; (3) internal/test contacts (@wetutorathome.com)
+    are never auto-attached."""
     for r in (c for lst in _open_chases().values() for c in lst):
-        parts = (r.get("student") or "").split()
+        student = (r.get("student") or "").strip()
+        if student.lower() in _PLACEHOLDER_STUDENTS:
+            continue
+        parts = student.split()
         if len(parts) < 2:
+            continue
+        if not _deal_still_needs_parent(r.get("deal_id")):
+            # already fixed by a human (or resolved elsewhere) → close the
+            # chase so it stops being swept, but touch NOTHING on the deal
+            audit.append({"message_id": f"parent-chase-resolved:{r.get('deal_id')}",
+                          "source": "po_inbox", "action_taken": "parent_chase_resolved",
+                          "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id"),
+                          "resolved_via": "deal no longer NEEDS PARENT (human fixed)"})
             continue
         try:
             parents = hs.find_family_contact(parts[0], " ".join(parts[1:]))
@@ -1044,7 +1093,7 @@ def _sweep_chase_self_resolve() -> None:
             continue
         props = parents[0].get("properties") or {}
         em = (props.get("email") or "").strip()
-        if not em:
+        if not em or _internal_email(em):
             continue
         notes: list[str] = []
         _resolve_parent_chase(r, {"parent_email": em,
@@ -1498,6 +1547,8 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             bcc = (cfg().get("hubspot", {}) or {}).get("bcc_log_address") or ""
             d = gm.create_draft_reply(m["threadId"], to_addr, m["subject"], draft,
                                       m.get("message_id_header", ""), bcc=bcc)
+            draft_feedback.register(d, "reply", draft, to_addr, "po_inbox",
+                                    thread_id=m["threadId"])
             dm_id = ((d or {}).get("message") or {}).get("id")
             if dm_id:
                 try:
@@ -1589,6 +1640,10 @@ def run() -> None:
         _sweep_chase_self_resolve()
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  chase self-resolve sweep failed (non-fatal): {e}")
+    try:
+        draft_feedback.sweep()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  draft-feedback sweep failed (non-fatal): {e}")
     if not DRY_RUN:
         cur_path.write_text(_json.dumps({"last_epoch": newest}))
 

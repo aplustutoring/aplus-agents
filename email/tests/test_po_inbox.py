@@ -1711,6 +1711,9 @@ def test_chase_self_resolve_sweep(monkeypatch):
              "student": "Kruz Vouniozos", "pipeline": "907748",
              "sla_due": "2026-09-01T10:00:00-07:00"}]
     monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.hs, "_get",       # deal still genuinely NEEDS PARENT
+                        lambda path, params=None: {"properties": {"dealname":
+                                                   "NEEDS PARENT - Kruz Vouniozos - iLead 1 - 26/27"}})
     monkeypatch.setattr(po.hs, "find_family_contact",
                         lambda sf, ln: [{"id": "C-aug", "properties":
                                          {"email": "august12v@gmail.com",
@@ -1791,3 +1794,71 @@ def test_charter_sales_not_notified_before_send(monkeypatch):
     monkeypatch.setattr(po.slack_client, "dm",
                         lambda u, t: (_ for _ in ()).throw(AssertionError("unsent → no Paola ping")))
     po._sweep_parent_chases()
+
+
+# ── Pilibos incident (2026-08-14): self-resolve guards ───────────────────────
+
+def test_self_resolve_skips_placeholder_student(monkeypatch):
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH", "deal_id": "D1",
+             "student": "the student", "sla_due": "2026-09-01T10:00:00-07:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: (_ for _ in ()).throw(AssertionError("must not search 'the student'")))
+    po._sweep_chase_self_resolve()
+
+
+def test_self_resolve_respects_live_deal_name(monkeypatch):
+    # deal already fixed by Kath (no longer NEEDS PARENT) → close the chase,
+    # touch nothing on the deal
+    appended = []
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH", "deal_id": "D1",
+             "student": "Cooper Doyal", "sla_due": "2026-09-01T10:00:00-07:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.hs, "_get",
+                        lambda path, params=None: {"properties": {"dealname":
+                                                   "Kristy Doyal - Cooper Doyal - Heartland 1 - 26/27"}})
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: (_ for _ in ()).throw(AssertionError("fixed deal must not be searched")))
+    monkeypatch.setattr(po, "_resolve_parent_chase",
+                        lambda *a: (_ for _ in ()).throw(AssertionError("must not resolve")))
+    po._sweep_chase_self_resolve()
+    assert appended and appended[0]["action_taken"] == "parent_chase_resolved"
+    assert "human fixed" in appended[0]["resolved_via"]
+
+
+def test_self_resolve_never_attaches_internal_contact(monkeypatch):
+    recs = [{"action_taken": "parent_chase_opened", "thread_id": "TH", "deal_id": "D1",
+             "student": "Cooper Doyal", "sla_due": "2026-09-01T10:00:00-07:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.hs, "_get",
+                        lambda path, params=None: {"properties": {"dealname": "NEEDS PARENT - Cooper Doyal - Heartland 1 - 26/27"}})
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: [{"id": "C-test", "properties":
+                                         {"email": "roman+001@wetutorathome.com",
+                                          "firstname": "Pilibos", "lastname": "Student"}}])
+    monkeypatch.setattr(po, "_resolve_parent_chase",
+                        lambda *a: (_ for _ in ()).throw(AssertionError("test contact must not attach")))
+    po._sweep_chase_self_resolve()
+
+
+def test_resolve_renames_from_live_deal_not_stale_audit(monkeypatch):
+    patches = []
+    chase = {"deal_id": "D9", "deal_name": "NEEDS PARENT - Heartland 2 - 26/27",   # stale
+             "pipeline": "907748", "po_number": "X", "thread_id": "TH"}
+    monkeypatch.setattr(po.hs, "_get",
+                        lambda path, params=None: {"properties": {"dealname":
+                                                   "NEEDS PARENT - Charlotte Czaja - Heartland 1 - 26/27"}})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m_, p_, payload=None: patches.append((p_, payload)) or {})
+    monkeypatch.setattr(po.audit, "append", lambda r: None)
+    monkeypatch.setattr(dsy_mod, "sync_deal", lambda d, **k: {"action_taken": "tw_synced"})
+    po._resolve_parent_chase(chase, {"parent_email": "angela@x.com", "parent_first": "Angela",
+                                     "parent_last": "Czaja"}, [])
+    renames = [p for p in patches if (p[1] or {}).get("properties", {}).get("dealname")]
+    assert renames[0][1]["properties"]["dealname"] == \
+        "Angela Czaja - Charlotte Czaja - Heartland 1 - 26/27"   # live name, student kept

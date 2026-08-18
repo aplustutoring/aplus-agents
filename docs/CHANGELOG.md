@@ -8,6 +8,59 @@ Newest entries first.
 
 ---
 
+## 2026-08-17 — Draft feedback loop (Tiers 1+2) — the team's edits train the drafter
+
+**What:** New `email/src/draft_feedback.py`. Tier 1: every agent-created draft
+(chase + reply, charter@ inbox) is registered with its exact text
+(state/draft_registry.jsonl); each 15-min run settles drafts that left Gmail
+Drafts by comparing to what was actually SENT on the thread — sent_as_is (≥97%
+similar) / edited (≥50%) / rewritten / discarded — flips the sent message to
+`A+ Agent/Sent`, and stores the unified diff. Tier 2: edits/rewrites/discards
+become one file each in `corrections/email-drafts/` (fleet corrections format)
+plus a distilled line in `STYLE-RULES.md`, which BOTH drafting prompts (PO
+extractor + admin classifier) load at runtime (last 25 rules) — tomorrow's
+drafts carry yesterday's edits. Weekly Friday 4 PM PT one-liner to the
+visionary seat (new email-draft-feedback-weekly.yml). Tier 3 unchanged: a reply
+to the aplus bot in #agent-feedback files a rule via the feedback agent.
+Admin-inbox drafts (HubSpot conversation comments) consume the rules but
+aren't outcome-tracked yet — different plumbing, follow-up.
+
+**Why:** Roman: "is there a way for the agent to get input from kath and from
+all others when drafts are made whether the draft was good or needs
+improvement" → "LETS DO IT".
+
+**Files:** `email/src/draft_feedback.py` (new), `email/src/po_inbox.py`,
+`email/src/classifier.py`, `email/tests/test_draft_feedback.py` (new; suite
+239 green), `.github/workflows/{email-po-inbox,email-draft-feedback-weekly}.yml`,
+`corrections/email-drafts/README.md` (new).
+
+## 2026-08-17 — INCIDENT: chase self-resolve renamed 5 Heartland deals to "Pilibos Student"
+
+**What:** Roman: "how come heartland deals were named pilibos?" Property
+history: integration 39943154 (our app) at 2026-08-14 19:35Z — the po_inbox
+`_sweep_chase_self_resolve` shipped that day. Root cause: the Heartland chases
+were opened BEFORE the multi-student fix, so their audit records carried the
+placeholder student "the student"; the sweep searched family contacts for it,
+found exactly one match — Roman's TEST contact "Pilibos Student"
+(roman+001@wetutorathome.com) — and "resolved" all five chases against deals
+Kath had already fixed by hand: renamed them from the audit's STALE
+"NEEDS PARENT - Heartland N" to "Pilibos Student - Heartland N" and attached
+the test contact. Repaired in-portal: five names restored (Kristy Doyal /
+Angela Czaja ×3 / Jamie Holloway), test contact detached from all five (real
+parents untouched). Code guards: (1) placeholder student strings never
+searched; (2) the deal must STILL say NEEDS PARENT in the LIVE portal (human-
+fixed deals just close their chase, touching nothing); (3) internal-domain
+(@wetutorathome.com) contacts never auto-attached; (4) resolution renames
+from the LIVE deal name, never the audit copy. 4 regression tests.
+
+**Why:** Wrote automation that trusted its own stale bookkeeping over the
+portal and treated a placeholder as data. Both fixed at the root.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 231 green).
+
+---
+
 ## 2026-08-17 — Charter Monday launch: 6-way family segmentation + student names (Roman)
 
 **What:** Roman: "split list as segmented as you can make them" (after
