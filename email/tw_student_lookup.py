@@ -15,6 +15,9 @@ for acct, token in tw.accounts().items():
                 cust = c
         lessons = tw.tw_get("lessons", {"student_id": s["id"]}, token=token)
         last_l = max((str(l.get("from_date") or "")[:10] for l in lessons), default="")
+        latest = max(lessons, key=lambda l: str(l.get("from_date") or ""), default={})
+        tutors = sorted({(l.get("employee_name") or "").strip() for l in lessons if l.get("employee_name")})
+        print(f"   last tutor: {latest.get('employee_name') or '-'} | all tutors: {', '.join(tutors) or '-'}")
         print(f"[{acct}] student {s.get('id')} {s.get('first_name')} {s.get('last_name')} "
               f"status={s.get('status')} customer={s.get('customer_id')} "
               f"parent={cust.get('first_name','')} {cust.get('last_name','')} "
