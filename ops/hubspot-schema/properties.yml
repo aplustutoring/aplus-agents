@@ -177,6 +177,20 @@ properties:
         AGENT PROPERTY — written by scripts/charter_gap_analysis.py, do not
         edit by hand. Number of distinct students across the family's charter
         deals since Aug 2025 (drives 1-vs-multi segmentation).
+    - name: charter_winback_replied
+      label: "[Agent] Charter Win-back Replied"
+      group: family
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — set to true when a charter win-back campaign contact
+        replies (Conversations inbox hook + email agent). Workflow exit goal
+        for the win-back sequences so repliers never get the follow-up nudge.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
