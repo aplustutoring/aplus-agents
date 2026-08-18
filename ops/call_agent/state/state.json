@@ -297,9 +297,13 @@
     405649179,
     405653727,
     405653795,
-    405658576
+    405658576,
+    405661869,
+    405674681,
+    405662691,
+    405666132
   ],
-  "last_run_utc": "2026-08-18T20:34:09.466394+00:00",
+  "last_run_utc": "2026-08-18T21:02:04.925935+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -1332,6 +1336,138 @@
       "ticket_id": "47795502005",
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 405662691,
+      "number": "18188261069",
+      "time_pt": "1:38 PM",
+      "matched": true,
+      "contact_label": "Blanca Perez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Blanca Perez regarding prior tutoring inquiry for her son Joseph. Call went to voicemail; Paola left a message asking Blanca to call back to schedule sessions. No contact made.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Blanca; if no response, attempt another follow-up outreach",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Blanca Perez is a prospective family for her son Joseph (4th grade at CWC, ELA and math support originally recommended by teacher). Paola left a voicemail today following up on the prior inquiry \u2014 no live contact yet. Blanca had previously indicated availability 'today or Thursday after 4PM.' She expects a callback to schedule sessions. If reaching out again, open with: 'Hi Blanca, this is [name] from A+ Tutoring following up on Paola's message about Joseph's tutoring \u2014 I'd love to find a time that works to get him started.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only; no live conversation and caller already has 'We Connected' status from prior contact.",
+        "student_or_school_names_mentioned": [
+          "Joseph",
+          "Blanca Perez"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail for Blanca following up on tutoring interest for Joseph. No live contact made.",
+          "what_we_can_do_to_help": "Continue follow-up outreach until Blanca responds; be ready to schedule ELA/math sessions for Joseph per prior notes (availability today or Thursday after 4PM).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail for Blanca following up on tutoring interest for Joseph. No live contact made."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach until Blanca responds; be ready to schedule ELA/math sessions for Joseph per prior notes (availability today or Thursday after 4PM)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Blanca; if no response, attempt another follow-up outreach",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405666132,
+      "number": "18082828769",
+      "time_pt": "1:44 PM",
+      "matched": true,
+      "contact_label": "Shannon Troy",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made a follow-up outbound call to Shannon Troy regarding tutoring for her son Atlas. The call went to voicemail; Paola left a brief message asking Shannon to call back when convenient. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue follow-up outreach to Shannon Troy to move forward on tutoring plan/pricing decision for Atlas",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Shannon Troy (parent of Atlas, 2nd grade at Rio Vista) is a warm prospect \u2014 husband Robert is a returning A+ customer. Roman already sent online and in-home pricing on 8/7 for a recommended 1:1 reading fluency program (3x/week x 45 min). Paola left a voicemail on this follow-up attempt (no contact made). Shannon still owes us a decision after discussing with her husband. Next time you reach her, open with: 'Hi Shannon, this is [name] from A+ following up on the reading tutoring pricing Roman sent for Atlas \u2014 wanted to see if you and Robert had a chance to talk it over and answer any questions.' Keep it warm and low-pressure given the family history with us.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation, so no basis to change status. Existing prospective-family record with prior contact; leaving status as-is.",
+        "student_or_school_names_mentioned": [
+          "Shannon Troy",
+          "Atlas"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back when convenient.",
+          "what_we_can_do_to_help": "Continue follow-up outreach until we reach Shannon to close the loop on the pricing Roman sent and move forward with a tutoring plan for Atlas.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back when convenient."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach until we reach Shannon to close the loop on the pricing Roman sent and move forward with a tutoring plan for Atlas."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue follow-up outreach to Shannon Troy to move forward on tutoring plan/pricing decision for Atlas",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
