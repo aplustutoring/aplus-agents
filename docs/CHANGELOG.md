@@ -59,6 +59,8 @@ portal and treated a placeholder as data. Both fixed at the root.
 **Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
 (suite 231 green).
 
+---
+
 ## 2026-08-17 — Charter Monday launch: 6-way family segmentation + student names (Roman)
 
 **What:** Roman: "split list as segmented as you can make them" (after

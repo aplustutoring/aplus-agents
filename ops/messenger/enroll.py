@@ -78,8 +78,27 @@ def main():
 
     live = args.confirm == "LAUNCH"
     pairs = [p for p in cfg.get("enrollments", []) if p.get("workflow_id")]
+    pilot = cfg.get("pilot") or {}
+    if pilot.get("workflow_id"):
+        pairs = [{"list_id": pilot["list_id"], "workflow_id": pilot["workflow_id"],
+                  "email_ids": pilot.get("email_ids", []), "segment": "pilot"}] + pairs
     if not pairs:
         sys.exit("campaign.yml has no enrollments with workflow_id set.")
+
+    # pre-flight: publish AUTOMATED_DRAFT emails + enable the workflow (live only)
+    for p in pairs:
+        for eid in p.get("email_ids", []):
+            st = requests.get(f"{HS_BASE}/marketing/v3/emails/{eid}", headers=H, timeout=30).json().get("state")
+            print(f"email {eid}: {st}")
+            if live and st == "AUTOMATED_DRAFT":
+                r = requests.post(f"{HS_BASE}/marketing/v3/emails/{eid}/publish", headers=H, timeout=30)
+                print(f"  publish -> {r.status_code}")
+        wf = requests.get(f"{HS_BASE}/automation/v4/flows/{p['workflow_id']}", headers=H, timeout=30).json()
+        print(f"workflow {p['workflow_id']} '{wf.get('name')}': enabled={wf.get('isEnabled')}")
+        if live and not wf.get("isEnabled"):
+            wf["isEnabled"] = True
+            r = requests.put(f"{HS_BASE}/automation/v4/flows/{p['workflow_id']}", headers=H, json=wf, timeout=30)
+            print(f"  enable -> {r.status_code}")
 
     for p in pairs:
         contacts = list_emails(p["list_id"])
