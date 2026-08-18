@@ -282,9 +282,13 @@
     405547873,
     405534586,
     405543836,
-    405549408
+    405549408,
+    405555237,
+    405572123,
+    405579804,
+    405588867
   ],
-  "last_run_utc": "2026-08-18T17:32:37.597020+00:00",
+  "last_run_utc": "2026-08-18T18:52:24.368846+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -737,8 +741,156 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 405555237,
+      "number": "13236057682",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Theodore Barber",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Ted Barber called back Paola to move forward with tutoring for his daughter Carys. They agreed on three lessons per week (Monday/Wednesday/Friday between 4:30-6:30pm Pacific), one lesson per subject: AP US History, AP Psychology, and SAT prep. Paola confirmed his email on file and said the scheduling team will follow up to confirm times and share tutor profiles.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Pass Ted's scheduling preferences (M/W/F, 4:30-6:30pm PT, three subjects: AP US History, AP Psychology, SAT) to the scheduling team",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Scheduling team to confirm days/times with Ted and send tutor profile matches for Carys",
+            "owner_hint": "Scheduling team"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ted Barber (dad of Carys, 12th grade) called back \u2014 warm, ready to start. He agreed to 3 lessons/week, Mon/Wed/Fri between 4:30-6:30pm Pacific, one subject per session: AP US History, AP Psychology, and SAT prep. Paola told him the scheduling team will confirm specific times and send tutor profiles matched to those subjects. Email on file (tedbarber1@gmail.com) confirmed working. No pricing was discussed on this call. Open with: \"Hi Ted, Paola passed along your scheduling for Carys \u2014 M/W/F between 4:30-6:30 for AP US History, AP Psych, and SAT. I've got a few tutor profiles to share and want to lock in exact times.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in an OPEN_DEAL stage \u2014 family is converting to active tutoring, so pipeline owns the status.",
+        "student_or_school_names_mentioned": [
+          "Carys",
+          "Ted Barber"
+        ],
+        "record_updates": {
+          "whats_going_on": "Ted called back to get Carys started with tutoring now that she's settled in her classes. Confirmed three subjects (AP US History, AP Psychology, SAT prep) and agreed to three sessions per week, Mon/Wed/Fri between 4:30-6:30pm Pacific. Paola is handing off to the scheduling team to confirm times and share tutor profiles.",
+          "what_we_can_do_to_help": "Schedule 3 sessions/week (M/W/F, 4:30-6:30pm PT) with tutor(s) covering AP US History, AP Psychology, and SAT prep \u2014 one subject per session, ideally a tutor who can cover multiple subjects if available.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ted called back to get Carys started with tutoring now that she's settled in her classes. Confirmed three subjects (AP US History, AP Psychology, SAT prep) and agreed to three sessions per week, Mon/Wed/Fri between 4:30-6:30pm Pacific. Paola is handing off to the scheduling team to confirm times and share tutor profiles."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Schedule 3 sessions/week (M/W/F, 4:30-6:30pm PT) with tutor(s) covering AP US History, AP Psychology, and SAT prep \u2014 one subject per session, ideally a tutor who can cover multiple subjects if available."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Pass Ted's scheduling preferences (M/W/F, 4:30-6:30pm PT, three subjects: AP US History, AP Psychology, SAT) to the scheduling team",
+          81494333
+        ],
+        [
+          "Scheduling team to confirm days/times with Ted and send tutor profile matches for Carys",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405579804,
+      "number": "17474947620",
+      "time_pt": "11:21 AM",
+      "matched": true,
+      "contact_label": "Nish Fernandez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Nish Fernandez regarding their prior interest in tutoring. The call went to voicemail and Paola left a message asking Nish to return the call to find a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Nish Fernandez; if no response in a few days, attempt another outreach (call/email/text).",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a friendly voicemail for Nish Fernandez following up on their initial tutoring inquiry \u2014 no details on student, grade, or subject yet since we've never actually connected. Nish now expects a callback opportunity; if they don't call back within a few days, try another touchpoint. Open with: 'Hi Nish, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we'd love to learn a bit about your family's tutoring needs and see how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound call reached voicemail only; no contact was made, so the ATTEMPTED_TO_CONTACT status remains appropriate.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail; left a message asking Nish to call back to discuss tutoring needs for their family. No details yet on student or subject.",
+          "what_we_can_do_to_help": "Continue follow-up outreach via call/email/text until we connect and can learn about the student's grade, subject needs, and modality preference.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail; left a message asking Nish to call back to discuss tutoring needs for their family. No details yet on student or subject."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach via call/email/text until we connect and can learn about the student's grade, subject needs, and modality preference."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Nish Fernandez; if no response in a few days, attempt another outreach (call/email/text).",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "19092134868",
+      "time_pt": "11:38 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
