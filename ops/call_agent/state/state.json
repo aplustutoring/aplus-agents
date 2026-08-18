@@ -282,9 +282,28 @@
     405547873,
     405534586,
     405543836,
-    405549408
+    405549408,
+    405555237,
+    405572123,
+    405579804,
+    405588867,
+    405607232,
+    405612156,
+    405616508,
+    405629251,
+    405629267,
+    405645307,
+    405647682,
+    405649179,
+    405653727,
+    405653795,
+    405658576,
+    405661869,
+    405674681,
+    405662691,
+    405666132
   ],
-  "last_run_utc": "2026-08-18T17:32:37.597020+00:00",
+  "last_run_utc": "2026-08-18T21:02:04.925935+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -737,8 +756,726 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 405555237,
+      "number": "13236057682",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Theodore Barber",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Ted Barber called back Paola to move forward with tutoring for his daughter Carys. They agreed on three lessons per week (Monday/Wednesday/Friday between 4:30-6:30pm Pacific), one lesson per subject: AP US History, AP Psychology, and SAT prep. Paola confirmed his email on file and said the scheduling team will follow up to confirm times and share tutor profiles.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Pass Ted's scheduling preferences (M/W/F, 4:30-6:30pm PT, three subjects: AP US History, AP Psychology, SAT) to the scheduling team",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Scheduling team to confirm days/times with Ted and send tutor profile matches for Carys",
+            "owner_hint": "Scheduling team"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ted Barber (dad of Carys, 12th grade) called back \u2014 warm, ready to start. He agreed to 3 lessons/week, Mon/Wed/Fri between 4:30-6:30pm Pacific, one subject per session: AP US History, AP Psychology, and SAT prep. Paola told him the scheduling team will confirm specific times and send tutor profiles matched to those subjects. Email on file (tedbarber1@gmail.com) confirmed working. No pricing was discussed on this call. Open with: \"Hi Ted, Paola passed along your scheduling for Carys \u2014 M/W/F between 4:30-6:30 for AP US History, AP Psych, and SAT. I've got a few tutor profiles to share and want to lock in exact times.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in an OPEN_DEAL stage \u2014 family is converting to active tutoring, so pipeline owns the status.",
+        "student_or_school_names_mentioned": [
+          "Carys",
+          "Ted Barber"
+        ],
+        "record_updates": {
+          "whats_going_on": "Ted called back to get Carys started with tutoring now that she's settled in her classes. Confirmed three subjects (AP US History, AP Psychology, SAT prep) and agreed to three sessions per week, Mon/Wed/Fri between 4:30-6:30pm Pacific. Paola is handing off to the scheduling team to confirm times and share tutor profiles.",
+          "what_we_can_do_to_help": "Schedule 3 sessions/week (M/W/F, 4:30-6:30pm PT) with tutor(s) covering AP US History, AP Psychology, and SAT prep \u2014 one subject per session, ideally a tutor who can cover multiple subjects if available.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ted called back to get Carys started with tutoring now that she's settled in her classes. Confirmed three subjects (AP US History, AP Psychology, SAT prep) and agreed to three sessions per week, Mon/Wed/Fri between 4:30-6:30pm Pacific. Paola is handing off to the scheduling team to confirm times and share tutor profiles."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Schedule 3 sessions/week (M/W/F, 4:30-6:30pm PT) with tutor(s) covering AP US History, AP Psychology, and SAT prep \u2014 one subject per session, ideally a tutor who can cover multiple subjects if available."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Pass Ted's scheduling preferences (M/W/F, 4:30-6:30pm PT, three subjects: AP US History, AP Psychology, SAT) to the scheduling team",
+          81494333
+        ],
+        [
+          "Scheduling team to confirm days/times with Ted and send tutor profile matches for Carys",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405579804,
+      "number": "17474947620",
+      "time_pt": "11:21 AM",
+      "matched": true,
+      "contact_label": "Nish Fernandez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Nish Fernandez regarding their prior interest in tutoring. The call went to voicemail and Paola left a message asking Nish to return the call to find a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Nish Fernandez; if no response in a few days, attempt another outreach (call/email/text).",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a friendly voicemail for Nish Fernandez following up on their initial tutoring inquiry \u2014 no details on student, grade, or subject yet since we've never actually connected. Nish now expects a callback opportunity; if they don't call back within a few days, try another touchpoint. Open with: 'Hi Nish, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we'd love to learn a bit about your family's tutoring needs and see how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound call reached voicemail only; no contact was made, so the ATTEMPTED_TO_CONTACT status remains appropriate.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail; left a message asking Nish to call back to discuss tutoring needs for their family. No details yet on student or subject.",
+          "what_we_can_do_to_help": "Continue follow-up outreach via call/email/text until we connect and can learn about the student's grade, subject needs, and modality preference.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail; left a message asking Nish to call back to discuss tutoring needs for their family. No details yet on student or subject."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach via call/email/text until we connect and can learn about the student's grade, subject needs, and modality preference."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Nish Fernandez; if no response in a few days, attempt another outreach (call/email/text).",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405612156,
+      "number": "13236335979",
+      "time_pt": "12:15 PM",
+      "matched": true,
+      "contact_label": "Donovan Leitch",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Donovan Leitch regarding a previously scheduled call. The call went to voicemail and Paola left a message asking Donovan to let her know a good time to connect. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Donovan's callback to reschedule the connect call; attempt again if no response in a couple of days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Donovan Leitch (dad; son Donovan, 5th grade at Wonderland Elementary in Laurel Canyon, needs math tutoring 1-2x/week per prior inquiry) following up on a scheduled call he missed. Tone was friendly and low-pressure. He now expects us to be reachable when he calls back. If he responds, open with: \"Hi Donovan, thanks for getting back to me \u2014 I know you'd mentioned Donovan could use math support a couple times a week; want to walk through how we'd set that up and find a time that works?\" Confirm online vs in-person and whether math is the only subject.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound follow-up reached voicemail only; no conversation occurred, so prior ATTEMPTED_TO_CONTACT status stands.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Donovan to call back with a good time to connect.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Left a message asking Donovan to call back with a good time to connect."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Donovan's callback to reschedule the connect call; attempt again if no response in a couple of days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405616508,
+      "number": "13236335979",
+      "time_pt": "12:21 PM",
+      "matched": true,
+      "contact_label": "Donovan Leitch",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called returning customer Donovan Leitch to follow up. Donovan confirmed he'd just heard from Janelle that his previous tutor Mackenzie is available starting September 1, and he's moving forward with resuming sessions. He asked for a payment link to purchase hours/a package. Paola said she'd loop Janelle in to send the payment link so he doesn't have to coordinate with two people.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Loop in Janelle to send Donovan a payment link for purchasing tutoring hours or a package with Mackenzie",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Janelle to send Donovan the payment link and confirm Mackenzie's September 1 start",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Janelle \u2014 Donovan Leitch (returning customer, warm and easy on the call) is ready to resume tutoring with Mackenzie starting September 1. You already emailed him the availability; he now expects YOU to send a payment link so he can purchase hours or a package. Paola told him she'd hand this off to you so he only has one point of contact. Open with something like: 'Hi Donovan, Paola let me know you're all set to restart with Mackenzie on Sept 1 \u2014 here's the payment link for hours/package options...' Confirm session cadence (previously 1\u20132x/week) when you follow up.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an open deal resuming service with prior tutor Mackenzie; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Donovan (student)",
+          "Mackenzie (tutor)",
+          "Janelle",
+          "Wonderland Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning customer \u2014 Donovan is resuming tutoring with his prior tutor Mackenzie starting September 1. Janelle had already emailed him her availability and dates, and he's ready to move forward. He asked for a payment link to buy hours or a package.",
+          "what_we_can_do_to_help": "Janelle to send Donovan the payment link for hours/package so he can pay and get Mackenzie's Sept 1 sessions on the calendar. Keep Janelle as the single point of contact to avoid confusion.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning customer \u2014 Donovan is resuming tutoring with his prior tutor Mackenzie starting September 1. Janelle had already emailed him her availability and dates, and he's ready to move forward. He asked for a payment link to buy hours or a package."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle to send Donovan the payment link for hours/package so he can pay and get Mackenzie's Sept 1 sessions on the calendar. Keep Janelle as the single point of contact to avoid confusion."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Loop in Janelle to send Donovan a payment link for purchasing tutoring hours or a package with Mackenzie",
+          81494333
+        ],
+        [
+          "Janelle to send Donovan the payment link and confirm Mackenzie's September 1 start",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405629267,
+      "number": "12139255266",
+      "time_pt": "12:43 PM",
+      "matched": true,
+      "contact_label": "Lilian Gong",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Lilian Gong regarding her prior interest in tutoring. The call went to voicemail and Paola left a message asking Lilian to call back at a convenient time. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt to reach Lilian Gong again if she does not return the voicemail within a few days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Lilian Gong is a prospective parent whose charter-school-referred inquiry has not yet been discussed live \u2014 Paola left a voicemail today with no callback response. We still have no details about the student, grade, subject, or modality. If Lilian calls back, open with: 'Hi Lilian, this is [name] from A+ Tutoring returning your call about tutoring for your family \u2014 thanks for reaching out! Can you tell me a bit about your student and what you're hoping to work on?' Confirm whether they're using charter instructional funds since the record indicates 'From my Charter School.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live contact made, so keep existing ATTEMPTED_TO_CONTACT status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up attempt by Paola \u2014 reached voicemail and left a message asking Lilian to call back regarding tutoring interest for her family. No new details gathered.",
+          "what_we_can_do_to_help": "Continue attempts to connect with Lilian to learn about her student's needs and confirm charter-school funding eligibility so we can propose an appropriate tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up attempt by Paola \u2014 reached voicemail and left a message asking Lilian to call back regarding tutoring interest for her family. No new details gathered."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempts to connect with Lilian to learn about her student's needs and confirm charter-school funding eligibility so we can propose an appropriate tutoring plan."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt to reach Lilian Gong again if she does not return the voicemail within a few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405645307,
+      "number": "13104028006",
+      "time_pt": "1:09 PM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Pete Flores called from the parking lot near Ventura and Sherman Oaks trying to locate our in-person tutoring office. He asked if we were up the stairs and mentioned he was looking to be added to the tutoring system. Before Janelle could gather details, he said he found the location and ended the call. No student details, subject, or scheduling was discussed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "If Pete comes inside, greet him and capture full intake details (student name, grade, school, subject need, modality) since none were gathered on the call.",
+            "owner_hint": null
+          },
+          {
+            "item": "If he doesn't walk in within the day, call 310-402-8006 back to follow up on his tutoring inquiry.",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Pete Flores (310-402-8006) called from our parking lot at Ventura & Sherman Oaks looking for the in-person location and said he wanted to be added to the tutoring system. Tone was casual/rushed \u2014 he hung up saying he found the office before we could get any details. No student info, grade, subject, or modality was captured, and nothing was promised. If he walks in, greet him and do a full intake; if he doesn't appear, call him back. Suggested opener: 'Hi Pete, this is ___ from A+ Tutoring \u2014 you called earlier looking for our office. Did you find us okay, and can I learn a bit about the student you'd like to get set up with tutoring?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family who briefly connected but shared no student details or need; defaulting to We Connected.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Pete called from the parking lot at Ventura & Sherman Oaks looking for our in-person office; said he wanted to be added to the tutoring system. He found the location and hung up before sharing any student details.",
+          "what_we_can_do_to_help": "If he walks in, do a full intake to learn about his student and needs; otherwise call 310-402-8006 back to gather details and start an inquiry.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Pete called from the parking lot at Ventura & Sherman Oaks looking for our in-person office; said he wanted to be added to the tutoring system. He found the location and hung up before sharing any student details."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "If he walks in, do a full intake to learn about his student and needs; otherwise call 310-402-8006 back to gather details and start an inquiry."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "If Pete comes inside, greet him and capture full intake details (student name, grade, school, subject need, modality) since none were gathered on the call.",
+          81494333
+        ],
+        [
+          "If he doesn't walk in within the day, call 310-402-8006 back to follow up on his tutoring inquiry.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405647682,
+      "number": "13104028006",
+      "time_pt": "1:11 PM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Demelco called the number on file (310-402-8006) trying to find A+'s in-person Studio City office (Ventura Blvd, Suite 207) for help with an upcoming chemistry class. Amanda/Yolanda confirmed the address and suite, said staff should be there, and offered to text the location. Demelco was going to knock at 207; Yolanda asked him to let her know if he got in so she could alert the on-site team. No student intake details beyond 'chemistry' were captured.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Alert the Studio City Suite 207 on-site staff that Demelco is at the door looking for chemistry tutoring help and to let him in",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Text the Studio City office address/suite info to 310-402-8006",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "If Demelco doesn't make it inside, call 310-402-8006 back to do a full intake (student name, grade, school, chemistry-specific needs, timing)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Demelco called the main line trying to physically find our Studio City office (Ventura Blvd, Suite 207) \u2014 he was already standing outside and the door appeared locked. He's looking for tutoring help with an upcoming chemistry class (sounds like it could be for himself or a student \u2014 not clarified). Tone was patient but a little confused. Yolanda confirmed the suite, said staff should be there, offered to text the location, and asked him to report back once he got in. He now expects (a) someone to open the door / greet him at Suite 207, and (b) a text with the address. If he doesn't walk in successfully, call 310-402-8006 back and open with: 'Hi Demelco, this is ___ from A+ Tutoring following up \u2014 were you able to get into our Studio City office? I want to make sure we get you set up for that chemistry help.' Then run a full intake (who the student is, grade, school, what chemistry course, timeline).",
+        "lead_status": "no_change",
+        "lead_status_reason": "Record is already 'We Connected' from the prior 2026-08-18 call about the same walk-in inquiry; this call is a continuation and no new qualifying info (charter funding, diagnostic need) surfaced to change the status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Caller (gave name as Demelco) called back from 310-402-8006 while standing outside Suite 207 on Ventura Blvd in Studio City \u2014 door appeared locked. He's seeking tutoring help for an upcoming chemistry class. No student name, grade, or school captured yet.",
+          "what_we_can_do_to_help": "Ping the Studio City Suite 207 team to open up and greet Demelco, and text him the address. If he doesn't get inside, call 310-402-8006 back and run a full intake focused on the chemistry need (who the student is, course level, school, timeline).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Caller (gave name as Demelco) called back from 310-402-8006 while standing outside Suite 207 on Ventura Blvd in Studio City \u2014 door appeared locked. He's seeking tutoring help for an upcoming chemistry class. No student name, grade, or school captured yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Ping the Studio City Suite 207 team to open up and greet Demelco, and text him the address. If he doesn't get inside, call 310-402-8006 back and run a full intake focused on the chemistry need (who the student is, course level, school, timeline)."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Alert the Studio City Suite 207 on-site staff that Demelco is at the door looking for chemistry tutoring help and to let him in",
+          86868539
+        ],
+        [
+          "Text the Studio City office address/suite info to 310-402-8006",
+          86868539
+        ],
+        [
+          "If Demelco doesn't make it inside, call 310-402-8006 back to do a full intake (student name, grade, school, chemistry-specific needs, timing)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405649179,
+      "number": "13104028006",
+      "time_pt": "1:15 PM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Pete Flores (310-402-8006) called back after visiting our Studio City office and finding the door locked with no staff available. Janelle offered to reach the office person, but Pete said he was no longer interested in pursuing tutoring with us and hung up. This is the second failed in-person visit today; the lead is effectively lost due to the office being closed/unattended.",
+        "caller_type": "parent",
+        "intent": "complaint",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Escalate to management that Pete Flores (310-402-8006) walked away from the inquiry because no one was at the Studio City Suite 207 office when he visited \u2014 investigate why the office was unstaffed/locked today.",
+            "owner_hint": null
+          },
+          {
+            "item": "Optional recovery: attempt one goodwill callback to 310-402-8006 to apologize for the missed visit and see if he'll reconsider; do not pressure.",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Pete Flores (310-402-8006) called in frustrated after driving to our Studio City Suite 207 office and finding it locked with no staff \u2014 this is his second attempt today. He told Janelle he is NOT going to move forward with A+ and hung up before sharing any student details. Tone was curt/disappointed, not hostile. He is not expecting a callback. If we attempt recovery, open with: 'Pete, this is [name] from A+ Tutoring \u2014 I'm so sorry you drove out to our Studio City office twice today and no one was there to help you. That's on us. I'd love to make it right if you're open to it.' Also please loop in management about why Suite 207 was unattended.",
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Caller explicitly withdrew ('I'm not going to be going with you guys') after a poor in-person experience \u2014 no longer a prospective lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Call] Pete called back after arriving at the Studio City office and finding the door locked with no one available. He said he is no longer interested in pursuing tutoring with A+ and ended the call before sharing any student details. Second failed in-person visit today.",
+          "what_we_can_do_to_help": "[Call] Escalate internally about Suite 207 being unstaffed/locked during business hours today \u2014 this cost us the lead. Optional: one apologetic goodwill callback to 310-402-8006 to try to recover, but do not pressure; he clearly disengaged.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Pete called back after arriving at the Studio City office and finding the door locked with no one available. He said he is no longer interested in pursuing tutoring with A+ and ended the call before sharing any student details. Second failed in-person visit today."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Escalate internally about Suite 207 being unstaffed/locked during business hours today \u2014 this cost us the lead. Optional: one apologetic goodwill callback to 310-402-8006 to try to recover, but do not pressure; he clearly disengaged."
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Escalate to management that Pete Flores (310-402-8006) walked away from the inquiry because no one was at the Studio City Suite 207 office when he visited \u2014 investigate why the office was unstaffed/locked today.",
+          81494333
+        ],
+        [
+          "Optional recovery: attempt one goodwill callback to 310-402-8006 to apologize for the missed visit and see if he'll reconsider; do not pressure.",
+          81494333
+        ]
+      ],
+      "ticket_id": "47795502005",
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 405662691,
+      "number": "18188261069",
+      "time_pt": "1:38 PM",
+      "matched": true,
+      "contact_label": "Blanca Perez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Blanca Perez regarding prior tutoring inquiry for her son Joseph. Call went to voicemail; Paola left a message asking Blanca to call back to schedule sessions. No contact made.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Blanca; if no response, attempt another follow-up outreach",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Blanca Perez is a prospective family for her son Joseph (4th grade at CWC, ELA and math support originally recommended by teacher). Paola left a voicemail today following up on the prior inquiry \u2014 no live contact yet. Blanca had previously indicated availability 'today or Thursday after 4PM.' She expects a callback to schedule sessions. If reaching out again, open with: 'Hi Blanca, this is [name] from A+ Tutoring following up on Paola's message about Joseph's tutoring \u2014 I'd love to find a time that works to get him started.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only; no live conversation and caller already has 'We Connected' status from prior contact.",
+        "student_or_school_names_mentioned": [
+          "Joseph",
+          "Blanca Perez"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail for Blanca following up on tutoring interest for Joseph. No live contact made.",
+          "what_we_can_do_to_help": "Continue follow-up outreach until Blanca responds; be ready to schedule ELA/math sessions for Joseph per prior notes (availability today or Thursday after 4PM).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail for Blanca following up on tutoring interest for Joseph. No live contact made."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach until Blanca responds; be ready to schedule ELA/math sessions for Joseph per prior notes (availability today or Thursday after 4PM)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Blanca; if no response, attempt another follow-up outreach",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405666132,
+      "number": "18082828769",
+      "time_pt": "1:44 PM",
+      "matched": true,
+      "contact_label": "Shannon Troy",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made a follow-up outbound call to Shannon Troy regarding tutoring for her son Atlas. The call went to voicemail; Paola left a brief message asking Shannon to call back when convenient. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue follow-up outreach to Shannon Troy to move forward on tutoring plan/pricing decision for Atlas",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Shannon Troy (parent of Atlas, 2nd grade at Rio Vista) is a warm prospect \u2014 husband Robert is a returning A+ customer. Roman already sent online and in-home pricing on 8/7 for a recommended 1:1 reading fluency program (3x/week x 45 min). Paola left a voicemail on this follow-up attempt (no contact made). Shannon still owes us a decision after discussing with her husband. Next time you reach her, open with: 'Hi Shannon, this is [name] from A+ following up on the reading tutoring pricing Roman sent for Atlas \u2014 wanted to see if you and Robert had a chance to talk it over and answer any questions.' Keep it warm and low-pressure given the family history with us.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation, so no basis to change status. Existing prospective-family record with prior contact; leaving status as-is.",
+        "student_or_school_names_mentioned": [
+          "Shannon Troy",
+          "Atlas"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back when convenient.",
+          "what_we_can_do_to_help": "Continue follow-up outreach until we reach Shannon to close the loop on the pricing Roman sent and move forward with a tutoring plan for Atlas.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola called Shannon to follow up on tutoring interest for Atlas; reached voicemail and left a message asking Shannon to call back when convenient."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up outreach until we reach Shannon to close the loop on the pricing Roman sent and move forward with a tutoring plan for Atlas."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue follow-up outreach to Shannon Troy to move forward on tutoring plan/pricing decision for Atlas",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "19092134868",
+      "time_pt": "11:38 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }

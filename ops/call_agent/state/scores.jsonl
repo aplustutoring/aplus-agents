@@ -123,3 +123,13 @@
 {"call_id": 405534586, "date_pt": "2026-08-18", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.8, "scores": {"U1": 5, "U3": 4, "U5": 3, "S4": 3}}
 {"call_id": 405543836, "date_pt": "2026-08-18", "agent": "Roman Slavinsky", "direction": "outgoing", "overall": 1.0, "scores": {"U1": 1, "U3": 1, "U5": 1}}
 {"call_id": 405549408, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 405555237, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "incoming", "overall": 3.7, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 4, "U5": 3, "V2": 4}}
+{"call_id": 405579804, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 405612156, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 4, "U3": 4, "U5": 2}}
+{"call_id": 405616508, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 3, "V2": 3}}
+{"call_id": 405629267, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 405645307, "date_pt": "2026-08-18", "agent": "Janelle Alinea", "direction": "incoming", "overall": 1.9, "scores": {"U1": 5, "U2": 2, "U3": 2, "U4": 1, "U5": 1, "S1": 1, "S4": 1}}
+{"call_id": 405647682, "date_pt": "2026-08-18", "agent": "Yolanda Rico", "direction": "incoming", "overall": 1.7, "scores": {"U1": 2, "U2": 2, "U3": 2, "U4": 2, "U5": 2, "S1": 1, "S4": 1}}
+{"call_id": 405649179, "date_pt": "2026-08-18", "agent": "Janelle Alinea", "direction": "incoming", "overall": 1.4, "scores": {"U1": 1, "U2": 2, "U3": 2, "U4": 1, "U5": 1, "V1": 2, "V2": 1}}
+{"call_id": 405662691, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 5, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 405666132, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
