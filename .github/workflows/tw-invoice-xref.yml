@@ -4,6 +4,17 @@ name: TW invoice cross-reference (read-only)
 # results are in the run log. See email/invoice_xref.py.
 on:
   workflow_dispatch:
+    inputs:
+      student_first:
+        description: "Optional: look up ONE student by name instead (first)"
+        required: false
+        type: string
+        default: ""
+      student_last:
+        description: "…(last)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -26,4 +37,7 @@ jobs:
           HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
           TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
           TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
-        run: python -m invoice_xref
+          STUDENT_FIRST: ${{ inputs.student_first }}
+          STUDENT_LAST: ${{ inputs.student_last }}
+        run: |
+          if [ -n "$STUDENT_FIRST" ]; then python -m tw_student_lookup; else python -m invoice_xref; fi
