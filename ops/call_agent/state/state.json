@@ -286,9 +286,12 @@
     405555237,
     405572123,
     405579804,
-    405588867
+    405588867,
+    405607232,
+    405612156,
+    405616508
   ],
-  "last_run_utc": "2026-08-18T18:57:56.705386+00:00",
+  "last_run_utc": "2026-08-18T19:34:10.755254+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -878,6 +881,140 @@
         [
           "Await callback from Nish Fernandez; if no response in a few days, attempt another outreach (call/email/text).",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405612156,
+      "number": "13236335979",
+      "time_pt": "12:15 PM",
+      "matched": true,
+      "contact_label": "Donovan Leitch",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Donovan Leitch regarding a previously scheduled call. The call went to voicemail and Paola left a message asking Donovan to let her know a good time to connect. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Donovan's callback to reschedule the connect call; attempt again if no response in a couple of days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Donovan Leitch (dad; son Donovan, 5th grade at Wonderland Elementary in Laurel Canyon, needs math tutoring 1-2x/week per prior inquiry) following up on a scheduled call he missed. Tone was friendly and low-pressure. He now expects us to be reachable when he calls back. If he responds, open with: \"Hi Donovan, thanks for getting back to me \u2014 I know you'd mentioned Donovan could use math support a couple times a week; want to walk through how we'd set that up and find a time that works?\" Confirm online vs in-person and whether math is the only subject.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound follow-up reached voicemail only; no conversation occurred, so prior ATTEMPTED_TO_CONTACT status stands.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Donovan to call back with a good time to connect.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Left a message asking Donovan to call back with a good time to connect."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Donovan's callback to reschedule the connect call; attempt again if no response in a couple of days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405616508,
+      "number": "13236335979",
+      "time_pt": "12:21 PM",
+      "matched": true,
+      "contact_label": "Donovan Leitch",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called returning customer Donovan Leitch to follow up. Donovan confirmed he'd just heard from Janelle that his previous tutor Mackenzie is available starting September 1, and he's moving forward with resuming sessions. He asked for a payment link to purchase hours/a package. Paola said she'd loop Janelle in to send the payment link so he doesn't have to coordinate with two people.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Loop in Janelle to send Donovan a payment link for purchasing tutoring hours or a package with Mackenzie",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Janelle to send Donovan the payment link and confirm Mackenzie's September 1 start",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Janelle \u2014 Donovan Leitch (returning customer, warm and easy on the call) is ready to resume tutoring with Mackenzie starting September 1. You already emailed him the availability; he now expects YOU to send a payment link so he can purchase hours or a package. Paola told him she'd hand this off to you so he only has one point of contact. Open with something like: 'Hi Donovan, Paola let me know you're all set to restart with Mackenzie on Sept 1 \u2014 here's the payment link for hours/package options...' Confirm session cadence (previously 1\u20132x/week) when you follow up.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an open deal resuming service with prior tutor Mackenzie; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Donovan (student)",
+          "Mackenzie (tutor)",
+          "Janelle",
+          "Wonderland Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning customer \u2014 Donovan is resuming tutoring with his prior tutor Mackenzie starting September 1. Janelle had already emailed him her availability and dates, and he's ready to move forward. He asked for a payment link to buy hours or a package.",
+          "what_we_can_do_to_help": "Janelle to send Donovan the payment link for hours/package so he can pay and get Mackenzie's Sept 1 sessions on the calendar. Keep Janelle as the single point of contact to avoid confusion.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning customer \u2014 Donovan is resuming tutoring with his prior tutor Mackenzie starting September 1. Janelle had already emailed him her availability and dates, and he's ready to move forward. He asked for a payment link to buy hours or a package."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle to send Donovan the payment link for hours/package so he can pay and get Mackenzie's Sept 1 sessions on the calendar. Keep Janelle as the single point of contact to avoid confusion."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Loop in Janelle to send Donovan a payment link for purchasing tutoring hours or a package with Mackenzie",
+          81494333
+        ],
+        [
+          "Janelle to send Donovan the payment link and confirm Mackenzie's September 1 start",
+          80047202
         ]
       ],
       "ticket_id": null,

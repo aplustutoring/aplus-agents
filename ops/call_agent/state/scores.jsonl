@@ -125,3 +125,5 @@
 {"call_id": 405549408, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
 {"call_id": 405555237, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "incoming", "overall": 3.7, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 4, "U5": 3, "V2": 4}}
 {"call_id": 405579804, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 405612156, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 4, "U3": 4, "U5": 2}}
+{"call_id": 405616508, "date_pt": "2026-08-18", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 3, "V2": 3}}
