@@ -309,9 +309,13 @@
     405689304,
     405696862,
     405700575,
-    405715898
+    405715898,
+    405719570,
+    405717916,
+    405723583,
+    405724679
   ],
-  "last_run_utc": "2026-08-18T23:01:58.877566+00:00",
+  "last_run_utc": "2026-08-18T23:38:18.030063+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -1629,6 +1633,187 @@
       "tasks_created": [
         [
           "Attempt another follow-up contact with Hellen if she doesn't return the voicemail within a few days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405717916,
+      "number": "18184612243",
+      "time_pt": "4:04 PM",
+      "matched": true,
+      "contact_label": "Buki Famosa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound follow-up call to Buki Famosa, an existing customer whose daughter Eva is enrolled in the 20-hour Prep package. The call was intercepted by a screening service; Janelle left her name and reason for calling, but Buki was not available and the call went to a message prompt. No substantive conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Buki again later or send a text follow-up since the outbound call was screened and she was unavailable",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Buki is an existing customer (purchased 20-hour Prep package for Eva); her status is owned by the deal pipeline. Also, no real conversation occurred on this call.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Buki again later or send a text follow-up since the outbound call was screened and she was unavailable",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405723583,
+      "number": "13109954550",
+      "time_pt": "4:27 PM",
+      "matched": true,
+      "contact_label": "Tom Nichols",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Tom Nichols regarding tutoring for his son Ben. The call went to Tom's voicemail; Paola left a brief message asking Tom to call back to connect on next steps. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Tom again in a few days if no callback; consider a follow-up email with pricing/assessment scheduling link",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound follow-up to Tom Nichols (dad of Ben, 8th grader at Crossroads doing Algebra 2, needs online math tutoring) went to voicemail \u2014 Paola left a message asking him to call back. Tom already received the diagnostic/pricing plan email (2 x 60-min sessions/week for 4 weeks) and was mulling over pricing; he's also been offered the free 1.5-hour assessment. If he calls back, open with: \"Hi Tom, it's [name] from A+ Tutoring returning your call about Ben \u2014 wanted to see if you had any questions on the plan we sent and whether you'd like to get Ben's free assessment on the calendar.\" Goal is to book the assessment or first session.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail on outbound follow-up; no new contact made and existing QTL - Diagnostic Sent status still applies.",
+        "student_or_school_names_mentioned": [
+          "Ben",
+          "Tom Nichols"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola called Tom to follow up on tutoring interest for Ben; reached voicemail and left a message asking him to call back to connect.",
+          "what_we_can_do_to_help": "Continue follow-up cadence \u2014 try Tom again in a few days and/or send a short email nudging him toward scheduling Ben's free assessment or deciding on a pricing package.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola called Tom to follow up on tutoring interest for Ben; reached voicemail and left a message asking him to call back to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up cadence \u2014 try Tom again in a few days and/or send a short email nudging him toward scheduling Ben's free assessment or deciding on a pricing package."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Tom again in a few days if no callback; consider a follow-up email with pricing/assessment scheduling link",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405724679,
+      "number": "14094975825",
+      "time_pt": "4:32 PM",
+      "matched": true,
+      "contact_label": "Lindsey Owens",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Lindsey Owens regarding tutoring interest for her daughter. Call went to voicemail; Paola left a message asking Lindsey to call back to schedule a time to connect. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Lindsey's callback; if no response in a few days, attempt another outreach",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Lindsey Owens is a prospective parent interested in tutoring for her daughter (name/grade not yet known). Paola made an outbound follow-up call today and left a voicemail asking Lindsey to call back to set a time to connect. Current record shows she was previously reached via voicemail on 2026-08-13 as well. She is flagged as a charter-school family (instructional funds). When she calls back, open with: 'Hi Lindsey, this is [name] from A+ Tutoring returning your interest \u2014 I'd love to learn more about your daughter and what kind of support you're looking for.' Confirm charter school details, student's grade/subjects, and modality preference.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail only; did not actually connect with Lindsey, so keep her at ATTEMPTED_TO_CONTACT.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Second outbound follow-up attempt; reached voicemail again. Left a message referencing her interest in tutoring for her daughter and asking her to call back with a good time to connect.",
+          "what_we_can_do_to_help": "Continue outreach attempts to reconnect with Lindsey; once she calls back, gather details on her daughter's grade, subject needs, and confirm charter-school funding to propose next steps.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Second outbound follow-up attempt; reached voicemail again. Left a message referencing her interest in tutoring for her daughter and asking her to call back with a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach attempts to reconnect with Lindsey; once she calls back, gather details on her daughter's grade, subject needs, and confirm charter-school funding to propose next steps."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Lindsey's callback; if no response in a few days, attempt another outreach",
           81494333
         ]
       ],
