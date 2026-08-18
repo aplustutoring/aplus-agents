@@ -289,9 +289,11 @@
     405588867,
     405607232,
     405612156,
-    405616508
+    405616508,
+    405629251,
+    405629267
   ],
-  "last_run_utc": "2026-08-18T19:34:10.755254+00:00",
+  "last_run_utc": "2026-08-18T19:59:16.411523+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -1015,6 +1017,69 @@
         [
           "Janelle to send Donovan the payment link and confirm Mackenzie's September 1 start",
           80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405629267,
+      "number": "12139255266",
+      "time_pt": "12:43 PM",
+      "matched": true,
+      "contact_label": "Lilian Gong",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Lilian Gong regarding her prior interest in tutoring. The call went to voicemail and Paola left a message asking Lilian to call back at a convenient time. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt to reach Lilian Gong again if she does not return the voicemail within a few days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Lilian Gong is a prospective parent whose charter-school-referred inquiry has not yet been discussed live \u2014 Paola left a voicemail today with no callback response. We still have no details about the student, grade, subject, or modality. If Lilian calls back, open with: 'Hi Lilian, this is [name] from A+ Tutoring returning your call about tutoring for your family \u2014 thanks for reaching out! Can you tell me a bit about your student and what you're hoping to work on?' Confirm whether they're using charter instructional funds since the record indicates 'From my Charter School.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live contact made, so keep existing ATTEMPTED_TO_CONTACT status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up attempt by Paola \u2014 reached voicemail and left a message asking Lilian to call back regarding tutoring interest for her family. No new details gathered.",
+          "what_we_can_do_to_help": "Continue attempts to connect with Lilian to learn about her student's needs and confirm charter-school funding eligibility so we can propose an appropriate tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up attempt by Paola \u2014 reached voicemail and left a message asking Lilian to call back regarding tutoring interest for her family. No new details gathered."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempts to connect with Lilian to learn about her student's needs and confirm charter-school funding eligibility so we can propose an appropriate tutoring plan."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt to reach Lilian Gong again if she does not return the voicemail within a few days",
+          81494333
         ]
       ],
       "ticket_id": null,
