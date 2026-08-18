@@ -23,7 +23,7 @@ import sys
 import traceback
 from datetime import datetime, timedelta, timezone
 
-from . import audit, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
@@ -101,7 +101,8 @@ def po_extract(body: str, subject: str, sender: str,
     client = Anthropic(api_key=ANTHROPIC_API_KEY)
     c = cfg()["classifier"]
     msg = client.messages.create(
-        model=c["model"], max_tokens=c["max_tokens"], system=PO_SYSTEM,
+        model=c["model"], max_tokens=c["max_tokens"],
+        system=PO_SYSTEM + draft_feedback.style_rules_prompt(),
         messages=[{"role": "user",
                    "content": _content_blocks(body, subject, sender, attachments or [])}],
     )
@@ -784,6 +785,8 @@ def _open_parent_chases(queue: list, msg: dict | None, note_parts: list[str]) ->
             continue
         d_msg = (draft or {}).get("message") or {}
         chase_thread = d_msg.get("threadId") or msg["threadId"]
+        draft_feedback.register(draft, "parent_chase", body, to_addr, "po_inbox",
+                                thread_id=chase_thread, meta={"students": student_line})
         try:
             if d_msg.get("id"):
                 gm.apply_labels(d_msg["id"], ["A+ Agent/Draft Pending"])
@@ -1544,6 +1547,8 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             bcc = (cfg().get("hubspot", {}) or {}).get("bcc_log_address") or ""
             d = gm.create_draft_reply(m["threadId"], to_addr, m["subject"], draft,
                                       m.get("message_id_header", ""), bcc=bcc)
+            draft_feedback.register(d, "reply", draft, to_addr, "po_inbox",
+                                    thread_id=m["threadId"])
             dm_id = ((d or {}).get("message") or {}).get("id")
             if dm_id:
                 try:
@@ -1635,6 +1640,10 @@ def run() -> None:
         _sweep_chase_self_resolve()
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  chase self-resolve sweep failed (non-fatal): {e}")
+    try:
+        draft_feedback.sweep()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  draft-feedback sweep failed (non-fatal): {e}")
     if not DRY_RUN:
         cur_path.write_text(_json.dumps({"last_epoch": newest}))
 

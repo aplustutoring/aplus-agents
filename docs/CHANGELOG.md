@@ -8,6 +8,32 @@ Newest entries first.
 
 ---
 
+## 2026-08-17 — Draft feedback loop (Tiers 1+2) — the team's edits train the drafter
+
+**What:** New `email/src/draft_feedback.py`. Tier 1: every agent-created draft
+(chase + reply, charter@ inbox) is registered with its exact text
+(state/draft_registry.jsonl); each 15-min run settles drafts that left Gmail
+Drafts by comparing to what was actually SENT on the thread — sent_as_is (≥97%
+similar) / edited (≥50%) / rewritten / discarded — flips the sent message to
+`A+ Agent/Sent`, and stores the unified diff. Tier 2: edits/rewrites/discards
+become one file each in `corrections/email-drafts/` (fleet corrections format)
+plus a distilled line in `STYLE-RULES.md`, which BOTH drafting prompts (PO
+extractor + admin classifier) load at runtime (last 25 rules) — tomorrow's
+drafts carry yesterday's edits. Weekly Friday 4 PM PT one-liner to the
+visionary seat (new email-draft-feedback-weekly.yml). Tier 3 unchanged: a reply
+to the aplus bot in #agent-feedback files a rule via the feedback agent.
+Admin-inbox drafts (HubSpot conversation comments) consume the rules but
+aren't outcome-tracked yet — different plumbing, follow-up.
+
+**Why:** Roman: "is there a way for the agent to get input from kath and from
+all others when drafts are made whether the draft was good or needs
+improvement" → "LETS DO IT".
+
+**Files:** `email/src/draft_feedback.py` (new), `email/src/po_inbox.py`,
+`email/src/classifier.py`, `email/tests/test_draft_feedback.py` (new; suite
+239 green), `.github/workflows/{email-po-inbox,email-draft-feedback-weekly}.yml`,
+`corrections/email-drafts/README.md` (new).
+
 ## 2026-08-17 — INCIDENT: chase self-resolve renamed 5 Heartland deals to "Pilibos Student"
 
 **What:** Roman: "how come heartland deals were named pilibos?" Property

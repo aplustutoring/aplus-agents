@@ -10,6 +10,15 @@ import re
 
 from .config import ANTHROPIC_API_KEY, ROOT, cfg
 
+
+def _style_rules() -> str:
+    # learned draft style (team edits) — shared with the charter inbox
+    try:
+        from .draft_feedback import style_rules_prompt
+        return style_rules_prompt()
+    except Exception:  # noqa: BLE001
+        return ""
+
 REQUIRED_KEYS = {
     "category", "risk", "confidence", "routing_target",
     "sla_tier", "draft_reply", "reason",
@@ -135,7 +144,7 @@ def classify(body: str, enrichment_summary: str, client=None) -> dict:
         msg = client.messages.create(
             model=c["model"],
             max_tokens=c["max_tokens"],
-            system=SYSTEM,
+            system=SYSTEM + _style_rules(),
             messages=[{"role": "user", "content": user}],
         )
         text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
