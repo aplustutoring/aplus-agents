@@ -1862,3 +1862,34 @@ def test_resolve_renames_from_live_deal_not_stale_audit(monkeypatch):
     renames = [p for p in patches if (p[1] or {}).get("properties", {}).get("dealname")]
     assert renames[0][1]["properties"]["dealname"] == \
         "Angela Czaja - Charlotte Czaja - Heartland 1 - 26/27"   # live name, student kept
+
+
+# ── surname-only parent match rejected (Matthew Rose / Dina Rose, 2026-08-18) ─
+
+def test_lone_surname_match_without_student_evidence_is_rejected(monkeypatch):
+    from src import hubspot_client as hsc
+    monkeypatch.setattr(hsc, "_write",
+                        lambda m, path, body=None:
+                        {"results": [{"id": "C-dina", "properties":
+                                      {"email": "dinah.pham@gmail.com", "firstname": "Dina",
+                                       "lastname": "Rose", "student_last_name": ""}}]}
+                        if "contacts/search" in path else {"results": []})
+    monkeypatch.setattr(hsc, "contact_deal_names", lambda cid: [])
+    monkeypatch.setattr(hsc, "cfg", lambda: {"teachworks": {"student_name_properties": ["student_last_name"]}})
+    assert hsc.find_family_contact("Matthew", "Rose") == []
+
+
+def test_lone_surname_match_with_student_deal_is_accepted(monkeypatch):
+    from src import hubspot_client as hsc
+    def _write(m, path, body=None):
+        if "contacts/search" in path:
+            return {"results": [{"id": "C-mom", "properties":
+                                 {"email": "mom@x.com", "firstname": "Marcela",
+                                  "lastname": "Shea", "student_last_name": ""}}]}
+        if "deals/batch/read" in path:
+            return {"results": [{"properties": {"dealname": "Marcela Shea - Matthew - iLead 6"}}]}
+        return {"results": []}
+    monkeypatch.setattr(hsc, "_write", _write)
+    monkeypatch.setattr(hsc, "contact_deal_names", lambda cid: ["Marcela Shea - Matthew - iLead 6"])
+    monkeypatch.setattr(hsc, "cfg", lambda: {"teachworks": {"student_name_properties": ["student_last_name"]}})
+    assert [c["id"] for c in hsc.find_family_contact("Matthew", "Shea")] == ["C-mom"]

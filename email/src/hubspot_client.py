@@ -421,9 +421,20 @@ def find_family_contact(student_first: str, lastname: str) -> list[dict]:
     }
     res = _write("POST", "/crm/v3/objects/contacts/search", body)
     parents = res.get("results", []) if isinstance(res, dict) else []
+    sf = (student_first or "").strip().lower()
+    if len(parents) == 1 and sf:
+        # A LONE surname match is not evidence — 'Rose' matched a 2022 contact
+        # (Dina Rose) for student Matthew Rose, 2026-08-18. Accept a single
+        # match only when its student-name fields name THIS student, or the
+        # contact has any deal whose name carries the student's first name.
+        props = parents[0].get("properties") or {}
+        if any(sf in str(props.get(p, "") or "").lower() for p in sprops):
+            return parents
+        if any(sf in (n or "").lower() for n in contact_deal_names(parents[0]["id"])):
+            return parents
+        return []                      # unverified → the caller chases instead
     if len(parents) <= 1:
         return parents
-    sf = (student_first or "").strip().lower()
     if sf:
         def has_student(c: dict) -> bool:
             props = c.get("properties") or {}

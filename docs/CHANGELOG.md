@@ -8,6 +8,28 @@ Newest entries first.
 
 ---
 
+## 2026-08-18 — Week audit + wrong-family fix (Matthew Rose) + South Sutter errant PO
+
+**What:** Week-of-Aug-10 PO audit (16 emails → 43 deals, $9.8k, 72% same-day
+TW-invoiced). Roman caught: (1) Matthew Rose (iLEAD, 3 POs) attached to
+"Dina Rose" — a 2022 contact with the same surname and no student data. Root
+cause: find_family_contact() returned a LONE surname match without ever
+checking the student name (the same-surname tiebreak only ran on 2+ matches).
+Fixed: a single surname match is accepted only when the contact's student-name
+props or an associated deal name carry the student's first name; else [] →
+the parent chase runs. Deals detached from Dina, renamed NEEDS PARENT, parent
+stamps cleared; PO replayed so the agent re-chases via TOR Sara Ramirez.
+(2) South Sutter/IEM PO 1309153 ($3,010, 3 students, "submitted 4/3/2025") is
+a stale 2025 errant — 3 deals ARCHIVED (Roman). Also fixed during audit: Seeley
+×5 amounts → reissued $75/hr ($637.50; Kath caught the old-rate PO, Christine
+Gurney reissued Aug 18); Heartland ×5 stale parent_email from the Pilibos
+incident corrected; Kruz Invoice # tab char cleaned. Open for Kath: confirm
+Seeley TW invoices 54435–439 at new amounts; Cooper Doyal Invoice # 54422 not
+found under Kristy's TW record.
+
+**Files:** `email/src/hubspot_client.py`, `email/tests/{test_family_contact,
+test_po_inbox}.py` (suite 242 green).
+
 ## 2026-08-17 — Draft feedback loop (Tiers 1+2) — the team's edits train the drafter
 
 **What:** New `email/src/draft_feedback.py`. Tier 1: every agent-created draft
