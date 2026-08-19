@@ -338,9 +338,15 @@
     406061208,
     406086791,
     406104147,
-    406141492
+    406141492,
+    406178540,
+    406177402,
+    406177905,
+    406178779,
+    406180161,
+    406182398
   ],
-  "last_run_utc": "2026-08-19T22:01:42.983334+00:00",
+  "last_run_utc": "2026-08-19T22:43:44.553454+00:00",
   "pending_digest": [
     {
       "call_id": 406003462,
@@ -699,6 +705,417 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 406178540,
+      "number": "13108941830",
+      "time_pt": "3:21 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Hope Mclendon called in asking for Yolanda, who had just called her. Mandy answered, took the message, and promised to have Yolanda call Hope back in about two minutes. No substantive discussion of Luna's renewal, Ocean's enrollment, or the payment method update occurred on this call.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Hope back immediately (within ~2 minutes) to continue the payment method / renewal / Ocean enrollment discussion.",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Yolanda \u2014 Hope Mclendon just called back asking for you (you had just called her). Mandy told her you'd call back in about 2 minutes, so please call Hope right away. Tone was friendly/neutral. This is the same open thread: resolve the payment method update, then finalize Luna's package renewal and enroll Ocean (age 5). Open with: 'Hi Hope, it's Yolanda returning your call \u2014 thanks for calling right back. Let's get that payment method sorted so we can get Luna's renewal going and add Ocean.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal (Luna currently enrolled, renewal + sibling enrollment in progress); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[call] Hope called in asking for Yolanda, saying Yolanda had just called her. Mandy told Hope that Yolanda would call her back in about two minutes and sent Yolanda a message to return the call.",
+          "what_we_can_do_to_help": "Yolanda to call Hope back immediately to continue working through the payment method update, Luna's renewal, and Ocean's enrollment.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Hope called in asking for Yolanda, saying Yolanda had just called her. Mandy told Hope that Yolanda would call her back in about two minutes and sent Yolanda a message to return the call."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to call Hope back immediately to continue working through the payment method update, Luna's renewal, and Ocean's enrollment."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Hope back immediately (within ~2 minutes) to continue the payment method / renewal / Ocean enrollment discussion.",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 406177402,
+      "number": "13108941830",
+      "time_pt": "3:17 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed another outbound follow-up call to Hope regarding Luna's package renewal. She reached Hope's call-screening service and identified herself with the reason (package renewal). The call did not connect to Hope directly.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue attempts to reach Hope by phone and/or SMS to complete payment method update, Luna's renewal, and Ocean's enrollment.",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Hope is an existing customer (Luna currently enrolled); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Luna"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda placed another outbound follow-up call to Hope for the package renewal; reached the call-screening service and identified herself with name and reason (package renewal). Did not connect with Hope directly.",
+          "what_we_can_do_to_help": "Continue attempting to reach Hope by call and/or SMS to complete the payment method update, Luna's renewal, and Ocean's enrollment.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda placed another outbound follow-up call to Hope for the package renewal; reached the call-screening service and identified herself with name and reason (package renewal). Did not connect with Hope directly."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempting to reach Hope by call and/or SMS to complete the payment method update, Luna's renewal, and Ocean's enrollment."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue attempts to reach Hope by phone and/or SMS to complete payment method update, Luna's renewal, and Ocean's enrollment.",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406177905,
+      "number": "13108941830",
+      "time_pt": "3:18 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed another outbound follow-up call to Hope regarding payment method update and Luna's package renewal. She reached the call-screening service, identified herself, and was routed to voicemail. She left a message asking Hope to call back, noting she'll try again at 6pm today and again tomorrow, and requesting the husband's phone number so A+ can contact him directly to finalize payment.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Hope back at 6pm today to continue working through payment method update and Luna's renewal",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Yolanda to call Hope again tomorrow if no response",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Obtain husband's phone number from Hope so A+ can contact him directly to finalize payment and enrollment",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Hope Mclendon is an existing customer (mom of Luna, and looking to enroll 5-year-old Ocean). We've been chasing her for over a week to update payment method, renew Luna's package, and enroll Ocean. Yolanda has been the point of contact. On this call Yolanda hit the call-screening service and left a voicemail promising to call back at 6pm today and again tomorrow, and asked Hope to share her husband's phone number so we can reach him directly to close out payment. If Hope calls in, open with: 'Hi Hope, thanks for calling back \u2014 Yolanda's been trying to reach you to get the payment method set up so we can renew Luna and enroll Ocean. Want to walk through it now, or would it be easier for us to call your husband directly?' Have the CC update link ready and be prepared to take the husband's number.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; status is owned by the deal pipeline and should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Luna",
+          "Ocean"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda placed another outbound follow-up call to Hope regarding payment method update for Luna's lessons; reached the call-screening service and then voicemail. Left a message asking Hope to call back, noting Yolanda will try again at 6pm today and again tomorrow, and requesting the husband's phone number so A+ can contact him directly.",
+          "what_we_can_do_to_help": "Yolanda to call Hope again at 6pm today and again tomorrow to lock in the payment method update, Luna's renewal, and Ocean's enrollment; also try reaching the husband directly if Hope provides his number.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda placed another outbound follow-up call to Hope regarding payment method update for Luna's lessons; reached the call-screening service and then voicemail. Left a message asking Hope to call back, noting Yolanda will try again at 6pm today and again tomorrow, and requesting the husband's phone number so A+ can contact him directly."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to call Hope again at 6pm today and again tomorrow to lock in the payment method update, Luna's renewal, and Ocean's enrollment; also try reaching the husband directly if Hope provides his number."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Hope back at 6pm today to continue working through payment method update and Luna's renewal",
+          86868539
+        ],
+        [
+          "Yolanda to call Hope again tomorrow if no response",
+          86868539
+        ],
+        [
+          "Obtain husband's phone number from Hope so A+ can contact him directly to finalize payment and enrollment",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406180161,
+      "number": "13108941830",
+      "time_pt": "3:23 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed an outbound follow-up call and finally connected with Luna's dad, Josh Kane. She quoted the current 20-hour package at $1,660 and confirmed Luna would keep the same tutor. Josh agreed to renew and also wants to add 5-year-old sister Ocean; Yolanda explained the 20 hours can be split (recommending 30-min sessions for Ocean) and will resend the CC update link since the card on file is no longer valid. Josh committed to completing payment by end of day and will decide the hour split between the two girls afterward.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Resend the credit card update link to Josh/Hope via text and/or email today",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Follow up to confirm the CC update form is completed (target today or tomorrow, within 3-day window)",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Once payment is processed, coordinate with the family on how to split the 20 hours between Luna and Ocean (Ocean recommended at 30-min sessions)",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Set up Ocean as a new student in the system (age 5, sister of Luna, focus on reading)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda finally connected with Luna's dad, Josh Kane \u2014 friendly and ready to move forward. He verbally agreed to renew the 20-hour package at $1,660 (same tutor for Luna) and wants to add 5-year-old sister Ocean for reading. Yolanda explained the 20 hours can be split between the two girls and that Ocean should do 30-min sessions; the actual split will be decided after payment. The card on file is no longer valid (that's why auto-renew failed), so Yolanda is resending the CC update link by text; Josh promised to complete it by end of day. Next step: confirm the CC form comes through today/tomorrow, then circle back with Hope/Josh on hour allocation and Ocean's schedule. If picking this up, open with: \"Hi Josh, just following up to make sure the credit card update link came through okay and to help you decide how you'd like to split the 20 hours between Luna and Ocean.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an active deal (OPEN_DEAL) discussing renewal and adding a sibling \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Luna",
+          "Ocean",
+          "Josh Kane",
+          "Hope Mclendon"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda finally connected with Luna's dad, Josh Kane, on the renewal follow-up. Josh agreed to renew the 20-hour package ($1,660, same tutor for Luna) and wants to add 5-year-old sister Ocean for reading lessons. Confirmed the card on file is no longer valid \u2014 that's why auto-renew failed \u2014 and Josh will complete the resent CC update link by end of day.",
+          "what_we_can_do_to_help": "Resend the CC update link to Josh today and monitor for completion (target today/tomorrow, 3-day window). Once payment processes, work with the family to split the 20 hours between Luna and Ocean (recommend 30-min sessions for Ocean, age 5, reading focus) and get Ocean set up as a new student.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda finally connected with Luna's dad, Josh Kane, on the renewal follow-up. Josh agreed to renew the 20-hour package ($1,660, same tutor for Luna) and wants to add 5-year-old sister Ocean for reading lessons. Confirmed the card on file is no longer valid \u2014 that's why auto-renew failed \u2014 and Josh will complete the resent CC update link by end of day."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Resend the CC update link to Josh today and monitor for completion (target today/tomorrow, 3-day window). Once payment processes, work with the family to split the 20 hours between Luna and Ocean (recommend 30-min sessions for Ocean, age 5, reading focus) and get Ocean set up as a new student."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Resend the credit card update link to Josh/Hope via text and/or email today",
+          86868539
+        ],
+        [
+          "Follow up to confirm the CC update form is completed (target today or tomorrow, within 3-day window)",
+          86868539
+        ],
+        [
+          "Once payment is processed, coordinate with the family on how to split the 20 hours between Luna and Ocean (Ocean recommended at 30-min sessions)",
+          86868539
+        ],
+        [
+          "Set up Ocean as a new student in the system (age 5, sister of Luna, focus on reading)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406182398,
+      "number": "13234934787",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Divyesh Motiwalla",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring returned Divyesh Motiwalla's inquiry about tutoring for his 10th-grade daughter at Peacock Junior High (zip 91381). He wants in-person, one-on-one help with English and math (about 30 min each, several days per week), possibly adding history later. Paola quoted $130/hr in-person and $95/hr online, offered a free online trial session, and agreed to email rates/packages and check in-person tutor availability in his area. Divyesh will discuss the free online trial with his wife and reply by email; he'd consider a trial around Monday.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Divyesh the in-person and online tutoring rates and package information",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check tutor availability for in-person sessions in zip code 91381 (10th grade English and math, ideally one tutor for both)",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Await Divyesh's email reply confirming a day/time for a free online trial session (he mentioned possibly Monday) and book it",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once a tutor is matched, send tutor profile to Divyesh for review before booking",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Divyesh Motiwalla (friendly, engaged dad) is a warm prospect for his 10th-grade daughter at Peacock Junior High, zip 91381. He wants in-person 1:1 tutoring, English + math, ~30 min each, multiple days/week \u2014 ideally one tutor covering both subjects, following her school's curriculum/homework. History may be added later. Paola quoted $130/hr in-person and $95/hr online, mentioned package discounts, and offered a free online trial. Divyesh is open to trying the online trial (possibly Monday) pending a conversation with his wife, and will reply by email. He expects: (1) an email with in-person + online rates/packages, (2) confirmation of in-person tutor availability in 91381, (3) a tutor profile to review before any session is booked. When following up, open with: \"Hi Divyesh, following up on your call with Paola \u2014 here are our rates and I'm checking in-person tutor availability in 91381 now; just let me know what day/time works for the free online trial and I'll get it on the calendar.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; standard tutoring inquiry (not charter, not diagnostic/test prep).",
+        "student_or_school_names_mentioned": [
+          "Peacock Junior High"
+        ],
+        "record_updates": {
+          "whats_going_on": "Dad Divyesh called back; 10th-grade daughter at Peacock Junior High (zip 91381) needs help keeping up with daily English and math homework (possibly history later). Wants in-person 1:1 tutoring at home, several days/week, ~30 min English + 30 min math per session, following her school's curriculum.",
+          "what_we_can_do_to_help": "Paola quoted $130/hr in-person and $95/hr online and will email rates/packages. Checking in-person tutor availability in 91381 with a tutor who can cover both English and math. Offered a free online trial (Divyesh to confirm day/time by email, possibly Monday, after talking with his wife). Tutor profile will be sent for review before booking.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "10",
+          "student_school": "Peacock Junior High",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Dad Divyesh called back; 10th-grade daughter at Peacock Junior High (zip 91381) needs help keeping up with daily English and math homework (possibly history later). Wants in-person 1:1 tutoring at home, several days/week, ~30 min English + 30 min math per session, following her school's curriculum."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $130/hr in-person and $95/hr online and will email rates/packages. Checking in-person tutor availability in 91381 with a tutor who can cover both English and math. Offered a free online trial (Divyesh to confirm day/time by email, possibly Monday, after talking with his wife). Tutor profile will be sent for review before booking."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "10"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Peacock Junior High"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Divyesh the in-person and online tutoring rates and package information",
+          81494333
+        ],
+        [
+          "Check tutor availability for in-person sessions in zip code 91381 (10th grade English and math, ideally one tutor for both)",
+          81494333
+        ],
+        [
+          "Await Divyesh's email reply confirming a day/time for a free online trial session (he mentioned possibly Monday) and book it",
+          81494333
+        ],
+        [
+          "Once a tutor is matched, send tutor profile to Divyesh for review before booking",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
