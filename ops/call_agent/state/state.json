@@ -313,9 +313,17 @@
     405719570,
     405717916,
     405723583,
-    405724679
+    405724679,
+    405737749,
+    405739554,
+    405739969,
+    405740228,
+    405732218,
+    405735349,
+    405737745,
+    405742398
   ],
-  "last_run_utc": "2026-08-18T23:59:07.917310+00:00",
+  "last_run_utc": "2026-08-19T00:58:41.901039+00:00",
   "pending_digest": [
     {
       "call_id": 405334130,
@@ -1814,6 +1822,304 @@
       "tasks_created": [
         [
           "Await Lindsey's callback; if no response in a few days, attempt another outreach",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405732218,
+      "number": "17604643328",
+      "time_pt": "5:02 PM",
+      "matched": true,
+      "contact_label": "Leah Panichello",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paula from A+ Tutoring placed an outbound call to Leah Panichello and left a voicemail. The purpose was to let Leah know that her teacher Alicia nominated her daughter Zarah (heard as 'Sarah') for a free tutoring session. Paula invited Leah to call back for details on how to set this up.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Leah; if no response in a few days, follow up again about the free tutoring session nomination from teacher Alicia",
+            "owner_hint": "Paula"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paula left a voicemail for Leah Panichello (mom of Zarah, student at iLEAD Exploration charter). Zarah was nominated by her teacher Alicia for a free tutoring session. No response yet \u2014 Leah expects a callback opportunity to hear details. If she calls back or you follow up, open with: 'Hi Leah, this is [name] from A+ Tutoring following up on Paula's message \u2014 your teacher Alicia nominated Zarah for a free tutoring session and we'd love to walk you through how to get that set up.' Zarah struggles with math per prior notes; confirm grade level, subject focus, and online vs. in-person preference on the next call.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "iLEAD charter family \u2014 pays via instructional funds.",
+        "student_or_school_names_mentioned": [
+          "Zarah",
+          "Leah Panichello",
+          "Alicia",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound VM left by Paula: Zarah's teacher Alicia at iLEAD nominated her for a free tutoring session. Waiting for Leah to call back to discuss details.",
+          "what_we_can_do_to_help": "Offer the nominated free tutoring session and use it as a starting point to build a math tutoring plan for Zarah through her iLEAD charter funds.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": "Alicia",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound VM left by Paula: Zarah's teacher Alicia at iLEAD nominated her for a free tutoring session. Waiting for Leah to call back to discuss details."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Offer the nominated free tutoring session and use it as a starting point to build a math tutoring plan for Zarah through her iLEAD charter funds."
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Alicia"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Leah; if no response in a few days, follow up again about the free tutoring session nomination from teacher Alicia",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405735349,
+      "number": "18184612243",
+      "time_pt": "5:17 PM",
+      "matched": true,
+      "contact_label": "Buki Famosa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Buki Famosa but reached her voicemail screening service. Yolanda left a message noting that Eva's tutor Arthur is online waiting for the scheduled lesson right now, that a lesson reminder was sent, and asked Buki to complete the credit card form emailed to her so lessons can be officially scheduled. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm Buki received the lesson reminder and that Eva joins Arthur's session",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Follow up to ensure Buki completes the CC authorization form to finalize scheduling",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Buki is an active customer (Eva, 12th grade, Burbank HS, working with tutor Arthur). Yolanda left a voicemail because Eva's session was starting and Arthur was waiting online \u2014 Buki did not pick up. We also need her to complete the CC form we emailed so lessons can be officially scheduled. If she calls back or you're following up, open with: 'Hi Buki, just checking in \u2014 Arthur was online for Eva's session and we wanted to make sure you got the reminder. Also, whenever you have a moment, please complete the CC form we emailed so we can lock in Eva's schedule.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Buki is an existing customer already purchased into the 20-hour Prep package; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Eva",
+          "Arthur"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda called Buki and reached voicemail at the time of Eva's scheduled session with tutor Arthur. Left a voicemail noting Arthur was online waiting and that the lesson reminder had been sent.",
+          "what_we_can_do_to_help": "Need Buki to complete the CC authorization form emailed to her so lessons can be officially scheduled. Team to follow up to confirm receipt of the reminder and CC form completion.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda called Buki and reached voicemail at the time of Eva's scheduled session with tutor Arthur. Left a voicemail noting Arthur was online waiting and that the lesson reminder had been sent."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Need Buki to complete the CC authorization form emailed to her so lessons can be officially scheduled. Team to follow up to confirm receipt of the reminder and CC form completion."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm Buki received the lesson reminder and that Eva joins Arthur's session",
+          86868539
+        ],
+        [
+          "Follow up to ensure Buki completes the CC authorization form to finalize scheduling",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405737745,
+      "number": "16265408413",
+      "time_pt": "5:27 PM",
+      "matched": true,
+      "contact_label": "Rachel Pariser",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Rachel Pariser, an active tutor, to offer a potential student \u2014 Sofia, 11th grade English, ZIP 90077. Rachel declined the assignment due to schedule and location conflicts. She also shared that she needs to suspend her tutoring availability altogether because she has started teaching and is enrolled in a master's program. The call ended cordially.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Mark Rachel as unavailable / suspend her tutor availability in the system due to new teaching job and master's program",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Find another tutor for Sofia (11th grade English, ZIP 90077)",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Rachel Pariser (active tutor) declined the Sofia assignment (11th grade English, 90077) due to schedule/location conflict and told Janelle she needs to suspend her tutoring availability entirely \u2014 she has started teaching and is in a master's program. Please update her tutor availability to suspended/unavailable in the system, and reassign Sofia's match to another tutor. Rachel was polite and professional; no further outreach expected from her side. If you need to contact her, open with: 'Hi Rachel, just confirming we've paused your tutor availability per our last call \u2014 reach out whenever your schedule opens back up.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Rachel is an existing active tutor (Tutor-Active); status is owned by tutor pipeline. She is pausing availability but not resigning, so no demotion needed here \u2014 handled via availability flag.",
+        "student_or_school_names_mentioned": [
+          "Sofia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Rachel declined the Sofia (11th grade English, 90077) assignment due to schedule and location conflict. She also stated she needs to suspend her tutoring availability entirely \u2014 she has started teaching and is enrolled in a master's program, so she cannot commit to tutoring right now.",
+          "what_we_can_do_to_help": "Mark Rachel's tutor availability as suspended/unavailable and hold her profile for potential reactivation later. Reassign Sofia to a different tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Rachel declined the Sofia (11th grade English, 90077) assignment due to schedule and location conflict. She also stated she needs to suspend her tutoring availability entirely \u2014 she has started teaching and is enrolled in a master's program, so she cannot commit to tutoring right now."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Mark Rachel's tutor availability as suspended/unavailable and hold her profile for potential reactivation later. Reassign Sofia to a different tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Mark Rachel as unavailable / suspend her tutor availability in the system due to new teaching job and master's program",
+          80047202
+        ],
+        [
+          "Find another tutor for Sofia (11th grade English, ZIP 90077)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 405742398,
+      "number": "13108941830",
+      "time_pt": "5:50 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda (identifying as Amanda) from A+ Tutoring placed another outbound follow-up call to Hope Mclendon regarding her payment method update. The call went to voicemail/call screening. Yolanda left a message saying she'll call back tomorrow around 12-1pm to try to resolve the payment method issue together.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Hope back tomorrow around 12-1pm to follow up on payment method update",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Continue trying to resolve Luna's renewal and Ocean's enrollment once payment method is updated",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Hope Mclendon is an existing customer (Luna, currently in tutoring; also planning to enroll 5-year-old Ocean). We've been chasing her for a payment method update and to lock in Luna's renewal. Yolanda left a VM today promising to call back TOMORROW around 12-1pm to work through the payment method together. If you're covering, open with: 'Hi Hope, this is [name] from A+ Tutoring following up on Yolanda's message from yesterday \u2014 we wanted to help you get your payment method updated so we can get Luna's renewal and Ocean's enrollment set up.' Have the CC update link ready to resend.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; status is owned by the deal pipeline and should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Luna"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda placed another outbound follow-up call to Hope regarding her payment method update; reached voicemail. Left a message stating she'll call back tomorrow around 12-1pm to work through the payment method together.",
+          "what_we_can_do_to_help": "Yolanda to call Hope back tomorrow around 12-1pm to help resolve the payment method update, then proceed with Luna's renewal and Ocean's enrollment.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda placed another outbound follow-up call to Hope regarding her payment method update; reached voicemail. Left a message stating she'll call back tomorrow around 12-1pm to work through the payment method together."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to call Hope back tomorrow around 12-1pm to help resolve the payment method update, then proceed with Luna's renewal and Ocean's enrollment."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Hope back tomorrow around 12-1pm to follow up on payment method update",
+          86868539
+        ],
+        [
+          "Continue trying to resolve Luna's renewal and Ocean's enrollment once payment method is updated",
           81494333
         ]
       ],
