@@ -21900,3 +21900,5 @@
 {"message_id": "pending-po-reminder:64051260972", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64051260972", "po_number": "3114103797", "timestamp": "2026-08-19T01:42:10.136671+00:00"}
 {"message_id": "pending-po-reminder:64048709242", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64048709242", "po_number": "3114103798", "timestamp": "2026-08-19T01:42:10.655816+00:00"}
 {"message_id": "pending-po-reminder:64048569925", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64048569925", "po_number": "3114103799", "timestamp": "2026-08-19T01:42:11.167216+00:00"}
+{"ticket_id": "47792229141", "thread_id": "11100190797", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-08-19T01:59:15.905642+00:00"}
+{"ticket_id": "47751007008", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T02:01:59.522534+00:00"}
