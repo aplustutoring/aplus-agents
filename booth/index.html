@@ -114,12 +114,12 @@
   #screen-camera{background:var(--oak-deep);padding:0;}
   .cam-stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
   #video{
-    height:78%;aspect-ratio:1080/1306;object-fit:cover;border-radius:24px;
+    height:78%;aspect-ratio:1080/1330;object-fit:cover;border-radius:24px;
     transform:scaleX(-1);background:#000;
   }
   .cam-frame{
     position:absolute;pointer-events:none;border:6px solid var(--cream);border-radius:24px;
-    height:78%;aspect-ratio:1080/1306;
+    height:78%;aspect-ratio:1080/1330;
   }
   .cam-goal-chip{
     position:absolute;bottom:11%;left:50%;transform:translateX(-50%);
@@ -200,10 +200,10 @@
   /* ---------- Print ---------- */
   #print-area{display:none;}
   @media print{
-    @page{size:100mm 148mm;margin:0;}   /* Selphy 4x6 postcard, borderless */
     body>*{display:none !important;}
-    #print-area{display:block !important;position:fixed;inset:0;}
-    #print-area img{width:100%;height:100%;object-fit:cover;display:block;}
+    #print-area{display:block !important;position:static;}
+    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
+    @page{margin:0;}
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -443,13 +443,13 @@ const CONFIG = {
 
   function capture(){
     const video=$("video");
-    const W=1200, H=1776;                       // Selphy 4x6 postcard: 100×148mm @300dpi exactly — full-bleed, no crop
+    const W=1200, H=1800;                       // 2:3 — the format that printed correctly on the Selphy
     const canvas=document.createElement("canvas");
     canvas.width=W; canvas.height=H;
     const ctx=canvas.getContext("2d");
 
     // Photo (mirrored to match preview), cover-cropped into upper area
-    const photoTop=200, photoH=1306, photoPad=60;
+    const photoTop=200, photoH=1330, photoPad=60;
     const pw=W-photoPad*2;
     const vr=video.videoWidth/video.videoHeight, tr=pw/photoH;
     let sw,sh,sx,sy;
