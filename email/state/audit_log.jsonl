@@ -22007,3 +22007,8 @@
 {"ticket_id": "47795660354", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:06.248683+00:00"}
 {"ticket_id": "47805454848", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:06.538541+00:00"}
 {"ticket_id": "47795195776", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:06.798429+00:00"}
+{"message_id": "error:deal:64200455730", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T21:01:02.742917+00:00"}
+{"message_id": "error:deal:64204010015", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T21:01:04.466963+00:00"}
+{"message_id": "error:deal:64186008336", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T21:01:06.106746+00:00"}
+{"message_id": "error:deal:64200923573", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T21:01:07.676064+00:00"}
+{"message_id": "error:deal:64196588684", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T21:01:09.616940+00:00"}
