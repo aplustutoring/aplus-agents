@@ -335,9 +335,10 @@
     406003462,
     406042943,
     406051617,
-    406061208
+    406061208,
+    406086791
   ],
-  "last_run_utc": "2026-08-19T18:54:50.066324+00:00",
+  "last_run_utc": "2026-08-19T19:30:21.460369+00:00",
   "pending_digest": [
     {
       "call_id": 406003462,
@@ -516,6 +517,69 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 406086791,
+      "number": "16619043139",
+      "time_pt": "12:13 PM",
+      "matched": true,
+      "contact_label": "Annie  Wolfstein",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Annie Wolfstein regarding her prior interest in tutoring. The call went to voicemail (Danny's voicemail box). Paola left a message asking Annie to call back at a convenient time.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with Annie Wolfstein if she does not return the voicemail",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Annie Wolfstein (reached a voicemail greeting for 'Danny') following up on her prior tutoring inquiry. No details discussed \u2014 nothing promised. Annie now expects a callback opportunity but no time was set. If she calls back, open with: 'Hi Annie, thanks for calling back \u2014 I'd love to learn more about who you're looking to get tutoring for and what they're working on.' We still need student name, grade, school, subject, and modality.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail only \u2014 no live contact made, so we haven't actually connected yet. Keeping status as NEW.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up attempt on Annie's prior tutoring inquiry. Reached voicemail (greeting was for 'Danny') and left a message asking her to call back.",
+          "what_we_can_do_to_help": "Continue follow-up attempts to connect live, gather student details (name, grade, school, subject, online/in-person), and match to an appropriate tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up attempt on Annie's prior tutoring inquiry. Reached voicemail (greeting was for 'Danny') and left a message asking her to call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up attempts to connect live, gather student details (name, grade, school, subject, online/in-person), and match to an appropriate tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with Annie Wolfstein if she does not return the voicemail",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
