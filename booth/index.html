@@ -203,7 +203,9 @@
     body>*{display:none !important;}
     #print-area{display:block !important;position:static;}
     #print-area img{width:100%;max-height:100vh;object-fit:contain;}
+    /* margin:0 leaves Safari no room to print its header/footer (URL, title, date) */
     @page{margin:0;}
+    html,body{margin:0 !important;padding:0 !important;}
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -510,6 +512,10 @@ const CONFIG = {
   // ---------- Review ----------
   $("btn-retake").addEventListener("click",()=>show("camera"));
   $("btn-keep").addEventListener("click",()=>show("form"));
+  // iOS prints the page <title> in its header when "Headers and Footers" is on;
+  // blank it around printing so nothing but the photo can appear.
+  window.addEventListener("beforeprint",()=>{document.title=" ";});
+  window.addEventListener("afterprint",()=>{document.title="Sage Oak Back to School Photo Booth";});
 
   // ---------- Form ----------
   let selectedRole=null;
