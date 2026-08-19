@@ -331,10 +331,78 @@
     405927484,
     405978600,
     405978601,
-    405984884
+    405984884,
+    406003462
   ],
-  "last_run_utc": "2026-08-19T16:48:07.789416+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-19T17:31:03.872446+00:00",
+  "pending_digest": [
+    {
+      "call_id": 406003462,
+      "number": "18185845401",
+      "time_pt": "9:59 AM",
+      "matched": true,
+      "contact_label": "Dina Rose",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up attempt to existing customer Dina Rose regarding her son Matthew. Call did not connect \u2014 voicemail box was full and no message could be left. No conversation took place.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry contacting Dina Rose via alternate channel (email or SMS) since voicemail box is full",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Tried calling Dina Rose (existing customer, son Matthew) \u2014 her voicemail was full and no message could be left. Please try again later or reach out via email (dinah.pham@gmail.com) or SMS. Open with a quick note that we tried calling but couldn't leave a voicemail, and confirm best way to reach her.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; call did not connect so no new information to change status.",
+        "student_or_school_names_mentioned": [
+          "Matthew",
+          "Dina Rose"
+        ],
+        "record_updates": {
+          "whats_going_on": "Attempted outbound call to Dina; voicemail box was full so no message could be left. No contact made.",
+          "what_we_can_do_to_help": "Retry via email or SMS since voicemail is unavailable.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Attempted outbound call to Dina; voicemail box was full so no message could be left. No contact made."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry via email or SMS since voicemail is unavailable."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry contacting Dina Rose via alternate channel (email or SMS) since voicemail box is full",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
