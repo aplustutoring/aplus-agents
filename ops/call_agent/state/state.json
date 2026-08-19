@@ -332,9 +332,12 @@
     405978600,
     405978601,
     405984884,
-    406003462
+    406003462,
+    406042943,
+    406051617,
+    406061208
   ],
-  "last_run_utc": "2026-08-19T18:00:16.188653+00:00",
+  "last_run_utc": "2026-08-19T18:54:50.066324+00:00",
   "pending_digest": [
     {
       "call_id": 406003462,
@@ -401,6 +404,118 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 406042943,
+      "number": "14786549001",
+      "time_pt": "11:03 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inbound caller trying to visit the A+ Tutoring office reported that the parking lot is blocked/full with cars parked in the middle of the lot and kids around. They asked whether there is an alternate parking lot. Paola acknowledged parking is tricky right now and pivoted to ask if the caller was looking for tutoring; the call cuts off before resolution.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Check the office parking lot situation and clear/address the cars parked in the middle of the lot blocking access",
+            "owner_hint": null
+          },
+          {
+            "item": "Call the visitor back at 1-478-654-9001 to give them parking guidance and find out why they were coming in (possible tutoring inquiry)",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "A visitor called from 478-654-9001 sounding frustrated because they couldn't access our office parking lot \u2014 cars (and lots of kids) were parked in the middle of the lot blocking the way. They asked if we have an alternate lot. Paola started to redirect the call toward tutoring but the call cut off before we learned who they are or why they were coming in. Please (a) walk out and clear/address the parking situation, and (b) call this number back. Open with: 'Hi, this is ___ from A+ Tutoring \u2014 I'm so sorry about the parking mess when you tried to come by earlier. Were you able to get in, and can I help you with what you were coming in for?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call was too brief and got cut off before we could identify the caller or confirm they are a prospective tutoring family; not enough info to classify.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check the office parking lot situation and clear/address the cars parked in the middle of the lot blocking access",
+          81494333
+        ],
+        [
+          "Call the visitor back at 1-478-654-9001 to give them parking guidance and find out why they were coming in (possible tutoring inquiry)",
+          81494333
+        ]
+      ],
+      "ticket_id": "47835933229",
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 406061208,
+      "number": "19499924243",
+      "time_pt": "11:30 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Himadri Paregi called to ask if A+ Tutoring is currently hiring. Paola confirmed we accept applications and provided the email admin@wetutorathome.com. Himadri shared her email (himadri.paregi@gmail.com) and Paola agreed to send the application info by email after the call.",
+        "caller_type": "tutor applicant",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Himadri Paregi at himadri.paregi@gmail.com with application instructions and the correct link/email (admin@wetutorathome.com).",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Caller is a prospective tutor applicant asking how to apply.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Himadri Paregi called asking if A+ is currently hiring and wanted the correct application link/email.",
+          "what_we_can_do_to_help": "Paola is sending the application info to himadri.paregi@gmail.com and directing her to submit at admin@wetutorathome.com.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Himadri Paregi at himadri.paregi@gmail.com with application instructions and the correct link/email (admin@wetutorathome.com).",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
