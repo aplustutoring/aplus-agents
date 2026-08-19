@@ -336,9 +336,10 @@
     406042943,
     406051617,
     406061208,
-    406086791
+    406086791,
+    406104147
   ],
-  "last_run_utc": "2026-08-19T19:30:21.460369+00:00",
+  "last_run_utc": "2026-08-19T20:00:53.846220+00:00",
   "pending_digest": [
     {
       "call_id": 406003462,
@@ -580,6 +581,123 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 406104147,
+      "number": "19093804811",
+      "time_pt": "12:35 PM",
+      "matched": true,
+      "contact_label": "Banafsheh Salehi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Banafsheh Salehi called to move up her consultation (originally Aug 31) for private writing tutoring for her 5th-grade daughter Roxanne, specifically ISEE writing prep. Paola walked her through rates ($95/hr online, $130/hr in-person, package discounts), confirmed she'd prefer in-person but is open to a free online trial, and tentatively scheduled a free online trial for Saturday or Sunday at 2 PM. Paola will email rates and check in-person tutor availability for ZIP 91436, and the scheduling team will text to confirm the trial and share a tutor profile.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Banafsheh current online ($95/hr) and in-person ($130/hr) rate sheet with package options",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91436 and follow up with Banafsheh",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Scheduling team to text Banafsheh to confirm free online trial for Saturday or Sunday at 2 PM and share tutor profile",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Match Roxanne with a tutor specialized in ISEE writing prep",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Banafsheh Salehi (warm, engaged parent) called to accelerate her Aug 31 consultation. Daughter Roxanne, 5th grade at Lanai Elementary, needs ISEE writing test prep. Paola quoted $95/hr online and $130/hr in-person with package discounts, and offered a free online trial. Banafsheh prefers in-person (ZIP 91436) but agreed to try online first \u2014 tentative free trial Saturday or Sunday at 2 PM. She expects: (1) an email from Paola with rates, (2) a text from scheduling to lock in Sat or Sun 2 PM and share the tutor's profile before the trial, and (3) confirmation on in-person tutor availability in 91436. Ensure the assigned tutor is ISEE-writing oriented, not general writing. Open with: 'Hi Banafsheh, this is [name] from A+ Tutoring following up on Roxanne's free online trial \u2014 I'd like to confirm Saturday or Sunday at 2 PM and send over the tutor's profile.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "no_change",
+        "student_or_school_names_mentioned": [
+          "Roxanne Salehi",
+          "Lanai Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Banafsheh called to move up her Aug 31 consultation and got full info on the same call. Confirmed Roxanne (5th grade, Lanai Elementary) needs ISEE writing test prep; mom prefers in-person at ZIP 91436 but agreed to a free online trial tentatively Sat or Sun at 2 PM.",
+          "what_we_can_do_to_help": "Send rate sheet ($95/hr online, $130/hr in-person, package discounts), check in-person tutor availability in 91436, and have scheduling text to confirm the free online trial (Sat/Sun 2 PM) with an ISEE-writing-focused tutor profile.",
+          "student_first_name": "Roxanne",
+          "student_last_name": "Salehi",
+          "grade_level": "5",
+          "student_school": "Lanai Elementary",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Banafsheh called to move up her Aug 31 consultation and got full info on the same call. Confirmed Roxanne (5th grade, Lanai Elementary) needs ISEE writing test prep; mom prefers in-person at ZIP 91436 but agreed to a free online trial tentatively Sat or Sun at 2 PM."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send rate sheet ($95/hr online, $130/hr in-person, package discounts), check in-person tutor availability in 91436, and have scheduling text to confirm the free online trial (Sat/Sun 2 PM) with an ISEE-writing-focused tutor profile."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Salehi"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Roxane",
+          "Roxanne",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Email Banafsheh current online ($95/hr) and in-person ($130/hr) rate sheet with package options",
+          81494333
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91436 and follow up with Banafsheh",
+          81494333
+        ],
+        [
+          "Scheduling team to text Banafsheh to confirm free online trial for Saturday or Sunday at 2 PM and share tutor profile",
+          81494333
+        ],
+        [
+          "Match Roxanne with a tutor specialized in ISEE writing prep",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
