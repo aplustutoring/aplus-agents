@@ -22000,3 +22000,10 @@
 {"message_id": "error:deal:64186008336", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T20:43:06.363394+00:00"}
 {"message_id": "error:deal:64200923573", "source": "deal_sync", "action_taken": "error", "error": "403 Client Error: Forbidden for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T20:43:07.717888+00:00"}
 {"message_id": "error:deal:64196588684", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-08-19T20:43:09.073544+00:00"}
+{"ticket_id": "47787316399", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-19T20:52:04.400627+00:00"}
+{"ticket_id": "47787164289", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-08-19T20:52:04.684946+00:00"}
+{"ticket_id": "47784534694", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:05.083968+00:00"}
+{"ticket_id": "47789802516", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:05.997630+00:00"}
+{"ticket_id": "47795660354", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:06.248683+00:00"}
+{"ticket_id": "47805454848", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:06.538541+00:00"}
+{"ticket_id": "47795195776", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-19T20:52:06.798429+00:00"}
