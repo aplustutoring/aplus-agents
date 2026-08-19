@@ -36,8 +36,9 @@ PO_SYSTEM = (
     "school, student_first, "
     "student_last, grade, po_number, amount, rate, hours, parent_first, parent_last, "
     "parent_email, "
-    "parent_phone, tor_first, tor_last, tor_email, po_month, level_up (bool), summary, "
-    "draft_reply, confidence (0-1)}. "
+    "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, level_up (bool), "
+    "summary, draft_reply, confidence (0-1)}. "
+    "tutor_name = the A+ tutor named on the PO/order agreement, if any (e.g. 'Jacquelyn Lemerond'). "
     "rate = the HOURLY RATE stated in the PO (number only, e.g. 75). hours = the hours "
     "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
     "we compute it. "
@@ -1284,6 +1285,47 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                                    f"{po.get('parent_last', '')} <{p_email}> from the PO, ")
             except Exception as e:  # noqa: BLE001 — contact handling is best-effort
                 print(f"  ⚠️  parent-contact create/lookup failed (non-fatal): {e}")
+        if not contact_id:
+            # STEP 2 (Roman, 2026-08-18): the student may already be IN
+            # Teachworks — a family with real lesson history (and ideally the
+            # PO's tutor as their last tutor) is the surest parent there is.
+            fam = None
+            try:
+                fam = tw.find_family_by_student(po.get("student_first") or "",
+                                                po.get("student_last") or "",
+                                                tutor_hint=po.get("tutor_name") or "")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  TW student lookup failed (non-fatal): {e}")
+            if fam and fam.get("email") and not _internal_email(fam["email"]):
+                try:
+                    existing = hs.find_contact_by_email(fam["email"])
+                    if existing:
+                        contact_id = existing["id"]
+                        xp = existing.get("properties") or {}
+                        parent_name = (f"{xp.get('firstname', '')} {xp.get('lastname', '')}".strip()
+                                       or f"{fam['parent_first']} {fam['parent_last']}".strip())
+                    else:
+                        created_c = hs.create_contact(fam["email"], fam.get("parent_first") or None,
+                                                      fam.get("parent_last") or None,
+                                                      phone=fam.get("phone") or None,
+                                                      extra_props=FAMILY_CREATE_PROPS)
+                        contact_id = created_c.get("id")
+                        parent_name = f"{fam['parent_first']} {fam['parent_last']}".strip()
+                    parent_email_res = fam["email"]
+                    po.setdefault("parent_email", fam["email"])
+                    if not po.get("parent_phone") and fam.get("phone"):
+                        po["parent_phone"] = fam["phone"]
+                    why = (f"tutor {fam['tutor']} matches the PO" if fam.get("tutor_match")
+                           else f"{fam['lessons']} lessons, last tutor {fam['tutor'] or '?'}")
+                    contact_bit = (f"parent {parent_name} found IN TEACHWORKS by student "
+                                   f"name ({why}, last lesson {fam.get('last_lesson') or '?'}), ")
+                    if not fam.get("tutor_match") and (po.get("tutor_name") or "").strip():
+                        note_parts.append(f"⚠️ TW family matched by student name but the PO's "
+                                          f"tutor ({po['tutor_name']}) ≠ their last tutor "
+                                          f"({fam['tutor'] or '?'}) — verify it's the same "
+                                          f"student before scheduling.")
+                except Exception as e:  # noqa: BLE001
+                    print(f"  ⚠️  TW-family contact link failed (non-fatal): {e}")
         if not contact_id:
             found = _find_parent_via_deals(po)
             if found:

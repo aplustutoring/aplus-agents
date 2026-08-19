@@ -8,6 +8,31 @@ Newest entries first.
 
 ---
 
+## 2026-08-18 — Parent resolution step 2: the student in Teachworks (Roman: "build")
+
+**What:** New tw.find_family_by_student(): searches both TW accounts for the
+PO's student by exact name, scores candidates by real lesson history (+100 when
+the PO's tutor is their last tutor; 0-lesson shells never count), returns the
+family (parent name/email/phone, last tutor, lesson count). Wired into
+po_inbox parent resolution as STEP 2 — after "parent email in the PO", BEFORE
+prior deals and the surname search — with the extractor now pulling
+`tutor_name` off the PO. Internal-domain families skipped; tutor mismatch adds
+a "verify same student" flag. Matthew Rose (iLEAD, 3 POs) resolved this way
+by hand today: TW showed Megan Miller's Matthew with 104 lessons, all with
+Jacquelyn Lemerond — the tutor on the new PO — while the "Dina Rose / Matthew"
+record had 0 lessons (a 2022 Gold-pipeline shell). Deals renamed "Megan Miller
+- Matthew Rose - iLead 1/2/3 - 26/27", Megan attached + stamped, family→TOR
+(Sara Ramirez), SMS armed, chases closed. Also: tw_student_lookup.py + xref
+workflow input for ad-hoc "have we ever tutored X?" checks (shows last tutor).
+
+**Why:** Roman: "matthew rose can be found in teachworks, to eliminate if we
+ever tutored him before… cross reference who the last teacher [tutor] was for
+both of the matthews and you will know" → "build".
+
+**Files:** `email/src/teachworks_client.py`, `email/src/po_inbox.py`,
+`email/tw_student_lookup.py` (new), `.github/workflows/tw-invoice-xref.yml`,
+`email/tests/test_po_inbox.py` (suite 246 green), `docs/PO-PROCESS.md`.
+
 ## 2026-08-18 — Week audit + wrong-family fix (Matthew Rose) + South Sutter errant PO
 
 **What:** Week-of-Aug-10 PO audit (16 emails → 43 deals, $9.8k, 72% same-day

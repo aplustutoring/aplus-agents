@@ -39,9 +39,17 @@ Tried in order; the first hit wins:
 
 1. **Parent email in the PO** → find the contact, or create it
    (`a_persona=Family`, phone included).
-2. **The student's prior deal** → its non-TOR contact, if unique.
-3. **Unique family-contact match** by student name.
-4. **Nothing** → the deal is born `NEEDS PARENT - …` and the **parent chase**
+2. **The student in Teachworks** → search both TW accounts by the student's
+   exact name; a student with real lesson history gives us their family
+   (parent name/email/phone) directly — and if the PO's tutor is that
+   student's last tutor, it's decisive. 0-lesson shell records never count;
+   a tutor mismatch is flagged for verification. (Matthew Rose, 2026-08-18:
+   104 lessons with Jacquelyn Lemerond → Megan Miller, no chase needed.)
+3. **The student's prior deal** → its non-TOR contact, if unique.
+4. **Family-contact match** by student name — a lone surname hit only counts
+   when that contact's student fields or deal names carry the student's first
+   name (the "Dina Rose" collision).
+5. **Nothing** → the deal is born `NEEDS PARENT - …` and the **parent chase**
    starts. Before drafting, the agent checks the TOR's recent **call-agent
    summaries** — a phone call may already hold the answer (flagged on the
    ticket). The request (parent name/email/phone) is drafted to the TOR — as a

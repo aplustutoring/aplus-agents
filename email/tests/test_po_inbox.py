@@ -1893,3 +1893,94 @@ def test_lone_surname_match_with_student_deal_is_accepted(monkeypatch):
     monkeypatch.setattr(hsc, "contact_deal_names", lambda cid: ["Marcela Shea - Matthew - iLead 6"])
     monkeypatch.setattr(hsc, "cfg", lambda: {"teachworks": {"student_name_properties": ["student_last_name"]}})
     assert [c["id"] for c in hsc.find_family_contact("Matthew", "Shea")] == ["C-mom"]
+
+
+# ── TW student-name lookup as parent-resolution step 2 (Matthew Rose, 2026-08-18)
+
+@pytest.fixture
+def _no_tw_family(monkeypatch):
+    monkeypatch.setattr(po.tw, "find_family_by_student", lambda f, l, tutor_hint="": None)
+
+
+def test_tw_student_lookup_resolves_parent_before_surname_search(monkeypatch):
+    # PO: Matthew Rose, tutor Jacquelyn Lemerond, no parent info. Teachworks
+    # knows Megan Miller's Matthew (104 lessons, same tutor). The surname
+    # search (which would find Dina Rose) must never even run.
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.tw, "find_family_by_student",
+                        lambda f, l, tutor_hint="": {"parent_first": "Megan", "parent_last": "Miller",
+                                                     "email": "missmegan1230@yahoo.com",
+                                                     "phone": "661-886-9677",
+                                                     "tutor": "Lemerond, Jacquelyn", "lessons": 104,
+                                                     "last_lesson": "2026-05-20", "tutor_match": True})
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C-megan", "properties":
+                                                    {"firstname": "Megan", "lastname": "Miller"}})
+    monkeypatch.setattr(po.hs, "find_family_contact",
+                        lambda sf, ln: (_ for _ in ()).throw(AssertionError("surname search must not run")))
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, contact_id=None, **k:
+                        created.append((name, contact_id)) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(student_first="Matthew", student_last="Rose", po_number="",
+                        tutor_name="Jacquelyn Lemerond", po_month="2026-09"), notes)
+    assert created == [("Megan Miller - Matthew Rose - iLead 1 - 26/27", "C-megan")]
+    assert any("found IN TEACHWORKS" in n and "Lemerond" in n for n in notes)
+
+
+def test_tw_student_lookup_tutor_mismatch_flags(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.tw, "find_family_by_student",
+                        lambda f, l, tutor_hint="": {"parent_first": "Megan", "parent_last": "Miller",
+                                                     "email": "m@x.com", "phone": "",
+                                                     "tutor": "Someone Else", "lessons": 12,
+                                                     "last_lesson": "2026-03-01", "tutor_match": False})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(po_number="", tutor_name="Jacquelyn Lemerond"), notes)
+    assert any("verify it's the same student" in n for n in notes)
+
+
+def test_tw_student_lookup_internal_family_ignored(monkeypatch):
+    fell_through = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.tw, "find_family_by_student",
+                        lambda f, l, tutor_hint="": {"parent_first": "Pilibos", "parent_last": "Student",
+                                                     "email": "roman+001@wetutorathome.com",
+                                                     "phone": "", "tutor": "", "lessons": 3,
+                                                     "last_lesson": "", "tutor_match": False})
+    monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: fell_through.append(1) or [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D1"})
+    po._handle_deal(_po(po_number=""), [])
+    assert fell_through == [1]        # test family skipped → normal ladder continues
+
+
+def test_find_family_by_student_prefers_lessons_and_tutor(monkeypatch):
+    from src import teachworks_client as twc
+    monkeypatch.setattr(twc, "accounts", lambda: {"online": "tok"})
+    def _get(endpoint, params=None, token=None):
+        if endpoint == "students":
+            return [{"id": 1, "first_name": "Matthew", "last_name": "Rose", "customer_id": 10},
+                    {"id": 2, "first_name": "Matthew", "last_name": "Rose", "customer_id": 20}]
+        if endpoint == "lessons":
+            sid = params["student_id"]
+            return ([{"from_date": "2026-05-20", "employee_name": "Lemerond, Jacquelyn"}] * 3
+                    if sid == 1 else [])           # student 2 = 0-lesson shell
+        if endpoint == "customers":
+            cid = params["id"]
+            return [{"id": 10, "first_name": "Megan", "last_name": "Miller",
+                     "email": "missmegan1230@yahoo.com", "mobile_phone": "661"}] if cid == 10 else \
+                   [{"id": 20, "first_name": "Dina", "last_name": "Rose", "email": "d@x.com"}]
+        return []
+    monkeypatch.setattr(twc, "tw_get", _get)
+    fam = twc.find_family_by_student("Matthew", "Rose", tutor_hint="Jacquelyn Lemerond")
+    assert fam["email"] == "missmegan1230@yahoo.com" and fam["tutor_match"] is True
+    assert fam["lessons"] == 3
+    # no lesson history anywhere → None (never a shell)
+    monkeypatch.setattr(twc, "tw_get",
+                        lambda e, p=None, token=None:
+                        [{"id": 2, "first_name": "Matthew", "last_name": "Rose", "customer_id": 20}]
+                        if e == "students" else [])
+    assert twc.find_family_by_student("Matthew", "Rose") is None
