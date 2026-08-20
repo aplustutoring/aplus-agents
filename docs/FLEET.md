@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**36 registered agents** — 23 active · 10 manual · 3 deprecated · across 9 engines.
+**38 registered agents** — 25 active · 10 manual · 3 deprecated · across 9 engines.
 
 ## What this is
 
@@ -10,6 +10,13 @@ A+ Tutoring runs its operations on a fleet of automated agents. They live in one
 repo (`aplustutoring/aplus-agents`) and run on GitHub Actions cron — there is no
 always-on server. Each run commits its own state back to the repo, which is why
 the remote is usually well ahead of any local checkout.
+
+**Not everything is a GitHub Action.** Most agents are Actions cron jobs, but some
+run elsewhere — Google Apps Scripts (the Drive watcher, the Slack relay), and
+Cloudflare Workers. Those carry a `runtime:` in the registry and show it in the
+tables below. It matters because they deploy by hand, outside CI: editing the
+file in this repo does **not** make the change live, and if one stops, nothing in
+GitHub goes red.
 
 **Systems in play:** HubSpot (CRM, portal 6312752) · Teachworks (lessons and
 scheduling) · JustCall (phones + SMS) · Monday (boards) · Slack (where agents
@@ -30,12 +37,12 @@ outranks those two. HubSpot is where humans act.
 | Engine | Agents | Active |
 |---|---|---|
 | B2B blogs | 6 | 3 |
-| B2C spotlights | 4 | 1 |
+| B2C spotlights | 5 | 2 |
 | Email / inbox ops | 9 | 9 |
 | Data sync | 3 | 3 |
 | Call agent | 1 | 1 |
 | Messenger | 2 | 1 |
-| Feedback agent | 2 | 2 |
+| Feedback agent | 3 | 3 |
 | Fleet health | 4 | 3 |
 | Charter analysis | 5 | 0 |
 
@@ -43,7 +50,7 @@ outranks those two. HubSpot is where humans act.
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (13):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `campaign-launch`.
+**Writes to live systems on its own (15):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`.
 
 **Reports, drafts, or waits for a human (10):** `topic-gen`, `blog-metrics`, `feedback-agent`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `fleet-docs`, `branch-hygiene`.
 
@@ -68,10 +75,13 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
+| **spotlight-drive-watcher**<br>Spotlight Drive watcher (Google Apps Script) | Apps Script time-driven trigger<br>*apps-script* | active | GoogleDrive | GitHub: repository_dispatch -> spotlight-orchestrator, GoogleDrive |
 | **spotlight-orchestrator**<br>Spotlight Orchestrator | on event | active | GoogleDrive, marketing/data/partner-schools.md, HubSpot:contacts | HubSpot:blog_posts, Slack, marketing/data/partner-schools.md, marketing/aplus-content/<bundle>/ |
 | **backfill-logsheet**<br>Backfill case-study log sheet | manual | manual | GoogleDrive | GoogleSheets |
 | **rerender-textstory**<br>Re-render textstories for a bundle | manual | manual | bundle artifact (passed via --bundle), marketing/assets/sfx/ | Slack |
 | **verify-logsheet**<br>Verify case-study log sheet | manual | manual | GoogleSheets | — |
+
+- **spotlight-drive-watcher** — Fires only for subfolders holding all three required source files (parent-call*, lesson-notes/report*, paola-brief*) that have no sentinel yet
 
 ### Email / inbox ops
 
@@ -128,9 +138,11 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 |---|---|---|---|---|
 | **feedback-agent**<br>Feedback agent — #agent-feedback intake + Friday digest | on event | active (draft) | Slack, registry.yml, ops/feedback-agent/state/state.json | Slack, corrections/<agent>/, registry.yml, HubSpot:tickets, ops/feedback-agent/state/ |
 | **feedback-fix**<br>Feedback agent — execute approved fix | on event | active | corrections/<agent>/, registry.yml, the agent's own source | GitHub: fix/ branch + PR to main (never merged by the agent), Slack |
+| **feedback-slack-relay**<br>Feedback agent Slack relay (Google Apps Script) | event<br>*apps-script* | active | Slack | GitHub: repository_dispatch feedback-report -> feedback-agent |
 
 - **feedback-agent** — Claude classification (structured outputs): agent (registry id or UNKNOWN -> Zapier-census flag) x type (BROKEN/WRONG/ANNOYING/IDEA/ DEMOTE) x severity (critical/normal/low)
 - **feedback-fix** — Confirms or corrects the diagnosis before changing anything; stays scoped to the approved plan (implements the honest minimal version and says so if the real fix differs)
+- **feedback-slack-relay** — The doorbell and nothing more — all classification lives in git
 
 ### Fleet health
 

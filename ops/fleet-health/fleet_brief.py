@@ -39,6 +39,13 @@ repo (`aplustutoring/aplus-agents`) and run on GitHub Actions cron — there is 
 always-on server. Each run commits its own state back to the repo, which is why
 the remote is usually well ahead of any local checkout.
 
+**Not everything is a GitHub Action.** Most agents are Actions cron jobs, but some
+run elsewhere — Google Apps Scripts (the Drive watcher, the Slack relay), and
+Cloudflare Workers. Those carry a `runtime:` in the registry and show it in the
+tables below. It matters because they deploy by hand, outside CI: editing the
+file in this repo does **not** make the change live, and if one stops, nothing in
+GitHub goes red.
+
 **Systems in play:** HubSpot (CRM, portal 6312752) · Teachworks (lessons and
 scheduling) · JustCall (phones + SMS) · Monday (boards) · Slack (where agents
 talk to humans) · Google Drive/Sheets (spotlight intake, retention log).
@@ -263,7 +270,12 @@ def render(agents):
             status = a.get("status", "?")
             if a.get("probation") == "draft":
                 status += " (draft)"
-            L.append(f"| **{a['id']}**<br>{a.get('name','')} | {trigger_text(a)} | {status} "
+            rt = a.get("runtime", "github-actions")
+            # Only worth the ink when it is NOT the default — the exception is
+            # the thing a reader needs to notice (different runtime, different
+            # deploy path, different way of going wrong).
+            runs = trigger_text(a) if rt == "github-actions" else f"{trigger_text(a)}<br>*{rt}*"
+            L.append(f"| **{a['id']}**<br>{a.get('name','')} | {runs} | {status} "
                      f"| {reads} | {writes} |")
         notes = [(a["id"], first_sentence(a.get("notes"))) for a in by_engine[e]]
         notes = [(i, n) for i, n in notes if n]

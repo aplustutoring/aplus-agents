@@ -7,6 +7,43 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — `runtime:` — the fleet is not all GitHub Actions
+
+**What:** Added a required `runtime:` field (`github-actions` | `cloudflare-worker`
+| `apps-script` | `zapier`) plus `source:` for non-Actions agents, registered the
+two Google Apps Scripts that were previously named only as the `source:` of other
+entries (`spotlight-drive-watcher`, `feedback-slack-relay`), and taught
+`registry_check.py` to DISCOVER non-Actions agents rather than only validate
+declared ones — `wrangler.toml` means a Worker, `*.gs` means an Apps Script, and
+anything unreferenced by the registry is flagged. FLEET.md now prints the runtime
+when it is not the default and warns that those agents deploy by hand.
+
+**Why:** Roman asked why the photo booth agents were not in the handoff. Three
+reasons, worst last: it is on the unmerged `booth-backend` branch (PR #66 open,
+22 commits); it is a Cloudflare Worker + Pages app, which the registry's
+workflow-shaped schema could not express; and **registry_check.py structurally
+could not have caught it** — it compared registry.yml against
+`.github/workflows/` only, so Workers, Apps Scripts, and Zapier zaps were an
+invisible class. The booth writes four contact properties to production HubSpot,
+emails via Resend, and sends MMS from the main A+ line.
+
+**Bug found while testing:** sibling-directory coverage was too loose — the
+spotlight watcher's `.gs` was masked by `download-drive-folder.py` in the same
+directory, so deleting its registry entry did NOT trip the check. Sibling
+coverage is now per-pattern: on for `wrangler.toml` (config beside a named
+worker script), off for `*.gs` (the script IS the agent). Both discovery paths
+verified by removing entries and confirming the flag fires.
+
+**Still unregistered:** the Sage Oak photo booth itself. Its code is not on main,
+and another session is actively working that branch — the entry should land with
+PR #66. Once merged, the new discovery heuristic will flag it if it does not.
+
+**Files:** `registry.yml` (runtime on 38 entries + 2 new Apps Script agents),
+`ops/fleet-health/registry_check.py`, `ops/fleet-health/fleet_brief.py`,
+`docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — Prevention: generated FLEET.md, an enforced registry, an exit-code rule
 
 **What:** Three mechanisms, in the order Roman picked (3, 1, 2).
