@@ -51,7 +51,7 @@
       "correction_path": "corrections/topic-gen/2026-07-31-topic-gen-weird-picks-recurring.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/51",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785534000810129"
     },
     {
@@ -221,7 +221,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 7
+    "clean_merges": 8
   },
   "pending_proposals": {
     "1786554388.265099": {
