@@ -42,6 +42,39 @@ slack:
   # until a Fleet Manager exists to verify state changes.
   approvers: ["roman", "danielle", "paola", "emily"]
 
+intake:
+  # Channel furniture is not a report. On 2026-08-20 the channel's own pinned
+  # "How this channel works" post was itself filed as an IDEA against the
+  # feedback agent (thread 1787258667.896529) — it arrives as an ordinary human
+  # message, so nothing upstream drops it. These are deterministic checks (no
+  # Claude call, same reasoning as the status keyword match): a genuine report
+  # must never be swallowed by a fuzzy "looks like boilerplate".
+  ignore:
+    # Distinctive phrases from the pinned how-to-use post. Matched
+    # case-insensitively against the message text.
+    meta_markers:
+      - "How this channel works"
+      - "What it's for:"
+      - "How to report:"
+      - "What happens next"
+      - "Reply in that thread with one word"
+      - "Every Friday there's a digest"
+      - "Nothing ships without one of us saying"
+    # How many DISTINCT markers must hit before a message is treated as the
+    # instructions rather than a complaint. Two, so quoting one line of the
+    # pinned post while reporting a real problem still files normally.
+    min_marker_hits: 2
+    # Slack apps/workflows whose posts are never reports — the ID in the
+    # "*Sent using* <@…>" attribution at the bottom of a message.
+    #
+    # DELIBERATELY EMPTY. The obvious candidate, U0AKFN28V1U, is NOT a workflow
+    # bot: it is the attribution Roman's Slack client appends to everything he
+    # types, including real reports (the content-build carousel overflow report
+    # 2026-08-04, the call-agent exit-code report 2026-08-20) and even his
+    # "status" queries. Listing it here would silently swallow every report
+    # Roman files. Only add an ID you have confirmed posts nothing but notices.
+    sender_app_ids: []
+
 claude:
   # Repo-standard model (matches ops/call_agent + marketing/scripts/*).
   model: "claude-opus-4-7"

@@ -7,6 +7,37 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Feedback agent: the pinned channel post is not a report
+
+**What:** Intake now drops "channel furniture" before classification. A
+top-level message matching ≥2 distinct phrases from the pinned how-to-use post
+(`intake.ignore.meta_markers` in `ops/feedback-agent/config.yml`) is logged and
+skipped — nothing filed, no thread reply, marked processed so Slack retries
+don't re-run it. A companion `intake.ignore.sender_app_ids` knob ignores posts
+by a given Slack app/workflow; it ships EMPTY on purpose (below). Also withdrew
+the mis-filed report from `state/state.json` so Friday's digest doesn't count
+it against the feedback agent.
+
+**Why:** Roman posted the channel's own pinned explainer into the channel on
+2026-08-20 and the classifier filed it as an IDEA against the feedback agent
+(thread 1787258667.896529). The post is written by a human into the channel, so
+it carries no `bot_id` and the relay forwards it like any report; the classifier
+then did its job on text that describes every agent in the fleet.
+
+**Correction to the approved plan:** the plan proposed ignoring sender
+`U0AKFN28V1U` ("the Slack workflow bot at the bottom is the giveaway"). It
+isn't one — that ID is the "*Sent using* <@…>" attribution Roman's client
+appends to everything he types, including real reports (content-build carousel
+overflow 2026-08-04, call-agent exit code 2026-08-20) and his `status` queries.
+Ignoring it would have silently swallowed every report Roman files. The knob
+exists, documented, empty.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`,
+`ops/feedback-agent/config.yml`, `ops/feedback-agent/README.md`,
+`ops/feedback-agent/state/state.json`,
+`ops/feedback-agent/tests/test_meta_posts.py` (new, 7 tests green).
+
+---
 ## 2026-08-20 — Approve + merge opened to Danielle, Paola and Emily
 
 **What:** Split `slack.approvers` out of `slack.alerts_to`. `alerts_to` still
