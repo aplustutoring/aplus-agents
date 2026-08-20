@@ -23,7 +23,8 @@
     "Ev0BRNE74CLR",
     "Ev0BRQAFLJ57",
     "Ev0BRNBVTWUA",
-    "Ev0BRG6GJ5T5"
+    "Ev0BRG6GJ5T5",
+    "Ev0BRLFSHUH4"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -197,6 +198,21 @@
       "ticket": null,
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787256679631249"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787257225.951989",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-20-missing-superhero-video-reel.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/94",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787257225951989"
     }
   ],
   "graduation": {
@@ -219,6 +235,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
+    },
+    "1787257225.951989": {
+      "agent": "spotlight-orchestrator",
+      "agent_label": "Spotlight Orchestrator",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-20-missing-superhero-video-reel.md",
+      "branch": "fix/spotlight-orchestrator-2026-08-20-951989",
+      "diagnosis": "The Spotlight Orchestrator didn't produce a superhero reel for Amelia's case study \u2014 likely the reel sub-pipeline (build_reel.py + make_script/clips/stills/vo) either wasn't invoked for this bundle or failed silently. Note: reel scripts exist under marketing/scripts/b2c/reel/ but aren't listed in the registry's depends_on, which suggests the orchestrator may not be wiring them in consistently.",
+      "fix_plan": [
+        "Locate Amelia's bundle directory under marketing/aplus-content/<bundle>/ and confirm which assets exist vs. the missing reel outputs.",
+        "Run the reel pipeline standalone against Amelia's bundle: marketing/scripts/b2c/reel/make_script.py \u2192 make_vo.py \u2192 make_stills.py \u2192 make_clips.py \u2192 build_reel.py, then deliver_reel.py to post to Slack.",
+        "Verify the output matches the prior Student Spotlight reel format (same aspect ratio, intro/outro, VO style) by diffing against the most recent successful reel bundle.",
+        "Investigate why the orchestrator skipped the reel on the original run \u2014 check spotlight_orchestrator.py for the reel step and its error handling, and add the reel scripts to the registry depends_on if missing.",
+        "Deliver the reel to the usual Slack channel and confirm with Paola."
+      ],
+      "risk": "low",
+      "recommendation": "execute",
+      "proposed_utc": "2026-08-20T20:23:38.311740+00:00",
+      "reporter": "Paola"
     }
   }
 }
