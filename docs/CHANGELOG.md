@@ -7,6 +7,67 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Prevention: generated FLEET.md, an enforced registry, an exit-code rule
+
+**What:** Three mechanisms, in the order Roman picked (3, 1, 2).
+
+1. **`docs/FLEET.md` is now generated** from `registry.yml` by
+   `ops/fleet-health/fleet_brief.py`, regenerated on every merge to main.
+   Grouped by engine, with an autonomy section and per-agent reads/writes.
+   Handing the fleet to Claude-in-chat is now "copy one file" instead of a
+   hand-written summary that is stale on arrival. Required a new `engine:`
+   field on all 36 registry entries (inferring it from entrypoint paths breaks
+   on cases like tw-invoice-xref, which lives in email/ but is a charter tool).
+2. **`ops/fleet-health/registry_check.py`** enforces the registry's own first
+   rule: workflows <-> registry both directions, required fields, unique ids,
+   entrypoints exist, FLEET.md current. Wired up as the `fleet-docs` workflow —
+   which had to register itself to pass its own check. ROLLOUT: PRs run with
+   `--warn` (annotate, don't block); drop the flag in a couple of weeks.
+3. **Exit-code rule** added to ARCHITECTURE.md governance: an agent that
+   accomplished NONE of its work must exit non-zero. Deliberately narrow — a
+   sweeping "any failure exits non-zero" would break call-agent's per-call
+   isolation, which is correct design. 0 of 50 is a failed run; 49 of 50 is a
+   warning. Three agents still need the change: campaign-launch (enroll.py),
+   bulk-messenger (messenger.py), call-agent (all-calls-failed case only).
+
+**Why:** Roman — "we do it in code, but then claude chat doesnt know about it and
+neither does github, and i always feel like we are back asswards." The diagnosis:
+these mechanisms already existed as CONVENTIONS (register everything, update the
+changelog) and conventions decay silently. Nine workflows broke the registration
+rule for weeks; ARCHITECTURE.md was wrong for seven. Nothing was watching, and
+nothing published what the repo already knew.
+
+**Files:** `ops/fleet-health/fleet_brief.py` (new),
+`ops/fleet-health/registry_check.py` (new), `.github/workflows/fleet-docs.yml`
+(new), `docs/FLEET.md` (new, generated), `registry.yml` (engine field on 36
+entries + the fleet-docs entry), `ARCHITECTURE.md`, `docs/CHANGELOG.md`.
+
+**Decision-log candidates for Roman:** (a) generated fleet breakdown as the
+canonical handoff artifact; (b) registry check blocking merges after rollout;
+(c) the exit-code rule as a fleet-wide convention.
+
+---
+
+## 2026-08-20 — ARCHITECTURE.md rewritten to match the fleet as it actually is
+
+**What:** The human-readable fleet map described four engines with email in a
+separate repo — the world as of ~2026-06. Rewritten for the real eight: added
+the call agent, feedback agent, messenger, and fleet-health; folded email in;
+replaced the finished migration history with an **Autonomy** section (what
+writes without asking vs. what only drafts) and a **Known weak points** section.
+Added the rule that `registry.yml` wins on conflict.
+
+**Why:** Roman — it was the last fleet doc still wrong after the registry pass,
+and it is the file a human reads first.
+
+**Note:** this entry was written when the rewrite was committed (231ab2d) but
+silently failed to land — the insert matched on surrounding prose, which a
+concurrent session had just changed, so the no-op reported success. Restored
+here, and the insert is now anchored on structure. A small live instance of the
+exact failure mode the entry above is about.
+
+---
+
 
 ## 2026-08-20 — Charter campaign: wave 2 sent, all segments built, Paola hot list
 

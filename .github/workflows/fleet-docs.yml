@@ -1,0 +1,76 @@
+name: Fleet — registry check + FLEET.md
+
+# The watcher for registry.yml's first rule ("if it's not here, it doesn't
+# exist") and the generator for docs/FLEET.md.
+#
+# ROLLOUT MODE (2026-08-20): pull_request runs with --warn, so an unregistered
+# workflow annotates the PR but does not block the merge. Once it has run clean
+# for a couple of weeks, drop the flag from the PR step and it starts blocking.
+#
+# On main it regenerates docs/FLEET.md and commits it back — same pattern the
+# agents use for their state. The commit carries [skip ci] so it does not
+# re-trigger this workflow.
+env:
+  TZ: America/Los_Angeles
+
+on:
+  pull_request:
+    paths:
+      - "registry.yml"
+      - ".github/workflows/**"
+      - "ops/fleet-health/fleet_brief.py"
+      - "ops/fleet-health/registry_check.py"
+  push:
+    branches: [main]
+    paths:
+      - "registry.yml"
+      - ".github/workflows/**"
+      - "ops/fleet-health/fleet_brief.py"
+      - "ops/fleet-health/registry_check.py"
+  workflow_dispatch:
+
+concurrency:
+  group: fleet-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -q PyYAML
+
+      # PRs: advisory during rollout. Flip by removing --warn.
+      - name: Registry check (advisory)
+        if: github.event_name == 'pull_request'
+        run: python3 ops/fleet-health/registry_check.py --warn
+
+      - name: Regenerate docs/FLEET.md
+        if: github.event_name != 'pull_request'
+        run: python3 ops/fleet-health/fleet_brief.py
+
+      - name: Commit FLEET.md if it changed
+        if: github.event_name != 'pull_request'
+        run: |
+          if git diff --quiet -- docs/FLEET.md; then
+            echo "docs/FLEET.md already current."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/FLEET.md
+          git commit -m "docs: regenerate FLEET.md from registry.yml [skip ci]"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      # Runs after the regen so a stale FLEET.md never fails main on its own.
+      - name: Registry check (advisory)
+        if: github.event_name != 'pull_request'
+        run: python3 ops/fleet-health/registry_check.py --warn

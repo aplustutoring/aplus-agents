@@ -22,6 +22,9 @@
 #
 # Fields:
 #   id          stable slug
+#   engine      which engine this agent belongs to — the grouping used by
+#               docs/FLEET.md (generated) and ARCHITECTURE.md. Set it on every
+#               new entry; ops/fleet-health/registry_check.py fails without it.
 #   name        human label (matches the workflow `name:` where one exists)
 #   owner       responsible human
 #   status      active | manual | deprecated | unverified
@@ -53,6 +56,7 @@
 agents:
   # ───────────────────────── B2B content engine ─────────────────────────
   - id: topic-gen
+    engine: B2B blogs
     name: Topic generation (Thursday 5 PM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -72,6 +76,7 @@ agents:
       - marketing/scripts/shared/state.py
 
   - id: content-build
+    engine: B2B blogs
     name: Content build (Saturday — approved slate → HubSpot drafts)
     owner: roman@wetutorathome.com
     status: active
@@ -100,6 +105,7 @@ agents:
       - skill:aplus-fact-check
 
   - id: blog-metrics
+    engine: B2B blogs
     name: Blog metrics scorecard (Monday 9 AM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -118,6 +124,7 @@ agents:
 
   # ───────────────────────── B2C spotlight engine ───────────────────────
   - id: spotlight-orchestrator
+    engine: B2C spotlights
     name: Spotlight Orchestrator
     owner: roman@wetutorathome.com
     status: active
@@ -151,6 +158,7 @@ agents:
       - skill:aplus-b2c-hashtag-analyst
 
   - id: rerender-textstory
+    engine: B2C spotlights
     name: Re-render textstories for a bundle
     owner: roman@wetutorathome.com
     status: manual
@@ -169,6 +177,7 @@ agents:
 
   # ───────────────────────── Case-study log sheet ───────────────────────
   - id: backfill-logsheet
+    engine: B2C spotlights
     name: Backfill case-study log sheet
     owner: roman@wetutorathome.com
     status: manual
@@ -185,6 +194,7 @@ agents:
       - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
 
   - id: verify-logsheet
+    engine: B2C spotlights
     name: Verify case-study log sheet
     owner: roman@wetutorathome.com
     status: manual
@@ -201,6 +211,7 @@ agents:
 
   # ───────────────────────── Deprecated (kept for dispatch) ─────────────
   - id: blog-publish
+    engine: B2B blogs
     name: Blog publish (DEPRECATED — superseded by content-build)
     owner: roman@wetutorathome.com
     status: deprecated
@@ -214,6 +225,7 @@ agents:
     depends_on: [marketing/scripts/shared/publish-to-hubspot.py]
 
   - id: approval-deadline
+    engine: B2B blogs
     name: Approval deadline check (DEPRECATED — approval gate removed)
     owner: roman@wetutorathome.com
     status: deprecated
@@ -227,6 +239,7 @@ agents:
     depends_on: [marketing/scripts/shared/state.py]
 
   - id: approval-poll
+    engine: B2B blogs
     name: Approval poll (DEPRECATED — approval gate removed)
     owner: roman@wetutorathome.com
     status: deprecated
@@ -245,6 +258,7 @@ agents:
   # Stateless (no state committed back). Cutover note: the 3 local crontab
   # lines are removed once the Actions runs are verified green.
   - id: scorecard-weekly-sync
+    engine: Data sync
     name: Weekly scorecard sync
     owner: roman@wetutorathome.com
     status: active
@@ -259,6 +273,7 @@ agents:
     notes: CHECK_ONLY smoke mode for CI (no DRY_RUN). WEEK_START/WEEK_END manual override.
 
   - id: retention-sync
+    engine: Data sync
     name: Retention sync
     owner: roman@wetutorathome.com
     status: active
@@ -275,6 +290,7 @@ agents:
     notes: Has built-in DRY_RUN. SA JSON written from secret at runtime.
 
   - id: missed-lessons-sync
+    engine: Data sync
     name: Missed-lessons sync
     owner: roman@wetutorathome.com
     status: active
@@ -294,6 +310,7 @@ agents:
   # auto-created contacts. Deployment defaults to --dry-run until the repo
   # variable CALL_AGENT_LIVE=true.
   - id: call-agent
+    engine: Call agent
     name: Call agent — daily digest (~5:30 PM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -339,6 +356,7 @@ agents:
   # BROKEN/critical, and runs the #AP011 DEMOTE fast path (one-click registry
   # PR, human-executed). Mechanism behind the /corrections loop (#AP008).
   - id: feedback-agent
+    engine: Feedback agent
     name: "Feedback agent — #agent-feedback intake + Friday digest"
     owner: roman@wetutorathome.com
     status: active
@@ -384,6 +402,7 @@ agents:
   # intake fires this dispatch, a coding agent implements it on a fix/ branch
   # and opens a PR. Approval buys execution, not deployment — Roman merges.
   - id: feedback-fix
+    engine: Feedback agent
     name: Feedback agent — execute approved fix
     owner: roman@wetutorathome.com
     status: active
@@ -417,6 +436,7 @@ agents:
   # GitHub's own per-failure emails are account-level noise; turn off at
   # github.com/settings/notifications once this is live.
   - id: fleet-retry
+    engine: Fleet health
     name: Fleet retry sweeper (every 20 min)
     owner: roman@wetutorathome.com
     status: active
@@ -444,6 +464,7 @@ agents:
   # Conversations (portal 6312752). Draft-only except two locked auto-actions
   # (junk->archive, tutor_document->fixed receipt). FERPA-safe enrichment.
   - id: email-triage
+    engine: Email / inbox ops
     name: Inbox triage
     owner: roman@wetutorathome.com
     status: active
@@ -457,6 +478,7 @@ agents:
     writes: [HubSpot:tickets, HubSpot:conversations(comment), Slack]
     depends_on: [email/rules.md, email/config.yaml, "Claude Sonnet classifier"]
   - id: email-sla-sweep
+    engine: Email / inbox ops
     name: SLA sweep
     owner: roman@wetutorathome.com
     status: active
@@ -465,6 +487,7 @@ agents:
     reads: [HubSpot:tickets]
     writes: [Slack, HubSpot:tickets]
   - id: email-weekly-digest
+    engine: Email / inbox ops
     name: Weekly digest
     owner: roman@wetutorathome.com
     status: active
@@ -473,6 +496,7 @@ agents:
     reads: [HubSpot:tickets, email/state/audit_log.jsonl]
     writes: [Slack]
   - id: email-daily-summary
+    engine: Email / inbox ops
     name: Daily summary (6 PM PT DM)
     owner: roman@wetutorathome.com
     status: active
@@ -481,6 +505,7 @@ agents:
     reads: [email/state/audit_log.jsonl, HubSpot:tickets]
     writes: [Slack]
   - id: email-hourly-update
+    engine: Email / inbox ops
     name: Hourly launch-monitoring update
     owner: roman@wetutorathome.com
     status: active
@@ -489,6 +514,7 @@ agents:
     reads: [email/state/audit_log.jsonl]
     writes: [Slack]
   - id: email-po-inbox
+    engine: Email / inbox ops
     name: Charter PO inbox (charter@wetutorathome.com)
     owner: roman@wetutorathome.com
     status: active
@@ -509,6 +535,7 @@ agents:
     depends_on: [email/config.yaml, "Claude Sonnet PO extractor"]
     notes: Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
   - id: email-deal-sync
+    engine: Email / inbox ops
     name: Deal sync (HubSpot → Teachworks) + invoice sweep
     owner: roman@wetutorathome.com
     status: active                     # LIVE 2026-08-03 (12-day pilot, backlog replayed)
@@ -532,6 +559,7 @@ agents:
       workflow inputs (one-deal real sync).
 
   - id: email-po-daily-report
+    engine: Email / inbox ops
     name: PO day report (6 PM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -554,6 +582,7 @@ agents:
       or a TW invoice matching its amount exists. Roman 2026-08-13 ask.
 
   - id: email-draft-feedback
+    engine: Email / inbox ops
     name: Draft feedback weekly (Fri 4 PM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -592,6 +621,7 @@ agents:
   # renewal push. They are one-shot reports, not scheduled agents: no cron, no
   # state, and every write is an explicit opt-in input (default dry-run).
   - id: charter-gap-analysis
+    engine: Charter analysis
     name: Charter gap analysis (manual report)
     owner: roman@wetutorathome.com
     status: manual
@@ -616,6 +646,7 @@ agents:
       fetch results via the run artifact, never by running this locally.
 
   - id: tw-tutor-active-check
+    engine: Charter analysis
     name: TW tutor active check (charter gap)
     owner: roman@wetutorathome.com
     status: manual
@@ -636,6 +667,7 @@ agents:
       tutor who has left. Read-only on Teachworks.
 
   - id: tw-invoice-status
+    engine: Charter analysis
     name: TW invoice status by list (read-only)
     owner: roman@wetutorathome.com
     status: manual
@@ -650,6 +682,7 @@ agents:
       - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
 
   - id: tw-invoice-xref
+    engine: Charter analysis
     name: TW invoice cross-reference (read-only)
     owner: roman@wetutorathome.com
     status: manual
@@ -665,6 +698,7 @@ agents:
     notes: Recent PO deals <-> Teachworks invoices. The audit companion to the invoice sweep.
 
   - id: tw-invoice-backfill
+    engine: Charter analysis
     name: TW invoice-submitted backfill (verified)
     owner: roman@wetutorathome.com
     status: manual
@@ -689,6 +723,7 @@ agents:
   # only — never deletes). First entries: ticket_source + source_agent
   # (#AP007 ticket conventions), created 2026-07-27.
   - id: hubspot-schema
+    engine: Fleet health
     name: HubSpot schema sync (manual)
     owner: roman@wetutorathome.com
     status: manual
@@ -711,7 +746,41 @@ agents:
       Re-run after registering a new agent so source_agent picks up the new
       option. CHECK_ONLY smoke mode.
 
+  # ───────────────────────── Registry watcher (ops/fleet-health) ───────
+  # The mechanism that makes this file's first rule enforceable, plus the
+  # generator for docs/FLEET.md. Added 2026-08-20 after an audit found nine
+  # live workflows with no entry here — three writing to HubSpot, one opening
+  # PRs. The rule existed; nothing was watching.
+  - id: fleet-docs
+    engine: Fleet health
+    name: Fleet — registry check + FLEET.md
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [pull_request, push, workflow_dispatch]
+      source: >
+        Any change to registry.yml, .github/workflows/**, or the two
+        fleet-health scripts. PRs run advisory; main regenerates and commits.
+      workflow: .github/workflows/fleet-docs.yml
+    entrypoint: ops/fleet-health/registry_check.py
+    reads:
+      - registry.yml
+      - .github/workflows/                   # both-directions cross-check
+      - docs/FLEET.md                        # staleness check
+    writes:
+      - docs/FLEET.md                        # regenerated + committed back on main
+    depends_on:
+      - ops/fleet-health/fleet_brief.py
+    notes: >
+      ROLLOUT: PR runs use --warn, so an unregistered workflow annotates the PR
+      without blocking the merge. Drop the flag once it has run clean for a
+      couple of weeks and it starts blocking. Checks: workflows <-> registry
+      both directions, required fields (incl. engine), unique ids, entrypoints
+      exist, FLEET.md current. The main-branch commit carries [skip ci].
+
   - id: branch-hygiene
+    engine: Fleet health
     name: Fleet — branch hygiene (Mon 9 AM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -733,6 +802,7 @@ agents:
       daily — Actions cannot see never-pushed local commits.
 
   - id: bulk-messenger
+    engine: Messenger
     name: Bulk messenger (on-demand email/SMS to a HubSpot list)
     owner: roman@wetutorathome.com
     status: manual
@@ -758,6 +828,7 @@ agents:
       front door + STOP ingestion are phase 2 (see ops/messenger/README.md).
 
   - id: campaign-launch
+    engine: Messenger
     name: Campaign launch (Monday enrollments)
     owner: roman@wetutorathome.com
     status: active

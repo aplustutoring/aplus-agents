@@ -4,9 +4,10 @@ The full map of A+'s automation. `registry.yml` is the machine-readable source o
 truth; this file is the human-readable companion. **If the two disagree, the
 registry is right and this file is stale** — fix it.
 
-Last reconciled against `.github/workflows/` on 2026-08-20: 35 registered agents
-(22 active · 10 manual · 3 deprecated), every workflow on disk registered, every
-registered workflow present on disk.
+Reconciliation is no longer manual: `ops/fleet-health/registry_check.py` verifies
+every workflow ⇄ registry entry in both directions on every relevant PR and push,
+and `docs/FLEET.md` — the per-agent breakdown, safe to hand to anyone — is
+generated from `registry.yml` on every merge to `main`.
 
 ## Sources of truth (data)
 
@@ -55,10 +56,11 @@ of any local checkout.
 | **Call agent** | `ops/call_agent` | daily ~5:30 PM PT | JustCall transcripts → contact match → CRM writes, tasks, coaching scores, digest |
 | **Messenger** | `ops/messenger` | manual · daily gated | Bulk email/SMS to a HubSpot list · campaign enrollment launcher |
 | **Feedback agent** | `ops/feedback-agent` | Slack event · Fri digest | #agent-feedback → classify → correction PR → DEMOTE fast path |
-| **Fleet health** | `ops/fleet-health`, `ops/hubspot-schema` | 20-min · Mon · manual | Retry sweeper · branch hygiene · HubSpot property/enum sync |
+| **Fleet health** | `ops/fleet-health`, `ops/hubspot-schema` | 20-min · Mon · on PR/push · manual | Retry sweeper · branch hygiene · registry check + FLEET.md generation · HubSpot property/enum sync |
 
 For the per-agent detail — every trigger, every read, every write — read
-`registry.yml`. It is deliberately verbose so this file doesn't have to be.
+**`docs/FLEET.md`** (generated, always current) or `registry.yml` itself. This
+file deliberately stays at the level that doesn't change week to week.
 
 ## Autonomy: what acts alone, what waits for a human
 
@@ -107,23 +109,39 @@ Rules that bind every agent:
   checkout. Direct commits to `main` only when that is the session's sole surface.
 - **Schema:** new HubSpot properties are declared in
   `ops/hubspot-schema/properties.yml` and synced by workflow — never created ad hoc.
+- **Exit codes (#2026-08-20):** an agent that accomplished **none** of its work
+  must exit non-zero. `fleet-retry` only reacts to non-zero exits, so a script
+  that prints failures and exits 0 is invisible — that is exactly how the
+  2026-08-18 campaign failure stayed silent. This is deliberately *not* "any
+  failure exits non-zero": isolating one bad item so it can't kill a batch is
+  good design (see `call-agent`, which skips a bad call and keeps going). The
+  line is **total failure, or a guard that stopped the real work** — 0 of 50
+  enrolled is a failed run, 49 of 50 is a run with a warning.
 
 ## Known weak points (as of 2026-08-20)
 
 Honest list. These are the ways the fleet has actually misled us, not theoretical.
 
-1. **Green ≠ working.** A script that prints failures and exits 0 shows as a
-   successful Actions run, and `fleet-retry` only reacts to non-zero exits. Live
-   example: on 2026-08-18 `ops/messenger/enroll.py` failed all 50 enrollments
-   (v4 flow id sent to the v2 enrollment endpoint → 404), failed to publish the
-   emails (403) and failed to enable the workflow (400) — and reported success.
-   The campaign only shipped because Roman did all three by hand in the portal.
-   **Agents must exit non-zero when their actual job fails.**
-2. **Registration drifts.** Nine live workflows ran unregistered until 2026-08-20,
-   three of them writing to HubSpot and one opening PRs. Nothing enforced the
-   registry's own first rule; it was caught by a manual audit.
-3. **This file drifts.** It described a four-engine world for roughly seven weeks
-   after email folded into this repo and three engines were added.
+1. **Green ≠ working.** — OPEN. A script that prints failures and exits 0 shows
+   as a successful Actions run, and `fleet-retry` only reacts to non-zero exits.
+   Live example: on 2026-08-18 `ops/messenger/enroll.py` failed all 50
+   enrollments (v4 flow id sent to the v2 enrollment endpoint → 404), failed to
+   publish the emails (403) and failed to enable the workflow (400) — and
+   reported success. The campaign only shipped because Roman did all three by
+   hand in the portal. The exit-code rule is now in Governance above; three
+   agents still need the change — `campaign-launch` (`enroll.py`),
+   `bulk-messenger` (`messenger.py`), and `call-agent` (only for the
+   all-calls-failed case; its per-call isolation is correct as-is).
+2. **Registration drifts.** — CLOSED 2026-08-20. Nine live workflows ran
+   unregistered, three writing to HubSpot and one opening PRs. Nothing enforced
+   the registry's own first rule. Now enforced by
+   `ops/fleet-health/registry_check.py` via the `fleet-docs` workflow (advisory
+   on PRs during rollout; drop `--warn` to make it block).
+3. **This file drifts.** — MITIGATED 2026-08-20. It described a four-engine world
+   for roughly seven weeks. The per-agent breakdown now lives in `docs/FLEET.md`,
+   generated from `registry.yml` on every merge, so the volatile half cannot go
+   stale. This file keeps the prose — architecture, autonomy, governance — which
+   still has to be maintained by hand.
 
 ## Service accounts (two active — do not cross-wire)
 
