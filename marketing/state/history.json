@@ -1254,6 +1254,73 @@
       "brand_pass": true,
       "seo_issues": 0,
       "flags": []
+    },
+    {
+      "ts": "2026-08-13T19:07:56.896271-07:00",
+      "kind": "topic_gen",
+      "week": "2026-08-13",
+      "lenses": [
+        "policy_funding_hawk",
+        "target_school_radar",
+        "competitive_intel"
+      ],
+      "topics_produced": 3,
+      "topics_rejected_redundant": 0,
+      "topics_posted": 3,
+      "refresh_mode": false,
+      "slack_channel": "C0B4K9K0162",
+      "slack_ts": "1786673573.911249"
+    },
+    {
+      "ts": "2026-08-15T08:34:47.580322-07:00",
+      "kind": "content_build",
+      "week": "2026-08-13",
+      "slot": 1,
+      "post_date": "2026-08-17",
+      "headline": "NWEA finds middle school reading recovery has stalled \u2014 lowest-performing readers falling further behind",
+      "bundle_dir": "aplus-content/2026-08-17-middle-school-reading-cliff-nwea",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "219534406547",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-15T09:07:11.450023-07:00",
+      "kind": "content_build",
+      "week": "2026-08-13",
+      "slot": 2,
+      "post_date": "2026-08-19",
+      "headline": "iLEAD Flex Lancaster approved \u2014 Tier A partner expansion into hybrid TK-12",
+      "bundle_dir": "aplus-content/2026-08-19-ilead-flex-lancaster-hybrid-charter",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "219535377264",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-15T09:29:05.478656-07:00",
+      "kind": "content_build",
+      "week": "2026-08-13",
+      "slot": 3,
+      "post_date": "2026-08-21",
+      "headline": "Varsity Tutors for Schools shuts down \u2014 and experts say it's about evidence, not just ESSER",
+      "bundle_dir": "aplus-content/2026-08-21-varsity-tutors-schools-shutdown-evidence",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "219533664349",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

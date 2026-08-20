@@ -29,11 +29,20 @@ jobs:
           fetch-depth: 0
           ref: main   # fix branches start from current main, not the dispatch-time SHA
       - name: Implement the approved fix
+        id: implement
+        continue-on-error: true   # a failure must still reach the Slack thread
         uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The feedback agent dispatches this with GITHUB_TOKEN, so the actor is
+          # the github-actions bot. claude-code-action gained a non-human-actor
+          # guard between 2026-08-04 and 2026-08-11 (the @v1 tag floats and ships
+          # near-daily), which silently broke every approval from 08-11 on:
+          # "Workflow initiated by non-human actor: github-actions (type: Bot)".
+          # Named explicitly rather than '*' — only our own dispatcher, no apps.
+          allowed_bots: "github-actions"
           claude_args: |
             --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh pr create:*),Bash(gh pr list:*),Bash(python3:*),Bash(pip:*),Bash(ls:*)"
           prompt: |
@@ -81,7 +90,20 @@ jobs:
           FIX_CHANNEL: ${{ github.event.client_payload.channel }}
           FIX_THREAD_TS: ${{ github.event.client_payload.thread_ts }}
           FIX_AGENT_LABEL: ${{ github.event.client_payload.agent_label }}
+          # So the thread can say WHY, and link straight to the evidence, rather
+          # than "no PR was opened — check the run log" (2026-08-11: accurate,
+          # unactionable, ignored for 9 days).
+          FIX_STEP_OUTCOME: ${{ steps.implement.outcome }}
+          FIX_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           pip install -q -r ops/feedback-agent/requirements.txt
           export FIX_PR_URL=$(gh pr list --head "${{ github.event.client_payload.branch }}" --json url -q '.[0].url' || true)
           python3 ops/feedback-agent/feedback_agent.py --mode fix-notify
+
+      # continue-on-error above keeps the notify step reachable; the job itself
+      # must still end red so a failed approval is visible in Actions.
+      - name: Fail the job if the fix did not run
+        if: steps.implement.outcome == 'failure'
+        run: |
+          echo "::error::The coding agent failed — see the step above. Thread notified."
+          exit 1

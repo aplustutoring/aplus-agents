@@ -70,6 +70,25 @@ properties:
           label: "Unregistered automation"
 
   contacts:
+    # ── LABEL CONVENTION (Roman 2026-08-14): every property an AGENT writes
+    # carries the "[Agent] " label prefix + a description naming the writer,
+    # so humans in the portal can tell agent-maintained fields from intake
+    # capture at a glance. Applies to new declarations; existing agent props
+    # were relabeled in-portal the same day (sync never relabels).
+    - name: sms_opt_out
+      label: "[Agent] SMS Opt Out"
+      group: master
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — read by ops/messenger (bulk SMS skips these);
+        set by the STOP-reply ingestion once it lands, manual until then.
+        Contact asked not to receive SMS (STOP reply or verbal request).
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: a_persona
       label: "A+ PERSONA"
       group: master
@@ -102,6 +121,76 @@ properties:
       group: family
       type: enumeration
       fieldType: booleancheckbox
+    - name: last_tutor_name
+      label: "[Agent] Last Tutor Name"
+      group: family
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py
+        (--write-props), do not edit by hand. FIRST NAME of the tutor on
+        the family's most recent COMPLETED Teachworks lesson
+        (customer-facing — no last names, Roman 2026-08-14). Distinct
+        from the deal-level assigned_tutor intake field.
+    - name: student_first_name
+      label: "[Agent] Student First Name"
+      group: family
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py
+        alongside last_tutor_name, do not edit by hand. Student on the
+        family's most recent COMPLETED Teachworks lesson. NOTE: a deal
+        property with the same name exists (dealinformation intake
+        capture) — this is the contact-level counterpart.
+    - name: last_tutor_active
+      label: "[Agent] Last Tutor Active"
+      group: family
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by scripts/tw_tutor_active_check.py, do not
+        edit by hand. Whether the tutor in last_tutor_name is still an ACTIVE
+        Teachworks employee (both accounts). Outreach must NOT name an
+        inactive tutor (Roman 2026-08-17: "Ruth does not tutor with us").
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
+    - name: student_names
+      label: "[Agent] Student Names"
+      group: family
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py, do not
+        edit by hand. ALL students named across the family's charter deals
+        since Aug 2025, formatted for prose ("Brooke, Haven & Lillie"), so
+        multi-student families get every child named in outreach.
+    - name: student_count
+      label: "[Agent] Student Count"
+      group: family
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_gap_analysis.py, do not
+        edit by hand. Number of distinct students across the family's charter
+        deals since Aug 2025 (drives 1-vs-multi segmentation).
+    - name: charter_winback_replied
+      label: "[Agent] Charter Win-back Replied"
+      group: family
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — set to true when a charter win-back campaign contact
+        replies (Conversations inbox hook + email agent). Workflow exit goal
+        for the win-back sequences so repliers never get the follow-up nudge.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
@@ -203,11 +292,6 @@ properties:
       group: tor
       type: date
       fieldType: date
-    - name: teacher_email_address
-      label: "Teacher Email Address"
-      group: tor
-      type: string
-      fieldType: text
     # — tutor —
     - name: a__pay_per_hour
       label: "A+ Pay Per Hour"

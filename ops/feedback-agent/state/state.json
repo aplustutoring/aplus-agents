@@ -17,7 +17,17 @@
     "Ev0BPNEFFW0Z",
     "Ev0BPLGNF12N",
     "Ev0BPV9EHW2D",
-    "Ev0BPTBT6MB4"
+    "Ev0BPTBT6MB4",
+    "Ev0BQ5R9TD0B",
+    "Ev0BRQ62HN1J",
+    "Ev0BRNE74CLR",
+    "Ev0BRQAFLJ57",
+    "Ev0BRNBVTWUA",
+    "Ev0BRG6GJ5T5",
+    "Ev0BRLFSHUH4",
+    "Ev0BRLJ4Q5AS",
+    "Ev0BR78BTKNK",
+    "Ev0BRLN5KFK8"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -146,10 +156,85 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786554388265099?thread_ts=1786554388.265099&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-14",
+      "ts": "1786733741.882079",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "UNKNOWN",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/UNKNOWN/2026-08-14-scheduling-tutor-applicant-routing-rules.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/74",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786733741882079"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787242876.934569",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "UNKNOWN",
+      "type": "BROKEN",
+      "severity": "low",
+      "correction_path": "corrections/UNKNOWN/2026-08-20-unclear-danielle-8-18-post.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/90",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787242876934569?thread_ts=1787242876.934569&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787256679.631249",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "call-agent",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/call-agent/2026-08-20-exit-nonzero-on-zero-successes.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/92",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787256679631249"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787257225.951989",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-20-missing-superhero-video-reel.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/94",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787257225951989"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787258667.896529",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "feedback-agent",
+      "type": "IDEA",
+      "severity": "low",
+      "correction_path": "corrections/feedback-agent/2026-08-20-channel-intro-pin-noop.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/96",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787258667896529"
     }
   ],
   "graduation": {
-    "clean_merges": 3
+    "clean_merges": 4
   },
   "pending_proposals": {
     "1786554388.265099": {

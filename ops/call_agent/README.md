@@ -11,11 +11,16 @@ call's native AI transcript, and turns each call into CRM actions:
 - **Lead status** — Claude assigns `hs_lead_status` per call (portal option
   VALUES, e.g. `We Connected` = "QTL - NEW"): prospective families →
   QTL - NEW / QTL - Charter (charter funds) / QTL - Diagnostic Sent (test
-  prep or evaluate-first); school staff → School Personnel or Charter TOR/EF;
+  prep or evaluate-first); school staff → Decision Maker/Director or Teacher of Record/EF/ES (lead-status labels = persona names, 2026-08-17);
   tutor applicants → Tutors; spam/vendors → Unqualified. Existing/past
   customers → no change (the deal pipeline owns their status). Changes are
   applied every call (Claude's judgment wins) and surfaced in the digest.
-- **Action items → HubSpot Tasks** with owner + due date (default owner Paola)
+- **Action items → HubSpot Tasks** with due date. Handoff routing (Roman
+  2026-08-13): calls **Roman answered** always assign to Paola — she does
+  100% of follow-up — and the task body opens with a handoff block ("Roman
+  spoke with this caller" + a Claude-written handoff brief: what was
+  promised, pricing quoted, names, timing, suggested opener). Other
+  answerers: `owner_hint` routes, default Paola.
 - **Missed-call alerts (conversion guard)** — inbound missed/abandoned/
   voicemail calls on ANY account line fire an immediate Slack alert + a
   same-day HIGH call-back task on the next poll. Metadata only (caller,
@@ -220,9 +225,13 @@ for multi-run-per-day schedules; the next digest-posting run flushes them).
    `school` is a FB-Ads field — the real one is `student_school`. Enum option
    values for grade/subject/modality/source are pinned in `call_agent.py` and
    validated before writing.
-6. **Tasks & tickets** — each action item becomes a HubSpot Task (owner from
-   the caller's `owner_hint`, mapped via `config.yml → hubspot.owners`
-   [roman/paola/janelle], default Paola; due next business day). Negative
+6. **Tasks & tickets** — each action item becomes a HubSpot Task due next
+   business day. Calls ROMAN answered (JustCall `agent_name`): owner is
+   forced to `default_task_owner` (Paola) and the body opens with a handoff
+   block — "Roman spoke with this caller" plus the summary's `handoff_note`
+   (promises made, pricing quoted, names, timing, suggested opener). Calls
+   answered by others: owner from `owner_hint` via `config.yml →
+   hubspot.owners`, default Paola. Negative
    sentiment or complaint intent → HIGH ticket (Support Pipeline → "Working
    on it", source PHONE, owner Roman) + companion check-in task due in 2
    business days + immediate alert to `slack.alert_channel`.

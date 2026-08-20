@@ -1,0 +1,34 @@
+name: TW tutor active check (charter gap)
+
+# Verifies every tutor named in [Agent] Last Tutor Name is still an active
+# Teachworks employee; write_props stamps [Agent] Last Tutor Active. Read-only
+# on Teachworks. See scripts/tw_tutor_active_check.py.
+on:
+  workflow_dispatch:
+    inputs:
+      write_props:
+        description: "Stamp last_tutor_active onto gap contacts"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv
+      - name: Tutor active check
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+        run: >
+          python scripts/tw_tutor_active_check.py
+          ${{ inputs.write_props && '--write-props' || '' }}

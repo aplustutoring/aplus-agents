@@ -22,6 +22,17 @@
 #
 # Fields:
 #   id          stable slug
+#   runtime     WHERE it runs: github-actions | cloudflare-worker | apps-script |
+#               zapier. Defaults to nothing — set it. Only github-actions agents
+#               can be auto-discovered (they have a workflow file); everything
+#               else is found by the source-file heuristics in registry_check.py,
+#               so a non-Actions agent that ships without an entry here can hide
+#               longer. The Sage Oak photo booth hid this way until 2026-08-20.
+#   source      for non-Actions runtimes: repo path to the code (there is no
+#               workflow file to point at)
+#   engine      which engine this agent belongs to — the grouping used by
+#               docs/FLEET.md (generated) and ARCHITECTURE.md. Set it on every
+#               new entry; ops/fleet-health/registry_check.py fails without it.
 #   name        human label (matches the workflow `name:` where one exists)
 #   owner       responsible human
 #   status      active | manual | deprecated | unverified
@@ -53,6 +64,8 @@
 agents:
   # ───────────────────────── B2B content engine ─────────────────────────
   - id: topic-gen
+    runtime: github-actions
+    engine: B2B blogs
     name: Topic generation (Thursday 5 PM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -72,6 +85,8 @@ agents:
       - marketing/scripts/shared/state.py
 
   - id: content-build
+    runtime: github-actions
+    engine: B2B blogs
     name: Content build (Saturday — approved slate → HubSpot drafts)
     owner: roman@wetutorathome.com
     status: active
@@ -100,6 +115,8 @@ agents:
       - skill:aplus-fact-check
 
   - id: blog-metrics
+    runtime: github-actions
+    engine: B2B blogs
     name: Blog metrics scorecard (Monday 9 AM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -118,6 +135,8 @@ agents:
 
   # ───────────────────────── B2C spotlight engine ───────────────────────
   - id: spotlight-orchestrator
+    runtime: github-actions
+    engine: B2C spotlights
     name: Spotlight Orchestrator
     owner: roman@wetutorathome.com
     status: active
@@ -151,6 +170,8 @@ agents:
       - skill:aplus-b2c-hashtag-analyst
 
   - id: rerender-textstory
+    runtime: github-actions
+    engine: B2C spotlights
     name: Re-render textstories for a bundle
     owner: roman@wetutorathome.com
     status: manual
@@ -169,6 +190,8 @@ agents:
 
   # ───────────────────────── Case-study log sheet ───────────────────────
   - id: backfill-logsheet
+    runtime: github-actions
+    engine: B2C spotlights
     name: Backfill case-study log sheet
     owner: roman@wetutorathome.com
     status: manual
@@ -185,6 +208,8 @@ agents:
       - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
 
   - id: verify-logsheet
+    runtime: github-actions
+    engine: B2C spotlights
     name: Verify case-study log sheet
     owner: roman@wetutorathome.com
     status: manual
@@ -201,6 +226,8 @@ agents:
 
   # ───────────────────────── Deprecated (kept for dispatch) ─────────────
   - id: blog-publish
+    runtime: github-actions
+    engine: B2B blogs
     name: Blog publish (DEPRECATED — superseded by content-build)
     owner: roman@wetutorathome.com
     status: deprecated
@@ -214,6 +241,8 @@ agents:
     depends_on: [marketing/scripts/shared/publish-to-hubspot.py]
 
   - id: approval-deadline
+    runtime: github-actions
+    engine: B2B blogs
     name: Approval deadline check (DEPRECATED — approval gate removed)
     owner: roman@wetutorathome.com
     status: deprecated
@@ -227,6 +256,8 @@ agents:
     depends_on: [marketing/scripts/shared/state.py]
 
   - id: approval-poll
+    runtime: github-actions
+    engine: B2B blogs
     name: Approval poll (DEPRECATED — approval gate removed)
     owner: roman@wetutorathome.com
     status: deprecated
@@ -245,6 +276,8 @@ agents:
   # Stateless (no state committed back). Cutover note: the 3 local crontab
   # lines are removed once the Actions runs are verified green.
   - id: scorecard-weekly-sync
+    runtime: github-actions
+    engine: Data sync
     name: Weekly scorecard sync
     owner: roman@wetutorathome.com
     status: active
@@ -259,6 +292,8 @@ agents:
     notes: CHECK_ONLY smoke mode for CI (no DRY_RUN). WEEK_START/WEEK_END manual override.
 
   - id: retention-sync
+    runtime: github-actions
+    engine: Data sync
     name: Retention sync
     owner: roman@wetutorathome.com
     status: active
@@ -275,6 +310,8 @@ agents:
     notes: Has built-in DRY_RUN. SA JSON written from secret at runtime.
 
   - id: missed-lessons-sync
+    runtime: github-actions
+    engine: Data sync
     name: Missed-lessons sync
     owner: roman@wetutorathome.com
     status: active
@@ -294,6 +331,8 @@ agents:
   # auto-created contacts. Deployment defaults to --dry-run until the repo
   # variable CALL_AGENT_LIVE=true.
   - id: call-agent
+    runtime: github-actions
+    engine: Call agent
     name: Call agent — daily digest (~5:30 PM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -339,6 +378,8 @@ agents:
   # BROKEN/critical, and runs the #AP011 DEMOTE fast path (one-click registry
   # PR, human-executed). Mechanism behind the /corrections loop (#AP008).
   - id: feedback-agent
+    runtime: github-actions
+    engine: Feedback agent
     name: "Feedback agent — #agent-feedback intake + Friday digest"
     owner: roman@wetutorathome.com
     status: active
@@ -379,12 +420,48 @@ agents:
       link (#AP008). Digests aggregate by agent, never by person. DEMOTE
       registry-flip stays human-executed until the Fleet Manager exists.
 
+  # The execution half of the propose->approve loop (2026-08-04, per Roman):
+  # an approver green-lights a fix proposal in the #agent-feedback thread, the
+  # intake fires this dispatch, a coding agent implements it on a fix/ branch
+  # and opens a PR. Approval buys execution, not deployment — Roman merges.
+  - id: feedback-fix
+    runtime: github-actions
+    engine: Feedback agent
+    name: Feedback agent — execute approved fix
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [repository_dispatch]
+      source: >
+        feedback-fix-approved dispatch from the feedback agent, carrying the
+        correction path, diagnosis, approved plan, branch and Slack thread.
+      workflow: .github/workflows/feedback-fix.yml
+    entrypoint: anthropics/claude-code-action@v1   # + ops/feedback-agent/feedback_agent.py --mode fix-notify
+    reads:
+      - corrections/<agent>/                  # the reporter's own words + context
+      - registry.yml                          # entrypoint + dependencies of the target agent
+      - the agent's own source
+    writes:
+      - "GitHub: fix/ branch + PR to main (never merged by the agent)"
+      - Slack                                 # links the PR (or the failure) back in the thread
+    depends_on:
+      - "secrets: ANTHROPIC_API_KEY, SLACK_BOT_TOKEN (GITHUB_TOKEN ambient)"
+    notes: >
+      Confirms or corrects the diagnosis before changing anything; stays scoped
+      to the approved plan (implements the honest minimal version and says so if
+      the real fix differs). Forbidden from touching registry.yml or workflows.
+      Branches start from current main, not the dispatch-time SHA. Excluded from
+      the fleet-retry sweeper — paid coding-agent runs are never blindly retried.
+
   # ───────────────────────── Fleet retry sweeper (ops/fleet-health) ────
   # Failed runs get 3 automatic retries (~20 min apart — rides out platform
   # outages like 2026-08-06's) before ONE Slack alert pings the approvers.
   # GitHub's own per-failure emails are account-level noise; turn off at
   # github.com/settings/notifications once this is live.
   - id: fleet-retry
+    runtime: github-actions
+    engine: Fleet health
     name: Fleet retry sweeper (every 20 min)
     owner: roman@wetutorathome.com
     status: active
@@ -412,6 +489,8 @@ agents:
   # Conversations (portal 6312752). Draft-only except two locked auto-actions
   # (junk->archive, tutor_document->fixed receipt). FERPA-safe enrichment.
   - id: email-triage
+    runtime: github-actions
+    engine: Email / inbox ops
     name: Inbox triage
     owner: roman@wetutorathome.com
     status: active
@@ -425,6 +504,8 @@ agents:
     writes: [HubSpot:tickets, HubSpot:conversations(comment), Slack]
     depends_on: [email/rules.md, email/config.yaml, "Claude Sonnet classifier"]
   - id: email-sla-sweep
+    runtime: github-actions
+    engine: Email / inbox ops
     name: SLA sweep
     owner: roman@wetutorathome.com
     status: active
@@ -433,6 +514,8 @@ agents:
     reads: [HubSpot:tickets]
     writes: [Slack, HubSpot:tickets]
   - id: email-weekly-digest
+    runtime: github-actions
+    engine: Email / inbox ops
     name: Weekly digest
     owner: roman@wetutorathome.com
     status: active
@@ -441,6 +524,8 @@ agents:
     reads: [HubSpot:tickets, email/state/audit_log.jsonl]
     writes: [Slack]
   - id: email-daily-summary
+    runtime: github-actions
+    engine: Email / inbox ops
     name: Daily summary (6 PM PT DM)
     owner: roman@wetutorathome.com
     status: active
@@ -449,6 +534,8 @@ agents:
     reads: [email/state/audit_log.jsonl, HubSpot:tickets]
     writes: [Slack]
   - id: email-hourly-update
+    runtime: github-actions
+    engine: Email / inbox ops
     name: Hourly launch-monitoring update
     owner: roman@wetutorathome.com
     status: active
@@ -457,6 +544,8 @@ agents:
     reads: [email/state/audit_log.jsonl]
     writes: [Slack]
   - id: email-po-inbox
+    runtime: github-actions
+    engine: Email / inbox ops
     name: Charter PO inbox (charter@wetutorathome.com)
     owner: roman@wetutorathome.com
     status: active
@@ -477,6 +566,8 @@ agents:
     depends_on: [email/config.yaml, "Claude Sonnet PO extractor"]
     notes: Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
   - id: email-deal-sync
+    runtime: github-actions
+    engine: Email / inbox ops
     name: Deal sync (HubSpot → Teachworks) + invoice sweep
     owner: roman@wetutorathome.com
     status: active                     # LIVE 2026-08-03 (12-day pilot, backlog replayed)
@@ -499,6 +590,58 @@ agents:
       Manual tools: FORCE_DEAL_ID / FORCE_CONTACT_EMAIL / FORCE_STUDENT_FIRST
       workflow inputs (one-deal real sync).
 
+  - id: email-po-daily-report
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: PO day report (6 PM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 1 * * 2-6 (18:00 PDT Mon-Fri / 17:00 PST)"]
+      repo: aplustutoring/aplus-agents
+      workflow: .github/workflows/email-po-daily-report.yml
+    entrypoint: email/src/po_daily_report.py
+    reads:
+      - HubSpot:deals                        # every deal born today with a po_number, gross value
+      - Teachworks:invoices                  # invoices created on/after the deal, each claimable once
+    writes:
+      - Slack                                # one DM to Roman; names the misses
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON, SLACK_BOT_TOKEN"
+    notes: >
+      Read-only + one DM. Closes the loop on Kath's same-day STEP 1 (PO →
+      Teachworks invoice): a deal counts as covered when `Invoice #` is stamped
+      or a TW invoice matching its amount exists. Roman 2026-08-13 ask.
+
+  - id: email-draft-feedback
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Draft feedback weekly (Fri 4 PM PT)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 23 * * 5 (16:00 PDT Fri / 15:00 PST)"]
+      repo: aplustutoring/aplus-agents
+      workflow: .github/workflows/email-draft-feedback-weekly.yml
+    entrypoint: email/src/draft_feedback.py   # invoked with --weekly
+    reads:
+      - "Gmail:drafts"                       # read-only: draft still there? sent as-is? edited?
+      - email/state/draft_registry.jsonl     # append-only draft events
+    writes:
+      - corrections/email-drafts/            # one file per edited/discarded draft
+      - email/state/                         # draft_registry.jsonl + learned style-rules file
+      - Slack                                # weekly one-liner to the visionary seat
+    depends_on:
+      - "secrets: SLACK_BOT_TOKEN"
+    notes: >
+      The team's edits ARE the training signal (#AP008 corrections path).
+      Tier 1 registers every agent-written draft; Tier 2 turns edits/discards
+      into style rules the drafting prompts load at runtime, so tomorrow's
+      drafts carry yesterday's edits; Tier 3 is a human reply to the aplus bot
+      in #agent-feedback. Read-only against Gmail — writes repo files + one DM.
+
   # ───────────────────────── Charter prospecting + sales-ops ────────────
   # NOT BUILT. A B2B charter-sales engine has been discussed (prospecting pull,
   # school research, deal creation) but no live automation exists — so per this
@@ -506,6 +649,112 @@ agents:
   # entries. An earlier manual experiment lived in ~/charter_tool + ~/aplus-sync;
   # those were dropped 2026-06-29. The GCP SA charter-prospecting@aplus-automations-cars
   # exists but is unused. If charter is ever built, add it here as a Tier-A engine.
+  #
+  # What DOES exist is a set of manual, mostly read-only ANALYSIS tools behind
+  # workflow_dispatch (scripts/ + email/) — built 2026-08 for the charter 26/27
+  # renewal push. They are one-shot reports, not scheduled agents: no cron, no
+  # state, and every write is an explicit opt-in input (default dry-run).
+  - id: charter-gap-analysis
+    runtime: github-actions
+    engine: Charter analysis
+    name: Charter gap analysis (manual report)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/charter-gap-analysis.yml
+    entrypoint: scripts/charter_gap_analysis.py
+    reads:
+      - HubSpot:deals                        # 25/26 deal with no 26/27 renewal
+      - HubSpot:contacts                     # list 3104 / 3106 gap membership
+      - Teachworks                           # invoice history + last completed lesson (tutor + student first name)
+    writes:
+      - "GitHub: run artifact charter_gap_analysis.xlsx (7-day retention)"
+      - "HubSpot:contacts — ONLY with write_props=true: last_tutor_name + student_first_name onto list-3104 contacts, UPDATE-only import"
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
+      - scripts/charter_gap_segments.py      # recency x student-count x personalization segmenter
+    notes: >
+      Read-only by default. Feeds the campaign segments in
+      ops/messenger/campaign.yml. The TW key lives ONLY in Actions secrets —
+      fetch results via the run artifact, never by running this locally.
+
+  - id: tw-tutor-active-check
+    runtime: github-actions
+    engine: Charter analysis
+    name: TW tutor active check (charter gap)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/tw-tutor-active-check.yml
+    entrypoint: scripts/tw_tutor_active_check.py
+    reads:
+      - "HubSpot:contacts — [Agent] Last Tutor Name on the gap contacts"
+      - Teachworks:employees                 # is that tutor still active?
+    writes:
+      - "HubSpot:contacts — ONLY with write_props=true: [Agent] Last Tutor Active"
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
+    notes: >
+      Guards the campaign's personalization tokens — never promise a family a
+      tutor who has left. Read-only on Teachworks.
+
+  - id: tw-invoice-status
+    runtime: github-actions
+    engine: Charter analysis
+    name: TW invoice status by list (read-only)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]           # inputs: list_id (required), since (default 2025-08-01)
+      workflow: .github/workflows/tw-invoice-status.yml
+    entrypoint: scripts/tw_invoice_status.py
+    reads: [HubSpot:contacts, "Teachworks:invoices (with payment status)"]
+    writes: []                               # results in the run log only
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
+
+  - id: tw-invoice-xref
+    runtime: github-actions
+    engine: Charter analysis
+    name: TW invoice cross-reference (read-only)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]           # optional student_first/student_last = single-student lookup
+      workflow: .github/workflows/tw-invoice-xref.yml
+    entrypoint: email/invoice_xref.py        # or email/tw_student_lookup.py when a student name is given
+    reads: [HubSpot:deals, Teachworks:invoices]
+    writes: []                               # results in the run log only
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
+    notes: Recent PO deals <-> Teachworks invoices. The audit companion to the invoice sweep.
+
+  - id: tw-invoice-backfill
+    runtime: github-actions
+    engine: Charter analysis
+    name: TW invoice-submitted backfill (verified)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]           # apply=false (default) = dry-run report
+      workflow: .github/workflows/tw-invoice-backfill.yml
+    entrypoint: email/invoice_backfill.py
+    reads: [HubSpot:deals, Teachworks:invoices]
+    writes:
+      - "HubSpot:deals — ONLY with apply=true: invoice_submitted_date + Invoice Submitted stage, on TW-verified deals"
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
+    notes: >
+      One-off, written to clear the 2026-08-07..09 invoice-sweep backlog.
+      Stamps only what a real Teachworks invoice verifies. Kept registered so
+      the same verified-backfill path is re-runnable rather than rebuilt.
 
   # ───────────────────────── HubSpot schema (ops/hubspot-schema) ───────
   # The property registry: properties.yml declares every custom property the
@@ -513,6 +762,8 @@ agents:
   # only — never deletes). First entries: ticket_source + source_agent
   # (#AP007 ticket conventions), created 2026-07-27.
   - id: hubspot-schema
+    runtime: github-actions
+    engine: Fleet health
     name: HubSpot schema sync (manual)
     owner: roman@wetutorathome.com
     status: manual
@@ -535,7 +786,100 @@ agents:
       Re-run after registering a new agent so source_agent picks up the new
       option. CHECK_ONLY smoke mode.
 
+  # ───────────────────────── Non-Actions runtimes ──────────────────────
+  # Agents that do NOT run on GitHub Actions. Registered 2026-08-20 after the
+  # Sage Oak photo booth (a Cloudflare Worker writing to production HubSpot)
+  # turned out to be in none of the fleet maps: registry_check.py could only
+  # ever see .github/workflows/, so an entire class of agent was invisible.
+  # These two were previously named only as the `source:` of other agents.
+  - id: spotlight-drive-watcher
+    engine: B2C spotlights
+    runtime: apps-script
+    name: Spotlight Drive watcher (Google Apps Script)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["every 5 min (Apps Script time-driven trigger)"]
+    source: marketing/scripts/watcher/apps-script.gs
+    entrypoint: marketing/scripts/watcher/apps-script.gs
+    reads:
+      - GoogleDrive                          # the intake folder Paola drops material into
+    writes:
+      - "GitHub: repository_dispatch -> spotlight-orchestrator"
+      - GoogleDrive                          # .spotlight-dispatched sentinel per folder
+    depends_on:
+      - "Apps Script Properties: intake folder id, GitHub repo, PAT"
+      - service_account: spotlight-watcher@a-plus-spotlight-watcher.iam.gserviceaccount.com
+    notes: >
+      Fires only for subfolders holding all three required source files
+      (parent-call*, lesson-notes/report*, paola-brief*) that have no sentinel
+      yet. Config lives in Script Properties, never hardcoded. Deployed and
+      triggered from the Apps Script UI — nothing in this repo can deploy it,
+      so a change here is not live until someone pastes it in.
+
+  - id: feedback-slack-relay
+    engine: Feedback agent
+    runtime: apps-script
+    name: Feedback agent Slack relay (Google Apps Script)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [slack_message]
+      source: Slack Events API subscription on #agent-feedback (C0BL05MCJ4B)
+    source: ops/feedback-agent/relay/apps-script.gs
+    entrypoint: ops/feedback-agent/relay/apps-script.gs
+    reads:
+      - Slack                                # message events in #agent-feedback
+    writes:
+      - "GitHub: repository_dispatch feedback-report -> feedback-agent"
+    depends_on:
+      - "Deployed as a Web App (execute as me, access anyone); its URL is the Slack app's Event Subscriptions Request URL"
+    notes: >
+      The doorbell and nothing more — all classification lives in git. Filters
+      here to keep Actions minutes flat: forwards top-level messages and thread
+      replies, drops bot messages (including the fleet bot), edits, deletes,
+      joins, and anything outside the channel. If this stops, the whole
+      #agent-feedback loop goes silent with no error anywhere.
+
+  # ───────────────────────── Registry watcher (ops/fleet-health) ───────
+  # The mechanism that makes this file's first rule enforceable, plus the
+  # generator for docs/FLEET.md. Added 2026-08-20 after an audit found nine
+  # live workflows with no entry here — three writing to HubSpot, one opening
+  # PRs. The rule existed; nothing was watching.
+  - id: fleet-docs
+    runtime: github-actions
+    engine: Fleet health
+    name: Fleet — registry check + FLEET.md
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [pull_request, push, workflow_dispatch]
+      source: >
+        Any change to registry.yml, .github/workflows/**, or the two
+        fleet-health scripts. PRs run advisory; main regenerates and commits.
+      workflow: .github/workflows/fleet-docs.yml
+    entrypoint: ops/fleet-health/registry_check.py
+    reads:
+      - registry.yml
+      - .github/workflows/                   # both-directions cross-check
+      - docs/FLEET.md                        # staleness check
+    writes:
+      - docs/FLEET.md                        # regenerated + committed back on main
+    depends_on:
+      - ops/fleet-health/fleet_brief.py
+    notes: >
+      ROLLOUT: PR runs use --warn, so an unregistered workflow annotates the PR
+      without blocking the merge. Drop the flag once it has run clean for a
+      couple of weeks and it starts blocking. Checks: workflows <-> registry
+      both directions, required fields (incl. engine), unique ids, entrypoints
+      exist, FLEET.md current. The main-branch commit carries [skip ci].
+
   - id: branch-hygiene
+    runtime: github-actions
+    engine: Fleet health
     name: Fleet — branch hygiene (Mon 9 AM PT)
     owner: roman@wetutorathome.com
     status: active
@@ -555,3 +899,59 @@ agents:
       unmerged for a week; a CallRail matching fix sat unpushed locally for
       16 days). Companion LOCAL mode (--local) runs from Roman's Mac crontab
       daily — Actions cannot see never-pushed local commits.
+
+  - id: bulk-messenger
+    runtime: github-actions
+    engine: Messenger
+    name: Bulk messenger (on-demand email/SMS to a HubSpot list)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: workflow_dispatch
+      workflow: .github/workflows/messenger.yml
+    entrypoint: ops/messenger/messenger.py
+    reads:
+      - HubSpot                             # list memberships + contact merge props
+    writes:
+      - HubSpot                             # DRAFT marketing-email clone (email channel)
+      - JustCall                            # outbound SMS (sms channel, live only)
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET"
+      - ops/messenger/config.yml
+      - ops/messenger/templates/
+    notes: >
+      BULK ONLY (min_bulk 25) — refuses 1:1 sends. Approval-first: dry-run
+      default; live needs confirm=SEND. Email = clone+retarget an in-portal
+      marketing email, left as DRAFT (Roman clicks Send; HubSpot suppression
+      applies). SMS = JustCall, sales/conference number routing, sms_opt_out
+      + STOP-line + 9-20 PT quiet-hours guardrails. Built 2026-08-14; Slack
+      front door + STOP ingestion are phase 2 (see ops/messenger/README.md).
+
+  - id: campaign-launch
+    runtime: github-actions
+    engine: Messenger
+    name: Campaign launch (Monday enrollments)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      schedule: ["0 16 * * * (09:00 PDT / 08:00 PST daily — gated in enroll.py)"]
+      events: [workflow_dispatch]           # inputs: confirm=LAUNCH, force (skip the gates)
+      workflow: .github/workflows/monday-launch.yml
+    entrypoint: ops/messenger/enroll.py
+    reads:
+      - ops/messenger/campaign.yml          # armed flag, launch_date, {list_id, workflow_id} pairs
+      - HubSpot                              # list members' emails
+    writes:
+      - HubSpot                              # workflow enrollments (automation v2), per-contact result log
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN"
+      - ops/messenger/campaign.yml
+      - ops/messenger/templates/
+    notes: >
+      The daily cron is a no-op unless campaign.yml has `armed: true` AND today
+      (PT) == launch_date — arming is a deliberate config change in a PR, so a
+      launch is a human decision that the cron merely executes. Dry-run default
+      on manual dispatch; live needs confirm=LAUNCH. Already-enrolled contacts
+      error harmlessly. First use: charter 26/27 re-engagement pilot, 2026-08-18
+      (list 3146 -> workflow 1868435042). See ops/messenger/CAMPAIGN-2026-08-17.md.

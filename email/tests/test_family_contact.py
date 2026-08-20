@@ -6,10 +6,18 @@ def _no_deals(monkeypatch):
     monkeypatch.setattr(hs, "contact_deal_names", lambda cid: [])
 
 
-def test_single_match_links(monkeypatch):
-    _no_deals(monkeypatch)
+def test_single_match_links_only_with_student_evidence(monkeypatch):
+    # a lone surname match is NOT enough (Dina Rose / Matthew Rose, 2026-08-18):
+    # the contact must carry the student somewhere — a deal name here
+    monkeypatch.setattr(hs, "contact_deal_names", lambda cid: ["Pat Smith - Anyone - iLead 1"])
     monkeypatch.setattr(hs, "_write", lambda m, p, b=None: {"results": [{"id": "9", "properties": {"lastname": "Smith"}}]})
     assert [c["id"] for c in hs.find_family_contact("Anyone", "Smith")] == ["9"]
+
+
+def test_single_surname_match_without_evidence_rejected(monkeypatch):
+    _no_deals(monkeypatch)
+    monkeypatch.setattr(hs, "_write", lambda m, p, b=None: {"results": [{"id": "9", "properties": {"lastname": "Rose"}}]})
+    assert hs.find_family_contact("Matthew", "Rose") == []
 
 
 def test_collision_resolved_by_student_property(monkeypatch):

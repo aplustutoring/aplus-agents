@@ -1,0 +1,43 @@
+name: Charter gap analysis
+
+# Manual report: charter families with a 25/26 deal but no 26/27 renewal,
+# enriched with Teachworks invoice history + each family's last completed
+# lesson (tutor + student first name). Read-only by default — the xlsx is
+# uploaded as a run artifact. The write_props input opt-in stamps
+# last_tutor_name/student_first_name onto list-3104 contacts via an
+# UPDATE-only import (the script's only write).
+# See scripts/charter_gap_analysis.py.
+on:
+  workflow_dispatch:
+    inputs:
+      write_props:
+        description: "Stamp last_tutor_name/student_first_name onto list-3104 contacts"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv openpyxl
+      - name: Run gap analysis
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+        run: >
+          python scripts/charter_gap_analysis.py --out charter_gap_analysis.xlsx
+          ${{ inputs.write_props && '--write-props' || '' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: charter-gap-analysis
+          path: charter_gap_analysis.xlsx
+          retention-days: 7

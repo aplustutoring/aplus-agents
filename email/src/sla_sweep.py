@@ -22,7 +22,10 @@ def _latest_tickets() -> dict[str, dict]:
     an instant breach."""
     tickets = {}
     for r in audit._iter_records():
-        if (r.get("action_taken") in ("ticket_created", "ticket_reopened")
+        # po_processed = PO-inbox tickets — they carry sla_due too, and their
+        # breaches were invisible to this sweep until 2026-08-14 (the Taylion
+        # convert-to-invoice ticket sat past SLA with zero escalation)
+        if (r.get("action_taken") in ("ticket_created", "ticket_reopened", "po_processed")
                 and r.get("ticket_id") and r.get("sla_due")):
             tickets[r["ticket_id"]] = r
     return tickets

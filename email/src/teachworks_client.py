@@ -10,6 +10,7 @@ classifier — never full lesson rows or attendance histories.
 """
 from __future__ import annotations
 
+import re
 import time
 from datetime import date, datetime, timedelta
 
@@ -128,14 +129,115 @@ def find_customer_by_email(email: str, token: str | None = None) -> dict | None:
     return None
 
 
+def customers_for_family(email: str, last_name: str = "", first_name: str = "",
+                         token: str | None = None) -> list[dict]:
+    """EVERY customer record for a family in one account — email match PLUS
+    name match, deduped, ACTIVE records first. Teachworks carries duplicate
+    customers (the Aly Daly case, 2026-08-12: an inactive dupe owned the email
+    while the live record held the invoices/students) — email-only lookups can
+    land on the empty dupe and report a real family as inactive. Name filters
+    are re-checked client-side in case the API ignores unknown params."""
+    seen: set = set()
+    out: list[dict] = []
+    queries: list = []
+    if (email or "").strip():
+        queries.append(({"email": email.strip().lower()}, None))
+    ln = (last_name or "").strip()
+    if ln:
+        q = {"last_name": ln}
+        fn = (first_name or "").strip()
+        if fn:
+            q["first_name"] = fn
+        queries.append((q, (fn.lower(), ln.lower())))
+    for params, name_check in queries:
+        try:
+            for c in tw_get("customers", params, token=token):
+                if name_check:
+                    fn_c, ln_c = name_check
+                    if (c.get("last_name") or "").strip().lower() != ln_c:
+                        continue
+                    if fn_c and (c.get("first_name") or "").strip().lower() != fn_c:
+                        continue
+                if c.get("id") in seen:
+                    continue
+                seen.add(c.get("id"))
+                out.append(c)
+        except Exception:  # noqa: BLE001 — a failed variant must not kill the lookup
+            continue
+    out.sort(key=lambda c: 0 if str(c.get("status") or "").lower().startswith("activ") else 1)
+    return out
+
+
 def _safe_date(value) -> str | None:
     if not value:
         return None
     return str(value)[:10]
 
 
+def find_family_by_student(student_first: str, student_last: str,
+                           tutor_hint: str = "") -> dict | None:
+    """The family Teachworks ALREADY knows for a student named in a PO — the
+    fastest, surest parent resolution there is (Roman, 2026-08-18: "matthew
+    rose can be found in teachworks"). Searches both accounts for students
+    with that exact name; each candidate is scored by real lesson history
+    (a 0-lesson shell like the duplicate 'Dina Rose / Matthew Rose' record
+    scores nothing) and by whether the PO's tutor taught them. Returns
+    {parent_first, parent_last, email, phone, tutor, lessons, customer_id,
+    account} for the strongest candidate, or None when no candidate has
+    lesson history (a real family with lessons always wins over a shell)."""
+    sf, sl = (student_first or "").strip().lower(), (student_last or "").strip().lower()
+    if not sf or not sl:
+        return None
+    hint = (tutor_hint or "").strip().lower()
+    hint_parts = [p for p in re.split(r"[\s,]+", hint) if p]
+    best, best_score = None, 0
+    for acct, token in accounts().items():
+        try:
+            studs = tw_get("students", {"first_name": student_first, "last_name": student_last},
+                           token=token)
+        except Exception:  # noqa: BLE001
+            continue
+        for s in studs:
+            if (s.get("first_name") or "").strip().lower() != sf or \
+               (s.get("last_name") or "").strip().lower() != sl:
+                continue
+            try:
+                lessons = tw_get("lessons", {"student_id": s["id"]}, token=token)
+            except Exception:  # noqa: BLE001
+                lessons = []
+            if not lessons:
+                continue                       # shell record — never evidence
+            latest = max(lessons, key=lambda l: str(l.get("from_date") or ""))
+            last_tutor = (latest.get("employee_name") or "").strip()
+            score = 1 + min(len(lessons), 50)   # history weight
+            if hint_parts and all(p in last_tutor.lower() for p in hint_parts):
+                score += 100                    # PO tutor == last tutor: decisive
+            if score <= best_score:
+                continue
+            cust = {}
+            try:
+                for c in tw_get("customers", {"id": s.get("customer_id")}, token=token):
+                    if str(c.get("id")) == str(s.get("customer_id")):
+                        cust = c
+            except Exception:  # noqa: BLE001
+                pass
+            if not (cust.get("email") or "").strip():
+                continue
+            best_score = score
+            best = {"parent_first": (cust.get("first_name") or "").strip(),
+                    "parent_last": (cust.get("last_name") or "").strip(),
+                    "email": (cust.get("email") or "").strip().lower(),
+                    "phone": (cust.get("mobile_phone") or cust.get("phone") or "").strip(),
+                    "tutor": last_tutor, "lessons": len(lessons),
+                    "last_lesson": str(latest.get("from_date") or "")[:10],
+                    "customer_id": cust.get("id"), "account": acct,
+                    "tutor_match": bool(hint_parts) and all(p in last_tutor.lower() for p in hint_parts)}
+    return best
+
+
 def student_lesson_activity(email: str, student_first: str,
-                            lookback_days: int = 30) -> dict:
+                            lookback_days: int = 30,
+                            parent_first: str = "", parent_last: str = "") -> dict:
     """THIS student's lesson signal, both accounts, keyed by the parent's email:
     {found, recent, upcoming} — `recent` = attended/completed lessons within
     `lookback_days`, `upcoming` = future not-cancelled lessons. found=False when
@@ -154,7 +256,9 @@ def student_lesson_activity(email: str, student_first: str,
     upcoming_lessons: list[dict] = []
     recent_lessons: list[dict] = []
     for _acct, token in accounts().items():
-        for cust in tw_get("customers", {"email": email.strip().lower()}, token=token):
+        # customers_for_family, not a bare email match — duplicate/inactive
+        # customer records would otherwise hide the student (Aly Daly case)
+        for cust in customers_for_family(email, parent_last, parent_first, token=token):
             for s in tw_get("students", {"customer_id": cust.get("id")}, token=token):
                 if (s.get("first_name") or "").strip().lower() != sf:
                     continue

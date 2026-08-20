@@ -1,0 +1,139 @@
+{
+ "updatedAt": "2024-09-05T17:14:04.747Z",
+ "createdAt": "2019-08-06T02:41:11.159Z",
+ "name": "hs_lead_status",
+ "label": "Lead Status",
+ "type": "enumeration",
+ "fieldType": "radio",
+ "description": "The contact's sales, prospecting or outreach status",
+ "groupName": "contactinformation",
+ "options": [
+  {
+   "label": "New (Inbox)",
+   "value": "NEW",
+   "description": "",
+   "displayOrder": 0,
+   "hidden": true
+  },
+  {
+   "label": "Attempting to Contact",
+   "value": "ATTEMPTED_TO_CONTACT",
+   "description": "",
+   "displayOrder": 1,
+   "hidden": true
+  },
+  {
+   "label": "Meeting Booked",
+   "value": "Meeting Booked",
+   "description": "",
+   "displayOrder": 2,
+   "hidden": true
+  },
+  {
+   "label": "QTL - NEW",
+   "value": "We Connected",
+   "displayOrder": 3,
+   "hidden": true
+  },
+  {
+   "label": "QTL - CAP",
+   "value": "CAP",
+   "displayOrder": 4,
+   "hidden": true
+  },
+  {
+   "label": "QTL - Diagnostic Sent",
+   "value": "QTL - Diagnostic Sent",
+   "displayOrder": 5,
+   "hidden": false
+  },
+  {
+   "label": "QTL - Charter",
+   "value": "QTL - Charter",
+   "displayOrder": 6,
+   "hidden": false
+  },
+  {
+   "label": "Open deal",
+   "value": "OPEN_DEAL",
+   "description": "",
+   "displayOrder": 7,
+   "hidden": true
+  },
+  {
+   "label": "Past Customer",
+   "value": "Past Customer",
+   "description": "",
+   "displayOrder": 8,
+   "hidden": true
+  },
+  {
+   "label": "Check Back Quarterly",
+   "value": "Using Someone Else",
+   "description": "",
+   "displayOrder": 9,
+   "hidden": true
+  },
+  {
+   "label": "Dead Opportunity/Unqualified",
+   "value": "UNQUALIFIED",
+   "description": "",
+   "displayOrder": 10,
+   "hidden": true
+  },
+  {
+   "label": "Student",
+   "value": "Student",
+   "description": "",
+   "displayOrder": 11,
+   "hidden": true
+  },
+  {
+   "label": "School Personnel",
+   "value": "Teacher in a School",
+   "description": "",
+   "displayOrder": 12,
+   "hidden": true
+  },
+  {
+   "label": "Tutors",
+   "value": "Tutor-Active",
+   "description": "",
+   "displayOrder": 13,
+   "hidden": true
+  },
+  {
+   "label": "Other",
+   "value": "Other",
+   "displayOrder": 14,
+   "hidden": true
+  },
+  {
+   "label": "For Review To Be Deleted",
+   "value": "For Review To Be Deleted",
+   "displayOrder": 15,
+   "hidden": true
+  },
+  {
+   "label": "Charter School Teacher TOR/EF",
+   "value": "Charter School Teacher TOR/EF",
+   "description": "",
+   "displayOrder": 16,
+   "hidden": false
+  }
+ ],
+ "displayOrder": -1,
+ "calculated": false,
+ "externalOptions": false,
+ "hasUniqueValue": false,
+ "hidden": false,
+ "hubspotDefined": true,
+ "modificationMetadata": {
+  "archivable": true,
+  "readOnlyDefinition": true,
+  "readOnlyOptions": false,
+  "readOnlyValue": false
+ },
+ "formField": true,
+ "dataSensitivity": "non_sensitive"
+}

@@ -39,13 +39,28 @@ Tried in order; the first hit wins:
 
 1. **Parent email in the PO** → find the contact, or create it
    (`a_persona=Family`, phone included).
-2. **The student's prior deal** → its non-TOR contact, if unique.
-3. **Unique family-contact match** by student name.
-4. **Nothing** → the deal is born `NEEDS PARENT - …` and the **parent chase**
-   starts: a request for the parent's name/email/phone is drafted to the TOR
-   (else the sender) on the same thread — a human sends it (the agent never
-   sends from charter@). The reply auto-creates the contact, renames the deal,
-   and fires the Teachworks sync. Silent for 2 business days → escalation DM.
+2. **The student in Teachworks** → search both TW accounts by the student's
+   exact name; a student with real lesson history gives us their family
+   (parent name/email/phone) directly — and if the PO's tutor is that
+   student's last tutor, it's decisive. 0-lesson shell records never count;
+   a tutor mismatch is flagged for verification. (Matthew Rose, 2026-08-18:
+   104 lessons with Jacquelyn Lemerond → Megan Miller, no chase needed.)
+3. **The student's prior deal** → its non-TOR contact, if unique.
+4. **Family-contact match** by student name — a lone surname hit only counts
+   when that contact's student fields or deal names carry the student's first
+   name (the "Dina Rose" collision).
+5. **Nothing** → the deal is born `NEEDS PARENT - …` and the **parent chase**
+   starts. Before drafting, the agent checks the TOR's recent **call-agent
+   summaries** — a phone call may already hold the answer (flagged on the
+   ticket). The request (parent name/email/phone) is drafted to the TOR — as a
+   **fresh email** when the PO came from a portal robot (never addressed to
+   noreply); one draft per recipient even for multi-student certificates. A
+   human sends it (the agent never sends from charter@). Drafts carry the
+   Gmail label `A+ Agent/Draft Pending` + the HubSpot BCC; the agent detects
+   the send (unsent after 4 business hours → 🚩 nag), the reply auto-creates
+   the contact, renames the deal, fires the Teachworks sync, and arms the
+   family's SMS. Open chases also **self-resolve** if the family contact
+   appears on its own. No reply 2 business days after the SEND → escalation DM.
 
 Why it matters: the Teachworks sync keys the family on the deal's parent
 contact email — no parent contact means no TW family, no scheduling, no
@@ -71,6 +86,8 @@ invoice hour-tracking.
 | `student_grade` | 3 | From the PO. |
 | `student_school` | iCC1 for iLEAD Hybrid Exploration | From the PO (full extracted name). |
 | `parent_email` / `parent_phone` | — | From the PO when stated; also stamped when a parent-chase reply resolves them. Missing → ticket flag + 🚩 DM. |
+| `teacher_of_record_name` | Mary Nieves | The TOR named in the PO/email. Missing → ticket flag + 🚩 DM. |
+| `teacher_of_record_email` | mary.nieves@… | From the PO; PO has only the name → the email is **resolved from the matched TOR contact** and stamped anyway. |
 | `lessons_fulfilled_date` | Aug 31 | **Last day of the PO's service month** — the invoice due date. Prefilled by the agent; Kath confirms (see Stage 5). |
 | `invoice__` (Invoice #) | *Kath fills* | The Teachworks invoice number, after she creates the invoice (Stage 5). |
 | `invoice_submitted_date` | *Kath fills* | When she submits the invoice to the school (Stage 6). Clears the deal from the unbilled sweep. |

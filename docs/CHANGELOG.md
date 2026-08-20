@@ -7,6 +7,902 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Approve + merge opened to Danielle, Paola and Emily
+
+**What:** Split `slack.approvers` out of `slack.alerts_to`. `alerts_to` still
+controls who gets @-pinged (Roman only — pinging four people on every proposal
+trains everyone to ignore pings); `approvers` controls who may fire the coding
+agent and squash-merge its PR from a thread reply. Set to Roman, Danielle, Paola,
+Emily. Falls back to `alerts_to` when unset, so older configs are unaffected.
+The proposal message now names who can act, reporter first.
+
+**Why:** Roman 2026-08-20 — "i want it that danielle or paola or emily could do
+the approve and merges." The case it unlocks: whoever reports a problem can ship
+its fix. Paola reports the missing reel, Paola approves, Paola merges — no round
+trip through Roman for work she is closest to. An unnamed permission is one
+nobody uses, hence naming the approvers in the message itself.
+
+**Not delegated:** DEMOTE registry flips stay with Roman until a Fleet Manager
+exists to verify state changes (#AP011).
+
+**Also:** posted a pinned explainer to #agent-feedback covering how to report,
+the approve/merge/no vocabulary, that screenshots now work, the FERPA rule, and
+what to do when the agent stays silent.
+
+**Files:** `ops/feedback-agent/config.yml`, `ops/feedback-agent/feedback_agent.py`,
+`docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Feedback agent: schema debris no longer reaches HubSpot ticket subjects
+
+**What:** The classifier's free-text fields are now scrubbed of leaked schema
+fragments, the classification retries once when debris appears, and the ticket
+subject truncates on a word boundary instead of mid-token.
+
+**Why:** Caught live on Paola's spotlight report. Structured output is
+schema-constrained and `json.loads` parsed it fine — but the model lost the thread
+mid-field and wrote schema INTO a value:
+
+    summary = "...the other assets rendered successfully.','clarifying_question':"
+
+That summary flowed unvalidated into `subject: f"[AGENT] {label}: {summary[:120]}"`,
+so the drafted HubSpot ticket read `...successfully.','clari` — a corrupted subject
+line on a ticket the whole team sees.
+
+**How:** `scrub_debris()` cuts any trailing `'...','field':` fragment out of
+summary / ack_message / clarifying_question and reports which fields were dirty;
+one retry (degraded output rarely repeats), then ship the scrubbed value rather
+than fail — a slightly clipped summary still reaches a human, a crash does not.
+`truncate_words()` replaces the raw `[:120]` slice. Verified against the real
+failure plus false-positive guards: legitimate apostrophes ("Danielle's op-ed")
+and colons ("Ratio is 3:1") are untouched.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — INCIDENT: every #agent-feedback report with a screenshot was silently dropped
+
+**What:** The Slack relay dropped any message carrying a file. Slack tags an
+attachment-bearing message `subtype: "file_share"`, and the relay's filter was a
+bare `if (ev.subtype) return textOut_('ok')` — written to drop edits, deletes and
+joins. The relay answers Slack `ok`, so there was no error, no retry, and no
+Actions run. The report simply evaporated, and from the reporter's side the agent
+had ignored them.
+
+**Evidence (100% correlation across the visible channel history):** reports WITH
+a screenshot — Danielle Aug 13, Aug 17, Aug 18; Paola Aug 20 — got no agent reply
+at all. Reports WITHOUT one — Paola Aug 14, Roman Aug 20 09:21, the Aug 20 13:11
+test — were all answered within a minute.
+
+**Why it matters more than the count suggests:** people attach a screenshot
+exactly when a problem is visual and hard to put in words, so this ate the most
+careful reports. Danielle reported the LinkedIn op-ed being cut off THREE times
+(Aug 13/17/18), each with a screenshot, each into a void — while the one report
+of hers that did land (Aug 11) had its fix run die on the claude-code-action bot
+guard. She has never once seen this loop work.
+
+**Fix:** allow `file_share` and `thread_broadcast` through; keep dropping edits,
+deletes, joins and bot messages. A file-only post (screenshot, no words) now
+falls back to the file title instead of being dropped for having no text. The
+dispatch payload carries `has_files` so the agent can ask what the screenshot
+shows rather than guess — it classifies from text and does not read images.
+Filter verified against seven event shapes; the script parses.
+
+**NOT LIVE YET.** This is an Apps Script: it deploys by hand from the Apps Script
+UI, and editing the file in this repo changes nothing until someone pastes it in.
+That deploy is Roman's. (Exactly the hazard the `runtime:` field added earlier
+today exists to make visible.)
+
+**Files:** `ops/feedback-agent/relay/apps-script.gs`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — `runtime:` — the fleet is not all GitHub Actions
+
+**What:** Added a required `runtime:` field (`github-actions` | `cloudflare-worker`
+| `apps-script` | `zapier`) plus `source:` for non-Actions agents, registered the
+two Google Apps Scripts that were previously named only as the `source:` of other
+entries (`spotlight-drive-watcher`, `feedback-slack-relay`), and taught
+`registry_check.py` to DISCOVER non-Actions agents rather than only validate
+declared ones — `wrangler.toml` means a Worker, `*.gs` means an Apps Script, and
+anything unreferenced by the registry is flagged. FLEET.md now prints the runtime
+when it is not the default and warns that those agents deploy by hand.
+
+**Why:** Roman asked why the photo booth agents were not in the handoff. Three
+reasons, worst last: it is on the unmerged `booth-backend` branch (PR #66 open,
+22 commits); it is a Cloudflare Worker + Pages app, which the registry's
+workflow-shaped schema could not express; and **registry_check.py structurally
+could not have caught it** — it compared registry.yml against
+`.github/workflows/` only, so Workers, Apps Scripts, and Zapier zaps were an
+invisible class. The booth writes four contact properties to production HubSpot,
+emails via Resend, and sends MMS from the main A+ line.
+
+**Bug found while testing:** sibling-directory coverage was too loose — the
+spotlight watcher's `.gs` was masked by `download-drive-folder.py` in the same
+directory, so deleting its registry entry did NOT trip the check. Sibling
+coverage is now per-pattern: on for `wrangler.toml` (config beside a named
+worker script), off for `*.gs` (the script IS the agent). Both discovery paths
+verified by removing entries and confirming the flag fires.
+
+**Still unregistered:** the Sage Oak photo booth itself. Its code is not on main,
+and another session is actively working that branch — the entry should land with
+PR #66. Once merged, the new discovery heuristic will flag it if it does not.
+
+**Files:** `registry.yml` (runtime on 38 entries + 2 new Apps Script agents),
+`ops/fleet-health/registry_check.py`, `ops/fleet-health/fleet_brief.py`,
+`docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Prevention: generated FLEET.md, an enforced registry, an exit-code rule
+
+**What:** Three mechanisms, in the order Roman picked (3, 1, 2).
+
+1. **`docs/FLEET.md` is now generated** from `registry.yml` by
+   `ops/fleet-health/fleet_brief.py`, regenerated on every merge to main.
+   Grouped by engine, with an autonomy section and per-agent reads/writes.
+   Handing the fleet to Claude-in-chat is now "copy one file" instead of a
+   hand-written summary that is stale on arrival. Required a new `engine:`
+   field on all 36 registry entries (inferring it from entrypoint paths breaks
+   on cases like tw-invoice-xref, which lives in email/ but is a charter tool).
+2. **`ops/fleet-health/registry_check.py`** enforces the registry's own first
+   rule: workflows <-> registry both directions, required fields, unique ids,
+   entrypoints exist, FLEET.md current. Wired up as the `fleet-docs` workflow —
+   which had to register itself to pass its own check. ROLLOUT: PRs run with
+   `--warn` (annotate, don't block); drop the flag in a couple of weeks.
+3. **Exit-code rule** added to ARCHITECTURE.md governance: an agent that
+   accomplished NONE of its work must exit non-zero. Deliberately narrow — a
+   sweeping "any failure exits non-zero" would break call-agent's per-call
+   isolation, which is correct design. 0 of 50 is a failed run; 49 of 50 is a
+   warning. Three agents still need the change: campaign-launch (enroll.py),
+   bulk-messenger (messenger.py), call-agent (all-calls-failed case only).
+
+**Why:** Roman — "we do it in code, but then claude chat doesnt know about it and
+neither does github, and i always feel like we are back asswards." The diagnosis:
+these mechanisms already existed as CONVENTIONS (register everything, update the
+changelog) and conventions decay silently. Nine workflows broke the registration
+rule for weeks; ARCHITECTURE.md was wrong for seven. Nothing was watching, and
+nothing published what the repo already knew.
+
+**Files:** `ops/fleet-health/fleet_brief.py` (new),
+`ops/fleet-health/registry_check.py` (new), `.github/workflows/fleet-docs.yml`
+(new), `docs/FLEET.md` (new, generated), `registry.yml` (engine field on 36
+entries + the fleet-docs entry), `ARCHITECTURE.md`, `docs/CHANGELOG.md`.
+
+**Decision-log candidates for Roman:** (a) generated fleet breakdown as the
+canonical handoff artifact; (b) registry check blocking merges after rollout;
+(c) the exit-code rule as a fleet-wide convention.
+
+---
+
+## 2026-08-20 — ARCHITECTURE.md rewritten to match the fleet as it actually is
+
+**What:** The human-readable fleet map described four engines with email in a
+separate repo — the world as of ~2026-06. Rewritten for the real eight: added
+the call agent, feedback agent, messenger, and fleet-health; folded email in;
+replaced the finished migration history with an **Autonomy** section (what
+writes without asking vs. what only drafts) and a **Known weak points** section.
+Added the rule that `registry.yml` wins on conflict.
+
+**Why:** Roman — it was the last fleet doc still wrong after the registry pass,
+and it is the file a human reads first.
+
+**Note:** this entry was written when the rewrite was committed (231ab2d) but
+silently failed to land — the insert matched on surrounding prose, which a
+concurrent session had just changed, so the no-op reported success. Restored
+here, and the insert is now anchored on structure. A small live instance of the
+exact failure mode the entry above is about.
+
+---
+
+
+## 2026-08-20 — Charter campaign: wave 2 sent, all segments built, Paola hot list
+
+**What:** (1) WAVE 2 SENT: 213 more Win-back-1-student families through live
+workflow 1868435042 (Roman "lets move on to the next list") — campaign total
+259 emailed; 11 prior-repliers held back (reply-date exit goal would silently
+skip them), 27 excluded, 2 enrollment-blocked (Aquaddoomi, DaVault → Paola
+calls). Weekday-only action windows (Mon–Fri 9:00–18:00 PT) set on the live
+workflow — wave-2's Day-3 nudge moved off Sunday. (2) PILOT LEARNINGS baked
+in: lead-status=OPEN_DEAL exit goal removed (34 families carried stale
+Open-deal status from 25/26 and were silently skipped — root cause of the
+13/47 partial send); reply exit = hs_email_last_reply_date IS_KNOWN (UI-valid
+shape; the API accepted an IS_AFTER timePoint the UI rendered "always
+False"). Both live-verified: Surova + Potter replies exited them. (3) ALL
+REMAINING SEGMENTS BUILT (OFF, pending Roman publish+enable — marketing-email
+publish scope unavailable at account tier): queues 3162 Never-Started (28),
+3163 No-Lesson (10), 3164 Multi (71); emails 219949380453 / 219949261351 /
+219949261355 / 219949261359 / 219949380457; workflows 1869922921 / 1869934421 /
+1869933870 (same goal trio, weekday windows, Paola Day-7 task). Multi
+student_names scrubbed: Munoz "Alanna/Alannah" deduped; White (Yari/Yuri)
++ Lopez (Mathew/Matthew) HELD for Roman (twins vs typo — not queued). (4)
+PAOLA HOT LIST 3161 (55) Slack-DM'd to Paola: T1 replied (Surova asked for
+Fred/Vlado; Potter), T2 opened (30, revenue-ranked), T3 Hot-12 never emailed
+(personal calls), T4 email-unreachable (7). Behavior at 48h: 46 sent /
+18 opened (39%) / 2 replied / both repliers auto-exited before the nudge.
+**Files:** portal-side builds; durable scripts already in scripts/. Session
+worktree was reset mid-flight — recreated per concurrency rule before this
+commit.
+
+## 2026-08-20 — registry.yml: the 9 unregistered workflows are now registered
+
+**What:** Added registry entries for every live workflow that was running
+without one — `email-po-daily-report`, `email-draft-feedback`, `feedback-fix`,
+`campaign-launch` (monday-launch.yml), and the five manual charter/Teachworks
+analysis tools (`charter-gap-analysis`, `tw-tutor-active-check`,
+`tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`). The charter
+section's "NOT BUILT" note is kept — the prospecting ENGINE still doesn't
+exist — with a new paragraph distinguishing it from the manual read-only
+analysis tools that do. Registry is now 35 agents (22 active, 10 manual,
+3 deprecated) and `.github/workflows/` ⇄ `registry.yml` cross-check is clean
+in both directions.
+
+**Why:** Roman, reviewing a fleet breakdown: the registry's own first rule is
+"if it's not here, it doesn't exist," and the feedback agent classifies every
+`#agent-feedback` report against this file's vocabulary. Nine live workflows —
+including two that write to HubSpot and one that opens PRs — were invisible to
+that vocabulary, so nobody could report a problem against them and the DEMOTE
+path had no target to flip.
+
+**Follow-up:** `source_agent` and `ticket_source` derive their enum options
+from this file (`options_from: registry`), so the HubSpot schema sync
+(`.github/workflows/hubspot-schema.yml`) needs a run to pick up the 9 new
+options. Not run in this session — portal writes are Roman's call.
+
+**Files:** `registry.yml`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-18 — Parent resolution step 2: the student in Teachworks (Roman: "build")
+
+**What:** New tw.find_family_by_student(): searches both TW accounts for the
+PO's student by exact name, scores candidates by real lesson history (+100 when
+the PO's tutor is their last tutor; 0-lesson shells never count), returns the
+family (parent name/email/phone, last tutor, lesson count). Wired into
+po_inbox parent resolution as STEP 2 — after "parent email in the PO", BEFORE
+prior deals and the surname search — with the extractor now pulling
+`tutor_name` off the PO. Internal-domain families skipped; tutor mismatch adds
+a "verify same student" flag. Matthew Rose (iLEAD, 3 POs) resolved this way
+by hand today: TW showed Megan Miller's Matthew with 104 lessons, all with
+Jacquelyn Lemerond — the tutor on the new PO — while the "Dina Rose / Matthew"
+record had 0 lessons (a 2022 Gold-pipeline shell). Deals renamed "Megan Miller
+- Matthew Rose - iLead 1/2/3 - 26/27", Megan attached + stamped, family→TOR
+(Sara Ramirez), SMS armed, chases closed. Also: tw_student_lookup.py + xref
+workflow input for ad-hoc "have we ever tutored X?" checks (shows last tutor).
+
+**Why:** Roman: "matthew rose can be found in teachworks, to eliminate if we
+ever tutored him before… cross reference who the last teacher [tutor] was for
+both of the matthews and you will know" → "build".
+
+**Files:** `email/src/teachworks_client.py`, `email/src/po_inbox.py`,
+`email/tw_student_lookup.py` (new), `.github/workflows/tw-invoice-xref.yml`,
+`email/tests/test_po_inbox.py` (suite 246 green), `docs/PO-PROCESS.md`.
+
+## 2026-08-18 — Week audit + wrong-family fix (Matthew Rose) + South Sutter errant PO
+
+**What:** Week-of-Aug-10 PO audit (16 emails → 43 deals, $9.8k, 72% same-day
+TW-invoiced). Roman caught: (1) Matthew Rose (iLEAD, 3 POs) attached to
+"Dina Rose" — a 2022 contact with the same surname and no student data. Root
+cause: find_family_contact() returned a LONE surname match without ever
+checking the student name (the same-surname tiebreak only ran on 2+ matches).
+Fixed: a single surname match is accepted only when the contact's student-name
+props or an associated deal name carry the student's first name; else [] →
+the parent chase runs. Deals detached from Dina, renamed NEEDS PARENT, parent
+stamps cleared; PO replayed so the agent re-chases via TOR Sara Ramirez.
+(2) South Sutter/IEM PO 1309153 ($3,010, 3 students, "submitted 4/3/2025") is
+a stale 2025 errant — 3 deals ARCHIVED (Roman). Also fixed during audit: Seeley
+×5 amounts → reissued $75/hr ($637.50; Kath caught the old-rate PO, Christine
+Gurney reissued Aug 18); Heartland ×5 stale parent_email from the Pilibos
+incident corrected; Kruz Invoice # tab char cleaned. Open for Kath: confirm
+Seeley TW invoices 54435–439 at new amounts; Cooper Doyal Invoice # 54422 not
+found under Kristy's TW record.
+
+**Files:** `email/src/hubspot_client.py`, `email/tests/{test_family_contact,
+test_po_inbox}.py` (suite 242 green).
+
+## 2026-08-17 — Draft feedback loop (Tiers 1+2) — the team's edits train the drafter
+
+**What:** New `email/src/draft_feedback.py`. Tier 1: every agent-created draft
+(chase + reply, charter@ inbox) is registered with its exact text
+(state/draft_registry.jsonl); each 15-min run settles drafts that left Gmail
+Drafts by comparing to what was actually SENT on the thread — sent_as_is (≥97%
+similar) / edited (≥50%) / rewritten / discarded — flips the sent message to
+`A+ Agent/Sent`, and stores the unified diff. Tier 2: edits/rewrites/discards
+become one file each in `corrections/email-drafts/` (fleet corrections format)
+plus a distilled line in `STYLE-RULES.md`, which BOTH drafting prompts (PO
+extractor + admin classifier) load at runtime (last 25 rules) — tomorrow's
+drafts carry yesterday's edits. Weekly Friday 4 PM PT one-liner to the
+visionary seat (new email-draft-feedback-weekly.yml). Tier 3 unchanged: a reply
+to the aplus bot in #agent-feedback files a rule via the feedback agent.
+Admin-inbox drafts (HubSpot conversation comments) consume the rules but
+aren't outcome-tracked yet — different plumbing, follow-up.
+
+**Why:** Roman: "is there a way for the agent to get input from kath and from
+all others when drafts are made whether the draft was good or needs
+improvement" → "LETS DO IT".
+
+**Files:** `email/src/draft_feedback.py` (new), `email/src/po_inbox.py`,
+`email/src/classifier.py`, `email/tests/test_draft_feedback.py` (new; suite
+239 green), `.github/workflows/{email-po-inbox,email-draft-feedback-weekly}.yml`,
+`corrections/email-drafts/README.md` (new).
+
+## 2026-08-17 — INCIDENT: chase self-resolve renamed 5 Heartland deals to "Pilibos Student"
+
+**What:** Roman: "how come heartland deals were named pilibos?" Property
+history: integration 39943154 (our app) at 2026-08-14 19:35Z — the po_inbox
+`_sweep_chase_self_resolve` shipped that day. Root cause: the Heartland chases
+were opened BEFORE the multi-student fix, so their audit records carried the
+placeholder student "the student"; the sweep searched family contacts for it,
+found exactly one match — Roman's TEST contact "Pilibos Student"
+(roman+001@wetutorathome.com) — and "resolved" all five chases against deals
+Kath had already fixed by hand: renamed them from the audit's STALE
+"NEEDS PARENT - Heartland N" to "Pilibos Student - Heartland N" and attached
+the test contact. Repaired in-portal: five names restored (Kristy Doyal /
+Angela Czaja ×3 / Jamie Holloway), test contact detached from all five (real
+parents untouched). Code guards: (1) placeholder student strings never
+searched; (2) the deal must STILL say NEEDS PARENT in the LIVE portal (human-
+fixed deals just close their chase, touching nothing); (3) internal-domain
+(@wetutorathome.com) contacts never auto-attached; (4) resolution renames
+from the LIVE deal name, never the audit copy. 4 regression tests.
+
+**Why:** Wrote automation that trusted its own stale bookkeeping over the
+portal and treated a placeholder as data. Both fixed at the root.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 231 green).
+
+---
+
+## 2026-08-17 — Charter Monday launch: 6-way family segmentation + student names (Roman)
+
+**What:** Roman: "split list as segmented as you can make them" (after
+catching that 1-student copy undersold multi-student families — 81 of 389).
+New `scripts/charter_gap_segments.py`: derives EVERY student per family from
+charter deal titles since 2025-08-01, stamps NEW contact props `student_names`
+("Brooke, Haven & Lillie") + `student_count` ([Agent]-labeled, registry +2,
+UPDATE-only import — 419 stamped), and builds 6 static lists = recency ×
+student-count × personalization: 3138 Hot-1 (9), 3140 Hot-Multi (3),
+3136 Win-back-1 (299), 3135 Win-back-Multi (78), 3137 Never Started (30),
+3139 No Lesson Data (10) — sums to the 429 gap families. campaign.yml
+re-wired to the six (2-way lists 3112/3113 superseded, kept). New copy
+drafts: families_winback_multi / families_hot_multi / families_no_lesson_data
+(multi variants use {{student_names}} and "their tutors" — no single-tutor
+token, since siblings often had different tutors). Still DISARMED.
+**Files:** scripts/charter_gap_segments.py (new), ops/hubspot-schema/
+properties.yml, ops/messenger/campaign.yml, ops/messenger/templates/
+campaign-2026-08-17/ (+3).
+
+---
+
+## 2026-08-17 — Lead status: unhidden, funnel-ordered, persona-labeled + Meeting Booked hard-wired
+
+**What:** (1) `hs_lead_status` had 14 of 17 options HIDDEN (unknown when/who —
+property updatedAt stale at 2024-09). Roman: "I don't want anything hidden" →
+all 17 unhidden (backup `ops/fleet-health/audit/backups/2026-08-11-hs_lead_
+status-before-unhide.json`). (2) Options reordered to the funnel Roman
+described: New (Inbox) → Attempting to Contact → Meeting Booked → QTL-NEW /
+QTL-Charter / QTL-Diagnostic Sent → Open deal → Past Customer / Check Back
+Quarterly / Dead Opportunity; then the persona labels; then leftovers.
+(3) LOCKED rule (Roman): for non-family personas the lead-status LABEL = the
+persona name. Two label renames (internal values unchanged, so no workflow or
+agent breaks): `Charter School Teacher TOR/EF` → label "Teacher of Record/EF/ES";
+`Teacher in a School` ("School Personnel") → label "Decision Maker/Director".
+Call agent LEAD_STATUS_LABELS + README updated. (4) Meeting Booked was a manual
+gap (Paola set it by hand; nurtures kept chasing booked families) → NEW
+event-based workflow 1868302723 "Lead funnel — Meeting Booked (Paola consult)
+→ lead status": trigger = HubSpot meeting booked with title containing
+"Tutoring Call w/" (Paola's meetings-link consults; excludes Spotlight/TSN
+meetings), sets hs_lead_status = Meeting Booked; ENABLED. Cloned from the
+Spotlight #5 pattern. (5) Nurture exit: added a second OR-goal
+"lead status = Meeting Booked" to `Lead Pipe Line - Online` (50818589) so
+booked families drop out of the New/Attempting chase. The same goal edit on
+`Lead Pipe Line - Ads - Free Lesson` (149937308) FAILED via API (500 on
+round-trip PUT — custom-code actions) → flow untouched, **needs a 30-second UI
+edit: Settings → Goal → add "Lead status is any of Meeting Booked"**.
+
+**Why:** Roman 2026-08-17 walkthrough of the funnel: form → New + text/email
+push to book → Attempting to Contact + "inbox is full" email → Meeting Booked
+(Paola's new manual step) → QTL after consult. Also surfaced: 10,064 of 11,115
+contacts have NO a_persona; lead status is doing identity duty for them
+(Tutors 1,249 / Student 191 / School Personnel 97 / CBQ 4,453 = families).
+Persona backfill-from-status proposed, NOT run — Roman to approve. 25 Decision
+Makers still carry the TOR status value — pending Roman's call.
+
+**Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/README.md`,
+`ops/fleet-health/audit/backups/2026-08-17-*` (flow snapshots + created flow).
+
+---
+
+## 2026-08-14 — Agent-property labeling rule + TOR/DM hygiene (Roman)
+
+**What:** (1) NEW RULE: every property an agent writes carries the `[Agent] `
+label prefix + "AGENT PROPERTY — written by <script>" description (CLAUDE.md
++ registry header comment). Applied: last_tutor_name, student_first_name,
+sms_opt_out relabeled in-portal (sync never relabels) and in properties.yml.
+(2) TOR persona hygiene: 77 non-marketing TOR contacts set as marketing via
+import; **155 hard-bounced TOR contacts ARCHIVED** (backup with associations
+in ops/fleet-health/audit/backups/2026-08-14-bounced-tors/; recycle-bin
+90 days); one bounced contact kept — Cynthia Rachel (IEM) — because she is
+now a Decision Maker (needs a fresh email). (3) Decision Maker/Director
+persona: 17 real school DMs now tagged — Covil, Hetrick, Rachel (IEM);
+Chapin, Budke, Barlow, Joy, Kim, Rogers (iLEAD); Smith (Compass), Jorgensen
+(Elite), Brackett (Forest), Sutton (Harvest Ridge), Corioso (Pacific
+Coast), King (Sage Oak), Woodard (Taylion), Houchin (VIEDU). Title-based
+sweep deliberately EXCLUDED 38 non-school "directors" (vendors, media).
+Pending Roman: 5 Sage Oak mock contacts (nameless 2026-03-24 records +
+Courtney Gibson) to delete — the other 28 Sage Oak contacts are real TORs
+with live deals; DMs still missing for Compass/Heartland/Gorman/Blue Ridge/
+Pacific Charters/Granite Mountain/Heartwood/Suncoast.
+**Also flagged for Monday copy:** 81/389 personalized gap families have >1
+student in last year's deals — one-student template undersells them
+(decision pending: split list vs multi-student variant).
+**Files:** CLAUDE.md, ops/hubspot-schema/properties.yml,
+ops/fleet-health/audit/backups/2026-08-14-bounced-tors/.
+
+---
+
+## 2026-08-14 — Charter 26/27 launch scaffolding (Monday 08-17, DISARMED)
+
+**What:** Segmented Monday-morning campaign per Roman ("families from charter
+schools where we worked with them last year, and some where we didn't...
+teachers who we worked with last year, or didn't"). 5 NEW static lists built
+from gap list 3104 + Family→TOR associations (typeId 15): 3107 Families-Hot
+(12), 3108 Families-Win-back (387), 3109 Families-Never-Started (30), 3110
+TORs-Worked-With-Us (163), 3111 TORs-New-Outreach (8). 329/429 gap families
+have a TOR association (100 without — hygiene queue candidate). Campaign
+program: ops/messenger/CAMPAIGN-2026-08-17.md (cadence: Day 0 email, Day 3
+follow-up, Day 7 CHARTER SALES task, goal-exit on renewal/reply); 5 copy
+drafts in ops/messenger/templates/campaign-2026-08-17/ (HubSpot tokens;
+never-started segment deliberately token-free). Launch rail:
+ops/messenger/enroll.py + monday-launch.yml (daily 9 AM PT cron, exits unless
+campaign.yml armed: true AND today == launch_date 2026-08-17; enrollment via
+automation v2 per-contact endpoint). **DISARMED — blocked on Roman:** copy
+approval, base branded email id (or "plain"), workflow build go (ids →
+campaign.yml), armed flip.
+**Files:** ops/messenger/{CAMPAIGN-2026-08-17.md,enroll.py,campaign.yml,
+templates/campaign-2026-08-17/}, .github/workflows/monday-launch.yml.
+
+---
+
+## 2026-08-14 — EOS knowledge ingested from Monday (knowledge/eos/)
+
+**What:** New `knowledge/eos/README.md` — synced snapshot of the FY2027 Annual
+Goals (16k package hours / 900 students / 2 intervention programs / 75%
+retention / 100% tutors scored / 70 referral families) and Q1 FY2027 Rocks by
+seat, with Monday board ids (Goals 18419427040, Rocks 18421156386, L10
+Scorecard 18402267902, L10 Agenda, Data Review Protocol) and usage guidance:
+seats map to config roles:, work should cite the Rock/Goal it serves, the ops
+scorecard sync feeds the L10 Scorecard, Monday stays source of truth.
+
+**Why:** Roman: "do our agents have our EOS knowledge?" — they had none;
+"check in monday.com you will find our goals for the year and our rocks."
+
+**Files:** `knowledge/eos/README.md` (new).
+
+---
+
+## 2026-08-14 — NEW ENGINE: bulk messenger (on-demand email/SMS to lists)
+
+**What:** `ops/messenger/` — on-demand bulk email + SMS to a HubSpot list,
+per Roman's rail decisions: EMAIL via HubSpot marketing email (agent clones an
+in-portal template, retargets the clone at the list, leaves it DRAFT with a
+review link — Roman clicks Send, HubSpot suppression applies; personalization
+via native contact tokens incl. student_first_name / last_tutor_name); SMS via
+JustCall with from-number routing (sales +18185736644, conference
++18188506284), rendered per-contact from repo templates. Guardrails: BULK
+ONLY (min_bulk 25, refuses 1:1), dry-run default + live requires
+confirm=SEND, sms_opt_out contacts skipped (NEW contact property, group
+master), STOP line required in every SMS template, 9:00–20:00 PT quiet hours,
+E.164 normalization. Trigger: workflow_dispatch (messenger.yml); the Slack
+front door + JustCall STOP-reply ingestion are phase 2 (README).
+First template: templates/charter_win_back.txt (uses first-name-only
+last_tutor_name). Registry: new `bulk-messenger` entry (status manual).
+**WHY:** Roman 2026-08-14: "we need to have a programmed agent that can send
+out custom email and text messaging to customers whenever called upon. only
+for bulk options." Rail + trigger choices confirmed by Roman same day.
+**Decision-log candidates (pending Roman):** bulk-only threshold (25); email
+sends stay human-clicked in HubSpot for now; SMS number routing map.
+**Files:** ops/messenger/{messenger.py,config.yml,README.md,templates/},
+.github/workflows/messenger.yml, registry.yml, ops/hubspot-schema/properties.yml
+(+sms_opt_out).
+
+---
+## 2026-08-14 — Accountability chart: roles resolve to people at config load (Roman)
+
+**What:** New `roles:` block in email/config.yaml — the EOS-style seat map
+(visionary/roman, operations/emily, scheduling_lead/mandy, scheduler_a_l/janelle,
+scheduler_m_z/yolanda, charter_admin/kath, sales/danielle, charter_sales/paola).
+Every functional key now names a SEAT (routing owners, scheduler_split,
+escalation level2/3, recipients, cc, missing_info_dms, charter_sales, internal
+fallback); cfg() resolves roles → staff keys at load time so all consumers and
+tests keep seeing resolved people, and config.staff() resolves either form.
+Hardcoded "paola" in main.py's pre-deal routing → charter_sales seat. Team
+change = edit `roles:`, nothing else. Claude-to-Roman comms keep using NAMES
+(memory rule). Seat titles are inferred from function — Roman to correct
+against the real accountability chart.
+
+**Why:** Roman: "lets give all team members a role title and that way its
+never tied to anyones name... if a team member moves or leaves or gets added
+i just have to add it for you."
+
+**Files:** `email/config.yaml`, `email/src/config.py`, `email/src/main.py`,
+`email/src/po_inbox.py`, `email/tests/{test_invoice_sweep,test_hourly_update,
+test_po_inbox}.py` (suite 227 green).
+
+## 2026-08-14 — Parent-chase: CHARTER SALES notified at 24h (Roman; role, not name)
+
+**What:** Family contact info still missing 24 HOURS (calendar, configurable
+`parent_chase.notify_charter_sales_after_hours`) after the chase email was
+SENT → the CHARTER SALES role gets a DM to chase the TOR/school directly —
+ahead of the existing Kath+Roman escalation at 2 business days. Once per chase
+(parent_chase_sales_notified); unsent drafts never trigger it (the send is the
+anchor). NEW RULE (Roman, same session): functional config keys and audit
+actions name ROLES, never people — new `po_inbox.charter_sales: paola` role
+map; change the person in config, never in code. First-pass person-named key
+(notify_paola_after_hours / parent_chase_paola_notified) renamed same day,
+legacy names still honored on read.
+
+**Why:** Roman: "If a family is missing contact info for longer than 24 hours
+after an email Paola must be notified too" + "make sure that no properties are
+named after people. notify charter sales instead of paola."
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (suite 227 green).
+
+## 2026-08-14 — Draft guidelines: humans only, tracked, context-aware (Roman: "yes")
+
+**What:** 14-day audit found 55 drafts/512 emails, 21 of them po_inbox warm
+replies to vendor-admin mail nobody sends. Six-part fix, all live: (1) extractor
+drafts ONLY when a named human asked A+ something — never for mass notices,
+onboarding confirmations, DocuSign/portal notices, auto-acks. (2) Robot
+recipients banned (`noreply/donotreply/notifications@/mailer.*`) for chase AND
+reply drafts — no human to write to → 📨 gap note → 🚩 DM instead. (3) Chase
+drafts to a TOR who wasn't the sender go out as FRESH emails ("Parent contact
+info needed — Student (School)") — no more replies quoting portal robots;
+chase records track the NEW thread so replies still auto-resolve. (4) Every
+agent draft: Gmail label `A+ Agent/Draft Pending`, HubSpot BCC
+(hubspot.bcc_log_address — verify on first real send) so sends log to contact
+timelines; NEW _sweep_chase_drafts detects the draft leaving Drafts →
+parent_chase_sent (TOR reply clock starts AT SEND, and unsent chases never
+escalate the TOR) / still sitting after 4 business hours → 🚩 nag. (5) Call-
+context check before chasing: recent [Call Agent] engagements on the TOR's
+contact surface on the ticket ("a recent call may ALREADY have this info") and
+add a P.S. to the draft — built after the Karen Mercer case (parent's name was
+on her contact an hour before the chase drafted). (6) _sweep_chase_self_resolve:
+open chases re-check HubSpot for a newly appeared family contact each run — the
+August Vouniozos case (family called in; contact existed before anyone read a
+reply) now closes itself. ALSO: Kruz Vouniozos chases resolved by hand via
+call context (deals renamed to August Vouniozos, parent attached+stamped,
+family→TOR to Karen Mercer, SMS armed); guidelines DM'd to Paola + Danielle.
+
+**Why:** Roman: excessive drafts; noreply senders; "is it in any way possible
+that this agent has already checked the transcript... from last call" — it
+couldn't; now it does.
+
+**Files:** `email/src/po_inbox.py`, `email/src/gmail_client.py`,
+`email/src/hubspot_client.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (suite 225 green).
+
+## 2026-08-14 — PO improvement batch (Roman: "lets go") — 5 changes
+
+**What:** (1) SMS flow 1603217415 rev 42: second OR-branch enrolls contacts
+whose a_persona includes Family even when they also carry the TOR persona —
+dual-role parents (Kristy Doyal) get their scheduling texts; pure teachers stay
+blocked. (2) SLA sweep now tracks PO-inbox tickets (po_processed records carry
+ticket_id + sla_due) — PO ticket breaches finally escalate (the silent Taylion
+breach can't recur). (3) Chase-resolved parents get their SMS: on resolution
+the agent stamps contact_level_deal_stage = "Pre-Lesson (Charter Traditional)"
+on the new parent contact, arming the texting flow that fired at deal creation
+when no parent existed (Charter Trad only). (4) Pending-approval sweep: order-
+agreement deals log pending_po_opened; the duplicate alert (approved PO
+re-arriving) logs pending_po_confirmed; unconfirmed past 16 business hours →
+ONE ⏳ nag to missing_info_dms (kath+roman) + pending_po_reminded. (5) Multi-
+student certificates codified (yesterday's Heartland run needed hand-cleanup):
+extractor returns per-student pos[] entries (student/grade/parent per family,
+synthesized '<PO>-<StudentName>' numbers), _split_pos merges them, seq numbers
+per student, scheduling alert per student, and the parent chase sends ONE draft
+per recipient listing all students (was 5 identical drafts to the same TOR)
+with per-deal chase records; replies resolve the chases whose student they
+name (multi-family threads), else all (single-family multi-month).
+
+**Why:** Roman's approved batch, triggered by the Kristy Doyal dual-persona PO
+and the Heartland 5-student certificate.
+
+**Files:** `email/src/po_inbox.py`, `email/src/sla_sweep.py`,
+`email/config.yaml`, `email/tests/test_po_inbox.py` (suite 219 green);
+HubSpot flow 1603217415 rev 42.
+
+---
+
+## 2026-08-14 — Charter gap: tutor/student enrichment + property stamping (Roman)
+
+**What:** `scripts/charter_gap_analysis.py` extended — Step 3b pulls each
+matched gap family's most recent COMPLETED Teachworks lesson (per-customer
+students → per-student lessons, the proven email-client query pattern, both
+accounts) and captures tutor name + student first name; new Tab-1 columns
+Last Tutor / Student First / Last Lesson; match rate printed. New OPT-IN
+write stage (--write-props / workflow input write_props): stamps
+`last_tutor_name` + `student_first_name` onto list-3104 gap contacts via an
+UPDATE-only email-keyed import (crm.import scope — added by Roman 2026-08-13).
+BOTH `last_tutor_name` and `student_first_name` newly declared as CONTACT
+properties (group family) in ops/hubspot-schema/properties.yml. Registry trap
+hit on the way: the pre-existing `student_first_name` at line ~407 is a DEAL
+property (dealinformation) — the first declaration attempt landed in the
+deals: section and created a stray empty deals/last_tutor_name (archived
+immediately, no values ever written). The deal-level student_first_name is
+untouched; the contact-level one is its counterpart.
+**Duplicate-list flag for Roman:** the parallel session's run created static
+list 3106 "Charter Re-Engagement 26/27 - Gap Families (Aug 2026)" (426
+members, pre-correction cutoff). List 3104 (429, corrected cutoff) is
+canonical per Roman's instructions; 3106 is a duplicate awaiting his
+keep/delete call. **Also reconciles the script fork:** ece98a0 (parallel
+session) had overwritten the executed PR-#68 version on main; this change
+re-bases on the executed version and absorbs ece98a0's invoice-level name
+fallback (customer_first_name/customer_last_name when the customer record is
+missing). Base run stays read-only.
+**WHY:** Roman 2026-08-14: win-back outreach personalization — "your student
+X's tutor was Y" needs the last tutor on the contact record.
+**Run results (2026-08-14, run 31769645948):** MATCH RATE 389/429 gap
+families got a tutor name (91%) — every matched-with-invoices family that had
+a completed lesson. Import 78996473 DONE; full verify: 389/429 list-3104
+contacts carry BOTH last_tutor_name and student_first_name. The 40 without:
+30 never-invoiced (no TW match) + 10 invoiced but no completed lesson in
+window. Same-day follow-up (Roman: "tutors first name only no last names"):
+last_tutor_name now holds the tutor's FIRST NAME only (parsed from
+Teachworks "Last, First"); all 389 re-stamped.
+**Files:** scripts/charter_gap_analysis.py,
+.github/workflows/charter-gap-analysis.yml,
+ops/hubspot-schema/properties.yml (+2 contact properties).
+
+---
+
+## 2026-08-13 — Charter re-engagement gap analysis + static list (Roman)
+
+**What:** New reusable `scripts/charter_gap_analysis.py`: pulls charter deals
+(5 pipelines, created since 2025-08-01) + associated contacts from HubSpot,
+excludes school-staff email domains (student.* subdomains stay family),
+classifies RENEWED (deal created ≥ 2026-06-01 OR "26/27" in dealname) vs GAP,
+merges against Teachworks invoices (email match, name fallback), writes
+`~/Desktop/charter_gap_analysis.xlsx` (4 tabs) + non-marketable CSV, and
+creates HubSpot static list "Charter Re-Engagement 26/27 - Gap Families
+(Aug 2026)" (id 3106, 426 members verified). Run results 2026-08-13:
+439 families / 13 renewed / 426 gap — matched Roman's expected ~439/~11/~428.
+TEACHWORKS_API_KEY only lives in Actions secrets, so a new manual workflow
+`charter-gap-tw-fetch.yml` runs the read-only Teachworks fetch stage and hands
+the JSON back as an artifact (`--fetch-teachworks` / `--tw-json` split).
+One-off run, structured for weekly scheduling later (`--start`,
+`--renewal-cutoff`, `--renewal-token`, `--skip-list`, `--list-only` flags).
+
+**Why:** Charter re-engagement email going out tomorrow AM needs the gap-family
+list + prioritized call-down sheet; repo keeps the script as the reusable
+engine for a weekly cadence.
+
+**Files:** `scripts/charter_gap_analysis.py` (new),
+`.github/workflows/charter-gap-tw-fetch.yml` (new), `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-13 — Charter renewal gap analysis (one-off report, schedulable)
+
+**What:** New read-only report script `scripts/charter_gap_analysis.py` +
+manual workflow `.github/workflows/charter-gap-analysis.yml` (workflow_dispatch;
+xlsx uploaded as a 7-day run artifact — Teachworks tokens live only in Actions
+secrets, so the run happens in CI). Charter families with a 25/26 deal but no
+26/27 renewal, enriched with Teachworks invoice history across both accounts.
+5 charter pipelines (907748, 72281989, 88841552, 5119061, 1066195), deals since
+2025-08-01; school-staff contacts excluded by email domain (student.* subdomains
+stay family); RENEWED = deal created ≥2026-08-01 OR "26/27" in dealname
+(cutoff tightened same day from 2026-06-01 — late spring 25/26 POs were
+counting as renewals; Roman 2026-08-13).
+**WHY:** 26/27 renewal season — Roman needed the call/win-back list ranked by
+actual invoiced value, plus the deal-but-never-invoiced and TW-no-charter-deal
+hygiene queues. First run 2026-08-13: 439 families → 13 renewed / 426 gap
+(396 with invoices: 10 Hot, 386 Win-back; 30 never invoiced; 278 mismatches).
+Corrected re-run same day (cutoff Aug 1): 439 families → 10 renewed / 429 gap
+(399 with invoices: 12 Hot, 387 Win-back; 30 never invoiced; 278 mismatches).
+HubSpot static list "Charter 26/27 Gap Families" (listId 3104) built from the
+corrected gap set — all 429 contacts — with marketability audit: 378 fully
+clean, 42 not marketing contacts, 4 opted out, 4 hard bounced, 1 no email.
+Follow-up: the 42 were set as marketing contacts (helper list "Charter 26/27
+Gap - Upgrade to Marketing", listId 3105; done via portal UI bulk action —
+hs_marketable_status is API-read-only and the private app lacked crm.import;
+Roman added the crm.import scope later that day — verified working, so future
+status flips can use an UPDATE-only import with marketableContactImport=true).
+Marketing tier after: 9,751/12,000. Reachable gap now 420/429.
+**Files:** scripts/charter_gap_analysis.py, .github/workflows/charter-gap-analysis.yml
+(temporary branch push trigger dropped at merge).
+**Merge note:** a PARALLEL implementation of the same script landed on main
+from another session (e20a8ec script + bfb0a07 charter-gap-tw-fetch.yml,
+list name "Charter Re-Engagement 26/27 - Gap Families (Aug 2026)" — never
+executed, no such list in the portal, no changelog entry). Superseded at merge
+by this branch's executed version; charter-gap-tw-fetch.yml removed (it calls
+a --fetch-teachworks flag only the superseded script had). Restore from
+e20a8ec/bfb0a07 if anything from it is wanted.
+
+---
+
+## 2026-08-11 — iLead purge completed + one-student decision + teacher-email verdict (Roman)
+
+**What:** Forms scope added → the two iLead intake forms ("Level up - Ilead",
+"A+ Tutoring x iLEAD Tiered Support") backed up + archived, all 10 blocked
+iLead scheduling properties archived, empty `level-up_ilead` group DELETED.
+Roman decisions, same session: (1) ONE student per contact record — the plan
+is the A+ persona system; sibling fields retire: `sibling_school`,
+`student_3`, `student_3_school`, `student_4_school` ARCHIVED;
+`sibling_current_grade_level` KEPT (Roman, same day: "if it's in the main
+consultation form definitely keep it" — submissions API shows Get Started Now
+Full Length live, last submission 2026-07-23). (2) `teacher_email_address` un-kept —
+`teacher_of_record_email_address` is the teacher-email property; Roman then
+redirected (same day): NOT archived — it is a Spotlight field: moved to group
+`spotlight`, relabeled "Spotlight Teacher Email Address" per the Spotlight
+nomenclature (live TSN Workflow 3b still reads it — flagged). (3)
+`student_last_name_if_diff_from_parent` confirmed staying. Registry 42→41
+contacts; KEEPERS 81→80. Pending code change before the last sibling fields
+go: email/config.yaml teachworks.student_name_properties reads
+student_full_name_clone_/student_3_full_name/student_4_full_name.
+
+**Why:** Roman's verdicts on the low-fill review, 2026-08-11. Decision-log
+entries pending: one-student model; canonical teacher-email property.
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md`,
+`ops/fleet-health/audit/backups/2026-08-11-ilead-forms/` (new).
+
+---
+
+## 2026-08-13 — call_agent: Roman-answered calls hand follow-up to Paola
+
+**What:** (refined same-day: first pass forced Paola on ALL tasks; Roman
+narrowed it to his own calls + handoff context.) Two changes:
+(1) `_resolve_owner()` — when JustCall `agent_name` shows ROMAN answered,
+the task owner is forced to `default_task_owner` (Paola), `owner_hint`
+ignored; other answerers keep hint routing with Paola default.
+(2) New `handoff_note` field in the summary schema/prompt — a Claude-written
+brief for the teammate who wasn't on the call (what was promised, pricing
+quoted, names, timing, suggested opener). Tasks from Roman-answered calls
+(action items AND the no-next-step guard task) open with a handoff block:
+"HANDOFF — Roman spoke with this caller on <date>; follow-up is assigned to
+Paola." + the brief.
+
+**Why:** Roman 2026-08-13: sales calls ring Roman first, overflow to Paola,
+and Paola does 100% of follow-up — but the hint mapping assigned tasks to
+whoever was named on the call (both Karen Mercer call tasks, 404280341,
+landed on Roman because he answered). Paola also needs enough context to
+pick up a conversation she wasn't part of — hence the handoff brief.
+
+**Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/config.yml`,
+`ops/call_agent/README.md`.
+
+---
+
+## 2026-08-13 — Verified 69-deal invoice backfill EXECUTED + PO day report
+
+**What:** (1) The parked $17.5k backlog closed with VERIFICATION instead of
+blind stamping: new email/invoice_backfill.py (+ tw-invoice-backfill workflow)
+matched each swept deal to a Teachworks invoice (family + amount, service-month
+due preferred, one claim per invoice, Paid/Approved/Sent only) — **64/69
+verified & stamped** (invoice_submitted_date = service-month end, Invoice #,
+Invoice Submitted stage; Jamie Holloway's date hand-corrected to 2026-08-13,
+its "(Aug) 25/26" name tag is a year off). **5 EXCEPTIONS for Kath**: Christina
+Duran/Talia Visions ×2 ($495) + Myra Garcia/Jason Gorman ($67) have NO TW
+invoice (possible genuinely-unbilled); Katherine Perez ×2 ($1,200) have no
+family contact on the deal (can't verify). (2) NEW daily report (Roman):
+email/src/po_daily_report.py + 6 PM PT weekday cron DMs Roman the day's PO
+deal count/value ⇄ how many already have TW invoices (Invoice # stamp or
+amount-matched invoice dated on/after the deal), misses named.
+
+**Why:** Roman: "yes" to verified backfill; "at the end of each day i get a
+slack message that tells me the value of the POs that came in and corresponds
+them to how many teachworks invoices created."
+
+**Files:** `email/invoice_backfill.py` (new), `email/src/po_daily_report.py`
+(new), `.github/workflows/{tw-invoice-backfill,email-po-daily-report}.yml`
+(new), `email/tests/test_daily_summary.py` (suite 213 green).
+
+---
+
+## 2026-08-13 — TOR got the parent SMS (Mary Nieves) — persona-gated texting
+
+**What:** Mary Nieves (TOR) received the parent schedule-confirmation SMS.
+Chain: the agent now attaches TORs to deals AT CREATION → deal flow 1608222821
+stamps contact_level_deal_stage on ALL associated contacts (no persona filter)
+→ SMS flow 1603217415 enrolled her. Worse, deal flow 64686392 (Charter
+Pre-Lesson) had ALREADY flipped her hs_lead_status to OPEN_DEAL — so a
+status-based exclusion could never have saved her, and the flip also silently
+broke the TOR name-matching pool. Fixes (all executed): (1) a_persona
+"Teacher of Record/EF/ES" backfilled onto 1,170 of 1,203 TOR-status contacts
+(append-only) — the persona is now the un-corruptible teacher marker.
+(2) SMS flow 1603217415 enrollment now excludes a_persona containing the TOR
+persona (revision 41, verified; unenroll-on-criteria ejects mid-flow slips).
+(3) Agent self-healing: whenever po_inbox touches a TOR contact it re-asserts
+persona + lead status (skipping dual-role Family+TOR contacts). Mary's lead
+status restored in-portal. NOT changed: deal flows 1608222821/64686392 still
+stamp/flip all associated contacts (their action type can't filter targets) —
+harmless for texting now; the status flips on TORs heal on next agent touch.
+
+**Why:** Roman 2026-08-13: "mary nieves received the sms ont the parent...
+what do we do to make sure this doesnt happen in future."
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py` (suite 211
+green); HubSpot: flow 1603217415 rev 41, 1,170 contact persona backfills.
+
+---
+
+## 2026-08-12 — Zie Rojas PO: net-payout misread + dropped correction + TOR variant (3 fixes)
+
+**What:** Roman caught the Zie Rojas deals at $140/$280 when the PO he was
+reading says $150/$300. TRUE root cause (recovered replies told the story):
+the extractor read the OA CORRECTLY — iLEAD issued the POs at the old $70/hr
+rate (140/280 = 2h/4h @ 70); Kath had already replied asking iLEAD to REISSUE
+at $75/hr (=150/300), and Christina Mondolo acknowledged — but BOTH replies
+were SILENTLY SKIPPED by the closed-thread guard, so nobody downstream saw the
+rate dispute. Fixes: (1) closed PO threads are no longer skipped — replies
+process (is_po replies trip the duplicate alert; others get a "↩️ PO-thread
+reply" ticket); cursor rewound to 19:30Z and both dropped replies recovered as
+tickets 47559984489 + 47563508797. (2) TOR 'Christina Mondolo' didn't link
+because the portal contact is 'ChristinE' — name fallback now accepts a UNIQUE
+last-name match in the TOR pool on first-name variants (her reply confirmed
+christina.mondolo@ileadexploration.org). (3) Prompt guardrail added anyway:
+use the PO value/'Total Cost', never a net-of-fee payout figure. Portal: both deals corrected to $150/$300,
+Christine Mondolo associated (+family→TOR label, TOR fields stamped), Kath's
+two tasks rewritten with AMOUNT CORRECTED flags. Also: teachworks
+customers_for_family() (email + name match, active first) — the Aly Daly
+inactive-dupe case; wired into calendar/schedule lookups and invoice_xref.
+
+**Why:** Roman 2026-08-12: PO says 150; "there was a follow up email that came
+from school with correct amount. but why is the teacher not tied to the deal?"
+
+**Files:** `email/src/po_inbox.py`, `email/src/teachworks_client.py`,
+`email/invoice_xref.py`, `email/tests/test_po_inbox.py` (suite 208 green),
+`email/state/po_cursor.json` (rewound).
+
+---
+
+## 2026-08-12 — Missed 8/10 iLEAD PO recovered + seq double-count fix
+
+**What:** Kath flagged a PO from 8/10 that never became deals. Found it: an OPS
+order agreement (5 POs, 3114057042–46, Zackarias Barajas / Mari Barajas,
+phonics w/ Fidal Williams, $1,630.38 total) arrived 8/10 09:45 PT — ~4 hours
+BEFORE the OAs-are-POs rule deployed, and the evening replay list only covered
+the two older iLEAD emails. Replayed via replay_msg_ids → 5 deals created with
+the full current pipeline (TOR Mary Nieves name-matched WITH resolved email,
+parent attached, pending flag, tutored=No, invoice tasks). Audit of every other
+po_inbox record since 8/9 confirmed nothing else was missed. Also fixed the
+bug the replay exposed: 'School N' came out 1,2,4,7,9 because the base count
+was re-searched per sibling while the index caught up — the base is now
+searched ONCE per email (seq_cache) and offsets applied locally; the three
+misnumbered deals were renamed to iLead 3/4/5 in-portal.
+
+**Why:** Kath's report (via Roman): "a PO came in on 8.10 that we never
+caught." Root cause was rule-deployment timing, not a pipeline gap.
+
+**Files:** `email/src/po_inbox.py`, `email/tests/test_po_inbox.py`
+(suite 206 green).
+
+---
+
+## 2026-08-12 — TOR name + email stamped on PO deals
+
+**What:** PO deals now stamp `teacher_of_record_name` + `teacher_of_record_email`
+(the deal properties built for exactly this) via the deal_property_map. Bonus:
+when the PO names the TOR without an email and the name-match fallback finds
+the contact, the RESOLVED email is stamped on the deal anyway. Both fields flag
+on the ticket + 🚩 DM when the PO omits the TOR entirely. Backfilled today's 13
+live deals (Mary Nieves ×3, Véronique Fabre ×9, Shauna Smith ×1). Note: the
+deal-level TEXT fields are convenience copies for filters/reports — the
+contact-to-contact "Teacher of Record" association (#AP031) remains the source
+of truth. PO-PROCESS.md property table updated.
+
+**Why:** Roman (2026-08-12): "we need to make sure we have the teacher of
+record name and email address extracted from PO as well." Extraction already
+existed; the deal-level stamps did not.
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (suite 205 green), `docs/PO-PROCESS.md`.
+
+---
 
 ## 2026-08-11 — Low-fill review round 1: iLead scheduling + tutor credentials un-kept (Roman)
 
