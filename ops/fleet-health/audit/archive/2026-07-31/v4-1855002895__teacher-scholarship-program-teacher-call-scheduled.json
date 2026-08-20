@@ -1,0 +1,543 @@
+{
+  "id": "1855002895",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "15",
+  "name": "Teacher Scholarship Program - Teacher - Call Scheduled",
+  "description": "Creates a task to research school info, waits until the scheduled meeting, then updates deal stage or sends a no-show email based on the meeting outcome.",
+  "createdAt": "2026-07-21T19:15:54.988Z",
+  "updatedAt": "2026-07-22T18:09:05.839Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "8",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Run Research Agent on School Information",
+        "body": "<p>- school demographics<br>- teachers background<br>- teachers current teaching information (grade level, class size, etc.)<br>- school model</p>",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 216
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "reminder_time": {
+          "delta": 0,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 8,
+            "minute": 0
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_activity_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Student Scholarship - Meet w/Teacher"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      },
+                      {
+                        "property": "hs_meeting_title",
+                        "operation": {
+                          "operator": "IS_EQUAL_TO",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Teacher Scholarship Program"
+                          ],
+                          "operationType": "MULTISTRING"
+                        },
+                        "filterType": "PROPERTY"
+                      },
+                      {
+                        "property": "hs_meeting_outcome",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "COMPLETED"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Completed Meeting",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "4"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_activity_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Student Scholarship - Meet w/Teacher"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  },
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_meeting_title",
+                        "operation": {
+                          "operator": "IS_EQUAL_TO",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Teacher Scholarship Program"
+                          ],
+                          "operationType": "MULTISTRING"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  },
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_meeting_outcome",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "NO_SHOW"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "No Show ",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "5"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_activity_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Student Scholarship - Meet w/Teacher"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  },
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_meeting_title",
+                        "operation": {
+                          "operator": "IS_EQUAL_TO",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Teacher Scholarship Program"
+                          ],
+                          "operationType": "MULTISTRING"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  },
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_meeting_outcome",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "CANCELED"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-47",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 211,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Canceled Meeting "
+        }
+      ],
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "date": {
+          "propertyName": "teacher_scholarship_meeting_date",
+          "type": "OBJECT_PROPERTY"
+        },
+        "delta": "1440",
+        "time_unit": "MINUTES",
+        "time_of_day": {
+          "hour": 11,
+          "minute": 0
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "dealstage",
+        "value": {
+          "staticValue": "1399145266",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "6"
+      },
+      "fields": {
+        "content_id": "217676152601"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "6",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "7"
+      },
+      "fields": {
+        "delta": "2",
+        "time_unit": "DAYS"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "7",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "teacher_scholarship_meeting_date",
+        "value": {
+          "propertyName": "hs_next_meeting_start_time",
+          "type": "OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1399145264"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "917641511"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "pipeline",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "917641511"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      },
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "1399145264"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_323965874",
+      "objectTypeId": "0-8",
+      "associationTypeId": 19,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_323965873",
+      "objectTypeId": "0-2",
+      "associationTypeId": 341,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_323965872",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_323965871",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

@@ -1,0 +1,819 @@
+{
+  "id": "338830114",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "10",
+  "name": "Lead Pipe Line - Charter",
+  "description": "Sends notifications and SMS to sales when a Charter Consultation form is submitted, updates lead status, and follows up based on call outcomes and lead engagement.",
+  "createdAt": "2023-03-03T01:04:47.382Z",
+  "updatedAt": "2024-08-29T16:29:32.853Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "56",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "55"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "NEW",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "52"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "227538487",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "15"
+      },
+      "fields": {
+        "content_id": "40824453112"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "15",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "16"
+      },
+      "fields": {
+        "delta": "2",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "16",
+      "actionTypeVersion": 9,
+      "actionTypeId": "1-1917",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "17"
+      },
+      "fields": {
+        "phoneNumbers": "{{ _0_1.phone }}",
+        "sms": "Hi {{ _0_1.firstname }}, thanks so much for reaching out to us. My name is Danielle, I am with the Student Success team at A+ Tutoring. When is a good time for us to connect?",
+        "owner": "hubspot_owner_id",
+        "logSMS": "true",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "17",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "18"
+      },
+      "fields": {
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 17,
+          "minute": 0
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "18",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_engagement_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "CALL",
+                            "CONVERSATION_SESSION",
+                            "FORWARDED_EMAIL",
+                            "NOTE",
+                            "INCOMING_EMAIL",
+                            "MEETING",
+                            "EMAIL"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 9,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              },
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_call_duration",
+                        "operation": {
+                          "operator": "IS_GREATER_THAN_OR_EQUAL_TO",
+                          "includeObjectsWithNoValueSet": false,
+                          "value": 60000.0,
+                          "operationType": "NUMBER"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 9,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Connected"
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Sale in Process"
+        }
+      ],
+      "defaultBranchName": "Not Connected",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "53"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "28",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "35"
+      },
+      "fields": {
+        "delta": "55",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "35",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_call_disposition",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "b2cf5968-551e-4856-9783-52b3da59a7d0"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 9,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Left Voicemail",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "36"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_call_disposition",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "f240bbac-87c9-4f6e-bf70-924b57d47db7"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 9,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              },
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "We Connected"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Connected"
+        }
+      ],
+      "defaultBranchName": "Did Not Connect -Voicemail not setup or Full ",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "40"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "36",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "41"
+      },
+      "fields": {
+        "content_id": "40889639661"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "40",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "43"
+      },
+      "fields": {
+        "content_id": "41192638620"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "41",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "42"
+      },
+      "fields": {
+        "delta": "60",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "42",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_engagement_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "CALL",
+                            "MEETING"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 9,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              },
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "CAP",
+                        "We Connected",
+                        "QTL - Diagnostic Sent",
+                        "QTL - Charter",
+                        "Qualified Tutoring Lead - Past Customer"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Connected"
+        }
+      ],
+      "defaultBranchName": "Did Not Connect",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "48"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "43",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "44"
+      },
+      "fields": {
+        "delta": "60",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "44",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_engagement_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "CALL",
+                            "MEETING"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 9,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              },
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "CAP",
+                        "We Connected",
+                        "QTL - Diagnostic Sent",
+                        "QTL - Charter",
+                        "Qualified Tutoring Lead - Past Customer"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Connected"
+        }
+      ],
+      "defaultBranchName": "Did Not Connect",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "49"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "48",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "ATTEMPTED_TO_CONTACT",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "49",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "ATTEMPTED_TO_CONTACT",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "52",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-9",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "user_ids": [
+          "46811240",
+          "7738815"
+        ],
+        "team_ids": [
+          "11013871"
+        ],
+        "delivery_method": "MOBILE",
+        "subject": "New Charter Lead",
+        "body": "{{ _0_1.firstname }} {{ _0_1.lastname }} - {{ _0_1.phone }} - from {{ _0_1.how_did_you_hear_about_us_ }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "53",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-9",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "28"
+      },
+      "fields": {
+        "user_ids": [
+          "46811240",
+          "7738815"
+        ],
+        "team_ids": [
+          "11013871"
+        ],
+        "delivery_method": "MOBILE",
+        "subject": "Reminder to Contact {{ _0_1.firstname }} {{ _0_1.lastname }}",
+        "body": "{{ _0_1.firstname }} {{ _0_1.lastname }} - {{ _0_1.phone }} - from {{ _0_1.how_did_you_hear_about_us_ }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "54",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "property_name": "charter_school_family_",
+        "value": {
+          "staticValue": "true",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "55",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "54"
+      },
+      "fields": {
+        "property_name": "how_did_you_hear_about_us_",
+        "value": {
+          "staticValue": "From my Charter School",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "54d7784a-e256-4b9d-9def-65e0d74adf60",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "formId": "54d7784a-e256-4b9d-9def-65e0d74adf60",
+            "operator": "FILLED_OUT",
+            "filterType": "FORM_SUBMISSION"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "SATURDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "SUNDAY",
+      "startTime": {
+        "hour": 7,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "goalFilterBranch": {
+    "filterBranches": [
+      {
+        "filterBranches": [
+          {
+            "filterBranches": [],
+            "filters": [
+              {
+                "property": "start_of_tutoring_for_this_deal",
+                "operation": {
+                  "operator": "IS_KNOWN",
+                  "includeObjectsWithNoValueSet": false,
+                  "operationType": "ALL_PROPERTY"
+                },
+                "filterType": "PROPERTY"
+              }
+            ],
+            "objectTypeId": "0-3",
+            "operator": "IN_LIST",
+            "associationTypeId": 4,
+            "associationCategory": "HUBSPOT_DEFINED",
+            "filterBranchType": "ASSOCIATION",
+            "filterBranchOperator": "AND"
+          }
+        ],
+        "filters": [],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "filters": [],
+    "filterBranchType": "OR",
+    "filterBranchOperator": "OR"
+  },
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

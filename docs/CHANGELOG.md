@@ -61,6 +61,153 @@ out of `registry.yml`. Worth a one-line follow-up.
 **Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
 
 ---
+## 2026-08-20 — Photo booth registered (39 agents, new Events engine)
+
+**What:** `sage-oak-booth` is in `registry.yml` — the Cloudflare Worker + Pages
+booth from PR #66, under a new `Events` engine. Written by reading `worker.js`
+rather than the README, so the entry lists what it actually does: upserts the
+HubSpot contact by email with the five events-group properties, applies a
+CREATE-ONLY persona stamp by self-identified role (teacher → TOR persona + lead
+status, administrator → Decision Maker, support_staff → none, existing contacts
+never overwritten — po_inbox doctrine), logs an email engagement and a photo
+note on the contact, sends the framed photo via Resend, and sends MMS from the
+main A+ line via JustCall.
+
+**Why now:** PR #66 merged mid-session and `registry_check.py` flagged
+`booth/wrangler.toml` within a minute — the discovery heuristic added earlier
+today doing exactly its job on a real merge rather than a simulated one.
+
+**Two things recorded in the entry that are not in its README:**
+- It is hand-deployed in TWO pieces (`wrangler deploy` + `wrangler pages
+  deploy`); editing this repo makes neither live.
+- **REVIEW ITEM for Roman:** `GET /photo/<key>` is public and unauthenticated —
+  unguessable-key privacy only — and the archive copy is written with NO TTL, so
+  attendee photos stay publicly retrievable indefinitely. Reasonable for MMS
+  delivery, worth a deliberate decision for a school event.
+
+**Also flagged:** status is `active`, but this is scoped to one event. When Sage
+Oak BTSC 2026 is done it should go `unverified` or be retired rather than sit
+`active` forever.
+
+**Files:** `registry.yml`, `ops/fleet-health/fleet_brief.py` (Events in the
+engine order), `docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Feedback agent: the pinned channel post is not a report
+
+**What:** Intake now drops "channel furniture" before classification. A
+top-level message matching ≥2 distinct phrases from the pinned how-to-use post
+(`intake.ignore.meta_markers` in `ops/feedback-agent/config.yml`) is logged and
+skipped — nothing filed, no thread reply, marked processed so Slack retries
+don't re-run it. A companion `intake.ignore.sender_app_ids` knob ignores posts
+by a given Slack app/workflow; it ships EMPTY on purpose (below). Also withdrew
+the mis-filed report from `state/state.json` so Friday's digest doesn't count
+it against the feedback agent.
+
+**Why:** Roman posted the channel's own pinned explainer into the channel on
+2026-08-20 and the classifier filed it as an IDEA against the feedback agent
+(thread 1787258667.896529). The post is written by a human into the channel, so
+it carries no `bot_id` and the relay forwards it like any report; the classifier
+then did its job on text that describes every agent in the fleet.
+
+**Correction to the approved plan:** the plan proposed ignoring sender
+`U0AKFN28V1U` ("the Slack workflow bot at the bottom is the giveaway"). It
+isn't one — that ID is the "*Sent using* <@…>" attribution Roman's client
+appends to everything he types, including real reports (content-build carousel
+overflow 2026-08-04, call-agent exit code 2026-08-20) and his `status` queries.
+Ignoring it would have silently swallowed every report Roman files. The knob
+exists, documented, empty.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`,
+`ops/feedback-agent/config.yml`, `ops/feedback-agent/README.md`,
+`ops/feedback-agent/state/state.json`,
+`ops/feedback-agent/tests/test_meta_posts.py` (new, 7 tests green).
+
+---
+## 2026-08-20 — Screenshot relay: fix shipped, problem NOT closed
+
+**What:** Stopped debugging and wrote the state down. The relay's subtype filter
+fix is deployed (Apps Script Version 3, 2:14 PM PT) but screenshots STILL do not
+reach the agent: a screenshot posted at 2:15:57 PM produced no dispatch, while a
+plain-text reply 35 seconds earlier did. Necessary but not sufficient. Logged as
+an open weak point plus a TODO in `ARCHITECTURE.md` carrying the next diagnostic
+step (Apps Script -> Executions at 2:15:57; present = script bug, absent = Slack
+app config, most likely a missing `files:read` bot scope requiring a reinstall).
+
+**Also:** posted a correction into the pinned #agent-feedback thread. The pin
+told the team screenshots were fixed. They are not, and leaving that standing
+would have kept people posting reports into a void believing they had landed.
+The correction names Danielle's three lost reports explicitly — she has been
+reporting the same bug since Aug 13 and getting silence — and gives the
+workaround: report in text, attach the screenshot as a thread reply afterwards.
+
+**Roman should edit the pinned message itself** (it was posted under his
+account, and the API cannot edit it) to strike the "Screenshots are welcome /
+Fixed now" paragraph.
+
+**Rule going in:** do not announce this fixed again without a passing test. It
+was announced once already on a fix that was real but incomplete.
+
+**Files:** `ARCHITECTURE.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Approve + merge opened to Danielle, Paola and Emily
+
+**What:** Split `slack.approvers` out of `slack.alerts_to`. `alerts_to` still
+controls who gets @-pinged (Roman only — pinging four people on every proposal
+trains everyone to ignore pings); `approvers` controls who may fire the coding
+agent and squash-merge its PR from a thread reply. Set to Roman, Danielle, Paola,
+Emily. Falls back to `alerts_to` when unset, so older configs are unaffected.
+The proposal message now names who can act, reporter first.
+
+**Why:** Roman 2026-08-20 — "i want it that danielle or paola or emily could do
+the approve and merges." The case it unlocks: whoever reports a problem can ship
+its fix. Paola reports the missing reel, Paola approves, Paola merges — no round
+trip through Roman for work she is closest to. An unnamed permission is one
+nobody uses, hence naming the approvers in the message itself.
+
+**Not delegated:** DEMOTE registry flips stay with Roman until a Fleet Manager
+exists to verify state changes (#AP011).
+
+**Also:** posted a pinned explainer to #agent-feedback covering how to report,
+the approve/merge/no vocabulary, that screenshots now work, the FERPA rule, and
+what to do when the agent stays silent.
+
+**Files:** `ops/feedback-agent/config.yml`, `ops/feedback-agent/feedback_agent.py`,
+`docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Feedback agent: schema debris no longer reaches HubSpot ticket subjects
+
+**What:** The classifier's free-text fields are now scrubbed of leaked schema
+fragments, the classification retries once when debris appears, and the ticket
+subject truncates on a word boundary instead of mid-token.
+
+**Why:** Caught live on Paola's spotlight report. Structured output is
+schema-constrained and `json.loads` parsed it fine — but the model lost the thread
+mid-field and wrote schema INTO a value:
+
+    summary = "...the other assets rendered successfully.','clarifying_question':"
+
+That summary flowed unvalidated into `subject: f"[AGENT] {label}: {summary[:120]}"`,
+so the drafted HubSpot ticket read `...successfully.','clari` — a corrupted subject
+line on a ticket the whole team sees.
+
+**How:** `scrub_debris()` cuts any trailing `'...','field':` fragment out of
+summary / ack_message / clarifying_question and reports which fields were dirty;
+one retry (degraded output rarely repeats), then ship the scrubbed value rather
+than fail — a slightly clipped summary still reaches a human, a crash does not.
+`truncate_words()` replaces the raw `[:120]` slice. Verified against the real
+failure plus false-positive guards: legitimate apostrophes ("Danielle's op-ed")
+and colons ("Ratio is 3:1") are untouched.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — INCIDENT: every #agent-feedback report with a screenshot was silently dropped
 
 **What:** The Slack relay dropped any message carrying a file. Slack tags an
@@ -980,6 +1127,105 @@ invoices in TW, Claude cowork records payments in TW, QBO synced manually; the
 (KEEP; `is_the_online_tutor_ready_for_onboarding` + `business_license_on_file`
 reclassified KEEP-IN-PLACE). Contacts: KEEP-IN-PLACE 185→189,
 RETIRE-CANDIDATE 99→95. Verdicts now: 25 DELETE / 43 EDIT / 4 KEEP / 15 VERIFY.
+
+---
+
+## 2026-08-12 — Booth: role picker + attendee list + short consent
+
+**What:** (1) NEW `aplus_event_role` (events group, dropdown
+Administrator/Teacher/Support Staff), declared + synced; required pill picker
+on the booth form. Role now drives the create-only persona stamp:
+teacher→TOR persona+lead status, administrator→Decision Maker/Director,
+support_staff→no stamp, missing→teacher default (verified e2e). (2) NEW
+ACTIVE list 3103 "Sage Oak BTSC 2026 — Booth Attendees" on
+aplus_event_tag=sage_oak_btsc_2026 — auto-enrolls all booth contacts;
+future events get one list per appended tag option. Enrollment verified
+(<30s); team test runs (Roman/Emily/Hugh Jazz/Danielle) already enrolled,
+personas behaved per doctrine. (3) Consent copy shortened (Roman):
+"Send my photo + A+ can reach out about tutoring for my students 📸".
+
+**Why:** Roman 2026-08-12: role segmentation + "every contact that submits
+this photo booth ends up on a hubspot list."
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md` (81→82).
+
+---
+
+## 2026-08-11 — Booth round 3: enum-write bugfix, frame design, delivery=All
+
+**What:** (1) CRITICAL FIX: worker.js wrote enum LABELS ("Print") where the
+HubSpot API takes internal VALUES ("print") — every booth submission failed
+the contact upsert silently while photos still delivered (the fleet "read
+labels" rule is about reading, not writing). Verified fixed end-to-end:
+test contact created with all 6 props + TOR persona, then archived.
+(2) Email timeline logging verified live: test submission → 1 email
+engagement on the contact (subject/SENT), then archived. BCC workaround
+declined — sender isn't a HubSpot user so BCC logging would misattribute;
+API logging is deterministic. (3) Frame redesign: both logos in the header
+band, fun banners ("Best. Year. Ever. ✨" etc.), 2026–2027 school year on
+frame/attract/email, type sized for 2x3" prints (~600dpi: old 24-30px text
+printed at ~3pt). (4) Delivery "Both" → "All 3!" (email+text+print);
+aplus_booth_delivery += all (synced; "both" kept legacy). (5) Screens
+scroll when content overflows (kiosk overflow:hidden clipped the 4-card
+delivery screen with no way to reach the rest). (6) Photo retention is
+DOCUMENTED as ephemeral: email=attachment only, text=KV 7-day TTL,
+print=nothing. Archive-all option proposed to Roman, not yet approved.
+
+**Why:** The event capture chain (contact + persona + timeline email) is the
+point of the booth; the silent enum failure was defeating exactly that.
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`.
+
+---
+
+## 2026-08-11 — Booth round 2: branding, TOR audience, JustCall texts, email logging
+
+**What:** (1) Logos: Sage Oak pennant + white A+ on attract, color A+ in the
+email. (2) All outbound links → wetutorathome.com/home-school-tutoring
+(aplustutoring.com is NOT ours — email CTA, SMS body, photo-frame footer).
+(3) TOR audience (Roman: attendees are homeschool charter TORs, not parents):
+teacher-facing copy pitching one-on-one tutoring + intervention programs, and
+booth-CREATED contacts stamped a_persona="Teacher of Record/EF/ES" +
+hs_lead_status="Charter School Teacher TOR/EF" (create-only, mirrors
+po_inbox TOR_CREATE_PROPS; existing contacts never overwritten). (4) NEW
+"Text it" delivery via JustCall MMS from the main A+ line +18188506284:
+photo stored in Workers KV (7-day TTL, UUID keys) and served publicly at
+<worker>/photo/<uuid> as the media_url; JUSTCALL_API_KEY/SECRET set as Worker
+secrets; `aplus_booth_delivery` gained option Text(text) — declared in
+properties.yml and synced (R2 skipped: not enabled on the account, KV needs
+nothing). (5) Booth photo emails logged to the contact's HubSpot timeline
+via engagements API (assoc 198; write scope verified create+delete). (6)
+Photo canvas 1200×1500 (4:5) → 1200×1800 (2:3) to fit Roman's 2x3" portable
+printer (also fits 4x6); camera preview ratio matched.
+
+**Why:** Event capture should classify TORs correctly for the fleet, deliver
+photos the way teachers actually want them, and leave a full trail (email on
+timeline) in HubSpot.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`ops/hubspot-schema/properties.yml`.
+
+**What:** New `booth/` directory: Cloudflare Worker `sage-oak-booth`
+(worker.js — `/submit` upserts the HubSpot contact with the 4 events-group
+props from PR #65 and emails the framed photo via Resend) + kiosk front-end
+(index.html — attract → banner → camera → form → delivery, client-side photo
+composite) + wrangler.toml + README. DEPLOYED live:
+Worker `https://sage-oak-booth.nameless-mountain-bafa.workers.dev` (secrets
+HUBSPOT_TOKEN + RESEND_API_KEY set via wrangler), Pages
+`https://sage-oak-booth.pages.dev`; CONFIG.WORKER_URL and ALLOWED_ORIGIN
+cross-wired; smoke-tested (CORS preflight, input validation, Pages 200).
+Sender is `photos@wetutorathome.com` — that's the Resend-verified domain
+(aplustutoring.com is NOT verified there; Roman verified wetutorathome.com
+in-session).
+
+**Why:** Sage Oak BTSC 2026 event capture — booth attendees become HubSpot
+contacts (event-tagged, consent recorded) with zero manual entry.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`booth/README.md`.
 
 ---
 

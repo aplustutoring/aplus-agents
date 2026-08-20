@@ -25,7 +25,11 @@
     "Ev0BRNBVTWUA",
     "Ev0BRG6GJ5T5",
     "Ev0BRLFSHUH4",
-    "Ev0BRLJ4Q5AS"
+    "Ev0BRLJ4Q5AS",
+    "Ev0BR78BTKNK",
+    "Ev0BRLN5KFK8",
+    "Ev0BRSE7SP3N",
+    "Ev0BRLTAM8HL"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -47,7 +51,7 @@
       "correction_path": "corrections/topic-gen/2026-07-31-topic-gen-weird-picks-recurring.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/51",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1785534000810129"
     },
     {
@@ -152,7 +156,7 @@
       "correction_path": "corrections/call-agent/2026-08-12-low-balance-alerts-route-paola-only.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/67",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786554388265099?thread_ts=1786554388.265099&cid=C0BL05MCJ4B"
     },
     {
@@ -212,12 +216,12 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-20-missing-superhero-video-reel.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/94",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787257225951989"
     }
   ],
   "graduation": {
-    "clean_merges": 4
+    "clean_merges": 8
   },
   "pending_proposals": {
     "1786554388.265099": {

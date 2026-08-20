@@ -1,0 +1,177 @@
+{
+  "id": "1752100651",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "6",
+  "name": "When deals over 72 hours, create a ticket",
+  "description": "Sends a webhook 3 days after deals enter any Pre-Lesson stage and proceeds based on specific Post-Lesson deal stages.",
+  "createdAt": "2025-12-31T21:02:55.078Z",
+  "updatedAt": "2026-01-02T17:08:52.150Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "4",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "delta": "4320",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "inputValue": {
+        "propertyName": "dealstage",
+        "type": "OBJECT_PROPERTY"
+      },
+      "staticBranches": [
+        {
+          "branchValue": "presentationscheduled"
+        },
+        {
+          "branchValue": "closedlost"
+        },
+        {
+          "branchValue": "3067400"
+        },
+        {
+          "branchValue": "3067399"
+        },
+        {
+          "branchValue": "907774"
+        },
+        {
+          "branchValue": "140397125"
+        },
+        {
+          "branchValue": "164922250"
+        },
+        {
+          "branchValue": "1066199"
+        },
+        {
+          "branchValue": "5119063"
+        }
+      ],
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "type": "STATIC_BRANCH"
+    },
+    {
+      "actionId": "3",
+      "method": "POST",
+      "webhookUrl": "https://hooks.zapier.com/hooks/catch/998200/uwh6s4w/",
+      "queryParams": [],
+      "type": "WEBHOOK"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1066196",
+                  "appointmentscheduled",
+                  "164922249",
+                  "140397124",
+                  "5119062",
+                  "3067398",
+                  "907749"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_242479618",
+      "objectTypeId": "0-8",
+      "associationTypeId": 19,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_242479545",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_242479617",
+      "objectTypeId": "0-2",
+      "associationTypeId": 341,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_242479616",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_242527073",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_createdate",
+        "missing": null,
+        "order": "ASC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

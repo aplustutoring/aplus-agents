@@ -1,0 +1,110 @@
+{
+  "id": "513387343",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "25",
+  "name": "New Gold Deals - Kitzia",
+  "description": "triggers monday board",
+  "createdAt": "2023-11-13T23:37:51.731Z",
+  "updatedAt": "2025-08-07T00:47:36.261Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "fields": {
+        "listId": "2174",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [
+            {
+              "filterBranches": [],
+              "filters": [
+                {
+                  "property": "createdate",
+                  "operation": {
+                    "operator": "IS_AFTER",
+                    "includeObjectsWithNoValueSet": false,
+                    "timePoint": {
+                      "timezoneSource": "CUSTOM",
+                      "zoneId": "America/Los_Angeles",
+                      "year": 2023,
+                      "month": 10,
+                      "day": 1,
+                      "hour": 23,
+                      "minute": 59,
+                      "second": 59,
+                      "millisecond": 999,
+                      "timeType": "DATE"
+                    },
+                    "endpointBehavior": "EXCLUSIVE",
+                    "propertyParser": "VALUE",
+                    "type": "TIME_POINT",
+                    "operationType": "TIME_POINT"
+                  },
+                  "filterType": "PROPERTY"
+                },
+                {
+                  "property": "start_of_tutoring_for_this_deal",
+                  "operation": {
+                    "operator": "IS_KNOWN",
+                    "includeObjectsWithNoValueSet": false,
+                    "operationType": "ALL_PROPERTY"
+                  },
+                  "filterType": "PROPERTY"
+                },
+                {
+                  "property": "dealstage",
+                  "operation": {
+                    "operator": "IS_ANY_OF",
+                    "includeObjectsWithNoValueSet": false,
+                    "values": [
+                      "closedlost",
+                      "presentationscheduled"
+                    ],
+                    "operationType": "ENUMERATION"
+                  },
+                  "filterType": "PROPERTY"
+                }
+              ],
+              "objectTypeId": "0-3",
+              "operator": "IN_LIST",
+              "associationTypeId": 4,
+              "associationCategory": "HUBSPOT_DEFINED",
+              "filterBranchType": "ASSOCIATION",
+              "filterBranchOperator": "AND"
+            }
+          ],
+          "filters": [],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

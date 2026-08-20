@@ -1,0 +1,2145 @@
+{
+  "id": "178769548",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "33",
+  "name": "QTL Workflow - Charter School - Retired",
+  "description": "Sends grade-specific emails and follow-up texts to contacts with \"QTL - Charter\" lead status, checking deal status and updating lead status based on responses.",
+  "createdAt": "2022-03-03T01:52:48.335Z",
+  "updatedAt": "2025-10-24T20:59:43.723Z",
+  "startActionId": "214",
+  "nextAvailableActionId": "234",
+  "actions": [
+    {
+      "actionId": "18",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "230"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "30",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "TK",
+                        "Kindergarten"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "TK or K",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "67"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "1"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "1st Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "31"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "2"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "2nd Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "47"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "3"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "3rd Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "58"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "4"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "4th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "51"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "5"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "5th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "59"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "6"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "6th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "60"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "7"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "7th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "61"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "8"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "8th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "62"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "9"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "9th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "63"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "10"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "10th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "64"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "11"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "11th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "65"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "12"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "12th Grade",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "66"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "what_is_your_child_s_current_grade_level_",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "Graduated/College"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "College/Graduated",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "68"
+          }
+        }
+      ],
+      "defaultBranchName": "Don't Know Grade Level",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "71"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "31",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "108"
+      },
+      "fields": {
+        "content_id": "48354364224"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "47",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "106"
+      },
+      "fields": {
+        "content_id": "48352122026"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "50",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "18"
+      },
+      "fields": {
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 10,
+          "minute": 0
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "51",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "98"
+      },
+      "fields": {
+        "content_id": "41460171635"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "58",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "101"
+      },
+      "fields": {
+        "content_id": "48355358033"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "59",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "95"
+      },
+      "fields": {
+        "content_id": "48403890269"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "60",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "92"
+      },
+      "fields": {
+        "content_id": "48501256321"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "61",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "89"
+      },
+      "fields": {
+        "content_id": "48499916681"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "62",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "86"
+      },
+      "fields": {
+        "content_id": "48501333830"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "63",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "83"
+      },
+      "fields": {
+        "content_id": "48501337107"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "64",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "80"
+      },
+      "fields": {
+        "content_id": "48501605896"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "65",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "77"
+      },
+      "fields": {
+        "content_id": "48503481910"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "66",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "74"
+      },
+      "fields": {
+        "content_id": "48503711324"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "67",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "111"
+      },
+      "fields": {
+        "content_id": "48503485252"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "68",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "69"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "69",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "229"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "71",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "73"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "73",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "155"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "74",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "76"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "76",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "77",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "79"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "79",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "80",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "82"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "82",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "83",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "85"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "85",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "86",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "88"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "88",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "89",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "91"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "91",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "92",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "94"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "94",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "95",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "97"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "97",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "98",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "100"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "100",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "101",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "103"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "103",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "106",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "107"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "107",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "108",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "110"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "110",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "GOTO",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "111",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "113"
+      },
+      "fields": {
+        "delta": "1440",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "113",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Deal"
+        }
+      ],
+      "defaultBranchName": "No Deal",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "215"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "155",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "209"
+      },
+      "fields": {
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 17,
+          "minute": 0
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "159",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "231"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "209",
+      "actionTypeVersion": 8,
+      "actionTypeId": "1-1917",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "211"
+      },
+      "fields": {
+        "phoneNumbers": "{{ _0_1.phone }}",
+        "sms": "Hey {{ _0_1.firstname }}, it's Roman w/ A+ tutoring. We spoke a few days ago about tutoring for {{ _0_1.student_last_name }}. After we spoke I had a few additional thoughts on how we can help support {{ _0_1.student_last_name }}'s educational journey.",
+        "owner": "hubspot_owner_id",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "211",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "212"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "212",
+      "actionTypeVersion": 8,
+      "actionTypeId": "1-1917",
+      "fields": {
+        "phoneNumbers": "{{ _0_1.phone }}",
+        "sms": "are you free to connect later today or tomorrow?",
+        "owner": "hubspot_owner_id",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "214",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "50"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "227538487",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "215",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "216"
+      },
+      "fields": {
+        "content_id": "52814693734"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "216",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "217"
+      },
+      "fields": {
+        "delta": "1170",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "217",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Open Deal"
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "Using Someone Else"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Not Interested Right Now"
+        }
+      ],
+      "defaultBranchName": "No Deal Yet",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "220"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "220",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "221"
+      },
+      "fields": {
+        "content_id": "170991753907"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "221",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "222"
+      },
+      "fields": {
+        "delta": "2940",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "222",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Open Deal"
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "Using Someone Else"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Not Interested Right Now"
+        }
+      ],
+      "defaultBranchName": "No Deal Yet",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "224"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "224",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "233"
+      },
+      "fields": {
+        "delta": "7200",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "226",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "OPEN_DEAL"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Open Deal"
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "hs_lead_status",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "Using Someone Else"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Not Interested Right Now"
+        }
+      ],
+      "defaultBranchName": "No Deal Yet",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "228"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "227",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "226"
+      },
+      "fields": {
+        "delta": "1380",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "228",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "Using Someone Else",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "229",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "Using Someone Else",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "230",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "159"
+      },
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "Hey {{ _0_1.firstname }}, it's {{ _0_1.hubspot_owner_id.firstname }} w/ A+ tutoring. We spoke about tutoring for {{ _0_1.student_last_name }}. Where you able to find us in your OPS portal to submit a PO?",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "231",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "232"
+      },
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "I can help guide you with that.",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "232",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "30"
+      },
+      "fields": {
+        "delta": "7",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "233",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "227"
+      },
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "Hey {{ _0_1.firstname }}, I haven't heard back from since we last spoke and I wanted to see if you guys are still looking for a tutor for {{ _0_1.student_last_name }}. Please let me know so I can update our records accordingly.",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "hs_lead_status",
+              "operation": {
+                "operator": "IS_EXACTLY",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "QTL - Charter"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 23,
+        "minute": 0
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "goalFilterBranch": {
+    "filterBranches": [
+      {
+        "filterBranches": [
+          {
+            "filterBranches": [],
+            "filters": [
+              {
+                "property": "start_of_tutoring_for_this_deal",
+                "operation": {
+                  "operator": "IS_KNOWN",
+                  "includeObjectsWithNoValueSet": false,
+                  "operationType": "ALL_PROPERTY"
+                },
+                "filterType": "PROPERTY"
+              },
+              {
+                "property": "createdate",
+                "operation": {
+                  "operator": "IS_AFTER",
+                  "includeObjectsWithNoValueSet": false,
+                  "timePoint": {
+                    "timezoneSource": "CUSTOM",
+                    "zoneId": "America/Los_Angeles",
+                    "year": 2021,
+                    "month": 8,
+                    "day": 1,
+                    "hour": 23,
+                    "minute": 59,
+                    "second": 59,
+                    "millisecond": 999,
+                    "timeType": "DATE"
+                  },
+                  "endpointBehavior": "EXCLUSIVE",
+                  "propertyParser": "VALUE",
+                  "type": "TIME_POINT",
+                  "operationType": "TIME_POINT"
+                },
+                "filterType": "PROPERTY"
+              }
+            ],
+            "objectTypeId": "0-3",
+            "operator": "IN_LIST",
+            "associationTypeId": 4,
+            "associationCategory": "HUBSPOT_DEFINED",
+            "filterBranchType": "ASSOCIATION",
+            "filterBranchOperator": "AND"
+          }
+        ],
+        "filters": [],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "filters": [],
+    "filterBranchType": "OR",
+    "filterBranchOperator": "OR"
+  },
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

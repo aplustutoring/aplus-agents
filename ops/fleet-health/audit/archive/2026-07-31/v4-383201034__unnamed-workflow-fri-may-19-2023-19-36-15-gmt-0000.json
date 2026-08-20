@@ -1,0 +1,45 @@
+{
+  "id": "383201034",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Unnamed workflow - Fri May 19 2023 19:36:15 GMT+0000",
+  "description": "Delays the workflow until a specific date and time when manually triggered.",
+  "createdAt": "2023-05-19T19:36:16.304Z",
+  "updatedAt": "2023-05-19T19:36:16.304Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "fields": {
+        "date": {
+          "staticValue": "1685602800000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 12,
+          "minute": 0
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "type": "MANUAL"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

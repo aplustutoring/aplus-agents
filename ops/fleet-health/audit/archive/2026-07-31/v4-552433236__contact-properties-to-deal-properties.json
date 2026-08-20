@@ -1,0 +1,177 @@
+{
+  "id": "552433236",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "10",
+  "name": "Contact Properties to Deal Properties",
+  "description": "Updates deal properties with contact information when the deal stage is in pre-lesson or pre-session stages.",
+  "createdAt": "2024-01-09T01:59:00.228Z",
+  "updatedAt": "2024-11-12T23:03:07.387Z",
+  "startActionId": "4",
+  "nextAvailableActionId": "30",
+  "actions": [
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "24"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "association": {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 3
+        },
+        "value": {
+          "staticValue": "OPEN_DEAL",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "24",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "25"
+      },
+      "fields": {
+        "property_name": "student_first_name",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21971571.student_last_name }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "25",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "28"
+      },
+      "fields": {
+        "property_name": "last_name",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21971571.lastname }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "26",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "what_s_going_on_",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21971571.parent_concerns_what_can_we_do_to_help_ }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "28",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "29"
+      },
+      "fields": {
+        "property_name": "student_email_address",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21971571.student_email_address }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "29",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "26"
+      },
+      "fields": {
+        "property_name": "student_grade",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21971571.what_is_your_child_s_current_grade_level_ }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1066196",
+                  "appointmentscheduled",
+                  "69948487",
+                  "69965353",
+                  "2265591",
+                  "47072313",
+                  "5119062",
+                  "3067398",
+                  "907749",
+                  "51098471"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_21971571",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

@@ -1,0 +1,157 @@
+{
+  "id": "318880884",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "15",
+  "name": "Free Trial - booked weekly create new deal IN gold",
+  "description": "Once free trial deal wants to book weekly, closes out free trial deal and creates a new gold deal in post lesson.",
+  "createdAt": "2023-01-25T21:30:58.506Z",
+  "updatedAt": "2024-09-03T16:59:38.972Z",
+  "startActionId": "3",
+  "nextAvailableActionId": "6",
+  "actions": [
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "property_name": "closedate",
+        "value": {
+          "timestampType": "EXECUTION_TIME",
+          "type": "TIMESTAMP"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "5"
+      },
+      "fields": {
+        "property_name": "closed_won_reason",
+        "value": {
+          "staticValue": "Signed up for tutoring after free trial session",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-14",
+      "fields": {
+        "object_type_id": "0-3",
+        "properties": [
+          {
+            "targetProperty": "hubspot_owner_id",
+            "value": {
+              "propertyName": "hubspot_owner_id",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "dealstage",
+            "value": {
+              "staticValue": "presentationscheduled",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "dealname",
+            "value": {
+              "staticValue": "FT - {{ _0_3.dealname }}",
+              "type": "STATIC_VALUE"
+            }
+          }
+        ],
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 3
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 3
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 341
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 341
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 451
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "47314738"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

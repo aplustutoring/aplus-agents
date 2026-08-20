@@ -1,0 +1,198 @@
+{
+  "id": "179096165",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "14",
+  "name": "expected lessons fulfilled - charter",
+  "description": "Creates a task assigned to Melanie when a deal is in \"Post-Lesson\" stage and the expected lessons fulfilled date is before yesterday.",
+  "createdAt": "2022-03-03T23:37:19.493Z",
+  "updatedAt": "2022-08-12T20:25:36.465Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "{{ _0_3.dealname }}: Expected Lessons Fulfilled",
+        "body": "",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 12
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 3
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "43737660",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 0,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 10,
+            "minute": 15
+          },
+          "daysOfWeek": []
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "907774"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "lessons_fulfilled_date",
+              "operation": {
+                "operator": "IS_BEFORE",
+                "includeObjectsWithNoValueSet": false,
+                "timePoint": {
+                  "timezoneSource": "CUSTOM",
+                  "zoneId": "America/Los_Angeles",
+                  "indexReference": {
+                    "referenceType": "TODAY"
+                  },
+                  "offset": {
+                    "days": -1
+                  },
+                  "timeType": "INDEXED"
+                },
+                "endpointBehavior": "EXCLUSIVE",
+                "propertyParser": "VALUE",
+                "type": "TIME_POINT",
+                "operationType": "TIME_POINT"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "lessons_fulfilled_date",
+              "operation": {
+                "operator": "IS_KNOWN",
+                "includeObjectsWithNoValueSet": false,
+                "operationType": "ALL_PROPERTY"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "lessons_fulfilled_date",
+            "operation": {
+              "operator": "IS_BEFORE",
+              "includeObjectsWithNoValueSet": false,
+              "timePoint": {
+                "timezoneSource": "CUSTOM",
+                "zoneId": "America/Los_Angeles",
+                "indexReference": {
+                  "referenceType": "TODAY"
+                },
+                "offset": {
+                  "days": -1
+                },
+                "timeType": "INDEXED"
+              },
+              "endpointBehavior": "EXCLUSIVE",
+              "propertyParser": "VALUE",
+              "type": "TIME_POINT",
+              "operationType": "TIME_POINT"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      },
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "907774"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

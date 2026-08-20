@@ -1,0 +1,25 @@
+{
+  "id": "405667728",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Unnamed workflow - Tue Jun 20 2023 19:00:45 GMT+0000",
+  "description": "Enables manual enrollment but does not perform any actions or automated steps.",
+  "createdAt": "2023-06-20T19:00:45.916Z",
+  "updatedAt": "2023-06-20T19:00:45.916Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "type": "MANUAL"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

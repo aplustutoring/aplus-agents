@@ -1,0 +1,122 @@
+{
+  "id": "467160244",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "4",
+  "name": "EO PowerLunch - no text or email",
+  "description": "Updates contact properties for leads who submitted the \"EO - AI - Powerlunch Demo\" form, setting Lead Status, referral source, and contact owner, with a 2-minute delay at the end.",
+  "createdAt": "2023-09-14T16:16:53.706Z",
+  "updatedAt": "2025-09-26T02:12:45.784Z",
+  "startActionId": "167176451",
+  "nextAvailableActionId": "168032813",
+  "actions": [
+    {
+      "actionId": "167176451",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032799"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "Tutor-Active",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032799",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032801"
+      },
+      "fields": {
+        "property_name": "how_did_you_hear_about_us_",
+        "value": {
+          "staticValue": "Tutor - To Exclude in Reports",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032801",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032802"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "39191217",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032802",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "fields": {
+        "delta": "2",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "31610034-d6c6-4fb1-a9c7-a7ec4800a138",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "formId": "31610034-d6c6-4fb1-a9c7-a7ec4800a138",
+            "operator": "FILLED_OUT",
+            "filterType": "FORM_SUBMISSION"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

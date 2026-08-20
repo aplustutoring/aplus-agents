@@ -1,0 +1,65 @@
+{
+  "id": "338830124",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Unnamed workflow - Fri Mar 3 2023 01:10:52 GMT+0000",
+  "description": "Does not perform any actions but is triggered when a contact is associated with deals in the \"Renewal Processed - Continuing Schedule\" stage.",
+  "createdAt": "2023-03-03T01:10:53.271Z",
+  "updatedAt": "2023-03-03T01:11:36.709Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [
+            {
+              "filterBranches": [],
+              "filters": [
+                {
+                  "property": "dealstage",
+                  "operation": {
+                    "operator": "IS_ANY_OF",
+                    "includeObjectsWithNoValueSet": false,
+                    "values": [
+                      "16552749",
+                      "16858650"
+                    ],
+                    "operationType": "ENUMERATION"
+                  },
+                  "filterType": "PROPERTY"
+                }
+              ],
+              "objectTypeId": "0-3",
+              "operator": "IN_LIST",
+              "associationTypeId": 4,
+              "associationCategory": "HUBSPOT_DEFINED",
+              "filterBranchType": "ASSOCIATION",
+              "filterBranchOperator": "AND"
+            }
+          ],
+          "filters": [],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

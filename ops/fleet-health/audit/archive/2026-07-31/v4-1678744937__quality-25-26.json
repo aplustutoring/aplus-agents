@@ -1,0 +1,1566 @@
+{
+  "id": "1678744937",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "24",
+  "name": "Quality **25/26**",
+  "description": "Gold Tutoring Quality Workflow with SMS and Email",
+  "createdAt": "2025-08-01T20:59:30.523Z",
+  "updatedAt": "2025-08-07T19:13:53.821Z",
+  "startActionId": "200124332",
+  "nextAvailableActionId": "200124395",
+  "actions": [
+    {
+      "actionId": "200124332",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124394"
+      },
+      "fields": {
+        "delay": {
+          "delta": 1,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 15,
+            "minute": 30
+          },
+          "daysOfWeek": []
+        },
+        "direction": "BEFORE"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124344",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124393"
+      },
+      "fields": {
+        "delay": {
+          "delta": 5,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 15,
+            "minute": 45
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124346",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124344"
+      },
+      "fields": {
+        "content_id": "150989471490"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124347",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124349"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124380"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124349",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124350"
+      },
+      "fields": {
+        "delay": {
+          "delta": 8,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 16,
+            "minute": 0
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124350",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124351"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124381"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124351",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124352"
+      },
+      "fields": {
+        "delay": {
+          "delta": 9,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 16,
+            "minute": 15
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124352",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124369"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124382"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124355",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124356"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124383"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124356",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124359"
+      },
+      "fields": {
+        "content_id": "150989493010"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124358",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124355"
+      },
+      "fields": {
+        "delay": {
+          "delta": 16,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 16,
+            "minute": 30
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124359",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124360"
+      },
+      "fields": {
+        "delay": {
+          "delta": 20,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 16,
+            "minute": 45
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124360",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124364"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124384"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124363",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "fields": {
+        "delay": {
+          "delta": 34,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 17,
+            "minute": 0
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124364",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124365"
+      },
+      "fields": {
+        "content_id": "157608385655"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124365",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124372"
+      },
+      "fields": {
+        "delay": {
+          "delta": 27,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 17,
+            "minute": 0
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124366",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124376"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124386"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124367",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "formId": "55cdaa2c-32a2-480e-9e27-b83d47774105",
+                    "operator": "FILLED_OUT",
+                    "filterType": "FORM_SUBMISSION"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Completed Survey",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124377"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Complete Survey",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124375"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124369",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-11",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124388"
+      },
+      "fields": {
+        "user_ids": [
+          "72636338"
+        ],
+        "target_property": "hubspot_owner_id",
+        "overwrite_current_owner": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124370",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124392"
+      },
+      "fields": {
+        "content_id": "150986675541"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124371",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124346"
+      },
+      "fields": {
+        "delay": {
+          "delta": 2,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 8,
+            "minute": 0
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124372",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Post Lesson - Active",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124373"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "15961683"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Renewed",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124385"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124373",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124374"
+      },
+      "fields": {
+        "content_id": "162843535784"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124374",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124366"
+      },
+      "fields": {
+        "delay": {
+          "delta": 29,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 18,
+            "minute": 45
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124375",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-11",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124390"
+      },
+      "fields": {
+        "user_ids": [
+          "72636338"
+        ],
+        "target_property": "hubspot_owner_id",
+        "overwrite_current_owner": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124376",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124367"
+      },
+      "fields": {
+        "delay": {
+          "delta": 34,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 7,
+            "minute": 30
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124377",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-11",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124389"
+      },
+      "fields": {
+        "user_ids": [
+          "72636338"
+        ],
+        "target_property": "hubspot_owner_id",
+        "overwrite_current_owner": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124379",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-179507819",
+      "fields": {
+        "slackUserIds": [
+          "U05NW5H3SLC",
+          "U05NA7UMSSV",
+          "U07T6MPPRD1"
+        ],
+        "slackChannelIds": [
+          "C05NM3GE9M5"
+        ],
+        "notifyOwner": [
+          "hubspot_owner_id"
+        ],
+        "message": "New Quality Form Submission for  {{ enrolled_object.firstname }} {{ enrolled_object.lastname }} - Please send $5 starbucks card."
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124380",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124381",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124382",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124383",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124384",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124385",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124386",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-15",
+      "fields": {
+        "flow_id": "586571557"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124387",
+      "actionTypeVersion": 20,
+      "actionTypeId": "1-887",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124371"
+      },
+      "fields": {
+        "to_number": "{{ enrolled_object.phone }}",
+        "body": "Hi {{ _0_1.firstname }}, it's A+ Tutoring, hope you are doing well, wanted to check in and see how {{ fetched_objects.fetched_object_163474532.student_first_name }}'s lessons are going?",
+        "from_number": "18188691627",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124388",
+      "actionTypeVersion": 20,
+      "actionTypeId": "1-887",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124358"
+      },
+      "fields": {
+        "to_number": "{{ enrolled_object.phone }}",
+        "body": "Hi {{ _0_1.firstname }}, it's A+ Tutoring, wanted to check in to make sure you guys are receiving the lesson notes for our sessions.",
+        "from_number": "18188691627",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124389",
+      "actionTypeVersion": 20,
+      "actionTypeId": "1-887",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124379"
+      },
+      "fields": {
+        "to_number": "{{ enrolled_object.phone }}",
+        "body": "Hi {{ _0_1.firstname }}, it's A+ Tutoring, wanted to thank you for completing our Quality Survey, we will be sending you a Starbucks giftcard via email shortly.",
+        "from_number": "18188691627",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124390",
+      "actionTypeVersion": 20,
+      "actionTypeId": "1-887",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124363"
+      },
+      "fields": {
+        "to_number": "{{ enrolled_object.phone }}",
+        "body": "Hi {{ _0_1.firstname }}, it's A+ Tutoring, wanted to check in and see how things are going for you guys?",
+        "from_number": "18188691627",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124391",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "closedlost",
+                            "presentationscheduled"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Gold",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "200124370"
+          }
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "3067399",
+                            "3067400"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "In-Person"
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "140397125",
+                            "907774",
+                            "164922250"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Charter Any "
+        },
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "dealstage",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "47314737"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-3",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 4,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Free Trial"
+        }
+      ],
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "200124392",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-28",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124387"
+      },
+      "fields": {
+        "delay": {
+          "delta": 1,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 17,
+            "minute": 0
+          },
+          "daysOfWeek": []
+        },
+        "direction": "AFTER"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124393",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124347"
+      },
+      "fields": {
+        "content_id": "193817238572"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "200124394",
+      "method": "POST",
+      "webhookUrl": "https://hooks.zapier.com/hooks/catch/998200/u45bv8m/",
+      "queryParams": [],
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "200124391"
+      },
+      "type": "WEBHOOK"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "type": "MANUAL"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_163480187",
+      "objectTypeId": "0-3",
+      "associationTypeId": 4,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_163480186",
+      "objectTypeId": "0-2",
+      "associationTypeId": 279,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_163474532",
+      "objectTypeId": "0-3",
+      "associationTypeId": 4,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_createdate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_163480188",
+      "objectTypeId": "0-47",
+      "associationTypeId": 199,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "eventAnchor": {
+    "contactProperty": "start_date_for_tutoring_for_this_deal",
+    "type": "CONTACT_PROPERTY_ANCHOR"
+  },
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

@@ -1,0 +1,192 @@
+{
+  "id": "412196646",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "7",
+  "name": "Post Renewal Deal",
+  "description": "Creates a task one week after deal creation for renewal deals in specified pipelines, only if the deal stage is not \"Stopped\".",
+  "createdAt": "2023-06-29T23:21:13.128Z",
+  "updatedAt": "2023-06-29T23:33:07.793Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "4",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "delta": "20160",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "dealstage",
+                    "operation": {
+                      "operator": "IS_NONE_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "16552752",
+                        "16858656"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Continuing",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "3"
+          }
+        }
+      ],
+      "defaultBranchName": "Stopped",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Post Renewal Check-in: {{ _0_3.dealname }}",
+        "body": "<p>Things to engage for:</p><br/><p>1. Referrals</p><p>2. Yelp/Google Reviews</p><p>3. Testimonial Videos</p>",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 12
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 3
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 1,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 10,
+            "minute": 0
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "16858643",
+                  "16547180"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "createdate",
+              "operation": {
+                "operator": "IS_AFTER",
+                "includeObjectsWithNoValueSet": false,
+                "timePoint": {
+                  "timezoneSource": "CUSTOM",
+                  "zoneId": "America/Los_Angeles",
+                  "year": 2023,
+                  "month": 6,
+                  "day": 29,
+                  "hour": 23,
+                  "minute": 59,
+                  "second": 59,
+                  "millisecond": 999,
+                  "timeType": "DATE"
+                },
+                "endpointBehavior": "EXCLUSIVE",
+                "propertyParser": "VALUE",
+                "type": "TIME_POINT",
+                "operationType": "TIME_POINT"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

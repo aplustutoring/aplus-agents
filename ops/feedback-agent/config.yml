@@ -20,13 +20,60 @@ slack:
   # Slack member IDs (Uxxxxxxxx) for pings (verified against the workspace
   # 2026-07-27). If either is blank the agent falls back to a plain name.
   people:
-    emily: "U05MXK1MC5Q"   # Emily Shulman — kept for future delegation, not currently pinged
-    roman: "U05NA7UMSSV"   # Roman Slavinsky
+    emily: "U05MXK1MC5Q"      # Emily Shulman
+    roman: "U05NA7UMSSV"      # Roman Slavinsky
+    danielle: "U05NMABF3B2"   # Danielle Brodetsky
+    paola: "U094B5DRZBR"      # Paola Sarmiento
   # Who receives operational pings: ticket drafts, DEMOTE alerts, and the
-  # digest's demotion-review flags. 2026-07-31 per Roman: everything runs
-  # through Roman. To delegate again, add "emily" to this list — the code
-  # reads it, no code changes needed.
+  # digest's demotion-review flags. Kept narrow on purpose — pinging four
+  # people on every proposal trains everyone to ignore the pings.
   alerts_to: ["roman"]
+  # Who may APPROVE a fix proposal and MERGE the resulting PR by replying in
+  # the thread. Falls back to alerts_to when unset (the pre-2026-08-20
+  # behavior). Deliberately wider than alerts_to: Roman 2026-08-20 — "i want it
+  # that danielle or paola or emily could do the approve and merges".
+  #
+  # The natural case this unlocks: whoever REPORTS a problem can approve its
+  # fix. Paola reports the missing reel, Paola approves the fix, Paola merges
+  # it — no round trip through Roman for work she is closest to.
+  #
+  # What this grants: firing the coding agent, and squash-merging its PR to
+  # main. What it does NOT grant: DEMOTE registry flips, which stay with Roman
+  # until a Fleet Manager exists to verify state changes.
+  approvers: ["roman", "danielle", "paola", "emily"]
+
+intake:
+  # Channel furniture is not a report. On 2026-08-20 the channel's own pinned
+  # "How this channel works" post was itself filed as an IDEA against the
+  # feedback agent (thread 1787258667.896529) — it arrives as an ordinary human
+  # message, so nothing upstream drops it. These are deterministic checks (no
+  # Claude call, same reasoning as the status keyword match): a genuine report
+  # must never be swallowed by a fuzzy "looks like boilerplate".
+  ignore:
+    # Distinctive phrases from the pinned how-to-use post. Matched
+    # case-insensitively against the message text.
+    meta_markers:
+      - "How this channel works"
+      - "What it's for:"
+      - "How to report:"
+      - "What happens next"
+      - "Reply in that thread with one word"
+      - "Every Friday there's a digest"
+      - "Nothing ships without one of us saying"
+    # How many DISTINCT markers must hit before a message is treated as the
+    # instructions rather than a complaint. Two, so quoting one line of the
+    # pinned post while reporting a real problem still files normally.
+    min_marker_hits: 2
+    # Slack apps/workflows whose posts are never reports — the ID in the
+    # "*Sent using* <@…>" attribution at the bottom of a message.
+    #
+    # DELIBERATELY EMPTY. The obvious candidate, U0AKFN28V1U, is NOT a workflow
+    # bot: it is the attribution Roman's Slack client appends to everything he
+    # types, including real reports (the content-build carousel overflow report
+    # 2026-08-04, the call-agent exit-code report 2026-08-20) and even his
+    # "status" queries. Listing it here would silently swallow every report
+    # Roman files. Only add an ID you have confirmed posts nothing but notices.
+    sender_app_ids: []
 
 claude:
   # Repo-standard model (matches ops/call_agent + marketing/scripts/*).

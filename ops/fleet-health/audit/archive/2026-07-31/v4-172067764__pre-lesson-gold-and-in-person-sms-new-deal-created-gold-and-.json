@@ -1,0 +1,209 @@
+{
+  "id": "172067764",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "68",
+  "name": "Pre Lesson - gold and in person SMS New Deal Created gold and in person ",
+  "description": "Sends a series of SMS messages to contacts in the Pre-Lesson deal stage to confirm their schedule preference and request a reply.",
+  "createdAt": "2022-02-09T23:30:25.607Z",
+  "updatedAt": "2024-11-15T18:54:51.769Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "33",
+  "actions": [
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "17"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "17",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "31"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "911789198",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "19",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "20"
+      },
+      "fields": {
+        "delta": "10",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "20",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "21"
+      },
+      "fields": {
+        "content_id": "100190116885"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "21",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "25"
+      },
+      "fields": {
+        "delta": "7",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "23",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "28"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "25",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "23"
+      },
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "Hi {{ _0_1.firstname }}, it's  A+ Tutoring. This is an automated text message from my direct # to confirm your schedule preference: {{ _0_1.schedule_preference }}",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "28",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "Please reply back to confirm",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "31",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "19"
+      },
+      "fields": {
+        "property_name": "schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_23159968.schedule_preferences }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [
+            {
+              "filterBranches": [],
+              "filters": [
+                {
+                  "property": "dealstage",
+                  "operation": {
+                    "operator": "IS_ANY_OF",
+                    "includeObjectsWithNoValueSet": false,
+                    "values": [
+                      "appointmentscheduled",
+                      "3067398"
+                    ],
+                    "operationType": "ENUMERATION"
+                  },
+                  "filterType": "PROPERTY"
+                }
+              ],
+              "objectTypeId": "0-3",
+              "operator": "IN_LIST",
+              "associationTypeId": 4,
+              "associationCategory": "HUBSPOT_DEFINED",
+              "filterBranchType": "ASSOCIATION",
+              "filterBranchOperator": "AND"
+            }
+          ],
+          "filters": [],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": true,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_23159968",
+      "objectTypeId": "0-3",
+      "associationTypeId": 4,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}
