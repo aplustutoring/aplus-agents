@@ -82,6 +82,39 @@ def strip_client_suffix(text):
     return re.sub(r"\s*\*Sent using\*\s*<@[^>]+>\s*$", "", (text or "").strip())
 
 
+# The app/workflow credited in that same attribution line, when we need to know
+# WHO posted rather than just to clean up the text.
+SENT_USING_RE = re.compile(r"\*Sent using\*\s*<@([A-Z0-9]+)>", re.I)
+
+
+def _norm(s):
+    """Lowercase, straight apostrophes, single spaces — Slack curls quotes and
+    wraps lines, and a marker shouldn't miss over typography."""
+    return " ".join((s or "").replace("’", "'").lower().split())
+
+
+def meta_post_reason(text, cfg):
+    """Why this top-level message is channel furniture, or None if it's a report.
+
+    2026-08-20: the channel's own pinned "How this channel works" post was filed
+    as an IDEA against this agent. It is posted BY a human INTO the channel, so
+    it carries no bot_id and the relay forwards it like any other message — the
+    classifier then does its job on instructions describing every agent, and
+    lands on the feedback agent itself. Deterministic checks only (no Claude
+    call), and conservative on purpose: a false positive here is a real report
+    that silently never happened.
+    """
+    icfg = (cfg.get("intake") or {}).get("ignore") or {}
+    m = SENT_USING_RE.search(text or "")
+    if m and m.group(1) in (icfg.get("sender_app_ids") or []):
+        return f"posted by ignored Slack app/workflow {m.group(1)}"
+    body = _norm(text)
+    hits = [mk for mk in (icfg.get("meta_markers") or []) if _norm(mk) in body]
+    if len(hits) >= (icfg.get("min_marker_hits") or 2):
+        return f"reads as the pinned channel-instructions post ({len(hits)} markers: {'; '.join(hits[:3])})"
+    return None
+
+
 # ─── Config / state ───────────────────────────────────────────────────────────
 
 def load_config():
@@ -874,6 +907,20 @@ def intake(cfg, payload, dry_run):
             save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
         log.info("status query answered")
         return
+
+    # Channel furniture (the pinned how-to-use post, workflow notices): not a
+    # report, so file nothing and reply nothing — a bot answer under the pinned
+    # instructions is the noise, not the fix. Marked processed so a Slack retry
+    # doesn't re-run the check.
+    if not is_reply:
+        meta_reason = meta_post_reason(payload["text"], cfg)
+        if meta_reason:
+            log.info(f"meta post — not filing: {meta_reason}")
+            state["processed"].append(event_key)
+            if not dry_run:
+                save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
+            return
+
     clarification = None
     if is_reply:
         # Thread replies are conversation, not new reports — except answers in

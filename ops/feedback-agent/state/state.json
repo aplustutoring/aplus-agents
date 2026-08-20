@@ -216,21 +216,6 @@
       "ticket": "drafted",
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787257225951989"
-    },
-    {
-      "date": "2026-08-20",
-      "ts": "1787258667.896529",
-      "channel": "C0BL05MCJ4B",
-      "reporter": "Roman",
-      "reporter_slack_id": "U05NA7UMSSV",
-      "agent": "feedback-agent",
-      "type": "IDEA",
-      "severity": "low",
-      "correction_path": "corrections/feedback-agent/2026-08-20-channel-intro-pin-noop.md",
-      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/96",
-      "ticket": null,
-      "status": "open",
-      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787258667896529"
     }
   ],
   "graduation": {
