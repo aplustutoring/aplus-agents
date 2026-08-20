@@ -129,16 +129,34 @@ Four things are unverified and will silently break sends if they are wrong:
 6. Reset: clear test flags and contacts, restore `17 1 * * *` and `0 3 * * *`,
    confirm `MODE = "send"`, redeploy.
 
+## Where the photos live
+
+KV, permanently — `env.PHOTOS.put()` is called with **no `expirationTtl`**, so
+booth photos and hero images persist until something deletes them. Each is
+served at `/photo/<key>`, and both URLs are written to the contact's HubSpot
+timeline as a note.
+
+That is deliberate: it means Drive is a *migration you run tomorrow*, not a
+live dependency that has to work while the room is full. Nothing about the
+event depends on Drive being wired up.
+
 ## Post-event checklist (Aug 21+)
 
-- [ ] Pull the prints you want from Crystal's Drive folder
+**Order matters. The KV purge is last, and it is destructive.**
+
+- [ ] **Migrate photos to Drive first.** Walk the tagged contacts, read the
+      photo + hero URLs off each timeline note, upload to the shared folder.
+- [ ] Confirm every file is actually in Drive, by count, against the contact
+      list — not by spot check
 - [ ] Export any contacts worth keeping
 - [ ] Delete the `eo_lav_agents_2026` contacts
 - [ ] Delete both crons from `wrangler.toml` and redeploy — **Cloudflare crons
       have no date component**, so `17 1 * * *` fires again every single day
       until it is removed. This is load-bearing, not hygiene.
 - [ ] Disable the JustCall inbound webhook on the booth line
-- [ ] Purge the `eo/` and `optout:` keys from the shared KV namespace
+- [ ] Purge the `eo/` and `optout:` keys from the shared KV namespace —
+      **ONLY after the Drive migration above is verified.** KV is the only
+      copy of every photo taken tonight; this step is the point of no return.
 - [ ] Archive the six `eo_*` properties via the properties.yml retire process
 - [ ] Delete the `eo-booth-agent` entry from `registry.yml`, regenerate
       `docs/FLEET.md`

@@ -5,9 +5,9 @@ compatibility_date = "2026-08-20"
 [vars]
 # EVENT-TEMP — EO LA Valley, 2026-08-20. Sunset 2026-08-22.
 
-# Guardrail: dry_run logs every send instead of making it. Flip to "send"
-# only after the test plan passes (booth/eo/README.md).
-MODE = "dry_run"
+# Guardrail: dry_run logs every send instead of making it. LIVE as of
+# 2026-08-20 15:30 PT — real texts and emails go out from here.
+MODE = "send"
 
 # Sender domain must be verified in Resend. wetutorathome.com is verified,
 # but the display name must NOT read as A+ — the mystery is the demo.
@@ -15,10 +15,12 @@ RESEND_FROM = "Minion #23 <minion23@wetutorathome.com>"
 
 ALLOWED_ORIGIN = "https://eo-booth.pages.dev"
 
-# Booth line from the brief. NOT the main A+ line (+18188506284) — this
-# number must exist in JustCall and be MMS-verified before go-live, or
-# MMS sends fail. VERIFY IN THE JUSTCALL CONSOLE FIRST.
-JUSTCALL_FROM = "+18185736258"
+# Booth line. NOT the main A+ line (+18188506284). Confirmed against the
+# JustCall API 2026-08-20: sms_compliance=Verified, MMS=Yes,
+# business_registration=Approved. Roman's call to use 6293 over the 6258 in
+# the original brief; both are verified, 6293 is the one not in day-to-day
+# use, so booth traffic cannot collide with real customer threads.
+JUSTCALL_FROM = "+18185736293"
 
 # Zapier catch-hook → Google Sheet "EO Agent Ideas — Aug 20".
 # Set with `wrangler secret put ZAPIER_IDEAS_HOOK` (it is a capability URL).
@@ -43,8 +45,14 @@ id = "38b24fd52f064143a0273d9f43a85a3c"
 # Cloudflare crons have NO date component: these fire again at the same UTC
 # time on Aug 22, 23, ... until deleted. Disabling them is load-bearing
 # cleanup, not hygiene.
+#
+# The every-minute cron is the work queue. Research takes ~75s and
+# waitUntil() gets killed long before that, so capture stays instant and this
+# tick does the slow work: research, hero images, Drive upload, and Payload #1
+# for anyone who arrives after 6:17. Within a minute of someone's photo, their
+# brief is being written.
 [triggers]
-crons = ["17 1 * * *", "0 3 * * *"]
+crons = ["* * * * *", "17 1 * * *", "0 3 * * *"]
 
 # Secrets (never in this file):
 #   wrangler secret put HUBSPOT_TOKEN

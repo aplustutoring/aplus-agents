@@ -237,7 +237,10 @@ const CONFIG = {
   <div class="attract-frame"></div>
   <div class="attract-corner ac-tl"></div><div class="attract-corner ac-tr"></div>
   <div class="attract-corner ac-bl"></div><div class="attract-corner ac-br"></div>
-  <div class="attract-eyebrow">EO LA Valley &middot; August 2026</div>
+  <img id="eo-logo-attract" src="eo-logo.png?v=1" alt="EO Los Angeles Valley"
+       style="height:88px;width:auto;margin:0 auto 26px;display:block;background:#fff;padding:14px 20px;border-radius:16px;"
+       onerror="this.style.display='none'">
+  <div class="attract-eyebrow">Build Your First AI Agent &middot; August 2026</div>
   <h1 class="attract-title">Minion <em>#23</em></h1>
   <div class="attract-sub">I take your photo. Then I get to work.</div>
   <div class="attract-cta">Tap to start &rarr;</div>
@@ -364,6 +367,12 @@ const CONFIG = {
     if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; }
   }
 
+  // Preloaded so capture() can draw it onto the card. If the file is
+  // missing the card falls back to the text wordmark — never a broken photo.
+  const EO_LOGO = new Image();
+  EO_LOGO.src = "eo-logo.png?v=1";
+  const logoReady = () => EO_LOGO.complete && EO_LOGO.naturalWidth > 0;
+
   $("btn-shutter").addEventListener("click", runCountdown);
   async function runCountdown(){
     const overlay=$("countdown-overlay"), num=$("count-num");
@@ -394,7 +403,7 @@ const CONFIG = {
     canvas.width=W; canvas.height=H;
     const ctx=canvas.getContext("2d");
 
-    const photoTop=200, photoH=1330, photoPad=60;
+    const photoTop=214, photoH=1316, photoPad=60;
     const pw=W-photoPad*2;
     const vr=video.videoWidth/video.videoHeight, tr=pw/photoH;
     let sw,sh,sx,sy;
@@ -411,13 +420,24 @@ const CONFIG = {
     ctx.strokeStyle="#38BDF8"; ctx.lineWidth=8;
     ctx.strokeRect(photoPad,photoTop,pw,photoH);
 
-    // Header — text only. No logos: nothing on this card may read as A+.
-    ctx.fillStyle="#F1F5F9"; ctx.textAlign="center";
-    ctx.font="700 40px 'Bricolage Grotesque','Nunito Sans',sans-serif";
-    ctx.fillText("EO LA VALLEY", W/2, 96);
-    ctx.font="700 28px 'Nunito Sans',sans-serif";
+    // Header — the EO LA Valley logo on a white plate (the logo is navy on
+    // white and vanishes on the dark card without one). Falls back to the
+    // text wordmark if eo-logo.png is missing, so the photo always works.
+    ctx.textAlign="center";
+    if(logoReady()){
+      const lh=86, lw=lh*EO_LOGO.naturalWidth/EO_LOGO.naturalHeight;
+      const px=22, py=14;
+      ctx.fillStyle="#FFFFFF";
+      roundRect(ctx, W/2-lw/2-px, 42-py, lw+px*2, lh+py*2, 16); ctx.fill();
+      ctx.drawImage(EO_LOGO, W/2-lw/2, 42, lw, lh);
+    } else {
+      ctx.fillStyle="#F1F5F9";
+      ctx.font="700 40px 'Bricolage Grotesque','Nunito Sans',sans-serif";
+      ctx.fillText("EO LA VALLEY", W/2, 96);
+    }
+    ctx.font="700 26px 'Nunito Sans',sans-serif";
     ctx.fillStyle="#38BDF8";
-    ctx.fillText("BUILD YOUR FIRST AI AGENT · AUG 20, 2026", W/2, 140);
+    ctx.fillText("BUILD YOUR FIRST AI AGENT · AUG 20, 2026", W/2, 176);
 
     const bannerY=photoTop+photoH+58;
     ctx.fillStyle="#38BDF8";

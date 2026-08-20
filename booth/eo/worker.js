@@ -26,10 +26,16 @@
 
 const EVENT_TAG = "eo_lav_agents_2026";
 
-// Claude model: locked by Roman's brief. claude-opus-5 is the current
-// flagship and writes a better brief; sonnet-4-6 is faster and cheaper, and
-// supports the same web_search_20260209 tool. Swap the constant to change.
-const CLAUDE_MODEL = "claude-sonnet-4-6";
+// Cron handlers have no inbound request to read an origin from, so the
+// public host for /photo/<key> links is pinned here.
+const WORKER_ORIGIN = "https://eo-booth.nameless-mountain-bafa.workers.dev";
+
+// Roman's call 2026-08-20: Opus for the copy. The brief IS the demo, and
+// Opus reasons harder about the five agent suggestions. It thinks by
+// default, and thinking shares max_tokens with the response — hence the
+// generous ceiling below. Cost is pennies across one evening.
+const CLAUDE_MODEL = "claude-opus-5";
+const CLAUDE_MAX_TOKENS = 8000;
 
 // Gemini for the hero image — the same model + reference-image face-lock
 // technique the case-study comic engine uses. NOT Higgsfield: Higgsfield is
@@ -46,8 +52,8 @@ const HERO_PROMPT =
   "quality.";
 
 const PHOTO_SMS =
-  "📸 Great seeing you tonight! Here's your photo from the EO LA Valley " +
-  "workshop. Reply STOP to opt out.";
+  "📸 Thanks for coming to the EO LA Valley learning event tonight — here's " +
+  "your photo. Reply STOP to opt out.";
 
 const PAYLOAD1_TEXTS = [
   (c) => `Hi ${c.firstname || "there"} — while you were finding your seat, I researched ${c.company || "your company"}. Full notes in your email. — Minion #23 🤖`,
@@ -71,7 +77,11 @@ const IDEA_AUTOREPLY = "Logged. Roman sees everything. Build it well tonight. �
 // before go-live. Everything else in this file is per spec.
 const RESEARCH_SYSTEM = `You are Minion #23, an AI agent working a photo booth at an Entrepreneurs' Organization chapter event in Los Angeles. You have about two minutes and one job: find out who this person actually is, professionally, and write it up so it lands when they read it on their phone twenty minutes later.
 
-Search the web for the company you are given. Look for what it does, roughly how big it is, who runs it, and — most importantly — anything recent and specific: a new location, a hire, an award, an acquisition, a press mention, a product launch, a milestone. Specific and recent beats comprehensive.
+You are given their email domain and the company name they typed at the booth. THE DOMAIN IS THE AUTHORITATIVE ONE — it came from their actual email address, so it cannot be misspelled. The typed company name is a cross-reference: use it to confirm you have the right organisation and to catch cases where the domain is a parent company, a holding company, or an agency that operates under a different trading name. Where the two disagree, trust the domain and say what you think is going on.
+
+Start at that domain's website, then search wider. Look for what they do, roughly how big they are, who runs it, and — most importantly — anything recent and specific: a new location, a hire, an award, an acquisition, a press mention, a product launch, a milestone. Specific and recent beats comprehensive.
+
+Be careful with the company's own marketing copy. Claims on an About page are claims, not verified facts. You may use them, but attribute them rather than asserting them as your own finding — "their site says", "by their own count". Independent sources are worth more.
 
 Then write a brief of 150-220 words, in plain paragraphs. No headers, no bullet points, no markdown — this is going in the body of an email and it should read like a person wrote it, not like a report.
 
@@ -82,7 +92,20 @@ Rules that matter:
 - No flattery, no "impressive work you're doing." Observant, dry, a little amused at itself. You are a robot who did homework.
 - Do not mention tutoring, education, or any company other than theirs. Do not pitch anything. Do not sign off — the email template adds the signature.
 
-Your entire response is pasted directly into an email body with no editing. Start with the first word of the brief itself. No preamble ("Here is the brief..."), no closing remark, no horizontal rules, no markdown of any kind.`;
+Then, after the brief, add a section listing FIVE AI agents this specific company could actually build. Format that section exactly like this — the literal line "Five agents you could build tonight:" on its own, then five numbered lines:
+
+Five agents you could build tonight:
+1. Name of the agent — one or two sentences on what it does and why it fits them.
+2. ...
+
+Rules for the five:
+- Ground every one in what you actually found. If they run trade-show booths, one should involve trade shows. If they franchise, one should involve franchisees. Generic suggestions ("a customer service chatbot") are worthless here — anyone could have written those without doing the research, which defeats the entire point.
+- Aim at real friction in their business, not at technology. Start from a thing that is annoying, repetitive, or slipping through the cracks, and work backwards.
+- Range from genuinely easy to slightly ambitious. At least two should be something they could plausibly get working tonight in this workshop.
+- Keep each to one or two sentences. This is a phone screen at a networking event, not a consulting deck.
+- Name them like a person would, not like a product ("The Reseller Watchdog", not "Automated Brand Protection Solution").
+
+Your entire response is pasted directly into an email body with no editing. Start with the first word of the brief itself. No preamble ("Here is the brief..."), no closing remark, no horizontal rules, no markdown of any kind — no asterisks, no bold.`;
 
 const PAYLOAD2_SYSTEM = `You are Minion #23, an AI agent at an Entrepreneurs' Organization event in Los Angeles. Earlier tonight you took someone's photo, researched their company, and texted them about it. The workshop is now ending — they have just spent two hours building their first AI agent.
 
@@ -132,12 +155,30 @@ export default {
       return handleCapture(request, env, ctx, url);
     }
 
+    // TEMPORARY diagnostic. Runs the research path SYNCHRONOUSLY and returns
+    // the real error instead of swallowing it into waitUntil. Refuses to run
+    // once MODE=send, so it cannot be poked at during the event.
+    // DELETE THIS ROUTE before go-live.
+    if (request.method === "GET" && url.pathname === "/debug/research") {
+      if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
+      const company = url.searchParams.get("company") || "funbox.com";
+      const t0 = Date.now();
+      try {
+        const brief = await researchBrief(env, company);
+        return json({ ok: true, ms: Date.now() - t0, chars: brief.length, brief }, 200, env);
+      } catch (e) {
+        return json({ ok: false, ms: Date.now() - t0, error: String(e), stack: e?.stack }, 200, env);
+      }
+    }
+
     return json({ error: "Not found" }, 404, env);
   },
 
   // Cron A and cron B share this handler; event.cron says which fired.
   async scheduled(event, env, ctx) {
-    if (event.cron === "17 1 * * *") {
+    if (event.cron === "* * * * *") {
+      ctx.waitUntil(runQueue(env, WORKER_ORIGIN));
+    } else if (event.cron === "17 1 * * *") {
       ctx.waitUntil(runPayload1(env));
     } else if (event.cron === "0 3 * * *") {
       ctx.waitUntil(runPayload2(env));
@@ -224,99 +265,136 @@ async function handleCapture(request, env, ctx, url) {
     results.text = { error: String(e) };
   }
 
-  // ---- 3. ASYNC: research → hero → Drive → clock check ----
+  // ---- 3. Hand off to the queue ----
+  // Nothing slow happens in this request. The research call takes ~75s and
+  // waitUntil() gets killed long before that — which is exactly why four
+  // captures produced zero briefs. Instead: stash what the queue needs, and
+  // the every-minute cron picks it up with a proper time budget.
   if (contactId) {
-    ctx.waitUntil(afterCapture(env, url, {
-      contactId, firstName, lastName, email, to, company, face, photoUrl,
-      demoConsent: !!demoConsent,
-    }));
+    ctx.waitUntil(handoff(env, url, { contactId, firstName, lastName, face, photoUrl }));
   }
 
   return json({ ok: true, results }, 200, env);
 }
 
-// Sequential by design: the clock check at the end must see the stored brief.
-async function afterCapture(env, url, c) {
-  // (a) research brief — retry once, then a graceful generic brief
-  let brief = null;
-  try {
-    brief = await researchBrief(env, c.company);
-  } catch (e) {
-    log(env, { at: "research", contactId: c.contactId, error: String(e), attempt: 1 });
-    try {
-      brief = await researchBrief(env, c.company);
-    } catch (e2) {
-      log(env, { at: "research", contactId: c.contactId, error: String(e2), attempt: 2 });
-      brief = genericBrief(c.company);
-    }
-  }
-  try {
-    await patchContact(env, c.contactId, { eo_research_brief: brief });
-  } catch (e) {
-    log(env, { at: "research.store", contactId: c.contactId, error: String(e) });
-  }
-
-  // (b) hero image — retry once, then leave empty (Payload #2 degrades)
-  let heroUrl = "";
+// Fast path only: stash the face crop for the queue and drop a breadcrumb on
+// the contact. Both are single quick calls that comfortably survive
+// waitUntil; anything slow belongs in runQueue() below.
+async function handoff(env, url, c) {
   if (c.face) {
-    for (let attempt = 1; attempt <= 2 && !heroUrl; attempt++) {
-      try {
-        const bytes = await heroImage(env, c.face);
-        const key = `eo/hero-${crypto.randomUUID()}.jpg`;
-        await env.PHOTOS.put(key, bytes);
-        heroUrl = `${url.origin}/photo/${key}`;
-      } catch (e) {
-        log(env, { at: "hero", contactId: c.contactId, error: String(e), attempt });
-      }
-    }
-    if (heroUrl) {
-      try {
-        await patchContact(env, c.contactId, { eo_hero_image_url: heroUrl });
-      } catch (e) {
-        log(env, { at: "hero.store", contactId: c.contactId, error: String(e) });
-      }
+    try {
+      await env.PHOTOS.put(`eo/face/${c.contactId}.jpg`, dataUrlToBytes(c.face));
+    } catch (e) {
+      log(env, { at: "handoff.face", contactId: c.contactId, error: String(e) });
     }
   }
-
-  // (c) Drive upload for Crystal (comms chair). Since the booth no longer
-  // prints, Drive is where prints are pulled from afterwards — so a silent
-  // failure here costs someone their print. It still must not block or
-  // surface, so instead we leave a recovery path: both URLs go on the
-  // contact's timeline, and the images live in KV with no TTL. Nothing is
-  // lost if the Drive hook is down, it just has to be re-run.
   try {
-    await logPhotoNote(env, c.contactId, c.photoUrl, heroUrl);
+    await logPhotoNote(env, c.contactId, c.photoUrl, "");
   } catch (e) {
-    log(env, { at: "photo.note", contactId: c.contactId, error: String(e) });
+    log(env, { at: "handoff.note", contactId: c.contactId, error: String(e) });
   }
+  // Booth photo to Drive here rather than in the queue: it is one quick POST
+  // and the photo already exists, so there is no reason to make anyone wait
+  // a minute for it. The hero image goes up later, from the queue, because
+  // it does not exist yet.
   try {
     await uploadToDrive(env, {
-      lastName: c.lastName, firstName: c.firstName, photoUrl: c.photoUrl, heroUrl,
+      lastName: c.lastName, firstName: c.firstName, photoUrl: c.photoUrl, heroUrl: "",
     });
   } catch (e) {
-    log(env, { at: "drive", contactId: c.contactId, error: String(e) });
+    log(env, { at: "handoff.drive", contactId: c.contactId, error: String(e) });
+  }
+}
+
+// ────────────────────────────────────────────────────────────────── queue
+// Runs every minute. Does every slow thing: research, hero image, Drive
+// upload, and Payload #1 for anyone who walked up after 6:17. A scheduled
+// handler gets minutes of wall clock where waitUntil got milliseconds, so
+// this is the only place a 75-second call can safely live.
+//
+// Bounded per tick so one minute's work finishes inside its minute; the next
+// tick picks up whatever is left.
+const QUEUE_BATCH = 6;
+
+async function runQueue(env, origin) {
+  const contacts = await listTagged(env, [
+    "firstname", "lastname", "email", "phone", "eo_company_name",
+    "eo_research_brief", "eo_hero_image_url", "eo_payload1_sent", "eo_demo_consent",
+  ]);
+
+  const needBrief = contacts.filter((c) => !c.properties.eo_research_brief).slice(0, QUEUE_BATCH);
+  const needHero = contacts.filter((c) => !c.properties.eo_hero_image_url).slice(0, QUEUE_BATCH);
+
+  if (needBrief.length || needHero.length) {
+    log(env, { at: "queue", total: contacts.length, briefs: needBrief.length, heroes: needHero.length });
   }
 
-  // (d) clock check — captured after 6:17 PM PT? send Payload #1 now.
-  // Before 6:17, do nothing: cron A batches this contact with everyone else.
-  if (nowPT() >= 18 * 60 + 17) {   // 6:17 PM PT
+  // Research — all at once; the whole batch costs about one call's latency.
+  await Promise.all(needBrief.map(async (c) => {
+    const p = c.properties;
     try {
-      const fresh = await getContact(env, c.contactId, ["eo_payload1_sent"]);
-      if (!fresh?.properties?.eo_payload1_sent) {
-        await sendPayload1(env, {
-          id: c.contactId,
-          firstname: c.firstName,
-          email: c.email,
-          phone: c.to,
-          company: c.company,
-          brief,
-          demoConsent: c.demoConsent,
-        });
-      }
+      const brief = await researchBrief(env, p.eo_company_name, p.email);
+      await patchContact(env, c.id, { eo_research_brief: brief });
+      log(env, { at: "queue.brief", contactId: c.id, chars: brief.length });
     } catch (e) {
-      log(env, { at: "instant.payload1", contactId: c.contactId, error: String(e) });
+      log(env, { at: "queue.brief", contactId: c.id, error: String(e) });
+    }
+  }));
+
+  // Hero images, from the face crop stashed at capture.
+  await Promise.all(needHero.map(async (c) => {
+    const key = `eo/face/${c.id}.jpg`;
+    const face = await env.PHOTOS.get(key, "arrayBuffer").catch(() => null);
+    if (!face) return;
+    try {
+      const b64 = bytesToB64(new Uint8Array(face));
+      const bytes = await heroImage(env, `data:image/jpeg;base64,${b64}`);
+      const hk = `eo/hero-${crypto.randomUUID()}.jpg`;
+      await env.PHOTOS.put(hk, bytes);
+      const heroUrl = `${origin}/photo/${hk}`;
+      await patchContact(env, c.id, { eo_hero_image_url: heroUrl });
+      await env.PHOTOS.delete(key).catch(() => {});
+      log(env, { at: "queue.hero", contactId: c.id, url: heroUrl });
+
+      const p = c.properties;
+      await uploadToDrive(env, {
+        lastName: p.lastname, firstName: p.firstname, photoUrl: "", heroUrl,
+      }).catch((e) => log(env, { at: "queue.drive", contactId: c.id, error: String(e) }));
+    } catch (e) {
+      log(env, { at: "queue.hero", contactId: c.id, error: String(e) });
+    }
+  }));
+
+  // Late arrivals: captured after 6:17, brief ready, Payload #1 not yet sent.
+  if (nowPT() >= 18 * 60 + 17) {
+    const late = contacts.filter((c) =>
+      !c.properties.eo_payload1_sent && c.properties.eo_research_brief);
+    for (const c of late) {
+      const p = c.properties;
+      try {
+        await sendPayload1(env, {
+          id: c.id,
+          firstname: p.firstname,
+          email: p.email,
+          phone: normalizePhone(p.phone),
+          company: p.eo_company_name,
+          brief: p.eo_research_brief,
+          demoConsent: p.eo_demo_consent === "true",
+        });
+        log(env, { at: "queue.payload1", contactId: c.id, sent: true });
+      } catch (e) {
+        log(env, { at: "queue.payload1", contactId: c.id, error: String(e) });
+      }
     }
   }
+}
+
+function bytesToB64(bytes) {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(bin);
 }
 
 // ─────────────────────────────────────────────────────── inbound SMS
@@ -413,13 +491,36 @@ async function runPayload1(env) {
         email: p.email,
         phone: normalizePhone(p.phone),
         company: p.eo_company_name,
-        brief: p.eo_research_brief || genericBrief(p.eo_company_name),
+        brief: p.eo_research_brief || "",
         demoConsent: p.eo_demo_consent === "true",
       });
     } catch (e) {
       log(env, { at: "payload1.claim", contactId: c.id, error: String(e) });
     }
   }
+
+  // Backfill briefs that never landed at capture time. This is the reliable
+  // place to do the research: a scheduled handler gets minutes of wall clock,
+  // where waitUntil() got killed mid-call. Runs all of them concurrently, so
+  // the whole backfill costs about one call's latency, not N of them.
+  const missing = claimed.filter((c) => !c.brief);
+  if (missing.length) {
+    log(env, { at: "payload1.backfill", count: missing.length });
+    await Promise.all(missing.map((c) =>
+      researchBrief(env, c.company, c.email)
+        .then(async (b) => {
+          c.brief = b;
+          await patchContact(env, c.id, { eo_research_brief: b });
+          log(env, { at: "payload1.backfill", contactId: c.id, chars: b.length });
+        })
+        .catch((e) => {
+          c.brief = genericBrief(c.company);
+          log(env, { at: "payload1.backfill", contactId: c.id, error: String(e) });
+        })
+    ));
+  }
+  // Anything still empty (research threw and the catch above missed it)
+  claimed.forEach((c) => { if (!c.brief) c.brief = genericBrief(c.company); });
 
   // Texts in three waves, ~30s apart. Sleeping is wall clock, not CPU, so
   // this stays well inside the scheduled-handler budget.
@@ -517,9 +618,30 @@ async function runPayload2(env) {
 
 // ─────────────────────────────────────────────────────────── Claude
 
-async function researchBrief(env, company) {
+// Free-mail domains tell you nothing about the business, so they are never
+// used as the research subject.
+const FREEMAIL = new Set([
+  "gmail.com", "googlemail.com", "yahoo.com", "ymail.com", "hotmail.com",
+  "outlook.com", "live.com", "msn.com", "icloud.com", "me.com", "mac.com",
+  "aol.com", "protonmail.com", "proton.me", "gmx.com", "zoho.com",
+  "comcast.net", "sbcglobal.net", "att.net", "verizon.net",
+]);
+
+function researchSubject(company, email) {
   const name = (company || "").trim();
-  if (!name) throw new Error("no company");
+  const domain = String(email || "").split("@")[1]?.trim().toLowerCase() || "";
+  const useful = domain && !FREEMAIL.has(domain);
+
+  if (useful && name) return `Email domain: ${domain}\nCompany name they typed: ${name}`;
+  if (useful) return `Email domain: ${domain}\n(They did not give a company name.)`;
+  if (name) return `Company name they typed: ${name}\n(Their email is on a free provider, so there is no company domain to work from — the typed name is all you have, and it may be misspelled.)`;
+  return "";
+}
+
+async function researchBrief(env, company, email) {
+  const subject = researchSubject(company, email);
+  if (!subject) throw new Error("no company or domain");
+  const name = (company || "").trim();
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -530,15 +652,20 @@ async function researchBrief(env, company) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 2000,
+      max_tokens: CLAUDE_MAX_TOKENS,
       system: RESEARCH_SYSTEM,
       // Dynamic filtering is built into this tool version — do NOT also
       // declare code_execution; a second execution environment confuses
       // the model.
-      tools: [{ type: "web_search_20260209", name: "web_search" }],
+      // max_uses is load-bearing, not tuning. Uncapped, the model ran 12-16
+      // searches and the call took 90 SECONDS — measured against the
+      // deployed Worker. Cloudflare kills waitUntil() background work long
+      // before that, so every brief was silently lost: four captures, zero
+      // briefs stored. Capped at 5 the call lands in ~25-35s, which fits.
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
       messages: [{
         role: "user",
-        content: `Company: ${name}\n\nResearch them and write the brief.`,
+        content: `${subject}\n\nResearch them and write the brief.`,
       }],
     }),
   });
@@ -563,9 +690,14 @@ async function researchBrief(env, company) {
         model: CLAUDE_MODEL,
         max_tokens: 2000,
         system: RESEARCH_SYSTEM,
-        tools: [{ type: "web_search_20260209", name: "web_search" }],
+        // max_uses is load-bearing, not tuning. Uncapped, the model ran 12-16
+      // searches and the call took 90 SECONDS — measured against the
+      // deployed Worker. Cloudflare kills waitUntil() background work long
+      // before that, so every brief was silently lost: four captures, zero
+      // briefs stored. Capped at 5 the call lands in ~25-35s, which fits.
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
         messages: [
-          { role: "user", content: `Company: ${name}\n\nResearch them and write the brief.` },
+          { role: "user", content: `${subject}\n\nResearch them and write the brief.` },
           { role: "assistant", content: data.content },
         ],
       }),
@@ -573,12 +705,67 @@ async function researchBrief(env, company) {
     if (!resumed.ok) throw new Error(`Anthropic resume ${resumed.status}`);
     const rdata = await resumed.json();
     const rtext = cleanBody(extractText(rdata));
-    if (rtext) return rtext;
+    if (rtext) return polish(env, rtext);
   }
 
   const text = cleanBody(extractText(data));
   if (!text) throw new Error("empty brief");
-  return text;
+  return polish(env, text);
+}
+
+// The search call narrates. Across four test runs it produced three
+// different preamble shapes — "Here is the brief for your email:",
+// "I've now done five searches...", "I now have enough solid, accurate
+// information to write the brief. Here's what I know: ..." — and each new
+// regex only caught the shape that had already burned us. One in three
+// briefs was arriving with the model's working notes stapled to the front.
+//
+// So: a second pass with NO tools, which has nothing to narrate about. It
+// only ever deletes; the wording that reaches the attendee is still the
+// wording the research call wrote. Costs one cheap call and a few seconds,
+// and this runs in waitUntil() where seconds are free.
+//
+// If it fails, fall back to the regex-cleaned text — degraded, not broken.
+async function polish(env, raw) {
+  const system = `You are given the raw output of an AI assistant that was asked to research a company, write a short brief for an email, and then list five AI agents that company could build.
+
+Return ONLY the deliverable itself, word for word as written. The deliverable is the brief AND the "Five agents you could build tonight:" section with its five numbered items — both are part of it. Keep the numbered list intact and keep that heading line exactly as written.
+
+Remove anything that is not the brief: opening commentary about the research process ("I've now done five searches", "I now have enough information"), announcements of what is coming ("Here is the brief:", "Here's what I know:"), summaries of findings written as notes to self, horizontal rules, headers, and any closing remark addressed to whoever asked.
+
+If a sentence or paragraph appears twice — a draft opening followed by the real one — keep only the version inside the final brief.
+
+Do not rewrite, reword, shorten, expand, correct, or reorder anything you keep. You are deleting, not editing. If the entire input is already clean, return it unchanged.`;
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: CLAUDE_MAX_TOKENS,
+      system,
+      messages: [{ role: "user", content: raw }],
+    }),
+  });
+  if (!res.ok) {
+    log(env, { at: "polish", error: `Anthropic ${res.status}` });
+    return raw;
+  }
+  const data = await res.json();
+  if (data.stop_reason === "refusal") return raw;
+
+  const out = cleanBody(extractText(data));
+  // Guard against the polish call eating the brief or "helpfully" rewriting
+  // it into something much shorter — if it looks wrong, keep the original.
+  if (!out || out.length < 120 || out.length > raw.length + 40) {
+    log(env, { at: "polish", kept_raw: true, rawLen: raw.length, outLen: out.length });
+    return raw;
+  }
+  return out;
 }
 
 async function composePayload2Email(env, brief) {
@@ -591,7 +778,7 @@ async function composePayload2Email(env, brief) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 1200,
+      max_tokens: CLAUDE_MAX_TOKENS,
       system: PAYLOAD2_SYSTEM,
       messages: [{
         role: "user",
@@ -604,7 +791,7 @@ async function composePayload2Email(env, brief) {
   if (data.stop_reason === "refusal") throw new Error("refusal");
   const text = cleanBody(extractText(data));
   if (!text) throw new Error("empty email");
-  return text;
+  return polish(env, text);
 }
 
 // Response content interleaves text with server_tool_use and
@@ -726,25 +913,44 @@ async function heroImage(env, faceDataUrl) {
 // source everyone's prints get pulled from after the event. Failure is
 // logged and never surfaced: the photo flow is sacred and must not block on
 // a Drive write, and the recovery path above means nothing is unrecoverable.
+// One POST per file, flat fields. Zapier's Catch Hook maps flat keys
+// straight onto a "Upload File" step (File = the url field, File Name =
+// filename); a nested array would need a code step in between.
 async function uploadToDrive(env, { lastName, firstName, photoUrl, heroUrl }) {
-  if (!env.DRIVE_UPLOAD_HOOK) return;
-  const slug = (s) => String(s || "guest").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const base = `${slug(lastName)}-${slug(firstName)}`;
-  const files = [];
-  if (photoUrl) files.push({ filename: `${base}-photo.jpg`, url: photoUrl });
-  if (heroUrl) files.push({ filename: `${base}-hero.jpg`, url: heroUrl });
-  if (!files.length) return;
-
-  if (env.MODE !== "send") {
-    log(env, { at: "drive", dry_run: true, files: files.map((f) => f.filename) });
+  if (!env.DRIVE_UPLOAD_HOOK) {
+    log(env, { at: "drive", skipped: "DRIVE_UPLOAD_HOOK unset" });
     return;
   }
-  const res = await fetch(env.DRIVE_UPLOAD_HOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ folder: env.DRIVE_FOLDER_ID || "", files }),
-  });
-  if (!res.ok) throw new Error(`Drive hook ${res.status}`);
+  const slug = (s) => String(s || "guest").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const base = `${slug(lastName)}-${slug(firstName)}`;
+
+  const files = [];
+  if (photoUrl) files.push({ kind: "photo", filename: `${base}-photo.jpg`, url: photoUrl });
+  if (heroUrl) files.push({ kind: "hero", filename: `${base}-hero.jpg`, url: heroUrl });
+  if (!files.length) return;
+
+  for (const f of files) {
+    const body = {
+      filename: f.filename,
+      url: f.url,
+      kind: f.kind,
+      first_name: firstName || "",
+      last_name: lastName || "",
+      folder_id: env.DRIVE_FOLDER_ID || "",
+      event: "EO LA Valley 2026-08-20",
+    };
+    if (env.MODE !== "send") {
+      log(env, { at: "drive", dry_run: true, ...body });
+      continue;
+    }
+    const res = await fetch(env.DRIVE_UPLOAD_HOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`Drive hook ${res.status} for ${f.filename}`);
+    log(env, { at: "drive", sent: f.filename, kind: f.kind });
+  }
 }
 
 // ─────────────────────────────────────────────────────────── HubSpot
@@ -929,16 +1135,38 @@ function shell(inner) {
 
 function photoEmailHtml(firstName, photoUrl) {
   return shell(`
-  <h1 style="color:#F1F5F9;font-size:23px;margin:0 0 16px;">Here's your photo, ${escapeHtml(firstName || "friend")}.</h1>
+  <h1 style="color:#F1F5F9;font-size:23px;margin:0 0 16px;">Thanks for coming tonight, ${escapeHtml(firstName || "friend")}.</h1>
   ${photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="Your photo" style="width:100%;border-radius:12px;margin:0 0 18px;">` : ""}
-  <p style="font-size:16px;line-height:1.65;color:#CBD5E1;">That's the easy part. I'm working on something else for you — give me a few minutes.</p>
+  <p style="font-size:16px;line-height:1.65;color:#CBD5E1;">Here's your photo from the EO LA Valley learning event. That's the easy part — I'm working on something else for you. Give me a few minutes.</p>
   <p style="font-size:16px;line-height:1.65;color:#94A3B8;">— Minion #23 🤖</p>`);
 }
 
 function briefEmailHtml(bodyText) {
-  const paras = String(bodyText).split(/\n\s*\n/).map((p) =>
-    `<p style="font-size:16px;line-height:1.7;color:#CBD5E1;margin:0 0 16px;">${escapeHtml(p.trim()).replace(/\n/g, "<br>")}</p>`
-  ).join("");
+  const P = 'style="font-size:16px;line-height:1.7;color:#CBD5E1;margin:0 0 16px;"';
+
+  const paras = String(bodyText).split(/\n\s*\n/).map((block) => {
+    const lines = block.trim().split("\n").map((l) => l.trim()).filter(Boolean);
+
+    // "Five agents you could build tonight:" + numbered items. Render as a
+    // real list — as plain <p> the numbers run together on a phone and the
+    // most useful part of the email reads like a wall.
+    const numbered = lines.filter((l) => /^\d+\.\s/.test(l));
+    if (numbered.length >= 2) {
+      const heading = lines.filter((l) => !/^\d+\.\s/.test(l));
+      const items = numbered.map((l) => {
+        const t = escapeHtml(l.replace(/^\d+\.\s*/, ""));
+        // Bold the agent name up to the em dash, if the model used one
+        const named = t.replace(/^([^—]{2,60})—/, '<strong style="color:#F1F5F9;">$1</strong>—');
+        return `<li style="margin:0 0 11px;">${named}</li>`;
+      }).join("");
+      return (heading.length
+        ? `<p style="font-size:16px;line-height:1.7;color:#38BDF8;font-weight:700;margin:26px 0 12px;">${escapeHtml(heading.join(" "))}</p>`
+        : "") +
+        `<ol style="font-size:16px;line-height:1.65;color:#CBD5E1;margin:0 0 16px;padding-left:22px;">${items}</ol>`;
+    }
+
+    return `<p ${P}>${escapeHtml(block.trim()).replace(/\n/g, "<br>")}</p>`;
+  }).join("");
   return shell(`
   <p style="font-size:16px;line-height:1.7;color:#94A3B8;margin:0 0 20px;">You took a photo 20 minutes ago. I've been busy since.</p>
   ${paras}

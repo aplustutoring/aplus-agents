@@ -64,6 +64,45 @@ def clean_body(text):
     return t.strip()
 
 
+POLISH_SYSTEM = """You are given the raw output of an AI assistant that was asked to research a company, write a short brief for an email, and then list five AI agents that company could build.
+
+Return ONLY the deliverable itself, word for word as written. The deliverable is the brief AND the "Five agents you could build tonight:" section with its five numbered items — both are part of it. Keep the numbered list intact and keep that heading line exactly as written.
+
+Remove anything that is not the brief: opening commentary about the research process ("I've now done five searches", "I now have enough information"), announcements of what is coming ("Here is the brief:", "Here's what I know:"), summaries of findings written as notes to self, horizontal rules, headers, and any closing remark addressed to whoever asked.
+
+If a sentence or paragraph appears twice — a draft opening followed by the real one — keep only the version inside the final brief.
+
+Do not rewrite, reword, shorten, expand, correct, or reorder anything you keep. You are deleting, not editing. If the entire input is already clean, return it unchanged."""
+
+
+def call(body, key):
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=json.dumps(body).encode(),
+        headers={
+            "x-api-key": key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=180) as r:
+        return json.loads(r.read())
+
+
+def polish(raw, key):
+    """Mirror of polish() in worker.js — second pass, no tools."""
+    data = call({
+        "model": model(),
+        "max_tokens": 2000,
+        "system": POLISH_SYSTEM,
+        "messages": [{"role": "user", "content": raw}],
+    }, key)
+    out = clean_body(extract_text(data.get("content", [])))
+    if not out or len(out) < 120 or len(out) > len(raw) + 40:
+        return raw
+    return out
+
+
 def brief(company, key):
     body = {
         "model": model(),
@@ -75,21 +114,11 @@ def brief(company, key):
             "content": f"Company: {company}\n\nResearch them and write the brief.",
         }],
     }
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=json.dumps(body).encode(),
-        headers={
-            "x-api-key": key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=180) as r:
-        data = json.loads(r.read())
-
+    data = call(body, key)
     blocks = data.get("content", [])
     searches = sum(1 for b in blocks if b.get("type") == "server_tool_use")
-    return (clean_body(extract_text(blocks)), searches,
+    raw = clean_body(extract_text(blocks))
+    return (polish(raw, key), searches,
             data.get("stop_reason"), data.get("usage", {}))
 
 
