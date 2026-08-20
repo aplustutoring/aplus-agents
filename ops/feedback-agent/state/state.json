@@ -19,18 +19,14 @@
     "Ev0BPV9EHW2D",
     "Ev0BPTBT6MB4",
     "Ev0BQ5R9TD0B",
-    "Ev0BRQ62HN1J"
+    "Ev0BRQ62HN1J",
+    "Ev0BRNE74CLR"
   ],
   "awaiting": {
     "1785537854.599709": {
       "user": "U05NA7UMSSV",
       "text": "status *Sent using* <@U0AKFN28V1U>",
       "asked_utc": "2026-07-31T22:44:47.124156+00:00"
-    },
-    "1787242876.934569": {
-      "user": "U05NA7UMSSV",
-      "text": "Did you get the last message",
-      "asked_utc": "2026-08-20T16:21:48.672237+00:00"
     }
   },
   "reports": [
@@ -168,6 +164,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786733741882079"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787242876.934569",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "UNKNOWN",
+      "type": "BROKEN",
+      "severity": "low",
+      "correction_path": "corrections/UNKNOWN/2026-08-20-unclear-danielle-8-18-post.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/90",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787242876934569?thread_ts=1787242876.934569&cid=C0BL05MCJ4B"
     }
   ],
   "graduation": {
