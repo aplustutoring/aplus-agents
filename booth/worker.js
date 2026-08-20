@@ -84,6 +84,32 @@ export default {
       results.hubspot = { error: String(e) };
     }
 
+    // ---------- 1b. Photo archive (every submission, permanent) ----------
+    // Stored in KV under an unguessable key, served at /photo/<key>; the MMS
+    // path reuses this object instead of storing its own 7-day copy. The
+    // archive URL is logged on the contact's timeline so any photo can be
+    // recovered/resent later (Katie Lane bounced-email lesson, 2026-08).
+    let archiveUrl = null;
+    if (photo) {
+      try {
+        const base64 = photo.replace(/^data:image\/jpeg;base64,/, "");
+        const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+        const key = `${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID()}.jpg`;
+        await env.PHOTOS.put(key, bytes); // no TTL — permanent archive
+        archiveUrl = `${url.origin}/photo/${key}`;
+        results.archive = { url: archiveUrl };
+        if (results.hubspot?.id) {
+          try {
+            await logPhotoNote(env, results.hubspot.id, archiveUrl, { goal, delivery });
+          } catch (e) {
+            results.archive.noted = String(e);
+          }
+        }
+      } catch (e) {
+        results.archive = { error: String(e) };
+      }
+    }
+
     // ---------- 2. Resend email ----------
     if (sendEmail && photo) {
       try {
@@ -104,7 +130,7 @@ export default {
     // ---------- 3. JustCall MMS ----------
     if (sendText && photo) {
       try {
-        results.text = await sendPhotoText(env, { phone, firstName, photo });
+        results.text = await sendPhotoText(env, { phone, firstName, photo, archiveUrl });
       } catch (e) {
         results.text = { error: String(e) };
       }
@@ -236,6 +262,28 @@ async function logEmailEngagement(env, contactId, toEmail) {
   if (!res.ok) throw new Error(`HubSpot email log ${res.status}: ${await res.text()}`);
 }
 
+// Photo-archive breadcrumb on the contact timeline (note→contact assoc 202)
+async function logPhotoNote(env, contactId, photoUrl, { goal, delivery }) {
+  const res = await fetch("https://api.hubapi.com/crm/v3/objects/notes", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.HUBSPOT_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      properties: {
+        hs_timestamp: new Date().toISOString(),
+        hs_note_body: `📸 Booth photo (archived): ${photoUrl}\nBanner: "${goal || ""}" · Delivery: ${delivery || ""} · Sage Oak BTSC 2026`,
+      },
+      associations: [{
+        to: { id: contactId },
+        types: [{ associationCategory: "HUBSPOT_DEFINED", associationTypeId: 202 }],
+      }],
+    }),
+  });
+  if (!res.ok) throw new Error(`HubSpot photo note ${res.status}: ${await res.text()}`);
+}
+
 // "(818) 850-6284" / "818-850-6284" / "+18188506284" → "+18188506284"
 function normalizePhone(raw) {
   const d = String(raw || "").replace(/\D/g, "");
@@ -244,14 +292,19 @@ function normalizePhone(raw) {
   return null;
 }
 
-async function sendPhotoText(env, { phone, firstName, photo }) {
+async function sendPhotoText(env, { phone, firstName, photo, archiveUrl }) {
   const to = normalizePhone(phone);
-  const base64 = photo.replace(/^data:image\/jpeg;base64,/, "");
-  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
-  const key = `${crypto.randomUUID()}.jpg`;
-  await env.PHOTOS.put(key, bytes, { expirationTtl: 604800 }); // 7 days
-  const mediaUrl = `https://sage-oak-booth.nameless-mountain-bafa.workers.dev/photo/${key}`;
+  // Reuse the permanent archive object when available; store a 7-day copy
+  // only as fallback (e.g. archive write failed).
+  let mediaUrl = archiveUrl;
+  if (!mediaUrl) {
+    const base64 = photo.replace(/^data:image\/jpeg;base64,/, "");
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const key = `${crypto.randomUUID()}.jpg`;
+    await env.PHOTOS.put(key, bytes, { expirationTtl: 604800 });
+    mediaUrl = `https://sage-oak-booth.nameless-mountain-bafa.workers.dev/photo/${key}`;
+  }
 
   const name = firstName || "there";
   const res = await fetch("https://api.justcall.io/v2.1/texts/new", {
