@@ -1,10 +1,29 @@
-# A+ Automation Fleet — current breakdown
+# A+ Automation Fleet — handoff brief
 
-**Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Safe to paste anywhere (a Claude chat, an email, a doc) knowing it matches what is actually running.
+**Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
 **36 registered agents** — 23 active · 10 manual · 3 deprecated · across 9 engines.
 
-Everything runs on GitHub Actions cron out of one repo (`aplustutoring/aplus-agents`). No always-on machine. HubSpot owns families and all communication; Teachworks owns lessons; engines sync from Teachworks into HubSpot. For architecture and governance read `ARCHITECTURE.md`; for the full per-agent detail read `registry.yml`.
+## What this is
+
+A+ Tutoring runs its operations on a fleet of automated agents. They live in one
+repo (`aplustutoring/aplus-agents`) and run on GitHub Actions cron — there is no
+always-on server. Each run commits its own state back to the repo, which is why
+the remote is usually well ahead of any local checkout.
+
+**Systems in play:** HubSpot (CRM, portal 6312752) · Teachworks (lessons and
+scheduling) · JustCall (phones + SMS) · Monday (boards) · Slack (where agents
+talk to humans) · Google Drive/Sheets (spotlight intake, retention log).
+
+**Sources of truth — these two settle every argument:**
+
+| System | Owns |
+|---|---|
+| **HubSpot** | Families: all contact information AND all communication — contacts, deals, tickets, conversations, blog posts |
+| **Teachworks** | Lessons: scheduling, attendance, invoices |
+
+Agents sync **from Teachworks into HubSpot**. No sheet, cache, or state file
+outranks those two. HubSpot is where humans act.
 
 ## At a glance
 
@@ -63,7 +82,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **email-draft-feedback**<br>Draft feedback weekly (Fri 4 PM PT) | 16:00 PDT Fri / 15:00 PST | active | Gmail:drafts, email/state/draft_registry.jsonl | corrections/email-drafts/, email/state/, Slack |
 | **email-hourly-update**<br>Hourly launch-monitoring update | hourly, business hours | active | email/state/audit_log.jsonl | Slack |
 | **email-po-daily-report**<br>PO day report (6 PM PT) | 18:00 PDT Mon-Fri / 17:00 PST | active | HubSpot:deals, Teachworks:invoices | Slack |
-| **email-po-inbox**<br>Charter PO inbox (charter@wetutorathome.com) | every 15 min during business hours + hourly | active | Gmail:charter@ (incl. PDF/image PO attachments), HubSpot:deals, HubSpot:contacts, Teachworks:lessons (upcoming-calendar check) | HubSpot:deals (create; Level Up A 88841552 routing; props: po_number, number_of_hours_in_this_po, student_first_name, student_last_name_if_diff_from_parent, student_grade, student_school, parent_email, parent_phone, lessons_fulfilled_date), HubSpot:contacts (find-or-create parent + TOR, associate to deal), HubSpot:files+notes (PO PDF pinned to the deal), HubSpot:tickets+tasks (Kath ticket; same-day convert-PO-to-TW-invoice task), Gmail:labels (drafts only on non-PO mail — POs never get replies), Slack (Kath DM; URGENT duplicate-PO alert; no-lessons scheduling nudge) |
+| **email-po-inbox**<br>Charter PO inbox (charter@wetutorathome.com) | every 15 min during business hours + hourly | active | Gmail:charter@ (incl. PDF/image PO attachments), HubSpot:deals, HubSpot:contacts, Teachworks:lessons (upcoming-calendar check) | HubSpot:deals, HubSpot:contacts, HubSpot:files+notes, HubSpot:tickets+tasks, Gmail:labels, Slack |
 | **email-sla-sweep**<br>SLA sweep | hourly | active | HubSpot:tickets | Slack, HubSpot:tickets |
 | **email-triage**<br>Inbox triage | every 15 min during business hours + hourly | active | HubSpot:conversations, HubSpot:contacts, Teachworks | HubSpot:tickets, HubSpot:conversations(comment), Slack |
 | **email-weekly-digest**<br>Weekly digest | Mon 8 AM PT | active | HubSpot:tickets, email/state/audit_log.jsonl | Slack |
@@ -142,3 +161,59 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 - **tw-invoice-xref** — Recent PO deals <-> Teachworks invoices
 - **tw-invoice-backfill** — One-off, written to clear the 2026-08-07..09 invoice-sweep backlog
 
+## Working rules every agent follows
+
+Anyone reasoning about this fleet — human or Claude — needs these.
+
+- **Registration.** If it isn't in `registry.yml`, it doesn't exist. That file is
+  also the feedback agent's vocabulary and the DEMOTE path's target list, so an
+  unregistered agent cannot be reported against or paused. Enforced in CI by
+  `ops/fleet-health/registry_check.py`.
+- **Read labels, never values.** Agents read HubSpot enumeration LABELS. Internal
+  values differ from what humans see (e.g. lead status value `We Connected` is
+  labeled "QTL - NEW").
+- **Agent-written properties are marked.** Any property an agent writes carries
+  the `[Agent] ` label prefix and a description starting "AGENT PROPERTY — written
+  by <script>", so humans can tell agent fields from intake capture at a glance.
+  New properties are declared in `ops/hubspot-schema/properties.yml` and synced by
+  workflow — never created ad hoc.
+- **Roles, not names.** Config keys, properties, and audit actions name roles
+  (`charter_sales`), never people. Only the `staff:` block maps roles to humans.
+- **Five personas.** Contacts are typed by `a_persona` (multi-select): Decision
+  Maker/Director · Teacher of Record/EF/ES · Family · Tutors · Student.
+- **Family→Teacher-of-Record is an association**, contact-to-contact, paired label
+  "Teacher of Record" (typeId 15; reverse "Family" = 14). The stamped
+  `teacher_of_record_name/email` text fields are legacy intake capture, not truth.
+- **Charter PO deals** are named `Parent - Student - School N - YY/YY`. PO numbers
+  are stored bare, with no "PO" prefix.
+- **Pacific time.** Every workflow sets `TZ=America/Los_Angeles`. Human-facing
+  output and date windows are PT; state cursors and audit logs are explicit UTC.
+- **Exit codes.** An agent that accomplished NONE of its work must exit non-zero —
+  the retry sweeper only reacts to non-zero exits, so a script that prints failures
+  and exits 0 is invisible. Narrow on purpose: isolating one bad item so it can't
+  kill a batch is good design. 0 of 50 is a failed run; 49 of 50 is a warning.
+- **Concurrency.** Multiple Claude sessions share this checkout. Branch/PR work
+  happens in a git worktree, never in the shared checkout.
+- **Approval-first.** Nothing outbound ships without Roman's explicit go.
+
+## How a problem gets fixed
+
+Report it in the Slack channel `#agent-feedback` in plain English. The feedback
+agent works out which agent you mean and how bad it is, asks at most one
+clarifying question, files it as a correction, and proposes a fix in the thread.
+Approve in the thread and a coding agent implements it on a branch and opens a PR
+for Roman to merge; merging replies in the original thread to close the loop.
+
+To stop a misbehaving agent, say so — the DEMOTE path produces a one-click PR
+flipping it to draft-only. Honored first, reviewed after.
+
+## Not built (deliberately)
+
+**Charter prospecting / B2B sales engine.** Discussed, never built — no code, no
+automation. What exists are five manual, read-only-by-default charter analysis
+reports. If it is ever built for real it goes in as a fresh engine with registry
+entries.
+
+---
+
+*Deeper detail: `ARCHITECTURE.md` for the engine map, autonomy, and known weak points · `registry.yml` for every trigger, read, and write per agent · `docs/CHANGELOG.md` for why things changed.*

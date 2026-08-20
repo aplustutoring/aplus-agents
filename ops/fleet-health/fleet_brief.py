@@ -27,6 +27,87 @@ REPO = Path(__file__).resolve().parents[2]
 REGISTRY = REPO / "registry.yml"
 OUT = REPO / "docs" / "FLEET.md"
 
+# ── Hand-maintained prose ───────────────────────────────────────────────────
+# Everything below this line is context a reader (or a Claude chat) needs that
+# registry.yml cannot express. Keep it short and keep it true — the per-agent
+# detail is generated, this is the part a human has to maintain.
+
+CONTEXT = """## What this is
+
+A+ Tutoring runs its operations on a fleet of automated agents. They live in one
+repo (`aplustutoring/aplus-agents`) and run on GitHub Actions cron — there is no
+always-on server. Each run commits its own state back to the repo, which is why
+the remote is usually well ahead of any local checkout.
+
+**Systems in play:** HubSpot (CRM, portal 6312752) · Teachworks (lessons and
+scheduling) · JustCall (phones + SMS) · Monday (boards) · Slack (where agents
+talk to humans) · Google Drive/Sheets (spotlight intake, retention log).
+
+**Sources of truth — these two settle every argument:**
+
+| System | Owns |
+|---|---|
+| **HubSpot** | Families: all contact information AND all communication — contacts, deals, tickets, conversations, blog posts |
+| **Teachworks** | Lessons: scheduling, attendance, invoices |
+
+Agents sync **from Teachworks into HubSpot**. No sheet, cache, or state file
+outranks those two. HubSpot is where humans act.
+"""
+
+RULES = """## Working rules every agent follows
+
+Anyone reasoning about this fleet — human or Claude — needs these.
+
+- **Registration.** If it isn't in `registry.yml`, it doesn't exist. That file is
+  also the feedback agent's vocabulary and the DEMOTE path's target list, so an
+  unregistered agent cannot be reported against or paused. Enforced in CI by
+  `ops/fleet-health/registry_check.py`.
+- **Read labels, never values.** Agents read HubSpot enumeration LABELS. Internal
+  values differ from what humans see (e.g. lead status value `We Connected` is
+  labeled "QTL - NEW").
+- **Agent-written properties are marked.** Any property an agent writes carries
+  the `[Agent] ` label prefix and a description starting "AGENT PROPERTY — written
+  by <script>", so humans can tell agent fields from intake capture at a glance.
+  New properties are declared in `ops/hubspot-schema/properties.yml` and synced by
+  workflow — never created ad hoc.
+- **Roles, not names.** Config keys, properties, and audit actions name roles
+  (`charter_sales`), never people. Only the `staff:` block maps roles to humans.
+- **Five personas.** Contacts are typed by `a_persona` (multi-select): Decision
+  Maker/Director · Teacher of Record/EF/ES · Family · Tutors · Student.
+- **Family→Teacher-of-Record is an association**, contact-to-contact, paired label
+  "Teacher of Record" (typeId 15; reverse "Family" = 14). The stamped
+  `teacher_of_record_name/email` text fields are legacy intake capture, not truth.
+- **Charter PO deals** are named `Parent - Student - School N - YY/YY`. PO numbers
+  are stored bare, with no "PO" prefix.
+- **Pacific time.** Every workflow sets `TZ=America/Los_Angeles`. Human-facing
+  output and date windows are PT; state cursors and audit logs are explicit UTC.
+- **Exit codes.** An agent that accomplished NONE of its work must exit non-zero —
+  the retry sweeper only reacts to non-zero exits, so a script that prints failures
+  and exits 0 is invisible. Narrow on purpose: isolating one bad item so it can't
+  kill a batch is good design. 0 of 50 is a failed run; 49 of 50 is a warning.
+- **Concurrency.** Multiple Claude sessions share this checkout. Branch/PR work
+  happens in a git worktree, never in the shared checkout.
+- **Approval-first.** Nothing outbound ships without Roman's explicit go.
+
+## How a problem gets fixed
+
+Report it in the Slack channel `#agent-feedback` in plain English. The feedback
+agent works out which agent you mean and how bad it is, asks at most one
+clarifying question, files it as a correction, and proposes a fix in the thread.
+Approve in the thread and a coding agent implements it on a branch and opens a PR
+for Roman to merge; merging replies in the original thread to close the loop.
+
+To stop a misbehaving agent, say so — the DEMOTE path produces a one-click PR
+flipping it to draft-only. Honored first, reviewed after.
+
+## Not built (deliberately)
+
+**Charter prospecting / B2B sales engine.** Discussed, never built — no code, no
+automation. What exists are five manual, read-only-by-default charter analysis
+reports. If it is ever built for real it goes in as a fresh engine with registry
+entries.
+"""
+
 # Engine order for the document — narrative order, not alphabetical: the two
 # content engines, then the operational core, then the plumbing.
 ENGINE_ORDER = [
@@ -66,8 +147,14 @@ def trigger_text(a):
     return t.get("type", "—")
 
 
-def flatten(v):
-    """reads/writes are lists of strings, sometimes single-key dicts."""
+def flatten(v, budget=260):
+    """reads/writes are lists of strings, sometimes single-key dicts.
+
+    Registry entries spell out implementation detail in parentheses — invaluable
+    in registry.yml, unreadable in a table cell (email-po-inbox's writes run past
+    900 characters). Over `budget`, keep each item's subject and drop its
+    parenthetical; registry.yml is cited for the rest.
+    """
     out = []
     for item in v or []:
         if isinstance(item, dict):
@@ -76,6 +163,9 @@ def flatten(v):
             # Registry entries carry trailing `# comment` context; keep the
             # payload, drop the annotation.
             out.append(str(item).split("#", 1)[0].strip())
+    out = [x for x in out if x]
+    if sum(len(x) for x in out) > budget:
+        out = [x.split("(", 1)[0].strip().rstrip(",;") if "(" in x else x for x in out]
     return [x for x in out if x]
 
 
@@ -103,20 +193,18 @@ def render(agents):
     depr = sum(1 for a in agents if a.get("status") == "deprecated")
 
     L = []
-    L.append("# A+ Automation Fleet — current breakdown")
+    L.append("# A+ Automation Fleet — handoff brief")
     L.append("")
     L.append("**Generated from `registry.yml` — do not edit by hand.** Regenerated on every "
-             "merge to `main` by `ops/fleet-health/fleet_brief.py`. Safe to paste anywhere "
-             "(a Claude chat, an email, a doc) knowing it matches what is actually running.")
+             "merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on "
+             "purpose: paste the whole thing into a Claude chat (or hand it to a new person) "
+             "and it is everything needed to reason about the fleet, current as of the last "
+             "merge.")
     L.append("")
     L.append(f"**{len(agents)} registered agents** — {active} active · {manual} manual · "
              f"{depr} deprecated · across {len(engines)} engines.")
     L.append("")
-    L.append("Everything runs on GitHub Actions cron out of one repo "
-             "(`aplustutoring/aplus-agents`). No always-on machine. HubSpot owns families "
-             "and all communication; Teachworks owns lessons; engines sync from Teachworks "
-             "into HubSpot. For architecture and governance read `ARCHITECTURE.md`; for the "
-             "full per-agent detail read `registry.yml`.")
+    L.append(CONTEXT.strip())
     L.append("")
 
     L.append("## At a glance")
@@ -184,6 +272,13 @@ def render(agents):
             for i, n in notes:
                 L.append(f"- **{i}** — {n}")
     L.append("")
+    L.append(RULES.strip())
+    L.append("")
+    L.append("---")
+    L.append("")
+    L.append("*Deeper detail: `ARCHITECTURE.md` for the engine map, autonomy, and known weak "
+             "points · `registry.yml` for every trigger, read, and write per agent · "
+             "`docs/CHANGELOG.md` for why things changed.*")
     return "\n".join(L) + "\n"
 
 
