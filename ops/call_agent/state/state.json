@@ -354,10 +354,124 @@
     406219567,
     406220846,
     406220636,
-    406346243
+    406346243,
+    406455910,
+    406455166
   ],
-  "last_run_utc": "2026-08-20T16:13:29.826146+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-20T16:55:22.524859+00:00",
+  "pending_digest": [
+    {
+      "call_id": 406455910,
+      "number": "13104028006",
+      "time_pt": "9:22 AM",
+      "matched": true,
+      "contact_label": "Pete Flores",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Pete Flores called back after his prior failed in-person visit to the Studio City office. He clarified he is a partner with Parenthood Partners & Family Services (PPFS), a vendor under the regional centers, calling on behalf of participant Demelco (Domenico), who needs in-person chemistry tutoring (Chem 001B / Intro to Chem at Pasadena City College). His supervisor Josh joined via three-way. Paola quoted $130/hr in-person and $95/hr online, took his ZIP (91601) and email (peterf@ppfsla.org), and will send rates by email while Pete confirms funding limits with the agency.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Peter at peterf@ppfsla.org with in-person ($130/hr) and online ($95/hr) rates and a note about the free online trial session",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check tutor availability for chemistry (PCC Chem 001B) in ZIP 91601 for in-person sessions",
+            "owner_hint": null
+          },
+          {
+            "item": "Confirm Studio City Suite 207 office hours/staffing and communicate to Peter if he wants to revisit in person",
+            "owner_hint": null
+          },
+          {
+            "item": "Await Peter's callback after he confirms hourly-rate cap with PPFS/regional center funder",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Peter Flores (310-402-8006, peterf@ppfsla.org) called back \u2014 cordial and engaged this time, no longer disengaged as prior notes suggested. He is a 'partner' at Parenthood Partners & Family Services (PPFS), a vendor under the CA regional centers; his supervisor Josh was on a three-way. Tutoring is for their participant Demelco/Domenico (adult regional-center client), who is starting Intro to Chemistry / Chem 001B at Pasadena City College and wants IN-PERSON chemistry tutoring. ZIP 91601 (North Hollywood). Paola quoted $130/hr in-person and $95/hr online and mentioned a free online trial. Peter needs to verify the agency's hourly-rate cap before proceeding and will call back. He now expects a rates email from Paola. Open with: 'Hi Peter, this is ___ following up on your call with Paola \u2014 sending over the rates for Demelco's chemistry tutoring and happy to line up an in-person chemistry tutor in 91601 as soon as PPFS confirms the rate works.' Note: this is agency/regional-center funded, not a K-12 charter EF case.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Full intake completed on a prospective in-person tutoring engagement; rates quoted and email captured. Funding is via regional center agency (not a charter EF), and no diagnostic is needed for a college chemistry tutor, so 'We Connected' fits.",
+        "student_or_school_names_mentioned": [
+          "Demelco / Domenico",
+          "Pasadena City College",
+          "Parenthood Partners & Family Services (PPFS)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Pete called back, cordial this time. He clarified he is a 'partner' with Parenthood Partners & Family Services (PPFS), a vendor under the CA regional centers, calling on behalf of participant Demelco/Domenico who needs in-person chemistry tutoring for Pasadena City College Chem 001B (Intro to Chemistry) starting this semester. ZIP 91601 (North Hollywood). Agency (via regional center) will fund the tutoring pending confirmation of an allowable hourly rate.",
+          "what_we_can_do_to_help": "Paola emailed rates to peterf@ppfsla.org: $130/hr in-person and $95/hr online, plus free online trial. Next: check tutor availability in 91601 for PCC Chem 001B, and stand by for Peter's callback after PPFS confirms the rate cap. Treat billing as agency/regional-center invoicing, not a K-12 charter EF.",
+          "student_first_name": "Demelco",
+          "student_last_name": null,
+          "grade_level": "Graduated/College",
+          "student_school": "Pasadena City College",
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Pete called back, cordial this time. He clarified he is a 'partner' with Parenthood Partners & Family Services (PPFS), a vendor under the CA regional centers, calling on behalf of participant Demelco/Domenico who needs in-person chemistry tutoring for Pasadena City College Chem 001B (Intro to Chemistry) starting this semester. ZIP 91601 (North Hollywood). Agency (via regional center) will fund the tutoring pending confirmation of an allowable hourly rate."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola emailed rates to peterf@ppfsla.org: $130/hr in-person and $95/hr online, plus free online trial. Next: check tutor availability in 91601 for PCC Chem 001B, and stand by for Peter's callback after PPFS confirms the rate cap. Treat billing as agency/regional-center invoicing, not a K-12 charter EF."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Demelco"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "Graduated/College"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Pasadena City College"
+        ],
+        [
+          "lead_status",
+          "Dead Opportunity/Unqualified",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Peter at peterf@ppfsla.org with in-person ($130/hr) and online ($95/hr) rates and a note about the free online trial session",
+          81494333
+        ],
+        [
+          "Check tutor availability for chemistry (PCC Chem 001B) in ZIP 91601 for in-person sessions",
+          81494333
+        ],
+        [
+          "Confirm Studio City Suite 207 office hours/staffing and communicate to Peter if he wants to revisit in person",
+          81494333
+        ],
+        [
+          "Await Peter's callback after he confirms hourly-rate cap with PPFS/regional center funder",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
