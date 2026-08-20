@@ -347,9 +347,11 @@
     406182398,
     406188235,
     406194517,
-    406196588
+    406196588,
+    406199366,
+    406200983
   ],
-  "last_run_utc": "2026-08-19T23:39:16.124747+00:00",
+  "last_run_utc": "2026-08-20T00:00:14.355023+00:00",
   "pending_digest": [
     {
       "call_id": 406003462,
@@ -1114,6 +1116,173 @@
         [
           "Once a tutor is matched, send tutor profile to Divyesh for review before booking",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406199366,
+      "number": "16266848404",
+      "time_pt": "4:35 PM",
+      "matched": true,
+      "contact_label": "Abigail Villa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Abigail Villa to let her know that her daughter Malinale was nominated by her teacher Alicia for the A+ Tutoring Teacher Scholarship Program (free trial one-on-one tutoring). Abigail is a returning family \u2014 her son Zahavi was in the program last year \u2014 and she was excited. They booked the free trial session for Thursday the 27th at 2 PM, and Abigail shared context about Malinale being neurodivergent (ADHD, chronic anxiety), a visual/hands-on learner who needs a patient tutor. Abigail also mentioned she previously asked about getting her other child Ezekiel into the program.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out to Abigail to confirm details and share tutor profile before the Thursday 10/27 2 PM trial session",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Match Malinale with a patient tutor experienced with neurodivergent students (ADHD, anxiety); female preferred but open to male",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Send Abigail a confirmation email recapping the call and next steps",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Follow up internally on whether Ezekiel can also be included in the scholarship program, as Abigail previously asked teacher Alicia about it",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Abigail Villa (returning A+ family \u2014 son Zahavi was with us last year) was called to inform her that her daughter Malinale was nominated by teacher Alicia for the A+ Teacher Scholarship free trial. Abigail was warm and excited. We booked the free trial session for Thursday 10/27 at 2 PM. She's flexible on tutor gender (female or male) but the tutor MUST be patient and adaptable \u2014 Malinale is neurodivergent (ADHD, chronic anxiety), a visual/hands-on learner, outgoing but slow to build rapport, processes info fast but has focus issues. Abigail expects the scheduling team to reach out to confirm details and share the tutor's profile before the session. She also asked teacher Alicia about getting her other child Ezekiel into the program \u2014 worth checking on internally. Suggested opener: 'Hi Abigail, this is [name] from A+ Tutoring's scheduling team following up on Malinale's trial session on Thursday the 27th at 2 PM \u2014 I wanted to share her tutor's profile with you.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer family (son Zahavi previously enrolled, daughter now entering via scholarship program). Deal pipeline owns status \u2014 do not demote.",
+        "student_or_school_names_mentioned": [
+          "Malinale",
+          "Zahavi",
+          "Ezekiel",
+          "Alicia (teacher)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Daughter Malinale was nominated by her teacher Alicia for the A+ Teacher Scholarship Program (free trial 1:1 tutoring). Malinale is neurodivergent \u2014 ADHD and chronic anxiety \u2014 a visual/hands-on learner, outgoing but needs to build rapport first, processes info quickly but struggles with focus. Mom previously asked Alicia about also getting her other child Ezekiel into the program.",
+          "what_we_can_do_to_help": "Booked free trial session for Thursday 10/27 at 2 PM. Match Malinale with a patient tutor experienced with neurodivergent learners who can use multiple teaching approaches (visual/hands-on strongest). Scheduling team to send tutor profile and confirm details. Internally check on possibility of adding Ezekiel to the scholarship program.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Alicia",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Daughter Malinale was nominated by her teacher Alicia for the A+ Teacher Scholarship Program (free trial 1:1 tutoring). Malinale is neurodivergent \u2014 ADHD and chronic anxiety \u2014 a visual/hands-on learner, outgoing but needs to build rapport first, processes info quickly but struggles with focus. Mom previously asked Alicia about also getting her other child Ezekiel into the program."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Booked free trial session for Thursday 10/27 at 2 PM. Match Malinale with a patient tutor experienced with neurodivergent learners who can use multiple teaching approaches (visual/hands-on strongest). Scheduling team to send tutor profile and confirm details. Internally check on possibility of adding Ezekiel to the scholarship program."
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Alicia"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "how_did_you_hear",
+          "I'm a returning customer",
+          "From my School",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out to Abigail to confirm details and share tutor profile before the Thursday 10/27 2 PM trial session",
+          81494333
+        ],
+        [
+          "Match Malinale with a patient tutor experienced with neurodivergent students (ADHD, anxiety); female preferred but open to male",
+          81494333
+        ],
+        [
+          "Send Abigail a confirmation email recapping the call and next steps",
+          81494333
+        ],
+        [
+          "Follow up internally on whether Ezekiel can also be included in the scholarship program, as Abigail previously asked teacher Alicia about it",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406200983,
+      "number": "16267539538",
+      "time_pt": "4:48 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Rebeca Mejia to schedule tutoring for her daughters Sofia and Delina (also referenced as Valina/Selena) after receiving their PO. Rebeca requested Mondays 11-1 for both girls with their previous tutors if possible, and Wednesdays at 11 for Sofia and 1 for Delina. Yolanda will confirm tutor matches and follow up via SMS.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm tutor availability for Sofia and Delina \u2014 check if their previous tutors can continue on Mondays 11-1, Wednesdays 11am (Sofia) and Wednesdays 1pm (Delina)",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Send SMS to Rebeca with tutor match confirmation and finalized schedule",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Rebeca Mejia (parent, friendly/cooperative) has a PO on file for her two daughters Sofia and Delina (Rebeca also said 'Valina' and 'Selena' \u2014 likely same child, confirm spelling). Requested schedule: Mondays 11am-1pm both girls together; Wednesdays Sofia at 11am and Delina at 1pm (originally 12-2 but she has counseling at 12). She'd prefer their previous tutors continue (note: they had two different tutors before per Yolanda). Yolanda promised to text Rebeca via SMS with the tutor match. Open with: 'Hi Rebeca, following up on your call with Yolanda \u2014 we've confirmed your tutor match for Sofia and Delina...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with a PO on file arranging scheduling for ongoing tutoring; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Sofia",
+          "Delina"
+        ],
+        "record_updates": {
+          "whats_going_on": "Rebeca called to schedule tutoring for her two daughters, Sofia and Delina, after PO was received. Requested Mondays 11am-1pm for both, Wednesdays 11am for Sofia and 1pm for Delina (Delina has counseling at 12). Prefers the tutors they worked with previously.",
+          "what_we_can_do_to_help": "Yolanda to check availability of prior tutors for both girls and send Rebeca an SMS with the confirmed tutor match and finalized schedule.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm tutor availability for Sofia and Delina \u2014 check if their previous tutors can continue on Mondays 11-1, Wednesdays 11am (Sofia) and Wednesdays 1pm (Delina)",
+          86868539
+        ],
+        [
+          "Send SMS to Rebeca with tutor match confirmation and finalized schedule",
+          86868539
         ]
       ],
       "ticket_id": null,
