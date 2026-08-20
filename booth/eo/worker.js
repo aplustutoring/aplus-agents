@@ -220,6 +220,30 @@ export default {
       const which = url.searchParams.get("which") || "buildkit";
       if (!to) return json({ error: "?to= required" }, 400, env);
       let html;
+      if (which === "photo") {
+        // Exactly the email a capture sends, using a real stored photo.
+        const key = url.searchParams.get("photo");
+        html = photoEmailHtml(url.searchParams.get("name") || "Roman");
+        let attachments;
+        if (key) {
+          const buf = await env.PHOTOS.get(key, "arrayBuffer");
+          if (buf) {
+            attachments = [{
+              filename: "eo-la-valley-2026.jpg",
+              content: bytesToB64(new Uint8Array(buf)),
+            }];
+          }
+        }
+        try {
+          await sendEmail(env, {
+            to, subject: "Your photo from tonight", html, attachments,
+            bcc: env.PHOTO_BCC || undefined,
+          });
+          return json({ ok: true, which, to, attached: !!attachments, bytes: html.length }, 200, env);
+        } catch (e) {
+          return json({ ok: false, error: String(e) }, 200, env);
+        }
+      }
       if (which === "buildkit") {
         const found = await searchByEmail(env, to).catch(() => null);
         let ctx = null;
@@ -357,8 +381,21 @@ async function handleCapture(request, env, ctx, url) {
   try {
     results.email = await sendEmail(env, {
       to: email,
-      subject: "Your photo from tonight 📸",
-      html: photoEmailHtml(firstName, photoUrl),
+      // No emoji in the subject: another promotional signal, and the two
+      // test sends that DID arrive both had plain subjects.
+      subject: "Your photo from tonight",
+      html: photoEmailHtml(firstName),
+      // Chapter gets a blind copy of the photo email ONLY — not the research
+      // brief, not the build kit, not the closing note. Those are personal to
+      // the attendee. BCC so recipients never see the chapter address, and
+      // driven by a var so it can be changed or emptied without a code edit.
+      bcc: env.PHOTO_BCC || undefined,
+      attachments: photo
+        ? [{
+            filename: "eo-la-valley-2026.jpg",
+            content: photo.replace(/^data:image\/\w+;base64,/, ""),
+          }]
+        : undefined,
     });
   } catch (e) {
     results.email = { error: String(e) };
@@ -595,7 +632,12 @@ async function dryRunOne(env, origin, contactId) {
     }
   }
 
-  // 1 — Payload #1: three texts, real 30s cadence, then the brief email.
+  // 1 — Payload #1: the brief email, THEN the three texts pointing at it.
+  await sendEmail(env, {
+    to: p.email,
+    subject: `I did some homework on ${p.eo_company_name || "your company"}`,
+    html: briefEmailHtml(brief),
+  }).catch((e) => log(env, { at: "dryrun.p1email", contactId, error: String(e) }));
   for (let i = 0; i < PAYLOAD1_TEXTS.length; i++) {
     if (i > 0) await sleep(30000);
     await sendSms(env, {
@@ -605,11 +647,6 @@ async function dryRunOne(env, origin, contactId) {
       requireConsent: !consented,
     }).catch((e) => log(env, { at: "dryrun.p1text", contactId, error: String(e) }));
   }
-  await sendEmail(env, {
-    to: p.email,
-    subject: `I did some homework on ${p.eo_company_name || "your company"}`,
-    html: briefEmailHtml(brief),
-  }).catch((e) => log(env, { at: "dryrun.p1email", contactId, error: String(e) }));
 
   // 2 — Build kit
   await sendEmail(env, {
@@ -808,7 +845,20 @@ async function runPayload1(env) {
   // Anything still empty (research threw and the catch above missed it)
   claimed.forEach((c) => { if (!c.brief) c.brief = genericBrief(c.company); });
 
-  // Texts in three waves, ~30s apart. Sleeping is wall clock, not CPU, so
+  // EMAIL FIRST, THEN THE TEXTS. The texts exist to point at the email —
+  // "Full notes in your email", "Seriously, check your email". Sending them
+  // first means the first two land while the inbox is still empty, so the
+  // one instruction the message gives cannot be followed. Send the thing,
+  // then point at it.
+  await Promise.all(claimed.map((c) =>
+    sendEmail(env, {
+      to: c.email,
+      subject: `I did some homework on ${c.company || "your company"}`,
+      html: briefEmailHtml(c.brief),
+    }).catch((e) => log(env, { at: "payload1.email", contactId: c.id, error: String(e) }))
+  ));
+
+  // Then the three texts, ~30s apart. Sleeping is wall clock, not CPU, so
   // this stays well inside the scheduled-handler budget.
   for (let i = 0; i < PAYLOAD1_TEXTS.length; i++) {
     if (i > 0) await sleep(30000);
@@ -822,19 +872,21 @@ async function runPayload1(env) {
       }).catch((e) => log(env, { at: `payload1.text${i + 1}`, contactId: c.id, error: String(e) }))
     ));
   }
-
-  await Promise.all(claimed.map((c) =>
-    sendEmail(env, {
-      to: c.email,
-      subject: `I did some homework on ${c.company || "your company"}`,
-      html: briefEmailHtml(c.brief),
-    }).catch((e) => log(env, { at: "payload1.email", contactId: c.id, error: String(e) }))
-  ));
 }
 
 // Instant-path variant: one contact, same copy, same stagger.
 async function sendPayload1(env, c) {
   await patchContact(env, c.id, { eo_payload1_sent: new Date().toISOString() });
+  // EMAIL FIRST, THEN THE TEXTS. The texts exist to point at the email —
+  // "Full notes in your email", "Seriously, check your email". Sending them
+  // first means the first two land while the inbox is still empty, so the
+  // one instruction the message gives cannot be followed. Send the thing,
+  // then point at it.
+  await sendEmail(env, {
+    to: c.email,
+    subject: `I did some homework on ${c.company || "your company"}`,
+    html: briefEmailHtml(c.brief),
+  });
   for (let i = 0; i < PAYLOAD1_TEXTS.length; i++) {
     if (i > 0) await sleep(30000);
     await sendSms(env, {
@@ -845,11 +897,6 @@ async function sendPayload1(env, c) {
       requireConsent: !c.demoConsent,
     }).catch((e) => log(env, { at: `payload1.text${i + 1}`, contactId: c.id, error: String(e) }));
   }
-  await sendEmail(env, {
-    to: c.email,
-    subject: `I did some homework on ${c.company || "your company"}`,
-    html: briefEmailHtml(c.brief),
-  });
 }
 
 // Cron B. ALL tagged contacts, regardless of payload-1 status.
@@ -1493,15 +1540,19 @@ async function sendSms(env, { to, body, mediaUrl, contactId, payload, requireCon
   return { sent: true };
 }
 
-async function sendEmail(env, { to, subject, html }) {
+async function sendEmail(env, { to, subject, html, attachments, bcc }) {
   if (env.MODE !== "send") {
-    log(env, { at: "email", to, subject, dry_run: true });
+    log(env, { at: "email", to, subject, dry_run: true, attached: !!attachments, bcc: bcc || null });
     return { dry_run: true };
   }
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: env.RESEND_FROM, to: [to], subject, html }),
+    body: JSON.stringify({
+      from: env.RESEND_FROM, to: [to], subject, html,
+      ...(attachments?.length ? { attachments } : {}),
+      ...(bcc ? { bcc: [bcc] } : {}),
+    }),
   });
   if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
   log(env, { at: "email", to, subject, sent: true });
@@ -1563,11 +1614,16 @@ function sig(note) {
     note ? ` <span style="color:${MAIL.muted};font-weight:400;">${note}</span>` : ""}</p>`;
 }
 
-function photoEmailHtml(firstName, photoUrl) {
+// The photo rides as an ATTACHMENT, the way the Sage Oak booth does it —
+// that one demonstrably lands. A single large remote <img> from a brand-new
+// sending address is a textbook promotional signature, and this email never
+// reached Roman's inbox while two plain test sends from the same address
+// did. An attachment also means they keep the photo offline, which is what
+// someone actually wants from a photo booth.
+function photoEmailHtml(firstName) {
   return shell(`
   ${h1(`Thanks for coming tonight, ${escapeHtml(firstName || "friend")}.`)}
-  ${photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="Your photo" style="display:block;width:100%;max-width:496px;border-radius:10px;margin:0 0 20px;">` : ""}
-  <p ${pStyle}>Here's your photo from the EO LA Valley learning event.</p>
+  <p ${pStyle}>Your photo from the EO LA Valley learning event is attached.</p>
   <p ${pStyle}>That's the easy part. I'm working on something else for you — give me a few minutes.</p>
   ${sig()}`);
 }

@@ -15,6 +15,12 @@ RESEND_FROM = "Minion #23 <minion23@wetutorathome.com>"
 
 ALLOWED_ORIGIN = "https://eo-booth.pages.dev"
 
+# Blind copy of the PHOTO email only, so the chapter gets a record of who
+# came through the booth. Deliberately not applied to the research brief,
+# the build kit or the closing email — those are personal to the attendee.
+# Empty this string to turn it off; no code change needed.
+PHOTO_BCC = "info@eolavalley.com"
+
 # Booth line. NOT the main A+ line (+18188506284). Confirmed against the
 # JustCall API 2026-08-20: sms_compliance=Verified, MMS=Yes,
 # business_registration=Approved. Roman's call to use 6293 over the 6258 in
