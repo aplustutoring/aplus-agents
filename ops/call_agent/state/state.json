@@ -359,9 +359,11 @@
     406455166,
     406494701,
     406489223,
-    406495809
+    406495809,
+    406521106,
+    406527005
   ],
-  "last_run_utc": "2026-08-20T18:04:28.176840+00:00",
+  "last_run_utc": "2026-08-20T19:01:24.945517+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -631,8 +633,89 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 406521106,
+      "number": "19163895980",
+      "time_pt": "11:16 AM",
+      "matched": true,
+      "contact_label": "Baspari Azizi",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Baspari Azizi to follow up about tutoring for her daughters Aisha and Zora for the current school year. Baspari was out and said she'd talk to her daughters and call back. Paola offered to send a follow-up email; Baspari agreed to reach back out after speaking with her kids.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send follow-up email to Baspari about tutoring options for Aisha and Zora this school year",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Await parent callback after she consults with her daughters",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Baspari Azizi (returning customer, existing open deal) was called by Paola to check in about tutoring for her daughters Aisha and Zora this school year. Baspari was out and busy but polite/receptive; she said she'll talk to the girls and call us back. Paola promised to send a follow-up email she can reply to. No pricing or scheduling discussed. Next step: send that email covering tutoring options for both students. If she hasn't responded in ~a week, follow up \u2014 open with something like: 'Hi Baspari, just checking in after Paola's call \u2014 have you had a chance to talk with Aisha and Zora about tutoring this year?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an OPEN_DEAL in the pipeline; deal pipeline owns the status.",
+        "student_or_school_names_mentioned": [
+          "Aisha",
+          "Zora",
+          "Visions In Education"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up outreach call re: tutoring for Aisha and Zora this school year. Mom was out and will speak with the girls before deciding; she'll call back.",
+          "what_we_can_do_to_help": "Send Baspari a follow-up email outlining tutoring options for Aisha and Zora so she can reply once she's spoken with them.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up outreach call re: tutoring for Aisha and Zora this school year. Mom was out and will speak with the girls before deciding; she'll call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Baspari a follow-up email outlining tutoring options for Aisha and Zora so she can reply once she's spoken with them."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send follow-up email to Baspari about tutoring options for Aisha and Zora this school year",
+          81494333
+        ],
+        [
+          "Await parent callback after she consults with her daughters",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18185781727",
+      "time_pt": "11:27 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
