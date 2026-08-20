@@ -20,7 +20,8 @@
     "Ev0BPTBT6MB4",
     "Ev0BQ5R9TD0B",
     "Ev0BRQ62HN1J",
-    "Ev0BRNE74CLR"
+    "Ev0BRNE74CLR",
+    "Ev0BRQAFLJ57"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -179,6 +180,21 @@
       "ticket": "drafted",
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787242876934569?thread_ts=1787242876.934569&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-20",
+      "ts": "1787256679.631249",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "call-agent",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/call-agent/2026-08-20-exit-nonzero-on-zero-successes.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/92",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787256679631249"
     }
   ],
   "graduation": {
@@ -201,6 +217,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
+    },
+    "1787256679.631249": {
+      "agent": "call-agent",
+      "agent_label": "Call agent \u2014 daily digest (~5:30 PM PT)",
+      "correction_path": "corrections/call-agent/2026-08-20-exit-nonzero-on-zero-successes.md",
+      "branch": "fix/call-agent-2026-08-20-631249",
+      "diagnosis": "The call agent likely catches per-call exceptions to keep the run going, but never tracks whether any call actually succeeded, so a run that fails 100% of calls still exits 0 and the GitHub Actions retry sweeper stays quiet. Fix lives in the main loop / exit handling in ops/call_agent/call_agent.py.",
+      "fix_plan": [
+        "In ops/call_agent/call_agent.py, add counters around the per-call loop: attempted, succeeded, skipped (hang-ups), failed.",
+        "At end of run, if attempted > 0 and succeeded == 0, log a clear error line and sys.exit(1) so the retry sweeper picks it up. Keep exit 0 when attempted == 0 (nothing to do) to avoid false alarms on quiet days.",
+        "Also fire the existing private Slack alert path with a one-line 'call agent: 0/N calls succeeded' message before exiting, so we hear about it even if the sweeper is slow.",
+        "Add a small unit test under ops/call_agent/tests/ that simulates all-calls-fail and asserts exit code 1; simulates zero-calls and asserts exit code 0.",
+        "Run once with --dry-run / CHECK_ONLY to confirm exit codes behave, then merge."
+      ],
+      "risk": "low",
+      "recommendation": "execute",
+      "proposed_utc": "2026-08-20T20:12:11.461053+00:00",
+      "reporter": "Roman"
     }
   }
 }
