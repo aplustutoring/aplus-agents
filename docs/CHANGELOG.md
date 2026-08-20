@@ -8,6 +8,35 @@ Newest entries first.
 
 ---
 
+## 2026-08-20 — registry.yml: the 9 unregistered workflows are now registered
+
+**What:** Added registry entries for every live workflow that was running
+without one — `email-po-daily-report`, `email-draft-feedback`, `feedback-fix`,
+`campaign-launch` (monday-launch.yml), and the five manual charter/Teachworks
+analysis tools (`charter-gap-analysis`, `tw-tutor-active-check`,
+`tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`). The charter
+section's "NOT BUILT" note is kept — the prospecting ENGINE still doesn't
+exist — with a new paragraph distinguishing it from the manual read-only
+analysis tools that do. Registry is now 35 agents (22 active, 10 manual,
+3 deprecated) and `.github/workflows/` ⇄ `registry.yml` cross-check is clean
+in both directions.
+
+**Why:** Roman, reviewing a fleet breakdown: the registry's own first rule is
+"if it's not here, it doesn't exist," and the feedback agent classifies every
+`#agent-feedback` report against this file's vocabulary. Nine live workflows —
+including two that write to HubSpot and one that opens PRs — were invisible to
+that vocabulary, so nobody could report a problem against them and the DEMOTE
+path had no target to flip.
+
+**Follow-up:** `source_agent` and `ticket_source` derive their enum options
+from this file (`options_from: registry`), so the HubSpot schema sync
+(`.github/workflows/hubspot-schema.yml`) needs a run to pick up the 9 new
+options. Not run in this session — portal writes are Roman's call.
+
+**Files:** `registry.yml`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-18 — Parent resolution step 2: the student in Teachworks (Roman: "build")
 
 **What:** New tw.find_family_by_student(): searches both TW accounts for the
