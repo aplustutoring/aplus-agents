@@ -216,12 +216,12 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-20-missing-superhero-video-reel.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/94",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787257225951989"
     }
   ],
   "graduation": {
-    "clean_merges": 5
+    "clean_merges": 6
   },
   "pending_proposals": {
     "1786554388.265099": {
