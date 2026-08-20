@@ -7,6 +7,34 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Feedback agent: schema debris no longer reaches HubSpot ticket subjects
+
+**What:** The classifier's free-text fields are now scrubbed of leaked schema
+fragments, the classification retries once when debris appears, and the ticket
+subject truncates on a word boundary instead of mid-token.
+
+**Why:** Caught live on Paola's spotlight report. Structured output is
+schema-constrained and `json.loads` parsed it fine — but the model lost the thread
+mid-field and wrote schema INTO a value:
+
+    summary = "...the other assets rendered successfully.','clarifying_question':"
+
+That summary flowed unvalidated into `subject: f"[AGENT] {label}: {summary[:120]}"`,
+so the drafted HubSpot ticket read `...successfully.','clari` — a corrupted subject
+line on a ticket the whole team sees.
+
+**How:** `scrub_debris()` cuts any trailing `'...','field':` fragment out of
+summary / ack_message / clarifying_question and reports which fields were dirty;
+one retry (degraded output rarely repeats), then ship the scrubbed value rather
+than fail — a slightly clipped summary still reaches a human, a crash does not.
+`truncate_words()` replaces the raw `[:120]` slice. Verified against the real
+failure plus false-positive guards: legitimate apostrophes ("Danielle's op-ed")
+and colons ("Ratio is 3:1") are untouched.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — INCIDENT: every #agent-feedback report with a screenshot was silently dropped
 
 **What:** The Slack relay dropped any message carrying a file. Slack tags an

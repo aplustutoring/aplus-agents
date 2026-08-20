@@ -318,7 +318,47 @@ def build_schema(agent_ids):
     }
 
 
-def classify_report(text, first_name, agents, cfg, clarification=None):
+# Structured output is schema-constrained, but the model can still lose the
+# thread mid-field and write part of the schema INTO a value — json.loads then
+# parses it happily. Seen live 2026-08-20 on Paola's spotlight report:
+#   summary = "...rendered successfully.','clarifying_question':"
+# which flowed straight into a HubSpot ticket subject via summary[:120],
+# truncating mid-debris as "...successfully.','clari". Nothing validated it.
+SCHEMA_DEBRIS = re.compile(
+    r"""['"]\s*,\s*['"][a-z_]{3,45}['"]\s*:.*$""",
+    re.IGNORECASE | re.DOTALL,
+)
+TEXT_FIELDS = ("summary", "ack_message", "clarifying_question")
+
+
+def scrub_debris(result):
+    """Cut any trailing schema fragment out of the free-text fields.
+
+    Returns the list of field names that were dirty, so the caller can decide
+    whether to retry rather than ship a mangled ticket subject.
+    """
+    dirty = []
+    for field in TEXT_FIELDS:
+        val = result.get(field)
+        if not isinstance(val, str):
+            continue
+        cleaned = SCHEMA_DEBRIS.sub("", val).rstrip().rstrip(",;:'\"")
+        if cleaned != val:
+            dirty.append(field)
+            result[field] = cleaned
+    return dirty
+
+
+def truncate_words(s, limit):
+    """Cut to `limit` chars on a word boundary — a HubSpot ticket subject is
+    read by humans, and `...successfully.','clari` is not a subject line."""
+    s = " ".join(s.split())
+    if len(s) <= limit:
+        return s
+    return s[:limit].rsplit(" ", 1)[0].rstrip(",;:.") + "…"
+
+
+def classify_report(text, first_name, agents, cfg, clarification=None, _attempt=1):
     import anthropic
 
     vocabulary = "\n".join(
@@ -347,6 +387,15 @@ def classify_report(text, first_name, agents, cfg, clarification=None):
     if resp.stop_reason == "refusal":
         raise ValueError("Claude refused to classify this report")
     result = json.loads(next(b.text for b in resp.content if b.type == "text"))
+    dirty = scrub_debris(result)
+    if dirty:
+        # One retry — degraded output usually does not repeat. If it does, ship
+        # the scrubbed version rather than fail the report: a slightly clipped
+        # summary still reaches a human, a crash does not.
+        log.warning(f"classifier leaked schema debris into {dirty} (attempt {_attempt})")
+        if _attempt == 1:
+            return classify_report(text, first_name, agents, cfg, clarification, _attempt=2)
+        log.warning("debris persisted on retry — using the scrubbed values")
     if clarification:
         result["needs_clarification"] = False   # one question max, enforced
     # Belt-and-braces: the ack must open with the reporter's name.
@@ -431,7 +480,7 @@ def build_ticket_payload(cls, first_name, permalink, agents, cfg, date_pt):
     label = agent_label(agents, cls["agent_id"])
     return {
         "properties": {
-            "subject": f"[AGENT] {label}: {cls['summary'][:120]}",
+            "subject": truncate_words(f"[AGENT] {label}: {cls['summary']}", 120),
             "content": (f"Reported by {first_name} in #agent-feedback ({date_pt}).\n\n"
                         f"{cls['summary']}\n\nThread: {permalink or 'unavailable'}\n"
                         f"Type: {cls['type']} · Severity: {cls['severity']}"),
