@@ -7,6 +7,43 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — INCIDENT: every #agent-feedback report with a screenshot was silently dropped
+
+**What:** The Slack relay dropped any message carrying a file. Slack tags an
+attachment-bearing message `subtype: "file_share"`, and the relay's filter was a
+bare `if (ev.subtype) return textOut_('ok')` — written to drop edits, deletes and
+joins. The relay answers Slack `ok`, so there was no error, no retry, and no
+Actions run. The report simply evaporated, and from the reporter's side the agent
+had ignored them.
+
+**Evidence (100% correlation across the visible channel history):** reports WITH
+a screenshot — Danielle Aug 13, Aug 17, Aug 18; Paola Aug 20 — got no agent reply
+at all. Reports WITHOUT one — Paola Aug 14, Roman Aug 20 09:21, the Aug 20 13:11
+test — were all answered within a minute.
+
+**Why it matters more than the count suggests:** people attach a screenshot
+exactly when a problem is visual and hard to put in words, so this ate the most
+careful reports. Danielle reported the LinkedIn op-ed being cut off THREE times
+(Aug 13/17/18), each with a screenshot, each into a void — while the one report
+of hers that did land (Aug 11) had its fix run die on the claude-code-action bot
+guard. She has never once seen this loop work.
+
+**Fix:** allow `file_share` and `thread_broadcast` through; keep dropping edits,
+deletes, joins and bot messages. A file-only post (screenshot, no words) now
+falls back to the file title instead of being dropped for having no text. The
+dispatch payload carries `has_files` so the agent can ask what the screenshot
+shows rather than guess — it classifies from text and does not read images.
+Filter verified against seven event shapes; the script parses.
+
+**NOT LIVE YET.** This is an Apps Script: it deploys by hand from the Apps Script
+UI, and editing the file in this repo changes nothing until someone pastes it in.
+That deploy is Roman's. (Exactly the hazard the `runtime:` field added earlier
+today exists to make visible.)
+
+**Files:** `ops/feedback-agent/relay/apps-script.gs`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — `runtime:` — the fleet is not all GitHub Actions
 
 **What:** Added a required `runtime:` field (`github-actions` | `cloudflare-worker`

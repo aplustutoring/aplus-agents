@@ -65,9 +65,29 @@ function doPost(e) {
 
   // Only human messages in the feedback channel ring the bell.
   if (ev.type !== 'message') return textOut_('ok');
-  if (ev.subtype) return textOut_('ok');            // edits, deletes, joins, bot_message
+  // Subtypes we WANT: a message carrying a screenshot arrives as `file_share`,
+  // and a thread reply also sent to the channel as `thread_broadcast`. Both are
+  // ordinary human reports.
+  //
+  // 2026-08-20: this line used to be a bare `if (ev.subtype) return` and it
+  // silently ate every report with an attachment — Danielle reported the same
+  // LinkedIn op-ed bug on Aug 13, 17 and 18, each with a screenshot, and none
+  // of them ever reached the agent. The relay answers Slack 'ok', so there is
+  // no error, no retry, and no Actions run: the report just evaporates, and
+  // from the reporter's side the agent simply ignored them. People attach a
+  // screenshot exactly when the problem is hard to describe in words, so this
+  // dropped our most careful reports.
+  var ALLOWED_SUBTYPES = ['file_share', 'thread_broadcast'];
+  if (ev.subtype && ALLOWED_SUBTYPES.indexOf(ev.subtype) === -1) {
+    return textOut_('ok');                          // edits, deletes, joins, bot_message
+  }
   if (ev.bot_id) return textOut_('ok');             // @Fleet must not hear itself
   if (ev.channel !== props.getProperty('CHANNEL_ID')) return textOut_('ok');
+  // A file-only post (screenshot, no words) still deserves a look, so fall back
+  // to any attached file's title rather than dropping it for having no text.
+  if (!ev.text && ev.files && ev.files.length) {
+    ev.text = '(screenshot only) ' + (ev.files[0].title || ev.files[0].name || '');
+  }
   if (!ev.text || !ev.user) return textOut_('ok');
 
   dispatch_(props, {
@@ -75,6 +95,10 @@ function doPost(e) {
     user: ev.user,
     text: ev.text,
     ts: ev.ts,
+    // The agent classifies from TEXT — it does not read the image. Knowing an
+    // attachment exists lets it ask "what does the screenshot show?" instead of
+    // guessing from a five-word report.
+    has_files: (ev.files && ev.files.length) ? ev.files.length : 0,
     thread_ts: ev.thread_ts || '',
     event_id: body.event_id || '',
     event_time: body.event_time || 0,
