@@ -38,6 +38,34 @@ exists, documented, empty.
 `ops/feedback-agent/tests/test_meta_posts.py` (new, 7 tests green).
 
 ---
+## 2026-08-20 — Screenshot relay: fix shipped, problem NOT closed
+
+**What:** Stopped debugging and wrote the state down. The relay's subtype filter
+fix is deployed (Apps Script Version 3, 2:14 PM PT) but screenshots STILL do not
+reach the agent: a screenshot posted at 2:15:57 PM produced no dispatch, while a
+plain-text reply 35 seconds earlier did. Necessary but not sufficient. Logged as
+an open weak point plus a TODO in `ARCHITECTURE.md` carrying the next diagnostic
+step (Apps Script -> Executions at 2:15:57; present = script bug, absent = Slack
+app config, most likely a missing `files:read` bot scope requiring a reinstall).
+
+**Also:** posted a correction into the pinned #agent-feedback thread. The pin
+told the team screenshots were fixed. They are not, and leaving that standing
+would have kept people posting reports into a void believing they had landed.
+The correction names Danielle's three lost reports explicitly — she has been
+reporting the same bug since Aug 13 and getting silence — and gives the
+workaround: report in text, attach the screenshot as a thread reply afterwards.
+
+**Roman should edit the pinned message itself** (it was posted under his
+account, and the API cannot edit it) to strike the "Screenshots are welcome /
+Fixed now" paragraph.
+
+**Rule going in:** do not announce this fixed again without a passing test. It
+was announced once already on a fix that was real but incomplete.
+
+**Files:** `ARCHITECTURE.md`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — Approve + merge opened to Danielle, Paola and Emily
 
 **What:** Split `slack.approvers` out of `slack.alerts_to`. `alerts_to` still

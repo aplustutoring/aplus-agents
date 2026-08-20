@@ -137,7 +137,18 @@ Honest list. These are the ways the fleet has actually misled us, not theoretica
    the registry's own first rule. Now enforced by
    `ops/fleet-health/registry_check.py` via the `fleet-docs` workflow (advisory
    on PRs during rollout; drop `--warn` to make it block).
-3. **This file drifts.** — MITIGATED 2026-08-20. It described a four-engine world
+3. **Hand-deployed code drifts from the repo, invisibly.** — OPEN. The two
+   Google Apps Scripts deploy by pasting into the Apps Script UI, and a Web App
+   serves a pinned *version*, not the saved file — so "saved", "deployed" and
+   "live" are three different states and nothing reports which one you have.
+   Found 2026-08-20: the feedback relay's live deployment was still the 7/31
+   version. No red run, no alert, nothing anywhere would have said so. A
+   deployed-version-vs-repo-HEAD check would close this; nothing does today.
+
+4. **`#agent-feedback` still drops every report with a screenshot.** — OPEN,
+   and users are affected right now. See TODO-relay-screenshots below.
+
+5. **This file drifts.** — MITIGATED 2026-08-20. It described a four-engine world
    for roughly seven weeks. The per-agent breakdown now lives in `docs/FLEET.md`,
    generated from `registry.yml` on every merge, so the volatile half cannot go
    stale. This file keeps the prose — architecture, autonomy, governance — which
@@ -159,6 +170,40 @@ A third, `charter-prospecting@aplus-automations-cars`, is left over from a dropp
 automation. What does exist is five manual, read-only-by-default charter analysis
 reports (`scripts/` + `email/`), registered as `manual`. If a real charter engine
 is ever built, it goes in as a fresh Tier-A engine with registry entries.
+
+## TODO — the relay screenshot problem (opened 2026-08-20)
+
+**Symptom:** a `#agent-feedback` message with a file attached never reaches the
+agent. No error, no retry, no Actions run, no reply. Plain-text messages in the
+same channel work and are answered in about a minute.
+
+**Who it hurts:** whoever attaches a screenshot — which people do exactly when a
+problem is visual and hard to describe. Danielle reported the same LinkedIn
+op-ed bug on Aug 13, Aug 17 and Aug 18, each with a screenshot, each into a void.
+
+**What is already done:** the relay's subtype filter was the obvious cause (a
+bare `if (ev.subtype) return` eats `file_share`) and it is fixed in
+`ops/feedback-agent/relay/apps-script.gs`, deployed as Version 3 at 2:14 PM PT
+2026-08-20.
+
+**Why it is still open:** a screenshot posted at 2:15:57 PM — after that deploy —
+produced no dispatch, while a plain-text reply 35 seconds earlier did. So the
+script fix was necessary but not sufficient.
+
+**Next step, and it is a diagnosis not a fix:** open the Apps Script project ->
+**Executions** and look for a `doPost` at 2:15:57 PM.
+  - execution present  -> Slack delivered it and the script dropped it; the bug
+    is in the script, keep reading the handler.
+  - execution absent   -> Slack never sent the event; the bug is in the Slack app
+    config. Most likely a missing `files:read` bot scope (Slack withholds
+    file-bearing message events from apps that cannot read files). Fixing that
+    means adding the scope at api.slack.com -> OAuth & Permissions and
+    REINSTALLING the app to the workspace, which briefly interrupts the relay —
+    do it deliberately, not mid-day.
+
+**Do not mark this fixed without testing it.** It was announced as fixed once
+already, in the channel's pinned post, and it was not. A correction is posted in
+that thread.
 
 ## Repos in the org
 
