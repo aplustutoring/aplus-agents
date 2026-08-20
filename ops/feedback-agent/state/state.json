@@ -28,7 +28,8 @@
     "Ev0BRLJ4Q5AS",
     "Ev0BR78BTKNK",
     "Ev0BRLN5KFK8",
-    "Ev0BRSE7SP3N"
+    "Ev0BRSE7SP3N",
+    "Ev0BRLTAM8HL"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -220,7 +221,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 4
+    "clean_merges": 5
   },
   "pending_proposals": {
     "1786554388.265099": {
