@@ -358,9 +358,10 @@
     406455910,
     406455166,
     406494701,
-    406489223
+    406489223,
+    406495809
   ],
-  "last_run_utc": "2026-08-20T17:35:28.237434+00:00",
+  "last_run_utc": "2026-08-20T18:04:28.176840+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -519,6 +520,112 @@
         [
           "Confirm Jackie received Slack message about new student assignment",
           86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406495809,
+      "number": "12139255266",
+      "time_pt": "10:30 AM",
+      "matched": true,
+      "contact_label": "Lilian Gong",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Lilian Gong, who confirmed she is a Blue Ridge charter family living in Sherman Oaks. Lilian is interested in SAT prep for her high school junior (Kelly Caruso) and in-person reading/writing tutoring for two younger children \u2014 Lucas (6th grade) and Marcus (8th grade). Paola quoted charter rates ($75/hr online, $130/hr in person), noted that SAT prep is online only, and booked a free trial SAT session for Friday morning, August 28. Paola will email the rate sheet and the scheduling team will follow up to confirm the trial session.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Lilian the current online and in-person charter rate sheet ($75/hr online, $130/hr in-person)",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Have scheduling team confirm free trial SAT prep session for Kelly on Friday morning, August 28",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Identify an online SAT prep tutor for Kelly (high school junior) for the trial",
+            "owner_hint": null
+          },
+          {
+            "item": "Identify in-person reading/writing tutors in the Sherman Oaks area for Lucas (6th) and Marcus (8th)",
+            "owner_hint": null
+          },
+          {
+            "item": "Verify Blue Ridge charter funding eligibility and paperwork for all three students",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Lilian Gong (Blue Ridge charter family, Sherman Oaks) was warm and engaged on Paola's outbound call. She has 3 students needing tutoring: Kelly Caruso (HS junior, SAT prep \u2014 online only, free trial booked Friday morning 8/28), Lucas (6th grade, reading/writing, in-person), and Marcus (8th grade, reading/writing, in-person). Paola quoted charter rates: $75/hr online, $130/hr in-person, and mentioned a same-tutor/same-time group discount but no discount for separate 1:1 in-person sessions. Lilian expects (1) an email with the rate sheet and (2) scheduling to confirm the Friday 8/28 AM SAT trial. Open with: 'Hi Lilian, following up on your call with Paola \u2014 I'd like to lock in a time Friday morning 8/28 for Kelly's free SAT trial and walk through next steps for Lucas and Marcus's in-person reading/writing tutoring.' Also confirm Blue Ridge funding is set up for all three kids.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Actually, correcting: family is a Blue Ridge charter (instructional funds) family, so QTL - Charter applies.",
+        "student_or_school_names_mentioned": [
+          "Kelly Caruso",
+          "Lucas",
+          "Marcus",
+          "Ebony",
+          "Blue Ridge"
+        ],
+        "record_updates": {
+          "whats_going_on": "Connected with Lilian on outbound follow-up. She is a Blue Ridge charter family in Sherman Oaks with three students needing tutoring: Kelly Caruso (HS junior) for SAT prep, and Lucas (6th) and Marcus (8th) for reading/writing. She wants SAT prep online but in-person for the younger two. A free SAT trial session was booked for Friday morning, 8/28.",
+          "what_we_can_do_to_help": "Send Lilian the charter rate sheet ($75/hr online, $130/hr in-person), confirm the 8/28 AM SAT trial for Kelly via scheduling, and line up an online SAT tutor plus in-person reading/writing tutors in the Sherman Oaks area for Lucas and Marcus. Verify Blue Ridge funding is in place for all three students.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected with Lilian on outbound follow-up. She is a Blue Ridge charter family in Sherman Oaks with three students needing tutoring: Kelly Caruso (HS junior) for SAT prep, and Lucas (6th) and Marcus (8th) for reading/writing. She wants SAT prep online but in-person for the younger two. A free SAT trial session was booked for Friday morning, 8/28."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Lilian the charter rate sheet ($75/hr online, $130/hr in-person), confirm the 8/28 AM SAT trial for Kelly via scheduling, and line up an online SAT tutor plus in-person reading/writing tutors in the Sherman Oaks area for Lucas and Marcus. Verify Blue Ridge funding is in place for all three students."
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Lilian the current online and in-person charter rate sheet ($75/hr online, $130/hr in-person)",
+          81494333
+        ],
+        [
+          "Have scheduling team confirm free trial SAT prep session for Kelly on Friday morning, August 28",
+          81494333
+        ],
+        [
+          "Identify an online SAT prep tutor for Kelly (high school junior) for the trial",
+          81494333
+        ],
+        [
+          "Identify in-person reading/writing tutors in the Sherman Oaks area for Lucas (6th) and Marcus (8th)",
+          81494333
+        ],
+        [
+          "Verify Blue Ridge charter funding eligibility and paperwork for all three students",
+          81494333
         ]
       ],
       "ticket_id": null,
