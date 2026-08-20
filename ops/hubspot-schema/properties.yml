@@ -387,6 +387,8 @@ properties:
       options:
         - value: sage_oak_btsc_2026
           label: "Sage Oak BTSC 2026"
+        - value: eo_lav_agents_2026
+          label: "EO LA Valley AI Agents 2026"
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events
@@ -438,6 +440,84 @@ properties:
       description: >-
         Opted into A+ resources at the booth. Declared in
         aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
+
+    # ── EVENT-TEMP: EO LA Valley "Build Your First AI Agent", 2026-08-20 ──
+    # These six eo_* properties exist ONLY for the one-night EO booth agent
+    # (booth/eo — "Minion #23"). They are deliberately NOT in KEEPERS.md.
+    # SUNSET: archive via the properties.yml retire process on/after
+    # 2026-08-22 once Roman has exported any contacts worth keeping.
+    - name: eo_company_name
+      label: "[Agent] EO Company Name"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by booth/eo/worker.js. Company the attendee
+        typed at the EO booth; the research agent's subject. EVENT-TEMP,
+        retire after 2026-08-22. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+    - name: eo_research_brief
+      label: "[Agent] EO Research Brief"
+      group: events
+      type: string
+      fieldType: textarea
+      description: >-
+        AGENT PROPERTY — written by booth/eo/worker.js. Claude-generated
+        research brief on the attendee's company, sent verbatim in Payload #1.
+        EVENT-TEMP, retire after 2026-08-22. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+    - name: eo_hero_image_url
+      label: "[Agent] EO Hero Image URL"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by booth/eo/worker.js. Gemini-generated
+        superhero portrait, hosted in the booth KV namespace. Empty means
+        generation failed and Payload #2 degrades to text-only. EVENT-TEMP,
+        retire after 2026-08-22. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+    - name: eo_payload1_sent
+      label: "[Agent] EO Payload 1 Sent"
+      group: events
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by booth/eo/worker.js. Check-and-set race
+        guard: stamped BEFORE the Payload #1 triple-text so the instant path
+        and cron A can never double-send. EVENT-TEMP, retire after
+        2026-08-22. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+    - name: eo_payload2_sent
+      label: "[Agent] EO Payload 2 Sent"
+      group: events
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by booth/eo/worker.js. Stamped before the
+        Payload #2 hero MMS + composed email. EVENT-TEMP, retire after
+        2026-08-22. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+    # Separate from aplus_marketing_consent on purpose: that field is "may we
+    # send you A+ resources", this one is "may we text you live on stage".
+    # Consent to the second is NOT consent to the first. Gates ALL SMS/MMS
+    # beyond the attendee's own photo.
+    - name: eo_demo_consent
+      label: "[Agent] EO Demo Consent"
+      group: events
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by booth/eo/worker.js. Attendee ticked "use
+        my number in tonight's live demo" at the booth. "false" excludes them
+        from the Payload #1 triple-text and the Payload #2 MMS; their photo
+        and email still send. EVENT-TEMP, retire after 2026-08-22. Declared
+        in aplus-agents/ops/hubspot-schema/properties.yml.
       options:
         - value: "true"
           label: "Yes"

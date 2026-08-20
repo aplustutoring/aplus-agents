@@ -1,0 +1,54 @@
+name = "eo-booth"
+main = "worker.js"
+compatibility_date = "2026-08-20"
+
+[vars]
+# EVENT-TEMP — EO LA Valley, 2026-08-20. Sunset 2026-08-22.
+
+# Guardrail: dry_run logs every send instead of making it. Flip to "send"
+# only after the test plan passes (booth/eo/README.md).
+MODE = "dry_run"
+
+# Sender domain must be verified in Resend. wetutorathome.com is verified,
+# but the display name must NOT read as A+ — the mystery is the demo.
+RESEND_FROM = "Minion #23 <minion23@wetutorathome.com>"
+
+ALLOWED_ORIGIN = "https://eo-booth.pages.dev"
+
+# Booth line from the brief. NOT the main A+ line (+18188506284) — this
+# number must exist in JustCall and be MMS-verified before go-live, or
+# MMS sends fail. VERIFY IN THE JUSTCALL CONSOLE FIRST.
+JUSTCALL_FROM = "+18185736258"
+
+# Zapier catch-hook → Google Sheet "EO Agent Ideas — Aug 20".
+# Set with `wrangler secret put ZAPIER_IDEAS_HOOK` (it is a capability URL).
+
+# Optional: a Zapier/Apps-Script hook that pulls the two image URLs into
+# Crystal's shared Drive folder. Unset = Drive archiving is skipped
+# silently, which is the documented failure mode anyway.
+# DRIVE_UPLOAD_HOOK = ""
+# DRIVE_FOLDER_ID   = ""
+
+# Photos, hero images, and STOP opt-out flags. Shares the Sage Oak
+# namespace; every key this Worker writes is prefixed `eo/` or `optout:`,
+# so post-event cleanup is a prefix delete.
+[[kv_namespaces]]
+binding = "PHOTOS"
+id = "38b24fd52f064143a0273d9f43a85a3c"
+
+# Cron A — 6:17 PM PT Aug 20 = 01:17 UTC Aug 21 (PT is UTC-7 in August).
+# Cron B — 8:00 PM PT Aug 20 = 03:00 UTC Aug 21.
+# Cloudflare crons have NO date component: these fire again at the same UTC
+# time on Aug 22, 23, ... until deleted. Disabling them is load-bearing
+# cleanup, not hygiene.
+[triggers]
+crons = ["17 1 * * *", "0 3 * * *"]
+
+# Secrets (never in this file):
+#   wrangler secret put HUBSPOT_TOKEN
+#   wrangler secret put RESEND_API_KEY
+#   wrangler secret put JUSTCALL_API_KEY
+#   wrangler secret put JUSTCALL_API_SECRET
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put GEMINI_API_KEY
+#   wrangler secret put ZAPIER_IDEAS_HOOK

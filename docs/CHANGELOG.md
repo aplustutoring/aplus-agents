@@ -7,6 +7,72 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — EO LA Valley booth agent ("Minion #23"), event-temp
+
+**Why:** Roman is running the "Build Your First AI Agent" workshop for EO LA
+Valley tonight (6:15–8:15 PM PT) and wanted the demo to be the demo: attendees
+take a photo at a booth, and twenty minutes later — mid-workshop — their phone
+buzzes with research on their own company, written by an agent nobody told them
+about. Everything attendee-facing signs as "Minion #23 🤖" and carries no A+
+branding, because the mystery is the point.
+
+**Built:** `booth/eo/` — a clone-and-extend of the Sage Oak booth stack
+(`booth/`) sharing its CSS, KV namespace, and Selphy/Resend/JustCall plumbing.
+New: a 4-field form (name, email, phone, company) plus a demo-consent checkbox;
+a `/capture` pipeline whose instant beat (print, email, photo MMS) is never
+blocked by the async beat (Claude company research with web search, Gemini hero
+image, Drive archive, clock check); two cron payloads at 6:17 PM and 8:00 PM PT;
+and an inbound-SMS webhook scoped to the booth line that logs Think-Big ideas to
+a Zapier→Sheets hook and handles STOP.
+
+**Three deliberate deviations from the build brief**, each of which would have
+failed silently at showtime:
+
+1. **Hero images use Gemini, not Higgsfield.** The brief asserted the
+   Higgsfield key "already exists in this stack — the case-study video agent
+   uses it." It does not, and the assertion is inverted: both places Higgsfield
+   appears in this repo name it as something the code deliberately avoids
+   (`build-case-study-comic.py:18`, `aplus-spotlight-reel/SKILL.md:12`) because
+   it is a connected app that will not run headless. Gemini is the proven image
+   path here, and the reference-image face-lock technique the comic engine uses
+   for character consistency transfers directly to preserving an attendee's face.
+2. **Printing stays client-side.** The brief placed "Selphy AirPrint job" inside
+   the Worker pipeline. A cloud Worker has no LAN access and cannot reach a
+   printer; `index.html` calls `window.print()`, which is how the Sage Oak booth
+   already worked.
+3. **A demo-consent checkbox gates the SMS payloads.** Added at Roman's
+   direction after a compliance flag: a triple text to someone who handed over a
+   phone number at a photo booth, with one opt-out line among four messages, is
+   a bad look in a room of business owners regardless of intent. `eo_demo_consent`
+   now gates the Payload #1 triple text and the Payload #2 MMS; photos and all
+   email still go to everyone, so declining costs the attendee nothing.
+
+**Cron math (the brief asked for it to be verified):** PT is UTC-7 in August, so
+6:17 PM PT Aug 20 = 01:17 UTC Aug 21 (`17 1 * * *`) and 8:00 PM PT = 03:00 UTC
+Aug 21 (`0 3 * * *`). Both strings in the brief were already correct. The real
+hazard is that Cloudflare crons carry no date component — these re-fire every
+day until deleted, which makes the post-event cleanup load-bearing rather than
+hygiene.
+
+**Schema:** six event-temp `eo_*` contact properties in the `events` group
+(`eo_company_name`, `eo_research_brief`, `eo_hero_image_url`, `eo_payload1_sent`,
+`eo_payload2_sent`, `eo_demo_consent`) plus an `eo_lav_agents_2026` option on
+`aplus_event_tag`. All carry the `[Agent] ` label prefix and the
+"AGENT PROPERTY — written by ..." description per the 2026-08-14 labeling rule,
+and all are marked for archival on 2026-08-22. Deliberately NOT in `KEEPERS.md`.
+
+**Still open at time of writing:** the two Claude system prompts are drafts —
+Deliverable ③ was referenced by the brief but never supplied, and those two
+pieces of copy are what make the reveal land. The booth number (818) 573-6258
+also needs confirming as MMS-verified in JustCall; it is not the main A+ line.
+
+**Files:** `booth/eo/{index.html,worker.js,wrangler.toml,README.md}`,
+`ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/FLEET.md`
+(regenerated), `docs/CHANGELOG.md`.
+
+**Sunset 2026-08-22** — post-event checklist lives in `booth/eo/README.md`.
+
+---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
 
 **Reported:** Paola — the case study for Amelia arrived in
