@@ -72,6 +72,59 @@ const PAYLOAD2_TEXT_NO_HERO =
 
 const IDEA_AUTOREPLY = "Logged. Roman sees everything. Build it well tonight. — M23";
 
+// The booth line, written out for attendee-facing copy. Roman moved the
+// booth to 6293; the original brief said 6258. One constant so the number
+// can never drift between the SMS sender and the text of an email.
+const BOOTH_NUMBER_HUMAN = "(818) 573-6293";
+
+// 7:30 PM PT — mid-build encouragement. One text, everyone at once.
+const POSITIVE_TEXT =
+  "Halfway. The part where it feels broken is the part right before it " +
+  "works — every single time. Keep going. — Minion #23 🤖";
+
+// The build-kit prompt attendees paste into a new Claude chat. VERBATIM
+// from Roman's Deliverable 4 — do not reflow, reword, or "improve" it.
+// Whitespace is load-bearing: they are copying this into a prompt box.
+const BUILD_KIT_PROMPT = `I'm a founder at a live workshop building my first AI agent
+tonight. Interview me ONE question at a time to fill out a
+RAFT job description for an agent that will run on a schedule:
+
+R - ROLE: what kind of agent it is, my company, what we do
+A - AUDIENCE: who reads the output and how fast
+F - FORMAT: the shape of the output
+T - TASK: exactly what to check each run, what to skip, and
+    what to say if nothing real happened
+
+Keep me scoped: web search + public info only, no logins to
+my other tools tonight. If my idea is too big, shrink it to
+the first 20% and tell me the rest is v2.
+
+Also collect: my full name, my email, a short agent name in
+lowercase-with-hyphens, and what schedule it should run on.
+
+When we're done, output ONE markdown code block titled
+HANDOFF.md containing EXACTLY this — no extra commentary:
+
+# HANDOFF — EO cohort agent
+Clone https://github.com/aplustutoring/eo-cohort-agents
+Create the file agents/<agent-name>.md with this content:
+
+---
+name: <my full name>
+email: <my email>
+agent: <agent-name>
+schedule: <my schedule>
+---
+ROLE: ...
+AUDIENCE: ...
+FORMAT: ...
+TASK: ...
+
+Then: create a branch named agent/<agent-name>, commit the
+file, push the branch, and open a pull request to main with
+the title "New hire: <agent-name>". Do not modify any other
+file. Report the PR link when done.`;
+
 // ── Deliverable ③ was not supplied. These two system prompts are DRAFTS
 // written to match the Minion #23 voice; Roman approves or replaces them
 // before go-live. Everything else in this file is per spec.
@@ -159,6 +212,64 @@ export default {
     // the real error instead of swallowing it into waitUntil. Refuses to run
     // once MODE=send, so it cannot be poked at during the event.
     // DELETE THIS ROUTE before go-live.
+    // TEMPORARY: preview an attendee-facing email without waiting for its
+    // cron. DELETE THIS ROUTE with /debug/research before sunset.
+    if (request.method === "GET" && url.pathname === "/debug/preview") {
+      if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
+      const to = url.searchParams.get("to");
+      const which = url.searchParams.get("which") || "buildkit";
+      if (!to) return json({ error: "?to= required" }, 400, env);
+      let html;
+      if (which === "buildkit") {
+        const found = await searchByEmail(env, to).catch(() => null);
+        let ctx = null;
+        if (found) {
+          const full = await getContact(env, found.id, [
+            "firstname", "lastname", "email", "eo_company_name", "eo_research_brief",
+          ]);
+          const fp = full.properties;
+          ctx = {
+            firstname: fp.firstname, lastname: fp.lastname, email: fp.email,
+            company: fp.eo_company_name, brief: fp.eo_research_brief,
+          };
+        }
+        html = buildKitHtml(ctx);
+      } else {
+        html = briefEmailHtml("Sample brief body.");
+      }
+      try {
+        await sendEmail(env, {
+          to,
+          subject: which === "buildkit"
+            ? "Your build kit — two pastes and you have an employee"
+            : "Preview",
+          html,
+        });
+        return json({ ok: true, which, to, bytes: html.length }, 200, env);
+      } catch (e) {
+        return json({ ok: false, error: String(e) }, 200, env);
+      }
+    }
+
+    // TEMPORARY: run the ENTIRE evening's sequence for one contact, now.
+    // The work itself happens on the next queue tick, because that is the
+    // only handler with enough time budget — a fetch handler would be killed
+    // partway through, which is the same trap that ate the research.
+    // DELETE THIS ROUTE with the other /debug routes before sunset.
+    if (request.method === "GET" && url.pathname === "/debug/dryrun") {
+      if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
+      const email = url.searchParams.get("email");
+      if (!email) return json({ error: "?email= required" }, 400, env);
+      const found = await searchByEmail(env, email);
+      if (!found) return json({ error: `no contact for ${email}` }, 404, env);
+      await env.PHOTOS.put(`dryrun:${found.id}`, new Date().toISOString());
+      return json({
+        ok: true,
+        contactId: found.id,
+        note: "queued — the next tick (within 60s) sends photo email, payload 1 (3 texts + brief email), build kit, positive text, then payload 2 (hero MMS + closing email)",
+      }, 200, env);
+    }
+
     if (request.method === "GET" && url.pathname === "/debug/research") {
       if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
       const company = url.searchParams.get("company") || "funbox.com";
@@ -180,6 +291,10 @@ export default {
       ctx.waitUntil(runQueue(env, WORKER_ORIGIN));
     } else if (event.cron === "17 1 * * *") {
       ctx.waitUntil(runPayload1(env));
+    } else if (event.cron === "5 2 * * *") {
+      ctx.waitUntil(runBuildKit(env));
+    } else if (event.cron === "30 2 * * *") {
+      ctx.waitUntil(runPositiveText(env));
     } else if (event.cron === "0 3 * * *") {
       ctx.waitUntil(runPayload2(env));
     } else {
@@ -317,9 +432,12 @@ async function handoff(env, url, c) {
 const QUEUE_BATCH = 6;
 
 async function runQueue(env, origin) {
+  await runDryRuns(env, origin);
+
   const contacts = await listTagged(env, [
     "firstname", "lastname", "email", "phone", "eo_company_name",
-    "eo_research_brief", "eo_hero_image_url", "eo_payload1_sent", "eo_demo_consent",
+    "eo_research_brief", "eo_hero_image_url", "eo_payload1_sent",
+    "eo_payload2_sent", "eo_demo_consent",
   ]);
 
   const needBrief = contacts.filter((c) => !c.properties.eo_research_brief).slice(0, QUEUE_BATCH);
@@ -365,28 +483,174 @@ async function runQueue(env, origin) {
     }
   }));
 
-  // Late arrivals: captured after 6:17, brief ready, Payload #1 not yet sent.
-  if (nowPT() >= 18 * 60 + 17) {
-    const late = contacts.filter((c) =>
-      !c.properties.eo_payload1_sent && c.properties.eo_research_brief);
-    for (const c of late) {
-      const p = c.properties;
+  // ── Catch-up ──────────────────────────────────────────────────────────
+  // The booth runs 6:15-8:15 but each scheduled send fires ONCE. Without
+  // this, someone who walks up at 7:20 never receives the 7:05 build kit —
+  // and at a two-hour booth that is most of the room. So every tick, each
+  // contact gets any step whose time has passed and which they have not had
+  // yet, in sequence order. Every step is flag-guarded, so a contact who
+  // already got it from the scheduled cron is skipped rather than doubled.
+  const mins = nowPT();
+  for (const c of contacts) {
+    const p = c.properties;
+    const phone = normalizePhone(p.phone);
+    const consented = p.eo_demo_consent === "true";
+
+    // 1 — Payload #1 (needs the brief to exist first, or it says nothing)
+    if (mins >= 18 * 60 + 17 && !p.eo_payload1_sent && p.eo_research_brief) {
       try {
         await sendPayload1(env, {
           id: c.id,
           firstname: p.firstname,
           email: p.email,
-          phone: normalizePhone(p.phone),
+          phone,
           company: p.eo_company_name,
           brief: p.eo_research_brief,
-          demoConsent: p.eo_demo_consent === "true",
+          demoConsent: consented,
         });
-        log(env, { at: "queue.payload1", contactId: c.id, sent: true });
+        log(env, { at: "catchup.payload1", contactId: c.id, sent: true });
       } catch (e) {
-        log(env, { at: "queue.payload1", contactId: c.id, error: String(e) });
+        log(env, { at: "catchup.payload1", contactId: c.id, error: String(e) });
+      }
+    }
+
+    // 2 — Build kit. Deliberately NOT gated on payload #1 having gone out:
+    // if the research failed for someone, they should still get the thing
+    // the workshop actually needs them to have.
+    if (mins >= 19 * 60 + 5) {
+      const flag = `sent:buildkit:${c.id}`;
+      if (!(await env.PHOTOS.get(flag))) {
+        await env.PHOTOS.put(flag, new Date().toISOString());
+        await sendEmail(env, {
+          to: p.email,
+          subject: "Your build kit — two pastes and you have an employee",
+          html: buildKitHtml({
+            firstname: p.firstname, lastname: p.lastname, email: p.email,
+            company: p.eo_company_name, brief: p.eo_research_brief,
+          }),
+        }).then(() => log(env, { at: "catchup.buildkit", contactId: c.id, sent: true }))
+          .catch((e) => log(env, { at: "catchup.buildkit", contactId: c.id, error: String(e) }));
+      }
+    }
+
+    // 3 — Encouragement text
+    if (mins >= 19 * 60 + 30) {
+      const flag = `sent:positive:${c.id}`;
+      if (!(await env.PHOTOS.get(flag))) {
+        await env.PHOTOS.put(flag, new Date().toISOString());
+        await sendSms(env, {
+          to: phone, body: POSITIVE_TEXT, contactId: c.id,
+          payload: "catchup-positive", requireConsent: !consented,
+        }).catch((e) => log(env, { at: "catchup.positive", contactId: c.id, error: String(e) }));
       }
     }
   }
+
+  // 4 — Payload #2. runPayload2 already stamps eo_payload2_sent before it
+  // sends and skips anyone stamped, so calling it here is idempotent: it
+  // simply picks up anyone the 8:00 run could not have known about yet.
+  if (mins >= 20 * 60) {
+    await runPayload2(env).catch((e) => log(env, { at: "catchup.payload2", error: String(e) }));
+  }
+}
+
+// Sends the whole evening to one person, in order, right now. Deliberately
+// does NOT stamp eo_payload1_sent / eo_payload2_sent or the KV send-flags,
+// so a rehearsal never causes a real attendee send to be skipped later.
+// That does mean the rehearsing contact will also receive the scheduled
+// sends when their time comes.
+async function runDryRuns(env, origin) {
+  const pending = await env.PHOTOS.list({ prefix: "dryrun:" });
+  for (const k of pending.keys) {
+    const contactId = k.name.slice("dryrun:".length);
+    await env.PHOTOS.delete(k.name).catch(() => {});
+    try {
+      await dryRunOne(env, origin, contactId);
+    } catch (e) {
+      log(env, { at: "dryrun", contactId, error: String(e) });
+    }
+  }
+}
+
+async function dryRunOne(env, origin, contactId) {
+  const c = await getContact(env, contactId, [
+    "firstname", "lastname", "email", "phone", "eo_company_name",
+    "eo_research_brief", "eo_hero_image_url", "eo_demo_consent",
+  ]);
+  const p = c.properties;
+  const phone = normalizePhone(p.phone);
+  const consented = p.eo_demo_consent === "true";
+  log(env, { at: "dryrun", contactId, start: true, email: p.email });
+
+  // The brief has to exist before payload 1 or 2 can say anything real.
+  let brief = p.eo_research_brief;
+  if (!brief) {
+    try {
+      brief = await researchBrief(env, p.eo_company_name, p.email);
+      await patchContact(env, contactId, { eo_research_brief: brief });
+      log(env, { at: "dryrun.brief", contactId, chars: brief.length });
+    } catch (e) {
+      brief = genericBrief(p.eo_company_name);
+      log(env, { at: "dryrun.brief", contactId, error: String(e) });
+    }
+  }
+
+  // 1 — Payload #1: three texts, real 30s cadence, then the brief email.
+  for (let i = 0; i < PAYLOAD1_TEXTS.length; i++) {
+    if (i > 0) await sleep(30000);
+    await sendSms(env, {
+      to: phone,
+      body: PAYLOAD1_TEXTS[i]({ firstname: p.firstname, company: p.eo_company_name }),
+      contactId, payload: `dryrun-p1-text${i + 1}`,
+      requireConsent: !consented,
+    }).catch((e) => log(env, { at: "dryrun.p1text", contactId, error: String(e) }));
+  }
+  await sendEmail(env, {
+    to: p.email,
+    subject: `I did some homework on ${p.eo_company_name || "your company"}`,
+    html: briefEmailHtml(brief),
+  }).catch((e) => log(env, { at: "dryrun.p1email", contactId, error: String(e) }));
+
+  // 2 — Build kit
+  await sendEmail(env, {
+    to: p.email,
+    subject: "Your build kit — two pastes and you have an employee",
+    html: buildKitHtml({
+      firstname: p.firstname, lastname: p.lastname, email: p.email,
+      company: p.eo_company_name, brief,
+    }),
+  }).catch((e) => log(env, { at: "dryrun.buildkit", contactId, error: String(e) }));
+
+  // 3 — Encouragement
+  await sendSms(env, {
+    to: phone, body: POSITIVE_TEXT, contactId,
+    payload: "dryrun-positive", requireConsent: !consented,
+  }).catch((e) => log(env, { at: "dryrun.positive", contactId, error: String(e) }));
+
+  // 4 — Payload #2: hero MMS + the composed closing email
+  const hero = p.eo_hero_image_url || "";
+  await sendSms(env, {
+    to: phone,
+    body: hero ? PAYLOAD2_TEXT_WITH_HERO : PAYLOAD2_TEXT_NO_HERO,
+    mediaUrl: hero || null,
+    contactId, payload: hero ? "dryrun-p2-mms" : "dryrun-p2-text",
+    requireConsent: !consented,
+  }).catch((e) => log(env, { at: "dryrun.p2text", contactId, error: String(e) }));
+
+  let closing;
+  try {
+    closing = await composePayload2Email(env, brief);
+  } catch (e) {
+    closing = fallbackPayload2Body();
+    log(env, { at: "dryrun.p2compose", contactId, error: String(e) });
+  }
+  await sendEmail(env, {
+    to: p.email,
+    subject: "Two of us on your team now",
+    html: briefEmailHtml(closing),
+  }).catch((e) => log(env, { at: "dryrun.p2email", contactId, error: String(e) }));
+
+  log(env, { at: "dryrun", contactId, done: true, hero: !!hero });
 }
 
 function bytesToB64(bytes) {
@@ -431,28 +695,34 @@ async function handleInboundSms(request, env, ctx) {
 
   if (!text) return new Response("ok", { status: 200 });
 
-  // Resolve a name if we can, so Crystal's sheet is readable.
+  // Resolve the contact so the idea lands on their own record.
   let name = "";
+  let contactId = null;
   try {
     const c = await searchByPhone(env, from);
-    if (c) name = `${c.properties.firstname || ""} ${c.properties.lastname || ""}`.trim();
+    if (c) {
+      contactId = c.id;
+      name = `${c.properties.firstname || ""} ${c.properties.lastname || ""}`.trim();
+    }
   } catch (e) {
     log(env, { at: "sms.resolve", from, error: String(e) });
   }
 
   ctx.waitUntil((async () => {
+    // Roman's call on the night: log to the HubSpot timeline, not a Zapier
+    // catch-hook into Sheets. Zero configuration, works the moment JustCall
+    // points its webhook here, and it lands on the contact record next to
+    // their photo and brief instead of in a separate spreadsheet. Export to
+    // a sheet tomorrow if you want one.
     try {
-      if (env.MODE === "send" && env.ZAPIER_IDEAS_HOOK) {
-        const res = await fetch(env.ZAPIER_IDEAS_HOOK, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            timestamp: new Date().toISOString(), phone: from, name, idea: text,
-          }),
-        });
-        if (!res.ok) throw new Error(`Zapier ${res.status}`);
+      if (contactId) {
+        await hubspotNote(env, contactId,
+          `💡 Agent idea texted from ${from}:\n\n${text}`);
+      } else {
+        await hubspotNote(env, null,
+          `💡 Agent idea from an unmatched number ${from}:\n\n${text}`);
       }
-      log(env, { at: "sms.idea", from, name, chars: text.length });
+      log(env, { at: "sms.idea", from, name, chars: text.length, logged: true });
     } catch (e) {
       log(env, { at: "sms.idea", from, error: String(e) });
     }
@@ -614,6 +884,56 @@ async function runPayload2(env) {
       html: briefEmailHtml(bodyText),
     }).catch((e) => log(env, { at: "payload2.email", contactId: c.id, error: String(e) }));
   }
+}
+
+// Build kit — 7:05 PM PT, as the build block starts. Everyone gets it,
+// consent or not: it is email, and it is the thing they actually came for.
+// KV holds the sent-flag rather than a HubSpot property, because these two
+// sends were added on the night and a KV key needs no schema change.
+async function runBuildKit(env) {
+  const contacts = await listTagged(env,
+    ["firstname", "lastname", "email", "eo_company_name", "eo_research_brief"]);
+  log(env, { at: "buildkit", found: contacts.length });
+
+  await Promise.all(contacts.map(async (c) => {
+    const flag = `sent:buildkit:${c.id}`;
+    if (await env.PHOTOS.get(flag)) return;
+    await env.PHOTOS.put(flag, new Date().toISOString());
+    try {
+      const pr = c.properties;
+      await sendEmail(env, {
+        to: pr.email,
+        subject: "Your build kit — two pastes and you have an employee",
+        html: buildKitHtml({
+          firstname: pr.firstname, lastname: pr.lastname, email: pr.email,
+          company: pr.eo_company_name, brief: pr.eo_research_brief,
+        }),
+      });
+      log(env, { at: "buildkit", contactId: c.id, sent: true, personalised: !!pr.eo_research_brief });
+    } catch (e) {
+      log(env, { at: "buildkit", contactId: c.id, error: String(e) });
+    }
+  }));
+}
+
+// 7:30 PM PT — one encouraging text, mid-build. Gated on demo consent like
+// every other non-photo SMS.
+async function runPositiveText(env) {
+  const contacts = await listTagged(env, ["firstname", "phone", "eo_demo_consent"]);
+  log(env, { at: "positive", found: contacts.length });
+
+  await Promise.all(contacts.map(async (c) => {
+    const flag = `sent:positive:${c.id}`;
+    if (await env.PHOTOS.get(flag)) return;
+    await env.PHOTOS.put(flag, new Date().toISOString());
+    await sendSms(env, {
+      to: normalizePhone(c.properties.phone),
+      body: POSITIVE_TEXT,
+      contactId: c.id,
+      payload: "positive",
+      requireConsent: c.properties.eo_demo_consent !== "true",
+    }).catch((e) => log(env, { at: "positive", contactId: c.id, error: String(e) }));
+  }));
 }
 
 // ─────────────────────────────────────────────────────────── Claude
@@ -1030,6 +1350,40 @@ async function logPhotoNote(env, contactId, photoUrl, heroUrl) {
   if (!res.ok) throw new Error(`HubSpot note ${res.status}: ${await res.text()}`);
 }
 
+// A note, optionally associated to a contact. An idea from a number we
+// cannot match still gets recorded rather than dropped — an unmatched text
+// is usually a typo'd phone at the booth, not a stranger.
+async function hubspotNote(env, contactId, body) {
+  const payload = {
+    properties: { hs_timestamp: new Date().toISOString(), hs_note_body: body },
+  };
+  if (contactId) {
+    payload.associations = [{
+      to: { id: contactId },
+      types: [{ associationCategory: "HUBSPOT_DEFINED", associationTypeId: 202 }],
+    }];
+  }
+  const res = await fetch("https://api.hubapi.com/crm/v3/objects/notes", {
+    method: "POST", headers: hsHeaders(env), body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`HubSpot note ${res.status}: ${await res.text()}`);
+}
+
+async function searchByEmail(env, email) {
+  const res = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
+    method: "POST",
+    headers: hsHeaders(env),
+    body: JSON.stringify({
+      filterGroups: [{ filters: [{ propertyName: "email", operator: "EQ", value: email }] }],
+      properties: ["email"],
+      limit: 1,
+    }),
+  });
+  if (!res.ok) throw new Error(`HubSpot email search ${res.status}`);
+  const data = await res.json();
+  return data.total > 0 ? data.results[0] : null;
+}
+
 async function searchByPhone(env, phone) {
   const res = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
     method: "POST",
@@ -1123,54 +1477,149 @@ async function sendEmail(env, { to, subject, html }) {
 }
 
 // ───────────────────────────────────────────────────────── templates
+//
+// Light card on a warm grey page, near-black body copy, EO indigo for the
+// one accent. The first cut was light-grey-on-navy and read like a terminal.
+// Email clients are unforgiving: everything is inline styles, no external
+// CSS, no flexbox, and every colour is stated explicitly so a dark-mode
+// client cannot invert half of it into mush.
 
-// Dark + electric, signed M23. No A+ logo, no A+ colours, no A+ links.
+const MAIL = {
+  page: "#EFEEEA",     // warm grey behind the card
+  card: "#FFFFFF",
+  head: "#18181B",     // headings — near black
+  body: "#3F3F46",     // body copy — dark enough to read on a phone outdoors
+  accent: "#3B3E8F",   // EO indigo, taken from the logo
+  muted: "#A1A1AA",
+  rule: "#E4E4E7",
+  codeBg: "#FAFAFA",
+  codeText: "#27272A",
+};
+
+const LOGO_URL = "https://eo-booth.pages.dev/eo-logo.png?v=1";
+
+const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+
+const pStyle = `style="font-family:${FONT};font-size:16px;line-height:1.65;color:${MAIL.body};margin:0 0 18px;"`;
+
 function shell(inner) {
-  return `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;background:#0B1220;color:#E2E8F0;padding:34px;border-radius:16px;">
-  <p style="font-size:12px;letter-spacing:2.5px;color:#38BDF8;font-weight:700;margin:0 0 22px;">EO LA VALLEY · BUILD YOUR FIRST AI AGENT</p>
-  ${inner}
-  <p style="color:#64748B;font-size:12px;margin-top:30px;">You met me at the photo booth on August 20, 2026.</p>
+  return `<div style="background:${MAIL.page};padding:28px 16px;font-family:${FONT};">
+  <div style="max-width:560px;margin:0 auto;background:${MAIL.card};border-radius:14px;padding:36px 32px;">
+    <img src="${LOGO_URL}" alt="EO Los Angeles Valley" width="150"
+         style="display:block;width:150px;height:auto;margin:0 0 6px;">
+    <p style="font-family:${FONT};font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:${MAIL.muted};font-weight:700;margin:0 0 24px;">Build Your First AI Agent &middot; August 20, 2026</p>
+    <div style="border-top:1px solid ${MAIL.rule};padding-top:26px;">
+      ${inner}
+    </div>
+    <p style="font-family:${FONT};font-size:12px;line-height:1.5;color:${MAIL.muted};margin:30px 0 0;border-top:1px solid ${MAIL.rule};padding-top:18px;">
+      You met me at the photo booth on August 20, 2026.
+    </p>
+  </div>
 </div>`;
+}
+
+function h1(text) {
+  return `<h1 style="font-family:${FONT};font-size:22px;line-height:1.3;font-weight:700;color:${MAIL.head};margin:0 0 16px;">${text}</h1>`;
+}
+
+function eyebrow(text) {
+  return `<p style="font-family:${FONT};font-size:13px;letter-spacing:0.6px;text-transform:uppercase;color:${MAIL.accent};font-weight:700;margin:28px 0 12px;">${text}</p>`;
+}
+
+function sig(note) {
+  return `<p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${MAIL.accent};font-weight:600;margin:26px 0 0;">— Minion #23 🤖${
+    note ? ` <span style="color:${MAIL.muted};font-weight:400;">${note}</span>` : ""}</p>`;
 }
 
 function photoEmailHtml(firstName, photoUrl) {
   return shell(`
-  <h1 style="color:#F1F5F9;font-size:23px;margin:0 0 16px;">Thanks for coming tonight, ${escapeHtml(firstName || "friend")}.</h1>
-  ${photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="Your photo" style="width:100%;border-radius:12px;margin:0 0 18px;">` : ""}
-  <p style="font-size:16px;line-height:1.65;color:#CBD5E1;">Here's your photo from the EO LA Valley learning event. That's the easy part — I'm working on something else for you. Give me a few minutes.</p>
-  <p style="font-size:16px;line-height:1.65;color:#94A3B8;">— Minion #23 🤖</p>`);
+  ${h1(`Thanks for coming tonight, ${escapeHtml(firstName || "friend")}.`)}
+  ${photoUrl ? `<img src="${escapeHtml(photoUrl)}" alt="Your photo" style="display:block;width:100%;max-width:496px;border-radius:10px;margin:0 0 20px;">` : ""}
+  <p ${pStyle}>Here's your photo from the EO LA Valley learning event.</p>
+  <p ${pStyle}>That's the easy part. I'm working on something else for you — give me a few minutes.</p>
+  ${sig()}`);
 }
 
 function briefEmailHtml(bodyText) {
-  const P = 'style="font-size:16px;line-height:1.7;color:#CBD5E1;margin:0 0 16px;"';
-
   const paras = String(bodyText).split(/\n\s*\n/).map((block) => {
     const lines = block.trim().split("\n").map((l) => l.trim()).filter(Boolean);
-
-    // "Five agents you could build tonight:" + numbered items. Render as a
-    // real list — as plain <p> the numbers run together on a phone and the
-    // most useful part of the email reads like a wall.
     const numbered = lines.filter((l) => /^\d+\.\s/.test(l));
+
+    // "Five agents you could build tonight:" + its items. Rendered as a real
+    // list — as running paragraphs the numbers collide on a phone and the
+    // most useful part of the email turns into a wall.
     if (numbered.length >= 2) {
       const heading = lines.filter((l) => !/^\d+\.\s/.test(l));
       const items = numbered.map((l) => {
         const t = escapeHtml(l.replace(/^\d+\.\s*/, ""));
-        // Bold the agent name up to the em dash, if the model used one
-        const named = t.replace(/^([^—]{2,60})—/, '<strong style="color:#F1F5F9;">$1</strong>—');
-        return `<li style="margin:0 0 11px;">${named}</li>`;
+        const named = t.replace(/^([^—]{2,60})—/,
+          `<strong style="color:${MAIL.head};">$1</strong>—`);
+        return `<li style="font-family:${FONT};font-size:15px;line-height:1.6;color:${MAIL.body};margin:0 0 12px;padding-left:4px;">${named}</li>`;
       }).join("");
-      return (heading.length
-        ? `<p style="font-size:16px;line-height:1.7;color:#38BDF8;font-weight:700;margin:26px 0 12px;">${escapeHtml(heading.join(" "))}</p>`
-        : "") +
-        `<ol style="font-size:16px;line-height:1.65;color:#CBD5E1;margin:0 0 16px;padding-left:22px;">${items}</ol>`;
+      return (heading.length ? eyebrow(escapeHtml(heading.join(" "))) : "") +
+        `<ol style="margin:0 0 18px;padding-left:20px;">${items}</ol>`;
     }
-
-    return `<p ${P}>${escapeHtml(block.trim()).replace(/\n/g, "<br>")}</p>`;
+    return `<p ${pStyle}>${escapeHtml(block.trim()).replace(/\n/g, "<br>")}</p>`;
   }).join("");
+
   return shell(`
-  <p style="font-size:16px;line-height:1.7;color:#94A3B8;margin:0 0 20px;">You took a photo 20 minutes ago. I've been busy since.</p>
+  <p style="font-family:${FONT};font-size:15px;line-height:1.6;color:${MAIL.muted};margin:0 0 20px;font-style:italic;">You took a photo 20 minutes ago. I've been busy since.</p>
   ${paras}
-  <p style="font-size:16px;line-height:1.7;color:#38BDF8;margin-top:22px;">— Minion #23 🤖 <span style="color:#64748B;">(I'm not done yet.)</span></p>`);
+  ${sig("(I'm not done yet.)")}`);
+}
+
+// Roman's prompt is verbatim below the CONTEXT block. We already researched
+// this person's company for the 6:17 email, so making them re-explain it to
+// a cold Claude chat wastes the best asset we have. The block states what is
+// already known and tells Claude not to ask for it again — so the interview
+// opens on the agent itself rather than on "what does your company do".
+//
+// Falls back to the plain prompt when there is no brief yet: a generic paste
+// still works, it is just slower for them.
+function buildKitPrompt(c) {
+  const name = [c?.firstname, c?.lastname].filter(Boolean).join(" ").trim();
+  const email = c?.email || "";
+  const company = c?.company || "";
+  const domain = email.split("@")[1] || "";
+  const brief = (c?.brief || "").trim();
+
+  if (!name && !email && !brief) return BUILD_KIT_PROMPT;
+
+  const known = [
+    name ? `My name: ${name}` : null,
+    email ? `My email: ${email}` : null,
+    company ? `My company: ${company}${domain ? ` (${domain})` : ""}` : null,
+  ].filter(Boolean).join("\n");
+
+  return `CONTEXT — you already know all of this about me. Do not ask me for any of it again.
+
+${known}
+${brief ? `
+Earlier tonight another agent researched my company and wrote this. Treat it as background you already have — do not read it back to me:
+
+${brief}
+` : ""}
+Because you already have my name, email and company, the only things you still need from me are the agent name and the schedule. Start by asking what I want the agent to DO.
+
+---
+
+${BUILD_KIT_PROMPT}`;
+}
+
+function buildKitHtml(c) {
+  return shell(`
+  ${h1("You're about to hire your first agent.")}
+  <p ${pStyle}>Two pastes. That's it.</p>
+
+  ${eyebrow("Step 1 — open a NEW Claude chat, paste this")}
+  <pre style="background:${MAIL.codeBg};border:1px solid ${MAIL.rule};border-radius:8px;padding:16px;margin:0 0 22px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;color:${MAIL.codeText};-webkit-user-select:all;user-select:all;">${escapeHtml(buildKitPrompt(c))}</pre>
+
+  ${eyebrow("Step 2 — open Claude Code")}
+  <p ${pStyle}>Paste the HANDOFF.md it gave you. Watch it work.</p>
+
+  <p ${pStyle}>Stuck? Raise a hand. Or text your agent name + RAFT to <strong style="color:${MAIL.head};">${BOOTH_NUMBER_HUMAN}</strong> and Minion #23 will file it for you.</p>
+  <p ${pStyle}>Your agent's first shift lands in this inbox tomorrow at 7 AM.</p>
+  ${sig()}`);
 }
 
 // ─────────────────────────────────────────────────────────── helpers
