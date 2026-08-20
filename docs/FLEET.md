@@ -64,7 +64,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
-| **blog-metrics**<br>Blog metrics scorecard (Monday 9 AM PT) | 09:00 PDT Mon | active | marketing/state/history.json, HubSpot:blog_posts | Slack |
+| **blog-metrics**<br>Blog metrics scorecard (Monday 9 AM PT) | 09:00 PDT Mon | active (draft) | marketing/state/history.json, HubSpot:blog_posts | Slack |
 | **content-build**<br>Content build (Saturday — approved slate → HubSpot drafts) | 08:00 PDT Sat | active | marketing/state/topic-queue.json, HubSpot:blog_posts | HubSpot:blog_posts, Slack, marketing/state/topic-queue.json, marketing/state/history.json |
 | **topic-gen**<br>Topic generation (Thursday 5 PM PT) | 17:00 PDT Thu | active | marketing/state/topic-registry.json | marketing/state/topic-queue.json, marketing/state/history.json |
 | **approval-deadline**<br>Approval deadline check (DEPRECATED — approval gate removed) | manual | deprecated | marketing/state/topic-queue.json | marketing/state/topic-queue.json, marketing/state/history.json |
