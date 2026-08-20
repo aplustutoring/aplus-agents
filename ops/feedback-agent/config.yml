@@ -20,13 +20,27 @@ slack:
   # Slack member IDs (Uxxxxxxxx) for pings (verified against the workspace
   # 2026-07-27). If either is blank the agent falls back to a plain name.
   people:
-    emily: "U05MXK1MC5Q"   # Emily Shulman — kept for future delegation, not currently pinged
-    roman: "U05NA7UMSSV"   # Roman Slavinsky
+    emily: "U05MXK1MC5Q"      # Emily Shulman
+    roman: "U05NA7UMSSV"      # Roman Slavinsky
+    danielle: "U05NMABF3B2"   # Danielle Brodetsky
+    paola: "U094B5DRZBR"      # Paola Sarmiento
   # Who receives operational pings: ticket drafts, DEMOTE alerts, and the
-  # digest's demotion-review flags. 2026-07-31 per Roman: everything runs
-  # through Roman. To delegate again, add "emily" to this list — the code
-  # reads it, no code changes needed.
+  # digest's demotion-review flags. Kept narrow on purpose — pinging four
+  # people on every proposal trains everyone to ignore the pings.
   alerts_to: ["roman"]
+  # Who may APPROVE a fix proposal and MERGE the resulting PR by replying in
+  # the thread. Falls back to alerts_to when unset (the pre-2026-08-20
+  # behavior). Deliberately wider than alerts_to: Roman 2026-08-20 — "i want it
+  # that danielle or paola or emily could do the approve and merges".
+  #
+  # The natural case this unlocks: whoever REPORTS a problem can approve its
+  # fix. Paola reports the missing reel, Paola approves the fix, Paola merges
+  # it — no round trip through Roman for work she is closest to.
+  #
+  # What this grants: firing the coding agent, and squash-merging its PR to
+  # main. What it does NOT grant: DEMOTE registry flips, which stay with Roman
+  # until a Fleet Manager exists to verify state changes.
+  approvers: ["roman", "danielle", "paola", "emily"]
 
 claude:
   # Repo-standard model (matches ops/call_agent + marketing/scripts/*).

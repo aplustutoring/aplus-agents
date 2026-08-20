@@ -7,6 +7,33 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Approve + merge opened to Danielle, Paola and Emily
+
+**What:** Split `slack.approvers` out of `slack.alerts_to`. `alerts_to` still
+controls who gets @-pinged (Roman only — pinging four people on every proposal
+trains everyone to ignore pings); `approvers` controls who may fire the coding
+agent and squash-merge its PR from a thread reply. Set to Roman, Danielle, Paola,
+Emily. Falls back to `alerts_to` when unset, so older configs are unaffected.
+The proposal message now names who can act, reporter first.
+
+**Why:** Roman 2026-08-20 — "i want it that danielle or paola or emily could do
+the approve and merges." The case it unlocks: whoever reports a problem can ship
+its fix. Paola reports the missing reel, Paola approves, Paola merges — no round
+trip through Roman for work she is closest to. An unnamed permission is one
+nobody uses, hence naming the approvers in the message itself.
+
+**Not delegated:** DEMOTE registry flips stay with Roman until a Fleet Manager
+exists to verify state changes (#AP011).
+
+**Also:** posted a pinned explainer to #agent-feedback covering how to report,
+the approve/merge/no vocabulary, that screenshots now work, the FERPA rule, and
+what to do when the agent stays silent.
+
+**Files:** `ops/feedback-agent/config.yml`, `ops/feedback-agent/feedback_agent.py`,
+`docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — Feedback agent: schema debris no longer reaches HubSpot ticket subjects
 
 **What:** The classifier's free-text fields are now scrubbed of leaked schema

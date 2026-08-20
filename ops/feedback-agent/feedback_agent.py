@@ -598,8 +598,36 @@ def analyze_report(text, first_name, cls, agents, cfg):
 
 
 def approver_ids(cfg):
+    """Who may approve a fix and merge its PR from a thread reply.
+
+    `approvers` is deliberately wider than `alerts_to` (Roman 2026-08-20): the
+    person who reported a problem should be able to approve and ship its fix
+    without a round trip. Falls back to alerts_to when unset, preserving the
+    old behavior for any config that predates the split.
+    """
     people = cfg["slack"].get("people") or {}
-    return {people.get(p, "") for p in (cfg["slack"].get("alerts_to") or []) if people.get(p, "").startswith("U")}
+    names = cfg["slack"].get("approvers") or cfg["slack"].get("alerts_to") or []
+    return {people.get(p, "") for p in names if people.get(p, "").startswith("U")}
+
+
+def approver_sentence(cfg, reporter_first_name=""):
+    """One line naming who can act, with the reporter first when they qualify.
+
+    Written for the thread, not for docs: the people who can now approve are the
+    ones who report the problems, and they will not know unless the message that
+    asks for approval says their name.
+    """
+    people = cfg["slack"].get("people") or {}
+    names = cfg["slack"].get("approvers") or cfg["slack"].get("alerts_to") or []
+    labels = [n.capitalize() for n in names if people.get(n, "").startswith("U")]
+    if reporter_first_name and reporter_first_name.capitalize() in labels:
+        labels.remove(reporter_first_name.capitalize())
+        labels.insert(0, reporter_first_name.capitalize())
+    if not labels:
+        return "No approvers configured — nobody can action this."
+    if len(labels) == 1:
+        return f"{labels[0]} can approve or merge this."
+    return f"{', '.join(labels[:-1])} or {labels[-1]} can approve or merge this."
 
 
 def fire_fix_dispatch(payload):
@@ -975,12 +1003,17 @@ def intake(cfg, payload, dry_run):
         try:
             analysis = analyze_report(original_text, first_name, cls, agents, cfg)
             branch = f"fix/{cls['agent_id']}-{date_pt}-{short_ts}"
-            verdict = {"execute": "Reply *approve* in this thread to execute — a fix PR follows for your merge. Anything else leaves it filed.",
-                       "needs_human_input": "Needs your input before it can run (see above) — reply here with the call.",
+            verdict = {"execute": "Reply *approve* in this thread to execute — then *merge* when the PR lands. Anything else leaves it filed.",
+                       "needs_human_input": "Needs a human call before it can run (see above) — reply here with the answer.",
                        "skip": "Recommend leaving this one filed only — reply *approve* to execute anyway."}[analysis["recommendation"]]
+            # The mention pings the alerts_to owner, but approval is open to
+            # everyone in slack.approvers — including whoever filed the report.
+            # Saying so is what makes the wider permission usable: an unnamed
+            # right is one nobody exercises.
             post_reply(payload["channel"], root_ts,
-                       f"{alert_mentions(cfg)} — proposed fix, your call:\n"
-                       f"{analysis['proposal_message']}\n{verdict}", dry_run)
+                       f"{alert_mentions(cfg)} — proposed fix:\n"
+                       f"{analysis['proposal_message']}\n{verdict}\n"
+                       f"_{approver_sentence(cfg, first_name)}_", dry_run)
             state["pending_proposals"][root_ts] = {
                 "agent": cls["agent_id"], "agent_label": label,
                 "correction_path": str(corr_path), "branch": branch,
