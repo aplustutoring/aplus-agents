@@ -356,9 +356,11 @@
     406220636,
     406346243,
     406455910,
-    406455166
+    406455166,
+    406494701,
+    406489223
   ],
-  "last_run_utc": "2026-08-20T16:55:22.524859+00:00",
+  "last_run_utc": "2026-08-20T17:35:28.237434+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -470,6 +472,58 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 406489223,
+      "number": "12623912051",
+      "time_pt": "10:24 AM",
+      "matched": true,
+      "contact_label": "Jacquelyn Lemerond",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called active tutor Jacquelyn (Jackie) Lemerond to inform her of a new student assignment. The call went to voicemail. Yolanda left a message asking Jackie to check her Slack messages for details.",
+        "caller_type": "tutor applicant",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm Jackie received Slack message about new student assignment",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Jackie is an active tutor (Tutor-Active); outbound call to assign a new student does not change her status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm Jackie received Slack message about new student assignment",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
