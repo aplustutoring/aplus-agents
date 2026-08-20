@@ -867,7 +867,8 @@ agents:
       - "JustCall (photo MMS, Payload #1 triple text, Payload #2 hero MMS, idea-capture auto-reply) from the booth line +18185736258"
       - "Cloudflare KV (photos + hero images under eo/, opt-outs under optout:)"
       - "Zapier catch-hook -> Google Sheet \"EO Agent Ideas — Aug 20\""
-      - "Google Drive (Crystal's shared folder — booth photo + hero image, via optional hook)"
+      - "Google Drive (Crystal's shared folder — booth photo + hero image, via optional hook; this is the print source now that the booth does not print)"
+      - "HubSpot:notes (photo + hero URLs on the contact timeline — recovery path if the Drive hook fails)"
     depends_on:
       - "secrets: HUBSPOT_TOKEN, RESEND_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET, ANTHROPIC_API_KEY, GEMINI_API_KEY, ZAPIER_IDEAS_HOOK"
       - "vars: MODE (dry_run|send), RESEND_FROM, ALLOWED_ORIGIN, JUSTCALL_FROM"
@@ -888,10 +889,14 @@ agents:
       from every later SMS/MMS.
       DEVIATIONS FROM THE BRIEF, all deliberate: (1) hero images use Gemini,
       not Higgsfield — Higgsfield has no API key in this stack and is a
-      connected app that cannot be called from a Worker; (2) Selphy printing
-      stays client-side in index.html via window.print(), because a cloud
-      Worker has no LAN access; (3) the two Claude system prompts are drafts
-      pending Roman's Deliverable 3.
+      connected app that cannot be called from a Worker; (2) NO printing at
+      the booth at all — the brief put a Selphy AirPrint job in the Worker,
+      which cannot work (no LAN access from a Worker), and Roman's call was to
+      drop booth printing entirely rather than move it to the iPad: photos are
+      delivered by email and MMS and printed later from the shared Drive
+      folder, which removes the one physical dependency that could fail
+      mid-event; (3) the two Claude system prompts are drafts pending Roman's
+      Deliverable 3.
       Carries the same privacy shape as sage-oak-booth: GET /photo/<key> is
       public and unauthenticated (unguessable-key privacy only), and hero
       images are written with no TTL.

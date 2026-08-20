@@ -23,9 +23,11 @@ JUSTCALL_FROM = "+18185736258"
 # Zapier catch-hook → Google Sheet "EO Agent Ideas — Aug 20".
 # Set with `wrangler secret put ZAPIER_IDEAS_HOOK` (it is a capability URL).
 
-# Optional: a Zapier/Apps-Script hook that pulls the two image URLs into
-# Crystal's shared Drive folder. Unset = Drive archiving is skipped
-# silently, which is the documented failure mode anyway.
+# A Zapier/Apps-Script hook that pulls the two image URLs into Crystal's
+# shared Drive folder. The booth does not print, so this folder is where all
+# prints come from afterwards — worth setting. Unset = the upload is skipped
+# silently; the photo and hero URLs still land on the contact's timeline and
+# the images stay in KV, so it is re-runnable rather than lost.
 # DRIVE_UPLOAD_HOOK = ""
 # DRIVE_FOLDER_ID   = ""
 

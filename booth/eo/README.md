@@ -2,16 +2,17 @@
 
 **EVENT-TEMP. One night: Thursday 2026-08-20, 6:15–8:15 PM PT. Sunset 2026-08-22.**
 
-Attendees get a photo. Twenty minutes later their phone buzzes three times
-with research on their own company. At 8:00 PM a superhero portrait of them
-arrives. Every attendee-facing message signs as **Minion #23 🤖** and carries
-no A+ branding anywhere — the mystery is the demo.
+Attendees get a photo, framed in an EO card, delivered by email and text.
+Twenty minutes later their phone buzzes three times with research on their own
+company. At 8:00 PM a superhero portrait of them arrives. Every attendee-facing
+message signs as **Minion #23 🤖** and carries no A+ branding anywhere — the
+mystery is the demo.
 
 ## Pieces
 
 | File | What | Runs on |
 | --- | --- | --- |
-| `index.html` | Booth front-end (Cloudflare Pages, `eo-booth`). Camera, 4-field form, demo-consent checkbox, and the Selphy AirPrint call. | iPad Safari |
+| `index.html` | Booth front-end (Cloudflare Pages, `eo-booth`). Camera, EO photo frame, 4-field form, demo-consent checkbox. | iPad Safari |
 | `worker.js` | Worker `eo-booth` — `/capture`, `/photo/<key>`, `/sms`, plus the two cron payloads | Cloudflare Workers |
 | `wrangler.toml` | Vars, KV binding, both cron triggers | — |
 
@@ -20,10 +21,15 @@ and flow changed.
 
 ## The three beats
 
-**Beat 1 — instant, and never blocked by anything else.** Print fires on the
-iPad before the network is even touched. The Worker then upserts the HubSpot
-contact, emails the photo, and sends one photo MMS. That MMS is the only
-message that carries the opt-out line.
+**Beat 1 — instant, and never blocked by anything else.** The Worker upserts
+the HubSpot contact, emails the framed photo, and sends one photo MMS. That MMS
+is the only message that carries the opt-out line.
+
+**Nothing prints at the booth.** No printer to jam, no queue, no one standing
+at a Selphy during the workshop. Both images land in the shared Drive folder at
+full resolution and prints are pulled from there afterwards. The card is still
+rendered at 2:3 / 1200x1800 — the format that printed correctly on the Selphy —
+so it is print-ready whenever you get to it.
 
 **Beat 2 — Payload #1 at 6:17 PM PT.** Three texts ~30 seconds apart, then the
 research-brief email. Sent in three waves so the whole room's phones buzz
@@ -34,8 +40,9 @@ closing email that calls back to the earlier brief.
 
 Between beats 1 and 2, `waitUntil()` does the slow work: Claude researches the
 company (web search), Gemini generates the hero image from the selfie, both
-images go to Crystal's Drive folder, and a clock check catches anyone who
-walked up *after* 6:17 and sends them Payload #1 immediately.
+images go to Crystal's Drive folder (and onto the contact's timeline as a
+recovery path), and a clock check catches anyone who walked up *after* 6:17 and
+sends them Payload #1 immediately.
 
 ## Consent and opt-out
 
@@ -56,7 +63,7 @@ The opt-out line appears exactly once per person, on the first photo MMS.
 | --- | --- |
 | Research | Retry once, then a graceful generic brief that still reads well aloud |
 | Hero image | Retry once, then `eo_hero_image_url` stays empty and Payload #2 sends text-only with the superhero sentence removed — no apology, no gap |
-| Drive upload | Logged, never surfaced |
+| Drive upload | Logged, never surfaced. Drive is now the print source, so a silent failure costs someone a print — but both URLs are also written to the contact's timeline and the images sit in KV with no TTL, so it is re-runnable, not lost |
 | Payload #2 email compose | Falls back to a static body |
 
 Beat 1 is sacred: nothing above can delay or block the photo.
@@ -107,9 +114,10 @@ Four things are unverified and will silently break sends if they are wrong:
 ## Test plan
 
 1. `MODE=dry_run`. Roman captures himself through the booth. Verify: HubSpot
-   upsert with tag + company + consent, print, email, MMS logged, brief lands
-   in ≤3 min **and reads great aloud**, hero image has his actual face, both
-   files in Crystal's Drive folder.
+   upsert with tag + company + consent, email and MMS logged, EO frame looks
+   right on the card, brief lands in ≤3 min **and reads great aloud**, hero
+   image has his actual face, both files in Crystal's Drive folder and both
+   URLs on his contact timeline.
 2. Temporarily set cron A to +5 min, `MODE=send`, Roman's contact only. Triple
    text arrives in order with the stagger, email arrives, flag stamped.
 3. Capture a second test contact **after** cron A fires. Instant path sends
@@ -123,6 +131,7 @@ Four things are unverified and will silently break sends if they are wrong:
 
 ## Post-event checklist (Aug 21+)
 
+- [ ] Pull the prints you want from Crystal's Drive folder
 - [ ] Export any contacts worth keeping
 - [ ] Delete the `eo_lav_agents_2026` contacts
 - [ ] Delete both crons from `wrangler.toml` and redeploy — **Cloudflare crons
@@ -144,10 +153,12 @@ Three, all deliberate, all explained where they live in the code:
   deliberately avoids, because it is a connected app that will not run
   headless and cannot be called from a Worker. Gemini is already the proven
   image path here, including the reference-image face-lock technique.
-- **Printing is client-side.** The brief put "Selphy AirPrint job" in the
-  Worker pipeline. A cloud Worker has no LAN access. Printing stays in
-  `index.html` via `window.print()`, which is how the Sage Oak booth already
-  worked.
+- **No printing at all.** The brief put a "Selphy AirPrint job" in the Worker
+  pipeline, which a cloud Worker cannot do — it has no LAN access. Roman's call
+  was to drop booth printing entirely rather than move it to the iPad: it is a
+  photo booth, the photo is delivered digitally, and prints come off the Drive
+  folder later. Removes the one physical dependency that could fail mid-event
+  with a room watching.
 - **Consent checkbox added.** Not in the original brief; added at Roman's
   direction so the triple text goes only to people who agreed to be part of
   the demo.

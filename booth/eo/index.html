@@ -197,17 +197,6 @@
   .done-sub{margin-top:18px;font-size:21px;font-weight:600;color:var(--sage-soft);max-width:34ch;line-height:1.5;}
   .done-reset{margin-top:46px;font-size:15px;color:rgba(201,212,191,.6);font-weight:700;}
 
-  /* ---------- Print ---------- */
-  #print-area{display:none;}
-  @media print{
-    body>*{display:none !important;}
-    #print-area{display:block !important;position:static;}
-    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
-    /* margin:0 leaves Safari no room to print its header/footer (URL, title, date) */
-    @page{margin:0;}
-    html,body{margin:0 !important;padding:0 !important;}
-  }
-
   @media (prefers-reduced-motion:reduce){
     .attract-cta,.count-pop,.spinner{animation:none;}
   }
@@ -313,7 +302,6 @@ const CONFIG = {
 </div>
 
 <div id="flash"></div>
-<div id="print-area"><img id="print-img" alt=""></div>
 
 <script>
 (() => {
@@ -322,8 +310,8 @@ const CONFIG = {
 
   // ---------- Navigation ----------
   // No goal picker and no delivery picker (both exist on the Sage Oak booth):
-  // every capture prints, emails AND texts. Fewer taps = more people through
-  // the booth in a two-hour window.
+  // every capture emails AND texts the photo. Fewer taps = more people
+  // through the booth in a two-hour window.
   const screens = ["attract","camera","review","form","sending","done"];
   function show(name){
     screens.forEach(s => $("screen-"+s).classList.toggle("active", s===name));
@@ -392,13 +380,16 @@ const CONFIG = {
   }
 
   // Two images come out of one capture:
-  //   photoDataUrl — the 2:3 print/keepsake card (Selphy-tested format)
+  //   photoDataUrl — the framed EO card the attendee receives. Kept at 2:3
+  //                  1200x1800 because that is the format that printed
+  //                  correctly on the Selphy, and these get printed later
+  //                  from the shared Drive folder.
   //   faceDataUrl  — an un-framed, un-mirrored portrait crop, which is what
   //                  the hero-image model needs. Handed the framed card it
   //                  tries to reproduce the border and the header text.
   function capture(){
     const video=$("video");
-    const W=1200, H=1800;                       // 2:3 — the format that printed correctly on the Selphy
+    const W=1200, H=1800;                       // 2:3 — see note above
     const canvas=document.createElement("canvas");
     canvas.width=W; canvas.height=H;
     const ctx=canvas.getContext("2d");
@@ -463,10 +454,6 @@ const CONFIG = {
   // ---------- Review ----------
   $("btn-retake").addEventListener("click",()=>show("camera"));
   $("btn-keep").addEventListener("click",()=>show("form"));
-  // iOS prints the page <title> in its header when "Headers and Footers" is
-  // on; blank it around printing so only the photo lands on the Selphy.
-  window.addEventListener("beforeprint",()=>{document.title=" ";});
-  window.addEventListener("afterprint",()=>{document.title="Minion #23";});
 
   // ---------- Form ----------
   $("lead-form").addEventListener("submit", e=>{
@@ -490,14 +477,11 @@ const CONFIG = {
   });
 
   // ---------- Submit ----------
+  // No printing at the booth. The framed card goes to the attendee by email
+  // and MMS, and lands in the shared Drive folder at full resolution — prints
+  // happen later, from Drive, with nobody standing at a printer mid-event.
   async function submitAll(){
     show("sending");
-
-    // Print FIRST — local, instant, independent of the network. This is the
-    // Selphy AirPrint path: a cloud Worker has no LAN access and cannot
-    // reach a printer, so printing has to happen here on the iPad.
-    $("print-img").src=state.photoDataUrl;
-    setTimeout(()=>window.print(), 300);
 
     let sendOk=true;
     try{
@@ -516,8 +500,8 @@ const CONFIG = {
 
     const first=state.contact.firstName||"friend";
     $("done-msg").textContent = sendOk
-      ? `Check your phone, ${first}. Grab your print on the way out.`
-      : `Got your details, ${first} — grab your print, and find Roman if the text never lands.`;
+      ? `Check your phone, ${first}. It's on its way.`
+      : `Got your details, ${first} — find Roman if the photo never lands.`;
     show("done");
     setTimeout(fullReset, CONFIG.DONE_RESET_MS);
   }

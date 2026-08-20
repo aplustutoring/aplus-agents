@@ -36,10 +36,18 @@ failed silently at showtime:
    it is a connected app that will not run headless. Gemini is the proven image
    path here, and the reference-image face-lock technique the comic engine uses
    for character consistency transfers directly to preserving an attendee's face.
-2. **Printing stays client-side.** The brief placed "Selphy AirPrint job" inside
-   the Worker pipeline. A cloud Worker has no LAN access and cannot reach a
-   printer; `index.html` calls `window.print()`, which is how the Sage Oak booth
-   already worked.
+2. **No printing at the booth at all.** The brief placed a "Selphy AirPrint job"
+   inside the Worker pipeline, which a cloud Worker cannot do — no LAN access.
+   The first cut moved it client-side to the iPad; Roman's call was to drop
+   booth printing entirely. It is a photo booth: the photo is delivered by
+   email and MMS with an EO frame, and prints come off the shared Drive folder
+   afterwards. This removes the only physical dependency in the whole build —
+   the one thing that could jam, run out of paper, or drop off the network with
+   a room watching. The card is still rendered at the Selphy-correct 2:3
+   1200x1800, so it stays print-ready. Because Drive is now the print source
+   rather than a nice-to-have archive, both image URLs are also written to the
+   contact's timeline and the images sit in KV with no TTL, so a failed Drive
+   hook is re-runnable rather than lost.
 3. **A demo-consent checkbox gates the SMS payloads.** Added at Roman's
    direction after a compliance flag: a triple text to someone who handed over a
    phone number at a photo booth, with one opt-out line among four messages, is

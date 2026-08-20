@@ -19,8 +19,9 @@
  *   HUBSPOT_TOKEN  RESEND_API_KEY  JUSTCALL_API_KEY  JUSTCALL_API_SECRET
  *   ANTHROPIC_API_KEY  GEMINI_API_KEY  ZAPIER_IDEAS_HOOK
  *
- * Printing is NOT here. The Selphy is driven by window.print() on the iPad
- * (index.html) — a cloud Worker has no LAN access and cannot reach a printer.
+ * Nothing prints at the booth. Attendees receive the framed EO card by email
+ * and MMS, and both images land in the shared Drive folder — prints are pulled
+ * from Drive afterwards, so no one is standing at a printer mid-event.
  */
 
 const EVENT_TAG = "eo_lav_agents_2026";
@@ -197,7 +198,6 @@ async function handleCapture(request, env, ctx, url) {
   }
 
   // ---- 2. INSTANT beat. Never blocked by the async work below. ----
-  // Print already fired on the iPad before this request was even sent.
   try {
     results.email = await sendEmail(env, {
       to: email,
@@ -278,7 +278,17 @@ async function afterCapture(env, url, c) {
     }
   }
 
-  // (c) Drive upload for Crystal (comms chair) — failures are logged, never surfaced
+  // (c) Drive upload for Crystal (comms chair). Since the booth no longer
+  // prints, Drive is where prints are pulled from afterwards — so a silent
+  // failure here costs someone their print. It still must not block or
+  // surface, so instead we leave a recovery path: both URLs go on the
+  // contact's timeline, and the images live in KV with no TTL. Nothing is
+  // lost if the Drive hook is down, it just has to be re-run.
+  try {
+    await logPhotoNote(env, c.contactId, c.photoUrl, heroUrl);
+  } catch (e) {
+    log(env, { at: "photo.note", contactId: c.contactId, error: String(e) });
+  }
   try {
     await uploadToDrive(env, {
       lastName: c.lastName, firstName: c.firstName, photoUrl: c.photoUrl, heroUrl,
@@ -657,8 +667,10 @@ async function heroImage(env, faceDataUrl) {
 
 // ──────────────────────────────────────────────────────────── Drive
 
-// Crystal's shared folder. Failure is logged and never surfaced — the
-// booth photo flow is sacred and must not block on an archive write.
+// Crystal's shared folder — and, now that the booth does not print, the
+// source everyone's prints get pulled from after the event. Failure is
+// logged and never surfaced: the photo flow is sacred and must not block on
+// a Drive write, and the recovery path above means nothing is unrecoverable.
 async function uploadToDrive(env, { lastName, firstName, photoUrl, heroUrl }) {
   if (!env.DRIVE_UPLOAD_HOOK) return;
   const slug = (s) => String(s || "guest").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -730,6 +742,31 @@ async function getContact(env, id, props) {
   );
   if (!res.ok) throw new Error(`HubSpot get ${res.status}`);
   return res.json();
+}
+
+// Recovery breadcrumb on the contact timeline (note→contact assoc 202), so
+// any photo can be re-fetched or re-uploaded to Drive later without digging
+// through KV keys. Same pattern the Sage Oak booth uses.
+async function logPhotoNote(env, contactId, photoUrl, heroUrl) {
+  if (!photoUrl && !heroUrl) return;
+  const lines = [
+    photoUrl ? `📸 Booth photo: ${photoUrl}` : null,
+    heroUrl ? `🦸 Hero image: ${heroUrl}` : null,
+    "EO LA Valley · Build Your First AI Agent · 2026-08-20",
+  ].filter(Boolean);
+
+  const res = await fetch("https://api.hubapi.com/crm/v3/objects/notes", {
+    method: "POST",
+    headers: hsHeaders(env),
+    body: JSON.stringify({
+      properties: { hs_timestamp: new Date().toISOString(), hs_note_body: lines.join("\n") },
+      associations: [{
+        to: { id: contactId },
+        types: [{ associationCategory: "HUBSPOT_DEFINED", associationTypeId: 202 }],
+      }],
+    }),
+  });
+  if (!res.ok) throw new Error(`HubSpot note ${res.status}: ${await res.text()}`);
 }
 
 async function searchByPhone(env, phone) {
