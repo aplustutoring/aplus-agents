@@ -7,6 +7,71 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Spotlight Orchestrator: a missing reel can now actually be recovered
+
+**Reported:** Paola, a second time on the same bundle (Amelia) — the superhero
+reel still has not arrived. The earlier entry below made the miss *visible*; it
+did not make it *fixable*, so the deliverable never showed up.
+
+**Diagnosis (correcting the filed one):** the approved plan assumed the reel
+step had been skipped for this bundle and that the reel could be re-run against
+it from the repo. Neither holds. `stage_reel` is wired into `STAGE_ORDER` and
+`STAGE_DISPATCH` between `slack` and `textstory` and it ran — it is not skipped.
+And `marketing/aplus-content/` is gitignored and built inside the CI runner, so
+there is no bundle in this checkout to point `build_reel.py` at, and no
+Gemini/OpenAI/Slack credentials here to run it with. The real defect is the one
+underneath both: **the reel had no recovery path at all.** The textstory stage
+has had one since it shipped — the "Re-render textstories for a bundle"
+workflow pulls the bundle artifact and re-runs just that builder. The reel got
+none. The orchestrator has `--stop-after` but no way to *start* mid-pipeline, so
+the only "recovery" was a full re-run.
+
+**Why it matters:** the heads-up added below told the operator to "re-dispatch
+the Drive folder with SPOTLIGHT_REEL=1; the reel steps resume from whatever
+already rendered." Every clause of that is wrong in CI. A re-dispatch starts at
+`init` in a fresh runner, so nothing resumes — every Veo clip and VO regenerates
+from zero, at cost and with the same 429 exposure. It rewrites the HubSpot draft
+under `--force-update` and re-posts Paola's entire review thread a second time.
+And `SPOTLIGHT_REEL` is not a workflow input, so it cannot be set from the
+Actions UI at all. Faced with that, nobody ran it — which is why a visible miss
+stayed an undelivered one.
+
+**Fix:** `--reel-only BUNDLE` on the orchestrator — generate + deliver the reel
+against an already-built bundle and nothing else. `--source` is no longer
+unconditionally required (validated in `main()` instead); `--reel-thread-ts`
+lands the recovered reel in the case study's existing review thread rather than
+starting a new top-level post. Unlike the pipeline, where the reel is a
+non-fatal bonus, recovery mode exits 1 if the reel does not ship — delivering it
+is the whole point. `--dry-run` renders without posting. `_post_reel_alert` now
+names this command, prefilled with the bundle name and thread ts, instead of the
+re-dispatch advice.
+
+**Verified:** eight stubbed scenarios with `subprocess.run` and the Slack alert
+faked — no Veo, OpenAI, ffmpeg or Slack touched (happy path with thread-ts
+passthrough; flaky step rescued by the resumable retry; hard failure → exit 1,
+no delivery, alert naming the new command; delivery failure → exactly one
+delivery attempt, no double-post; `--dry-run` builds but does not post; missing
+bundle dir and bundle-without-metadata.md rejected before anything runs;
+`SPOTLIGHT_REEL=0` no longer reads as success in recovery mode) plus CLI wiring
+(arg validation, `--help`, and a normal `--source` run still reaching its
+stages).
+
+**Still not verified against Amelia's own bundle** — same reason as below: it
+lives in a 30-day Actions artifact, not in this checkout, and rendering it needs
+credentials this session does not have. What changed is that the recovery is now
+a command Roman can actually run against that artifact.
+
+**Left undone deliberately:** there is no `rerender-reel` Actions workflow to
+match `rerender-textstory` (which would download the artifact and invoke
+`--reel-only` in CI, where the keys and ffmpeg live), and the reel scripts are
+still absent from the registry's `depends_on` for `spotlight-orchestrator`. This
+session was scoped out of both `.github/workflows/` and `registry.yml`. Together
+they are the obvious follow-up: with the workflow in place the recovery is a
+button, not a local run.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
 
 **Reported:** Paola — the case study for Amelia arrived in
