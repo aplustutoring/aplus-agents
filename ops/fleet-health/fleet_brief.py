@@ -127,6 +127,7 @@ ENGINE_ORDER = [
     "Feedback agent",
     "Fleet health",
     "Charter analysis",
+    "Events",
 ]
 
 

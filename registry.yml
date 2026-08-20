@@ -787,6 +787,55 @@ agents:
       Re-run after registering a new agent so source_agent picks up the new
       option. CHECK_ONLY smoke mode.
 
+  # ───────────────────────── Events (booth capture) ────────────────────
+  # Registered 2026-08-20, right after PR #66 merged — the registry_check
+  # discovery heuristic flagged booth/wrangler.toml within a minute of the
+  # merge, which is exactly what that heuristic exists for.
+  - id: sage-oak-booth
+    engine: Events
+    runtime: cloudflare-worker
+    name: Sage Oak BTSC 2026 photo booth
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        Attendee submits the booth form on the Cloudflare Pages front-end
+        (booth/index.html) -> POST /submit on the Worker. Always-on HTTP, no
+        cron: it runs whenever someone uses the booth.
+    source: booth/worker.js
+    entrypoint: booth/worker.js
+    reads:
+      - "HubSpot:contacts (search by email — find-or-create)"
+      - "Cloudflare KV (PHOTOS binding — serves GET /photo/<key>)"
+    writes:
+      - "HubSpot:contacts (upsert by email; firstname/lastname/email/phone, aplus_event_tag=sage_oak_btsc_2026, aplus_booth_goal, aplus_booth_delivery, aplus_marketing_consent, aplus_event_role)"
+      - "HubSpot:contacts persona stamp, CREATE-ONLY (teacher -> Teacher of Record/EF/ES + lead status Charter School Teacher TOR/EF; administrator -> Decision Maker/Director; support_staff -> none). Existing contacts are never overwritten — po_inbox doctrine."
+      - "HubSpot:emails (engagement logged for the photo send)"
+      - "HubSpot:notes (booth photo + chosen banner/delivery on the contact)"
+      - "Resend (the framed photo, as an email attachment)"
+      - "JustCall (MMS from the main A+ line +18188506284; photo in KV at 7-day TTL, served as media_url)"
+      - "Cloudflare KV (permanent photo archive, no TTL)"
+    depends_on:
+      - "secrets (wrangler secret put): HUBSPOT_TOKEN, RESEND_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET"
+      - "vars: RESEND_FROM (photos@wetutorathome.com — the verified Resend domain), ALLOWED_ORIGIN (the Pages URL), JUSTCALL_FROM"
+      - booth/index.html
+      - "ops/hubspot-schema/properties.yml (the five events-group properties, PR #65)"
+    notes: >
+      HAND-DEPLOYED, two pieces: `npx wrangler deploy` for the Worker and
+      `npx wrangler pages deploy` for the front-end. Editing this repo does not
+      make either live. ALLOWED_ORIGIN must match the deployed Pages URL and
+      CONFIG.WORKER_URL in index.html must match the Worker's /submit URL —
+      chicken-and-egg on a first deploy. Scoped to ONE event: when Sage Oak
+      BTSC 2026 is over this should move to `unverified` or be retired rather
+      than sitting `active` forever. Future events APPEND options to
+      aplus_event_tag (the schema sync is additive; nothing is relabelled).
+      REVIEW ITEM for Roman: GET /photo/<key> is public and unauthenticated —
+      unguessable-key privacy only — and the archive copy is written with NO
+      TTL, so attendee photos stay publicly retrievable indefinitely. Fine for
+      MMS delivery, worth a deliberate decision for a school event.
+
   # ───────────────────────── Non-Actions runtimes ──────────────────────
   # Agents that do NOT run on GitHub Actions. Registered 2026-08-20 after the
   # Sage Oak photo booth (a Cloudflare Worker writing to production HubSpot)

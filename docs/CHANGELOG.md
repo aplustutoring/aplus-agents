@@ -7,6 +7,39 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Photo booth registered (39 agents, new Events engine)
+
+**What:** `sage-oak-booth` is in `registry.yml` — the Cloudflare Worker + Pages
+booth from PR #66, under a new `Events` engine. Written by reading `worker.js`
+rather than the README, so the entry lists what it actually does: upserts the
+HubSpot contact by email with the five events-group properties, applies a
+CREATE-ONLY persona stamp by self-identified role (teacher → TOR persona + lead
+status, administrator → Decision Maker, support_staff → none, existing contacts
+never overwritten — po_inbox doctrine), logs an email engagement and a photo
+note on the contact, sends the framed photo via Resend, and sends MMS from the
+main A+ line via JustCall.
+
+**Why now:** PR #66 merged mid-session and `registry_check.py` flagged
+`booth/wrangler.toml` within a minute — the discovery heuristic added earlier
+today doing exactly its job on a real merge rather than a simulated one.
+
+**Two things recorded in the entry that are not in its README:**
+- It is hand-deployed in TWO pieces (`wrangler deploy` + `wrangler pages
+  deploy`); editing this repo makes neither live.
+- **REVIEW ITEM for Roman:** `GET /photo/<key>` is public and unauthenticated —
+  unguessable-key privacy only — and the archive copy is written with NO TTL, so
+  attendee photos stay publicly retrievable indefinitely. Reasonable for MMS
+  delivery, worth a deliberate decision for a school event.
+
+**Also flagged:** status is `active`, but this is scoped to one event. When Sage
+Oak BTSC 2026 is done it should go `unverified` or be retired rather than sit
+`active` forever.
+
+**Files:** `registry.yml`, `ops/fleet-health/fleet_brief.py` (Events in the
+engine order), `docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-20 — Feedback agent: the pinned channel post is not a report
 
 **What:** Intake now drops "channel furniture" before classification. A
