@@ -984,6 +984,105 @@ RETIRE-CANDIDATE 99→95. Verdicts now: 25 DELETE / 43 EDIT / 4 KEEP / 15 VERIFY
 
 ---
 
+## 2026-08-12 — Booth: role picker + attendee list + short consent
+
+**What:** (1) NEW `aplus_event_role` (events group, dropdown
+Administrator/Teacher/Support Staff), declared + synced; required pill picker
+on the booth form. Role now drives the create-only persona stamp:
+teacher→TOR persona+lead status, administrator→Decision Maker/Director,
+support_staff→no stamp, missing→teacher default (verified e2e). (2) NEW
+ACTIVE list 3103 "Sage Oak BTSC 2026 — Booth Attendees" on
+aplus_event_tag=sage_oak_btsc_2026 — auto-enrolls all booth contacts;
+future events get one list per appended tag option. Enrollment verified
+(<30s); team test runs (Roman/Emily/Hugh Jazz/Danielle) already enrolled,
+personas behaved per doctrine. (3) Consent copy shortened (Roman):
+"Send my photo + A+ can reach out about tutoring for my students 📸".
+
+**Why:** Roman 2026-08-12: role segmentation + "every contact that submits
+this photo booth ends up on a hubspot list."
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md` (81→82).
+
+---
+
+## 2026-08-11 — Booth round 3: enum-write bugfix, frame design, delivery=All
+
+**What:** (1) CRITICAL FIX: worker.js wrote enum LABELS ("Print") where the
+HubSpot API takes internal VALUES ("print") — every booth submission failed
+the contact upsert silently while photos still delivered (the fleet "read
+labels" rule is about reading, not writing). Verified fixed end-to-end:
+test contact created with all 6 props + TOR persona, then archived.
+(2) Email timeline logging verified live: test submission → 1 email
+engagement on the contact (subject/SENT), then archived. BCC workaround
+declined — sender isn't a HubSpot user so BCC logging would misattribute;
+API logging is deterministic. (3) Frame redesign: both logos in the header
+band, fun banners ("Best. Year. Ever. ✨" etc.), 2026–2027 school year on
+frame/attract/email, type sized for 2x3" prints (~600dpi: old 24-30px text
+printed at ~3pt). (4) Delivery "Both" → "All 3!" (email+text+print);
+aplus_booth_delivery += all (synced; "both" kept legacy). (5) Screens
+scroll when content overflows (kiosk overflow:hidden clipped the 4-card
+delivery screen with no way to reach the rest). (6) Photo retention is
+DOCUMENTED as ephemeral: email=attachment only, text=KV 7-day TTL,
+print=nothing. Archive-all option proposed to Roman, not yet approved.
+
+**Why:** The event capture chain (contact + persona + timeline email) is the
+point of the booth; the silent enum failure was defeating exactly that.
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`.
+
+---
+
+## 2026-08-11 — Booth round 2: branding, TOR audience, JustCall texts, email logging
+
+**What:** (1) Logos: Sage Oak pennant + white A+ on attract, color A+ in the
+email. (2) All outbound links → wetutorathome.com/home-school-tutoring
+(aplustutoring.com is NOT ours — email CTA, SMS body, photo-frame footer).
+(3) TOR audience (Roman: attendees are homeschool charter TORs, not parents):
+teacher-facing copy pitching one-on-one tutoring + intervention programs, and
+booth-CREATED contacts stamped a_persona="Teacher of Record/EF/ES" +
+hs_lead_status="Charter School Teacher TOR/EF" (create-only, mirrors
+po_inbox TOR_CREATE_PROPS; existing contacts never overwritten). (4) NEW
+"Text it" delivery via JustCall MMS from the main A+ line +18188506284:
+photo stored in Workers KV (7-day TTL, UUID keys) and served publicly at
+<worker>/photo/<uuid> as the media_url; JUSTCALL_API_KEY/SECRET set as Worker
+secrets; `aplus_booth_delivery` gained option Text(text) — declared in
+properties.yml and synced (R2 skipped: not enabled on the account, KV needs
+nothing). (5) Booth photo emails logged to the contact's HubSpot timeline
+via engagements API (assoc 198; write scope verified create+delete). (6)
+Photo canvas 1200×1500 (4:5) → 1200×1800 (2:3) to fit Roman's 2x3" portable
+printer (also fits 4x6); camera preview ratio matched.
+
+**Why:** Event capture should classify TORs correctly for the fleet, deliver
+photos the way teachers actually want them, and leave a full trail (email on
+timeline) in HubSpot.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`ops/hubspot-schema/properties.yml`.
+
+**What:** New `booth/` directory: Cloudflare Worker `sage-oak-booth`
+(worker.js — `/submit` upserts the HubSpot contact with the 4 events-group
+props from PR #65 and emails the framed photo via Resend) + kiosk front-end
+(index.html — attract → banner → camera → form → delivery, client-side photo
+composite) + wrangler.toml + README. DEPLOYED live:
+Worker `https://sage-oak-booth.nameless-mountain-bafa.workers.dev` (secrets
+HUBSPOT_TOKEN + RESEND_API_KEY set via wrangler), Pages
+`https://sage-oak-booth.pages.dev`; CONFIG.WORKER_URL and ALLOWED_ORIGIN
+cross-wired; smoke-tested (CORS preflight, input validation, Pages 200).
+Sender is `photos@wetutorathome.com` — that's the Resend-verified domain
+(aplustutoring.com is NOT verified there; Roman verified wetutorathome.com
+in-session).
+
+**Why:** Sage Oak BTSC 2026 event capture — booth attendees become HubSpot
+contacts (event-tagged, consent recorded) with zero manual entry.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`booth/README.md`.
+
+---
+
 ## 2026-08-11 — Concurrency rule: branch work in worktrees (Roman: "lfg")
 
 **What:** New mandatory rule in `CLAUDE.md`: sessions doing branch/PR work use

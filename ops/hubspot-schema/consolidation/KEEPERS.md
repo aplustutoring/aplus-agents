@@ -1,6 +1,6 @@
 # KEEPERS — the property vocabulary agents use
 
-**80 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
+**81 properties.** This is the distilled keeper set the persona architecture (#AP024) was built to enable: if an agent reads or writes a contact/deal property, it should be one of these (plus HubSpot system fields like email/firstname/lastname/phone/hs_lead_status, which are out of scope here). Everything else in the portal is KEEP-IN-PLACE (forms/programs/integrations), STORAGE-ONLY, or a RETIRE-CANDIDATE — see the two proposal docs.
 
 **Approved by Roman 2026-08-10.** Persona group moves executed; every keeper is declared in `ops/hubspot-schema/properties.yml` (registry). 
 
@@ -72,7 +72,7 @@ Rules that travel with this list:
 | `student_last_name` | Student FIRST Name | DONE — moved by Roman 2026-08-10. LABEL MISMATCH: label is "Student FIRST Name" — student 1 first name; Teachworks disambiguation + call agent fill_only | #AP029 |
 | `student_last_name_if_diff_from_parent` | Student Last Name | DONE — moved by Roman 2026-08-10 (out of CAP form_fields). Student last name; call agent fill_only | #AP029 |
 
-## Events (4)
+## Events (5)
 
 Cross-persona event capture (locked by Roman 2026-08-11; decision-log # pending — see PR #65). Pattern: `aplus_event_tag` is the ONE cross-event attendance property — each future event APPENDS an option, never a new property per event.
 
@@ -80,6 +80,7 @@ Cross-persona event capture (locked by Roman 2026-08-11; decision-log # pending 
 |---|---|---|---|
 | `aplus_booth_delivery` | Booth Photo Delivery | Email/Print/Both — how the attendee gets their booth photo | PR #65 |
 | `aplus_booth_goal` | Booth Photo Banner | Banner text the attendee chose on their booth photo | PR #65 |
+| `aplus_event_role` | Event Role | Administrator/Teacher/Support Staff — segmentation + drives create-only persona stamp (teacher→TOR, administrator→Decision Maker, support_staff→none) | PR #66 |
 | `aplus_event_tag` | Event Tag | Which A+ events this contact attended (multi-checkbox; first option Sage Oak BTSC 2026) | PR #65 |
 | `aplus_marketing_consent` | Booth Marketing Consent | Opted into A+ resources at the booth (Yes=true/No=false) | PR #65 |
 

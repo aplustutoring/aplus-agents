@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Sage Oak Back to School Photo Booth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --oak-deep:#2E4030;
+    --oak-mid:#46603F;
+    --sage:#8FA383;
+    --sage-soft:#C9D4BF;
+    --cream:#F7F4EC;
+    --ink:#1E281C;
+    --gold:#E2A33B;
+    --gold-deep:#C8862A;
+    --white:#FFFFFF;
+    --radius:28px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+  body{
+    font-family:'Nunito Sans',system-ui,sans-serif;
+    background:var(--oak-deep);
+    color:var(--ink);
+  }
+  .screen{
+    position:fixed;inset:0;
+    display:none;
+    flex-direction:column;align-items:center;
+    padding:40px;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+  }
+  .screen.active{display:flex;}
+  /* Center content when it fits; scroll (instead of clipping) when it doesn't.
+     justify-content:center clips the top of overflowing flex content — the
+     grow-pseudo trick centers without that failure mode. */
+  .screen::before,.screen::after{content:"";flex:1 0 0;}
+  .screen > *{flex-shrink:0;}
+  h1,h2,.display{font-family:'Bricolage Grotesque','Nunito Sans',sans-serif;}
+
+  /* ---------- Attract ---------- */
+  #screen-attract{background:var(--oak-deep);color:var(--cream);text-align:center;cursor:pointer;}
+  .attract-eyebrow{
+    letter-spacing:.22em;text-transform:uppercase;font-weight:800;font-size:15px;
+    color:var(--sage-soft);margin-bottom:22px;
+  }
+  #screen-attract h1{font-size:clamp(44px,7vw,84px);font-weight:800;line-height:1.04;max-width:14ch;}
+  #screen-attract h1 em{font-style:normal;color:var(--gold);}
+  .attract-sub{margin-top:20px;font-size:20px;font-weight:600;color:var(--sage-soft);}
+  .attract-cta{
+    margin-top:52px;background:var(--gold);color:var(--ink);
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;
+    padding:26px 64px;border:none;border-radius:999px;
+    animation:breathe 2.6s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  .attract-frame{
+    position:absolute;inset:22px;border:3px solid rgba(201,212,191,.35);
+    border-radius:36px;pointer-events:none;
+  }
+  .attract-corner{position:absolute;width:44px;height:44px;border:5px solid var(--gold);pointer-events:none;}
+  .ac-tl{top:12px;left:12px;border-right:none;border-bottom:none;border-radius:22px 0 0 0;}
+  .ac-tr{top:12px;right:12px;border-left:none;border-bottom:none;border-radius:0 22px 0 0;}
+  .ac-bl{bottom:12px;left:12px;border-right:none;border-top:none;border-radius:0 0 0 22px;}
+  .ac-br{bottom:12px;right:12px;border-left:none;border-top:none;border-radius:0 0 22px 0;}
+  .attract-brands{
+    position:absolute;bottom:38px;left:0;right:0;
+    display:flex;align-items:center;justify-content:center;gap:20px;
+    font-weight:700;font-size:15px;color:var(--sage-soft);letter-spacing:.06em;
+  }
+  .attract-brands img{height:92px;width:auto;display:block;}
+  .attract-brands .brand-x{color:var(--gold);font-size:20px;font-weight:800;}
+
+  /* ---------- Shared chrome ---------- */
+  .step-eyebrow{
+    letter-spacing:.2em;text-transform:uppercase;font-weight:800;font-size:13px;
+    color:var(--oak-mid);margin-bottom:10px;
+  }
+  .light{background:var(--cream);color:var(--ink);}
+  .light .step-eyebrow{color:var(--oak-mid);}
+  .step-title{font-size:clamp(30px,4.4vw,46px);font-weight:800;text-align:center;line-height:1.08;}
+  .btn{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;border:none;border-radius:999px;
+    font-size:22px;padding:22px 46px;cursor:pointer;
+  }
+  .btn-primary{background:var(--oak-deep);color:var(--cream);}
+  .btn-gold{background:var(--gold);color:var(--ink);}
+  .btn-ghost{background:transparent;color:var(--oak-deep);border:3px solid var(--oak-deep);}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.45;}
+  .back-link{
+    position:absolute;top:26px;left:26px;background:none;border:none;
+    font-family:'Nunito Sans',sans-serif;font-weight:800;font-size:17px;color:var(--oak-mid);cursor:pointer;padding:12px;
+  }
+
+  /* ---------- Goal select ---------- */
+  #screen-goal .goal-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:36px;width:min(760px,92vw);
+  }
+  .goal-card{
+    background:var(--white);border:3px solid var(--sage-soft);border-radius:var(--radius);
+    padding:34px 26px;text-align:center;cursor:pointer;
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:23px;line-height:1.25;color:var(--ink);
+    min-height:120px;display:flex;align-items:center;justify-content:center;
+  }
+  .goal-card.selected{border-color:var(--gold);background:#FBF3E2;box-shadow:0 0 0 3px var(--gold);}
+
+  /* ---------- Camera ---------- */
+  #screen-camera{background:var(--oak-deep);padding:0;}
+  .cam-stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  #video{
+    height:78%;aspect-ratio:1080/1330;object-fit:cover;border-radius:24px;
+    transform:scaleX(-1);background:#000;
+  }
+  .cam-frame{
+    position:absolute;pointer-events:none;border:6px solid var(--cream);border-radius:24px;
+    height:78%;aspect-ratio:1080/1330;
+  }
+  .cam-goal-chip{
+    position:absolute;bottom:11%;left:50%;transform:translateX(-50%);
+    background:var(--gold);color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;
+    font-weight:800;font-size:20px;padding:12px 28px;border-radius:999px;white-space:nowrap;
+  }
+  #btn-shutter{
+    position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+    width:92px;height:92px;border-radius:50%;background:var(--gold);
+    border:6px solid var(--cream);cursor:pointer;
+  }
+  #countdown-overlay{
+    position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(30,40,28,.35);
+  }
+  #countdown-overlay.on{display:flex;}
+  #count-num{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:150px;color:var(--ink);
+    width:250px;height:250px;border-radius:50%;background:var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 50px rgba(0,0,0,.35);
+  }
+  .count-pop{animation:pop .95s ease both;}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.15);opacity:1}60%{transform:scale(1)}100%{opacity:1}}
+  #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .35s;}
+  .cam-hint{position:absolute;top:30px;left:0;right:0;text-align:center;color:var(--sage-soft);font-weight:700;font-size:18px;}
+  #cam-error{max-width:520px;text-align:center;color:var(--cream);font-size:19px;line-height:1.5;display:none;}
+
+  /* ---------- Review ---------- */
+  #review-img{height:66vh;border-radius:20px;box-shadow:0 20px 60px rgba(30,40,28,.25);}
+  .review-actions{display:flex;gap:20px;margin-top:34px;}
+
+  /* ---------- Form ---------- */
+  #screen-form form{width:min(620px,92vw);margin-top:30px;display:flex;flex-direction:column;gap:16px;}
+  .field label{display:block;font-weight:800;font-size:15px;margin-bottom:7px;color:var(--oak-mid);}
+  .field input{
+    width:100%;font-family:'Nunito Sans',sans-serif;font-size:22px;font-weight:600;
+    padding:18px 20px;border:3px solid var(--sage-soft);border-radius:18px;background:var(--white);color:var(--ink);
+    user-select:text;-webkit-user-select:text;
+  }
+  .field input:focus{outline:none;border-color:var(--oak-mid);}
+  .field-row{display:flex;gap:16px;}
+  .field-row .field{flex:1;}
+  .role-row{display:flex;gap:12px;}
+  .role-pill{
+    flex:1;padding:16px 8px;text-align:center;cursor:pointer;
+    background:var(--white);border:3px solid var(--sage-soft);border-radius:16px;
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:var(--ink);
+  }
+  .role-pill.selected{border-color:var(--gold);background:#FBF3E2;box-shadow:0 0 0 2px var(--gold);}
+  .consent{display:flex;gap:14px;align-items:flex-start;font-size:16px;font-weight:600;color:var(--oak-mid);line-height:1.4;margin-top:4px;}
+  .consent input{width:26px;height:26px;margin-top:2px;flex-shrink:0;}
+  #form-error{color:#A33B2E;font-weight:800;font-size:16px;display:none;text-align:center;}
+
+  /* ---------- Delivery ---------- */
+  .deliver-grid{display:flex;gap:22px;margin-top:38px;flex-wrap:wrap;justify-content:center;}
+  .deliver-card{
+    background:var(--white);border:3px solid var(--sage-soft);border-radius:var(--radius);
+    width:230px;padding:38px 22px;text-align:center;cursor:pointer;
+  }
+  .deliver-card .d-icon{font-size:52px;}
+  .deliver-card .d-label{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin-top:14px;}
+  .deliver-card .d-sub{font-size:15px;font-weight:600;color:var(--oak-mid);margin-top:6px;}
+  .deliver-card:active{border-color:var(--gold);}
+
+  /* ---------- Sending / Done ---------- */
+  #screen-sending,#screen-done{background:var(--oak-deep);color:var(--cream);text-align:center;}
+  .spinner{
+    width:74px;height:74px;border-radius:50%;border:7px solid rgba(201,212,191,.25);
+    border-top-color:var(--gold);animation:spin 1s linear infinite;margin-bottom:34px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #screen-done h2{font-size:clamp(40px,6vw,68px);font-weight:800;}
+  #screen-done h2 em{font-style:normal;color:var(--gold);}
+  .done-sub{margin-top:18px;font-size:21px;font-weight:600;color:var(--sage-soft);max-width:34ch;line-height:1.5;}
+  .done-reset{margin-top:46px;font-size:15px;color:rgba(201,212,191,.6);font-weight:700;}
+
+  /* ---------- Print ---------- */
+  #print-area{display:none;}
+  @media print{
+    body>*{display:none !important;}
+    #print-area{display:block !important;position:static;}
+    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
+    /* margin:0 leaves Safari no room to print its header/footer (URL, title, date) */
+    @page{margin:0;}
+    html,body{margin:0 !important;padding:0 !important;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .attract-cta,.count-pop,.spinner{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ CONFIG — edit before deploy ============ -->
+<script>
+const CONFIG = {
+  WORKER_URL: "https://sage-oak-booth.nameless-mountain-bafa.workers.dev/submit", // Cloudflare Worker endpoint
+  EVENT_TAG: "sage_oak_btsc_2026",
+  EVENT_NAME: "Sage Oak Back to School Conference 2026",
+  GOALS: [
+    "Best. Year. Ever. \u2728",
+    "Teacher mode: ACTIVATED",
+    "Growing amazing things \ud83c\udf31",
+    "Dream big, Sage Oak! \ud83c\udf1f"
+  ],
+  IDLE_RESET_MS: 75000,   // reset to attract screen after inactivity
+  DONE_RESET_MS: 9000
+};
+</script>
+
+<!-- ============ ATTRACT ============ -->
+<div class="screen active" id="screen-attract">
+  <div class="attract-frame"></div>
+  <div class="attract-corner ac-tl"></div><div class="attract-corner ac-tr"></div>
+  <div class="attract-corner ac-bl"></div><div class="attract-corner ac-br"></div>
+  <div class="attract-eyebrow">Sage Oak &middot; Back to School 2026</div>
+  <h1>Snap your <em>back-to-school</em> photo</h1>
+  <div class="attract-sub">Kick off the 2026&ndash;2027 school year with a free keepsake photo</div>
+  <button class="attract-cta">Tap to start</button>
+  <div class="attract-brands">
+    <img src="sageoak.webp" alt="Sage Oak Charter Schools">
+    <span class="brand-x">&times;</span>
+    <img src="logo-white.png" alt="A+ Tutoring">
+  </div>
+</div>
+
+<!-- ============ GOAL SELECT ============ -->
+<div class="screen light" id="screen-goal">
+  <button class="back-link" data-back="attract">&larr; Start over</button>
+  <div class="step-eyebrow">Step 1 of 3</div>
+  <h2 class="step-title">Pick the banner for your photo</h2>
+  <div class="goal-grid" id="goal-grid"></div>
+  <button class="btn btn-primary" id="btn-goal-next" style="margin-top:38px" disabled>Next: strike a pose &rarr;</button>
+</div>
+
+<!-- ============ CAMERA ============ -->
+<div class="screen" id="screen-camera">
+  <div class="cam-stage">
+    <div class="cam-hint">Get in frame, then tap the gold button</div>
+    <video id="video" autoplay playsinline muted></video>
+    <div class="cam-frame"></div>
+    <div class="cam-goal-chip" id="cam-goal-chip"></div>
+    <button id="btn-shutter" aria-label="Take photo"></button>
+    <div id="countdown-overlay"><div id="count-num"></div></div>
+    <div id="cam-error">Camera unavailable. In iPad Settings &rarr; Safari, allow camera access for this site, then reload.</div>
+  </div>
+</div>
+
+<!-- ============ REVIEW ============ -->
+<div class="screen light" id="screen-review">
+  <div class="step-eyebrow">Looking good?</div>
+  <img id="review-img" alt="Your photo">
+  <div class="review-actions">
+    <button class="btn btn-ghost" id="btn-retake">Retake</button>
+    <button class="btn btn-primary" id="btn-keep">Love it &rarr;</button>
+  </div>
+</div>
+
+<!-- ============ FORM ============ -->
+<div class="screen light" id="screen-form">
+  <button class="back-link" data-back="review">&larr; Back</button>
+  <div class="step-eyebrow">Step 2 of 3</div>
+  <h2 class="step-title">Where should we send it?</h2>
+  <form id="lead-form" autocomplete="off">
+    <div class="field-row">
+      <div class="field"><label for="f-first">First name</label><input id="f-first" type="text" required></div>
+      <div class="field"><label for="f-last">Last name</label><input id="f-last" type="text" required></div>
+    </div>
+    <div class="field"><label for="f-email">Email</label><input id="f-email" type="email" inputmode="email" required></div>
+    <div class="field"><label for="f-phone">Phone (optional)</label><input id="f-phone" type="tel" inputmode="tel"></div>
+    <div class="field"><label>I am a&hellip;</label>
+      <div class="role-row" id="role-row">
+        <div class="role-pill" data-role="teacher">Teacher</div>
+        <div class="role-pill" data-role="administrator">Administrator</div>
+        <div class="role-pill" data-role="support_staff">Support Staff</div>
+      </div>
+    </div>
+    <label class="consent">
+      <input type="checkbox" id="f-consent">
+      <span>Send my photo + A+ can reach out about tutoring for my students &#128248;</span>
+    </label>
+    <div id="form-error"></div>
+    <button class="btn btn-primary" type="submit" style="margin-top:6px">Next: delivery &rarr;</button>
+  </form>
+</div>
+
+<!-- ============ DELIVERY ============ -->
+<div class="screen light" id="screen-delivery">
+  <button class="back-link" data-back="form">&larr; Back</button>
+  <div class="step-eyebrow">Step 3 of 3</div>
+  <h2 class="step-title">How would you like your photo?</h2>
+  <div class="deliver-grid">
+    <div class="deliver-card" data-delivery="email">
+      <div class="d-icon">&#9993;</div><div class="d-label">Email it</div><div class="d-sub">In your inbox in seconds</div>
+    </div>
+    <div class="deliver-card" data-delivery="text">
+      <div class="d-icon">&#128172;</div><div class="d-label">Text it</div><div class="d-sub">Straight to your phone</div>
+    </div>
+    <div class="deliver-card" data-delivery="print">
+      <div class="d-icon">&#128424;</div><div class="d-label">Print it</div><div class="d-sub">Take one for your desk</div>
+    </div>
+    <div class="deliver-card" data-delivery="all">
+      <div class="d-icon">&#10024;</div><div class="d-label">All 3!</div><div class="d-sub">Email + text + print</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SENDING ============ -->
+<div class="screen" id="screen-sending">
+  <div class="spinner"></div>
+  <h2 class="step-title" style="color:var(--cream)">Working our magic&hellip;</h2>
+</div>
+
+<!-- ============ DONE ============ -->
+<div class="screen" id="screen-done">
+  <h2>You're <em>all set!</em></h2>
+  <div class="done-sub" id="done-msg"></div>
+  <div class="done-sub" style="margin-top:26px;font-size:17px;">Stop by the A+ Tutoring table to learn about one-on-one tutoring and intervention programs for your students.</div>
+  <div class="done-reset">Resetting for the next teacher&hellip;</div>
+</div>
+
+<div id="flash"></div>
+<div id="print-area"><img id="print-img" alt=""></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = { goal:null, photoDataUrl:null, contact:null, delivery:null, stream:null };
+
+  // ---------- Navigation ----------
+  const screens = ["attract","goal","camera","review","form","delivery","sending","done"];
+  function show(name){
+    screens.forEach(s => $("screen-"+s).classList.toggle("active", s===name));
+    resetIdleTimer(name);
+    if(name==="camera") startCamera();
+    else if(state.stream && name!=="camera") stopCamera();
+  }
+  document.querySelectorAll("[data-back]").forEach(b =>
+    b.addEventListener("click", () => show(b.dataset.back)));
+
+  // ---------- Idle reset ----------
+  let idleTimer=null;
+  function resetIdleTimer(current){
+    clearTimeout(idleTimer);
+    if(current && current!=="attract" && current!=="sending"){
+      idleTimer=setTimeout(fullReset, CONFIG.IDLE_RESET_MS);
+    }
+  }
+  ["touchstart","click","keydown"].forEach(ev =>
+    document.addEventListener(ev, () => {
+      const active = screens.find(s => $("screen-"+s).classList.contains("active"));
+      resetIdleTimer(active);
+    }, {passive:true}));
+
+  function fullReset(){
+    state.goal=null; state.photoDataUrl=null; state.contact=null; state.delivery=null;
+    selectedRole=null;
+    $("lead-form").reset();
+    document.querySelectorAll(".goal-card,.role-pill").forEach(c=>c.classList.remove("selected"));
+    $("btn-goal-next").disabled=true;
+    show("attract");
+  }
+
+  // ---------- Attract ----------
+  $("screen-attract").addEventListener("click", () => show("goal"));
+
+  // ---------- Goals ----------
+  const grid=$("goal-grid");
+  CONFIG.GOALS.forEach(g=>{
+    const card=document.createElement("div");
+    card.className="goal-card"; card.textContent=g;
+    card.addEventListener("click",()=>{
+      document.querySelectorAll(".goal-card").forEach(c=>c.classList.remove("selected"));
+      card.classList.add("selected");
+      state.goal=g; $("btn-goal-next").disabled=false;
+    });
+    grid.appendChild(card);
+  });
+  $("btn-goal-next").addEventListener("click",()=>{
+    $("cam-goal-chip").textContent=state.goal;
+    show("camera");
+  });
+
+  // ---------- Frame logos (preloaded so capture() can draw them) ----------
+  const LOGOS={sage:new Image(),aplus:new Image()};
+  LOGOS.sage.src="sageoak.webp"; LOGOS.aplus.src="logo.png";
+  const ready=img=>img.complete&&img.naturalWidth>0;
+
+  // ---------- Camera ----------
+  async function startCamera(){
+    try{
+      if(!state.stream){
+        state.stream=await navigator.mediaDevices.getUserMedia({
+          video:{facingMode:"user", width:{ideal:1920}, height:{ideal:1440}}, audio:false
+        });
+      }
+      $("video").srcObject=state.stream;
+      $("video").style.display=""; $("cam-error").style.display="none";
+    }catch(e){
+      $("video").style.display="none"; $("cam-error").style.display="block";
+    }
+  }
+  function stopCamera(){
+    if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; }
+  }
+
+  $("btn-shutter").addEventListener("click", runCountdown);
+  async function runCountdown(){
+    const overlay=$("countdown-overlay"), num=$("count-num");
+    overlay.classList.add("on");
+    for(const n of [3,2,1]){
+      num.textContent=n; num.classList.remove("count-pop"); void num.offsetWidth;
+      num.classList.add("count-pop");
+      await new Promise(r=>setTimeout(r,950));
+    }
+    overlay.classList.remove("on");
+    $("flash").style.opacity="1";
+    capture();
+    setTimeout(()=>{$("flash").style.opacity="0";},180);
+  }
+
+  function capture(){
+    const video=$("video");
+    const W=1200, H=1800;                       // 2:3 — the format that printed correctly on the Selphy
+    const canvas=document.createElement("canvas");
+    canvas.width=W; canvas.height=H;
+    const ctx=canvas.getContext("2d");
+
+    // Photo (mirrored to match preview), cover-cropped into upper area
+    const photoTop=200, photoH=1330, photoPad=60;
+    const pw=W-photoPad*2;
+    const vr=video.videoWidth/video.videoHeight, tr=pw/photoH;
+    let sw,sh,sx,sy;
+    if(vr>tr){ sh=video.videoHeight; sw=sh*tr; sx=(video.videoWidth-sw)/2; sy=0; }
+    else{ sw=video.videoWidth; sh=sw/tr; sx=0; sy=(video.videoHeight-sh)/2; }
+
+    // Cream card background
+    ctx.fillStyle="#F7F4EC"; ctx.fillRect(0,0,W,H);
+    // Sage border band
+    ctx.strokeStyle="#2E4030"; ctx.lineWidth=18; ctx.strokeRect(24,24,W-48,H-48);
+
+    ctx.save();
+    ctx.translate(W,0); ctx.scale(-1,1); // mirror
+    ctx.drawImage(video,sx,sy,sw,sh, photoPad,photoTop,pw,photoH);
+    ctx.restore();
+    ctx.strokeStyle="#2E4030"; ctx.lineWidth=8;
+    ctx.strokeRect(photoPad,photoTop,pw,photoH);
+
+    // Header \u2014 both logos flank the event title
+    if(ready(LOGOS.sage)){
+      const h=132, w=h*LOGOS.sage.naturalWidth/LOGOS.sage.naturalHeight;
+      ctx.drawImage(LOGOS.sage, 64, 36, w, h);
+    }
+    if(ready(LOGOS.aplus)){
+      const h=132, w=h*LOGOS.aplus.naturalWidth/LOGOS.aplus.naturalHeight;
+      ctx.drawImage(LOGOS.aplus, W-64-w, 36, w, h);
+    }
+    ctx.fillStyle="#2E4030"; ctx.textAlign="center";
+    ctx.font="700 38px 'Bricolage Grotesque','Nunito Sans',sans-serif";
+    ctx.fillText("SAGE OAK \u00B7 BACK TO SCHOOL", W/2, 88);
+    ctx.font="700 30px 'Nunito Sans',sans-serif";
+    ctx.fillStyle="#46603F";
+    ctx.fillText("2026–2027 School Year · with A+ Tutoring", W/2, 132);
+
+    // Goal banner
+    const bannerY=photoTop+photoH+58;
+    ctx.fillStyle="#E2A33B";
+    roundRect(ctx, W/2-460, bannerY-46, 920, 78, 39); ctx.fill();
+    ctx.fillStyle="#1E281C";
+    ctx.font="800 46px 'Bricolage Grotesque','Nunito Sans',sans-serif";
+    ctx.fillText(state.goal, W/2, bannerY+10);
+
+    // Footer credit
+    ctx.fillStyle="#46603F";
+    ctx.font="700 32px 'Nunito Sans',sans-serif";
+    ctx.fillText("Powered by A+ Tutoring \u00B7 wetutorathome.com", W/2, H-54);
+
+    state.photoDataUrl=canvas.toDataURL("image/jpeg",0.88);
+    $("review-img").src=state.photoDataUrl;
+    show("review");
+  }
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  // ---------- Review ----------
+  $("btn-retake").addEventListener("click",()=>show("camera"));
+  $("btn-keep").addEventListener("click",()=>show("form"));
+  // iOS prints the page <title> in its header when "Headers and Footers" is on;
+  // blank it around printing so nothing but the photo can appear.
+  window.addEventListener("beforeprint",()=>{document.title=" ";});
+  window.addEventListener("afterprint",()=>{document.title="Sage Oak Back to School Photo Booth";});
+
+  // ---------- Form ----------
+  let selectedRole=null;
+  document.querySelectorAll(".role-pill").forEach(p=>{
+    p.addEventListener("click",()=>{
+      document.querySelectorAll(".role-pill").forEach(x=>x.classList.remove("selected"));
+      p.classList.add("selected"); selectedRole=p.dataset.role;
+    });
+  });
+  $("lead-form").addEventListener("submit", e=>{
+    e.preventDefault();
+    const err=$("form-error");
+    const email=$("f-email").value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      err.textContent="Please double-check that email address."; err.style.display="block";
+      return;
+    }
+    if(!selectedRole){
+      err.textContent="Pick your role so we know who we met!"; err.style.display="block";
+      return;
+    }
+    err.style.display="none";
+    state.contact={
+      firstName:$("f-first").value.trim(),
+      lastName:$("f-last").value.trim(),
+      email,
+      phone:$("f-phone").value.trim(),
+      role:selectedRole,
+      marketingConsent:$("f-consent").checked
+    };
+    show("delivery");
+  });
+
+  // ---------- Delivery ----------
+  document.querySelectorAll(".deliver-card").forEach(card=>{
+    card.addEventListener("click",()=>{
+      if((card.dataset.delivery==="text"||card.dataset.delivery==="all") && !state.contact.phone){
+        const err=$("form-error");
+        err.textContent="Add your phone number and we'll text it to you.";
+        err.style.display="block";
+        show("form");
+        return;
+      }
+      state.delivery=card.dataset.delivery;
+      submitAll();
+    });
+  });
+
+  async function submitAll(){
+    show("sending");
+    const wantsEmail = state.delivery==="email"||state.delivery==="all";
+    const wantsText  = state.delivery==="text" ||state.delivery==="all";
+    const wantsPrint = state.delivery==="print"||state.delivery==="all";
+
+    // Print immediately (doesn't depend on network)
+    if(wantsPrint){
+      $("print-img").src=state.photoDataUrl;
+      setTimeout(()=>window.print(), 300);
+    }
+
+    let sendOk=true;
+    try{
+      const res=await fetch(CONFIG.WORKER_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          ...state.contact,
+          goal:state.goal,
+          role:state.contact.role,
+          delivery:state.delivery,
+          sendEmail:wantsEmail,
+          sendText:wantsText,
+          eventTag:CONFIG.EVENT_TAG,
+          photo:state.photoDataUrl
+        })
+      });
+      if(!res.ok) sendOk=false;
+    }catch(e){ sendOk=false; }
+
+    const first=state.contact.firstName||"friend";
+    let msg;
+    if(wantsText && sendOk) msg=`Check your phone, ${first} \u2014 your photo is on its way.`;
+    else if(wantsEmail && sendOk) msg=`Check your inbox, ${first} \u2014 your photo is on its way.`;
+    else if((wantsEmail||wantsText) && !sendOk) msg=`We saved your info, ${first} \u2014 if the photo doesn't arrive, grab us at the table and we'll resend it.`;
+    else msg=`Enjoy your print, ${first}!`;
+    $("done-msg").textContent=msg;
+    show("done");
+    setTimeout(fullReset, CONFIG.DONE_RESET_MS);
+  }
+})();
+</script>
+</body>
+</html>
