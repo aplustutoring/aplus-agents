@@ -22129,3 +22129,8 @@
 {"ticket_id": "47795195776", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-20T19:13:00.129380+00:00"}
 {"ticket_id": "47851411720", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-20T19:13:03.275036+00:00"}
 {"ticket_id": "47854561684", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-20T19:13:04.518833+00:00"}
+{"ticket_id": "47830310752", "thread_id": "11107460876", "category": "school_partner", "action_taken": "auto_handled", "timestamp": "2026-08-20T19:53:00.555157+00:00"}
+{"ticket_id": "47830930758", "thread_id": "11107483552", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-08-20T19:53:01.898020+00:00"}
+{"ticket_id": "47854402349", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-20T19:55:09.468867+00:00"}
+{"ticket_id": "47843933766", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-20T19:55:10.360088+00:00"}
+{"ticket_id": "47851411720", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-08-20T19:55:11.053539+00:00"}
