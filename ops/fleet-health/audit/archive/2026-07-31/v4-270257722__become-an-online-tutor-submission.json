@@ -1,0 +1,233 @@
+{
+  "id": "270257722",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "18",
+  "name": "Become an online tutor submission",
+  "description": "Sends a series of property updates, delays, an email, and a text message to applicants who submit the online tutor form during business hours.",
+  "createdAt": "2022-10-18T23:15:52.238Z",
+  "updatedAt": "2025-09-26T02:11:55.462Z",
+  "startActionId": "167176451",
+  "nextAvailableActionId": "168032815",
+  "actions": [
+    {
+      "actionId": "167176451",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032799"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "Tutor-Active",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032799",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032802"
+      },
+      "fields": {
+        "property_name": "how_did_you_hear_about_us_",
+        "value": {
+          "staticValue": "Tutor - To Exclude in Reports",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032801",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032814"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "39191217",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032802",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032809"
+      },
+      "fields": {
+        "delta": "2",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032804",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032811"
+      },
+      "fields": {
+        "content_id": "86512503190"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032809",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032804"
+      },
+      "fields": {
+        "delta": "165",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032811",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "168032801"
+      },
+      "fields": {
+        "delta": "15",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "168032814",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "fields": {
+        "phoneNumber": "{{ _0_1.phone }}",
+        "messageBody": "Hi {{ _0_1.firstname }}, it's {{ enrolled_object.hubspot_owner_id }} with A+ Tutoring. Thanks for applying for our tutoring position. We just reviewed your application and want to move to the next step. Please check your email, I sent you the link and more info there.",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "771ccb50-1014-4009-9898-4f5278c9d7bb",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        },
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "3bb55804-8f12-49b9-a479-09015f6c9f3d",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 0
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 0
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 0
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 0
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 0
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

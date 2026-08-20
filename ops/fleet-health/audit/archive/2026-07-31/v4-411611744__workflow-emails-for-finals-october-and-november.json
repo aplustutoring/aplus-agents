@@ -1,0 +1,233 @@
+{
+  "id": "411611744",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "14",
+  "name": "Workflow Emails for Finals- October and November",
+  "description": "Sends a series of scheduled emails about finals in October and November to contacts in grades 6-12 or graduated, with follow-ups based on email engagement.",
+  "createdAt": "2023-06-28T21:35:12.477Z",
+  "updatedAt": "2023-08-18T02:53:12.126Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "10",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1698105600000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "content_id": "122693052320"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1699920000000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "5"
+      },
+      "fields": {
+        "content_id": "122698439773"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "level": "EMAIL_API_CAMPAIGN_GROUP",
+                    "emailId": "264393177",
+                    "appId": "2286",
+                    "operator": "LINK_CLICKED",
+                    "filterType": "EMAIL_EVENT"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Opened/ Clicked",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "6"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Open/ Click",
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "7"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "6",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "9"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1701129600000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "7",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "8"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1701129600000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "8",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "fields": {
+        "content_id": "122700016163"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "9",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "fields": {
+        "content_id": "122700960335"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "what_is_your_child_s_current_grade_level_",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "11",
+                  "12",
+                  "6",
+                  "7",
+                  "Graduated/College",
+                  "8",
+                  "9",
+                  "10"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

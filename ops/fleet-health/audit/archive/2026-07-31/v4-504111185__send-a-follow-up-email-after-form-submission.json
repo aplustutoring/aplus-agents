@@ -1,0 +1,60 @@
+{
+  "id": "504111185",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Send a follow-up email after form submission",
+  "description": "Triggers when a specific form is submitted to send a follow-up email, but currently has no actions defined.",
+  "uuid": "6312752:6b5a8e23-0888-472a-ad16-fe7517bb8bda:fVA0l7gYLB",
+  "createdAt": "2023-11-01T19:09:47.177Z",
+  "updatedAt": "2023-11-01T19:10:12.161Z",
+  "nextAvailableActionId": "2",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "6b5a8e23-0888-472a-ad16-fe7517bb8bda",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "formId": "6b5a8e23-0888-472a-ad16-fe7517bb8bda",
+            "operator": "FILLED_OUT",
+            "filterType": "FORM_SUBMISSION"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

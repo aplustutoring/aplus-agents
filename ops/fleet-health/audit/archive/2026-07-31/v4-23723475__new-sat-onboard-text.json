@@ -1,0 +1,73 @@
+{
+  "id": "23723475",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "7",
+  "name": "New SAT onboard Text",
+  "uuid": "hybrid-execution-wf-10445383",
+  "createdAt": "2020-03-03T01:04:29.342Z",
+  "updatedAt": "2023-11-14T22:07:20.634Z",
+  "startActionId": "173713537",
+  "nextAvailableActionId": "173713538",
+  "actions": [
+    {
+      "actionId": "173713537",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-20",
+      "fields": {},
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [
+            {
+              "filterBranches": [],
+              "filters": [
+                {
+                  "property": "hs_activity_type",
+                  "operation": {
+                    "operator": "IS_ANY_OF",
+                    "includeObjectsWithNoValueSet": false,
+                    "values": [
+                      "SAT On-boarding"
+                    ],
+                    "operationType": "ENUMERATION"
+                  },
+                  "filterType": "PROPERTY"
+                }
+              ],
+              "objectTypeId": "0-4",
+              "operator": "IN_LIST",
+              "associationTypeId": 9,
+              "associationCategory": "HUBSPOT_DEFINED",
+              "filterBranchType": "ASSOCIATION",
+              "filterBranchOperator": "AND"
+            }
+          ],
+          "filters": [],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

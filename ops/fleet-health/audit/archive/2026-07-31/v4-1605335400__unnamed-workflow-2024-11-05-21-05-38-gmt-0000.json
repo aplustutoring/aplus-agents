@@ -1,0 +1,87 @@
+{
+  "id": "1605335400",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "Unnamed workflow - 2024-11-05 21:05:38 GMT+0000",
+  "description": "Sends a webhook when deals in the \"Pre-Lesson\" stage are not in specified pipelines.",
+  "createdAt": "2024-11-05T21:05:38.751Z",
+  "updatedAt": "2024-11-06T18:47:34.944Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "method": "POST",
+      "webhookUrl": "https://hooks.zapier.com/hooks/catch/998200/25d96hv/",
+      "queryParams": [],
+      "type": "WEBHOOK"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_NONE_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "16858643",
+                  "21277473",
+                  "5119061",
+                  "75e28846-ad0d-4be2-a027-5e1da6590b98",
+                  "30830920",
+                  "971802",
+                  "2265590",
+                  "16547180",
+                  "16195908",
+                  "30837103"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1066196",
+                  "appointmentscheduled",
+                  "164922249",
+                  "47072313",
+                  "140397124",
+                  "3067398",
+                  "907749"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

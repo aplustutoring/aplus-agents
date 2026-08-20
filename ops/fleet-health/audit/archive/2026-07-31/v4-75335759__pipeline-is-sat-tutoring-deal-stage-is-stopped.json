@@ -1,0 +1,126 @@
+{
+  "id": "75335759",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "4",
+  "name": "Pipeline is \"SAT Tutoring\", deal stage is \"Stopped\"",
+  "description": "Updates lead status to \"Past Customer\" and sets \"Actively Tutoring\" to \"No\" for deals in the \"SAT Tutoring\" pipeline with the \"Stopped\" stage.",
+  "createdAt": "2021-05-26T00:47:09.866Z",
+  "updatedAt": "2021-11-10T01:46:03.611Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "4",
+  "actions": [
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "association": {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 3
+        },
+        "value": {
+          "staticValue": "Past Customer",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "actively_tutoring",
+        "association": {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 3
+        },
+        "value": {
+          "staticValue": "false",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [],
+      "filters": [
+        {
+          "property": "pipeline",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "912029"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        },
+        {
+          "property": "dealstage",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "912034"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        }
+      ],
+      "filterBranchType": "AND",
+      "filterBranchOperator": "AND"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "912034"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

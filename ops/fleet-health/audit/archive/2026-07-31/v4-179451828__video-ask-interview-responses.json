@@ -1,0 +1,425 @@
+{
+  "id": "179451828",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "42",
+  "name": "Video Ask Interview Responses ",
+  "description": "Sends a text and updates deal details for contacts who complete a specific video interview event and pass the video ask within business hours.",
+  "createdAt": "2022-03-05T00:02:50.002Z",
+  "updatedAt": "2025-09-26T02:08:23.298Z",
+  "startActionId": "14",
+  "nextAvailableActionId": "19",
+  "actions": [
+    {
+      "actionId": "6",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-29",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "7"
+      },
+      "fields": {
+        "event_filter_branches": [
+          {
+            "filterBranches": [],
+            "filters": [
+              {
+                "property": "hs_name",
+                "operation": {
+                  "operator": "IS_EQUAL_TO",
+                  "includeObjectsWithNoValueSet": false,
+                  "value": "video_ask___pass_first_interview",
+                  "operationType": "STRING"
+                },
+                "filterType": "PROPERTY"
+              },
+              {
+                "property": "hs_value",
+                "operation": {
+                  "operator": "IS_ANY_OF",
+                  "includeObjectsWithNoValueSet": false,
+                  "values": [
+                    "True"
+                  ],
+                  "operationType": "ENUMERATION"
+                },
+                "filterType": "PROPERTY"
+              }
+            ],
+            "eventTypeId": "4-655002",
+            "operator": "HAS_COMPLETED",
+            "filterBranchType": "UNIFIED_EVENTS",
+            "filterBranchOperator": "AND"
+          }
+        ],
+        "expiration_minutes": "2628000"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "7",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "video_ask___pass_first_interview",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "True"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Pass Video Ask",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "10"
+          }
+        }
+      ],
+      "defaultBranchName": "Did Not Pass Video Ask",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "8",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "9"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "value": {
+          "staticValue": "Tutor-Active",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "9",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "6"
+      },
+      "fields": {
+        "property_name": "how_did_you_hear_about_us_",
+        "value": {
+          "staticValue": "Tutor - To Exclude in Reports",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "10",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-14",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "15"
+      },
+      "fields": {
+        "object_type_id": "0-3",
+        "properties": [
+          {
+            "targetProperty": "dealname",
+            "value": {
+              "staticValue": "{{ _0_1.firstname }} {{ _0_1.lastname }}",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "dealstage",
+            "value": {
+              "staticValue": "971803",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "is_the_student_preparing_for_the_non_sat_test_",
+            "value": {
+              "staticValue": "false",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "is_the_student_preparing_for_the_sat_",
+            "value": {
+              "staticValue": "false",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "description",
+            "value": {
+              "staticValue": "{{ _0_1.resume }}",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "hubspot_owner_id",
+            "value": {
+              "staticValue": "39191217",
+              "type": "STATIC_VALUE"
+            }
+          }
+        ],
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 3
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 341
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 279
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          }
+        ],
+        "use_explicit_associations": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "11",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "8"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "39191217",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "14",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "11"
+      },
+      "fields": {
+        "listId": "1027",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "15",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "18"
+      },
+      "fields": {
+        "delta": "2",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "17",
+      "actionTypeVersion": 1,
+      "actionTypeId": "1-25036468",
+      "fields": {
+        "phoneNumber": "{{ enrolled_object.phone }}",
+        "messageBody": "Hey {{ _0_1.firstname }}, it's Emily with A+ Tutoring. We loved your submission and want to forward with your application. Please check your email for an invitation to a virtual interview. Let me know if you have any questions.",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "18",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-11",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "17"
+      },
+      "fields": {
+        "user_ids": [
+          "8857935"
+        ],
+        "target_property": "hubspot_owner_id",
+        "overwrite_current_owner": "false"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "eventTypeId": 1070712,
+              "filterLines": [
+                {
+                  "property": "vaFormTitle",
+                  "operation": {
+                    "operator": "CONTAINS",
+                    "includeObjectsWithNoValueSet": false,
+                    "values": [
+                      "Applicant",
+                      "screening"
+                    ],
+                    "operationType": "MULTISTRING"
+                  }
+                }
+              ],
+              "filterType": "INTEGRATION_EVENT"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 17,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 0
+      }
+    },
+    {
+      "day": "SATURDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "SUNDAY",
+      "startTime": {
+        "hour": 9,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "95373391",
+  "isEnabled": false,
+  "objectTypeId": "0-2",
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Unnamed workflow - Wed Aug 11 2021 13:17:09 GMT-0500",
+  "createdAt": "2021-08-11T18:17:09.997Z",
+  "updatedAt": "2021-08-11T18:17:09.997Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "type": "MANUAL"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

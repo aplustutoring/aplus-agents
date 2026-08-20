@@ -1,0 +1,50 @@
+{
+  "id": "465928805",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "HS",
+  "description": "Enrolls contacts who have a known Resume property but performs no further actions.",
+  "createdAt": "2023-09-12T18:46:39.804Z",
+  "updatedAt": "2023-09-12T18:50:52.884Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "resume",
+              "operation": {
+                "operator": "IS_KNOWN",
+                "includeObjectsWithNoValueSet": false,
+                "operationType": "ALL_PROPERTY"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

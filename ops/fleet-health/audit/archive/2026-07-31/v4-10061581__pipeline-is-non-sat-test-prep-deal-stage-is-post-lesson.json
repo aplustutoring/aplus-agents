@@ -1,0 +1,106 @@
+{
+  "id": "10061581",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "5",
+  "name": "Pipeline is \"Non SAT test prep\", deal stage is \"Post-Lesson\"",
+  "description": "Updates deals in the \"Non SAT test prep\" pipeline at the \"Post-Lesson\" stage by setting the \"Actively Tutoring\" property to \"Yes\".",
+  "uuid": "deal-1203902-1203904",
+  "createdAt": "2019-11-26T00:19:38.284Z",
+  "updatedAt": "2021-12-21T00:37:11.141Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "3",
+  "actions": [
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "actively_tutoring",
+        "association": {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 3
+        },
+        "value": {
+          "staticValue": "true",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [],
+      "filters": [
+        {
+          "property": "pipeline",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "1203902"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        },
+        {
+          "property": "dealstage",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "1203904"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        }
+      ],
+      "filterBranchType": "AND",
+      "filterBranchOperator": "AND"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "1203904"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

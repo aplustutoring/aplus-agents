@@ -1,0 +1,98 @@
+{
+  "id": "1700137049",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Unnamed workflow - 2025-10-01 00:55:38 GMT+0000",
+  "createdAt": "2025-10-01T00:55:38.748Z",
+  "updatedAt": "2025-10-01T00:55:38.748Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "hs_lead_status",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "NEW",
+                  "CAP",
+                  "Past Customer",
+                  "We Connected",
+                  "QTL - Diagnostic Sent",
+                  "QTL - Charter",
+                  "UNQUALIFIED",
+                  "Using Someone Else",
+                  "ATTEMPTED_TO_CONTACT",
+                  "OPEN_DEAL"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_188527980",
+      "objectTypeId": "0-3",
+      "associationTypeId": 4,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_188527979",
+      "objectTypeId": "0-2",
+      "associationTypeId": 279,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_188527981",
+      "objectTypeId": "0-47",
+      "associationTypeId": 199,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

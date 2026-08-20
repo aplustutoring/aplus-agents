@@ -1,0 +1,63 @@
+{
+  "id": "1646484875",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Unnamed workflow - 2025-04-14 21:31:45 GMT+0000",
+  "description": "Enrolls objects with Pipeline set to \"New Tutor\" and Deal Stage set to \"Onboarded\"; no actions are performed in this workflow.",
+  "createdAt": "2025-04-14T21:31:45.573Z",
+  "updatedAt": "2025-04-14T21:32:34.993Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "971802"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1050059284"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

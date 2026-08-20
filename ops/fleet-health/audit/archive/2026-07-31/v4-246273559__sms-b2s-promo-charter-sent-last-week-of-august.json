@@ -1,0 +1,120 @@
+{
+  "id": "246273559",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "5",
+  "name": "SMS - B2S Promo Charter - Sent Last week of August",
+  "description": "Sends a promotional SMS wishing a successful school year and offering an early bird sign-up to contacts associated with deals created after August 15, 2022.",
+  "createdAt": "2022-08-25T21:39:34.883Z",
+  "updatedAt": "2024-11-15T22:15:39.909Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "6",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "38681249",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 9,
+      "actionTypeId": "1-1917",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "phoneNumbers": "{{ _0_1.phone }}",
+        "sms": "Hey {{ _0_1.firstname }}, it's Roman w/ A+ Tutoring. I wanted to wish you guys a successful start to the school year! We really appreciated the opportunity to work with {{ _0_1.student_last_name }} in the past. We just started a special promotion for early bird sign-ups.",
+        "logSMS": "true",
+        "owner": "hubspot_owner_id",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "type": "MANUAL"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "goalFilterBranch": {
+    "filterBranches": [
+      {
+        "filterBranches": [
+          {
+            "filterBranches": [],
+            "filters": [
+              {
+                "property": "createdate",
+                "operation": {
+                  "operator": "IS_AFTER",
+                  "includeObjectsWithNoValueSet": false,
+                  "timePoint": {
+                    "timezoneSource": "CUSTOM",
+                    "zoneId": "America/Los_Angeles",
+                    "year": 2022,
+                    "month": 8,
+                    "day": 15,
+                    "hour": 23,
+                    "minute": 59,
+                    "second": 59,
+                    "millisecond": 999,
+                    "timeType": "DATE"
+                  },
+                  "endpointBehavior": "EXCLUSIVE",
+                  "propertyParser": "VALUE",
+                  "type": "TIME_POINT",
+                  "operationType": "TIME_POINT"
+                },
+                "filterType": "PROPERTY"
+              }
+            ],
+            "objectTypeId": "0-3",
+            "operator": "IN_LIST",
+            "associationTypeId": 4,
+            "associationCategory": "HUBSPOT_DEFINED",
+            "filterBranchType": "ASSOCIATION",
+            "filterBranchOperator": "AND"
+          }
+        ],
+        "filters": [],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "filters": [],
+    "filterBranchType": "OR",
+    "filterBranchOperator": "OR"
+  },
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

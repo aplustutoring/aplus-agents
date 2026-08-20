@@ -1,0 +1,51 @@
+{
+  "id": "601469553",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Unnamed workflow - 2024-08-13 18:32:26 GMT+0000",
+  "description": "Enrolls contacts not in the \"New Tutor\" pipeline but contains no actions to perform after enrollment.",
+  "createdAt": "2024-08-13T18:32:26.118Z",
+  "updatedAt": "2024-08-13T18:33:02.891Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_NONE_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "971802"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}
