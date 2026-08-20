@@ -24,6 +24,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -3435,6 +3436,51 @@ def stage_slack(args: argparse.Namespace, run: dict) -> dict:
 
 REEL_DIR = REPO_ROOT / "scripts" / "b2c" / "reel"
 
+# One retry of the generation steps. They are all resumable (make_script skips
+# an existing script.json; stills/vo/clips reuse whatever is already on disk),
+# so a second pass only regenerates the piece that failed — which is exactly
+# the shape of the failures we see (Veo 429s, a single RAI-rejected beat).
+REEL_ATTEMPTS = 2
+# Wall-clock budget for the whole reel stage, shared across both attempts.
+# make_clips.py polls Veo with no ceiling of its own, so without this a stuck
+# generation eats the job's remaining time and takes the textstory + logsheet
+# stages (and the completion summary) down with it when the runner is killed.
+REEL_TIMEOUT_S = int(os.environ.get("SPOTLIGHT_REEL_TIMEOUT_S", "900"))
+# Delivery is budgeted separately from generation: a reel that took the whole
+# generation budget to render still deserves its trip to Slack.
+REEL_DELIVER_TIMEOUT_S = 360
+
+
+def _post_stage_alert(text: str, label: str) -> None:
+    """Post a heads-up about a NON-FATAL stage miss to the failure channel.
+    No-ops without SLACK_FAILURE_CHANNEL; never raises — alerting must not
+    break a run that otherwise succeeded."""
+    channel = os.environ.get("SLACK_FAILURE_CHANNEL")
+    if not channel:
+        return
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
+        import slack_delivery_common as sd  # noqa: E402
+        sd.post_message(sd.resolve_channel_id(channel), text)
+        print(f"  {label}: posted heads-up to {channel}")
+    except Exception as exc:  # noqa: BLE001 — alerting must never break the run
+        print(f"  {label}: could not post heads-up — {exc}", file=sys.stderr)
+
+
+def _post_reel_alert(run: dict, note: str) -> None:
+    """Heads-up when the (non-fatal) reel stage ships nothing. Without this the
+    miss is invisible: the reel is the only pack asset with no failure signal
+    of its own, so Paola just receives a delivery thread with no reel in it and
+    has no way to tell that one was ever attempted."""
+    bundle = Path(run["bundle_path"]).name
+    _post_stage_alert(
+        f":warning: *Spotlight reel is missing* — `{bundle}`: {note}. "
+        "The blog, graphics, and text-stories for this bundle are unaffected. "
+        "Recover by re-dispatching the Drive folder with SPOTLIGHT_REEL=1; the "
+        "reel steps resume from whatever already rendered.",
+        "reel",
+    )
+
 
 def stage_reel(args: argparse.Namespace, run: dict) -> dict:
     """Generate + deliver the animated spotlight reel (independent of the comic).
@@ -3443,6 +3489,12 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
     ffmpeg missing, etc.) is logged and the run still completes. Skipped in dry
     runs and when SPOTLIGHT_REEL=0. Uses the same upstream metadata + case study;
     delivers into #student-spotlight-ready like the rest of the pack.
+
+    Non-fatal does NOT mean silent (2026-08-20 correction — Amelia's pack landed
+    with no reel and nothing said one had been attempted): the generation steps
+    get one resumable retry, the stage is bounded by REEL_TIMEOUT_S, and a reel
+    that still fails posts a heads-up to SLACK_FAILURE_CHANNEL and shows up in
+    the completion summary.
     """
     run.update({"stage": "reel"})
     if os.environ.get("SPOTLIGHT_REEL", "1") == "0":
@@ -3458,31 +3510,51 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
         ("clips",    ["python3", str(REEL_DIR / "make_clips.py"),  "--bundle", bundle]),
         ("assemble", ["python3", str(REEL_DIR / "build_reel.py"),  "--bundle", bundle]),
     ]
+    deadline = time.monotonic() + REEL_TIMEOUT_S
+
+    def run_step(name: str, cmd: list[str], budget: float | None = None) -> None:
+        left = budget if budget is not None else deadline - time.monotonic()
+        if left <= 0:
+            raise RuntimeError(f"reel budget of {REEL_TIMEOUT_S}s exhausted before {name}")
+        print(f"  reel:{name} ...")
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=left)
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(f"reel {name} timed out after {left:.0f}s")
+        if r.returncode != 0:
+            sys.stderr.write(r.stdout or "")
+            sys.stderr.write(r.stderr or "")
+            raise RuntimeError(f"reel {name} failed (exit {r.returncode})")
+
+    alert = None
     try:
-        for name, cmd in steps:
-            print(f"  reel:{name} ...")
-            r = subprocess.run(cmd, capture_output=True, text=True)
-            if r.returncode != 0:
-                sys.stderr.write(r.stdout or "")
-                sys.stderr.write(r.stderr or "")
-                raise RuntimeError(f"reel {name} failed (exit {r.returncode})")
+        for attempt in range(1, REEL_ATTEMPTS + 1):
+            try:
+                for name, cmd in steps:
+                    run_step(name, cmd)
+                break
+            except RuntimeError as exc:
+                if attempt == REEL_ATTEMPTS:
+                    raise
+                print(f"  reel: attempt {attempt} failed ({exc}) — retrying the "
+                      f"resumable steps", file=sys.stderr)
         if not run.get("skip_hubspot"):
             dcmd = ["python3", str(REEL_DIR / "deliver_reel.py"), "--bundle", bundle]
             if args.slack_channel:
                 dcmd.extend(["--channel", args.slack_channel])
             if run.get("slack_thread_ts"):
                 dcmd.extend(["--thread-ts", run["slack_thread_ts"]])
-            print("  reel:deliver ...")
-            r = subprocess.run(dcmd, capture_output=True, text=True)
-            if r.returncode != 0:
-                sys.stderr.write(r.stdout or "")
-                sys.stderr.write(r.stderr or "")
-                raise RuntimeError("reel delivery failed")
+            # Delivery gets ONE attempt on purpose: a retry after a partial
+            # upload would double-post the reel into Paola's review thread.
+            run_step("deliver", dcmd, budget=REEL_DELIVER_TIMEOUT_S)
         run["reel_status"] = "ok"
         print("  reel: done")
     except Exception as exc:  # noqa: BLE001 — reel is non-fatal
         run["reel_status"] = f"skipped: {exc}"
+        alert = f"no reel was delivered — {exc}"
         print(f"  reel: NON-FATAL failure — {exc}", file=sys.stderr)
+    if alert and not run.get("skip_hubspot"):
+        _post_reel_alert(run, alert)
     update_run(run["run_id"], run)
     return run
 
@@ -3492,22 +3564,14 @@ TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.
 
 def _post_textstory_alert(run: dict, note: str) -> None:
     """Heads-up to the failure Slack channel when the (non-fatal) textstory
-    stage shipped fewer videos than expected — otherwise the miss is silent.
-    No-ops without SLACK_FAILURE_CHANNEL; never raises."""
-    channel = os.environ.get("SLACK_FAILURE_CHANNEL")
-    if not channel:
-        return
-    try:
-        sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
-        import slack_delivery_common as sd  # noqa: E402
-        bundle = Path(run["bundle_path"]).name
-        text = (f":warning: *Spotlight text-stories need attention* — `{bundle}`: {note}. "
-                "Blog, graphics, and reel are unaffected. Recover with the "
-                "“Re-render textstories for a bundle” Actions workflow.")
-        sd.post_message(sd.resolve_channel_id(channel), text)
-        print(f"  textstory: posted heads-up to {channel}")
-    except Exception as exc:  # noqa: BLE001 — alerting must never break the run
-        print(f"  textstory: could not post heads-up — {exc}", file=sys.stderr)
+    stage shipped fewer videos than expected — otherwise the miss is silent."""
+    bundle = Path(run["bundle_path"]).name
+    _post_stage_alert(
+        f":warning: *Spotlight text-stories need attention* — `{bundle}`: {note}. "
+        "Blog, graphics, and reel are unaffected. Recover with the "
+        "“Re-render textstories for a bundle” Actions workflow.",
+        "textstory",
+    )
 
 
 def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
@@ -3637,6 +3701,11 @@ def stage_complete(args: argparse.Namespace, run: dict) -> dict:
     if run.get("brand_check_violations"):
         n = len(run["brand_check_violations"])
         print(f"Brand-check:    {n} violations cleaned from Doc 1")
+    # Bonus assets are non-fatal, so their status only ever lived in the
+    # (gitignored) run state and the stderr stream. Print it here or a missing
+    # reel reads as a clean run.
+    if run.get("reel_status"):
+        print(f"Reel:           {run['reel_status']}")
     timings = run.get("stage_timings", {})
     if timings:
         print("Stage timings:")
