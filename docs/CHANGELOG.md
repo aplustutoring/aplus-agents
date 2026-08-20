@@ -7,6 +7,35 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Call agent: a 100%-failure run now exits 1
+
+**What:** `ops/call_agent/call_agent.py` counts outcomes around the per-call loop
+(attempted / succeeded / skipped / failed) and, when at least one call raised and
+none succeeded, logs `RUN FAILED — 0/N calls succeeded`, posts a one-line alert to
+`slack.alert_channel` (the private #calls channel), and `sys.exit(1)`. The digest
+still posts and state is still saved first, so the failing run reports what it saw
+and stays idempotent. New `ops/call_agent/tests/test_exit_code.py` covers it.
+
+**Why:** Reported as a correction — process_call exceptions are caught per call so
+one bad call can't kill the run, but nothing tracked whether ANY call succeeded, so
+a run that failed every call exited 0 and the Actions retry sweeper stayed silent.
+Total failure was indistinguishable from a quiet day.
+
+**Scope note (differs slightly from the approved plan):** the approved condition was
+`attempted > 0 and succeeded == 0`. That would fire on a day where every call was
+legitimately skipped — hang-up, no recording, no transcript are normal outcomes, and
+an all-hang-ups afternoon is common. The condition shipped is `failed > 0 and
+succeeded == 0`, which is the reported failure mode without the false alarm.
+
+**Known gap (not fixed here):** failed calls are still marked processed, so a
+sweeper retry of the same window is a no-op. The nonzero exit is a signal to a human,
+not yet a self-healing retry. Worth a follow-up decision on whether failures should
+stay off the processed list.
+
+**Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/tests/test_exit_code.py`,
+`docs/CHANGELOG.md`.
+
+---
 ## 2026-08-20 — `runtime:` — the fleet is not all GitHub Actions
 
 **What:** Added a required `runtime:` field (`github-actions` | `cloudflare-worker`
