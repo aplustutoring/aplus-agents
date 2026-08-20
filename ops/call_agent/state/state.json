@@ -368,9 +368,12 @@
     406635381,
     406645342,
     406646411,
-    406647961
+    406647961,
+    406652458,
+    406658058,
+    406660050
   ],
-  "last_run_utc": "2026-08-20T22:47:18.761890+00:00",
+  "last_run_utc": "2026-08-20T23:30:50.196752+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -856,6 +859,135 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 406658058,
+      "number": "18188261069",
+      "time_pt": "4:14 PM",
+      "matched": true,
+      "contact_label": "Blanca Perez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Blanca Perez regarding tutoring interest for her son Joseph. The call went to voicemail and Paola left a message asking Blanca to call back with a good time to connect. No live contact was made.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue follow-up outreach to Blanca until she responds regarding tutoring for Joseph",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Blanca Perez did not answer \u2014 Paola left a voicemail following up on her prior interest in tutoring for her son Joseph (4th grade, CWC, ELA/math support per prior notes). This is now the third outreach attempt (8/11, 8/18, and today) with no callback. Blanca's current status is 'Using Someone Else,' so tone should be light and non-pressuring. If she calls back, open with: 'Hi Blanca, thanks for getting back to us \u2014 we just wanted to check in on Joseph and see if there's anything we can help with for ELA or math this year.' Prior availability noted was today or Thursday after 4PM.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live contact made, so no basis to change existing 'Using Someone Else' status.",
+        "student_or_school_names_mentioned": [
+          "Joseph",
+          "Blanca Perez"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola left another voicemail for Blanca following up on tutoring interest for Joseph. No live contact made.",
+          "what_we_can_do_to_help": "Continue periodic follow-up outreach; be ready to schedule ELA/math sessions for Joseph (prior availability: today or Thursday after 4PM) if Blanca responds.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola left another voicemail for Blanca following up on tutoring interest for Joseph. No live contact made."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue periodic follow-up outreach; be ready to schedule ELA/math sessions for Joseph (prior availability: today or Thursday after 4PM) if Blanca responds."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue follow-up outreach to Blanca until she responds regarding tutoring for Joseph",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406660050,
+      "number": "17474947620",
+      "time_pt": "4:22 PM",
+      "matched": true,
+      "contact_label": "Nish Fernandez",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Nish Fernandez regarding their tutoring inquiry. The call went to voicemail, and Paola left a message asking Nish to call back to discuss tutoring needs. No new information was gathered about the student or their needs.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue follow-up outreach to Nish Fernandez via call, email, or text until connection is made",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Nish Fernandez is a prospective family lead we've been trying to reach. Paola left another voicemail today (following a prior 2026-08-18 voicemail) asking Nish to call back to discuss tutoring needs. No student details are known yet \u2014 we still need grade, subject, and modality. If you pick this up, try a different channel (email/text) and open with: 'Hi Nish, this is [name] from A+ Tutoring following up on your tutoring inquiry \u2014 I'd love to learn about your student and how we can help. When's a good time to chat?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went to voicemail; no live conversation occurred, so prior ATTEMPTED_TO_CONTACT status remains appropriate.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola again went to voicemail; left another message asking Nish to call back regarding tutoring interest. Still no details on student or needs.",
+          "what_we_can_do_to_help": "Continue multi-channel outreach (call, email, text) to reach Nish and gather student grade, subject, and modality preferences.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola again went to voicemail; left another message asking Nish to call back regarding tutoring interest. Still no details on student or needs."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue multi-channel outreach (call, email, text) to reach Nish and gather student grade, subject, and modality preferences."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue follow-up outreach to Nish Fernandez via call, email, or text until connection is made",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
