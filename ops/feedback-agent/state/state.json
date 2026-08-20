@@ -22,7 +22,8 @@
     "Ev0BRQ62HN1J",
     "Ev0BRNE74CLR",
     "Ev0BRQAFLJ57",
-    "Ev0BRNBVTWUA"
+    "Ev0BRNBVTWUA",
+    "Ev0BRG6GJ5T5"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -194,12 +195,12 @@
       "correction_path": "corrections/call-agent/2026-08-20-exit-nonzero-on-zero-successes.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/92",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787256679631249"
     }
   ],
   "graduation": {
-    "clean_merges": 3
+    "clean_merges": 4
   },
   "pending_proposals": {
     "1786554388.265099": {
