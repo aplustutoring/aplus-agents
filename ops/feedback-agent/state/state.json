@@ -30,7 +30,8 @@
     "Ev0BRLN5KFK8",
     "Ev0BRSE7SP3N",
     "Ev0BRLTAM8HL",
-    "Ev0BSHPY1GTS"
+    "Ev0BSHPY1GTS",
+    "Ev0BRRC8UQV7"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -256,23 +257,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
-    },
-    "1787266823.934319": {
-      "agent": "spotlight-orchestrator",
-      "agent_label": "Spotlight Orchestrator",
-      "correction_path": "corrections/spotlight-orchestrator/2026-08-20-spotlight-superhero-reel-not-delivered.md",
-      "branch": "fix/spotlight-orchestrator-2026-08-20-934319",
-      "diagnosis": "Paola isn't complaining about broken code \u2014 she's asking for a missing deliverable. The reel build/deliver scripts (marketing/scripts/b2c/reel/build_reel.py and deliver_reel.py) exist, so the orchestrator likely either skipped the reel step for Amelia's bundle or the previous 'fix' didn't re-run reel generation and delivery against her existing bundle.",
-      "fix_plan": [
-        "Locate Amelia's spotlight bundle under marketing/aplus-content/ and confirm whether reel assets (script, VO, stills, clips, final mp4) were ever produced.",
-        "If missing, run marketing/scripts/b2c/reel/build_reel.py against Amelia's bundle to generate the reel, then marketing/scripts/b2c/reel/deliver_reel.py to post it to Slack for Paola.",
-        "If build_reel.py fails or requires inputs the orchestrator didn't pass (e.g. hero_scene, VO API key, script fixture), capture the error and report back to Roman with the specific blocker.",
-        "Once delivered, check spotlight_orchestrator.py to confirm the reel step is actually invoked in the normal flow \u2014 if it was silently skipped for Amelia, that's a separate follow-up."
-      ],
-      "risk": "low",
-      "recommendation": "execute",
-      "proposed_utc": "2026-08-20T23:02:17.534522+00:00",
-      "reporter": "Paola"
     }
   }
 }
