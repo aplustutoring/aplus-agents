@@ -364,9 +364,10 @@
     406527005,
     406561555,
     406604186,
-    406609891
+    406609891,
+    406635381
   ],
-  "last_run_utc": "2026-08-20T21:44:56.874331+00:00",
+  "last_run_utc": "2026-08-20T22:11:05.326850+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -711,6 +712,84 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 406635381,
+      "number": "13107399526",
+      "time_pt": "2:43 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Eli Ham called asking for Roman, saying his family (siblings) has previously used A+ Tutoring in person. He needs an organic chemistry tutor for this Monday 9-11am, preferably in-person in Los Angeles (100 N Laython Dr, 90049) but open to online. Janelle could not locate an existing account and Eli declined to share sibling names. Janelle promised to message Roman and text Eli back ASAP with tutor options.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Roman to follow up with Eli about the organic chemistry tutoring request",
+            "owner_hint": "Roman"
+          },
+          {
+            "item": "Find an in-person organic chemistry tutor in LA (90049) available Monday 9-11am; fall back to online if unavailable",
+            "owner_hint": null
+          },
+          {
+            "item": "Text Eli at his callback number with tutor options ASAP (time-sensitive)",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Search CRM for related family record (siblings previously tutored in person, mom knows Roman) to link this contact",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roman \u2014 Eli Ham (email imagnus0026@gmail.com, address 100 N Laython Dr, Los Angeles 90049) called asking for you directly. He says his family has worked with you for a long time (siblings tutored in person, mom knows you well), but Janelle could not find an account and Eli declined to share sibling names. He needs an organic chemistry tutor THIS Monday 9-11am \u2014 prefers in-person in LA, will accept online if in-person isn't possible. Tone was polite but time-crunched; he asked us to get back to him ASAP. Nothing was quoted or booked. Please try to identify the family in the system (siblings, mom known to you) and reach out quickly. Suggested opener: \"Hi Eli, it's Roman \u2014 got your message about organic chem this Monday morning, let me tell you what I can line up for you.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "New inbound family inquiry we spoke with; not test prep/diagnostic and not charter-funded, so default We Connected. (Family may have prior history but no record was located.)",
+        "student_or_school_names_mentioned": [
+          "Eli Ham"
+        ],
+        "record_updates": {
+          "whats_going_on": "Eli Ham called asking for Roman; says his family (siblings, mom knows Roman) previously did in-person tutoring with A+ but no CRM record was located. He needs an organic chemistry tutor for this Monday 9-11am, ideally in-person in LA (90049), otherwise online. Time-sensitive \u2014 asked for a callback ASAP.",
+          "what_we_can_do_to_help": "Roman to check for a related family record and reach out quickly. Source an organic chemistry tutor for Monday 9-11am \u2014 try in-person in the 90049 area first, and confirm an online option as a backup. Text Eli at his callback number with the plan.",
+          "student_first_name": "Eli",
+          "student_last_name": "Ham",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Roman to follow up with Eli about the organic chemistry tutoring request",
+          38681249
+        ],
+        [
+          "Find an in-person organic chemistry tutor in LA (90049) available Monday 9-11am; fall back to online if unavailable",
+          81494333
+        ],
+        [
+          "Text Eli at his callback number with tutor options ASAP (time-sensitive)",
+          80047202
+        ],
+        [
+          "Search CRM for related family record (siblings previously tutored in person, mom knows Roman) to link this contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
