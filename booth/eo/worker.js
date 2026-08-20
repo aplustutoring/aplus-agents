@@ -680,9 +680,25 @@ async function handleInboundSms(request, env, ctx) {
   const text = String(d.body || d.message || d.text || d.sms_body || "").trim();
   const toNumber = normalizePhone(d.justcall_number || d.to || "");
 
-  // Hard scope guard: ignore anything that did not land on the booth line.
+  // Hard scope guard, and it FAILS CLOSED on purpose.
+  //
+  // JustCall scopes webhooks by event type, not by number, so this endpoint
+  // receives inbound SMS for EVERY line on the account — including the main
+  // business line. The earlier version skipped the check when it could not
+  // parse a destination number, which meant an unrecognised payload shape
+  // would auto-reply "Logged. Roman sees everything." to a real customer
+  // texting the main line, and file their message as an agent idea.
+  //
+  // So: unless we can positively identify this as landing on the booth line,
+  // we do nothing at all. Missing the odd booth text is a small cost;
+  // replying to a customer with a robot joke is not.
   const booth = normalizePhone(env.JUSTCALL_FROM || "");
-  if (booth && toNumber && toNumber !== booth) {
+  if (!booth || !toNumber || toNumber !== booth) {
+    log(env, {
+      at: "sms.ignored",
+      reason: !toNumber ? "no destination number in payload" : "not the booth line",
+      to: toNumber || null,
+    });
     return new Response("ok", { status: 200 });
   }
   if (!from) return new Response("ok", { status: 200 });
@@ -1286,7 +1302,7 @@ async function upsertContact(env, properties) {
     headers: hsHeaders(env),
     body: JSON.stringify({
       filterGroups: [{ filters: [{ propertyName: "email", operator: "EQ", value: properties.email }] }],
-      properties: ["email"],
+      properties: ["email", "aplus_event_tag"],
       limit: 1,
     }),
   });
@@ -1294,12 +1310,28 @@ async function upsertContact(env, properties) {
   const found = await search.json();
 
   if (found.total > 0) {
-    const id = found.results[0].id;
+    const hit = found.results[0];
+    const id = hit.id;
+
+    // aplus_event_tag is a MULTI-checkbox, and HubSpot replaces the whole set
+    // when you write it. Writing the EO tag bare therefore wipes any other
+    // event the contact has attended — a Sage Oak attendee who walks up
+    // tonight would silently lose sage_oak_btsc_2026. Merge instead: read
+    // what is there, add ours if missing, write the full semicolon-joined
+    // list back.
+    const existing = String(hit.properties?.aplus_event_tag || "")
+      .split(";").map((t) => t.trim()).filter(Boolean);
+    const merged = existing.includes(EVENT_TAG) ? existing : [...existing, EVENT_TAG];
+
     const upd = await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/${id}`, {
-      method: "PATCH", headers: hsHeaders(env), body: JSON.stringify({ properties }),
+      method: "PATCH",
+      headers: hsHeaders(env),
+      body: JSON.stringify({
+        properties: { ...properties, aplus_event_tag: merged.join(";") },
+      }),
     });
     if (!upd.ok) throw new Error(`HubSpot update ${upd.status}: ${await upd.text()}`);
-    return { action: "updated", id };
+    return { action: "updated", id, tags: merged.join(";") };
   }
 
   const crt = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
