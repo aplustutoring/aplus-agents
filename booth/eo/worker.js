@@ -82,7 +82,7 @@ Rules that matter:
 - No flattery, no "impressive work you're doing." Observant, dry, a little amused at itself. You are a robot who did homework.
 - Do not mention tutoring, education, or any company other than theirs. Do not pitch anything. Do not sign off — the email template adds the signature.
 
-Return only the brief text.`;
+Your entire response is pasted directly into an email body with no editing. Start with the first word of the brief itself. No preamble ("Here is the brief..."), no closing remark, no horizontal rules, no markdown of any kind.`;
 
 const PAYLOAD2_SYSTEM = `You are Minion #23, an AI agent at an Entrepreneurs' Organization event in Los Angeles. Earlier tonight you took someone's photo, researched their company, and texted them about it. The workshop is now ending — they have just spent two hours building their first AI agent.
 
@@ -98,7 +98,7 @@ What it needs to do:
 - Do not mention tutoring, education, or any company other than theirs.
 - Do not sign off — the template adds the signature.
 
-Return only the email body text.`;
+Your entire response is pasted directly into an email body with no editing. Start with the first word of the email itself. No preamble ("Here is the email..."), no closing remark, no horizontal rules, no markdown of any kind.`;
 
 // ────────────────────────────────────────────────────────────── HTTP
 
@@ -572,11 +572,11 @@ async function researchBrief(env, company) {
     });
     if (!resumed.ok) throw new Error(`Anthropic resume ${resumed.status}`);
     const rdata = await resumed.json();
-    const rtext = extractText(rdata);
+    const rtext = cleanBody(extractText(rdata));
     if (rtext) return rtext;
   }
 
-  const text = extractText(data);
+  const text = cleanBody(extractText(data));
   if (!text) throw new Error("empty brief");
   return text;
 }
@@ -602,19 +602,74 @@ async function composePayload2Email(env, brief) {
   if (!res.ok) throw new Error(`Anthropic ${res.status}: ${await res.text()}`);
   const data = await res.json();
   if (data.stop_reason === "refusal") throw new Error("refusal");
-  const text = extractText(data);
+  const text = cleanBody(extractText(data));
   if (!text) throw new Error("empty email");
   return text;
 }
 
-// Response content is a list of blocks — text, server_tool_use,
-// web_search_tool_result. Only the text blocks are the answer.
+// Response content interleaves text with server_tool_use and
+// web_search_tool_result blocks. The model narrates BETWEEN searches, so
+// joining every text block glues its research notes onto the front of the
+// answer — observed in testing: a 470-word Sugarfish "brief" that was mostly
+// raw search snippets. The real answer is the text after the LAST tool
+// block. Falls back to all text if the model never searched.
 function extractText(data) {
-  return (data.content || [])
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("\n")
-    .trim();
+  const blocks = data.content || [];
+  let lastTool = -1;
+  blocks.forEach((b, i) => { if (b.type !== "text") lastTool = i; });
+
+  // Join with "" not "\n": with citations enabled the final answer is split
+  // into one text block per cited span, mid-sentence. Joining with newlines
+  // put hard <br> breaks in the middle of sentences in the email.
+  const tail = blocks.slice(lastTool + 1)
+    .filter((b) => b.type === "text").map((b) => b.text).join("").trim();
+  if (tail) return tail;
+
+  return blocks.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
+}
+
+// Belt and braces on top of the "no preamble" instruction and the
+// last-tool-block rule above. Both of these were observed in testing and
+// both would have landed in an email body in front of a room:
+//   "Here is the brief for your email:" + a --- rule    (A+ Tutoring)
+//   "I was unable to find ... here is an honest brief:" (unknown company)
+// The announcement is not always at the start of the string, so cut at the
+// LAST one rather than anchoring to ^.
+function cleanBody(text) {
+  let t = String(text || "").trim();
+
+  // "...here is the brief:" / "here's an honest brief:" — keep what follows
+  // the last such announcement, but only if real content follows it.
+  const announce = /\bhere(?:'s| is)\b[^\n]{0,100}?:[ \t]*\n/gi;
+  let cut = 0, m;
+  while ((m = announce.exec(t)) !== null) cut = m.index + m[0].length;
+  if (cut && t.slice(cut).trim().length > 80) t = t.slice(cut);
+
+  // Meta-narration with no "here is" marker. Both of these were observed:
+  //   "I've now done five searches ... I'll write an honest brief."
+  //   "Now I have plenty of rich detail to write a great brief. Let me compose it."
+  // The tell is first-person process talk ABOUT the task paired with a
+  // composition verb. An honest brief opening "I was unable to find any
+  // public record of X" is also first person but has no composition verb,
+  // so it survives — that one is real content.
+  const paras = t.split(/\n\s*\n/);
+  if (paras.length > 1
+      && /\b(?:I(?:'ve|'ll|'m| have| will| am)|let me|now i)\b/i.test(paras[0])
+      && /\b(?:compose|write|writing|draft|put together|search(?:es|ed|ing)?|per the rules)\b/i.test(paras[0])
+      && paras[0].length < 400
+      && paras.slice(1).join("\n\n").trim().length > 80) {
+    t = paras.slice(1).join("\n\n");
+  }
+
+  // Collapse runaway blank lines the block-joining can leave behind
+  t = t.replace(/\n{3,}/g, "\n\n").replace(/[ \t]+\n/g, "\n");
+
+  // Horizontal rules the model likes to fence the body with
+  t = t.replace(/^\s*(?:-{3,}|\*{3,}|_{3,})\s*\n+/, "");
+  t = t.replace(/\n+\s*(?:-{3,}|\*{3,}|_{3,})\s*$/, "");
+  // Stray markdown heading marks — the email template is HTML
+  t = t.replace(/^#{1,6}\s+/gm, "");
+  return t.trim();
 }
 
 function genericBrief(company) {
