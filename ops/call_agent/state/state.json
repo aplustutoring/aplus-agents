@@ -365,9 +365,12 @@
     406561555,
     406604186,
     406609891,
-    406635381
+    406635381,
+    406645342,
+    406646411,
+    406647961
   ],
-  "last_run_utc": "2026-08-20T22:11:05.326850+00:00",
+  "last_run_utc": "2026-08-20T22:47:18.761890+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -784,6 +787,69 @@
         ],
         [
           "Search CRM for related family record (siblings previously tutored in person, mom knows Roman) to link this contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 406646411,
+      "number": "13109386211",
+      "time_pt": "3:26 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Shelby Perez-Selsky called from Rancho Palos Verdes (90275) asking about tutoring for her 4-year-old daughter Amelia. She's homeschooling through Blue Ridge Academy (a charter A+ is a vendor with) and wants roughly weekly in-person support in early reading and early math. Paola gathered info, offered a possible online free trial as an alternative, and said she'd email rates and check tutor availability in the area.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Shelby current tutoring rate information",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check tutor availability near ZIP 90275 for in-person early reading/math with a 4-year-old and follow up via email",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Shelby Perez-Selsky (friendly, ready to move) called about weekly tutoring for her 4-year-old daughter Amelia in early reading and early math. Family is homeschooling via Blue Ridge Academy charter (we're an approved vendor), so this should be set up as a charter/instructional-funds engagement. She's in Rancho Palos Verdes, ZIP 90275, and prefers in-person, though Paola mentioned a free online trial as a backup. Paola promised to email rates and check in-person tutor availability in her area. Email: shelbyssw@gmail.com. Open with: \"Hi Shelby, following up on your call with Paola about in-person tutoring for Amelia through Blue Ridge Academy \u2014 here are our rates and what I'm seeing for tutors near 90275...\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Blue Ridge Academy charter instructional funds.",
+        "student_or_school_names_mentioned": [
+          "Amelia Perez-Selsky",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Shelby is starting to homeschool her 4-year-old daughter Amelia through Blue Ridge Academy charter and wants ~weekly tutoring support (early reading and early math) because she has other young kids at home and can't always sit down 1:1. She prefers in-person in Rancho Palos Verdes (ZIP 90275).",
+          "what_we_can_do_to_help": "We're an approved vendor with Blue Ridge Academy, so we can bill through charter instructional funds. Paola is emailing rates and checking in-person tutor availability near 90275 for early reading/math with a 4-year-old; offered a free online trial as an alternative if in-person coverage is tight.",
+          "student_first_name": "Amelia",
+          "student_last_name": "Perez-Selsky",
+          "grade_level": "Pre-K",
+          "student_school": "Blue Ridge Academy (homeschool charter)",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Shelby current tutoring rate information",
+          81494333
+        ],
+        [
+          "Check tutor availability near ZIP 90275 for in-person early reading/math with a 4-year-old and follow up via email",
           81494333
         ]
       ],
