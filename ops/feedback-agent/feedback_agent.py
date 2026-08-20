@@ -1120,11 +1120,25 @@ def main():
         if not (channel and ts):
             log.error("FIX_CHANNEL/FIX_THREAD_TS not set")
             sys.exit(1)
+        run_url = os.getenv("FIX_RUN_URL", "")
+        outcome = os.getenv("FIX_STEP_OUTCOME", "")
+        run_link = f" <{run_url}|Run log>" if run_url else ""
         if pr_url:
             post_reply(channel, ts, f"Fix PR ready for *{label}*: {pr_url} — merge to ship.", args.dry_run)
+        elif outcome == "failure":
+            # 2026-08-11: the old wording ("finished but no PR was opened")
+            # read like a decision, not a breakage, carried no link and no
+            # reason, and sat unactioned for 9 days while every approval failed
+            # the same way. Say it broke, and link the evidence.
+            post_reply(channel, ts,
+                       f":x: The fix for *{label}* *failed to run* — no code was written and no "
+                       f"PR exists. This is a breakage in the fix executor itself, not a decision "
+                       f"about your report. Your report is still filed.{run_link}", args.dry_run)
         else:
-            post_reply(channel, ts, f"The fix run for *{label}* finished but no PR was opened — "
-                       f"check the feedback-fix run log in Actions.", args.dry_run)
+            post_reply(channel, ts,
+                       f":warning: The fix run for *{label}* completed but opened no PR — the "
+                       f"coding agent may have judged no change was needed. Worth a look."
+                       f"{run_link}", args.dry_run)
     else:
         if not args.pr:
             log.error("--pr required for close-loop mode")
