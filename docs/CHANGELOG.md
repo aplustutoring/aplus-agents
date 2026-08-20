@@ -8,6 +8,34 @@ Newest entries first.
 
 ---
 
+## 2026-08-20 — Charter campaign: wave 2 sent, all segments built, Paola hot list
+
+**What:** (1) WAVE 2 SENT: 213 more Win-back-1-student families through live
+workflow 1868435042 (Roman "lets move on to the next list") — campaign total
+259 emailed; 11 prior-repliers held back (reply-date exit goal would silently
+skip them), 27 excluded, 2 enrollment-blocked (Aquaddoomi, DaVault → Paola
+calls). Weekday-only action windows (Mon–Fri 9:00–18:00 PT) set on the live
+workflow — wave-2's Day-3 nudge moved off Sunday. (2) PILOT LEARNINGS baked
+in: lead-status=OPEN_DEAL exit goal removed (34 families carried stale
+Open-deal status from 25/26 and were silently skipped — root cause of the
+13/47 partial send); reply exit = hs_email_last_reply_date IS_KNOWN (UI-valid
+shape; the API accepted an IS_AFTER timePoint the UI rendered "always
+False"). Both live-verified: Surova + Potter replies exited them. (3) ALL
+REMAINING SEGMENTS BUILT (OFF, pending Roman publish+enable — marketing-email
+publish scope unavailable at account tier): queues 3162 Never-Started (28),
+3163 No-Lesson (10), 3164 Multi (71); emails 219949380453 / 219949261351 /
+219949261355 / 219949261359 / 219949380457; workflows 1869922921 / 1869934421 /
+1869933870 (same goal trio, weekday windows, Paola Day-7 task). Multi
+student_names scrubbed: Munoz "Alanna/Alannah" deduped; White (Yari/Yuri)
++ Lopez (Mathew/Matthew) HELD for Roman (twins vs typo — not queued). (4)
+PAOLA HOT LIST 3161 (55) Slack-DM'd to Paola: T1 replied (Surova asked for
+Fred/Vlado; Potter), T2 opened (30, revenue-ranked), T3 Hot-12 never emailed
+(personal calls), T4 email-unreachable (7). Behavior at 48h: 46 sent /
+18 opened (39%) / 2 replied / both repliers auto-exited before the nudge.
+**Files:** portal-side builds; durable scripts already in scripts/. Session
+worktree was reset mid-flight — recreated per concurrency rule before this
+commit.
+
 ## 2026-08-20 — registry.yml: the 9 unregistered workflows are now registered
 
 **What:** Added registry entries for every live workflow that was running
