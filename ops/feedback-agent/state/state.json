@@ -156,7 +156,7 @@
       "correction_path": "corrections/call-agent/2026-08-12-low-balance-alerts-route-paola-only.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/67",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1786554388265099?thread_ts=1786554388.265099&cid=C0BL05MCJ4B"
     },
     {
@@ -221,7 +221,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 6
+    "clean_merges": 7
   },
   "pending_proposals": {
     "1786554388.265099": {
