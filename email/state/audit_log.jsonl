@@ -22114,3 +22114,4 @@
 {"ticket_id": "47854402349", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-08-20T17:56:12.590639+00:00"}
 {"ticket_id": "47843933766", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-08-20T17:56:13.108380+00:00"}
 {"thread_id": "11103258734", "action_taken": "error", "error": "cannot access local variable 'staff' where it is not associated with a value", "timestamp": "2026-08-20T18:14:33.605799+00:00"}
+{"message_id": "deal:64178145969", "source": "deal_sync", "deal_id": "64178145969", "deal_name": "Lilian Gong - Kelly Coruso", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2153875, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-20T18:18:27.851948+00:00"}
