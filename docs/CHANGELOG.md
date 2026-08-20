@@ -7,6 +7,60 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
+
+**Reported:** Paola — the case study for Amelia arrived in
+#student-spotlight-ready with the blog, graphics and text-stories, but no
+superhero reel, and nothing said one had been attempted.
+
+**Diagnosis (correcting the filed one):** the reel IS wired into the
+orchestrator — `stage_reel` sits in `STAGE_ORDER`/`STAGE_DISPATCH` between
+`slack` and `textstory`, and the workflow installs ffmpeg for it. The reel
+scripts missing from the registry's `depends_on` is a documentation gap, not
+the cause. The real defect is that the stage has no failure signal at all:
+`stage_reel` caught every exception, wrote `reel_status` into
+`marketing/state/spotlight-runs.json` (gitignored — it does not survive the CI
+job), printed to stderr, and exited 0 under a "SPOTLIGHT ORCHESTRATION
+COMPLETE" banner that never mentioned the reel. The neighbouring textstory
+stage already solved exactly this with a SLACK_FAILURE_CHANNEL heads-up; the
+reel stage was never given one. On top of that a single flaky Veo beat killed
+the whole reel with no retry, and `make_clips.py` polls Veo with no ceiling of
+its own, so a stuck generation could burn the job's 30-minute timeout and take
+the later stages down with it.
+
+**Why it matters:** the reel is the only asset in the pack whose absence is
+invisible. Every other piece either lands in the thread or fails the run. A
+bonus asset being non-fatal is right; being unobservable is not — the miss
+surfaces only when a human notices the gap days later, which is exactly how
+this was found.
+
+**Fix:** in `stage_reel` — one retry of the generation steps (all of them are
+resumable, so the retry only regenerates what failed); a shared wall-clock
+budget, `SPOTLIGHT_REEL_TIMEOUT_S` (default 900s), so the stage cannot eat the
+job; delivery kept to a single attempt and budgeted separately so a retry can
+never double-post into Paola's review thread; and a Slack heads-up on failure
+via the same channel the textstory stage uses. `stage_complete` now prints the
+reel status. The textstory alert was refactored onto the shared
+`_post_stage_alert` helper with its message unchanged.
+
+**Verified:** seven stubbed scenarios against `stage_reel` (happy path, flaky
+step rescued by the resumable retry, hard failure, hang past the budget,
+delivery failure, `--skip-hubspot`, no failure channel configured) — no APIs,
+Slack or ffmpeg touched. Textstory alert text confirmed byte-identical.
+
+**NOT verified against Amelia's bundle.** Bundles are gitignored and built in
+CI (30-day Actions artifact), and re-running the reel needs Gemini/OpenAI/Slack
+credentials, so the approved plan's steps 1–3 and 5 (locate the bundle, re-run
+the pipeline standalone, diff against the last good reel, deliver to Paola)
+cannot be done from the repo. They need a re-dispatch of Amelia's Drive folder.
+
+**Left undone deliberately:** the reel scripts are still absent from the
+registry's `depends_on` for `spotlight-orchestrator` — the session was scoped
+out of `registry.yml`. Worth a one-line follow-up.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
 ## 2026-08-20 — INCIDENT: every #agent-feedback report with a screenshot was silently dropped
 
 **What:** The Slack relay dropped any message carrying a file. Slack tags an
