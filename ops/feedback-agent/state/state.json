@@ -32,7 +32,8 @@
     "Ev0BRLTAM8HL",
     "Ev0BSHPY1GTS",
     "Ev0BRRC8UQV7",
-    "Ev0BRE0TQ031"
+    "Ev0BRE0TQ031",
+    "Ev0BRP53JBGB"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -273,24 +274,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
-    },
-    "1787327572.959279": {
-      "agent": "spotlight-orchestrator",
-      "agent_label": "Spotlight Orchestrator",
-      "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-not-delivered.md",
-      "branch": "fix/spotlight-orchestrator-2026-08-21-959279",
-      "diagnosis": "Paola approved a one-shot reel delivery yesterday, but the reel still hasn't landed in Slack \u2014 most likely the reel branch of the orchestrator (build_reel.py / deliver_reel.py) either wasn't invoked on the approval, or it ran and silently failed before the Slack post. Without a run log I can't tell which; the orchestrator's approval-handling path is the first place to look.",
-      "fix_plan": [
-        "Pull the latest spotlight-orchestrator workflow runs for Amelia's bundle and check whether the reel branch executed after Paola's approval yesterday, and if so, where it exited.",
-        "If the reel job never fired, trace the approval handler in marketing/scripts/b2c/spotlight_orchestrator.py to confirm it dispatches to marketing/scripts/b2c/reel/build_reel.py + deliver_reel.py for a one-shot approval.",
-        "If build_reel ran but delivery didn't, re-run marketing/scripts/b2c/reel/deliver_reel.py against Amelia's existing bundle in marketing/aplus-content/<amelia-bundle>/ to post the reel to Slack.",
-        "If build_reel failed, inspect the error (likely VO, stills, or clip assembly in make_vo.py/make_stills.py/make_clips.py), fix or regenerate the missing input, then rerun build+deliver.",
-        "Report back to Paola in-thread with either the delivered reel or the specific blocker (e.g. missing VO, missing hero still, quota error)."
-      ],
-      "risk": "low",
-      "recommendation": "execute",
-      "proposed_utc": "2026-08-21T15:53:39.225231+00:00",
-      "reporter": "Paola"
     }
   }
 }
