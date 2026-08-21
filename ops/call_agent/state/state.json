@@ -387,9 +387,10 @@
     407057997,
     407057760,
     407058173,
-    407072760
+    407072760,
+    407085608
   ],
-  "last_run_utc": "2026-08-21T23:04:37.724371+00:00",
+  "last_run_utc": "2026-08-21T23:41:30.486731+00:00",
   "pending_digest": [
     {
       "call_id": 406932408,
@@ -723,6 +724,67 @@
         [
           "Send lesson reminder to Abigail for Malinale's session with tutor Sonia",
           86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407085608,
+      "number": "18186422559",
+      "time_pt": "4:34 PM",
+      "matched": true,
+      "contact_label": "Hellen Cresor",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Hellen Cresor regarding tutoring for her twins Tegan and Paxton. The call went to voicemail and Paola left a message asking Hellen to call back if she wants to move forward or has questions. No contact was made on this attempt.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Hellen; if no response in a few days, attempt another follow-up contact (call or email)",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a second voicemail for Hellen Cresor following up on tutoring interest for her twins Tegan (2nd grade) and Paxton (3rd grade, accelerated) at Excel Academy (homeschool charter, formerly Sage Oak). Family wants in-person tutoring to fill gaps from virtual learning and challenge the kids, especially Paxton who has testing in January. Prior voicemail was left 8/18; this is the second unanswered attempt. Hellen now expects a callback opportunity \u2014 if she doesn't respond in a few days, try a different channel (email marin_hellen@hotmail.com). Open with: \"Hi Hellen, this is [name] from A+ Tutoring following up on Paola's messages about getting Tegan and Paxton set up with an in-person tutor \u2014 wanted to see if you have any questions or are ready to move forward.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound follow-up went to voicemail; no new contact made and current status reflects prior state. Family is already a known prospective lead with detailed notes; no new information to reclassify.",
+        "student_or_school_names_mentioned": [
+          "Tegan Cresor",
+          "Paxton Cresor"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola left a second voicemail for Hellen following up on tutoring interest for Tegan and Paxton; still awaiting callback.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola left a second voicemail for Hellen following up on tutoring interest for Tegan and Paxton; still awaiting callback."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Hellen; if no response in a few days, attempt another follow-up contact (call or email)",
+          81494333
         ]
       ],
       "ticket_id": null,
