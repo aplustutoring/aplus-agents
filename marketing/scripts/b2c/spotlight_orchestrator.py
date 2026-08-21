@@ -169,7 +169,9 @@ def update_run(run_id: str, updates: dict) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Orchestrate a B2C spotlight case study bundle.")
-    parser.add_argument("--source", required=True, help="Raw source folder containing transcripts, lesson reports, and Paola briefs")
+    # Required for a normal run; --reel-only recovers an existing bundle and has
+    # no source folder to read (validated in main()).
+    parser.add_argument("--source", help="Raw source folder containing transcripts, lesson reports, and Paola briefs")
     parser.add_argument("--student-name", help="Student real first name (optional if HubSpot lookup can find it)")
     parser.add_argument("--school", help="School name used for slug and demographics")
     parser.add_argument("--dry-run", action="store_true", help="Run stages without HubSpot publish or Slack delivery")
@@ -177,6 +179,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-hubspot", action="store_true", help="Skip HubSpot contact lookup and proceed with local input only")
     parser.add_argument("--force-update", action="store_true", help="When a HubSpot draft already exists for the slug, refresh its body with this run's Doc 1 (PATCH) instead of reusing the stale draft. Re-runs should pass this so embed matches the current document.")
     parser.add_argument("--slack-channel", default=None, help="Override the Slack delivery channel (default: #student-spotlight-ready)")
+    parser.add_argument("--reel-only", metavar="BUNDLE", default=None, help="Recovery mode: skip the pipeline and run ONLY the reel stage (generate + deliver) against an already-built bundle directory. Use with the bundle artifact of the run whose reel failed.")
+    parser.add_argument("--reel-thread-ts", default=None, help="With --reel-only: post the recovered reel into this existing Slack thread (the case-study delivery thread) instead of starting a new one.")
     parser.add_argument("--verbose", action="store_true", help="Print extra diagnostic details")
     return parser.parse_args()
 
@@ -3471,13 +3475,29 @@ def _post_reel_alert(run: dict, note: str) -> None:
     """Heads-up when the (non-fatal) reel stage ships nothing. Without this the
     miss is invisible: the reel is the only pack asset with no failure signal
     of its own, so Paola just receives a delivery thread with no reel in it and
-    has no way to tell that one was ever attempted."""
+    has no way to tell that one was ever attempted.
+
+    The recovery line names --reel-only, NOT a Drive re-dispatch (2026-08-20,
+    second report on the same bundle — the first heads-up pointed at a recovery
+    nobody could run, so the reel stayed undelivered). A re-dispatch reruns the
+    whole pipeline in a fresh runner: nothing "resumes" — every Veo clip and VO
+    regenerates from zero — the HubSpot draft is rewritten under --force-update,
+    and Paola's entire review thread is posted a second time. SPOTLIGHT_REEL is
+    not a workflow input either, so it could not be set from the Actions UI.
+    """
     bundle = Path(run["bundle_path"]).name
+    cmd = f"--reel-only marketing/aplus-content/{bundle}"
+    if run.get("slack_thread_ts"):
+        cmd += f" --reel-thread-ts {run['slack_thread_ts']}"
     _post_stage_alert(
         f":warning: *Spotlight reel is missing* — `{bundle}`: {note}. "
         "The blog, graphics, and text-stories for this bundle are unaffected. "
-        "Recover by re-dispatching the Drive folder with SPOTLIGHT_REEL=1; the "
-        "reel steps resume from whatever already rendered.",
+        f"Recover without re-running the pipeline: download the `{bundle}` "
+        "bundle artifact from this Actions run (30-day retention), unpack it "
+        "under `marketing/aplus-content/`, then run `python3 "
+        f"marketing/scripts/b2c/spotlight_orchestrator.py {cmd}`. The reel "
+        "steps resume from whatever already rendered and the reel lands in "
+        "this student's existing review thread.",
         "reel",
     )
 
@@ -3557,6 +3577,62 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
         _post_reel_alert(run, alert)
     update_run(run["run_id"], run)
     return run
+
+
+def run_reel_only(args: argparse.Namespace) -> int:
+    """--reel-only: generate + deliver the reel for an ALREADY-BUILT bundle.
+
+    The recovery path the reel never had. The textstory stage has had one since
+    it shipped (the "Re-render textstories for a bundle" workflow, which pulls
+    the bundle artifact and re-runs just that builder); the reel had none, so a
+    pack that landed without its reel could only be "recovered" by re-running
+    the entire pipeline — which re-drafts, re-publishes and re-posts the whole
+    case study to Paola. This runs the reel stage and nothing else.
+
+    Unlike the pipeline, where the reel is a non-fatal bonus, delivering the
+    reel is the entire point here: a reel that still does not ship exits 1.
+    --dry-run renders locally without posting to Slack.
+    """
+    bundle = Path(args.reel_only).resolve()
+    if not bundle.is_dir():
+        print(f"ERROR: bundle not found: {bundle}", file=sys.stderr)
+        return 1
+    # Same guard the textstory recovery workflow uses: metadata.md is what the
+    # reel scripts read, and its absence means an artifact was unpacked one
+    # level off (dl/<name>/<name>/) rather than a genuinely empty bundle.
+    if not (bundle / "metadata.md").exists():
+        print(f"ERROR: {bundle} has no metadata.md — point --reel-only at the "
+              "bundle directory itself, not its parent.", file=sys.stderr)
+        return 1
+
+    run = {
+        "run_id": str(uuid.uuid4()),
+        "started_at": datetime.utcnow().isoformat() + "Z",
+        "status": "running",
+        "stage": "reel",
+        "mode": "reel-only",
+        "bundle_path": str(bundle),
+        "dry_run": bool(args.dry_run),
+        # stage_reel gates Slack delivery on skip_hubspot; in this mode that is
+        # simply "render but do not post".
+        "skip_hubspot": bool(args.dry_run),
+        "slack_thread_ts": args.reel_thread_ts,
+    }
+    append_run(run)
+    print(f"=== Reel-only recovery: {bundle.name} (run_id={run['run_id']}) ===")
+    if not args.reel_thread_ts:
+        print("  no --reel-thread-ts — the reel will start its own thread "
+              "instead of nesting under the case-study delivery")
+    run = stage_reel(args, run)
+
+    status = run.get("reel_status", "skipped: stage did not run")
+    print(f"Reel: {status}")
+    if status != "ok":
+        print("Reel recovery FAILED — nothing was delivered.", file=sys.stderr)
+        update_run(run["run_id"], {"status": "failed"})
+        return 1
+    update_run(run["run_id"], {"status": "completed"})
+    return 0
 
 
 TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.py"
@@ -3752,6 +3828,17 @@ def run_stage(stage_name: str, args: argparse.Namespace, run: dict) -> dict:
 
 def main() -> int:
     args = parse_args()
+    if args.reel_only:
+        return run_reel_only(args)
+    if not args.source:
+        print("ERROR: --source is required (or use --reel-only BUNDLE to "
+              "recover the reel for an already-built bundle).", file=sys.stderr)
+        return 2
+    if args.reel_thread_ts:
+        print("ERROR: --reel-thread-ts only applies to --reel-only; a normal "
+              "run nests the reel under the thread it just posted.", file=sys.stderr)
+        return 2
+
     run = stage_init(args, load_state())
 
     if args.stop_after == "init":
