@@ -126,7 +126,12 @@ When we're done, output ONE markdown code block titled
 HANDOFF.md containing EXACTLY this — no extra commentary:
 
 # HANDOFF — EO cohort agent
-Clone https://github.com/aplustutoring/eo-cohort-agents
+Fork and clone the repo — you do NOT have write access to the
+original, so you must work from your own fork:
+
+  gh repo fork aplustutoring/eo-cohort-agents --clone
+  cd eo-cohort-agents
+
 Create the file agents/<agent-name>.md with this content:
 
 ---
@@ -141,9 +146,18 @@ FORMAT: ...
 TASK: ...
 
 Then: create a branch named agent/<agent-name>, commit the
-file, push the branch, and open a pull request to main with
-the title "New hire: <agent-name>". Do not modify any other
-file. Report the PR link when done.`;
+file, and push the branch TO YOUR FORK (git push -u origin
+agent/<agent-name>). Then open a pull request from your fork
+against aplustutoring/eo-cohort-agents main:
+
+  gh pr create --repo aplustutoring/eo-cohort-agents \
+    --title "New hire: <agent-name>"
+
+If a push is rejected with "Permission denied" or 403, you are
+pushing to the original repo instead of your fork — check
+'git remote -v', and push to the remote pointing at YOUR
+username. Do not modify any other file. Report the PR link
+when done.`;
 
 // ── Deliverable ③ was not supplied. These two system prompts are DRAFTS
 // written to match the Minion #23 voice; Roman approves or replaces them
@@ -300,6 +314,24 @@ export default {
     // only handler with enough time budget — a fetch handler would be killed
     // partway through, which is the same trap that ate the research.
     // DELETE THIS ROUTE with the other /debug routes before sunset.
+    // Correct one attendee whose research found the wrong company, and
+    // resend just the research email — no texts. They have already had the
+    // pestering trio; sending it again would be noise, and the email is the
+    // part that was wrong. DELETE with the other /debug routes before sunset.
+    if (request.method === "GET" && url.pathname === "/debug/rebrief") {
+      if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
+      const email = url.searchParams.get("email");
+      const hint = url.searchParams.get("hint") || "";
+      if (!email) return json({ error: "?email= required" }, 400, env);
+      const found = await searchByEmail(env, email);
+      if (!found) return json({ error: `no contact for ${email}` }, 404, env);
+      await env.PHOTOS.put(`rebrief:${found.id}`, hint || "-");
+      return json({
+        ok: true, contactId: found.id, hint: hint || null,
+        note: "queued — next tick re-researches and resends the brief email only",
+      }, 200, env);
+    }
+
     if (request.method === "GET" && url.pathname === "/debug/dryrun") {
       if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
       const email = url.searchParams.get("email");
@@ -489,6 +521,7 @@ async function handoff(env, url, c) {
 const QUEUE_BATCH = 6;
 
 async function runQueue(env, origin) {
+  await runRebriefs(env);
   await runDryRuns(env, origin);
 
   const contacts = await listTagged(env, [
@@ -616,6 +649,33 @@ async function runQueue(env, origin) {
 // so a rehearsal never causes a real attendee send to be skipped later.
 // That does mean the rehearsing contact will also receive the scheduled
 // sends when their time comes.
+// Re-research one contact with an organiser correction, store the new brief,
+// and resend only the research email.
+async function runRebriefs(env) {
+  const pending = await env.PHOTOS.list({ prefix: "rebrief:" });
+  for (const k of pending.keys) {
+    const contactId = k.name.slice("rebrief:".length);
+    const hint = (await env.PHOTOS.get(k.name)) || "";
+    await env.PHOTOS.delete(k.name).catch(() => {});
+    try {
+      const c = await getContact(env, contactId,
+        ["firstname", "email", "eo_company_name"]);
+      const p = c.properties;
+      const brief = await researchBrief(
+        env, p.eo_company_name, p.email, hint === "-" ? "" : hint);
+      await patchContact(env, contactId, { eo_research_brief: brief });
+      await sendEmail(env, {
+        to: p.email,
+        subject: `I did some homework on ${p.eo_company_name || "your company"}`,
+        html: briefEmailHtml(brief),
+      });
+      log(env, { at: "rebrief", contactId, chars: brief.length, sent: true });
+    } catch (e) {
+      log(env, { at: "rebrief", contactId, error: String(e) });
+    }
+  }
+}
+
 async function runDryRuns(env, origin) {
   const pending = await env.PHOTOS.list({ prefix: "dryrun:" });
   for (const k of pending.keys) {
@@ -1030,19 +1090,37 @@ const FREEMAIL = new Set([
   "comcast.net", "sbcglobal.net", "att.net", "verizon.net",
 ]);
 
-function researchSubject(company, email) {
+function researchSubject(company, email, hint) {
   const name = (company || "").trim();
   const domain = String(email || "").split("@")[1]?.trim().toLowerCase() || "";
   const useful = domain && !FREEMAIL.has(domain);
 
-  if (useful && name) return `Email domain: ${domain}\nCompany name they typed: ${name}`;
-  if (useful) return `Email domain: ${domain}\n(They did not give a company name.)`;
-  if (name) return `Company name they typed: ${name}\n(Their email is on a free provider, so there is no company domain to work from — the typed name is all you have, and it may be misspelled.)`;
-  return "";
+  const lines = [];
+  if (useful) {
+    // Stated as a URL so web_fetch can actually retrieve it — that tool only
+    // reaches URLs already present in the conversation.
+    lines.push(`Email domain: ${domain}`);
+    lines.push(`Their website: https://${domain}  <- fetch this first`);
+  }
+  if (name) lines.push(`Company name they typed: ${name}`);
+  if (!useful && name) {
+    lines.push("(Their email is on a free provider, so there is no company domain to work from — the typed name is all you have, and it may be misspelled.)");
+  }
+  if (useful && !name) lines.push("(They did not give a company name.)");
+
+  // A human correction, when the first attempt found the wrong outfit. It
+  // outranks everything above, because a person who knows them said so.
+  if (hint) {
+    lines.push("");
+    lines.push(`CORRECTION FROM THE ORGANISER — trust this over the domain and over anything you find: ${hint}`);
+    lines.push("A previous attempt at this brief researched the wrong company. Use the correction to find the right one. If the domain contradicts the correction, the correction wins and the domain is probably a different business with a similar name.");
+  }
+  if (!lines.length) return "";
+  return lines.join("\n");
 }
 
-async function researchBrief(env, company, email) {
-  const subject = researchSubject(company, email);
+async function researchBrief(env, company, email, hint) {
+  const subject = researchSubject(company, email, hint);
   if (!subject) throw new Error("no company or domain");
   const name = (company || "").trim();
 
@@ -1061,11 +1139,18 @@ async function researchBrief(env, company, email) {
       // declare code_execution; a second execution environment confuses
       // the model.
       // max_uses is load-bearing, not tuning. Uncapped, the model ran 12-16
-      // searches and the call took 90 SECONDS — measured against the
-      // deployed Worker. Cloudflare kills waitUntil() background work long
-      // before that, so every brief was silently lost: four captures, zero
-      // briefs stored. Capped at 5 the call lands in ~25-35s, which fits.
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
+      // searches and the call took 90 SECONDS. Capped, it lands in ~25-35s.
+      //
+      // web_fetch matters as much as search: a small agency with a real site
+      // but no press coverage is invisible to search alone. Seen live —
+      // hellotalentagency.com came back as "nothing I could independently
+      // verify" while the site was sitting there the whole time. web_fetch
+      // can only reach URLs already in the conversation, which is why the
+      // user message below states the domain as a URL.
+      tools: [
+        { type: "web_search_20260209", name: "web_search", max_uses: 5 },
+        { type: "web_fetch_20260209", name: "web_fetch", max_uses: 4 },
+      ],
       messages: [{
         role: "user",
         content: `${subject}\n\nResearch them and write the brief.`,
@@ -1094,11 +1179,18 @@ async function researchBrief(env, company, email) {
         max_tokens: 2000,
         system: RESEARCH_SYSTEM,
         // max_uses is load-bearing, not tuning. Uncapped, the model ran 12-16
-      // searches and the call took 90 SECONDS — measured against the
-      // deployed Worker. Cloudflare kills waitUntil() background work long
-      // before that, so every brief was silently lost: four captures, zero
-      // briefs stored. Capped at 5 the call lands in ~25-35s, which fits.
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
+      // searches and the call took 90 SECONDS. Capped, it lands in ~25-35s.
+      //
+      // web_fetch matters as much as search: a small agency with a real site
+      // but no press coverage is invisible to search alone. Seen live —
+      // hellotalentagency.com came back as "nothing I could independently
+      // verify" while the site was sitting there the whole time. web_fetch
+      // can only reach URLs already in the conversation, which is why the
+      // user message below states the domain as a URL.
+      tools: [
+        { type: "web_search_20260209", name: "web_search", max_uses: 5 },
+        { type: "web_fetch_20260209", name: "web_fetch", max_uses: 4 },
+      ],
         messages: [
           { role: "user", content: `${subject}\n\nResearch them and write the brief.` },
           { role: "assistant", content: data.content },
