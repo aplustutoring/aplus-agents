@@ -7,6 +7,73 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-21 — TOR name matching: 119 of 218 orphaned deals were ours all along
+
+**What:** Rewrote the name matcher in `scripts/charter_tor_segments.py`. Deals
+attributed 2,026 -> 2,145; teachers with attributed deals 186 -> 205; orphaned
+deals 218 (75 names) -> 99 (41 names). Still read-only — nothing built in the
+portal, no properties stamped.
+
+**Why:** the previous entry logged "75 teacher names on 218 deals have no
+contact record" as a hygiene queue. Triaging it showed that was the wrong
+diagnosis for more than half the queue: **119 of those deals name a teacher we
+already have.** `norm_name` did `re.sub(r"[^a-z ]", "", s.lower())`, which
+deletes rather than folds. Four structural patterns fell through it:
+
+| pattern | deal value | contact | deals |
+|---|---|---|---|
+| accent deleted, not folded | `Veronique Fabre` | Véronique Fabre | 8 |
+| hyphen glued the surname | `Stephanie Negrete-Claar` | Stephanie Claar | 14 |
+| double/married surname | `Heather Pfeifer Tolan` | Heather Tolan | 26 |
+| `Last, First` (Ocean Grove import) | `Wood, Colleen ` | Colleen Wood | 3 |
+| curly apostrophe + reversed | `O’Hagan, Whitney` | Whitney O'Hagan | 1 |
+| middle initial | `Dawn L Gordon` | Dawn Gordon | 2 |
+| email localpart as the name | `bthurman` | Brittany Thurman | 5 |
+
+`norm_name` now NFKD-folds and maps punctuation to a separator; new
+`name_tokens` un-reverses `Last, First` and drops middle initials; `attribute`
+matches over four tiers (exact / token-set / surname-subset / email-localpart)
+and reports the tier mix. **Every tier only fires on a UNIQUE match** — ties are
+reported, never guessed, which is the same discipline as the original.
+
+**Why it mattered to fix BEFORE the portal build:** 23 teachers were in the
+wrong segment and 27 had understated merge tokens. Crystal Schoelen sat in
+C1 "Intro" on 14 deals; Brittany Thurman in C2 "Intro" on 5 — both queued to be
+told we had never worked together. Heather Tolan's copy would have read 9
+students instead of 13, Christine Mondolo 1 instead of 7. Nothing was built
+yet, so this cost one commit; after the build it would have meant re-stamping
+1,184 contacts and rebuilding six lists.
+
+**The 99 that remain are a real queue, triaged and verified against the portal:**
+- **34 deals / 17 names — the contact EXISTS** but under a nickname, spelling or
+  truncation the matcher must not guess (Judith->Judy Flora 5, Margaret->Maggie
+  Pulley 4, Diana->Diane Miscione 3, Katherine K Sommer->Kate Sommer 2). Two are
+  contact-side defects, not deal-side: `kbrown@ieminc.org` has lastname stored
+  as literally "F", and `Kathryn Connely` carries the email localpart
+  `kylee.connelly`. Awaiting Roman's row-by-row go.
+- **50 deals / 20 people — genuinely missing**, verified zero surname match
+  anywhere in the portal (Catherine Peloso 9, Brigid Feeney-Sherry 9). Cannot be
+  created from CRM data: deals carry no teacher email (0 of 2,284), so this needs
+  a school roster. **Does not block the send** — with no contact record they are
+  not on any list either way.
+- **15 deals / 3 values — junk.** `No EF Info` x13 (fix the intake form, not the
+  data), plus two unresolvable single tokens. `bthurman` was NOT junk.
+
+**Separate defect found, needs a merge decision:** `mina chang` matches two
+contacts carrying **23 deals** — `3609251` (`mina.chang@`, FORM, 2023-11-06, 19
+deals) and `195319672330` (`evcott@ileadexploration.org`, INTEGRATION,
+2026-01-22, 1 deal). Same name, school, persona and lead status; no "EV Cott"
+contact exists, so the second looks like an integration duplicate with a
+mis-keyed email. The matcher correctly refuses to pick.
+
+**Files:** `scripts/charter_tor_segments.py`, `docs/CHANGELOG.md`.
+
+**Decision-log candidate for Roman (#AP format):** "name matching against CRM
+contacts folds accents and punctuation and matches on a surname subset, but only
+ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
+auto-assigned."
+
+---
 ## 2026-08-21 — Charter TEACHER outreach from Danielle: 6-way segmentation, DISARMED
 
 **What:** The teacher-side counterpart to the family win-back campaign, built to

@@ -40,6 +40,7 @@ import os
 import re
 import sys
 import time
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -166,7 +167,30 @@ def load_charter_deals():
 
 
 def norm_name(s):
-    return re.sub(r"[^a-z ]", "", (s or "").lower()).strip()
+    """Accent-fold and turn punctuation into a separator (not nothing).
+
+    The old version stripped every non [a-z ] char, which silently glued
+    hyphenated surnames together ("Negrete-Claar" -> "negreteclaar") and
+    deleted accented letters outright ("Véronique" -> "vronique", so the
+    unaccented deal value could never match the accented contact)."""
+    s = (s or "").replace("\u2019", "'").replace("\u2018", "'")
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", re.sub(r"[^A-Za-z]+", " ", s).lower()).strip()
+
+
+def name_tokens(raw):
+    """norm_name + un-reverse 'Last, First' + drop middle initials.
+
+    Ocean Grove (ieminc.org) deals arrive as "Wood, Colleen " and
+    "O'Hagan, Whitney"; iLEAD/Visions deals carry middle initials
+    ("Dawn L Gordon"). Both forms name a contact we already have."""
+    raw = raw or ""
+    if "," in raw:
+        head, _, tail = raw.partition(",")
+        raw = f"{tail} {head}"
+    toks = [t for t in norm_name(raw).split() if t]
+    return [t for t in toks if len(t) > 1] or toks
 
 
 def parse_dt(v):
@@ -178,26 +202,64 @@ def parse_dt(v):
         return None
 
 
-def attribute(tors, deals):
-    """Deal -> TOR contact by normalized full name. Returns (hits, unmatched)."""
-    idx = collections.defaultdict(list)
+def build_index(tors):
+    """Four lookup views over the TOR universe, tried in order of strictness."""
+    by_full, by_set, by_first_last = {}, collections.defaultdict(list), collections.defaultdict(list)
+    by_localpart = collections.defaultdict(list)
     for cid, p in tors.items():
-        n = norm_name(f"{p.get('firstname', '')} {p.get('lastname', '')}")
-        if n and " " in n:            # single-token names are too ambiguous to match on
-            idx[n].append(cid)
+        t = name_tokens(f"{p.get('firstname', '')} {p.get('lastname', '')}")
+        if len(t) >= 2:               # single-token names are too ambiguous to match on
+            by_full.setdefault(" ".join(t), []).append(cid)
+            by_set[frozenset(t)].append(cid)
+            by_first_last[(t[0], frozenset(t[1:]))].append(cid)
+        em = (p.get("email") or "").lower()
+        if "@" in em:
+            by_localpart[norm_name(em.split("@")[0]).replace(" ", "")].append(cid)
+    return by_full, by_set, by_first_last, by_localpart
+
+
+def match_one(raw, idx):
+    """(cid, tier) or (None, reason). A tier only fires when it is UNIQUE —
+    two contacts matching the same way is reported, never guessed at."""
+    by_full, by_set, by_first_last, by_localpart = idx
+    t = name_tokens(raw)
+    if not t:
+        return None, "empty"
+    if len(t) == 1:                   # bare surname / email localpart on the deal
+        ids = by_localpart.get(t[0])
+        return (ids[0], "email-localpart") if ids and len(ids) == 1 else (None, "single-token")
+    for tier, ids in (("exact", by_full.get(" ".join(t))),
+                      ("token-set", by_set.get(frozenset(t)))):
+        if ids:
+            return (ids[0], tier if len(ids) == 1 else tier + "-AMBIGUOUS")
+    # married / double surnames: deal has "Pfeifer Tolan", contact has "Tolan"
+    first, surnames = t[0], frozenset(t[1:])
+    cands = {cid for (f, s), ids in by_first_last.items()
+             if f == first and (s <= surnames or surnames <= s) for cid in ids}
+    if cands:
+        return (sorted(cands)[0], "surname-subset" if len(cands) == 1 else "surname-subset-AMBIGUOUS")
+    ids = by_localpart.get("".join(t))
+    return (ids[0], "email-localpart") if ids and len(ids) == 1 else (None, "no-match")
+
+
+def attribute(tors, deals):
+    """Deal -> TOR contact. Returns (hits, unmatched, ambiguous, by_tier)."""
+    idx = build_index(tors)
     hits, unmatched, ambiguous = collections.defaultdict(list), collections.Counter(), set()
+    by_tier = collections.Counter()
     for did, d in deals.items():
-        n = norm_name(d.get("teacher_of_record_name"))
-        if not n:
+        raw = d.get("teacher_of_record_name")
+        if not norm_name(raw):
             continue
-        ids = idx.get(n)
-        if not ids:
-            unmatched[n] += 1
+        cid, tier = match_one(raw, idx)
+        if not cid:
+            unmatched[norm_name(raw)] += 1
             continue
-        if len(ids) > 1:
-            ambiguous.add(n)
-        hits[ids[0]].append(did)
-    return hits, unmatched, ambiguous
+        if tier.endswith("-AMBIGUOUS"):
+            ambiguous.add(norm_name(raw))
+        by_tier[tier] += 1
+        hits[cid].append(did)
+    return hits, unmatched, ambiguous, by_tier
 
 
 def profile(tors, deals, hits, gap):
@@ -328,10 +390,11 @@ def main():
     named = sum(1 for d in deals.values() if d.get("teacher_of_record_name"))
     print(f"  {len(deals)} deals, {named} carry teacher_of_record_name")
 
-    hits, unmatched, ambiguous = attribute(tors, deals)
+    hits, unmatched, ambiguous, by_tier = attribute(tors, deals)
     print(f"  attributed to {len(hits)} teachers; "
           f"{sum(unmatched.values())} deals name a teacher with no matching contact "
           f"({len(unmatched)} distinct names)")
+    print("  match tiers: " + ", ".join(f"{t}={n}" for t, n in by_tier.most_common()))
     if ambiguous:
         print(f"  ⚠ {len(ambiguous)} names match >1 contact (first wins): "
               f"{', '.join(sorted(ambiguous)[:5])}")
