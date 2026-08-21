@@ -7,6 +7,86 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-21 — Spotlight Orchestrator: the reel retry can now actually clear a refused beat
+
+**Reported:** Paola, a THIRD time on the same bundle (Amelia) — she approved a
+one-shot reel delivery on 2026-08-20 and the reel still has not landed in Slack.
+
+**Diagnosis (correcting the filed one, twice over):**
+
+1. *There is no approval handler.* The approved plan asked us to "trace the
+   approval handler in `spotlight_orchestrator.py` to confirm it dispatches to
+   `build_reel.py` + `deliver_reel.py` for a one-shot approval." No such path
+   exists. `spotlight-orchestrator` is triggered only by `repository_dispatch` /
+   `workflow_dispatch` from the Drive watcher; nothing in the engine consumes a
+   Slack approval. (The `await-slack-approval.py` / `approval-poll.yml`
+   machinery belongs to the B2B content-build engine and is not in this agent's
+   dependency graph.) So Paola's approval could not start anything — it was
+   approval for a human to run a recovery, and no human ran one.
+2. *The reel could not be re-delivered from the repo.* Plan step 3 pointed at
+   `marketing/aplus-content/<amelia-bundle>/`. That directory does not exist in
+   the checkout and is gitignored — bundles are built inside the CI runner and
+   survive only as a 30-day Actions artifact. Same wall the 2026-08-20 session
+   hit.
+
+**What we found underneath, and fixed:** the resumable retry added on
+2026-08-20 cannot clear the failure class its own comment names. It cites "a
+single RAI-rejected beat" — but a second pass re-submits the *byte-identical*
+still and motion prompt to Veo, precisely because the steps are resumable
+(`make_stills` reuses the still on disk). A beat Veo refuses on safety/RAI
+grounds is therefore refused again, forever, and no number of retries or Drive
+re-dispatches will ever produce that reel. Two sessions of recovery tooling sit
+on top of a retry that is a no-op for half the failures it was written for.
+
+**Fix:** break the determinism. `make_clips.py` now records the beat keys it
+could not render to `{bundle}/reel/work/clip_failures.json` (rewritten every
+pass, empty list included, so a stale file can't be misread). `make_stills.py`
+gains `--only key ...`, mirroring `make_clips.py`, and deliberately keeps the
+existing anchor even under `--force` when `--only` is given — a fresh anchor
+would relock the hero to a different face and the regenerated beat would no
+longer match the beats already rendered. `stage_reel` reads the failures file
+after a failed attempt and re-renders exactly those stills before retrying, so
+attempt 2 hands Veo a different image. The regen is best-effort: if it fails,
+the plain retry still happens. Failure text (run state, stderr, the Slack
+heads-up, the completion summary) now names the refused beats, so "reel clips
+failed (exit 1)" no longer means a trip to the Actions log to learn which of
+the four it was.
+
+**Verified:** 18 assertions across three stubbed suites — no Veo, Gemini,
+OpenAI, ffmpeg or Slack touched. `make_stills --only` (regen one beat, several
+beats, anchor preserved, bare `--force` unchanged, no-flags resume unchanged,
+missing anchor still generated, unknown key rejected); `make_clips` failures
+file (RAI-refused beat recorded + exit 1, clean pass records `[]`, stale file
+cleared on the all-present early return); `stage_reel` (happy path byte-for-byte
+unchanged, refused beat → regen → retry delivers, permanent refusal → no
+delivery + alert naming the beat, non-clip failure → plain retry with no
+invented regen, failed regen doesn't consume the retry, delivery still gets
+exactly one attempt, `--skip-hubspot` and `SPOTLIGHT_REEL=0` unchanged, and
+`_failed_clip_keys` tolerating junk/missing input).
+
+**NOT verified against Amelia's bundle, and Amelia's reel is still not
+delivered.** Same wall as the two entries below: the bundle is a CI artifact,
+not a checkout, and rendering needs Gemini/OpenAI/Slack credentials this session
+does not have. This change makes the *next* run able to recover itself; it does
+not retroactively produce the reel Paola has now asked for three times.
+
+**Left undone deliberately — and this is now the blocking item.** Producing
+Amelia's reel needs a runnable surface, and there still isn't one: PR #100
+(`--reel-only`) is open and unmerged, and there is no `rerender-reel` Actions
+workflow to match `rerender-textstory` (which is how the textstory stage has
+always been recoverable — download the artifact, re-run one builder, in CI where
+the keys and ffmpeg live). This session was scoped out of `.github/workflows/`
+and `registry.yml`, as the last two were. Three corrections have now been closed
+with code while the deliverable stayed undelivered; the next one should merge
+#100 and add the workflow rather than add more orchestrator logic. The reel
+scripts are also still missing from the registry's `depends_on` for
+`spotlight-orchestrator`.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`,
+`marketing/scripts/b2c/reel/make_stills.py`,
+`marketing/scripts/b2c/reel/make_clips.py`.
+
+---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
 
 **Reported:** Paola — the case study for Amelia arrived in
