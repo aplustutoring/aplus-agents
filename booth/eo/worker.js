@@ -29,6 +29,13 @@
 
 const EVENT_TAG = "eo_lav_agents_2026";
 
+// Doors. Once the event is live, nobody waits for the next cron slot: each
+// attendee gets the full sequence as soon as their research finishes, in
+// order. Before this, the queue only researches — it sends nothing, so a
+// setup-time test capture cannot fire the evening at an empty room.
+// 18*60+15 = 6:15 PM PT, in minutes since local midnight.
+const EVENT_LIVE_MIN = 18 * 60 + 15;
+
 // Cron handlers have no inbound request to read an origin from, so the
 // public host for /photo/<key> links is pinned here.
 const WORKER_ORIGIN = "https://eo-booth.nameless-mountain-bafa.workers.dev";
@@ -69,14 +76,16 @@ const PAYLOAD1_TEXTS = [
   (c) => `${c.firstname || "Hey"}. The email. I can see Roman stalling up there. You have time.`,
 ];
 
+// "Wrap it up, he's about to talk again" assumed an 8:00 PM send with Roman
+// about to retake the room. Untethered from that slot it is just confusing,
+// so it comes out; the rest of the line is the payoff and stands alone.
 const PAYLOAD2_TEXT_WITH_HERO =
   "Look at you — building a minion of your own. That superhero? That's you " +
-  "now. Wrap it up, he's about to talk again. — Minion #23 🤖";
+  "now. — Minion #23 🤖";
 
 // Same copy minus the superhero sentence. No apology, no "image failed".
 const PAYLOAD2_TEXT_NO_HERO =
-  "Look at you — building a minion of your own. Wrap it up, he's about to " +
-  "talk again. — Minion #23 🤖";
+  "Look at you — building a minion of your own. — Minion #23 🤖";
 
 const IDEA_AUTOREPLY = "Logged. Roman sees everything. Build it well tonight. — M23";
 
@@ -85,10 +94,13 @@ const IDEA_AUTOREPLY = "Logged. Roman sees everything. Build it well tonight. �
 // can never drift between the SMS sender and the text of an email.
 const BOOTH_NUMBER_HUMAN = "(818) 573-6293";
 
-// 7:30 PM PT — mid-build encouragement. One text, everyone at once.
+// Encouragement. Was written for a fixed 7:30 slot and opened with
+// "Halfway." — now that it can land at any point in the evening, that word
+// would be wrong for most people who read it. The rest of the line works
+// whenever it arrives.
 const POSITIVE_TEXT =
-  "Halfway. The part where it feels broken is the part right before it " +
-  "works — every single time. Keep going. — Minion #23 🤖";
+  "That bit where it feels broken is the bit right before it works — every " +
+  "single time. Keep going. — Minion #23 🤖";
 
 // The build-kit prompt attendees paste into a new Claude chat. VERBATIM
 // from Roman's Deliverable 4 — do not reflow, reword, or "improve" it.
@@ -528,21 +540,24 @@ async function runQueue(env, origin) {
     }
   }));
 
-  // ── Catch-up ──────────────────────────────────────────────────────────
-  // The booth runs 6:15-8:15 but each scheduled send fires ONCE. Without
-  // this, someone who walks up at 7:20 never receives the 7:05 build kit —
-  // and at a two-hour booth that is most of the room. So every tick, each
-  // contact gets any step whose time has passed and which they have not had
-  // yet, in sequence order. Every step is flag-guarded, so a contact who
-  // already got it from the scheduled cron is skipped rather than doubled.
+  // ── Deliver ───────────────────────────────────────────────────────────
+  // Roman's call: once the event is live, no drip. Each attendee gets every
+  // step as soon as their brief exists, in sequence order, rather than
+  // waiting for the next scheduled slot — someone who walks up at 7:50
+  // should not be missing four of the five things everyone else got.
+  //
+  // The scheduled crons still exist and are still correct; they simply
+  // rarely have anything left to do, because this usually got there first.
+  // Every step is flag-guarded, so the two paths cannot double up.
   const mins = nowPT();
+  if (mins < EVENT_LIVE_MIN) return;
   for (const c of contacts) {
     const p = c.properties;
     const phone = normalizePhone(p.phone);
     const consented = p.eo_demo_consent === "true";
 
     // 1 — Payload #1 (needs the brief to exist first, or it says nothing)
-    if (mins >= 18 * 60 + 17 && !p.eo_payload1_sent && p.eo_research_brief) {
+    if (!p.eo_payload1_sent && p.eo_research_brief) {
       try {
         await sendPayload1(env, {
           id: c.id,
@@ -559,10 +574,10 @@ async function runQueue(env, origin) {
       }
     }
 
-    // 2 — Build kit at 6:35 PM PT. Deliberately NOT gated on payload #1
-    // having gone out: if the research failed for someone, they should still
-    // get the thing the workshop actually needs them to have.
-    if (mins >= 18 * 60 + 35) {
+    // 2 — Build kit. Deliberately NOT gated on payload #1 having gone out:
+    // if the research failed for someone, they should still get the thing
+    // the workshop actually needs them to have.
+    {
       const flag = `sent:buildkit:${c.id}`;
       if (!(await env.PHOTOS.get(flag))) {
         await env.PHOTOS.put(flag, new Date().toISOString());
@@ -579,7 +594,7 @@ async function runQueue(env, origin) {
     }
 
     // 3 — Encouragement text
-    if (mins >= 19 * 60 + 30) {
+    {
       const flag = `sent:positive:${c.id}`;
       if (!(await env.PHOTOS.get(flag))) {
         await env.PHOTOS.put(flag, new Date().toISOString());
@@ -592,11 +607,8 @@ async function runQueue(env, origin) {
   }
 
   // 4 — Payload #2. runPayload2 already stamps eo_payload2_sent before it
-  // sends and skips anyone stamped, so calling it here is idempotent: it
-  // simply picks up anyone the 8:00 run could not have known about yet.
-  if (mins >= 20 * 60) {
-    await runPayload2(env).catch((e) => log(env, { at: "catchup.payload2", error: String(e) }));
-  }
+  // sends and skips anyone stamped, so calling it here is idempotent.
+  await runPayload2(env).catch((e) => log(env, { at: "catchup.payload2", error: String(e) }));
 }
 
 // Sends the whole evening to one person, in order, right now. Deliberately
