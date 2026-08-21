@@ -372,10 +372,204 @@
     406652458,
     406658058,
     406660050,
-    406666997
+    406666997,
+    406926934,
+    406932408,
+    406924050,
+    406924357,
+    406924800,
+    406931082
   ],
-  "last_run_utc": "2026-08-21T16:54:20.133461+00:00",
-  "pending_digest": [],
-  "pending_skipped": [],
+  "last_run_utc": "2026-08-21T17:34:07.287761+00:00",
+  "pending_digest": [
+    {
+      "call_id": 406932408,
+      "number": "16265323220",
+      "time_pt": "10:13 AM",
+      "matched": true,
+      "contact_label": "Christine Nierras",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Christine Nierras called in for her freshman son Matthew, who is enrolled at iLEAD Exploration charter school and needs math tutoring. She had submitted a website inquiry but hadn't heard back. Paola explained the charter process ($75/hr, tutor matching, PO required from iLEAD), confirmed online tutoring (family is in Orange County), and agreed to email Christine so she can loop in her iLEAD teacher to initiate the PO.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Christine a follow-up email summarizing charter process, $75/hr rate, tutor matching, and instructions to share her iLEAD teacher's name/email so we can request the PO",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once Christine provides her iLEAD teacher's contact, initiate PO request email loop with the teacher and Christine",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Begin tutor matching for a freshman math tutor (online) for Matthew, potentially open to also supporting other subjects/assignments",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Christine Nierras (warm, first-time tutoring client, pleasant) called about her freshman son Matthew at iLEAD Exploration charter \u2014 needs online math tutoring (family is in Orange County). She previously submitted a website inquiry and didn't hear back. Paola quoted the $75/hr charter rate, explained the tutor matching + approval process, and told Christine we need a PO from iLEAD. Christine doesn't have her iLEAD teacher's email handy, so Paola promised to email her (cnierras@americancontractfurniture.com) with the process details; Christine will reply with her teacher's info and cc the teacher. Sessions can be 1 hr or split into 30-min blocks. Christine may later want help with other subjects/assignments but for now it's math only. Open with: \"Hi Christine, this is [name] from A+ Tutoring following up on your call with Paola \u2014 here's the info on our charter process and rate\u2026\" and prompt her for her iLEAD teacher's name and email so we can start the PO.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family paying via iLEAD charter instructional funds; matches QTL - Charter (also current status).",
+        "student_or_school_names_mentioned": [
+          "Matthew Nierras",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Christine called in for her freshman son Matthew at iLEAD Exploration; she had submitted a web inquiry but hadn't heard back. Family is in Orange County so online-only, and she needs math support (possibly other subjects/assignments later). First-time tutoring client.",
+          "what_we_can_do_to_help": "Paola explained charter process and $75/hr rate, and will email Christine so she can reply with her iLEAD teacher's name/email to kick off the PO. Once PO is in, begin tutor matching for online freshman math (flexible on 1-hr vs 30-min sessions).",
+          "student_first_name": "Matthew",
+          "student_last_name": "Nierras",
+          "grade_level": "9",
+          "student_school": "iLEAD Exploration",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Christine called in for her freshman son Matthew at iLEAD Exploration; she had submitted a web inquiry but hadn't heard back. Family is in Orange County so online-only, and she needs math support (possibly other subjects/assignments later). First-time tutoring client."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola explained charter process and $75/hr rate, and will email Christine so she can reply with her iLEAD teacher's name/email to kick off the PO. Once PO is in, begin tutor matching for online freshman math (flexible on 1-hr vs 30-min sessions)."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Nierras"
+        ],
+        [
+          "student_school",
+          "iLEAD",
+          "iLEAD Exploration"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Christine a follow-up email summarizing charter process, $75/hr rate, tutor matching, and instructions to share her iLEAD teacher's name/email so we can request the PO",
+          81494333
+        ],
+        [
+          "Once Christine provides her iLEAD teacher's contact, initiate PO request email loop with the teacher and Christine",
+          81494333
+        ],
+        [
+          "Begin tutor matching for a freshman math tutor (online) for Matthew, potentially open to also supporting other subjects/assignments",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 406931082,
+      "number": "12139255266",
+      "time_pt": "10:15 AM",
+      "matched": true,
+      "contact_label": "Lilian Gong",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Lilian Gong to follow up on a text message about tutor Hannah's profile and to confirm the trial SAT lesson. Lilian confirmed she saw the text and is available for the trial lesson on Friday the 28th at 11 AM. Janelle will schedule the lesson and send the lesson link via email. Lilian mentioned she has five kids and has been busy, and will review all emails today.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Schedule the trial SAT lesson with tutor Hannah for Friday 8/28 at 11 AM and send Lilian the lesson link/information via email",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Follow up to confirm Lilian received the lesson email",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Janelle called Lilian Gong (Blue Ridge charter family, 5 kids) to confirm the SAT trial lesson for her daughter Kelly with tutor Hannah. Lilian confirmed availability for Friday 8/28 at 11 AM and was warm/friendly but busy \u2014 she mentioned she'd review all emails today and get back to us. Janelle promised to schedule the lesson and email the lesson link. Lilian now expects that email today. If following up, open with: 'Hi Lilian, just checking in to make sure you received the lesson link for Kelly's trial with Hannah this Friday at 11 AM.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing open deal \u2014 family already in the pipeline with a booked trial lesson; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kelly",
+          "Blue Ridge"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle reached Lilian on outbound follow-up to confirm the SAT trial lesson with tutor Hannah. Lilian confirmed Friday 8/28 at 11 AM works and said she'd review all emails today. She mentioned having 5 kids and being busy after a family trip to Universal Studios.",
+          "what_we_can_do_to_help": "Send Lilian the lesson link/details for Kelly's trial SAT session with Hannah on 8/28 at 11 AM and remain available for any questions as she catches up on emails.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle reached Lilian on outbound follow-up to confirm the SAT trial lesson with tutor Hannah. Lilian confirmed Friday 8/28 at 11 AM works and said she'd review all emails today. She mentioned having 5 kids and being busy after a family trip to Universal Studios."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Lilian the lesson link/details for Kelly's trial SAT session with Hannah on 8/28 at 11 AM and remain available for any questions as she catches up on emails."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Schedule the trial SAT lesson with tutor Hannah for Friday 8/28 at 11 AM and send Lilian the lesson link/information via email",
+          80047202
+        ],
+        [
+          "Follow up to confirm Lilian received the lesson email",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
+  "pending_skipped": [
+    {
+      "number": "18185813362",
+      "time_pt": "10:05 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18182964016",
+      "time_pt": "10:05 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
