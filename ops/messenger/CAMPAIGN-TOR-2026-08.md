@@ -110,6 +110,10 @@ inbox placement. The ramp, unless Roman overrides it:
 
 Watch bounce and spam-complaint rate after each wave before releasing the next.
 
+**Roman confirmed this ramp on 2026-08-21.** Wave 1 is the only wave being
+built. C1 and C2 lists, emails and workflows stay unbuilt until wave 1 reply
+and bounce data lands.
+
 ## Hygiene queue (found while building this)
 
 **75 teacher names appear on 218 charter deals with no matching contact
@@ -147,10 +151,14 @@ Run the schema sync before `--write-props`.
 
 ## Before launch (Roman)
 
-- [ ] Approve/edit the six copy drafts
-- [ ] Confirm the from-address. Danielle's owner email is
-      `success@wetutorathome.com`. That is a shared-looking mailbox for a
-      personally-voiced email signed by her.
-- [ ] Confirm audience scope: warm 181 only, or the full 1,122 on the ramp
-- [ ] Say GO for the list/email/workflow build (ids into `campaign-tor.yml`)
+- [x] **From-address (Roman 2026-08-21):** `danielle@wetutorathome.com`,
+      fromName "Danielle Brodetsky". Already proven in the portal: 30 recent
+      marketing emails use exactly that pair, so no new sender setup is needed.
+      Not `success@`, which reads as a shared mailbox under a personally-signed
+      email.
+- [x] **Audience scope (Roman 2026-08-21):** warm first. Wave 1 = A + B1 + B2 +
+      B3, 181 mailable. C1/C2 held for later waves.
+- [ ] Approve/edit the wave-1 copy drafts (`tors_a_restarted`, `tors_b1_anchor`,
+      `tors_b2_multi`, `tors_b3_single`)
+- [ ] Say GO for the wave-1 list/email/workflow build (ids into `campaign-tor.yml`)
 - [ ] Flip `armed: true` + set `launch_date`

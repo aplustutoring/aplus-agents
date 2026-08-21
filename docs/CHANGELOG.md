@@ -58,10 +58,18 @@ family campaign is untouched) so the two campaigns cannot arm each other.
 4 new `[Agent]`-labeled properties in the `tor` group: `tor_family_count`,
 `tor_student_count`, `tor_families_lapsed`, `tor_segment`.
 
-**Blocked on Roman:** copy approval; the from-address (Danielle's owner email is
-`success@wetutorathome.com`, which is a shared-looking mailbox for a
-personally-voiced email signed by her); audience scope (warm 181 vs the full
-1,122 on the ramp); then GO for the portal build.
+**Two decisions locked same session (Roman 2026-08-21):** (1) send-from is
+`danielle@wetutorathome.com` / fromName "Danielle Brodetsky", NOT her owner
+email `success@` — checked the portal and that exact pair is already on 30
+recent marketing emails, so no sender setup is needed. (2) Scope is warm-first:
+**wave 1 = A + B1 + B2 + B3 only, 181 mailable.** C1/C2 (941 near-cold) stay
+unbuilt until wave-1 reply and bounce data lands. Both recorded in
+`campaign-tor.yml` and the campaign doc. **Decision-log candidates for Roman
+(#AP format):** the warm-first ramp rule for cold charter sends, and
+"personally-signed campaign email sends from the person's own alias, never a
+shared mailbox".
+
+**Still blocked on Roman:** wave-1 copy approval, then GO for the portal build.
 
 **Noticed, not fixed:** `registry_check.py` flags `automation-audit.yml` as a
 live workflow with no registry entry. Pre-existing, unrelated to this session.
