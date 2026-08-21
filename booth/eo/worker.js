@@ -57,7 +57,12 @@ const PHOTO_SMS =
 
 const PAYLOAD1_TEXTS = [
   (c) => `Hi ${c.firstname || "there"} — while you were finding your seat, I researched ${c.company || "your company"}. Full notes in your email. — Minion #23 🤖`,
-  () => "Seriously, check your email. I stayed up all 11 minutes of my life working on this.",
+  // Spam line lives here, on text 2, because this is the "I looked and it
+  // isn't there" beat. Every attendee is a first-ever contact from a sending
+  // address with no reputation, so a share of these WILL be filtered — and a
+  // text telling someone to check an inbox that looks empty reads as broken
+  // rather than magic. Naming it turns the failure into part of the joke.
+  () => "Seriously, check your email. If it's not there, check spam — your filter doesn't know me yet. I stayed up all 11 minutes of my life working on this.",
   (c) => `${c.firstname || "Hey"}. The email. I can see Roman stalling up there. You have time.`,
 ];
 
