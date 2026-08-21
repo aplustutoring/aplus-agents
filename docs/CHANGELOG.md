@@ -7,6 +7,71 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-21 — Charter TEACHER outreach from Danielle: 6-way segmentation, DISARMED
+
+**What:** The teacher-side counterpart to the family win-back campaign, built to
+Roman's ask ("outreach email campaign and workflow in HubSpot for emails to go
+out from Danielle to all of our charter school teachers, segment same as we did
+with charter families"). New `scripts/charter_tor_segments.py` +
+`ops/messenger/campaign-tor.yml` + `CAMPAIGN-TOR-2026-08.md` + six copy drafts
+in `templates/campaign-tor-2026-08/`. **Nothing built in the portal** — no
+lists, no emails, no workflows. Read-only analysis only.
+
+**Why the axes are NOT the family axes:** the family split is recency x
+student-count x personalization. That does not transfer. A teacher has no
+lessons of their own and every teacher is "lapsed" in August. What separates
+teachers is whether business has already come through them in 26/27 and how
+much came through them in 25/26. Segments (total / mailable): A Restarted 14/14,
+B1 Anchor 5+ families 17/17, B2 Multi 2-4 60/60, B3 Single 95/90, C1 Intro-iLEAD
+181/171, C2 Intro-other 817/770. Total 1,184 / 1,122 mailable; 62 excluded
+(54 opt-out, 6 non-marketable, 1 no email, 1 internal), zero hard bounces
+because the 155 bounced TORs were archived 2026-08-14.
+
+**Three things the data turned up that were not known going in:**
+1. **Deals have no teacher EMAIL.** `teacher_of_record_name` is on 2,244 of the
+   2,284 charter deals since 2025-08-01; `teacher_of_record_email_address` does
+   not exist as a deal property at all. Attribution is a normalized full-name
+   match, which is why the script reports unmatched names instead of guessing.
+2. **Token trap:** `charter_school_teacher` is an enumeration and HubSpot email
+   tokens render the LABEL. The Ocean Grove label is
+   `IEM Inc South Sutter/Ocean Grove/Sky Mountain`, so a school token would have
+   printed that to 348 teachers. School wording belongs in the segment, never in
+   a token. (The enumeration rule in CLAUDE.md, biting from the other direction.)
+3. **75 teacher names on 218 charter deals have no contact record** (Heather
+   Pfeifer Tolan 22 deals, Christina Mondolo 21, Crystal Uribe Schoelen 14,
+   Stephanie Negrete Claar 14; 13 deals say "no EF info"). They are invisible to
+   every segment. Hygiene queue, not a blocker.
+
+**Pilot learnings carried over:** exit goal is `hs_email_last_reply_date`
+IS_KNOWN plus meeting booked, **never lead status** (that is what silently
+skipped 34 families in the family pilot); Mon-Fri 09:00-18:00 PT action windows.
+
+**Deliverability flagged, not decided:** 941 of the 1,122 mailable teachers have
+no deal history. Not toxic (557 of 998 have opened something, 7 ever replied,
+zero hard bounces) but stale — most were last emailed 2025-01. Sending them in
+one morning off the domain currently running the family win-back risks that
+campaign's placement. The doc proposes a 3-week ramp, warm first, Ocean Grove's
+348 last and split.
+
+**Also:** `enroll.py` gained `--config` (defaults to `campaign.yml`, so the live
+family campaign is untouched) so the two campaigns cannot arm each other.
+4 new `[Agent]`-labeled properties in the `tor` group: `tor_family_count`,
+`tor_student_count`, `tor_families_lapsed`, `tor_segment`.
+
+**Blocked on Roman:** copy approval; the from-address (Danielle's owner email is
+`success@wetutorathome.com`, which is a shared-looking mailbox for a
+personally-voiced email signed by her); audience scope (warm 181 vs the full
+1,122 on the ramp); then GO for the portal build.
+
+**Noticed, not fixed:** `registry_check.py` flags `automation-audit.yml` as a
+live workflow with no registry entry. Pre-existing, unrelated to this session.
+
+**Files:** `scripts/charter_tor_segments.py` (new), `ops/messenger/`
+{`campaign-tor.yml`, `CAMPAIGN-TOR-2026-08.md`, `enroll.py`, `README.md`,
+`templates/campaign-tor-2026-08/` (+6)}, `ops/hubspot-schema/properties.yml`,
+`registry.yml`.
+
+---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
 
 **Reported:** Paola — the case study for Amelia arrived in

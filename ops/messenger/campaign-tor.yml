@@ -1,0 +1,63 @@
+# Charter TEACHER (TOR) 26/27 outreach from Danielle — see CAMPAIGN-TOR-2026-08.md.
+# The teacher-side counterpart to campaign.yml (families, from Paola/A+ team).
+# Kept in a SEPARATE file so arming this never touches the live family campaign.
+#
+# Run with: python3 ops/messenger/enroll.py --config campaign-tor.yml
+#
+# DISARMED. Blocked on Roman (in order):
+#   1. approve the six copy drafts in templates/campaign-tor-2026-08/
+#   2. confirm the send-from identity (Danielle owner 227538487 =
+#      success@wetutorathome.com — confirm that is the address families/teachers
+#      should see, or give a danielle@ alias)
+#   3. confirm audience scope: 186 with-history teachers only, or the full 1,122
+#      (the 998 no-history teachers are a cold send, see the doc's ramp)
+#   4. say GO for the list + email + workflow build (ids land below)
+#   5. flip armed: true
+armed: false
+launch_date: ""
+timezone: America/Los_Angeles
+send_from:
+  role: sales                 # roles-not-names: email/config.yaml roles.sales -> danielle
+  hubspot_owner_id: "227538487"
+  task_owner_role: sales      # Day-8 call task goes to the same seat, not Paola
+
+# list_id filled by scripts/charter_tor_segments.py --build-lists
+# workflow_id/email_ids filled when the HubSpot build is approved.
+# Empty workflow_id = segment skipped by enroll.py.
+enrollments:
+  - segment: a_restarted       # 14 mailable — thank you + expand
+    list_id: ""
+    workflow_id: ""
+    email_ids: []
+    template: tors_a_restarted.md
+    cadence: "Day 0 email, Day 4 nudge"
+  - segment: b1_anchor         # 17 mailable — highest value, roster offer + Day-8 call task
+    list_id: ""
+    workflow_id: ""
+    email_ids: []
+    template: tors_b1_anchor.md
+    cadence: "Day 0 email, Day 4 nudge, Day 8 call task (sales seat)"
+  - segment: b2_multi          # 60 mailable
+    list_id: ""
+    workflow_id: ""
+    email_ids: []
+    template: tors_b2_multi.md
+    cadence: "Day 0 email, Day 5 nudge"
+  - segment: b3_single         # 90 mailable
+    list_id: ""
+    workflow_id: ""
+    email_ids: []
+    template: tors_b3_single.md
+    cadence: "Day 0 email, Day 5 nudge"
+  - segment: c1_intro_ilead    # 171 mailable — COLD, iLEAD Tier 3 case study
+    list_id: ""
+    workflow_id: ""
+    email_ids: []
+    template: tors_c1_intro_ilead.md
+    cadence: "Day 0 email only"
+  - segment: c2_intro          # 770 mailable — COLDEST, ramp in waves (see doc)
+    list_id: ""
+    workflow_id: ""
+    email_ids: []
+    template: tors_c2_intro.md
+    cadence: "Day 0 email only, wave-ramped"

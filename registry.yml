@@ -676,6 +676,7 @@ agents:
     depends_on:
       - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
       - scripts/charter_gap_segments.py      # recency x student-count x personalization segmenter
+      - scripts/charter_tor_segments.py      # TEACHER-side segmenter (26/27 activity x 25/26 volume)
     notes: >
       Read-only by default. Feeds the campaign segments in
       ops/messenger/campaign.yml. The TW key lives ONLY in Actions secrets —

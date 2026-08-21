@@ -62,15 +62,19 @@ def main():
     ap.add_argument("--confirm", default="", help="must be LAUNCH for a live run")
     ap.add_argument("--force", action="store_true",
                     help="skip the armed/launch-date gates (manual runs)")
+    ap.add_argument("--config", default="campaign.yml",
+                    help="campaign config in ops/messenger/ (default campaign.yml; "
+                         "the teacher outreach lives in campaign-tor.yml)")
     args = ap.parse_args()
 
-    cfg = yaml.safe_load(open(HERE / "campaign.yml"))
+    cfg = yaml.safe_load(open(HERE / args.config))
+    print(f"config: {args.config}")
     tz = ZoneInfo(cfg.get("timezone", "America/Los_Angeles"))
     today = datetime.now(tz).date().isoformat()
 
     if not args.force:
         if not cfg.get("armed"):
-            print("campaign.yml armed: false — nothing to do.")
+            print(f"{args.config} armed: false — nothing to do.")
             return
         if today != str(cfg.get("launch_date")):
             print(f"today {today} != launch_date {cfg.get('launch_date')} — nothing to do.")
@@ -83,7 +87,7 @@ def main():
         pairs = [{"list_id": pilot["list_id"], "workflow_id": pilot["workflow_id"],
                   "email_ids": pilot.get("email_ids", []), "segment": "pilot"}] + pairs
     if not pairs:
-        sys.exit("campaign.yml has no enrollments with workflow_id set.")
+        sys.exit(f"{args.config} has no enrollments with workflow_id set.")
 
     # pre-flight: publish AUTOMATED_DRAFT emails + enable the workflow (live only)
     for p in pairs:

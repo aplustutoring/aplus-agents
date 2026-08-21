@@ -31,6 +31,19 @@ gh workflow run messenger.yml -f list_id=3104 -f channel=sms \
   -f sms_template=templates/charter_win_back.txt -f sms_from=sales
 ```
 
+## Campaigns
+
+Multi-step campaigns live beside the on-demand messenger, one config + one
+program doc each. `enroll.py --config <file>` enrolls list members into the
+HubSpot workflows; both configs gate on `armed:` + `launch_date`.
+
+| Config | Doc | Audience | Sender | State |
+|---|---|---|---|---|
+| `campaign.yml` | `CAMPAIGN-2026-08-17.md` | charter gap FAMILIES | A+ team, Paola tasks | LIVE, wave 2 sent |
+| `campaign-tor.yml` | `CAMPAIGN-TOR-2026-08.md` | charter TEACHERS (TOR) | Danielle (sales seat) | DISARMED |
+
+Keep them in separate files: arming one must never move the other.
+
 ## Phase 2 (not built)
 
 - Slack front door: message the aplus bot ("send charter_win_back to list 3104

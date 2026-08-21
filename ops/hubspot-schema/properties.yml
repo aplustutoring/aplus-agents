@@ -292,6 +292,58 @@ properties:
       group: tor
       type: date
       fieldType: date
+    - name: tor_family_count
+      label: "[Agent] TOR Family Count"
+      group: tor
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_tor_segments.py, do not
+        edit by hand. Distinct families this teacher sent us in the CURRENT
+        attributed school year (26/27 deals if any exist, otherwise 25/26).
+        Drives the Anchor/Multi/Single volume tiers and is a live token in the
+        outreach copy, so re-stamp on the morning of any send.
+    - name: tor_student_count
+      label: "[Agent] TOR Student Count"
+      group: tor
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_tor_segments.py, do not
+        edit by hand. Distinct students across this teacher's attributed
+        charter deals since Aug 2025, parsed from deal titles.
+    - name: tor_families_lapsed
+      label: "[Agent] TOR Families Lapsed"
+      group: tor
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_tor_segments.py, do not
+        edit by hand. How many of this teacher's associated families sit in the
+        26/27 gap list (worked with us in 25/26, no renewal). The teacher-side
+        view of the family win-back campaign.
+    - name: tor_segment
+      label: "[Agent] TOR Campaign Segment"
+      group: tor
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by scripts/charter_tor_segments.py, do not
+        edit by hand. Which cell of the teacher outreach segmentation this
+        contact fell into on the last run. Read the LABEL, never the value.
+      options:
+        - value: "A"
+          label: "A - Restarted 26/27"
+        - value: "B1"
+          label: "B1 - Anchor (5+ families)"
+        - value: "B2"
+          label: "B2 - Multi (2-4 families)"
+        - value: "B3"
+          label: "B3 - Single (1 family)"
+        - value: "C1"
+          label: "C1 - Intro (iLEAD)"
+        - value: "C2"
+          label: "C2 - Intro (other schools)"
     # — tutor —
     - name: a__pay_per_hour
       label: "A+ Pay Per Hour"

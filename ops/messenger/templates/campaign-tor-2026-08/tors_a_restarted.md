@@ -1,0 +1,40 @@
+# A — Restarted 26/27 (segment A, 14 teachers)
+
+Voice: danielle-voice. From: Danielle Brodetsky, Director of School Partnerships.
+Tokens: {{contact.firstname}} only. Do NOT token the school (see CAMPAIGN doc).
+
+**Subject:** Thank you for the 26/27 referrals
+
+Hi {{contact.firstname}},
+
+You have already sent families our way this school year, and I want you to know
+that lands with us. Thank you.
+
+I taught K-8 before I moved into this role, so I know what it costs you to keep
+track of which students need more than the school day can give them. You are
+doing that on top of everything else.
+
+If there are other students on your roster who need targeted support, we can
+start them the same way. You approve, and we handle the purchase order paperwork
+from there. You get progress updates through the year without having to chase
+anyone for them.
+
+Is there anyone you are watching right now that you would want us to look at?
+
+Danielle Brodetsky
+Director of School Partnerships, A+ Tutoring
+
+---
+## Follow-up (Day 4, only if no reply)
+
+**Subject:** Re: Thank you for the 26/27 referrals
+
+Hi {{contact.firstname}},
+
+Following up on my note. If it is easier to talk it through than to write it out,
+I am happy to take 15 minutes whenever suits you.
+
+And if the answer is that everyone on your roster is where they need to be right
+now, that is a good answer. I will check back later in the year.
+
+Danielle
