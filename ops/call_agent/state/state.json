@@ -371,9 +371,10 @@
     406647961,
     406652458,
     406658058,
-    406660050
+    406660050,
+    406666997
   ],
-  "last_run_utc": "2026-08-20T23:30:50.196752+00:00",
+  "last_run_utc": "2026-08-21T00:01:00.651588+00:00",
   "pending_digest": [
     {
       "call_id": 406455910,
@@ -982,6 +983,77 @@
       "tasks_created": [
         [
           "Continue follow-up outreach to Nish Fernandez via call, email, or text until connection is made",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 406666997,
+      "number": "17143718613",
+      "time_pt": "4:48 PM",
+      "matched": true,
+      "contact_label": "Mario Aguilar",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Mario Aguilar, a returning customer, to follow up on his interest in resuming tutoring for this school year with tutor Fred. Mario confirmed he wants to work with Fred again and said either his number or his wife's number is fine for scheduling to reach him. Paola committed to notifying the scheduling team to check Fred's availability and reach out with details.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Notify scheduling team that Mario Aguilar wants to resume tutoring with Fred this school year and to check Fred's availability",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Scheduling team to reach out to Mario (either his number or his wife's number on file) with Fred's availability",
+            "owner_hint": "Scheduling team"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Mario Aguilar is a returning A+ family \u2014 friendly and eager to restart. He wants to continue with his previous tutor Fred for this school year. Paola promised the scheduling team would check Fred's availability and reach out with details. Either Mario's number (714-371-8613) or his wife's number (previously on file) works for contact. Please confirm Fred's availability first, then call Mario. Open with: 'Hi Mario, this is [name] from A+ Tutoring \u2014 Paola let us know you'd like to get back on Fred's schedule for this school year, and I wanted to share his availability.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Mario is a returning customer already in the deal pipeline (Meeting Booked); status is owned by the pipeline and should not be demoted.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Returning family \u2014 Mario reached out and confirmed he wants to resume tutoring for this school year with his previous tutor, Fred. Either Mario's phone or his wife's phone (previously used) works for contact.",
+          "what_we_can_do_to_help": "Scheduling team to check Fred's availability for this school year and contact Mario with options to get sessions restarted.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family \u2014 Mario reached out and confirmed he wants to resume tutoring for this school year with his previous tutor, Fred. Either Mario's phone or his wife's phone (previously used) works for contact."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling team to check Fred's availability for this school year and contact Mario with options to get sessions restarted."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Notify scheduling team that Mario Aguilar wants to resume tutoring with Fred this school year and to check Fred's availability",
+          81494333
+        ],
+        [
+          "Scheduling team to reach out to Mario (either his number or his wife's number on file) with Fred's availability",
           81494333
         ]
       ],
