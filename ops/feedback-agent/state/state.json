@@ -35,7 +35,8 @@
     "Ev0BRE0TQ031",
     "Ev0BRP53JBGB",
     "Ev0BRE4GDUB1",
-    "Ev0BRVK8QPAN"
+    "Ev0BRVK8QPAN",
+    "Ev0BRS02TG69"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -254,6 +255,21 @@
       "ticket": "drafted",
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787327572959279"
+    },
+    {
+      "date": "2026-08-21",
+      "ts": "1787331004.597459",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-only-rerun.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/103",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787331004597459"
     }
   ],
   "graduation": {
@@ -276,6 +292,23 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
+    },
+    "1787331004.597459": {
+      "agent": "spotlight-orchestrator",
+      "agent_label": "Spotlight Orchestrator",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-only-rerun.md",
+      "branch": "fix/spotlight-orchestrator-2026-08-21-597459",
+      "diagnosis": "This is a one-off asset request, not a bug \u2014 Paola wants the missing superhero video reel generated for an existing Spotlight bundle. The reel builder exists (marketing/scripts/b2c/reel/build_reel.py) but the orchestrator either skipped it on the original run or needs to be invoked in a reel-only mode against Amelia's existing bundle folder.",
+      "fix_plan": [
+        "Locate Amelia's existing bundle directory under marketing/aplus-content/ (the one for the Ocean Grove 9th grader case study) and confirm the reel asset is genuinely missing.",
+        "Run the reel pipeline directly against that bundle: invoke marketing/scripts/b2c/reel/make_script.py \u2192 make_vo.py \u2192 make_stills.py \u2192 make_clips.py \u2192 build_reel.py using the existing case study text and hero assets as inputs, matching the format used in prior Spotlight reels.",
+        "Use marketing/scripts/b2c/reel/deliver_reel.py (or post manually) to deliver the finished reel back into Paola's Slack thread, without touching any other assets in the bundle.",
+        "If the orchestrator should have produced this automatically, file a follow-up to check why the reel step was skipped on the original run \u2014 but do that separately, after delivery."
+      ],
+      "risk": "low",
+      "recommendation": "execute",
+      "proposed_utc": "2026-08-21T16:50:48.436946+00:00",
+      "reporter": "Paola"
     }
   }
 }
