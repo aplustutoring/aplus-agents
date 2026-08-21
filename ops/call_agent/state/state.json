@@ -382,9 +382,13 @@
     406999332,
     407027228,
     407026970,
-    407035273
+    407035273,
+    407057870,
+    407057997,
+    407057760,
+    407058173
   ],
-  "last_run_utc": "2026-08-21T21:02:22.243386+00:00",
+  "last_run_utc": "2026-08-21T21:41:18.753867+00:00",
   "pending_digest": [
     {
       "call_id": 406932408,
@@ -561,6 +565,168 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 407057870,
+      "number": "12137098332",
+      "time_pt": "2:22 PM",
+      "matched": true,
+      "contact_label": "Lucia Natale",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Lucia Natale to follow up on her inquiry for her 5th-grade daughter Matilda, who attends Carpenter and needs help with focus, daily homework, math, and language arts. Lucia prefers in-person tutoring at ZIP 91607. Paola committed to emailing current rates/packages and checking tutor availability in Lucia's area, after which they'd discuss scheduling.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Lucia current rates and packages",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91607 and confirm with Lucia",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Lucia Natale was warm and receptive. Her 5th grader Matilda (at Carpenter Elementary) needs an in-person tutor for daily after-school homework help, focus/attention support, and math + ELA. She's at ZIP 91607. Paola promised to (1) email current rates/packages and (2) check tutor availability in that ZIP, then circle back so Lucia can pick times. Lucia expects the pricing email soon and a tutor-availability confirmation. Open with: 'Hi Lucia, following up from Paola \u2014 here are our rates and I've been checking on tutors near 91607 for Matilda...' then propose times once a tutor match is identified.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [
+          "Matilda",
+          "Carpenter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Matilda (5th grade at Carpenter) struggles with attention/focus and needs support with daily after-school homework, specifically math and language arts. Mom Lucia prefers in-person tutoring at their home (ZIP 91607).",
+          "what_we_can_do_to_help": "Sending Lucia current rates/packages via email and checking in-person tutor availability in ZIP 91607. Once a tutor is identified, coordinate scheduling with the family for daily after-school homework support in math and ELA.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Carpenter",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Matilda (5th grade at Carpenter) struggles with attention/focus and needs support with daily after-school homework, specifically math and language arts. Mom Lucia prefers in-person tutoring at their home (ZIP 91607)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Sending Lucia current rates/packages via email and checking in-person tutor availability in ZIP 91607. Once a tutor is identified, coordinate scheduling with the family for daily after-school homework support in math and ELA."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Carpenter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "QTL - Charter",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Lucia current rates and packages",
+          81494333
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91607 and confirm with Lucia",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407057997,
+      "number": "16266848404",
+      "time_pt": "2:25 PM",
+      "matched": true,
+      "contact_label": "Abigail Villa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Abigail Villa to follow up on scheduling messages she hadn't heard back on. Abigail confirmed the tutor profile (Sonia) sent for daughter Malinale looks fine. Yolanda said she'd send the lesson reminder. Call ended positively.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send lesson reminder to Abigail for Malinale's session with tutor Sonia",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Abigail Villa (mom) confirmed she's happy with Sonia as the tutor match for daughter Malinale \u2014 the tutor profile had already been sent. Yolanda promised to send the lesson reminder for the previously-booked trial session (Thu 10/27 at 2 PM per record). Abigail was friendly but busy. No new asks from her on this call; just make sure the lesson reminder goes out and Sonia is fully briefed on Malinale (neurodivergent, ADHD/anxiety, visual/hands-on learner, Algebra 2). Also still open internally: whether sibling Ezekiel can be added to the scholarship program. If you follow up, open with: 'Hi Abigail, just confirming Sonia is set for Malinale's session and your reminder is on the way.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an active deal (OPEN_DEAL) \u2014 scheduling call for an already-booked trial session. Status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Malinale",
+          "Ezekiel",
+          "Zahavi",
+          "Sonia"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Follow-up scheduling call with mom Abigail re: Malinale's trial session. Abigail confirmed the tutor profile for Sonia looks good.",
+          "what_we_can_do_to_help": "[call] Yolanda to send the lesson reminder for Malinale's session with Sonia. Ensure Sonia is briefed on Malinale's neurodivergent learning profile ahead of the session. Still pending internally: confirm whether sibling Ezekiel can be added to the scholarship program.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Follow-up scheduling call with mom Abigail re: Malinale's trial session. Abigail confirmed the tutor profile for Sonia looks good."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to send the lesson reminder for Malinale's session with Sonia. Ensure Sonia is briefed on Malinale's neurodivergent learning profile ahead of the session. Still pending internally: confirm whether sibling Ezekiel can be added to the scholarship program."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send lesson reminder to Abigail for Malinale's session with tutor Sonia",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -572,6 +738,16 @@
     {
       "number": "18182964016",
       "time_pt": "10:05 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "13107399526",
+      "time_pt": "2:26 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "13107399526",
+      "time_pt": "2:27 PM",
       "reason": "hang-up"
     }
   ],
