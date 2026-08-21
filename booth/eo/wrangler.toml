@@ -60,11 +60,11 @@ id = "38b24fd52f064143a0273d9f43a85a3c"
 # PT is UTC-7 in August, so every evening slot lands on the NEXT UTC day:
 #   * * * * *   every minute  — the work queue (research, hero, Drive)
 #   17 1 * * *  = 6:17 PM PT  — Payload #1: triple text + research email
-#   5  2 * * *  = 7:05 PM PT  — Build kit email (build block starts)
+#   35 1 * * *  = 6:35 PM PT  — Build kit email
 #   30 2 * * *  = 7:30 PM PT  — Mid-build encouragement text
 #   0  3 * * *  = 8:00 PM PT  — Payload #2: hero MMS + closing email
 [triggers]
-crons = ["* * * * *", "17 1 * * *", "5 2 * * *", "30 2 * * *", "0 3 * * *"]
+crons = ["* * * * *", "17 1 * * *", "35 1 * * *", "30 2 * * *", "0 3 * * *"]
 
 # Secrets (never in this file):
 #   wrangler secret put HUBSPOT_TOKEN

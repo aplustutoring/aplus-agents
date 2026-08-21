@@ -12,7 +12,10 @@
  *   POST /sms         JustCall inbound webhook (idea capture + STOP)
  *
  * Crons (see wrangler.toml — UTC, and PT is UTC-7 in August)
- *   17 1 * * *  → 6:17 PM PT — Payload #1 (triple text + brief email)
+ *   * * * * *   every minute — work queue (research, hero, catch-up)
+ *   17 1 * * *  → 6:17 PM PT — Payload #1 (brief email, THEN triple text)
+ *   35 1 * * *  → 6:35 PM PT — Build kit email
+ *   30 2 * * *  → 7:30 PM PT — Encouragement text
  *   0  3 * * *  → 8:00 PM PT — Payload #2 (hero MMS + composed email)
  *
  * Secrets (wrangler secret put ...)
@@ -320,7 +323,7 @@ export default {
       ctx.waitUntil(runQueue(env, WORKER_ORIGIN));
     } else if (event.cron === "17 1 * * *") {
       ctx.waitUntil(runPayload1(env));
-    } else if (event.cron === "5 2 * * *") {
+    } else if (event.cron === "35 1 * * *") {
       ctx.waitUntil(runBuildKit(env));
     } else if (event.cron === "30 2 * * *") {
       ctx.waitUntil(runPositiveText(env));
@@ -556,10 +559,10 @@ async function runQueue(env, origin) {
       }
     }
 
-    // 2 — Build kit. Deliberately NOT gated on payload #1 having gone out:
-    // if the research failed for someone, they should still get the thing
-    // the workshop actually needs them to have.
-    if (mins >= 19 * 60 + 5) {
+    // 2 — Build kit at 6:35 PM PT. Deliberately NOT gated on payload #1
+    // having gone out: if the research failed for someone, they should still
+    // get the thing the workshop actually needs them to have.
+    if (mins >= 18 * 60 + 35) {
       const flag = `sent:buildkit:${c.id}`;
       if (!(await env.PHOTOS.get(flag))) {
         await env.PHOTOS.put(flag, new Date().toISOString());
