@@ -34,7 +34,8 @@
     "Ev0BRRC8UQV7",
     "Ev0BRE0TQ031",
     "Ev0BRP53JBGB",
-    "Ev0BRE4GDUB1"
+    "Ev0BRE4GDUB1",
+    "Ev0BRVK8QPAN"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -236,7 +237,7 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-20-spotlight-superhero-reel-not-delivered.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/99",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787266823934319"
     },
     {
@@ -256,7 +257,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 8
+    "clean_merges": 9
   },
   "pending_proposals": {
     "1786554388.265099": {
