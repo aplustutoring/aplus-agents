@@ -38,7 +38,8 @@
     "Ev0BRVK8QPAN",
     "Ev0BRS02TG69",
     "Ev0BRPJZB0HH",
-    "Ev0BRYCZPXQ9"
+    "Ev0BRYCZPXQ9",
+    "Ev0BS06RV3CL"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -270,12 +271,12 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-only-rerun.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/103",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787331004597459"
     }
   ],
   "graduation": {
-    "clean_merges": 9
+    "clean_merges": 10
   },
   "pending_proposals": {
     "1786554388.265099": {
