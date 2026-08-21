@@ -22198,3 +22198,7 @@
 {"message_id": "pending-po-reminder:64186615473", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64186615473", "po_number": "3114122480", "timestamp": "2026-08-21T01:45:58.642633+00:00"}
 {"message_id": "pending-po-reminder:64199814188", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64199814188", "po_number": "3114122481", "timestamp": "2026-08-21T01:45:59.107995+00:00"}
 {"message_id": "pending-po-reminder:64217686953", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64217686953", "po_number": "3114122482", "timestamp": "2026-08-21T01:45:59.488785+00:00"}
+{"ticket_id": "47840784915", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-21T02:07:42.473567+00:00"}
+{"ticket_id": "47850955097", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-21T02:07:43.238577+00:00"}
+{"ticket_id": "47845651874", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-21T02:07:44.077794+00:00"}
+{"ticket_id": "47841427319", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-21T02:07:47.461597+00:00"}
