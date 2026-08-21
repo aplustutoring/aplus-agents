@@ -3450,6 +3450,14 @@ REEL_ATTEMPTS = 2
 # generation eats the job's remaining time and takes the textstory + logsheet
 # stages (and the completion summary) down with it when the runner is killed.
 REEL_TIMEOUT_S = int(os.environ.get("SPOTLIGHT_REEL_TIMEOUT_S", "900"))
+# ...but that ceiling protects stages that do not exist in --reel-only mode,
+# where the reel IS the job. Inheriting 900s there is actively harmful: a cold
+# recovery renders 5 stills, 5 TTS lines and 4 Veo clips (whose submit alone
+# backs off up to 90s x 6 on a 429) before ffmpeg starts, and because the
+# budget is shared across both attempts, a first pass that eats it leaves the
+# retry to die on "budget exhausted before script" without running a step —
+# a recovery that burns the Veo spend and still delivers nothing.
+REEL_RECOVERY_TIMEOUT_S = int(os.environ.get("SPOTLIGHT_REEL_RECOVERY_TIMEOUT_S", "3600"))
 # Delivery is budgeted separately from generation: a reel that took the whole
 # generation budget to render still deserves its trip to Slack.
 REEL_DELIVER_TIMEOUT_S = 360
@@ -3484,8 +3492,27 @@ def _post_reel_alert(run: dict, note: str) -> None:
     regenerates from zero — the HubSpot draft is rewritten under --force-update,
     and Paola's entire review thread is posted a second time. SPOTLIGHT_REEL is
     not a workflow input either, so it could not be set from the Actions UI.
+
+    In --reel-only mode that same text becomes circular — it tells the operator
+    to fetch the artifact and run --reel-only, which is precisely the run that
+    just failed — so recovery gets its own wording (2026-08-21, third report on
+    this bundle). Naming a recovery nobody can act on is how the first two
+    reports ended with the reel still undelivered.
     """
     bundle = Path(run["bundle_path"]).name
+    if run.get("mode") == "reel-only":
+        _post_stage_alert(
+            f":warning: *Spotlight reel recovery failed* — `{bundle}`: {note}. "
+            "This was a `--reel-only` run against an already-built bundle, so "
+            "nothing else in the pack was touched and nothing was posted to the "
+            "student's review thread. The reel steps are resumable: re-running "
+            "the same command picks up from whatever already rendered, so a "
+            "transient Veo 429 or a timeout is worth one more pass. If it fails "
+            "on the same step twice, that step's stderr is in this run's output "
+            "— fix that before re-running.",
+            "reel",
+        )
+        return
     cmd = f"--reel-only marketing/aplus-content/{bundle}"
     if run.get("slack_thread_ts"):
         cmd += f" --reel-thread-ts {run['slack_thread_ts']}"
@@ -3515,6 +3542,10 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
     get one resumable retry, the stage is bounded by REEL_TIMEOUT_S, and a reel
     that still fails posts a heads-up to SLACK_FAILURE_CHANNEL and shows up in
     the completion summary.
+
+    The wall-clock budget depends on the mode: in the pipeline it is there to
+    keep a stuck Veo poll from taking the later stages down, while --reel-only
+    has no later stages to protect (see REEL_RECOVERY_TIMEOUT_S).
     """
     run.update({"stage": "reel"})
     if os.environ.get("SPOTLIGHT_REEL", "1") == "0":
@@ -3530,12 +3561,14 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
         ("clips",    ["python3", str(REEL_DIR / "make_clips.py"),  "--bundle", bundle]),
         ("assemble", ["python3", str(REEL_DIR / "build_reel.py"),  "--bundle", bundle]),
     ]
-    deadline = time.monotonic() + REEL_TIMEOUT_S
+    timeout_s = (REEL_RECOVERY_TIMEOUT_S if run.get("mode") == "reel-only"
+                 else REEL_TIMEOUT_S)
+    deadline = time.monotonic() + timeout_s
 
     def run_step(name: str, cmd: list[str], budget: float | None = None) -> None:
         left = budget if budget is not None else deadline - time.monotonic()
         if left <= 0:
-            raise RuntimeError(f"reel budget of {REEL_TIMEOUT_S}s exhausted before {name}")
+            raise RuntimeError(f"reel budget of {timeout_s}s exhausted before {name}")
         print(f"  reel:{name} ...")
         try:
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=left)
@@ -3620,6 +3653,17 @@ def run_reel_only(args: argparse.Namespace) -> int:
     }
     append_run(run)
     print(f"=== Reel-only recovery: {bundle.name} (run_id={run['run_id']}) ===")
+    # State the premise out loud. Recovery is for a reel that never shipped; if
+    # one is already sitting in the bundle it gets rebuilt and uploaded again,
+    # which puts a second copy in the student's review thread. Not blocked (a
+    # deliberate rebuild is legitimate) but never a surprise either.
+    existing = bundle / "reel" / "spotlight-reel.mp4"
+    if existing.exists():
+        print(f"  WARNING: {existing.name} already exists "
+              f"({existing.stat().st_size} bytes) — it will be rebuilt and "
+              f"delivered again (a second copy in the thread)", file=sys.stderr)
+    else:
+        print("  no reel in this bundle yet — confirmed missing")
     if not args.reel_thread_ts:
         print("  no --reel-thread-ts — the reel will start its own thread "
               "instead of nesting under the case-study delivery")

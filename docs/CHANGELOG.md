@@ -7,6 +7,82 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-21 — Spotlight Orchestrator: the reel recovery run can now finish
+
+**Reported:** Paola, a third time on the same bundle (Amelia) — asking for just
+the missing superhero reel to be generated against the existing Spotlight
+bundle, without regenerating any of the other assets.
+
+**Diagnosis (correcting the filed one):** the approved plan was to locate
+Amelia's bundle, run `make_script` → … → `build_reel` against it, and deliver
+with `deliver_reel.py`. None of that is runnable from this repo, for the reasons
+the two entries below already record: `marketing/aplus-content/` is gitignored
+and built inside the CI runner (there is no bundle here), and there is no
+`.env`, no `GEMINI_API_KEY`/`OPENAI_API_KEY`/Slack token and no `ffmpeg` in this
+checkout. The invocation the plan describes already exists too — `--reel-only`
+shipped 2026-08-20 and does exactly "reel and nothing else". So the honest
+question was not *how do we invoke it* but *does that invocation actually
+finish*, and two things say no:
+
+1. **Recovery inherited the pipeline's 900s budget.** `REEL_TIMEOUT_S` exists to
+   stop a stuck Veo poll from taking the textstory + logsheet stages and the
+   completion summary down with it. `--reel-only` has no later stages to
+   protect — the reel *is* the job — but got the same 900s ceiling, shared
+   across both attempts. A cold recovery renders 5 Gemini 2K stills, 5 TTS
+   lines and 4 Veo clips (whose submit alone backs off up to 90s × 6 on a 429)
+   before ffmpeg starts. When the first pass eats the budget the retry dies on
+   `budget exhausted before script` without running a single step, and recovery
+   mode exits 1 — Veo spend burned, nothing delivered.
+2. **A failed recovery told the operator to run the recovery.** `_post_reel_alert`
+   has one message: "download the bundle artifact from this Actions run, unpack
+   it under `marketing/aplus-content/`, then run `--reel-only …`". Correct for a
+   pipeline miss; circular for a `--reel-only` run, which is already local,
+   already has the bundle, and has no Actions artifact to fetch. It also frames
+   the failure as "*Spotlight reel is missing* — blog, graphics and text-stories
+   unaffected", i.e. as a fresh pipeline miss rather than "your recovery just
+   failed". Pointing at a recovery nobody can act on is precisely how the first
+   two reports ended with the reel still undelivered.
+
+**Fix:** `REEL_RECOVERY_TIMEOUT_S` (default 3600s, `SPOTLIGHT_REEL_RECOVERY_TIMEOUT_S`)
+applies in `--reel-only` mode; the pipeline keeps 900s unchanged, and the
+"budget exhausted" message now names whichever budget actually ran out.
+`_post_reel_alert` gets recovery wording: the recovery failed, nothing else in
+the pack was touched, nothing was posted to the student's thread, the steps
+resume so one more pass is worth it for a transient 429, and if the same step
+fails twice fix that step instead of looping. Pipeline wording is byte-identical.
+`run_reel_only` also states its premise before doing anything — "no reel in this
+bundle yet — confirmed missing", or a warning that an existing
+`spotlight-reel.mp4` will be rebuilt and delivered a second time into the
+review thread. Not blocked (a deliberate rebuild is legitimate), just never a
+surprise.
+
+**Verified:** 22 stubbed assertions across nine scenarios with `subprocess.run`,
+the state writers and the Slack alert faked — no Veo, Gemini, OpenAI, ffmpeg or
+Slack touched. Happy path (six steps in order, thread-ts passthrough, exit 0);
+recovery budget applied to generation with delivery still budgeted separately;
+pipeline mode still 900s; a slow first attempt now leaves the retry room to
+re-run every step, and the failure names the real step rather than the budget;
+a failed recovery exits 1, delivers nothing, and posts an alert with no artifact
+instructions and no prefilled restart command; pipeline alert text unchanged;
+both pre-flight messages; both bundle guards; `--reel-thread-ts` without
+`--reel-only` still exits 2.
+
+**The reel itself is still not generated.** That is the deliverable Paola asked
+for and this session could not produce it — no bundle, no credentials, no
+ffmpeg here. What changed is that the recovery run, when someone with the
+artifact and the keys does start it, is no longer capped at 15 minutes and no
+longer answers its own failure with instructions to start over.
+
+**Left undone deliberately:** still no `rerender-reel` Actions workflow to match
+`rerender-textstory` — the thing that would make this a button in CI where the
+keys and ffmpeg live, and the reason all three reports have ended without the
+asset. This session was scoped out of `.github/workflows/` and `registry.yml`
+(where the reel scripts are still missing from `depends_on`), same as the last
+one. Escalating it rather than re-noting it is the follow-up.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel can now actually be recovered
 
 **Reported:** Paola, a second time on the same bundle (Amelia) — the superhero
