@@ -836,6 +836,71 @@ agents:
       TTL, so attendee photos stay publicly retrievable indefinitely. Fine for
       MMS delivery, worth a deliberate decision for a school event.
 
+  # EVENT-TEMP — delete this entry on sunset (2026-08-22), do not leave it
+  # sitting `active`. See the post-event checklist in booth/eo/README.md.
+  - id: eo-booth-agent
+    engine: Events
+    runtime: cloudflare-worker
+    name: EO LA Valley "Minion #23" booth agent
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [http_post, cron]
+      source: >
+        POST /capture from the booth front-end (booth/eo/index.html) whenever
+        an attendee uses the booth; POST /sms from the JustCall inbound
+        webhook on the booth line; plus two one-night crons — "17 1 * * *"
+        UTC = 6:17 PM PT (Payload #1) and "0 3 * * *" UTC = 8:00 PM PT
+        (Payload #2). Cloudflare crons carry NO date, so both re-fire daily
+        until deleted.
+    source: booth/eo/worker.js
+    entrypoint: booth/eo/worker.js
+    reads:
+      - "HubSpot:contacts (search by email and by phone; CONTAINS_TOKEN on aplus_event_tag=eo_lav_agents_2026)"
+      - "Cloudflare KV (PHOTOS binding — booth photos, hero images, STOP opt-out flags)"
+      - "Anthropic API (claude-sonnet-4-6 + web_search_20260209) — company research"
+      - "Google Gemini API (gemini-3-pro-image) — superhero hero image from the selfie"
+    writes:
+      - "HubSpot:contacts (upsert by email; aplus_event_tag=eo_lav_agents_2026, eo_company_name, eo_demo_consent, eo_research_brief, eo_hero_image_url, eo_payload1_sent, eo_payload2_sent)"
+      - "Resend (photo email, Payload #1 brief email, Payload #2 closing email — all signed Minion #23, no A+ branding)"
+      - "JustCall (photo MMS, Payload #1 triple text, Payload #2 hero MMS, idea-capture auto-reply) from the booth line +18185736258"
+      - "Cloudflare KV (photos + hero images under eo/, opt-outs under optout:)"
+      - "Zapier catch-hook -> Google Sheet \"EO Agent Ideas — Aug 20\""
+      - "Google Drive (Crystal's shared folder — booth photo + hero image, via optional hook; this is the print source now that the booth does not print)"
+      - "HubSpot:notes (photo + hero URLs on the contact timeline — recovery path if the Drive hook fails)"
+    depends_on:
+      - "secrets: HUBSPOT_TOKEN, RESEND_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET, ANTHROPIC_API_KEY, GEMINI_API_KEY, ZAPIER_IDEAS_HOOK"
+      - "vars: MODE (dry_run|send), RESEND_FROM, ALLOWED_ORIGIN, JUSTCALL_FROM"
+      - booth/eo/index.html
+      - "ops/hubspot-schema/properties.yml (the six event-temp eo_* properties)"
+    notes: >
+      EVENT-TEMP, one night only: EO LA Valley "Build Your First AI Agent",
+      2026-08-20. SUNSET 2026-08-22 — delete both crons, disable the inbound
+      webhook, export any contacts worth keeping, delete the
+      eo_lav_agents_2026 contacts, archive the six eo_* properties, and
+      remove this entry. MODE defaults to dry_run and must be flipped to
+      send after the test plan passes.
+      Attendee-facing copy signs as "Minion #23" and carries NO A+ branding
+      anywhere — the mystery is the demo. Consent: a booth checkbox writes
+      eo_demo_consent, and only "true" contacts receive the Payload #1 triple
+      text and the Payload #2 MMS; the photo MMS (the one message carrying
+      the opt-out line) and all email go to everyone. STOP excludes a number
+      from every later SMS/MMS.
+      DEVIATIONS FROM THE BRIEF, all deliberate: (1) hero images use Gemini,
+      not Higgsfield — Higgsfield has no API key in this stack and is a
+      connected app that cannot be called from a Worker; (2) NO printing at
+      the booth at all — the brief put a Selphy AirPrint job in the Worker,
+      which cannot work (no LAN access from a Worker), and Roman's call was to
+      drop booth printing entirely rather than move it to the iPad: photos are
+      delivered by email and MMS and printed later from the shared Drive
+      folder, which removes the one physical dependency that could fail
+      mid-event; (3) the two Claude system prompts are drafts pending Roman's
+      Deliverable 3.
+      Carries the same privacy shape as sage-oak-booth: GET /photo/<key> is
+      public and unauthenticated (unguessable-key privacy only), and hero
+      images are written with no TTL.
+
   # ───────────────────────── Non-Actions runtimes ──────────────────────
   # Agents that do NOT run on GitHub Actions. Registered 2026-08-20 after the
   # Sage Oak photo booth (a Cloudflare Worker writing to production HubSpot)
