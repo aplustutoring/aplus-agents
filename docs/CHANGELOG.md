@@ -7,6 +7,90 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-21 — Spotlight Orchestrator: the reel now names its blocker, in Paola's thread
+
+**Reported:** Paola, a fourth time on the same bundle (Amelia) — "generate and
+deliver the superhero video reel for an existing Spotlight case study, **or
+surface the specific blocker preventing it**." The second clause is the new
+part, and it is the one nothing in the three entries below has answered.
+
+**Diagnosis (correcting the filed one):** the approved plan was again "locate
+the bundle under `marketing/aplus-content/`, run `build_reel.py`, deliver with
+`deliver_reel.py`". Confirmed unrunnable here for the third session running, and
+re-verified rather than taken on trust: `marketing/aplus-content/` does not
+exist and is gitignored (the bundle is a 30-day Actions artifact built in the
+runner); `GEMINI_API_KEY`, `OPENAI_API_KEY` and `SLACK_BOT_TOKEN` are all unset
+in this checkout; `ffmpeg`/`ffprobe` are not installed. `stage_reel` is wired
+into `STAGE_ORDER` between `slack` and `textstory` and does run, so "the
+orchestrator didn't run it" remains wrong. What was still true, and is what this
+session fixes, is that when it runs and fails **nobody learns why**:
+
+1. **The alert only ever said "exit 1".** `run_step` wrote the failing step's
+   stdout/stderr to the runner log and then threw away the text, raising
+   `reel {name} failed (exit {returncode})`. That string is what reached
+   `reel_status`, the completion summary and the Slack heads-up. Whether Veo
+   refused one beat on safety grounds, a key was unset, or ffmpeg was missing,
+   the operator-visible output was identical — which is how four reports could
+   be filed about this reel without the cause ever being written down.
+2. **The heads-up goes to a channel that is unset by default.** `_post_stage_alert`
+   no-ops without `SLACK_FAILURE_CHANNEL`, and the workflow passes
+   `vars.SLACK_FAILURE_CHANNEL || ''`. Even when it is set it is an ops channel,
+   not the review thread Paola is waiting in. "Surfaced" to a channel nobody
+   reads is indistinguishable from silence — and silence is exactly what she has
+   had four times.
+3. **A run doomed by config still spent the generation budget first.** The steps
+   happen to be ordered cheapest-first only by accident: `stills`/`voice`/`clips`
+   need `GEMINI_API_KEY`, but `assemble` is the one that needs `OPENAI_API_KEY`
+   (Whisper word timings) and ffmpeg. A recovery missing only the Whisper key
+   renders 5 Gemini 2K stills, 5 TTS lines and 4 Veo clips — real money, ~10
+   minutes — and only then dies, twice, once per attempt.
+
+**Fix:** all in `stage_reel` and its alert path.
+`_reel_blockers()` pre-flights what the steps actually read — `metadata.md`,
+`GEMINI_API_KEY`, `OPENAI_API_KEY`, `ffmpeg`, `ffprobe`, and `SLACK_BOT_TOKEN`
+when the run will deliver — and names every missing one before the first step
+runs, so a run that cannot finish says so instead of buying its way to the same
+conclusion. `_have_bin` mirrors `reel_common`'s resolution order so an explicit
+`$FFMPEG`/`$FFPROBE` override is not reported as missing. `_last_lines()` keeps
+the last three non-empty lines the failing step printed — stderr first (where
+the `make_*` scripts `sys.exit()`), falling back to stdout (where `make_clips.py`
+reports `NO VIDEO (safety/RAI)` and names the refused beat) — and carries them
+into the raised error, so `reel_status` and both alerts now read
+`reel clips failed (exit 1): … struggle: NO VIDEO (safety/RAI) … WITH FAILURES
+['struggle']` instead of `exit 1`. `_post_thread_note()` posts a one-line plain
+note into the case study's own review thread whenever the reel fails and a
+thread exists, so the blocker lands where the reel was promised; the ops-channel
+heads-up is unchanged in content and still fires alongside it. Recovery wording
+now says the thread got that note rather than claiming nothing was posted to it.
+
+**Verified:** stubbed scenarios with `subprocess.run`, the state writers and both
+Slack posters faked — no Veo, Gemini, OpenAI, ffmpeg or Slack touched. Blocker
+enumeration with nothing available, with `GEMINI_API_KEY` only, and with
+everything satisfied (including the `$FFMPEG` override path and the delivering
+vs. render-only distinction for `SLACK_BOT_TOKEN`); a blocked stage returning
+without executing a single step (asserted by making `subprocess.run` raise);
+`_last_lines` preferring stderr, falling back to stdout, handling empty output
+and truncating at 400 chars; a Veo RAI refusal on the `clips` step surfacing the
+beat name in both the thread note and the ops alert after the retry; the happy
+path still running all six steps in order and posting nothing; and `--dry-run`
+still stopping after `build_reel` without requiring a Slack token.
+
+**The reel itself is still not generated** — fourth session, same three reasons:
+no bundle, no credentials, no ffmpeg in this checkout. This session answers the
+second half of what Paola asked for ("or surface the specific blocker"), not the
+first.
+
+**Left undone deliberately:** still no `rerender-reel` Actions workflow to match
+`rerender-textstory`, which is the thing that would put this recovery on a
+button in CI where the keys and ffmpeg live. Three consecutive sessions have now
+been scoped out of `.github/workflows/` and `registry.yml` (where the reel
+scripts are still absent from `spotlight-orchestrator`'s `depends_on`), and
+three consecutive reports have ended without the asset. This is the fix; it
+needs a decision from Roman rather than a fourth note here.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
 ## 2026-08-21 — Spotlight Orchestrator: the reel recovery run can now finish
 
 **Reported:** Paola, a third time on the same bundle (Amelia) — asking for just
