@@ -40,7 +40,8 @@
     "Ev0BRPJZB0HH",
     "Ev0BRYCZPXQ9",
     "Ev0BS06RV3CL",
-    "Ev0BRUH8QRPX"
+    "Ev0BRUH8QRPX",
+    "Ev0BRUHM0UDB"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -311,24 +312,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
-    },
-    "1787357831.961899": {
-      "agent": "spotlight-orchestrator",
-      "agent_label": "Spotlight Orchestrator",
-      "correction_path": "corrections/spotlight-orchestrator/2026-08-21-deliver-superhero-reel-request.md",
-      "branch": "fix/spotlight-orchestrator-2026-08-21-961899",
-      "diagnosis": "Paola is asking for a one-off re-run of the superhero reel against Amelia's existing Ocean Grove Spotlight bundle \u2014 not a code fix. The reel builder exists (marketing/scripts/b2c/reel/build_reel.py + deliver_reel.py) but the orchestrator likely didn't run it on Amelia's original pass, or the output wasn't delivered to Slack.",
-      "fix_plan": [
-        "Locate Amelia's Ocean Grove bundle under marketing/aplus-content/<bundle>/ and confirm the Spotlight case-study assets (script, stills, VO inputs) are present.",
-        "Run marketing/scripts/b2c/reel/build_reel.py against that bundle to generate the superhero reel (invoking make_script.py, make_stills.py, make_vo.py, make_clips.py as needed).",
-        "Run marketing/scripts/b2c/reel/deliver_reel.py to post the finished MP4 into the Slack thread where Paola requested it.",
-        "If any input is missing (e.g. no VO script or stills), reply in-thread naming the specific missing file rather than filing another correction ticket.",
-        "Separately: check spotlight_orchestrator.py to see why the reel step didn't fire on the original run \u2014 but that's a follow-up, not part of this delivery."
-      ],
-      "risk": "low",
-      "recommendation": "execute",
-      "proposed_utc": "2026-08-22T00:17:56.177200+00:00",
-      "reporter": "Paola"
     }
   }
 }
