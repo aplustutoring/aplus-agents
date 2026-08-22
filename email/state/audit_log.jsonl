@@ -22275,3 +22275,4 @@
 {"ticket_id": "47856285556", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-22T01:56:10.364928+00:00"}
 {"ticket_id": "47828764032", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-22T01:56:10.863281+00:00"}
 {"ticket_id": "47849585165", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-22T01:56:11.329144+00:00"}
+{"message_id": "deal:64251888909", "source": "deal_sync", "deal_id": "64251888909", "deal_name": "Alyson Lago - Vivienne", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 1597128, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-22T02:05:34.365999+00:00"}
