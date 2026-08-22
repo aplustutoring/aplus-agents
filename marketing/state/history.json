@@ -1337,6 +1337,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1787275829.206459"
+    },
+    {
+      "ts": "2026-08-22T08:33:15.155201-07:00",
+      "kind": "content_build",
+      "week": "2026-08-20",
+      "slot": 1,
+      "post_date": "2026-08-24",
+      "headline": "California's Title III EL RFA is live \u2014 the money is on the table, and most of our partners aren't reaching for it",
+      "bundle_dir": "aplus-content/2026-08-24-california-title-iii-el-rfa",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "220083313691",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-22T09:00:21.056901-07:00",
+      "kind": "content_build",
+      "week": "2026-08-20",
+      "slot": 2,
+      "post_date": "2026-08-26",
+      "headline": "iLEAD Flex opens as the 7th school in the iLEAD network \u2014 NCB moratorium lift is now producing real charter expansion",
+      "bundle_dir": "aplus-content/2026-08-26-ilead-flex-ncb-charter-approval",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "220086263573",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-22T09:17:43.111671-07:00",
+      "kind": "content_build",
+      "week": "2026-08-20",
+      "slot": 3,
+      "post_date": "2026-08-28",
+      "headline": "Varsity Tutors just walked away from the K-12 schools market. What that tells charter directors about the \"platform tutoring\" bet.",
+      "bundle_dir": "aplus-content/2026-08-28-varsity-tutors-k12-exit-charter",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "220086263925",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
