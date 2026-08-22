@@ -391,9 +391,10 @@
     407085608,
     407089051,
     407094931,
-    407102085
+    407102085,
+    407145826
   ],
-  "last_run_utc": "2026-08-22T17:00:54.651515+00:00",
+  "last_run_utc": "2026-08-22T17:37:57.231901+00:00",
   "pending_digest": [
     {
       "call_id": 407102085,
@@ -444,6 +445,12 @@
       "direction": "incoming"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "16198120014",
+      "time_pt": "10:18 AM",
+      "reason": "no recording"
+    }
+  ],
   "pending_failures": []
 }
