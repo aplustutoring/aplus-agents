@@ -319,6 +319,25 @@ engine order), `docs/FLEET.md`, `docs/CHANGELOG.md`.
 
 ---
 
+## 2026-08-23 — PO texts ask for the schedule when the PO doesn't state one
+
+**What:** When a PO has no schedule and Teachworks has none either,
+`schedule_preferences` is now stamped with a general ask (new config
+`po_inbox.schedule_ask_fallback`, worded to follow the SMS template's
+"...still works for you:" colon in workflow 1603217415) so the confirmation
+text asks the family for their schedule instead of trailing off blank. The
+old ⚠️ "set the schedule manually" note becomes an ℹ️ ticket note that does
+NOT trip the 🚩 gap DM — nothing manual remains. Suite 247 green.
+
+**Why:** Roman 2026-08-22: "If the schedule is not included in the purchase
+order, we need to include just a general phrase of please provide us your
+schedule. and that will get auto texted."
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (blank-schedule test reworked + default test).
+
+---
+
 ## 2026-08-20 — Feedback agent: the pinned channel post is not a report
 
 **What:** Intake now drops "channel furniture" before classification. A

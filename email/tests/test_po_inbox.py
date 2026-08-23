@@ -1217,7 +1217,10 @@ def test_schedule_falls_back_to_recent_pattern(monkeypatch):
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "No"
 
 
-def test_no_schedule_derivable_flags_gap(monkeypatch):
+def test_no_schedule_derivable_stamps_ask_fallback(monkeypatch):
+    # Roman 2026-08-22: no schedule in the PO or TW → the SMS asks the family
+    # for one (general phrase auto-texted) instead of ending blank + a manual
+    # follow-up. Note is informational only — must NOT trip the 🚩 gap DM.
     captured = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
@@ -1228,9 +1231,30 @@ def test_no_schedule_derivable_flags_gap(monkeypatch):
                         captured.append(extra_props) or {"id": "D1"})
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com"), notes)
-    assert "schedule_preferences" not in captured[0]
-    gap = [n for n in notes if "schedule_preferences blank" in n]
-    assert gap and gap[0] in po._gap_notes(notes)
+    assert captured[0]["schedule_preferences"] == po.cfg()["po_inbox"]["schedule_ask_fallback"]
+    assert "schedule" in captured[0]["schedule_preferences"].lower()
+    info = [n for n in notes if "asks the family for their schedule" in n]
+    assert info and info[0].startswith("ℹ️")
+    assert info[0] not in po._gap_notes(notes)
+
+
+def test_schedule_ask_fallback_default_without_config(monkeypatch):
+    # Config key absent → the built-in default phrase still goes out.
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
+    monkeypatch.setattr(po.tw, "student_lesson_activity",
+                        lambda e, sf, lookback_days=30, **kw: {"found": False, "recent": 0, "upcoming": 0})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    base = po.cfg()
+    trimmed = {**base, "po_inbox": {k: v for k, v in base["po_inbox"].items()
+                                    if k != "schedule_ask_fallback"}}
+    monkeypatch.setattr(po, "cfg", lambda: trimmed)
+    po._handle_deal(_po(parent_email="mom@x.com"), [])
+    assert "reply" in captured[0]["schedule_preferences"].lower()
+    assert "schedule" in captured[0]["schedule_preferences"].lower()
 
 
 def test_schedule_text_formatting():
