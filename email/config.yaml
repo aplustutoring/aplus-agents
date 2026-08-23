@@ -243,6 +243,14 @@ b2c_deal:
 po_inbox:
   address: "charter@wetutorathome.com"
   owner: charter_admin
+  # When a PO has no schedule and Teachworks has none either, this phrase is
+  # stamped into the deal's schedule_preferences so the confirmation SMS asks
+  # the family instead of ending blank. It renders after "...confirm that this
+  # schedule still works for you:" in workflow 1603217415 — word it to follow
+  # that colon.
+  schedule_ask_fallback: >-
+    we don't have your schedule on file yet! Please reply with the days and
+    times that work best for your student
   deal_pipeline_id: "907748"   # Charter Schools - Traditional Vendor Funds
   waiting_for_po_stage: ""     # stage retired 2026-06-11 (deals moved to Stopped) — POs now CREATE deals
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)

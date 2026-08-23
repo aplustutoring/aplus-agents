@@ -1390,9 +1390,19 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             if sched_pref:
                 extra["schedule_preferences"] = sched_pref
             else:
-                tw_note = ("⚠️ No TW schedule to put in the SMS "
-                           "(schedule_preferences blank) — the confirmation text "
-                           "will be incomplete; set the schedule manually.")
+                # No schedule in the PO or Teachworks → the SMS asks the family
+                # for one instead of trailing off blank (Roman 2026-08-22:
+                # "include just a general phrase of please provide us your
+                # schedule, and that will get auto texted"). ℹ️ (not ⚠️) so the
+                # ticket records it without tripping the 🚩 gap DM — nothing
+                # manual is left to do.
+                extra["schedule_preferences"] = pc.get(
+                    "schedule_ask_fallback",
+                    "we don't have your schedule on file yet! Please reply "
+                    "with the days and times that work best for your student")
+                tw_note = ("ℹ️ No schedule in the PO or Teachworks — the "
+                           "confirmation text asks the family for their "
+                           "schedule instead.")
         upcoming = act.get("upcoming") if act else None
         name = _deal_name(po, parent_name, note_parts, seq_offset, seq_cache)
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
