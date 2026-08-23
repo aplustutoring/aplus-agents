@@ -394,63 +394,8 @@
     407102085,
     407145826
   ],
-  "last_run_utc": "2026-08-23T01:03:03.588885+00:00",
-  "pending_digest": [
-    {
-      "call_id": 407102085,
-      "number": "13236905157",
-      "time_pt": "7:48 PM",
-      "matched": true,
-      "contact_label": "Abuzarov,Dzhafa N/A",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Arnela called A+ Tutoring asking if the company is currently hiring. Roman directed her to the online tutor application on the website under About Us > Become a Tutor. She said she'd apply online and thanked him. No further action needed from A+ staff.",
-        "caller_type": "tutor applicant",
-        "intent": "new inquiry",
-        "sentiment": "positive",
-        "action_items": [],
-        "follow_up_needed": false,
-        "next_step_scheduled": true,
-        "handoff_note": null,
-        "lead_status": "Tutor-Active",
-        "lead_status_reason": "Caller is a prospective tutor asking about hiring; directed to online application.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": null,
-          "what_we_can_do_to_help": null,
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "lead_status",
-          "(blank)",
-          "Tutors"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    }
-  ],
-  "pending_skipped": [
-    {
-      "number": "16198120014",
-      "time_pt": "10:18 AM",
-      "reason": "no recording"
-    }
-  ],
+  "last_run_utc": "2026-08-23T02:07:59.273358+00:00",
+  "pending_digest": [],
+  "pending_skipped": [],
   "pending_failures": []
 }
