@@ -404,9 +404,11 @@
     407625399,
     407646542,
     407651626,
-    407656315
+    407656315,
+    407679187,
+    407679732
   ],
-  "last_run_utc": "2026-08-24T22:02:43.285520+00:00",
+  "last_run_utc": "2026-08-24T22:46:10.311573+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -833,6 +835,79 @@
         ],
         [
           "Complete and submit session submission form for AI/technology presentation (choose 11:00-12:15 or 4:15-5:30 Thursday slot)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407679732,
+      "number": "19093804811",
+      "time_pt": "3:34 PM",
+      "matched": true,
+      "contact_label": "Banafsheh Salehi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Banafsheh Salehi to follow up on Roxane's first tutoring session with tutor Gigi on Saturday. The call went to voicemail; Yolanda left a message asking Banafsheh to call or text back and said she would try again tomorrow morning.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Banafsheh back tomorrow morning to check in on how Saturday's session with Gigi went",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Optionally text Banafsheh via the existing thread to prompt a reply about Saturday's session",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound check-in from Yolanda to Banafsheh Salehi (mom of Roxane, 5th grade, ISEE writing prep) went to voicemail. Yolanda left a message asking how Roxane's Saturday session with tutor Gigi went and said she'd call back tomorrow morning; she also invited Banafsheh to text on the existing thread. This is an existing customer (OPEN_DEAL) \u2014 do not treat as new lead. When you reach her, open with: \"Hi Banafsheh, this is [name] from A+ Tutoring following up on Yolanda's message \u2014 we just wanted to hear how Roxane's first session with Gigi went on Saturday and make sure everything is on track for ISEE writing prep.\" Be ready to discuss scheduling the next session and confirm the tutor fit.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal (Roxane already had a session with tutor Gigi); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Gigi"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Yolanda called to follow up on Roxane's Saturday session with tutor Gigi; reached voicemail and left a message asking Banafsheh to call/text back. Yolanda plans to try again tomorrow morning.",
+          "what_we_can_do_to_help": "Reach Banafsheh by phone or text to confirm how the first session with Gigi went, address any concerns, and lock in the next session cadence for ISEE writing prep.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Yolanda called to follow up on Roxane's Saturday session with tutor Gigi; reached voicemail and left a message asking Banafsheh to call/text back. Yolanda plans to try again tomorrow morning."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reach Banafsheh by phone or text to confirm how the first session with Gigi went, address any concerns, and lock in the next session cadence for ISEE writing prep."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Banafsheh back tomorrow morning to check in on how Saturday's session with Gigi went",
+          86868539
+        ],
+        [
+          "Optionally text Banafsheh via the existing thread to prompt a reply about Saturday's session",
           81494333
         ]
       ],
