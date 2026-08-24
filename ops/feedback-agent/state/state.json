@@ -48,7 +48,8 @@
     "Ev0BS7R3JU0K",
     "Ev0BT8DT6D1N",
     "Ev0BT8E9BMQQ",
-    "Ev0BSE412GR0"
+    "Ev0BSE412GR0",
+    "Ev0BSG2U6YKB"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -340,12 +341,12 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-24-missing-animated-reels-backfill.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/112",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787610808300769"
     }
   ],
   "graduation": {
-    "clean_merges": 10
+    "clean_merges": 11
   },
   "pending_proposals": {
     "1786554388.265099": {
