@@ -398,9 +398,10 @@
     407181245,
     407212696,
     407524266,
-    407525996
+    407525996,
+    407540089
   ],
-  "last_run_utc": "2026-08-24T17:47:43.677594+00:00",
+  "last_run_utc": "2026-08-24T18:49:02.259795+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -529,6 +530,98 @@
       "tasks_created": [
         [
           "Await callback from Peter Flores; if no response in a few days, attempt another follow-up contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407540089,
+      "number": "13102706840",
+      "time_pt": "11:00 AM",
+      "matched": true,
+      "contact_label": "Shay David",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Shay David to follow up on her inquiry about tutoring for her son Sam (8, 3rd grade at Sherman Oaks Elementary). Shay explained Sam rushes through work, gets distracted, and struggles most with writing; math is average. She wants in-person tutoring to start (ZIP 91403) since Sam focuses better with someone physically present. Paola committed to emailing tutoring rates and checking in-person tutor availability in the area.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Shay the current tutoring rates and package options",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91403 for writing support for a 3rd grader",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Follow up via email once a matching in-person tutor is identified, sharing tutor profile for confirmation before booking",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Shay David (mom, warm and engaged) wants in-person tutoring for her son Sam, age 8, 3rd grade at Sherman Oaks Elementary. Primary need is writing \u2014 Sam rushes, gets distracted, and takes about double the time; math is average with rushing-driven mistakes. Mom works with him daily but wants a professional to reduce the parent-child friction. She specifically wants IN-PERSON to start (ZIP 91403); open to online later once trust is built. Paola promised to (1) email current rates/packages and (2) check in-person tutor availability in 91403 and email back with a tutor profile for confirmation before any booking. Shay expects both emails soon. Suggested opener: \"Hi Shay, following up on your call with Paola \u2014 here are our rates, and I've been looking into in-person tutors near 91403 for Sam's writing support...\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we actually spoke with; not charter-funded and no diagnostic required \u2014 standard writing tutoring need.",
+        "student_or_school_names_mentioned": [
+          "Sam",
+          "Sherman Oaks Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call confirmed Sam (age 8, 3rd grade) rushes through work and gets distracted; writing is the biggest struggle (pacing, spelling, getting words down). Math is average \u2014 mistakes come from rushing, not comprehension. Mom works with him daily but wants a professional to take over so the parent-child dynamic stops blocking progress.",
+          "what_we_can_do_to_help": "Match Sam with an in-person tutor near ZIP 91403 focused on writing support. Paola to email current rates and tutor availability; family wants to start in-person and may transition to online later once Sam builds trust with the tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call confirmed Sam (age 8, 3rd grade) rushes through work and gets distracted; writing is the biggest struggle (pacing, spelling, getting words down). Math is average \u2014 mistakes come from rushing, not comprehension. Mom works with him daily but wants a professional to take over so the parent-child dynamic stops blocking progress."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Sam with an in-person tutor near ZIP 91403 focused on writing support. Paola to email current rates and tutor availability; family wants to start in-person and may transition to online later once Sam builds trust with the tutor."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Shay the current tutoring rates and package options",
+          81494333
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91403 for writing support for a 3rd grader",
+          81494333
+        ],
+        [
+          "Follow up via email once a matching in-person tutor is identified, sharing tutor profile for confirmation before booking",
           81494333
         ]
       ],

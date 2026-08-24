@@ -173,3 +173,4 @@
 {"call_id": 407102085, "date_pt": "2026-08-21", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 2.8, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 1, "U5": 3, "S4": 2}}
 {"call_id": 407524266, "date_pt": "2026-08-24", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 4, "U3": 4, "U5": 3, "S2": 3, "S4": 2}}
 {"call_id": 407525996, "date_pt": "2026-08-24", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 407540089, "date_pt": "2026-08-24", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 4, "U2": 5, "U3": 4, "U4": 2, "U5": 3, "S1": 4, "S2": 3, "S3": 2, "S4": 2}}
