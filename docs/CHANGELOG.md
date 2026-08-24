@@ -7,6 +7,77 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-24 — Spotlight Orchestrator: `--reel-only` takes a batch; the real blocker escalated
+
+**Reported:** Paola, a fifth time on the same asset — three existing case
+studies (Amelia, Ethan, Isabella) are missing their Animated Spotlight Reels.
+Backfill request, not a bug: build the reels with the existing pipeline, match
+the Wyatt spec, do not touch the other assets in those packs.
+
+**Diagnosis (correcting the filed one):** the approved plan was, for the fourth
+session running, "locate the bundles under `marketing/aplus-content/`, run
+`build_reel.py`, deliver with `deliver_reel.py`". Re-verified here rather than
+taken on trust, and still unrunnable: `marketing/aplus-content/` does not exist
+and is gitignored (bundles are 30-day Actions artifacts built in the runner),
+and there are no Gemini/OpenAI/Slack credentials and no ffmpeg in this checkout.
+The plan's one code item — "consider adding a `--reels-only` flag so future
+single-asset backfills don't require a bespoke run" — **already shipped** on
+2026-08-20 as `--reel-only BUNDLE`. So the approved plan contained nothing this
+session could execute and nothing left to build.
+
+**Why the reels still have not arrived, plainly:** `--reel-only` cannot be run
+by the people who need it. There is no `rerender-reel` Actions workflow to match
+`rerender-textstory.yml`, and no workflow anywhere invokes `--reel-only`
+(verified: zero matches for `reel-only` under `.github/workflows/`). It is a
+command that only runs on a laptop that happens to have Veo/Gemini/OpenAI/Slack
+keys, ffmpeg, and a hand-unpacked artifact. The three sessions below each named
+this as the blocker and each was scoped out of `.github/workflows/`; this
+session was too. Four consecutive sessions have now improved a command nobody
+can invoke while the asset count delivered to Paola stayed at zero. **This is an
+escalation, not another footnote:** the next action on this agent should be the
+`rerender-reel` workflow, and it should be scoped in.
+
+**Fix (the honest minimal one, in scope):** `--reel-only` now takes one or more
+bundles, because this report is the first to ask for a batch and three bespoke
+invocations are three chances to mistype an artifact path with no single verdict
+at the end. Every bundle is preflighted before any of them generates anything,
+so a bundle unpacked one level off is named up front instead of surfacing after
+its predecessors have spent Veo credit; if any bundle fails preflight, nothing
+is generated and nothing is delivered (the approved plan's "stop and report
+exactly which student and which input is missing"). Each bundle then gets its
+own run record and its own `REEL_RECOVERY_TIMEOUT_S` budget — per student, not
+split across the batch — and a per-bundle summary plus a batch exit code at the
+end. `--reel-thread-ts` is rejected with more than one bundle: it names one case
+study's review thread, so a batch sharing it would drop every student's reel
+into one family's thread. Repeated paths collapse so a bundle named twice is not
+delivered twice. `_bundle_blockers` splits the bundle-shaped preconditions out
+of `_reel_blockers` so the batch preflight reports a verdict per student without
+repeating the run-wide env/binary blockers once per student; `_reel_blockers`
+delegates to it and its output is unchanged.
+
+**Verified:** 47 stubbed assertions across 11 scenarios with `stage_reel`, the
+run-state writers and the Slack alert faked — no Veo, Gemini, OpenAI, ffmpeg or
+Slack touched. Single-bundle behavior byte-identical (no preflight noise, no
+batch summary, the verified "Reel recovery FAILED — nothing was delivered."
+string intact); three bundles run in order with distinct run ids; a bundle
+missing `metadata.md` and a nonexistent directory each block the whole batch
+before the first generation call; a mid-batch failure still runs the bundles
+behind it, exits 1, names the failed one, and does **not** claim the batch
+delivered nothing; duplicate paths collapse to one run; `--reel-thread-ts`
+accepted for one bundle and rejected with exit 2 for two; `--dry-run` renders
+without delivering; a normal `--source` run and the standalone
+`--reel-thread-ts` guard are unaffected by the `nargs` change. Plus one real
+unstubbed run confirming the preflight rejects a bad batch with exit 1 and
+writes no run state.
+
+**The three reels are still not generated.** That is what Paola asked for and
+this session could not produce it, for the same reason as the last three: no
+bundles, no credentials, no ffmpeg here. What changed is that when the batch is
+finally runnable it is one command with one verdict.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-08-21 — Spotlight Orchestrator: the reel now names its blocker, in Paola's thread
 
 **Reported:** Paola, a fourth time on the same bundle (Amelia) — "generate and
