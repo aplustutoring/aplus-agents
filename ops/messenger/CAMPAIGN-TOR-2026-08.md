@@ -175,6 +175,28 @@ goes out, via one `charter-gap-analysis.yml` run, and hand Danielle the file.
 80 teachers replying to a promise she cannot fulfil for three days turns the
 curiosity hook into the thing that burns her.
 
+### The scholarship P.S.: say what it actually is
+
+Roman 2026-08-24: **"our scholarship program provides 1 free session to a child
+that the teacher wants."**
+
+The drafts had it as "covers one student in full, no charter funds involved",
+which is a much bigger promise. Corrected in all four warm segments to:
+"gives a student of your choosing one free session. Tell me who and I will set
+it up." One session that a teacher can picture giving to a specific kid is a
+fine offer. A funded tutoring programme that turns out to be one session is a
+trust problem.
+
+**⚠ The LIVE scholarship funnel has the same overclaim, and it is not ours to
+fix from here.** Stage 1.3 (`217749216439`) is subject-lined "A free tutoring
+spot for one of your students" and describes "free, synchronous one-on-one
+tutoring with a real tutor, matched to exactly where they need support, plus
+session notes so everyone stays in the loop". Nothing in it says one session.
+A teacher reading that expects ongoing tutoring.
+
+Once this campaign starts pointing teachers at that funnel, it inherits the
+mismatch. Worth a pass over those 22 emails with Danielle before wave 1.
+
 Rules for anyone editing these:
 * One ask per email. If there are two CTAs, cut one.
 * Lead with what they do not have, not with what we want. A teacher in

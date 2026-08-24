@@ -74,6 +74,39 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Scholarship offer corrected: one free session, not a funded spot
+
+**Roman:** "our scholarship program provides 1 free session to a child that the
+teacher wants."
+
+The teacher drafts said the Teacher Scholarship Program "covers one student in
+full, no charter funds involved". That is a materially bigger promise than one
+session, and it was in the P.S. of all four warm segments. Corrected to "gives a
+student of your choosing one free session. Tell me who and I will set it up."
+
+Where the error came from: the live funnel's own language. Its emails are the
+only written description of the programme, and Stage 1.3 is titled "A free
+tutoring spot for one of your students". Reading that as a funded spot is the
+natural reading, which is the point below.
+
+**⚠ The live funnel carries the same overclaim.** Stage 1.3 (`217749216439`)
+describes "free, synchronous one-on-one tutoring with a real tutor, matched to
+exactly where they need support, plus session notes so everyone stays in the
+loop" and never says one session. Stage 3.1 adds that a teacher may nominate up
+to three students, one per form submission, which reinforces the impression of
+something ongoing. **22 automated emails currently set an expectation the
+programme does not meet.**
+
+This is now a dependency of the teacher campaign rather than a separate issue:
+wave 1 points teachers at that funnel, so it inherits the mismatch. Flagged for
+a pass with Danielle before launch. **Not changed** — those are her emails and
+live automation, so editing them is Roman's and Danielle's call, not this
+session's.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/` (4 P.S. blocks),
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-24 — Teacher copy: curiosity over pitch (and a promise we could not keep)
 
 **Roman:** "curiosity over bullshit, school year start is busy."

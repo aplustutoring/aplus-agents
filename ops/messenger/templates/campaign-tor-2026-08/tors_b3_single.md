@@ -19,8 +19,8 @@ help. If not, I will check back later in the year.
 
 Danielle
 
-*P.S. Our Teacher Scholarship Program covers one student in full, no charter
-funds involved. Ask and I will send the form.*
+*P.S. Our Teacher Scholarship Program gives a student of your choosing one free
+session. Tell me who and I will set it up.*
 
 ---
 ## Follow-up (Day 5, only if no reply)
