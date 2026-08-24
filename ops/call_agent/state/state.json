@@ -406,9 +406,11 @@
     407651626,
     407656315,
     407679187,
-    407679732
+    407679732,
+    407686632,
+    407687006
   ],
-  "last_run_utc": "2026-08-24T22:46:10.311573+00:00",
+  "last_run_utc": "2026-08-24T23:26:27.134471+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -909,6 +911,152 @@
         [
           "Optionally text Banafsheh via the existing thread to prompt a reply about Saturday's session",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407686632,
+      "number": "19094548581",
+      "time_pt": "3:57 PM",
+      "matched": true,
+      "contact_label": "Jessica Lujan",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Jessica Lujan to schedule tutoring following a purchase order received for her two children, Mariah and Taylor. Jessica confirmed Tuesdays or Thursdays after 5 PM works for both kids, with Mariah continuing with Miss Allison and Taylor needing a new tutor match. Both students will focus on math and reading, with the tutor deciding subject focus per session. Janelle will coordinate Allison's availability and find a tutor match for Taylor, then follow up with Jessica.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Coordinate with Allison on availability Tuesdays/Thursdays after 5 PM for Mariah",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Find a new tutor match for Taylor for Tuesdays/Thursdays (ideally after 5 PM, but after 3 PM acceptable)",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Follow up with Jessica with Allison's confirmed availability and Taylor's tutor match",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jessica Lujan (returning customer, warm/friendly tone) has a purchase order in for her two kids Mariah and Taylor \u2014 both need 1 hr/week of tutoring covering math and reading (tutor decides subject each session). Mariah wants to continue with Miss Allison, Tuesday or Thursday after 5 PM. Taylor needs a NEW tutor (different from Mariah's), Tuesday or Thursday \u2014 ideally after 5 PM but anytime after 3 PM works since some online classes end around 2 PM. Janelle promised to (1) confirm Allison's post-5 PM availability and (2) find a tutor match for Taylor, then circle back to Jessica with options so she can confirm against the family schedule. Jessica is expecting a follow-up soon with proposed times/tutor. Suggested opener: 'Hi Jessica, following up on our scheduling call \u2014 here's what we have for Allison and a proposed tutor for Taylor\u2026'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal / active purchase order; scheduling call for ongoing service \u2014 status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Mariah",
+          "Taylor",
+          "Allison"
+        ],
+        "record_updates": {
+          "whats_going_on": "Purchase order received for two students, Mariah and Taylor. Both need 1 hour/week of tutoring in math and reading (tutor to decide subject focus each session). Mariah wants to continue with Miss Allison; Taylor needs a new tutor assignment.",
+          "what_we_can_do_to_help": "Schedule Mariah with Allison on Tuesday or Thursday after 5 PM. Match Taylor with a new tutor on Tuesday or Thursday, preferably after 5 PM but anytime after 3 PM is workable. Follow up with Jessica to confirm times once tutor availability is known.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Purchase order received for two students, Mariah and Taylor. Both need 1 hour/week of tutoring in math and reading (tutor to decide subject focus each session). Mariah wants to continue with Miss Allison; Taylor needs a new tutor assignment."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Schedule Mariah with Allison on Tuesday or Thursday after 5 PM. Match Taylor with a new tutor on Tuesday or Thursday, preferably after 5 PM but anytime after 3 PM is workable. Follow up with Jessica to confirm times once tutor availability is known."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Coordinate with Allison on availability Tuesdays/Thursdays after 5 PM for Mariah",
+          80047202
+        ],
+        [
+          "Find a new tutor match for Taylor for Tuesdays/Thursdays (ideally after 5 PM, but after 3 PM acceptable)",
+          80047202
+        ],
+        [
+          "Follow up with Jessica with Allison's confirmed availability and Taylor's tutor match",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407687006,
+      "number": "13104631221",
+      "time_pt": "4:03 PM",
+      "matched": true,
+      "contact_label": "Aly Daly",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Janelle at A+ Tutoring to Aly Daly regarding scheduling for her son Everson's tutoring. Reached what appears to be a call-screening service; Janelle left her name and reason and was asked to stay on the line, but the transcript ends before an actual conversation occurred. No new information was exchanged.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry contacting Aly to confirm Everson's Tuesday 9am math tutoring slot with Jonathan and coordinate Italian scheduling with Cynthia",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Janelle attempted an outbound follow-up to Aly Daly (existing customer, son Everson) to confirm the proposed Tuesday 9am math session with new tutor Jonathan and to coordinate Italian scheduling with Cynthia. The call hit a screening service \u2014 Janelle left her name/company and was told to hold, but no live conversation happened. Aly still expects confirmation of the schedule from prior 8/17 voicemail. Suggested opener: 'Hi Aly, it's [name] from A+ Tutoring following up on Janelle's message \u2014 wanted to lock in Tuesday 9am with Jonathan for Everson's math and figure out a time with Cynthia for Italian.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Aly is an existing customer with an open deal; status is owned by the deal pipeline and the call did not connect substantively.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Janelle called Aly for scheduling follow-up; reached a call-screening/voicemail service, left name and company, no live conversation. Still awaiting Aly's confirmation on Everson's Tuesday 9am math slot with Jonathan and Italian scheduling with Cynthia.",
+          "what_we_can_do_to_help": "[outbound call] Janelle to keep attempting contact (try SMS as well) to confirm Tuesday 9am math with Jonathan and finalize Italian time with Cynthia.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Janelle called Aly for scheduling follow-up; reached a call-screening/voicemail service, left name and company, no live conversation. Still awaiting Aly's confirmation on Everson's Tuesday 9am math slot with Jonathan and Italian scheduling with Cynthia."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Janelle to keep attempting contact (try SMS as well) to confirm Tuesday 9am math with Jonathan and finalize Italian time with Cynthia."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry contacting Aly to confirm Everson's Tuesday 9am math tutoring slot with Jonathan and coordinate Italian scheduling with Cynthia",
+          80047202
         ]
       ],
       "ticket_id": null,

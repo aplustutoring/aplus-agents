@@ -178,3 +178,5 @@
 {"call_id": 407625399, "date_pt": "2026-08-24", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 4, "U3": 4, "U5": 2, "V1": 3}}
 {"call_id": 407656315, "date_pt": "2026-08-24", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 2, "U2": 4, "U3": 4, "U5": 3, "S4": 3}}
 {"call_id": 407679732, "date_pt": "2026-08-24", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 4.2, "scores": {"U1": 5, "U3": 4, "U5": 4, "S4": 4}}
+{"call_id": 407686632, "date_pt": "2026-08-24", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 4.0, "scores": {"U1": 5, "U2": 4, "U3": 3, "U5": 4}}
+{"call_id": 407687006, "date_pt": "2026-08-24", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U5": 2}}
