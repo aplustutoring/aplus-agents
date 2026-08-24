@@ -46,7 +46,8 @@
     "Ev0BSE5QKYUR",
     "Ev0BSG0L2LC9",
     "Ev0BS7R3JU0K",
-    "Ev0BT8DT6D1N"
+    "Ev0BT8DT6D1N",
+    "Ev0BT8E9BMQQ"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -397,24 +398,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-24T22:35:00.570147+00:00",
       "reporter": "Roman"
-    },
-    "1787610808.300769": {
-      "agent": "spotlight-orchestrator",
-      "agent_label": "Spotlight Orchestrator",
-      "correction_path": "corrections/spotlight-orchestrator/2026-08-24-missing-animated-reels-backfill.md",
-      "branch": "fix/spotlight-orchestrator-2026-08-24-300769",
-      "diagnosis": "This is a routine backfill request, not a bug: Paola needs the Animated Spotlight Reel generated for three existing case studies (Amelia, Ethan, Isabella) using the existing reel pipeline under marketing/scripts/b2c/reel/. No code change is implied \u2014 the orchestrator/reel builder just needs to be invoked in reel-only mode against those three existing bundles.",
-      "fix_plan": [
-        "Locate the existing case study bundles for Amelia, Ethan, and Isabella under marketing/aplus-content/<bundle>/ and confirm each has the inputs required by marketing/scripts/b2c/reel/build_reel.py (script source, stills, VO inputs).",
-        "For any bundle missing a required input, stop and report exactly which student and which input is missing \u2014 do not regenerate other assets.",
-        "Run marketing/scripts/b2c/reel/build_reel.py in a reel-only path (bypassing the full spotlight_orchestrator so hero cards, carousels, etc. are not rebuilt) for each of the three bundles, matching the Wyatt reel spec: 9:16, ~29s, VO + captions, no student name, CTA 'Book a consultation' + link to more success stories.",
-        "Deliver the three MP4s to Paola via marketing/scripts/b2c/reel/deliver_reel.py (or manual Slack drop) for review before posting \u2014 do not auto-publish.",
-        "If this backfill pattern is common, consider adding a --reels-only flag to spotlight_orchestrator.py so future single-asset backfills don't require a bespoke run."
-      ],
-      "risk": "medium",
-      "recommendation": "execute",
-      "proposed_utc": "2026-08-24T22:35:49.918847+00:00",
-      "reporter": "Paola"
     }
   }
 }
