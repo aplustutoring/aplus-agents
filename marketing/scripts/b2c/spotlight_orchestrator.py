@@ -179,8 +179,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-hubspot", action="store_true", help="Skip HubSpot contact lookup and proceed with local input only")
     parser.add_argument("--force-update", action="store_true", help="When a HubSpot draft already exists for the slug, refresh its body with this run's Doc 1 (PATCH) instead of reusing the stale draft. Re-runs should pass this so embed matches the current document.")
     parser.add_argument("--slack-channel", default=None, help="Override the Slack delivery channel (default: #student-spotlight-ready)")
-    parser.add_argument("--reel-only", metavar="BUNDLE", default=None, help="Recovery mode: skip the pipeline and run ONLY the reel stage (generate + deliver) against an already-built bundle directory. Use with the bundle artifact of the run whose reel failed.")
-    parser.add_argument("--reel-thread-ts", default=None, help="With --reel-only: post the recovered reel into this existing Slack thread (the case-study delivery thread) instead of starting a new one.")
+    parser.add_argument("--reel-only", metavar="BUNDLE", nargs="+", default=None, help="Recovery mode: skip the pipeline and run ONLY the reel stage (generate + deliver) against one or more already-built bundle directories. Use with the bundle artifacts of the runs whose reels are missing.")
+    parser.add_argument("--reel-thread-ts", default=None, help="With a single --reel-only bundle: post the recovered reel into this existing Slack thread (the case-study delivery thread) instead of starting a new one.")
     parser.add_argument("--verbose", action="store_true", help="Print extra diagnostic details")
     return parser.parse_args()
 
@@ -3488,14 +3488,26 @@ def _have_bin(name: str) -> bool:
     return shutil.which(name) is not None
 
 
+def _bundle_blockers(bundle: Path) -> list[str]:
+    """Reasons THIS bundle cannot produce a reel, independent of credentials.
+
+    Split out of _reel_blockers so a multi-bundle backfill can print a verdict
+    per student without repeating the run-wide env/binary blockers once per
+    student (2026-08-24 — three missing reels asked for in one request).
+    """
+    if not bundle.is_dir():
+        return [f"{bundle} is not a directory"]
+    if not (bundle / "metadata.md").exists():
+        return [f"{bundle.name}/metadata.md is missing — the reel script "
+                "is derived from it"]
+    return []
+
+
 def _reel_blockers(bundle: Path, delivering: bool) -> list[str]:
     """Named reasons this reel cannot be produced at all. Empty list means every
     precondition the reel steps read is in place — it does NOT promise Veo will
     cooperate, only that nothing is missing before we ask it to."""
-    blockers = []
-    if not (bundle / "metadata.md").exists():
-        blockers.append(f"{bundle.name}/metadata.md is missing — the reel script "
-                        "is derived from it")
+    blockers = _bundle_blockers(bundle)
     for name, used_by in REEL_ENV_REQUIREMENTS:
         if not os.environ.get(name):
             blockers.append(f"{name} is not set (needed by reel:{used_by})")
@@ -3734,7 +3746,7 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
 
 
 def run_reel_only(args: argparse.Namespace) -> int:
-    """--reel-only: generate + deliver the reel for an ALREADY-BUILT bundle.
+    """--reel-only: generate + deliver the reel for ALREADY-BUILT bundles.
 
     The recovery path the reel never had. The textstory stage has had one since
     it shipped (the "Re-render textstories for a bundle" workflow, which pulls
@@ -3743,22 +3755,72 @@ def run_reel_only(args: argparse.Namespace) -> int:
     the entire pipeline — which re-drafts, re-publishes and re-posts the whole
     case study to Paola. This runs the reel stage and nothing else.
 
+    Takes one or more bundles. Paola's backfills arrive as a batch (2026-08-24 —
+    three case studies missing their reels in a single request), and three
+    bespoke invocations mean three chances to mistype a path and no one verdict
+    at the end. Every bundle is preflighted BEFORE the first one generates
+    anything, so an artifact that was unpacked wrong is named up front instead
+    of surfacing after the bundles ahead of it have already spent Veo credit;
+    if any bundle fails preflight nothing is generated or delivered at all.
+
     Unlike the pipeline, where the reel is a non-fatal bonus, delivering the
-    reel is the entire point here: a reel that still does not ship exits 1.
+    reel is the entire point here: any reel that still does not ship exits 1.
     --dry-run renders locally without posting to Slack.
     """
-    bundle = Path(args.reel_only).resolve()
-    if not bundle.is_dir():
-        print(f"ERROR: bundle not found: {bundle}", file=sys.stderr)
-        return 1
-    # Same guard the textstory recovery workflow uses: metadata.md is what the
-    # reel scripts read, and its absence means an artifact was unpacked one
-    # level off (dl/<name>/<name>/) rather than a genuinely empty bundle.
-    if not (bundle / "metadata.md").exists():
-        print(f"ERROR: {bundle} has no metadata.md — point --reel-only at the "
-              "bundle directory itself, not its parent.", file=sys.stderr)
+    # resolve() first so the same bundle named two different ways (a relative
+    # path and an absolute one) collapses instead of being delivered twice.
+    bundles: list[Path] = []
+    for raw in args.reel_only:
+        bundle = Path(raw).resolve()
+        if bundle not in bundles:
+            bundles.append(bundle)
+
+    # Preflight the whole batch. Bundle-shaped problems only — credentials and
+    # ffmpeg are run-wide and stage_reel reports them once, per bundle, itself.
+    blocked = [(b, _bundle_blockers(b)) for b in bundles]
+    blocked = [(b, reasons) for b, reasons in blocked if reasons]
+    if len(bundles) > 1 or blocked:
+        for bundle in bundles:
+            reasons = dict(blocked).get(bundle)
+            print(f"  preflight {bundle.name}: "
+                  f"{'CANNOT RUN' if reasons else 'ready'}")
+            for reason in reasons or []:
+                print(f"    - {reason}", file=sys.stderr)
+    if blocked:
+        # Same guard the textstory recovery workflow uses: metadata.md is what
+        # the reel scripts read, and its absence means an artifact was unpacked
+        # one level off (dl/<name>/<name>/) rather than a genuinely empty
+        # bundle. Point --reel-only at the bundle directory, not its parent.
+        print(f"ERROR: {len(blocked)} of {len(bundles)} bundle(s) cannot produce "
+              "a reel. Nothing was generated and nothing was delivered — fix "
+              "the paths above and re-run the batch.", file=sys.stderr)
         return 1
 
+    results = [(bundle, _recover_one_reel(args, bundle)) for bundle in bundles]
+    failed = [bundle for bundle, ok in results if not ok]
+    if len(bundles) > 1:
+        print("\n=== Reel-only recovery summary ===")
+        for bundle, ok in results:
+            print(f"  {bundle.name}: {'delivered' if ok else 'FAILED'}")
+    if failed:
+        if len(bundles) == 1:
+            print("Reel recovery FAILED — nothing was delivered.", file=sys.stderr)
+        else:
+            # Say which ones, and do not claim the whole batch delivered
+            # nothing — the bundles ahead of a failure did ship.
+            print(f"Reel recovery FAILED for {len(failed)} of {len(bundles)} "
+                  f"bundle(s): {', '.join(b.name for b in failed)}.",
+                  file=sys.stderr)
+        return 1
+    return 0
+
+
+def _recover_one_reel(args: argparse.Namespace, bundle: Path) -> bool:
+    """One bundle's reel-only recovery. True when the reel shipped.
+
+    Each bundle gets its own run record and its own REEL_RECOVERY_TIMEOUT_S
+    budget: in a batch the budget is per student, not split between them.
+    """
     run = {
         "run_id": str(uuid.uuid4()),
         "started_at": datetime.utcnow().isoformat() + "Z",
@@ -3797,11 +3859,10 @@ def run_reel_only(args: argparse.Namespace) -> int:
     status = run.get("reel_status", "skipped: stage did not run")
     print(f"Reel: {status}")
     if status != "ok":
-        print("Reel recovery FAILED — nothing was delivered.", file=sys.stderr)
         update_run(run["run_id"], {"status": "failed"})
-        return 1
+        return False
     update_run(run["run_id"], {"status": "completed"})
-    return 0
+    return True
 
 
 TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.py"
@@ -3998,10 +4059,20 @@ def run_stage(stage_name: str, args: argparse.Namespace, run: dict) -> dict:
 def main() -> int:
     args = parse_args()
     if args.reel_only:
+        # One thread ts names ONE case study's review thread, so a batch sharing
+        # it would drop every student's reel into the same family's thread.
+        if args.reel_thread_ts and len(args.reel_only) > 1:
+            print("ERROR: --reel-thread-ts names one case study's review "
+                  "thread, so it cannot be used with multiple bundles — every "
+                  "reel would land in the same student's thread. Run the "
+                  "bundles one at a time when each needs its own thread.",
+                  file=sys.stderr)
+            return 2
         return run_reel_only(args)
     if not args.source:
-        print("ERROR: --source is required (or use --reel-only BUNDLE to "
-              "recover the reel for an already-built bundle).", file=sys.stderr)
+        print("ERROR: --source is required (or use --reel-only BUNDLE [BUNDLE "
+              "...] to recover the reels for already-built bundles).",
+              file=sys.stderr)
         return 2
     if args.reel_thread_ts:
         print("ERROR: --reel-thread-ts only applies to --reel-only; a normal "
