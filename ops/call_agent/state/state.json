@@ -400,9 +400,10 @@
     407524266,
     407525996,
     407540089,
-    407597051
+    407597051,
+    407625399
   ],
-  "last_run_utc": "2026-08-24T20:04:04.904146+00:00",
+  "last_run_utc": "2026-08-24T20:49:41.001332+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -690,6 +691,77 @@
       "tasks_created": [
         [
           "Await Christine's callback; if no response in a few days, try another outreach attempt (call or email) to keep the charter PO process moving for Matthew.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407625399,
+      "number": "13108941830",
+      "time_pt": "1:25 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed another outbound follow-up call to Hope regarding the payment link that was sent for Luna's 20-hour package renewal. The call went to voicemail; Yolanda left a message asking Hope to confirm everything is okay with the link since no payment has been received yet, and provided the callback number 818-850-6284.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue attempting to reach Hope (and/or Josh at 310-800-6569) to confirm receipt of the payment link and complete payment for Luna's 20-hour package renewal",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Monitor for incoming payment on the resent link and follow up if not completed soon",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an active deal/renewal \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda placed another outbound follow-up call to Hope regarding the payment link for Luna's 20-hour package renewal; reached voicemail. Left a message noting no payment has been received yet and asking Hope to call back with any questions; provided callback number 818-850-6284.",
+          "what_we_can_do_to_help": "Continue attempts to reach Hope and/or Josh (310-800-6569) to confirm the payment link works and lock in payment for Luna's renewal, then proceed with splitting hours and enrolling Ocean.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda placed another outbound follow-up call to Hope regarding the payment link for Luna's 20-hour package renewal; reached voicemail. Left a message noting no payment has been received yet and asking Hope to call back with any questions; provided callback number 818-850-6284."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempts to reach Hope and/or Josh (310-800-6569) to confirm the payment link works and lock in payment for Luna's renewal, then proceed with splitting hours and enrolling Ocean."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue attempting to reach Hope (and/or Josh at 310-800-6569) to confirm receipt of the payment link and complete payment for Luna's 20-hour package renewal",
+          86868539
+        ],
+        [
+          "Monitor for incoming payment on the resent link and follow up if not completed soon",
           81494333
         ]
       ],
