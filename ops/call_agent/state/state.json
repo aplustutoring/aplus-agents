@@ -396,10 +396,147 @@
     407181028,
     407181054,
     407181245,
-    407212696
+    407212696,
+    407524266,
+    407525996
   ],
-  "last_run_utc": "2026-08-24T17:05:58.830363+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-24T17:47:43.677594+00:00",
+  "pending_digest": [
+    {
+      "call_id": 407524266,
+      "number": "17604643328",
+      "time_pt": "10:40 AM",
+      "matched": true,
+      "contact_label": "Leah Panichello",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Leah Panichello about her daughter Zarah, who was nominated by her teacher Alicia Skovar for A+'s teacher scholarship program. The call went to Leah's voicemail; Paola left a message introducing herself, referencing the nomination, and noting she had also sent an email and text to schedule a quick intro call. No live conversation occurred and no callback time was set.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Leah's response to the voicemail, email, and text; if no reply in a few days, attempt another outreach to schedule the intro call.",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound call to Leah Panichello (mom of Zarah, 11th grade at iLEAD Exploration, nominated by teacher Alicia Skovar for our teacher scholarship program) \u2014 went to voicemail. Paola left a friendly VM and also sent an email + text asking Leah to book a quick intro call to set up Zarah's free 1:1 session (math focus, funded via iLEAD charter funds). Leah now expects a scheduling conversation to activate the scholarship session. If she calls back, open with: \"Hi Leah, thanks for getting back to us \u2014 I'm calling about Zarah's teacher scholarship nomination from Alicia. I'd love to find a time this week to set up her first tutoring session.\" Confirm math as the subject, online vs in-person preference, and a day/time for the first session.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live contact made, so keep current ATTEMPTED_TO_CONTACT status.",
+        "student_or_school_names_mentioned": [
+          "Zarah",
+          "Leah Panichello",
+          "Alicia Skovar",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up attempt reached Leah's voicemail. Paola left a message referencing Alicia Skovar's teacher scholarship nomination for Zarah and also sent an email and text asking Leah to book a quick intro call.",
+          "what_we_can_do_to_help": "Continue outreach across phone, email, and text to schedule the intro call and activate Zarah's nominated free tutoring session, then build a math tutoring plan through iLEAD charter funds.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up attempt reached Leah's voicemail. Paola left a message referencing Alicia Skovar's teacher scholarship nomination for Zarah and also sent an email and text asking Leah to book a quick intro call."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach across phone, email, and text to schedule the intro call and activate Zarah's nominated free tutoring session, then build a math tutoring plan through iLEAD charter funds."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Leah's response to the voicemail, email, and text; if no reply in a few days, attempt another outreach to schedule the intro call.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407525996,
+      "number": "13104028006",
+      "time_pt": "10:44 AM",
+      "matched": true,
+      "contact_label": "Peter  Flores",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Peter Flores regarding his prior interest in tutoring sessions. The call went to voicemail and Paola left a brief message asking Peter to let her know a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Peter Flores; if no response in a few days, attempt another follow-up contact",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Peter Flores following up on his interest in tutoring (Chemistry support for his Pasadena City College coursework, in-person). No callback time was set. Peter now expects a return call from A+. If he calls back, open with: 'Hi Peter, thanks for getting back to us \u2014 I wanted to follow up on the Chemistry tutoring you were asking about for your PCC course and figure out the best way to get you started.' Confirm his current schedule/coursework and propose next steps for pairing him with a Chemistry tutor.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound voicemail with no live contact; existing 'We Connected' status remains appropriate.",
+        "student_or_school_names_mentioned": [
+          "Peter Flores",
+          "Pasadena City College"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Peter to call back to schedule tutoring.",
+          "what_we_can_do_to_help": "Await callback; continue periodic follow-up to re-engage Peter about Chemistry tutoring at PCC.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Left a message asking Peter to call back to schedule tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Await callback; continue periodic follow-up to re-engage Peter about Chemistry tutoring at PCC."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Peter Flores; if no response in a few days, attempt another follow-up contact",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
