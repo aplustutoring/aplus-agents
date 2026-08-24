@@ -74,6 +74,38 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Teacher copy cut from ~200 words to 70-95 (Roman: "AI slop")
+
+**Roman:** "why are these emails so verbose. its going to be clear that ai wrote
+it. these are busy teachers. they dont need ai slop sent to them. the goal is to
+replicate danielles brand voice. but to be concise."
+
+**He is right, and the failure was structural, not stylistic.** Every draft had
+grown the same five-part shape: welcome line, process explainer, credibility
+paragraph, CTA paragraph, scholarship paragraph. Each addition was individually
+defensible (the scholarship line came from Danielle's own note, the CTA rewrite
+came from her too) and the result was a 200-word email to a teacher in September.
+Following the voice skill's rules on vocabulary and punctuation while ignoring
+its rule about ending on the human reality produced something that passed every
+check and still read as machine-written.
+
+**All six rewritten. 70 to 95 words each**, one ask, scholarship demoted to a
+one-line P.S., short signature on the warm segments (full title kept on the cold
+intros, where the credential does work). What got cut: the "welcome back to the
+school year" line as its own paragraph, every explanation of the PO process the
+teacher already runs, and the second CTA.
+
+What was deliberately kept: the honest opt-out ("if nobody needs it right now,
+say so and I will check back later in the year"). It is the most in-voice line
+in the set and it is what stops the email reading as a pitch.
+
+Length is now a documented constraint in the campaign doc, with editing rules,
+so the next pass does not re-inflate them.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/` (all 6),
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-24 — Persona hygiene: 7 contacts are tagged as the wrong persona
 
 **What:** New `scripts/tor_persona_backfill.py` (read-only). Roman, on the Sage

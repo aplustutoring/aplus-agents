@@ -135,6 +135,23 @@ Six drafts in `templates/campaign-tor-2026-08/`, written to the
 `danielle-voice` skill: first-person, classroom-led, no em dashes, no
 rule-of-three, no "all students", no hard-sell close.
 
+### Length is a hard constraint, not a preference
+
+Roman 2026-08-24: "why are these emails so verbose. its going to be clear that
+AI wrote it. these are busy teachers. they dont need AI slop sent to them."
+
+The first drafts ran ~200 words each: a welcome line, a process explainer, a
+credibility paragraph, a CTA paragraph and a scholarship paragraph, which is
+exactly the shape that reads as machine-written. Rewritten to **70 to 95 words**
+with one ask each and the scholarship demoted to a one-line P.S.
+
+Rules for anyone editing these:
+* One ask per email. If there are two CTAs, cut one.
+* No paragraph explaining a process the teacher already runs every year.
+* Danielle's classroom credibility is worth one clause, not a paragraph.
+* The honest opt-out ("if nobody needs it, say so") stays. It is the most
+  in-voice line in the set and it is what keeps this from reading as a pitch.
+
 ### Token trap: do NOT put the school in the copy
 
 `charter_school_teacher` is an enumeration and HubSpot renders the option

@@ -1,35 +1,25 @@
-# B2: Multi, 2-4 families in 25/26, nothing yet in 26/27 (63 mailable, wave 1)
+# B2: Multi, 2-4 families in 25/26, nothing yet in 26/27 (62 mailable, wave 1)
 
-Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
-separately via the August Summit booth follow-up). From: Danielle.
-Tokens: firstname (with 'there' fallback, so a nameless contact never gets "Hi ,"), {{contact.tor_family_count}}.
+Voice: danielle-voice. Sage Oak EXCLUDED. From: Danielle.
+Tokens: firstname (fallback 'there'), tor_family_count.
+Length rule (Roman 2026-08-24): under 80 words, one ask.
 
-**Subject:** Welcome back: the families you sent us last year
+**Subject:** The families you sent us last year
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Welcome back to the school year.
+We worked with {{contact.tor_family_count}} of your families last year. None
+have restarted for 26/27.
 
-We worked with {{contact.tor_family_count}} of your families last year, and none
-of them have restarted for 26/27 yet.
+In my own classroom, the students who were behind in June were still behind in
+September. The summer did not fix it.
 
-I do not think that means the need went away. In my own classroom the students
-who were behind in June were the same students who were behind in September, and
-the summer did not fix it.
+Want the list of who we worked with?
 
-Restarting is the same process you already know. The family says yes, you
-approve, and we take the purchase order paperwork from there. Nothing new for you
-to learn.
+Danielle
 
-If it helps, email me back and I will send you the list of who we worked with so
-you can see it in one place. I will be your guide from there.
-
-Worth knowing separately: our Teacher Scholarship Program lets you nominate a
-student for a fully funded tutoring spot, no charter funds involved. Say the
-word and I will send you the nomination form.
-
-Danielle Brodetsky
-Director of School Partnerships, A+ Tutoring
+*P.S. Our Teacher Scholarship Program covers one student in full, no charter
+funds involved. Ask and I will send the form.*
 
 ---
 ## Follow-up (Day 5, only if no reply)
@@ -38,9 +28,8 @@ Director of School Partnerships, A+ Tutoring
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Short version of my last note: I can send you the roster of your families who
-tutored with us last year, and we can restart any of them without new paperwork
-on your end.
+Short version: I can send you the roster, and any of them can restart without
+new paperwork on your end.
 
 Reply with a yes and it is on its way.
 
