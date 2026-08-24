@@ -13,9 +13,13 @@
 #     2026-08-20 "all charter teachers from you (except sage oak)", reconfirmed
 #     2026-08-21: "they will be separate" — the August Summit booth follow-up
 #     Danielle is running covers them.
-#   * AUDIENCE TIGHTENED 2026-08-24: role mailboxes (vendors@, ap@, noreply@)
-#     and contacts carrying family signals are hard-excluded. charter_school_
-#     teacher means WHICH SCHOOL, not "is a teacher". 968 mailable, not 1,049.
+#   * AUDIENCE IS a_persona = "Teacher of Record/EF/ES", nothing else (Roman
+#     2026-08-24: "dont we have a persona for teachers... we created property
+#     architecture"). 1,064 contacts, 925 mailable, wave 1 = 193. The other
+#     signals only feed a backfill queue of 64 untagged people, never the send.
+#     Role mailboxes (vendors@, ap@, noreply@) still filtered: 19 carry the
+#     persona. Dual-persona contacts (TOR + Family) STAY -- persona beats
+#     heuristics (#AP030, Kristy Doyal).
 #   * Framing is BACK TO SCHOOL (Roman 2026-08-24).
 #   * CTA carries Danielle's own note (Slack 2026-08-21): make it "email me back
 #     and I will be your guide", and mention the Teacher Scholarship Program.

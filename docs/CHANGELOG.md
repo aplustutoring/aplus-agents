@@ -74,6 +74,55 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — a_persona is the teacher audience (the architecture already existed)
+
+**Roman:** "dont we have a persona for teachers as well in the A+ Persona
+property, or did i get amnesia. we creaed property architecture."
+
+No amnesia. `a_persona` = "Teacher of Record/EF/ES" existed, was populated on
+1,064 contacts, and this campaign was using it as **one vote in a four-signal
+union** instead of as the audience. CLAUDE.md says every agent reads a_persona
+FIRST to know who a contact is. The union bypassed that, and everything fixed
+earlier today was downstream damage from it.
+
+**The persona is cleaner AND nearly as complete as the union:**
+
+| Signal | Contacts | Families | Role mailboxes |
+|---|---|---|---|
+| a_persona TOR | 1,064 | 6 | 20 |
+| lead status TOR | 1,083 | 5 | 19 |
+| charter_school_teacher known | 1,173 | 48 | 35 |
+| EF flag | 548 | 3 | 0 |
+
+The union added 121 beyond the persona; 57 of those were junk (42 families,
+15 role mailboxes) and only 64 were real teachers the persona was missing.
+
+**Changed:** audience is now the persona alone. The other three signals feed a
+printed **persona backfill queue** — 64 people who look like teachers and carry
+no persona (14 iLEAD, 13 Sage Oak, 6 Ocean Grove, 5 Visions, 5 Horizon, tail).
+Reported, never emailed. Tag them in the portal and the next run includes them.
+
+**Persona now beats heuristics.** `looks_like_family` no longer fires on a
+contact explicitly tagged Teacher of Record. That is the dual-persona case the
+5-persona model was designed for (#AP030): **Kristy Doyal**, a real Heartland
+teacher who is also a parent, tagged `Teacher of Record/EF/ES;Family`, sitting
+in segment A with 3 new families this year. The heuristic added this morning
+would have silently dropped her. Verified she is included.
+
+**Counts:** audience 1,064, **mailable 925**, **wave 1 = 193** (A 18, B1 18,
+B2 62, B3 95). The "family, not a teacher" exclusion disappeared entirely,
+because with the persona as the audience families were never in it. The
+role-mailbox filter stays: 19 `vendors@`/`ap@` addresses carry the persona
+themselves, so the persona is not perfectly clean either.
+
+**Lesson worth keeping:** the fix for a dirty audience was not a better
+heuristic, it was using the property architecture that was already built. Two
+rounds of filtering this morning were treating symptoms.
+
+**Files:** `scripts/charter_tor_segments.py`, `ops/messenger/campaign-tor.yml`,
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-24 — Teacher audience was leaking families and AP inboxes; back-to-school framing
 
 **Reported:** Roman, looking at a family win-back email: "is it going to teachers

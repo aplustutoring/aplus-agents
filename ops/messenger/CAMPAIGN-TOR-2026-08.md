@@ -20,16 +20,39 @@ Built by `scripts/charter_tor_segments.py` (read-only by default).
 
 ## The audience
 
-The TOR universe is the UNION of four signals, because no single one is
-complete. Counts as of 2026-08-21:
+**The audience is `a_persona` = "Teacher of Record/EF/ES" and nothing else:
+1,064 contacts.** The persona property is the master contact-type switch
+(CLAUDE.md: every agent reads it FIRST), so it IS the audience, not one vote
+among several.
 
-| Signal | Contacts |
-|---|---|
-| `a_persona` contains "Teacher of Record/EF/ES" | 1,065 |
-| `hs_lead_status` = `Charter School Teacher TOR/EF` | 1,086 |
-| `charter_school_teacher` is known | 1,172 |
-| `educational_facillitator_teacher_of_record` = true | 548 |
-| **union** | **1,184** |
+An earlier version of this campaign unioned four signals. Roman, 2026-08-24:
+"dont we have a persona for teachers as well in the A+ Persona property... we
+created property architecture." Correct, and the union was bypassing it. The
+persona is both cleaner and nearly as complete:
+
+| Signal | Contacts | Families in it | Role mailboxes |
+|---|---|---|---|
+| **`a_persona` = Teacher of Record/EF/ES** | **1,064** | **6** | **20** |
+| `hs_lead_status` = `Charter School Teacher TOR/EF` | 1,083 | 5 | 19 |
+| `charter_school_teacher` is known | 1,173 | 48 | 35 |
+| `educational_facillitator_teacher_of_record` = true | 548 | 3 | 0 |
+
+The union added 121 contacts beyond the persona, and 57 of those 121 were the
+junk. Only 64 were real people the persona was missing.
+
+The other three signals are still read, but only to print a **persona backfill
+queue**: 64 people who look like teachers and have no persona. They are
+reported, never emailed. Tag them in the portal and the next run picks them up
+(14 iLEAD, 13 Sage Oak, 6 Ocean Grove, 5 Visions, 5 Horizon, and a tail).
+
+### The persona wins over heuristics
+
+`looks_like_family` does not fire on a contact explicitly tagged
+"Teacher of Record/EF/ES". That is the dual-persona case the 5-persona model
+was built for (#AP030). **Kristy Doyal** is exactly it: a real Heartland teacher
+who is also a parent, tagged `Teacher of Record/EF/ES;Family`, sitting in
+segment A with 3 new families this year. A pure heuristic would have dropped
+her. The persona keeps her.
 
 Attribution is by NAME. Charter deals carry `teacher_of_record_name` but there
 is no teacher email property on the deal (verified: 2,244 of 2,284 deals since
@@ -41,19 +64,23 @@ than guessing.
 
 | Code | Segment | Total | Mailable | Angle |
 |---|---|---|---|---|
-| A | Restarted 26/27 | 18 | 17 | Thank you, and who else on your roster |
+| A | Restarted 26/27 | 18 | 18 | Thank you, and who else on your roster |
 | B1 | Anchor, 5+ families in 25/26 | 18 | 18 | Named counts, roster offer, Danielle calls on Day 8 |
-| B2 | Multi, 2-4 families | 64 | 61 | Named count, roster offer |
+| B2 | Multi, 2-4 families | 63 | 62 | Named count, roster offer |
 | B3 | Single, 1 family | 105 | 95 | Restart is easy, honest opt-out invited |
-| C1 | Intro, iLEAD, no history | 180 | 152 | iLEAD AV Tier 3 results (published) |
-| C2 | Intro, other schools, no history | 800 | 625 | Danielle's classroom story, funding-already-there |
-| | **total** | **1,185** | **968** | |
+| C1 | Intro, iLEAD, no history | 157 | 141 | iLEAD AV Tier 3 results (published) |
+| C2 | Intro, other schools, no history | 703 | 591 | Danielle's classroom story, funding-already-there |
+| | **total** | **1,064** | **925** | |
 
-**Wave 1 (A + B1 + B2 + B3) = 191 teachers.**
+**Wave 1 (A + B1 + B2 + B3) = 193 teachers.**
 
-Exclusions (217): 76 Sage Oak, 54 opted out, **48 families**, **33 role
-mailboxes**, 4 non-marketable, 1 no email, 1 internal. Zero hard bounces,
-because the 155 bounced TORs were archived on 2026-08-14.
+Exclusions (139): 62 Sage Oak, 53 opted out, 19 role mailboxes, 3
+non-marketable, 1 no email, 1 internal. Zero hard bounces, because the 155
+bounced TORs were archived on 2026-08-14.
+
+The "families" exclusion is gone: with the persona as the audience, families
+were never in it. The role-mailbox filter still earns its keep, because 19
+`vendors@`/`ap@`-style addresses carry the teacher persona themselves.
 
 ### The audience needed tightening: `charter_school_teacher` is not "is a teacher"
 
@@ -139,7 +166,7 @@ from the family campaign's post-pilot shape:
 
 ## Deliverability: segment C is a cold send, treat it as one
 
-941 of the 1,122 mailable teachers have no deal history. Their engagement
+732 of the 925 mailable teachers have no deal history. Their engagement
 history is stale but not toxic: 708 of 998 have been sent something before, 557
 have opened at least once, 7 have ever replied, and **zero** have hard bounced.
 The bulk were last emailed in 2025-01.
@@ -148,8 +175,8 @@ Sending 941 near-cold contacts in one morning off the same domain that is
 currently running the family win-back is a real risk to the family campaign's
 inbox placement. The ramp, unless Roman overrides it:
 
-1. Week 1: A + B1 + B2 + B3 (191 contacts, warm, all have history)
-2. Week 2: C1 iLEAD (152)
+1. Week 1: A + B1 + B2 + B3 (193 contacts, warm, all have history)
+2. Week 2: C1 iLEAD (141)
 3. Week 3+: C2 in school-sized waves, largest last:
    Compass, then the long tail, then Ocean Grove's ~348 split in two.
    Sage Oak is not in any wave.
@@ -203,7 +230,7 @@ Run the schema sync before `--write-props`.
       Not `success@`, which reads as a shared mailbox under a personally-signed
       email.
 - [x] **Audience scope (Roman 2026-08-21):** warm first. Wave 1 = A + B1 + B2 +
-      B3, **191 mailable**. C1/C2 held for later waves.
+      B3, **193 mailable**. C1/C2 held for later waves.
 - [x] **Sage Oak excluded (Roman 2026-08-21):** all 76, every segment.
 - [x] **CTA per Danielle (Slack 2026-08-21):** "email me back and I will be your
       guide", plus a Teacher Scholarship Program mention, in all six drafts. No

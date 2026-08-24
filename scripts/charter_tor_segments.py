@@ -6,12 +6,16 @@ family segmenter splits on recency x student-count x personalization, the
 teacher relationship has different axes: whether the teacher has already sent
 us business in 26/27, and how much business came through them in 25/26.
 
-Builds the TOR universe from four independent signals (union, not intersection
-— no single one is complete):
-  a_persona contains "Teacher of Record/EF/ES"      (1065)
-  hs_lead_status = "Charter School Teacher TOR/EF"  (1086)
-  charter_school_teacher is known                   (1172)
-  educational_facillitator_teacher_of_record = true ( 548)
+AUDIENCE = `a_persona` contains "Teacher of Record/EF/ES", and nothing else.
+The persona property is the master contact-type switch (CLAUDE.md: every agent
+reads it FIRST), so it is the audience, not one vote among several.
+
+An earlier version unioned four signals. That was wrong: it bypassed the
+persona architecture and let `charter_school_teacher` (which holds WHICH
+SCHOOL, not "is a teacher") drag in 42 families and 15 school role mailboxes.
+The other three signals are still READ, but only to print a backfill queue --
+people who look like teachers and are missing the persona. They are reported,
+never emailed. Tag them in the portal and the next run picks them up.
 
 Then attributes charter deals to teachers. NOTE: deals carry
 `teacher_of_record_name` but NOT an email (checked 2026-08-21 — 2244 of 2284
@@ -97,7 +101,15 @@ def is_role_mailbox(email):
 
 
 def looks_like_family(p):
-    """Family signals stamped by the family campaign's own tooling."""
+    """Family signals stamped by the family campaign's own tooling.
+
+    The persona WINS over this heuristic. A contact explicitly tagged
+    "Teacher of Record/EF/ES" is a teacher even when family fields are also
+    stamped on them -- that is the dual-persona case the 5-persona model was
+    designed for (#AP030). Kristy Doyal is exactly this: a real Heartland
+    teacher who is also a parent, tagged "Teacher of Record/EF/ES;Family"."""
+    if PERSONA_TOR in (p.get("a_persona") or ""):
+        return False
     return bool(p.get("student_first_name") or p.get("student_names")
                 or p.get("last_tutor_name") or p.get("teacher_of_record_name"))
 NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
@@ -157,26 +169,44 @@ TOR_PROPS = ["email", "firstname", "lastname", "charter_school_teacher", "hs_lea
              "student_first_name", "student_names", "last_tutor_name", "teacher_of_record_name"]
 
 
+PERSONA_TOR = "Teacher of Record/EF/ES"
+
+
 def load_tors():
-    """Union of the four TOR signals. No single signal is complete."""
-    signals = [
-        ("a_persona", [{"filters": [{"propertyName": "a_persona", "operator": "CONTAINS_TOKEN",
-                                     "value": "Teacher of Record/EF/ES"}]}]),
-        ("lead_status", [{"filters": [{"propertyName": "hs_lead_status", "operator": "EQ",
-                                       "value": "Charter School Teacher TOR/EF"}]}]),
-        ("school_prop", [{"filters": [{"propertyName": "charter_school_teacher",
-                                       "operator": "HAS_PROPERTY"}]}]),
-        ("ef_flag", [{"filters": [{"propertyName": "educational_facillitator_teacher_of_record",
-                                   "operator": "EQ", "value": "true"}]}]),
-    ]
-    tors = {}
-    for label, groups in signals:
-        got = search_all("contacts", groups, TOR_PROPS)
-        new = len(set(got) - set(tors))
-        for k, v in got.items():
-            tors.setdefault(k, v)
-        print(f"  {label:<12} {len(got):>5}  (+{new} new)  union={len(tors)}")
+    """THE audience: contacts carrying the Teacher of Record persona."""
+    tors = search_all("contacts", [{"filters": [
+        {"propertyName": "a_persona", "operator": "CONTAINS_TOKEN", "value": PERSONA_TOR}]}],
+        TOR_PROPS)
+    print(f"  a_persona = {PERSONA_TOR}: {len(tors)}")
     return tors
+
+
+def backfill_queue(tors):
+    """People the other signals think are teachers but the persona does not know
+    about. Reported so a human can tag them; NEVER emailed from here."""
+    others = [
+        ("lead status = Charter School Teacher TOR/EF",
+         [{"filters": [{"propertyName": "hs_lead_status", "operator": "EQ",
+                        "value": "Charter School Teacher TOR/EF"}]}]),
+        ("charter_school_teacher is known",
+         [{"filters": [{"propertyName": "charter_school_teacher", "operator": "HAS_PROPERTY"}]}]),
+        ("educational_facillitator_teacher_of_record = true",
+         [{"filters": [{"propertyName": "educational_facillitator_teacher_of_record",
+                        "operator": "EQ", "value": "true"}]}]),
+    ]
+    seen = {}
+    for label, groups in others:
+        for cid, p in search_all("contacts", groups, TOR_PROPS).items():
+            if cid not in tors:
+                seen.setdefault(cid, (label, p))
+    real, junk = {}, {}
+    for cid, (label, p) in seen.items():
+        # same non-teacher tests the audience uses
+        if is_role_mailbox(p.get("email")) or looks_like_family(p):
+            junk[cid] = (label, p)
+        else:
+            real[cid] = (label, p)
+    return real, junk
 
 
 def load_charter_deals():
@@ -330,6 +360,7 @@ def profile(tors, deals, hits, gap):
             "lapsed": 0,          # filled by caller from associations
             "firstname": (p.get("firstname") or "").strip(),
             "is_family": looks_like_family(p),
+            "persona": p.get("a_persona") or "",
             "optout": p.get("hs_email_optout") == "true",
             "marketable": p.get("hs_marketable_status") == "true",
             "bounced": bool(p.get("hs_email_hard_bounce_reason")),
@@ -425,7 +456,7 @@ def main():
     if not HUBSPOT_TOKEN:
         sys.exit("HUBSPOT_PRIVATE_APP_TOKEN not set")
 
-    print("TOR universe (union of four signals):")
+    print("TOR audience (a_persona is authoritative):")
     tors = load_tors()
 
     print(f"\ncharter deals created since {SINCE}:")
@@ -475,6 +506,16 @@ def main():
     print("\n  teachers with lapsed (gap-list) families: "
           f"{sum(1 for r in rows.values() if r['lapsed'])} "
           f"({sum(r['lapsed'] for r in rows.values())} families)")
+
+    real, junk = backfill_queue(tors)
+    print(f"\n=== PERSONA BACKFILL QUEUE ===")
+    print(f"  {len(real)} contacts look like teachers but carry NO Teacher of Record persona.")
+    print(f"  They are NOT in the audience. Tag them in the portal and they join the next run.")
+    print(f"  ({len(junk)} more were skipped as families or role mailboxes.)")
+    by_school = collections.Counter((p.get("charter_school_teacher") or "(none)")
+                                    for _l, p in real.values())
+    for k, v in by_school.most_common(10):
+        print(f"    {v:>4}  {k}")
 
     if unmatched:
         print("\n  ⚠ top deal teacher names with NO contact record (hygiene queue):")
