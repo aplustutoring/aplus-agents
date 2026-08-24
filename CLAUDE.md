@@ -21,6 +21,10 @@ commit landed on the other's PR branch and had to be untangled by hand.)
   synced to portal 6312752 by `create_properties.py` (additive only). Declare new
   properties there; never create them ad hoc.
 - Enumeration rule: agents ALWAYS read option LABELS, never internal values.
+- Outbound style (Roman 2026-08-24, locked): NEVER use em dashes (—) or double
+  hyphens (--) in ANY customer-facing communication — emails, SMS, drafts,
+  marketing copy. No exceptions. Use periods, commas, or parentheses.
+  (Internal docs/code comments are fine.)
 - Agent-property labeling (Roman 2026-08-14): any property an agent WRITES gets the
   `[Agent] ` label prefix and a description starting "AGENT PROPERTY — written by <script>".
   Humans must be able to tell agent-maintained fields from intake capture at a glance.
