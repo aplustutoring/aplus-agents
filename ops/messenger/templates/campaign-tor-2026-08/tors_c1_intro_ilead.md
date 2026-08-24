@@ -1,6 +1,7 @@
-# C1 — Intro, iLEAD teachers with no deal history (181 teachers)
+# C1: Intro, iLEAD teachers with no deal history (170 mailable, wave 2)
 
-Voice: danielle-voice. From: Danielle. COLD-ish: many were last emailed 2025-01.
+Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
+separately via the August Summit booth follow-up). From: Danielle. COLD-ish: many were last emailed 2025-01.
 Uses the iLEAD Antelope Valley Tier 3 numbers, which are published and are hers to cite.
 Tokens: {{contact.firstname}} only.
 
@@ -22,8 +23,13 @@ For individual students on your roster, families can use their enrichment funds
 with us directly. You approve, we handle the purchase order, and you see progress
 through the year.
 
-If you have a student you are worried about, reply and tell me about them. I will
-tell you honestly whether this is the right fit.
+If you have a student you are worried about, email me back and tell me about
+them. I will tell you honestly whether this is the right fit, and I will be your
+guide through the setup if it is.
+
+There is also our Teacher Scholarship Program, where you nominate a student for
+a fully funded tutoring spot with no charter funds involved. Ask and I will send
+you the nomination form.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring

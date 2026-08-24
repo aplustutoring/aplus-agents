@@ -41,16 +41,28 @@ than guessing.
 
 | Code | Segment | Total | Mailable | Angle |
 |---|---|---|---|---|
-| A | Restarted 26/27 | 14 | 14 | Thank you, and who else on your roster |
-| B1 | Anchor, 5+ families in 25/26 | 17 | 17 | Named counts, roster offer, Danielle calls on Day 8 |
-| B2 | Multi, 2-4 families | 60 | 60 | Named count, roster offer |
-| B3 | Single, 1 family | 95 | 90 | Restart is easy, honest opt-out invited |
-| C1 | Intro, iLEAD, no history | 181 | 171 | iLEAD AV Tier 3 results (published) |
-| C2 | Intro, other schools, no history | 817 | 770 | Danielle's classroom story, funding-already-there |
-| | **total** | **1,184** | **1,122** | |
+| A | Restarted 26/27 | 17 | 17 | Thank you, and who else on your roster |
+| B1 | Anchor, 5+ families in 25/26 | 18 | 18 | Named counts, roster offer, Danielle calls on Day 8 |
+| B2 | Multi, 2-4 families | 64 | 63 | Named count, roster offer |
+| B3 | Single, 1 family | 106 | 96 | Restart is easy, honest opt-out invited |
+| C1 | Intro, iLEAD, no history | 180 | 170 | iLEAD AV Tier 3 results (published) |
+| C2 | Intro, other schools, no history | 800 | 685 | Danielle's classroom story, funding-already-there |
+| | **total** | **1,185** | **1,049** | |
 
-Exclusions (62): 54 opted out, 6 non-marketable, 1 no email, 1 internal. Zero
-hard bounces, because the 155 bounced TORs were archived on 2026-08-14.
+Exclusions (136): **76 Sage Oak**, 54 opted out, 4 non-marketable, 1 no email,
+1 internal. Zero hard bounces, because the 155 bounced TORs were archived on
+2026-08-14.
+
+**Sage Oak is excluded at every segment.** Roman to Danielle in Slack
+2026-08-20: "auto email campaign to all charter teachers from you (except sage
+oak)"; reconfirmed 2026-08-21. Those 76 teachers are worked through the August
+Summit booth follow-up Danielle is running, and double-touching them would
+collide with it. The exclusion lives in `EXCLUDE_SCHOOLS` in the segmenter, so
+it applies to every future wave too, not just wave 1.
+
+Counts above are post-matcher-fix. The first pass under-attributed: `norm_name`
+deleted accents and glued hyphenated surnames, which orphaned 119 deals and put
+23 teachers in the wrong segment. Fixed before any list was built.
 
 Cross-reference: **168 teachers have 329 families sitting in the 26/27 gap
 list** (list 3104). The teacher campaign and the family win-back campaign will
@@ -103,10 +115,11 @@ Sending 941 near-cold contacts in one morning off the same domain that is
 currently running the family win-back is a real risk to the family campaign's
 inbox placement. The ramp, unless Roman overrides it:
 
-1. Week 1: A + B1 + B2 + B3 (181 contacts, warm, all have history)
-2. Week 2: C1 iLEAD (171)
+1. Week 1: A + B1 + B2 + B3 (194 contacts, warm, all have history)
+2. Week 2: C1 iLEAD (170)
 3. Week 3+: C2 in school-sized waves, largest last:
-   Compass 108, Sage Oak 71, then the long tail, then Ocean Grove 348 split in two
+   Compass, then the long tail, then Ocean Grove's ~348 split in two.
+   Sage Oak is not in any wave.
 
 Watch bounce and spam-complaint rate after each wave before releasing the next.
 
@@ -116,15 +129,15 @@ and bounce data lands.
 
 ## Hygiene queue (found while building this)
 
-**75 teacher names appear on 218 charter deals with no matching contact
-record.** Top offenders: Heather Pfeifer Tolan (22 deals), Christina Mondolo
-(21), Crystal Uribe Schoelen (14), Stephanie Negrete Claar (14). Some are
-missing contacts, some are name variants of contacts we do have, and 13 deals
-literally say "no EF info". These teachers are invisible to every segment here.
-Worth a pass before the send, but not a blocker.
+The first pass logged "75 teacher names on 218 deals have no contact record" as
+a hygiene queue. **That was the wrong diagnosis for more than half of it:** 119
+of those deals named a teacher we already had, and the matcher was dropping
+them. Fixed (accent folding, hyphenated surnames, "Last, First" order, middle
+initials, email localparts). Orphans are now 99: 34 need a row-by-row call, 50
+need a school roster, 15 are junk.
 
-Also: `mina chang` matches more than one contact. The script takes the first and
-flags it.
+`mina chang` matches two contacts holding 23 deals between them and needs a
+merge decision before those deals attribute correctly.
 
 ## Runbook
 
@@ -157,7 +170,11 @@ Run the schema sync before `--write-props`.
       Not `success@`, which reads as a shared mailbox under a personally-signed
       email.
 - [x] **Audience scope (Roman 2026-08-21):** warm first. Wave 1 = A + B1 + B2 +
-      B3, 181 mailable. C1/C2 held for later waves.
+      B3, **194 mailable**. C1/C2 held for later waves.
+- [x] **Sage Oak excluded (Roman 2026-08-21):** all 76, every segment.
+- [x] **CTA per Danielle (Slack 2026-08-21):** "email me back and I will be your
+      guide", plus a Teacher Scholarship Program mention, in all six drafts. No
+      long dashes anywhere in the sent copy.
 - [ ] Approve/edit the wave-1 copy drafts (`tors_a_restarted`, `tors_b1_anchor`,
       `tors_b2_multi`, `tors_b3_single`)
 - [ ] Say GO for the wave-1 list/email/workflow build (ids into `campaign-tor.yml`)

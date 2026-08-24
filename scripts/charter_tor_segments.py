@@ -27,6 +27,9 @@ Segments (one static list per cell):
   C1  Intro - iLEAD    no deal history, school = iLEAD (case-study variant)
   C2  Intro - other    no deal history, any other partner school
 
+Sage Oak is excluded at every segment (EXCLUDE_SCHOOLS): those teachers are
+worked separately through the August Summit booth follow-up.
+
 --write-props stamps tor_family_count / tor_student_count /
 tor_families_lapsed / tor_segment onto the contacts (batch update, UPDATE-only
 by definition). --build-lists creates/refreshes the six static lists.
@@ -67,6 +70,12 @@ YEAR_2627 = "2026-07-01"           # a deal created on/after this is 26/27 busin
 CHARTER_PIPELINES = {"907748", "72281989", "88841552", "5119061", "1066195"}
 LIST_PREFIX = "Charter TOR 26/27 - "
 INTERNAL_DOMAIN = "@wetutorathome.com"
+# Sage Oak teachers are worked separately, through the August Summit booth
+# follow-up Danielle is running. Roman to Danielle in Slack 2026-08-20: "auto
+# email campaign to all charter teachers from you (except sage oak)";
+# reconfirmed to this session 2026-08-21 ("exclude sage oak, they will be
+# separate"). Excluded at every segment, not just wave 1.
+EXCLUDE_SCHOOLS = {"Sage Oak"}
 NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
 
 SEGMENTS = [
@@ -314,6 +323,8 @@ def segment_of(r):
 
 def mailable(r):
     """Exclusions the campaign applies on top of HubSpot's own suppression."""
+    if r["school"] in EXCLUDE_SCHOOLS:
+        return f"{r['school']} (worked separately)"
     if not r["email"]:
         return "no email"
     if r["email"].lower().endswith(INTERNAL_DOMAIN):

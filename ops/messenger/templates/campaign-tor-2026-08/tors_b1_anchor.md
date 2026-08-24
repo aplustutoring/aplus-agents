@@ -1,6 +1,7 @@
-# B1 — Anchor teachers, 5+ families in 25/26, nothing yet in 26/27 (17 teachers)
+# B1: Anchor, 5+ families in 25/26, nothing yet in 26/27 (18 mailable, wave 1)
 
-Voice: danielle-voice. From: Danielle. HIGHEST VALUE SEGMENT.
+Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
+separately via the August Summit booth follow-up). From: Danielle. HIGHEST VALUE SEGMENT.
 Tokens: {{contact.firstname}}, {{contact.tor_family_count}}, {{contact.tor_student_count}}.
 Counts are stamped by scripts/charter_tor_segments.py and are only accurate as of
 the last run. Re-stamp on the morning of the send.
@@ -22,7 +23,12 @@ I can send you the roster of who we worked with, so you can see the list without
 having to rebuild it from memory. If you want, I will also flag which students
 finished last year mid-goal.
 
-Want me to send it?
+Want me to send it? Email me back and I will be your guide from there, whether
+that is one family or all of them.
+
+Worth knowing separately: our Teacher Scholarship Program lets you nominate a
+student for a fully funded tutoring spot, no charter funds involved. Say the
+word and I will send you the nomination form.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring

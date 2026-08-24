@@ -9,6 +9,13 @@
 #     Already proven: 30 recent marketing emails use exactly this pair. NOT
 #     success@ (her owner email), which reads as a shared mailbox under a
 #     personally-signed email.
+#   * Sage Oak is EXCLUDED at every segment (76 teachers). Roman to Danielle
+#     2026-08-20 "all charter teachers from you (except sage oak)", reconfirmed
+#     2026-08-21: "they will be separate" — the August Summit booth follow-up
+#     Danielle is running covers them.
+#   * CTA carries Danielle's own note (Slack 2026-08-21): make it "email me back
+#     and I will be your guide", and mention the Teacher Scholarship Program.
+#     No long dashes anywhere in the copy.
 #   * scope = WARM FIRST, then ramp. Wave 1 is A + B1 + B2 + B3 only (181
 #     mailable, all with deal history). C1 and C2 stay unbuilt until wave 1
 #     reply/bounce data lands. See the ramp in CAMPAIGN-TOR-2026-08.md.
@@ -35,42 +42,42 @@ send_from:
 # Empty workflow_id = segment skipped by enroll.py.
 enrollments:
   - segment: a_restarted
-    wave: 1       # 14 mailable — thank you + expand
+    wave: 1        — thank you + expand
     list_id: ""
     workflow_id: ""
     email_ids: []
     template: tors_a_restarted.md
     cadence: "Day 0 email, Day 4 nudge"
   - segment: b1_anchor
-    wave: 1         # 17 mailable — highest value, roster offer + Day-8 call task
+    wave: 1          — highest value, roster offer + Day-8 call task
     list_id: ""
     workflow_id: ""
     email_ids: []
     template: tors_b1_anchor.md
     cadence: "Day 0 email, Day 4 nudge, Day 8 call task (sales seat)"
   - segment: b2_multi
-    wave: 1          # 60 mailable
+    wave: 1          
     list_id: ""
     workflow_id: ""
     email_ids: []
     template: tors_b2_multi.md
     cadence: "Day 0 email, Day 5 nudge"
   - segment: b3_single
-    wave: 1         # 90 mailable
+    wave: 1         
     list_id: ""
     workflow_id: ""
     email_ids: []
     template: tors_b3_single.md
     cadence: "Day 0 email, Day 5 nudge"
   - segment: c1_intro_ilead
-    wave: 2    # 171 mailable — COLD, iLEAD Tier 3 case study
+    wave: 2     — COLD, iLEAD Tier 3 case study
     list_id: ""
     workflow_id: ""
     email_ids: []
     template: tors_c1_intro_ilead.md
     cadence: "Day 0 email only"
   - segment: c2_intro
-    wave: 3          # 770 mailable — COLDEST, ramp in waves (see doc)
+    wave: 3           — COLDEST, ramp in waves (see doc)
     list_id: ""
     workflow_id: ""
     email_ids: []

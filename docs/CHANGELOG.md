@@ -74,6 +74,47 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-21 — Teacher campaign: Sage Oak excluded, Danielle's own CTA applied
+
+**What:** Two changes on top of the segmentation and the matcher fix.
+
+**1. Sage Oak excluded at every segment (76 teachers).** New `EXCLUDE_SCHOOLS`
+in `scripts/charter_tor_segments.py`, so it applies to every future wave, not
+just wave 1. Source: Roman to Danielle in Slack 2026-08-20, "auto email campaign
+to all charter teachers from you (except sage oak)", reconfirmed to this session
+2026-08-21 ("exclude sage oak, they will be separate"). Those teachers are
+worked through the August Summit booth follow-up Danielle is running, and the
+campaign would have double-touched them. **This constraint existed before the
+campaign was built and was not in the repo** — it was only in a DM. Worth a
+decision-log entry so the next session does not rediscover it.
+
+**2. Danielle's own copy note applied to all six drafts.** She reviewed the
+unrelated Sage Oak booth samples the same day and asked for: no long dashes; the
+CTA to be "email back and I can help be your guide to get you started"; and a
+mention of the Teacher Scholarship Program alongside the main ask. All three
+applied here. The sent copy now has zero em dashes (the six that remained were
+in internal header lines and are gone too). Scholarship framing checked against
+the live funnel before use: 22 automated emails, stages 1 to 6, the pitch is a
+fully funded tutoring spot for a nominated student. **No collision** — zero
+wave-1 teachers have ever submitted the nomination form, and only 2 contacts
+portal-wide have.
+
+**Counts after the matcher fix + Sage Oak (was 1,184 / 1,122):**
+1,185 total, **1,049 mailable**. A 17, B1 18, B2 63, B3 96, C1 170, C2 685.
+**Wave 1 is now 194**, up from 181, because the matcher fix moved 23 teachers
+out of the "no history" intro segments into history-based ones.
+
+**Branch note:** the hygiene follow-up session took `tor-campaign-2026-08` and
+committed the matcher fix to it while this session was mid-flight. Rather than
+write into a live worktree (the exact collision the concurrency rule exists to
+prevent), this work is stacked on `tor-campaign-sageoak`, based on that commit,
+so both are preserved and the branch fast-forwards.
+
+**Files:** `scripts/charter_tor_segments.py`, `ops/messenger/campaign-tor.yml`,
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`,
+`ops/messenger/templates/campaign-tor-2026-08/` (all 6).
+
+---
 ## 2026-08-21 — Charter TEACHER outreach from Danielle: 6-way segmentation, DISARMED
 
 **What:** The teacher-side counterpart to the family win-back campaign, built to

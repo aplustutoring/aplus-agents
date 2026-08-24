@@ -1,6 +1,7 @@
-# A — Restarted 26/27 (segment A, 14 teachers)
+# A: Restarted 26/27 (17 mailable, wave 1)
 
-Voice: danielle-voice. From: Danielle Brodetsky, Director of School Partnerships.
+Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
+separately via the August Summit booth follow-up). From: Danielle Brodetsky, Director of School Partnerships.
 Tokens: {{contact.firstname}} only. Do NOT token the school (see CAMPAIGN doc).
 
 **Subject:** Thank you for the 26/27 referrals
@@ -20,6 +21,12 @@ from there. You get progress updates through the year without having to chase
 anyone for them.
 
 Is there anyone you are watching right now that you would want us to look at?
+Email me back and I will be your guide from there.
+
+One more thing worth knowing about, if you do not already: our Teacher
+Scholarship Program. You can nominate a student for a fully funded tutoring
+spot, no charter funds involved. Tell me you are interested and I will send you
+the nomination form.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring

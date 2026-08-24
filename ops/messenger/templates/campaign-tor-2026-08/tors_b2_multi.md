@@ -1,6 +1,7 @@
-# B2 — Multi, 2-4 families in 25/26, nothing yet in 26/27 (60 teachers)
+# B2: Multi, 2-4 families in 25/26, nothing yet in 26/27 (63 mailable, wave 1)
 
-Voice: danielle-voice. From: Danielle.
+Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
+separately via the August Summit booth follow-up). From: Danielle.
 Tokens: {{contact.firstname}}, {{contact.tor_family_count}}.
 
 **Subject:** The families you sent us last year
@@ -18,8 +19,12 @@ Restarting is the same process you already know. The family says yes, you
 approve, and we take the purchase order paperwork from there. Nothing new for you
 to learn.
 
-If it helps, reply and I will send you the list of who we worked with so you can
-see it in one place.
+If it helps, email me back and I will send you the list of who we worked with so
+you can see it in one place. I will be your guide from there.
+
+Worth knowing separately: our Teacher Scholarship Program lets you nominate a
+student for a fully funded tutoring spot, no charter funds involved. Say the
+word and I will send you the nomination form.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring

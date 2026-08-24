@@ -1,6 +1,7 @@
-# C2 — Intro, all other schools, no deal history (817 teachers)
+# C2: Intro, other schools, no deal history (685 mailable, wave 3)
 
-Voice: danielle-voice. From: Danielle. COLDEST SEGMENT. Ramp in waves by school.
+Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
+separately via the August Summit booth follow-up). From: Danielle. COLDEST SEGMENT. Ramp in waves by school.
 No school token: charter_school_teacher renders its LABEL, and the Ocean Grove
 label is "IEM Inc South Sutter/Ocean Grove/Sky Mountain". See CAMPAIGN doc.
 Tokens: {{contact.firstname}} only.
@@ -23,7 +24,12 @@ For a student on your roster who needs more than the school day gives them, the
 process is short: the family decides, you approve, and we handle the purchase
 order and scheduling. You get progress updates through the year.
 
-If there is a student you keep thinking about, reply and tell me about them.
+If there is a student you keep thinking about, email me back and tell me about
+them. I will be your guide from there.
+
+There is also our Teacher Scholarship Program, where you nominate a student for
+a fully funded tutoring spot with no charter funds involved. Ask and I will send
+you the nomination form.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring
