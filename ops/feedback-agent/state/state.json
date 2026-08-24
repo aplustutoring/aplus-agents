@@ -44,18 +44,14 @@
     "Ev0BRUHM0UDB",
     "Ev0BSSRJ9P0Q",
     "Ev0BSE5QKYUR",
-    "Ev0BSG0L2LC9"
+    "Ev0BSG0L2LC9",
+    "Ev0BS7R3JU0K"
   ],
   "awaiting": {
     "1785537854.599709": {
       "user": "U05NA7UMSSV",
       "text": "status *Sent using* <@U0AKFN28V1U>",
       "asked_utc": "2026-07-31T22:44:47.124156+00:00"
-    },
-    "1787610648.745369": {
-      "user": "U05NA7UMSSV",
-      "text": "Audrey Van Reuter\nRebecca Mejia\nAmy Seeley\n\n\nWho are these deals assigned to? Who is the associated contact?",
-      "asked_utc": "2026-08-24T22:31:16.925565+00:00"
     }
   },
   "reports": [
@@ -313,6 +309,21 @@
       "ticket": "drafted",
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787594850024069"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787610648.745369",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "email-deal-sync",
+      "type": "WRONG",
+      "severity": "critical",
+      "correction_path": "corrections/email-deal-sync/2026-08-24-deals-assigned-by-teacher-name.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/111",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787610648745369?thread_ts=1787610648.745369&cid=C0BL05MCJ4B"
     }
   ],
   "graduation": {
@@ -353,6 +364,23 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-24T18:08:21.631177+00:00",
       "reporter": "Danielle"
+    },
+    "1787610648.745369": {
+      "agent": "email-deal-sync",
+      "agent_label": "Deal sync (HubSpot \u2192 Teachworks) + invoice sweep",
+      "correction_path": "corrections/email-deal-sync/2026-08-24-deals-assigned-by-teacher-name.md",
+      "branch": "fix/email-deal-sync-2026-08-24-745369",
+      "diagnosis": "Roman is asking a diagnostic question about three specific names (likely deals or contacts flagged by the sync) \u2014 not reporting a concrete bug. Without knowing whether these are deal names, contact names, or students, we can't localize a root cause in deal_sync.py.",
+      "fix_plan": [
+        "Ask Roman what these three names refer to (deals? contacts? students flagged in Slack?) and what the expected vs actual assignment/contact was.",
+        "Once identified, pull the deal records via HubSpot API (or FORCE_DEAL_ID dry-run in email-deal-sync.yml) to see hubspot_owner_id and associated primary contact.",
+        "Trace through deal_sync.py's contact-resolution path (family upsert by email + charter parent-match guard) to see why the wrong contact/owner was picked.",
+        "If it's a charter parent-mismatch or family-email collision, add or tighten a guard in deal_sync.py and log a needs-review Slack flag instead of writing."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-24T22:35:00.570147+00:00",
+      "reporter": "Roman"
     }
   }
 }
