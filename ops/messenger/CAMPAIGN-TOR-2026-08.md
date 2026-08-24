@@ -175,7 +175,27 @@ goes out, via one `charter-gap-analysis.yml` run, and hand Danielle the file.
 80 teachers replying to a promise she cannot fulfil for three days turns the
 curiosity hook into the thing that burns her.
 
-### The scholarship P.S.: say what it actually is
+### The scholarship P.S.: nominate, then WE select
+
+**Canonical description now lives at `knowledge/programs/teacher-scholarship.md`.
+All copy must match that file, not the marketing emails.** That file exists
+because this campaign described the offer wrong twice in one day, both times by
+reading the funnel instead of a definition. There was no definition.
+
+Roman 2026-08-24: "teachers nominate, we select. scarcity component in play...
+has to be universal."
+
+The P.S. in all four warm segments now reads:
+
+> Teacher Scholarship Program: you nominate a student, we select from the
+> nominations, and the student selected gets a free session. Who would you put
+> forward?
+
+Selection is stated, not hidden. Scarcity is deliberate and honest, and a
+selective award is worth more to a teacher than a giveaway. The line ends on a
+question, which is the curiosity rule doing its job.
+
+### Earlier drafts of this same P.S. (kept as a warning)
 
 Roman 2026-08-24: **"our scholarship program provides 1 free session to a child
 that the teacher wants."**

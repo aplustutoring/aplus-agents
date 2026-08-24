@@ -19,8 +19,9 @@ help. If not, I will check back later in the year.
 
 Danielle
 
-*P.S. Our Teacher Scholarship Program gives a student of your choosing one free
-session. Tell me who and I will set it up.*
+*P.S. Teacher Scholarship Program: you nominate a student, we select from the
+nominations, and the student selected gets a free session. Who would you put
+forward?*
 
 ---
 ## Follow-up (Day 5, only if no reply)

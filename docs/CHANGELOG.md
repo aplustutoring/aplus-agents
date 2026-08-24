@@ -74,6 +74,51 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Teacher Scholarship Program gets a canonical description
+
+**Roman:** "it has to be clearly and properly identified here. and we have a
+criteria that we select them. teachers nominate, we select. scarcity component
+in play. but you are right. has to be universal."
+
+**New `knowledge/programs/teacher-scholarship.md`** — the source of truth for how
+the programme is described. Every email, SMS, landing page, agent template and
+human reply must match it.
+
+**Why it needed to exist:** this campaign described the same offer wrong twice in
+one day. Draft 1: "covers one student in full, no charter funds involved."
+Draft 2, after correction: "gives a student of your choosing one free session,
+tell me who and I will set it up" — right about the session, wrong about who
+decides, and it deleted the selection step. Both errors came from paraphrasing
+the 22 marketing emails, because those emails were the ONLY written description
+of the programme anywhere. A definition that lives only inside its own marketing
+will drift every time someone reads it.
+
+**The programme, correctly:** a teacher nominates a student (up to three, one
+form each). **We select from the nominations.** The selected student receives
+**one free session.** Nomination is not acceptance, and the scarcity is
+deliberate. Approved short form now in all four warm drafts:
+
+> Teacher Scholarship Program: you nominate a student, we select from the
+> nominations, and the student selected gets a free session. Who would you put
+> forward?
+
+**The file also records what is NOT known**, explicitly so no agent invents it:
+selection criteria, how many are selected per period, cadence, what happens
+after the free session, and whether families are told there was a pool. Copy
+stays silent on all of it until Danielle fills them in.
+
+**Known drift documented, not fixed:** the live funnel contradicts this on both
+points. Stage 1.3 (`217749216439`) promises ongoing "one-on-one tutoring...
+plus session notes"; Stage 3.1 (`217749280608`) says "we can't wait to reach out
+to their families" as though nominating were being accepted. Those are
+Danielle's live emails; rewording them is hers and Roman's call, not this
+session's. Wave 1 points teachers at that funnel, so it is a launch dependency.
+
+**Files:** `knowledge/programs/teacher-scholarship.md` (new),
+`ops/messenger/templates/campaign-tor-2026-08/` (4 P.S. blocks),
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-24 — Scholarship offer corrected: one free session, not a funded spot
 
 **Roman:** "our scholarship program provides 1 free session to a child that the
