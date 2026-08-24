@@ -399,9 +399,10 @@
     407212696,
     407524266,
     407525996,
-    407540089
+    407540089,
+    407597051
   ],
-  "last_run_utc": "2026-08-24T19:34:15.211733+00:00",
+  "last_run_utc": "2026-08-24T20:04:04.904146+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -622,6 +623,73 @@
         ],
         [
           "Follow up via email once a matching in-person tutor is identified, sharing tutor profile for confirmation before booking",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407597051,
+      "number": "16265323220",
+      "time_pt": "12:38 PM",
+      "matched": true,
+      "contact_label": "Christine Nierras",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Christine Nierras regarding tutoring for her son Matthew. The call went to voicemail; Paola left a brief message asking Christine to call back at her convenience. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Christine's callback; if no response in a few days, try another outreach attempt (call or email) to keep the charter PO process moving for Matthew.",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Christine Nierras following up on her inquiry for online math tutoring for her freshman son Matthew at iLEAD Exploration (Orange County, charter-funded, $75/hr). Christine had previously spoken with Paola on 8/21 and was supposed to reply by email with her iLEAD teacher's name/email to start the PO, but hasn't. If she calls back, open with: \"Hi Christine, thanks for getting back to us \u2014 I just need your iLEAD teacher's name and email so we can start the PO and get Matthew matched with a math tutor.\" Tone was friendly; no new info gathered on this call.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing prospective charter family already correctly set to QTL - Charter; voicemail added no new qualifying info.",
+        "student_or_school_names_mentioned": [
+          "Matthew",
+          "Christine Nierras",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola called Christine to follow up on Matthew's tutoring inquiry; reached voicemail and left a message asking Christine to call back.",
+          "what_we_can_do_to_help": "[Follow-up call] Continue outreach to obtain iLEAD teacher contact info from Christine so we can initiate the PO and begin tutor matching for Matthew's online freshman math support.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola called Christine to follow up on Matthew's tutoring inquiry; reached voicemail and left a message asking Christine to call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Follow-up call] Continue outreach to obtain iLEAD teacher contact info from Christine so we can initiate the PO and begin tutor matching for Matthew's online freshman math support."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Christine's callback; if no response in a few days, try another outreach attempt (call or email) to keep the charter PO process moving for Matthew.",
           81494333
         ]
       ],
