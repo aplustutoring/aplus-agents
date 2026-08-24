@@ -74,6 +74,58 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Persona hygiene: 7 contacts are tagged as the wrong persona
+
+**What:** New `scripts/tor_persona_backfill.py` (read-only). Roman, on the Sage
+Oak backfill candidates: "i'm assuming [they] are support staff or
+administrators?" Correct — 4 self-identified as support staff at the booth,
+1 as administrator, 2 more are admin/director by job title, 2 are system
+mailboxes, 4 unverified. **None were confirmed teachers**, and 12 of the 13 were
+flagged only because `hs_lead_status` said TOR.
+
+**The most valuable finding was not in the backfill list at all.** The first
+version proposed re-tagging 16 "Decision Makers" — but 15 of them were ALREADY
+tagged Decision Maker/Director correctly. What was stale was their lead status.
+Excluding anyone carrying any persona shrank the list from 121 to 101 and turned
+up the real problem: **7 contacts carry a persona that contradicts their job
+title.**
+
+| Contact | Job title | Tagged | Should be |
+|---|---|---|---|
+| **Lisa Barlow** | Educational Facilitator | Decision Maker/Director | **Teacher of Record** |
+| Brittany Carper | ELD TOSA / Home School Teacher | Decision Maker/Director | Teacher of Record |
+| Kathleen Hermsmeyer | Superintendent | Teacher of Record | Decision Maker/Director |
+| Lisa Fishman | Chief Operations Officer | Teacher of Record | Decision Maker/Director |
+| Heidi Gasca | Superintendent | Teacher of Record | Decision Maker/Director |
+| Dawn Anthney | Academic Dean | Teacher of Record | Decision Maker/Director |
+| Richard Noblett | Chief of Outreach and Development | Teacher of Record | Decision Maker/Director |
+
+**Lisa Barlow is the expensive one.** She is named as Teacher of Record on
+**16 charter deals** — the single largest name in the orphaned-deals hygiene
+queue — and the mis-tag was silently excluding one of our most active teachers
+from a campaign built for exactly her. The other five would have received a
+"welcome back, I know what it costs you to keep track of your students" email
+addressed to a Superintendent or a COO.
+
+A mis-tag costs in both directions, and neither direction raises an error. The
+conflict scan is now a permanent section of the script's output.
+
+**Also:** the role-mailbox filter was widened. It was prefix-anchored, so
+`summit-techteam@sageoak.education` slipped through. It now matches whole words
+anywhere in the localpart (split on separators and camelCase) plus a substring
+pass for run-together forms, and a companion `looks_like_team_name` catches
+records literally named "Summit Tech Team" or "Enrichment Team". Verified it
+still does NOT fire on `apadilla@ileadca.org` — a person whose initials happen
+to spell a role. Role mailboxes caught: 19 -> 32. **Wave 1 unchanged at 193.**
+
+**Nothing was written to the portal.** All three lists (1 to tag as teacher,
+8 high-confidence not-teachers, 7 conflicts, 20 lead-status mismatches, 28
+shared inboxes, 63 needing a human) are read-only output plus a CSV.
+
+**Files:** `scripts/tor_persona_backfill.py` (new),
+`scripts/charter_tor_segments.py`.
+
+---
 ## 2026-08-24 — a_persona is the teacher audience (the architecture already existed)
 
 **Roman:** "dont we have a persona for teachers as well in the A+ Persona

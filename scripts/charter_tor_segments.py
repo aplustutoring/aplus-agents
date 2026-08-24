@@ -89,15 +89,66 @@ EXCLUDE_SCHOOLS = {"Sage Oak"}
 #     deliverability problem, not just an awkward one.
 #   * actual FAMILIES whose contact carries a school — they have students and
 #     tutors named on them, and they belong to the family campaign.
-ROLE_MAILBOX = re.compile(
-    r"^(vendors?|vendorsupport|vendor[._-]?relations|vendorservices|accountspayable|ap|billing|"
-    r"enrichment|info|admin|office|support|contact|help|purchasing|finance|cp|contracts?|"
-    r"contractprograms|noreply|no[._-]?reply|hr|jobs|careers|team|staff)([._-]|$)", re.I)
+# Matched as WHOLE WORDS anywhere in the localpart, not just at the start:
+# Sage Oak's event accounts are `summit-techteam@` and `sageoaksummit@`, which a
+# prefix-anchored pattern misses entirely (found 2026-08-24 reviewing the Sage
+# Oak backfill candidates). Words are split on . _ - and camelCase boundaries.
+ROLE_WORDS = {
+    "vendor", "vendors", "vendorsupport", "vendorrelations", "vendorservices",
+    "accountspayable", "accounting", "ap", "billing", "invoice", "invoices",
+    "purchasing", "finance", "contracts", "contract", "contractprograms", "cp",
+    "enrichment", "info", "admin", "office", "support", "contact", "help",
+    "noreply", "nореply", "donotreply", "hr", "jobs", "careers", "recruiting",
+    "team", "staff", "techteam", "helpdesk", "webmaster", "postmaster",
+    "vendorinquiries", "orders", "reception", "frontdesk", "mail",
+}
+
+
+def _localpart_words(local):
+    """Split an email localpart into comparable words.
+
+    'summit-techteam' -> {summit, techteam}; 'sageoaksummit' stays whole (no
+    separators to split on) and is caught by the substring pass below."""
+    parts = re.split(r"[._\-+0-9]+", local)
+    words = set()
+    for part in parts:
+        if not part:
+            continue
+        words.add(part.lower())
+        # camelCase / TitleCase runs: VendorSupport -> vendor, support
+        for w in re.findall(r"[A-Z]?[a-z]+", part):
+            words.add(w.lower())
+    return words
 
 
 def is_role_mailbox(email):
+    """True when the address is a shared/system inbox rather than a person.
+
+    Two passes: exact word match after splitting on separators and camelCase,
+    then a substring check for the run-together forms ('sageoaksummit')."""
     local = (email or "").split("@")[0]
-    return bool(local) and bool(ROLE_MAILBOX.match(local))
+    if not local:
+        return False
+    if _localpart_words(local) & ROLE_WORDS:
+        return True
+    flat = re.sub(r"[^a-z]", "", local.lower())
+    return any(w in flat for w in ("techteam", "helpdesk", "accountspayable",
+                                   "vendorsupport", "vendorrelations", "donotreply",
+                                   "noreply", "frontdesk", "webmaster"))
+
+
+# Run-together shared inboxes with no separator to split on ('sageoaksummit@',
+# 'communityproviders@') defeat any localpart rule that does not also guess at
+# real people's names. The contact's NAME is the cleaner signal: a record called
+# "Summit Tech Team" is not a person no matter what its address looks like.
+TEAM_NAME_WORDS = {"team", "tech", "support", "office", "department", "dept",
+                   "staff", "admin", "vendor", "vendors", "providers", "services",
+                   "accounts", "billing", "purchasing", "enrollment", "helpdesk"}
+
+
+def looks_like_team_name(p):
+    name = f"{p.get('firstname') or ''} {p.get('lastname') or ''}".lower()
+    return bool(set(re.findall(r"[a-z]+", name)) & TEAM_NAME_WORDS)
 
 
 def looks_like_family(p):
@@ -360,6 +411,7 @@ def profile(tors, deals, hits, gap):
             "lapsed": 0,          # filled by caller from associations
             "firstname": (p.get("firstname") or "").strip(),
             "is_family": looks_like_family(p),
+            "is_team": looks_like_team_name(p),
             "persona": p.get("a_persona") or "",
             "optout": p.get("hs_email_optout") == "true",
             "marketable": p.get("hs_marketable_status") == "true",
@@ -386,7 +438,7 @@ def mailable(r):
         return f"{r['school']} (worked separately)"
     if not r["email"]:
         return "no email"
-    if is_role_mailbox(r["email"]):
+    if is_role_mailbox(r["email"]) or r["is_team"]:
         return "role mailbox (not a person)"
     if r["is_family"]:
         return "family, not a teacher"
