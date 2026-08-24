@@ -42,7 +42,8 @@
     "Ev0BS06RV3CL",
     "Ev0BRUH8QRPX",
     "Ev0BRUHM0UDB",
-    "Ev0BSSRJ9P0Q"
+    "Ev0BSSRJ9P0Q",
+    "Ev0BSE5QKYUR"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -291,6 +292,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787357831961899"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787594850.024069",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-08-24-content-build-post-fails-error.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/109",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787594850024069"
     }
   ],
   "graduation": {
@@ -312,6 +328,24 @@
       "risk": "low",
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
+      "reporter": "Danielle"
+    },
+    "1787594850.024069": {
+      "agent": "content-build",
+      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
+      "correction_path": "corrections/content-build/2026-08-24-content-build-post-fails-error.md",
+      "branch": "fix/content-build-2026-08-24-024069",
+      "diagnosis": "A specific blog draft (the Title III EL post) is failing to publish to HubSpot \u2014 most likely a HubSpot API rejection (invalid field, oversized content, or slug/title collision) surfacing from publish-to-hubspot.py during the Saturday content-build run. Without the actual error text we can't pin the exact cause, but the failure is in the publish step, not generation.",
+      "fix_plan": [
+        "Pull the last content-build workflow run log from GitHub Actions and grab the exact HubSpot API error/response body for this post.",
+        "Inspect marketing/scripts/shared/publish-to-hubspot.py error handling \u2014 confirm it surfaces the HubSpot response payload (status + body) into logs/Slack, not just a generic 'error message'.",
+        "Reproduce locally by re-running blog_publish.py against the Title III EL draft to isolate whether it's a payload issue (title length, HTML, tags, campaign_id) vs. an auth/rate-limit issue.",
+        "Apply the targeted fix (e.g. sanitize HTML in embed-pull-quotes.py or fix-links.py output, retry with corrected field, or bump slug) and re-run content-build for just that topic.",
+        "Add a clearer failure message + the failing post title to the Slack notification in deliver-to-slack.py so Danielle sees the real reason next time."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-24T18:08:21.631177+00:00",
       "reporter": "Danielle"
     }
   }
