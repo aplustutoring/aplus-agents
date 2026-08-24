@@ -38,16 +38,52 @@ that implies ongoing tutoring or automatic acceptance.
 
 Never imply the teacher's pick is the decision. They nominate; we select.
 
-## TO BE FILLED IN by Danielle / Roman
+## Selection (Roman 2026-08-24)
 
-These are unknown to the repo and must NOT be invented by any agent writing
-copy. Until they are filled in, copy stays silent on them:
+**Criteria: the student's need, and the teacher's rationale for putting them
+forward.** Both are real and both are read.
 
-- [ ] **Selection criteria** — what makes a nomination successful?
-- [ ] **How many** are selected, and per what period?
-- [ ] **Cadence** — is this rolling, termly, annual?
-- [ ] What happens after the free session (offer to continue? at what price?)
-- [ ] Is the family told the student was selected from a pool?
+**In practice we do not reject nominations.** Roman: "we wont say no, but they
+need to feel like we did."
+
+That gap needs handling honestly, because it is the one thing here that can
+cost more than it earns:
+
+* **Do NOT write copy that asserts rejection.** "We select from the
+  nominations", "not every nomination is accepted", "limited spots" — a teacher
+  who nominates three students and sees three accepted has caught us
+  manufacturing scarcity, and that is a worse outcome than never implying it.
+  Teachers talk to each other at the same school.
+* **DO ask for the rationale, and mean it.** "Nominate a student and tell me
+  why them" is completely true, it is the actual criterion, and asking someone
+  to justify a choice is what makes the choice feel weighed. The gravity comes
+  from the teacher's own reasoning, not from our gatekeeping.
+* If genuine scarcity is introduced later (a real cap per term), this section
+  changes and the copy can then say so plainly.
+
+## After the free session (Roman 2026-08-24)
+
+The free session is the front door, not the whole house. The intended path
+afterwards is that the family continues using their **instructional funds** for
+tutoring. Where a family has no instructional funds, we look for other avenues,
+and Roman's words: "hope to not get to them."
+
+Copy rules that follow from this:
+
+* Never present the free session as the end of the offer, and never imply
+  ongoing free tutoring.
+* Do not lead with funding mechanics in a nomination ask. The teacher's job is
+  to name a student, not to means-test a family.
+* When a teacher asks "what happens after?", the honest answer is: the family
+  can continue with their instructional funds, and if they do not have any we
+  will look at other options with them.
+
+## Still unknown — do NOT invent
+
+- [ ] **How many** are selected, and per what period? (no cap exists today)
+- [ ] **Cadence** — rolling, termly, annual?
+- [ ] Is the family told anything about how their student came to be chosen?
+- [ ] What "other avenues" concretely means for a family with no funds
 
 ## Known drift to fix (as of 2026-08-24)
 

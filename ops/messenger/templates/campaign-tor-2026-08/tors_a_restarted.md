@@ -17,9 +17,8 @@ there.
 
 Danielle
 
-*P.S. Teacher Scholarship Program: you nominate a student, we select from the
-nominations, and the student selected gets a free session. Who would you put
-forward?*
+*P.S. Teacher Scholarship Program: nominate a student and tell me why them.
+They get a free session with one of our tutors. Who comes to mind?*
 
 ---
 ## Follow-up (Day 4, only if no reply)

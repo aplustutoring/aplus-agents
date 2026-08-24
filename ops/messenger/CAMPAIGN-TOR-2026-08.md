@@ -187,13 +187,20 @@ has to be universal."
 
 The P.S. in all four warm segments now reads:
 
-> Teacher Scholarship Program: you nominate a student, we select from the
-> nominations, and the student selected gets a free session. Who would you put
-> forward?
+> Teacher Scholarship Program: nominate a student and tell me why them. They get
+> a free session with one of our tutors. Who comes to mind?
 
-Selection is stated, not hidden. Scarcity is deliberate and honest, and a
-selective award is worth more to a teacher than a giveaway. The line ends on a
-question, which is the curiosity rule doing its job.
+**It asks for a rationale. It does not claim we reject anyone.** Roman
+2026-08-24: "we wont say no, but they need to feel like we did." The criteria
+are real (student need plus the teacher's reasoning) but nominations are not
+turned down in practice, so copy that asserts selection would be manufacturing
+scarcity. A teacher who nominates three students and sees three accepted has
+worked that out, and teachers at the same school compare notes. Asking someone
+to justify a choice is what makes the choice feel weighed, and "tell me why
+them" is both true and the actual criterion. Full reasoning in
+`knowledge/programs/teacher-scholarship.md`.
+
+The line ends on a question, which is the curiosity rule doing its job.
 
 ### Earlier drafts of this same P.S. (kept as a warning)
 

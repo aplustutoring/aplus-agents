@@ -74,6 +74,47 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Scholarship: selection criteria, the post-session path, and a scarcity call
+
+**Roman filled in three of the five blanks** the canonical file flagged:
+
+1. **Criteria:** the student's need, and the teacher's rationale for nominating.
+2. **In practice we do not reject nominations** — "we wont say no, but they need
+   to feel like we did."
+3. **After the free session:** the family is expected to continue on their
+   **instructional funds**. Where a family has none, we look at other avenues,
+   and "hope to not get to them."
+
+**On (2) I pushed back and then built the honest version.** Copy that asserts
+selection ("we select from the nominations", "limited spots") is manufacturing
+scarcity if nothing is ever turned down, and it fails in a specific, likely way:
+a teacher nominates three students, all three are accepted, and teachers at the
+same school compare notes. The cost of being caught is larger than the lift.
+
+The effect Roman wants is real and reachable without the claim. **Asking a
+teacher to justify a nomination is what makes the choice feel weighed**, and the
+rationale IS the criterion, so it is simply true. The P.S. became:
+
+> Teacher Scholarship Program: nominate a student and tell me why them. They get
+> a free session with one of our tutors. Who comes to mind?
+
+Recorded in the canonical file as a rule with its reasoning, plus the note that
+if a genuine cap is introduced later the copy can say so plainly.
+
+**On (3),** three new copy rules: never present the free session as the end of
+the offer; never lead a nomination ask with funding mechanics, because the
+teacher's job is to name a student, not to means-test a family; and a stated
+honest answer for "what happens after?".
+
+**Still unknown, still not to be invented:** how many are selected per period
+(no cap exists today), cadence, what the family is told about how their student
+was chosen, and what "other avenues" concretely means.
+
+**Files:** `knowledge/programs/teacher-scholarship.md`,
+`ops/messenger/templates/campaign-tor-2026-08/` (4 P.S. blocks),
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-24 — Teacher Scholarship Program gets a canonical description
 
 **Roman:** "it has to be clearly and properly identified here. and we have a
