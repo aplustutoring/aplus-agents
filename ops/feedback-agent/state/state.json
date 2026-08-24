@@ -49,7 +49,8 @@
     "Ev0BT8DT6D1N",
     "Ev0BT8E9BMQQ",
     "Ev0BSE412GR0",
-    "Ev0BSG2U6YKB"
+    "Ev0BSG2U6YKB",
+    "Ev0BSHS33XK6"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -343,6 +344,21 @@
       "ticket": null,
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787610808300769"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787612254.091039",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-24-spotlight-reels-not-delivered.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/114",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787612254091039"
     }
   ],
   "graduation": {
@@ -400,6 +416,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-24T22:35:00.570147+00:00",
       "reporter": "Roman"
+    },
+    "1787612254.091039": {
+      "agent": "spotlight-orchestrator",
+      "agent_label": "Spotlight Orchestrator",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-24-spotlight-reels-not-delivered.md",
+      "branch": "fix/spotlight-orchestrator-2026-08-24-091039",
+      "diagnosis": "Paola is explicitly asking for a workflow re-run (execution), not a code fix \u2014 she wants the Spotlight Orchestrator triggered for Amelia, Ethan, and Isabella so the Animated Spotlight Reels are delivered to #student-spotlight-ready. Multiple prior reel-only backfills (including merged PR #113) haven't produced the videos, which suggests either the reel subpipeline (marketing/scripts/b2c/reel/*) is silently failing or the orchestrator is being invoked in a mode that skips reel generation, but without logs from the last runs the root cause is uncertain.",
+      "fix_plan": [
+        "Manually dispatch .github/workflows/spotlight-orchestrator.yml three times (workflow_dispatch) with the intake folder IDs for Amelia, Ethan, and Isabella, forcing a full bundle regeneration if needed.",
+        "Watch the run logs specifically for marketing/scripts/b2c/reel/build_reel.py and deliver_reel.py \u2014 that's where prior attempts have been dying silently based on Paola's report.",
+        "Confirm deliver_reel.py posts the .mp4 files to Slack channel #student-spotlight-ready (not the default channel) and that auto-publish to HubSpot is disabled for this run.",
+        "If the reel step fails again, capture the exact error and file a real bug against marketing/scripts/b2c/reel/build_reel.py \u2014 don't loop back with another correction entry.",
+        "Reply to Paola in-thread with either the 3 delivered videos or the exact dispatch command + folder IDs she'd need to run it herself."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-24T22:59:28.487549+00:00",
+      "reporter": "Paola"
     }
   }
 }
