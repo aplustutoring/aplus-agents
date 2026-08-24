@@ -3,12 +3,14 @@
 Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
 separately via the August Summit booth follow-up). From: Danielle. No count tokens (a count of one reads oddly).
 
-**Subject:** Restarting tutoring for 26/27
+**Subject:** Welcome back: restarting tutoring for 26/27
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
-One of your families worked with us last school year. As 26/27 gets going I
-wanted to make restarting easy, for them and for anyone else on your roster.
+Welcome back to the school year.
+
+One of your families worked with us last year. As 26/27 gets going I wanted to
+make restarting easy, for them and for anyone else on your roster.
 
 Here is the whole process from your side: the family decides, you approve, and we
 handle the purchase order and the scheduling. You get progress updates through the
@@ -32,7 +34,7 @@ Director of School Partnerships, A+ Tutoring
 
 **Subject:** Re: Restarting tutoring for 26/27
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
 Following up once. If there is a student on your roster who is behind and not
 getting targeted support anywhere else, that is the one to send my way.

@@ -74,6 +74,55 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Teacher audience was leaking families and AP inboxes; back-to-school framing
+
+**Reported:** Roman, looking at a family win-back email: "is it going to teachers
+or families? i feel like we have confusion somewhere."
+
+**The email was fine** (219949261351 is a family email: from Paola, reply-to
+admin@, body reads "we'd love to pick things back up with your family"; its list
+had zero teacher signal). **The confusion was real but it was upstream, in the
+teacher audience this campaign builds.**
+
+`charter_school_teacher` holds WHICH SCHOOL a contact belongs to, not "is a
+teacher". It was one of the four union signals, so it pulled in two populations
+that are not teachers, 167 contacts in total:
+
+* **33 school role mailboxes** — `vendors@ileadexploration.org`, `ap@ieminc.org`,
+  `accountspayable@theblueridgeacademy.com`, `noreply@`, `contractprograms@`,
+  `vendorsupport@`. Danielle's copy is a personally-signed "I taught K-8, here is
+  what I saw". Into accounts payable, that is a deliverability problem.
+* **48 actual families** — parents on personal gmail/yahoo with students and
+  tutors stamped (Diana Torres / Freddie & Sarai / tutor Fidah; Veronica Lemus
+  Sanchez / Natalia & Nicolas; Karla Diaz / Alicia & Emilie). All three were
+  already sitting on the family Win-back Multi list, so they would have received
+  BOTH campaigns.
+* **78 with no first name**, which would have rendered "Hi ,".
+
+**Fix:** `is_role_mailbox()` and `looks_like_family()` are hard exclusions in
+`scripts/charter_tor_segments.py`. A contact carrying real family signals is
+never a teacher for this campaign, even when the person is genuinely both.
+The nameless contacts are kept, not dropped: every draft now uses
+`{{ personalization_token('contact.firstname', 'there') }}`. All 78 are in the
+cold C1/C2 waves anyway; wave 1 has none.
+
+**Mailable 1,049 -> 968. Wave 1 is 191.**
+
+**Also:** framing is now BACK TO SCHOOL per Roman ("we are focusing on charter
+school teachers and getting a back 2 school workflow going") — every draft opens
+on "Welcome back to the school year" and wave-1 subjects lead with "Welcome
+back". Matches what Roman pitched to Danielle on 2026-08-20.
+
+**Why it matters beyond this campaign:** the property NAME lies about its
+contents, and it will mislead the next thing that segments on it. Worth either a
+relabel or a note in the registry. Flagged, not changed — portal relabels are
+Roman's call.
+
+**Files:** `scripts/charter_tor_segments.py`, `ops/messenger/campaign-tor.yml`,
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`,
+`ops/messenger/templates/campaign-tor-2026-08/` (all 6).
+
+---
 ## 2026-08-21 — Teacher campaign: Sage Oak excluded, Danielle's own CTA applied
 
 **What:** Two changes on top of the segmentation and the matcher fix.

@@ -76,6 +76,30 @@ INTERNAL_DOMAIN = "@wetutorathome.com"
 # reconfirmed to this session 2026-08-21 ("exclude sage oak, they will be
 # separate"). Excluded at every segment, not just wave 1.
 EXCLUDE_SCHOOLS = {"Sage Oak"}
+
+# `charter_school_teacher` holds WHICH SCHOOL, not "is a teacher", so it drags
+# two non-teacher populations into the union (found 2026-08-24 when Roman asked
+# whether an email was going to teachers or families):
+#   * school role mailboxes — vendors@, accountspayable@, ap@, noreply@ ...
+#     A personally-signed "I taught K-8" email to accounts payable is a
+#     deliverability problem, not just an awkward one.
+#   * actual FAMILIES whose contact carries a school — they have students and
+#     tutors named on them, and they belong to the family campaign.
+ROLE_MAILBOX = re.compile(
+    r"^(vendors?|vendorsupport|vendor[._-]?relations|vendorservices|accountspayable|ap|billing|"
+    r"enrichment|info|admin|office|support|contact|help|purchasing|finance|cp|contracts?|"
+    r"contractprograms|noreply|no[._-]?reply|hr|jobs|careers|team|staff)([._-]|$)", re.I)
+
+
+def is_role_mailbox(email):
+    local = (email or "").split("@")[0]
+    return bool(local) and bool(ROLE_MAILBOX.match(local))
+
+
+def looks_like_family(p):
+    """Family signals stamped by the family campaign's own tooling."""
+    return bool(p.get("student_first_name") or p.get("student_names")
+                or p.get("last_tutor_name") or p.get("teacher_of_record_name"))
 NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
 
 SEGMENTS = [
@@ -128,7 +152,9 @@ def list_members(list_id):
 TOR_PROPS = ["email", "firstname", "lastname", "charter_school_teacher", "hs_lead_status",
              "a_persona", "hs_marketable_status", "hs_email_optout",
              "hs_email_hard_bounce_reason", "hubspot_owner_id", "createdate",
-             "tor_family_count", "tor_student_count", "tor_families_lapsed", "tor_segment"]
+             "tor_family_count", "tor_student_count", "tor_families_lapsed", "tor_segment",
+             # non-teacher detection (see ROLE_MAILBOX / looks_like_family)
+             "student_first_name", "student_names", "last_tutor_name", "teacher_of_record_name"]
 
 
 def load_tors():
@@ -302,6 +328,8 @@ def profile(tors, deals, hits, gap):
             "fam25": len(fam25), "fam2627": len(fam2627),
             "students": len(students), "amount25": round(amount25),
             "lapsed": 0,          # filled by caller from associations
+            "firstname": (p.get("firstname") or "").strip(),
+            "is_family": looks_like_family(p),
             "optout": p.get("hs_email_optout") == "true",
             "marketable": p.get("hs_marketable_status") == "true",
             "bounced": bool(p.get("hs_email_hard_bounce_reason")),
@@ -327,6 +355,10 @@ def mailable(r):
         return f"{r['school']} (worked separately)"
     if not r["email"]:
         return "no email"
+    if is_role_mailbox(r["email"]):
+        return "role mailbox (not a person)"
+    if r["is_family"]:
+        return "family, not a teacher"
     if r["email"].lower().endswith(INTERNAL_DOMAIN):
         return "internal"
     if r["optout"]:

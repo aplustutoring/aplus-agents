@@ -2,14 +2,16 @@
 
 Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
 separately via the August Summit booth follow-up). From: Danielle.
-Tokens: {{contact.firstname}}, {{contact.tor_family_count}}.
+Tokens: firstname (with 'there' fallback, so a nameless contact never gets "Hi ,"), {{contact.tor_family_count}}.
 
-**Subject:** The families you sent us last year
+**Subject:** Welcome back: the families you sent us last year
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
-We worked with {{contact.tor_family_count}} of your families last school year,
-and none of them have restarted for 26/27 yet.
+Welcome back to the school year.
+
+We worked with {{contact.tor_family_count}} of your families last year, and none
+of them have restarted for 26/27 yet.
 
 I do not think that means the need went away. In my own classroom the students
 who were behind in June were the same students who were behind in September, and
@@ -34,7 +36,7 @@ Director of School Partnerships, A+ Tutoring
 
 **Subject:** Re: The families you sent us last year
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
 Short version of my last note: I can send you the roster of your families who
 tutored with us last year, and we can restart any of them without new paperwork

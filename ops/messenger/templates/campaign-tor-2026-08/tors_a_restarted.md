@@ -2,14 +2,16 @@
 
 Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
 separately via the August Summit booth follow-up). From: Danielle Brodetsky, Director of School Partnerships.
-Tokens: {{contact.firstname}} only. Do NOT token the school (see CAMPAIGN doc).
+Tokens: firstname (with 'there' fallback, so a nameless contact never gets "Hi ,") only. Do NOT token the school (see CAMPAIGN doc).
 
-**Subject:** Thank you for the 26/27 referrals
+**Subject:** Welcome back, and thank you for the referrals
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You have already sent families our way this school year, and I want you to know
-that lands with us. Thank you.
+Welcome back to the school year.
+
+You have already sent families our way this year, and I want you to know that
+lands with us. Thank you.
 
 I taught K-8 before I moved into this role, so I know what it costs you to keep
 track of which students need more than the school day can give them. You are
@@ -36,7 +38,7 @@ Director of School Partnerships, A+ Tutoring
 
 **Subject:** Re: Thank you for the 26/27 referrals
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
 Following up on my note. If it is easier to talk it through than to write it out,
 I am happy to take 15 minutes whenever suits you.

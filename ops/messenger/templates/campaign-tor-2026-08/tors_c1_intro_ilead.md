@@ -3,14 +3,14 @@
 Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
 separately via the August Summit booth follow-up). From: Danielle. COLD-ish: many were last emailed 2025-01.
 Uses the iLEAD Antelope Valley Tier 3 numbers, which are published and are hers to cite.
-Tokens: {{contact.firstname}} only.
+Tokens: firstname (with 'there' fallback, so a nameless contact never gets "Hi ,") only.
 
 **Subject:** What the Tier 3 results at iLEAD Antelope Valley looked like
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
-I am the Director of School Partnerships at A+ Tutoring, and we are an approved
-vendor with iLEAD. Before this role I taught K-8, so I will keep this to the part
+Welcome back to the school year. I am the Director of School Partnerships at
+A+ Tutoring, and we are an approved vendor with iLEAD. Before this role I taught K-8, so I will keep this to the part
 that would have mattered to me as a teacher.
 
 Last school year we ran a Tier 3 intervention program at iLEAD Antelope Valley.

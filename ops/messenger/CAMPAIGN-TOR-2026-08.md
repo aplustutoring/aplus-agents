@@ -41,17 +41,43 @@ than guessing.
 
 | Code | Segment | Total | Mailable | Angle |
 |---|---|---|---|---|
-| A | Restarted 26/27 | 17 | 17 | Thank you, and who else on your roster |
+| A | Restarted 26/27 | 18 | 17 | Thank you, and who else on your roster |
 | B1 | Anchor, 5+ families in 25/26 | 18 | 18 | Named counts, roster offer, Danielle calls on Day 8 |
-| B2 | Multi, 2-4 families | 64 | 63 | Named count, roster offer |
-| B3 | Single, 1 family | 106 | 96 | Restart is easy, honest opt-out invited |
-| C1 | Intro, iLEAD, no history | 180 | 170 | iLEAD AV Tier 3 results (published) |
-| C2 | Intro, other schools, no history | 800 | 685 | Danielle's classroom story, funding-already-there |
-| | **total** | **1,185** | **1,049** | |
+| B2 | Multi, 2-4 families | 64 | 61 | Named count, roster offer |
+| B3 | Single, 1 family | 105 | 95 | Restart is easy, honest opt-out invited |
+| C1 | Intro, iLEAD, no history | 180 | 152 | iLEAD AV Tier 3 results (published) |
+| C2 | Intro, other schools, no history | 800 | 625 | Danielle's classroom story, funding-already-there |
+| | **total** | **1,185** | **968** | |
 
-Exclusions (136): **76 Sage Oak**, 54 opted out, 4 non-marketable, 1 no email,
-1 internal. Zero hard bounces, because the 155 bounced TORs were archived on
-2026-08-14.
+**Wave 1 (A + B1 + B2 + B3) = 191 teachers.**
+
+Exclusions (217): 76 Sage Oak, 54 opted out, **48 families**, **33 role
+mailboxes**, 4 non-marketable, 1 no email, 1 internal. Zero hard bounces,
+because the 155 bounced TORs were archived on 2026-08-14.
+
+### The audience needed tightening: `charter_school_teacher` is not "is a teacher"
+
+Roman, 2026-08-24, looking at a family email: "is it going to teachers or
+families? i feel like we have confusion somewhere." He was right, though not
+about the email. That property holds WHICH SCHOOL a contact belongs to, and it
+was one of the four signals building this audience, so it dragged in two
+populations that are not teachers:
+
+* **33 school role mailboxes** — `vendors@ileadexploration.org`, `ap@ieminc.org`,
+  `accountspayable@theblueridgeacademy.com`, `noreply@`, `contractprograms@`.
+  A personally-signed "I taught K-8, here is what I saw" landing in accounts
+  payable is a deliverability problem, not just an awkward one.
+* **48 actual families** — parents on personal gmail/yahoo with students and
+  tutors stamped on them (Diana Torres, students Freddie & Sarai, tutor Fidah).
+  They belong to the family campaign and were already receiving it.
+
+Both are now hard exclusions in the segmenter (`is_role_mailbox`,
+`looks_like_family`). A contact carrying real family signals is never a teacher
+for this campaign's purposes, even when it is genuinely both people.
+
+**78 contacts have no first name** and would have opened "Hi ,". All 78 sit in
+the cold C1/C2 waves; wave 1 has none. Rather than drop them, every draft now
+uses `{{ personalization_token('contact.firstname', 'there') }}`.
 
 **Sage Oak is excluded at every segment.** Roman to Danielle in Slack
 2026-08-20: "auto email campaign to all charter teachers from you (except sage
@@ -68,6 +94,13 @@ Cross-reference: **168 teachers have 329 families sitting in the 26/27 gap
 list** (list 3104). The teacher campaign and the family win-back campaign will
 touch the same households from two directions. That is deliberate. It is also
 the reason segment B leads with the roster offer rather than a second ask.
+
+## Framing: back to school
+
+Roman 2026-08-24: "we are focusing on charter school teachers and getting a
+back 2 school workflow going". Every draft now opens on "Welcome back to the
+school year" and the wave-1 subjects lead with "Welcome back", matching what
+Roman pitched to Danielle on 2026-08-20 ("Welcoming back to the school year").
 
 ## Copy
 
@@ -115,8 +148,8 @@ Sending 941 near-cold contacts in one morning off the same domain that is
 currently running the family win-back is a real risk to the family campaign's
 inbox placement. The ramp, unless Roman overrides it:
 
-1. Week 1: A + B1 + B2 + B3 (194 contacts, warm, all have history)
-2. Week 2: C1 iLEAD (170)
+1. Week 1: A + B1 + B2 + B3 (191 contacts, warm, all have history)
+2. Week 2: C1 iLEAD (152)
 3. Week 3+: C2 in school-sized waves, largest last:
    Compass, then the long tail, then Ocean Grove's ~348 split in two.
    Sage Oak is not in any wave.
@@ -170,7 +203,7 @@ Run the schema sync before `--write-props`.
       Not `success@`, which reads as a shared mailbox under a personally-signed
       email.
 - [x] **Audience scope (Roman 2026-08-21):** warm first. Wave 1 = A + B1 + B2 +
-      B3, **194 mailable**. C1/C2 held for later waves.
+      B3, **191 mailable**. C1/C2 held for later waves.
 - [x] **Sage Oak excluded (Roman 2026-08-21):** all 76, every segment.
 - [x] **CTA per Danielle (Slack 2026-08-21):** "email me back and I will be your
       guide", plus a Teacher Scholarship Program mention, in all six drafts. No

@@ -2,16 +2,18 @@
 
 Voice: danielle-voice. Sage Oak teachers are EXCLUDED (worked
 separately via the August Summit booth follow-up). From: Danielle. HIGHEST VALUE SEGMENT.
-Tokens: {{contact.firstname}}, {{contact.tor_family_count}}, {{contact.tor_student_count}}.
+Tokens: firstname (with 'there' fallback, so a nameless contact never gets "Hi ,"), {{contact.tor_family_count}}, {{contact.tor_student_count}}.
 Counts are stamped by scripts/charter_tor_segments.py and are only accurate as of
 the last run. Re-stamp on the morning of the send.
 
-**Subject:** Your families from last year, and what 26/27 looks like
+**Subject:** Welcome back: your families from last year
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Last school year we worked with {{contact.tor_family_count}} families on your
-roster, {{contact.tor_student_count}} students in total. That is more than almost
+Welcome back to the school year.
+
+Last year we worked with {{contact.tor_family_count}} families on your roster,
+{{contact.tor_student_count}} students in total. That is more than almost
 any other teacher we partner with, and it is not an accident. You saw who needed
 support and you moved.
 
@@ -38,7 +40,7 @@ Director of School Partnerships, A+ Tutoring
 
 **Subject:** Re: Your families from last year
 
-Hi {{contact.firstname}},
+Hi {{ personalization_token('contact.firstname', 'there') }},
 
 Just making sure this did not get buried. The roster takes me two minutes to pull
 and it is yours whether or not anyone restarts.
