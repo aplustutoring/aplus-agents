@@ -2,19 +2,17 @@
 
 Voice: danielle-voice. Sage Oak EXCLUDED. From: Danielle.
 Tokens: firstname (fallback 'there'), tor_family_count.
-Length rule (Roman 2026-08-24): under 80 words, one ask.
+Rules (Roman 2026-08-24): curiosity over bullshit; school year start is busy.
+Same hook as B1: nobody ever reports back to the teacher who referred.
 
-**Subject:** The families you sent us last year
+**Subject:** What happened with the families you sent us
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-We worked with {{contact.tor_family_count}} of your families last year. None
-have restarted for 26/27.
+{{contact.tor_family_count}} of your families tutored with us last year. Nobody
+sends a teacher a report on how that went.
 
-In my own classroom, the students who were behind in June were still behind in
-September. The summer did not fix it.
-
-Want the list of who we worked with?
+I can tell you, if it is useful.
 
 Danielle
 
@@ -24,13 +22,11 @@ funds involved. Ask and I will send the form.*
 ---
 ## Follow-up (Day 5, only if no reply)
 
-**Subject:** Re: The families you sent us last year
+**Subject:** Re: What happened with the families you sent us
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Short version: I can send you the roster, and any of them can restart without
-new paperwork on your end.
-
-Reply with a yes and it is on its way.
+One word back and I will send it over. No reply and I will leave you to
+September.
 
 Danielle

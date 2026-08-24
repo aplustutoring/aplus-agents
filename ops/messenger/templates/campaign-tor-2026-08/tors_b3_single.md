@@ -2,19 +2,20 @@
 
 Voice: danielle-voice. Sage Oak EXCLUDED. From: Danielle.
 No count tokens: "1 of your families" reads badly.
-Length rule (Roman 2026-08-24): under 80 words, one ask.
+Rules (Roman 2026-08-24): curiosity over bullshit; school year start is busy.
+Only one family here, so there is no data hook worth offering. Instead: ask the
+one question a teacher three weeks into the year already has an answer to.
 
-**Subject:** Welcome back: restarting tutoring
+**Subject:** One question
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-One of your families tutored with us last year, and I wanted to make restarting
-easy for anyone on your roster who needs it.
+I know September is not the month for new projects, so just one question.
 
-The family decides, you approve, we handle the paperwork and the scheduling.
+Is there a student you are already worried about?
 
-If there is a student you are worried about, tell me about them. And if nobody
-needs it right now, say so and I will check back later in the year.
+If there is, tell me about them and I will tell you honestly whether we can
+help. If not, I will check back later in the year.
 
 Danielle
 
@@ -24,13 +25,11 @@ funds involved. Ask and I will send the form.*
 ---
 ## Follow-up (Day 5, only if no reply)
 
-**Subject:** Re: Restarting tutoring
+**Subject:** Re: One question
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Following up once. If a student on your roster is behind and not getting
-targeted support anywhere else, that is the one to send my way.
-
-If not, no reply needed. I will leave you to your September.
+Still just the one question. The student who was behind in June is usually the
+same one who is behind now.
 
 Danielle

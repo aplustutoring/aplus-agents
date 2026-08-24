@@ -145,8 +145,42 @@ credibility paragraph, a CTA paragraph and a scholarship paragraph, which is
 exactly the shape that reads as machine-written. Rewritten to **70 to 95 words**
 with one ask each and the scholarship demoted to a one-line P.S.
 
+Roman 2026-08-24, second pass: **"curiosity over bullshit, school year start is
+busy."** That changed the ask, not just the length. "Want the roster of your
+families?" is still handing a teacher an admin task in September. The rewrite
+leads with something they do not have and cannot get anywhere else:
+
+* **B1 / B2** — a teacher never finds out what happened to the students they
+  referred. Nobody reports back. "Some finished the year, some stopped partway,
+  and I doubt anyone told you which. I can, in one email. Want it?" One word
+  costs them nothing and the answer is genuinely theirs.
+* **B3** — one family is not enough to offer a report on, so it asks the single
+  question a teacher three weeks into the year already knows the answer to:
+  "Is there a student you are already worried about?"
+* **C1** — the numbers are the hook, so they are the subject line:
+  "Sixteen of twenty".
+* **C2** — the hook is the thing most teachers do not know: the money is
+  already allocated.
+
+56 to 77 words each.
+
+### ⚠ The B1/B2 promise has an operational dependency
+
+Those two emails promise an answer, and the answer needs Teachworks lesson
+history (did each family finish or stop partway). **The Teachworks key lives
+ONLY in GitHub Actions secrets, not locally**, so nobody can pull it ad hoc.
+
+**Pre-send requirement:** generate the per-teacher answer sheets BEFORE wave 1
+goes out, via one `charter-gap-analysis.yml` run, and hand Danielle the file.
+80 teachers replying to a promise she cannot fulfil for three days turns the
+curiosity hook into the thing that burns her.
+
 Rules for anyone editing these:
 * One ask per email. If there are two CTAs, cut one.
+* Lead with what they do not have, not with what we want. A teacher in
+  September will answer curiosity and will bin a request for their time.
+* Never ask them to do admin. "Want the roster?" is homework; "want to know
+  which ones stopped?" is a gift.
 * No paragraph explaining a process the teacher already runs every year.
 * Danielle's classroom credibility is worth one clause, not a paragraph.
 * The honest opt-out ("if nobody needs it, say so") stays. It is the most

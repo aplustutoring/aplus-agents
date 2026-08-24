@@ -74,6 +74,45 @@ ever accepts a UNIQUE match — an ambiguous name is reported for a human, never
 auto-assigned."
 
 ---
+## 2026-08-24 — Teacher copy: curiosity over pitch (and a promise we could not keep)
+
+**Roman:** "curiosity over bullshit, school year start is busy."
+
+That changed the ASK, not just the length. The previous pass got the emails
+short but the ask was still "want me to send you the roster of your families?"
+which is handing a teacher an admin task in the busiest month of their year.
+
+Rewritten so each segment leads with something the teacher does not have and
+cannot get elsewhere:
+
+* **B1 / B2** — a teacher never finds out what happened to the students they
+  referred, because nobody reports back to them. "Some finished the year, some
+  stopped partway, and I doubt anyone told you which. I can, in one email.
+  Want it?" Replying costs one word; the answer is genuinely theirs.
+* **B3** — one family is too thin to offer a report on, so it asks the one
+  question a teacher three weeks in already knows the answer to: "Is there a
+  student you are already worried about?"
+* **C1** — the numbers ARE the hook, so they became the subject: "Sixteen of
+  twenty".
+* **C2** — the hook is what most teachers do not know: the money is already
+  allocated.
+
+**56 to 77 words each** (was 70-95, was ~200 before that).
+
+**⚠ The rewrite created a promise we cannot currently keep, caught before send.**
+B1 and B2 now promise an answer that requires Teachworks lesson history, and
+**the Teachworks key exists only in GitHub Actions secrets** — it is not in the
+local .env and cannot be pulled ad hoc. If 80 teachers reply and Danielle cannot
+answer for three days, the curiosity hook becomes the thing that burns her.
+
+**New hard pre-send step, documented in the campaign doc:** generate the
+per-teacher answer sheets via one `charter-gap-analysis.yml` run BEFORE wave 1
+goes out, and hand Danielle the file. Not yet built as a per-teacher view.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/` (all 6),
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-24 — Teacher copy cut from ~200 words to 70-95 (Roman: "AI slop")
 
 **Roman:** "why are these emails so verbose. its going to be clear that ai wrote
