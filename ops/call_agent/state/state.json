@@ -401,9 +401,12 @@
     407525996,
     407540089,
     407597051,
-    407625399
+    407625399,
+    407646542,
+    407651626,
+    407656315
   ],
-  "last_run_utc": "2026-08-24T20:49:41.001332+00:00",
+  "last_run_utc": "2026-08-24T21:35:03.037919+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -762,6 +765,74 @@
         ],
         [
           "Monitor for incoming payment on the resent link and follow up if not completed soon",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 407656315,
+      "number": "15309137693",
+      "time_pt": "2:20 PM",
+      "matched": true,
+      "contact_label": "Jeff Rice",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Danielle (A+ Tutoring, misidentified in transcript as Emily) to Jeff Rice regarding A+ Tutoring's participation in Jeff's conference as an exhibitor/presenter. Jeff confirmed exhibit space PC9 is available and reserved it pending Danielle's confirmation with Roman, and offered two AI/technology presentation slots (11:00-12:15 or 4:15-5:30 Thursday). Danielle will loop in Roman, submit the exhibitor/sponsorship form and session submission form today. Jeff is a conference organizer/vendor, not a tutoring prospect.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm exhibit booth PC9 selection with Roman",
+            "owner_hint": "Danielle"
+          },
+          {
+            "item": "Complete and submit exhibitor (or sponsorship) form to Jeff Rice today",
+            "owner_hint": "Danielle"
+          },
+          {
+            "item": "Complete and submit session submission form for AI/technology presentation (choose 11:00-12:15 or 4:15-5:30 Thursday slot)",
+            "owner_hint": "Danielle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Jeff Rice is a conference organizer A+ is partnering with as an exhibitor/presenter, not a tutoring family, school partner, or applicant. Current status should not be changed based on this logistics call.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm exhibit booth PC9 selection with Roman",
+          81494333
+        ],
+        [
+          "Complete and submit exhibitor (or sponsorship) form to Jeff Rice today",
+          81494333
+        ],
+        [
+          "Complete and submit session submission form for AI/technology presentation (choose 11:00-12:15 or 4:15-5:30 Thursday slot)",
           81494333
         ]
       ],
