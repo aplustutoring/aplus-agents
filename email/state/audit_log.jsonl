@@ -22463,3 +22463,4 @@
 {"ticket_id": "47856335706", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-25T19:08:42.681310+00:00"}
 {"ticket_id": "47849356049", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-08-25T19:08:43.608664+00:00"}
 {"ticket_id": "47899922068", "category": "payment_dispute", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-25T19:08:45.906368+00:00"}
+{"message_id": "deal:64333350793", "source": "deal_sync", "deal_id": "64333350793", "deal_name": "Inna Volodinsky- Myron", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 1000789, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-25T19:18:20.416626+00:00"}
