@@ -410,9 +410,11 @@
     407686632,
     407687006,
     407695515,
-    407696262
+    407696262,
+    407700702,
+    407711833
   ],
-  "last_run_utc": "2026-08-24T23:49:57.758463+00:00",
+  "last_run_utc": "2026-08-25T01:00:07.918602+00:00",
   "pending_digest": [
     {
       "call_id": 407524266,
@@ -1064,6 +1066,96 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 407700702,
+      "number": "12092719941",
+      "time_pt": "4:50 PM",
+      "matched": true,
+      "contact_label": "Cortney Richardson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Cortney Richardson, a returning parent, called to re-enroll her student Justin with his previous tutor Youssef, requesting once-a-week evening sessions. Yolanda (A+) confirmed she is the one who has been emailing Cortney and noted Youssef is available starting in September. Yolanda will text Cortney with Youssef's available evening times once he replies, and Cortney will send the voucher/PO to get scheduling finalized.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with tutor Youssef to confirm his September evening availability",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Text Cortney with Youssef's available evening times once he replies",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Schedule once-weekly evening sessions with Youssef starting September",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Process voucher/PO once received from Cortney",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an open deal re-enrolling for tutoring; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Justin",
+          "Youssef"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning family \u2014 Justin is re-enrolling and requesting his prior tutor Youssef again. Assessment was just completed with his teacher; family wants once-weekly evening sessions and is funding via a charter voucher/PO.",
+          "what_we_can_do_to_help": "Yolanda is coordinating with Youssef (available starting September) and will text Cortney his evening availability once he replies. Once confirmed, Cortney will send the voucher to the PO and Yolanda will schedule the weekly evening sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family \u2014 Justin is re-enrolling and requesting his prior tutor Youssef again. Assessment was just completed with his teacher; family wants once-weekly evening sessions and is funding via a charter voucher/PO."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda is coordinating with Youssef (available starting September) and will text Cortney his evening availability once he replies. Once confirmed, Cortney will send the voucher to the PO and Yolanda will schedule the weekly evening sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with tutor Youssef to confirm his September evening availability",
+          86868539
+        ],
+        [
+          "Text Cortney with Youssef's available evening times once he replies",
+          86868539
+        ],
+        [
+          "Schedule once-weekly evening sessions with Youssef starting September",
+          86868539
+        ],
+        [
+          "Process voucher/PO once received from Cortney",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
