@@ -773,3 +773,17 @@ Integrated 5 new SEO/GEO skills (sourced from aaron-he-zhu/seo-geo-claude-skills
 
 v1.0. Created May 11, 2026
 Foundation: Roman's MVP redefinition on May 11, 2026. "MVP isn't 3 LinkedIn posts, it's one complete journey from research to permanent owned SEO asset." Built to close the gap between content generation and durable owned assets. First test topic: Getting Down to Facts (Stanford, May 7, 2026).
+
+## Credentials (#AP044) — never write a claim from memory
+
+A+ holds credentials whose exact wording and term window are load-bearing. They
+live in ONE place: `knowledge/credentials.yml`. Read the claim from there.
+
+- Use the `claim_string` **verbatim**. It carries its term window, and a claim
+  without the date range is a defect.
+- **Check `public_ready` first.** If it is `false`, the credential's usage terms
+  are unconfirmed and it must NOT appear in anything customer- or partner-facing.
+  As of 2026-08-25 the NSSA badge is `public_ready: false`.
+- Never paraphrase, abbreviate, or restate a credential in your own words.
+- Never invent a credential, an issuer, or a date. If it is not in that file, we
+  do not claim it.

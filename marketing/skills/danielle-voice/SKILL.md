@@ -188,3 +188,17 @@ v1.2 . Updated May 11, 2026 (clarified iLEAD AV data: 81% is the combined 21-stu
 v1.1 . Updated May 8, 2026 (added hard differentiation rule)
 v1.0 . Created May 6, 2026
 Foundation: 10-question brand voice interview with Danielle Brodetsky
+
+## Credentials (#AP044) — never write a claim from memory
+
+A+ holds credentials whose exact wording and term window are load-bearing. They
+live in ONE place: `knowledge/credentials.yml`. Read the claim from there.
+
+- Use the `claim_string` **verbatim**. It carries its term window, and a claim
+  without the date range is a defect.
+- **Check `public_ready` first.** If it is `false`, the credential's usage terms
+  are unconfirmed and it must NOT appear in anything customer- or partner-facing.
+  As of 2026-08-25 the NSSA badge is `public_ready: false`.
+- Never paraphrase, abbreviate, or restate a credential in your own words.
+- Never invent a credential, an issuer, or a date. If it is not in that file, we
+  do not claim it.

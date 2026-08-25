@@ -7,6 +7,79 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — NSSA badge: one credentials file, gated in code (#AP044)
+
+**What:** A+ earned the **NSSA Tutoring Program Design Badge, 2026-2029**. Rather
+than putting that string into agent prompts, templates and copy files, it is
+declared once in **`knowledge/credentials.yml`** and every consumer reads from
+there through `scripts/credentials.py`.
+
+**Why one file:** a claim copied into N places goes stale in N places, and this
+one has a hard expiry. Same doctrine as the HubSpot property registry: declare
+once, read everywhere, never duplicate. `grep -ri "program design badge"` is a
+test (`test_no_hardcoded_claim_strings_in_repo`), not a convention.
+
+**Where it lives, and why not `shared/`:** the #AP044 handoff proposed
+`shared/credentials.yml`. There is no `shared/` data directory at the repo root
+(`marketing/scripts/shared/` is script code), while `knowledge/` is already
+defined by its own README as "material that agents read but do not generate".
+Creating `shared/` would have been the parallel home the handoff warns against.
+
+**The gate is code, not convention.** `scripts/credentials.py` fails CLOSED and
+raises rather than emitting a partial claim, because a credential that renders
+as an empty string inside a vendor packet is worse than a loud build failure:
+- `public_ready: false` → `CredentialNotPublic`. **Currently false** and stays
+  false until Roman reads NSSA's usage terms.
+- surface not in `approved_surfaces`, or in `prohibited_surfaces` →
+  `CredentialSurfaceNotApproved`.
+- past `expires_on` → `CredentialExpired`.
+- a null field (`asset_path` today) never renders the string "None".
+
+**Two additions to the proposed schema:** `prohibited_surfaces` (call-agent
+scripts and SMS — SMS has no room for the term window, and a claim without it is
+a defect by Roman's own rule), and `expires_on_confirmed`, so the expiry guard
+can say out loud when its own input is a guess.
+
+**Expiry guard:** `scripts/credential_expiry_check.py` +
+`.github/workflows/credential-expiry.yml`, monthly, warns at 180 days, escalates
+after expiry. **Never remediates** — it does not edit copy, retire a claim, or
+flip `public_ready`. Verified against all three states by overriding today.
+
+**Wired:** messenger (`{{credentials.<id>.<field>}}` as an available merge field,
+never auto-inserted), and the skills that produce partner-facing language —
+b2b/b2c brand kits, blog-longform, spotlight case study, danielle-voice — each
+told to read the claim verbatim and to check `public_ready` first.
+
+**Found while wiring, not in the brief:**
+1. **The blog agent already writes about NSSA badging as a market trend.** A
+   published post argues "NSSA-style quality screens favor embedded providers
+   like A+", written when we did not hold the badge. It now argues for a screen
+   we passed without disclosing that. Content opportunity and a disclosure
+   question.
+2. **`aplus-research/SKILL.md` lists NSSA as a neutral primary research source.**
+   We now hold their credential. A disclosure note was added: citing NSSA for
+   field research is fine, leaning on NSSA to validate A+ is not, without saying
+   why the relationship exists.
+
+**Roman 2026-08-25:** expiry is **August 2029** (`2029-08-31`; day-of-month not
+stated, and the 180-day warning lands the same either way). Badge image files
+and usage guidelines are **not yet in hand** — both stay null, and finding a URL
+online will not be enough to flip the gate. The terms have to be read.
+
+**Out of scope, follow-ups:** website copy, HubSpot templates and email
+signatures are not in this repo. `~/code/skills` does not exist on this machine,
+so the proposal/packet generators named in the handoff were not reachable.
+
+**Verified:** 15 new credential tests; full suite 281 passed. `registry_check`
+clean apart from the pre-existing unregistered `automation-audit.yml`.
+
+**Files:** `knowledge/credentials.yml` (new), `scripts/credentials.py` (new),
+`scripts/credential_expiry_check.py` (new), `scripts/tests/test_credentials.py`
+(new), `.github/workflows/credential-expiry.yml` (new),
+`ops/messenger/messenger.py`, 6 × `marketing/skills/*/SKILL.md`, `registry.yml`,
+`docs/FLEET.md`.
+
+---
 ## 2026-08-24 — Spotlight Orchestrator: `--reel-only` takes a batch; the real blocker escalated
 
 **Reported:** Paola, a fifth time on the same asset — three existing case

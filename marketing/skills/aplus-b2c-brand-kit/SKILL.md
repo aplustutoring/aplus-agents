@@ -244,3 +244,17 @@ v1.1 . Updated 2026-05-19 . Applied Danielle's feedback: typography switched fro
 
 v1.0 . Created May 6, 2026
 Foundation: HubSpot brand color (#ef5829) + custom palette designed for B2C/B2B distinction
+
+## Credentials (#AP044) — never write a claim from memory
+
+A+ holds credentials whose exact wording and term window are load-bearing. They
+live in ONE place: `knowledge/credentials.yml`. Read the claim from there.
+
+- Use the `claim_string` **verbatim**. It carries its term window, and a claim
+  without the date range is a defect.
+- **Check `public_ready` first.** If it is `false`, the credential's usage terms
+  are unconfirmed and it must NOT appear in anything customer- or partner-facing.
+  As of 2026-08-25 the NSSA badge is `public_ready: false`.
+- Never paraphrase, abbreviate, or restate a credential in your own words.
+- Never invent a credential, an issuer, or a date. If it is not in that file, we
+  do not claim it.
