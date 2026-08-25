@@ -431,9 +431,12 @@
     408115255,
     408131290,
     408143575,
-    408168031
+    408168031,
+    408169121,
+    408173592,
+    408178271
   ],
-  "last_run_utc": "2026-08-25T22:46:53.593025+00:00",
+  "last_run_utc": "2026-08-25T23:29:21.426054+00:00",
   "pending_digest": [
     {
       "call_id": 407970807,
@@ -828,6 +831,169 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 408173592,
+      "number": "13105625949",
+      "time_pt": "4:00 PM",
+      "matched": true,
+      "contact_label": "Anya Taheri",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Anya Taheri to follow up on a scheduled meeting about tutoring for her 5th grade daughter Milana at Roscomare Road. Anya wants prep for middle school entrance exams, specifically the Science Academy test, with a focus on English/reading comprehension. Paola explained online ($95/hr) and in-person ($130/hr) options, offered a free online trial, and Anya tentatively picked Wednesday 6-7 or 7-8 PM. Paola will email pricing/packages and Anya will reply to confirm moving forward with the trial and modality preference.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Anya current rates and packages information",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91423",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once Anya replies, book the free online trial session (Wednesday 6-7 or 7-8 PM) and share tutor profile for approval",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Anya Taheri (positive, engaged) is a prospective family for her 5th grade daughter Milana at Roscomare Road. Goal: prep Milana for middle school entrance testing, specifically the Science Academy test, with emphasis on English/reading comprehension. Milana is a strong student with no prior tutoring (only Russian Math). Paola quoted rates ($130/hr in-person, $95/hr online, 8-hr packages, no expiration, tutor swap allowed) and offered a free online trial. Anya leans in-person but is open to trying online; tentative trial time is Wednesday 6-7 or 7-8 PM. ZIP 91423 \u2014 check in-person tutor availability there. Anya expects Paola's pricing email and will reply to confirm next steps. Open with: 'Hi Anya, following up on the info I sent \u2014 happy to lock in Milana's Wednesday trial and share a tutor profile for your approval.'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "no_change",
+        "student_or_school_names_mentioned": [
+          "Milana",
+          "Roscomare Road",
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call confirmed Milana (5th grade, Roscomare Road) is a strong student with no prior traditional tutoring (only Russian Math). Mom wants her prepared and confident for middle school entrance testing, specifically the Science Academy test, with focus on English/reading comprehension.",
+          "what_we_can_do_to_help": "Send pricing/packages, offer a free online trial (tentatively Wed 6-7 or 7-8 PM), and check in-person tutor availability in ZIP 91423. Match Milana with a tutor experienced in Science Academy test prep and share the tutor profile for approval before booking.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call confirmed Milana (5th grade, Roscomare Road) is a strong student with no prior traditional tutoring (only Russian Math). Mom wants her prepared and confident for middle school entrance testing, specifically the Science Academy test, with focus on English/reading comprehension."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send pricing/packages, offer a free online trial (tentatively Wed 6-7 or 7-8 PM), and check in-person tutor availability in ZIP 91423. Match Milana with a tutor experienced in Science Academy test prep and share the tutor profile for approval before booking."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Anya current rates and packages information",
+          81494333
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91423",
+          81494333
+        ],
+        [
+          "Once Anya replies, book the free online trial session (Wednesday 6-7 or 7-8 PM) and share tutor profile for approval",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408178271,
+      "number": "13102931133",
+      "time_pt": "4:23 PM",
+      "matched": true,
+      "contact_label": "Marisa Zweben",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Marisa Zweben back after missing their scheduled meeting. Marisa said she had been shopping around but decided to stick with a tutor she previously used for her daughter, so she no longer needs A+'s services. Paola thanked her and let her know we're available if anything changes. Call ended cordially.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Close out the Lucas Erickson opportunity in the pipeline \u2014 family is going with a prior tutor; mark as lost but keep record warm for future outreach.",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Marisa declined services on this call \u2014 she is sticking with a previous tutor she used for her daughter. Not a live prospect, so removing from active QTL/We Connected pipeline.",
+        "student_or_school_names_mentioned": [
+          "Lucas Erickson"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola reached Marisa on the callback. Marisa had been comparing tutors but decided to stick with a tutor she'd previously used for her daughter, so she no longer needs A+ for Lucas at this time.",
+          "what_we_can_do_to_help": "No action needed now \u2014 Paola let Marisa know we're here if anything changes. Keep record warm for potential future outreach.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola reached Marisa on the callback. Marisa had been comparing tutors but decided to stick with a tutor she'd previously used for her daughter, so she no longer needs A+ for Lucas at this time."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "No action needed now \u2014 Paola let Marisa know we're here if anything changes. Keep record warm for potential future outreach."
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Close out the Lucas Erickson opportunity in the pipeline \u2014 family is going with a prior tutor; mark as lost but keep record warm for future outreach.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -839,6 +1005,11 @@
     {
       "number": "12392712245",
       "time_pt": "10:49 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "13102931133",
+      "time_pt": "3:48 PM",
       "reason": "hang-up"
     }
   ],
