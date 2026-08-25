@@ -34,8 +34,9 @@ And if there is a student on your mind this year, I am here.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring
-*A+ Tutoring holds the NSSA Tutoring Program Design Badge, 2026-2029, an
-independent review of how a tutoring program is built.*
+*A+ Tutoring holds the NSSA Tutoring Program Design Badge, 2026-2029, awarded by
+the National Student Support Accelerator at Stanford University after an
+evidence-based review of our program design.*
 
 *P.S. Teacher Scholarship Program: nominate a student and tell me why them.
 They get a free session with one of our tutors. You can put forward up to three.*
