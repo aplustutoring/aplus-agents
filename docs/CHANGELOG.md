@@ -66,9 +66,21 @@ stated, and the 180-day warning lands the same either way). Badge image files
 and usage guidelines are **not yet in hand** — both stay null, and finding a URL
 online will not be enough to flip the gate. The terms have to be read.
 
-**Out of scope, follow-ups:** website copy, HubSpot templates and email
-signatures are not in this repo. `~/code/skills` does not exist on this machine,
-so the proposal/packet generators named in the handoff were not reachable.
+**Correction to the #AP044 handoff (Roman 2026-08-25):** the handoff named a
+second repo, `~/code/skills`, holding "proposal or packet generators". **Neither
+exists.** `aplus-agents` is the entire surface, and a search here found no
+proposal or packet generator either — the only "proposal" files are internal
+HubSpot consolidation docs. The first version of this entry recorded those
+generators as "not reachable", which implied they were somewhere else. They are
+nowhere.
+
+Consequence recorded in `credentials.yml`: `approved_surfaces` is now annotated
+by who produces each surface. Two are agent-produced (case studies, blog author
+bio) and resolve through the gate; two are produced by Danielle **by hand**
+(charter vendor packets, intervention proposals) with this file as their
+reference; two live outside the repo entirely (website, email signature) where
+nothing here can enforce the gate, so they become a human checklist item when
+`public_ready` flips. The list is permission, not automation.
 
 **Verified:** 15 new credential tests; full suite 281 passed. `registry_check`
 clean apart from the pre-existing unregistered `automation-audit.yml`.
