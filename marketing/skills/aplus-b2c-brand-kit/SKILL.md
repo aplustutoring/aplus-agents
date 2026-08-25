@@ -245,33 +245,40 @@ v1.1 . Updated 2026-05-19 . Applied Danielle's feedback: typography switched fro
 v1.0 . Created May 6, 2026
 Foundation: HubSpot brand color (#ef5829) + custom palette designed for B2C/B2B distinction
 
-## Credentials (#AP044) — we hold the NSSA badge, and it is worth using
+## Credentials (#AP044) — we hold the NSSA Badge, and it is worth using
 
-A+ earned an NSSA Tutoring Program Design Badge, issued by the National Student
-Support Accelerator. In a market full of unverified tutoring vendors this is a
-real differentiator, and it belongs in marketing content and partner-facing
-copy. Use it.
+A+ earned the NSSA Tutoring Program Design Badge, awarded by the **National
+Student Support Accelerator at Stanford University** after an evidence-based
+review of how our program is designed. In a market full of unverified tutoring
+vendors this is a real differentiator. Use it.
 
 **Read the exact wording from `knowledge/credentials.yml`** (credential id
-`nssa_program_design_badge`, field `claim_string`) and reproduce it verbatim.
-Do not type it from memory and do not copy it out of another document: that
-file is the only place the wording and the term window are maintained, and this
-badge expires.
+`nssa_program_design_badge`) and reproduce `claim_string` verbatim. That file is
+the only place the wording, the term window and NSSA's usage rules are
+maintained, and this Badge expires.
 
-**The rules that matter:**
+**NSSA's approved framings** (lean on these, they are the issuer's own words):
+- awarded after receiving an evidence-based review
+- signifies the quality of our program design and our alignment to Tutoring
+  Quality Standards, as assessed by researchers and practitioners
+- awarded by the National Student Support Accelerator at Stanford University
 
-- **The term window travels with the claim.** The years are part of it. A claim
-  without them is a defect, not a shortening.
-- **Do not embellish.** We hold a program design badge. We are NOT
-  "NSSA-certified", "NSSA-accredited", "NSSA-endorsed", an "NSSA-approved
-  provider", or "NSSA-rated". It is not a ranking and not a score.
-- **Do not use the badge IMAGE.** `logo_ready: false` in that file. NSSA's
-  guidelines for displaying their mark are unread, so text only for now.
-- **Lead with what it means, not the acronym.** Most readers have never heard of
-  NSSA. Describe it as an independent review of how a tutoring program is
-  designed, then name it. First mention gets disambiguating context, per the
-  named entity rule.
-- **It is evidence, not a personality.** One clean mention in a credibility
-  block or author bio does more than three scattered references.
-- **Check `public_ready` before using it.** It is true today. If it is ever
-  false, the credential must not appear in anything customer-facing.
+**The rules:**
+
+- **Design, not effectiveness.** NSSA is explicit: the Badge denotes quality of
+  design, NOT implementation or outcomes. Never write "Stanford-validated
+  results" or place the Badge inside a results claim. Our outcome figures stand
+  on the case studies; the Badge stands on the program's design. Keep them in
+  separate sentences.
+- **The term window travels with the claim.** A claim without the years is a
+  defect.
+- **Capitalise "Badge".** NSSA requires it: "the Badge", "the NSSA Tutoring
+  Program Design Badge".
+- **Do not embellish.** Not "NSSA-certified", "NSSA-accredited",
+  "NSSA-endorsed", "NSSA-approved provider", "NSSA-rated".
+- **Never alter the Badge image.** No recolouring, cropping, retyping or
+  compositing. Supplied file as-is, or no image.
+- **Lead with what it means before the acronym.** Most readers have never heard
+  of NSSA; "Stanford University's National Student Support Accelerator" does
+  more work than "NSSA".
+- **It is evidence, not a personality.** One clean mention beats three.

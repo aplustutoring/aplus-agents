@@ -7,6 +7,59 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
+
+**Roman supplied NSSA's "Promotion Guidelines & Messaging" doc and the Badge
+image.** The terms are now encoded in `knowledge/credentials.yml` under
+`usage_rules` rather than paraphrased, and pushed into the skills that write
+copy — a rule that lives only in a yaml file never reaches the agent drafting a
+blog post.
+
+**The term that constrains us most, and was not something we would have
+guessed:**
+
+> "This Badge denotes **quality of design, not quality of implementation or
+> effectiveness**."
+
+Our content leads with outcome data — 75%, 87.5%, +19.4 RIT. Putting the Badge
+beside those figures implies Stanford validated our *results*. It did not; it
+reviewed how the program is designed. This is a live risk in exactly the assets
+we produce: the spotlight case-study credibility block sits directly above the
+results table. `aplus-fact-check` now flags the fusions specifically —
+"Stanford-validated results", "NSSA-verified outcomes", a sentence where the
+Badge is the subject and an outcome figure the object, or the Badge placed
+inside a results table rather than beside it.
+
+**Other terms now enforced:**
+- **The image may not be altered in any way**, including text or design. That
+  lands on `aplus-graphic-prompts` and the compositing pipeline: no recolouring
+  to fit a palette, no cropping, no retyping as vector, no compositing into a
+  generated image. Supplied file as-is or leave it out.
+- **"Badge" is always capitalised** (NSSA's rule, now a fact-check flag).
+- **Stanford attribution is granted** — "the National Student Support
+  Accelerator at Stanford University" is NSSA's own approved framing, and it is
+  far stronger for a teacher audience than the bare acronym. The three approved
+  messages are recorded verbatim so agents lean on the issuer's words.
+- Social attribution handles and hashtags recorded for the social skills.
+
+**`logo_ready` flipped to true, but `asset_path` is still null.** The files live
+in an NSSA-supplied Google Drive folder and are not in the repo. A consumer must
+check `asset_path`, not just `logo_ready`, or it will try to render `None` — the
+test says so explicitly and will need updating when the files land.
+
+**Superseded:** the earlier entry treating the live scholarship funnel's "more
+than one session" as an overclaim. Danielle (Slack 2026-08-24) explained it:
+teachers may nominate **multiple students, one session each**. The funnel was
+right and my reading was wrong.
+
+**Verified:** 18 credential tests (3 new, including one asserting the
+effectiveness rule actually reached the fact-check skill), full suite 284.
+
+**Files:** `knowledge/credentials.yml`, `marketing/skills/aplus-fact-check/
+SKILL.md`, `marketing/skills/aplus-graphic-prompts/SKILL.md`, 5 × content
+`SKILL.md`, `scripts/tests/test_credentials.py`.
+
+---
 ## 2026-08-25 — NSSA badge cleared for marketing use; image stays gated (#AP044)
 
 **Roman:** "i just want it to be known by our agents that we received the NSSA

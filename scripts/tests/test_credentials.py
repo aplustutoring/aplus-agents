@@ -34,12 +34,34 @@ def test_text_claim_is_cleared_for_use():
     assert C.is_public_ready(CID) is True
 
 
-def test_badge_image_stays_gated():
-    """The trademark image is a separate decision and is NOT cleared."""
+def test_badge_image_cleared_but_files_not_in_repo_yet():
+    """Guidelines received 2026-08-25, so the image is permitted — but the
+    files still live in NSSA's Drive folder. A consumer must check asset_path,
+    not just logo_ready, or it will try to render a path of None."""
     C.reload()
     c = C.get(CID)
-    assert c["logo_ready"] is False
-    assert c["asset_path"] is None, "no asset should be referenced while logo_ready is false"
+    assert c["logo_ready"] is True
+    assert c["usage_guidelines_received"] is True
+    assert c["asset_path"] is None, "update this test when the files land in the repo"
+
+
+def test_usage_rules_encode_the_design_not_effectiveness_limit():
+    """The single most consequential term NSSA imposes."""
+    C.reload()
+    rules = C.get(CID)["usage_rules"]
+    assert "DESIGN" in rules["denotes"]
+    assert "effectiveness" in rules["does_not_denote"]
+    assert rules["image"]["alteration_permitted"] is False
+    assert rules["style"]["capitalize_badge_word"] is True
+
+
+def test_fact_check_skill_carries_the_effectiveness_rule():
+    """A rule only in the yaml does not reach the agent that writes copy."""
+    skill = (Path(__file__).resolve().parents[2]
+             / "marketing" / "skills" / "aplus-fact-check" / "SKILL.md").read_text()
+    assert "not quality of implementation or effectiveness" in skill.lower() or \
+           "design is not effectiveness" in skill.lower()
+    assert "Stanford-validated results" in skill
 
 
 def test_real_claim_string_carries_the_term_window():
