@@ -428,9 +428,11 @@
     408018696,
     408069398,
     408072190,
-    408115255
+    408115255,
+    408131290,
+    408143575
   ],
-  "last_run_utc": "2026-08-25T20:47:45.068592+00:00",
+  "last_run_utc": "2026-08-25T21:33:46.912159+00:00",
   "pending_digest": [
     {
       "call_id": 407970807,
@@ -683,6 +685,69 @@
         [
           "Confirm company listing shows as 'A+ Tutoring' (no Inc.) in event materials",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408143575,
+      "number": "18184623808",
+      "time_pt": "2:26 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called existing customer Inna Volodinsky to collect payment info. Inna confirmed she wants to purchase 8 hours to start and provided her credit card details (number, expiration 12/27, CVV). Yolanda confirmed she would create the invoice and charge the card. Inna also asked about Melanie, and Yolanda explained Melanie moved to a different department.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Create invoice and charge Inna's provided credit card for 8 hours of tutoring",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Inna Volodinsky (existing customer, friendly) gave Yolanda her credit card over the phone to purchase an initial 8-hour block ('we'll see how it goes'). Yolanda promised to create the invoice and charge the card. Also FYI: Inna asked about Melanie \u2014 she was told Melanie moved out of scheduling. Next step is simply processing the invoice/charge; no need to re-contact Inna unless the card fails. If following up, open with 'Hi Inna, just confirming your 8-hour package has been invoiced and the card on file was charged successfully.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an open deal purchasing hours \u2014 lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Purchasing an initial 8-hour block to start ('we'll see how it goes'). Provided credit card over the phone to Yolanda for invoicing.",
+          "what_we_can_do_to_help": "Create invoice for 8 hours and charge the card Inna provided. Confirm charge went through and proceed with scheduling sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Purchasing an initial 8-hour block to start ('we'll see how it goes'). Provided credit card over the phone to Yolanda for invoicing."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Create invoice for 8 hours and charge the card Inna provided. Confirm charge went through and proceed with scheduling sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Create invoice and charge Inna's provided credit card for 8 hours of tutoring",
+          86868539
         ]
       ],
       "ticket_id": null,
