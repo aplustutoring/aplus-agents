@@ -7,6 +7,50 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — The Badge news makes the TEACHER the subject, not us
+
+**Roman:** "The first sentence about how we got the badge does not promote any
+fucking excitement. It has to somehow validate that the teacher's decision to
+push their tutoring with us is now validated by Stanford."
+
+He is right about why it was flat. "Stanford reviewed our program. We passed" is
+us talking about us, and a teacher has no stake in that sentence. The beat that
+actually lands is that **they** backed a vendor nobody outside A+ had vetted, and
+Stanford has now vetted it.
+
+Subject went from "We got some good news" to **"You were right about us"** —
+they are the subject, and it opens a curiosity gap instead of announcing.
+
+> You sent students our way last year, before anyone outside A+ had looked under
+> the hood.
+>
+> Stanford just did. Their National Student Support Accelerator reviewed how our
+> tutoring program is designed, against their Tutoring Quality Standards, and
+> awarded us the Tutoring Program Design Badge for 2026-2029.
+>
+> You backed us before that review existed. Thank you for that.
+
+**Where the compliance line actually sits, since this is the riskiest wording
+yet.** Roman asked for the teacher's decision to be "validated by Stanford", and
+NSSA forbids implying the Badge speaks to effectiveness. Those are reconcilable,
+because what is being validated is the teacher's **judgement about the program**,
+not their students' results:
+
+- allowed, and what the copy says: they chose a program whose DESIGN has now been
+  independently reviewed against published quality standards.
+- not allowed, and absent: any suggestion Stanford reviewed our outcomes, our
+  delivery, or those students' progress.
+
+"reviewed how our program is designed, against their Tutoring Quality Standards"
+is NSSA's own framing, used deliberately rather than paraphrased. These emails
+still carry no outcome figures at all — verified programmatically, the only
+digits in any body are 2026 and 2029 — so the Badge and results cannot sit
+together. No "certified", "accredited", "endorsed", "approved provider",
+"proven", or "Stanford-validated" anywhere.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/` (4 drafts).
+
+---
 ## 2026-08-25 — Teacher emails now ask about THIS year's caseload
 
 **Roman:** "they probably don't even have the same students on their case this
