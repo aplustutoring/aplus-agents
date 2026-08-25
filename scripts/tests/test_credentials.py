@@ -34,15 +34,25 @@ def test_text_claim_is_cleared_for_use():
     assert C.is_public_ready(CID) is True
 
 
-def test_badge_image_cleared_but_files_not_in_repo_yet():
-    """Guidelines received 2026-08-25, so the image is permitted — but the
-    files still live in NSSA's Drive folder. A consumer must check asset_path,
-    not just logo_ready, or it will try to render a path of None."""
+def test_badge_files_exist_and_are_unaltered():
+    """NSSA permits NO alteration of the Badge image, including text or design.
+
+    The committed files must match the sha256 of what NSSA supplied. A recolour,
+    a crop, or a re-export through an image tool all change the hash, so this
+    fails loudly instead of the altered mark shipping to a customer."""
+    import hashlib
     C.reload()
     c = C.get(CID)
     assert c["logo_ready"] is True
     assert c["usage_guidelines_received"] is True
-    assert c["asset_path"] is None, "update this test when the files land in the repo"
+    root = Path(__file__).resolve().parents[2]
+    for kind, key in (("png", "asset_path"), ("svg", "asset_path_svg")):
+        f = root / c[key]
+        assert f.exists(), f"{c[key]} is declared but missing"
+        got = hashlib.sha256(f.read_bytes()).hexdigest()
+        assert got == c["asset_sha256"][kind], (
+            f"{kind.upper()} has been ALTERED. NSSA permits no modification of "
+            f"the Badge image. Restore the original from the NSSA Drive folder.")
 
 
 def test_usage_rules_encode_the_design_not_effectiveness_limit():
@@ -128,12 +138,16 @@ def test_resolve_strip_leaves_no_trace(creds):
 
 
 def test_null_field_never_renders_none(creds):
-    """asset_path is null today. It must not render the string 'None'."""
+    """A null field must never render the string 'None' into customer copy.
+
+    usage_guidelines_url is the null field today (NSSA supplied the doc
+    directly, so there is no public URL). asset_path used to be null and is
+    now populated — that is the point of testing the behaviour, not the field."""
     creds(public_ready=True)
+    tok = "{{credentials.nssa_program_design_badge.usage_guidelines_url}}"
     with pytest.raises(C.CredentialNotFound):
-        C.resolve("{{credentials.nssa_program_design_badge.asset_path}}", surface="website")
-    out = C.resolve("{{credentials.nssa_program_design_badge.asset_path}}",
-                    surface="website", missing="strip")
+        C.resolve(tok, surface="website")
+    out = C.resolve(tok, surface="website", missing="strip")
     assert out == "" and "None" not in out
 
 

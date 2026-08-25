@@ -7,6 +7,41 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Badge files committed, with an alteration guard (#AP044)
+
+**What:** the NSSA-supplied `.png` (1200x1200) and `.svg` now live at
+`marketing/assets/nssa/nssa-tutoring-program-design-badge-2026-2029.{png,svg}`,
+alongside the existing `marketing/assets/` logo convention. `asset_path` and
+`asset_path_svg` point at them, so `logo_ready: true` is now backed by files
+rather than a promise.
+
+Copied byte-for-byte from the originals on Roman's Desktop — verified identical
+by sha256 before committing, and the PNG was opened and read to confirm it is
+the real Badge (A+ Tutoring, 2026-2029) rather than a screenshot or a
+placeholder.
+
+**The guard:** NSSA permits **no alteration of the Badge image, including text
+or design**. That is a rule no code can enforce by reading a policy, so the
+sha256 of each file is recorded in `credentials.yml` and asserted by
+`test_badge_files_exist_and_are_unaltered`. A recolour to fit a palette, a crop,
+or an innocent re-export through an image tool all change the hash and fail the
+test. Verified by appending one byte to the PNG: the test failed with
+"PNG has been ALTERED", and passed again on restore.
+
+This matters because the graphics pipeline exists to composite and transform
+images. Without the guard, an automated resize is exactly how an altered
+trademark would ship without anyone deciding to alter it.
+
+**Also:** `test_null_field_never_renders_none` was pointed at
+`usage_guidelines_url`, which is the field that is null now that `asset_path` is
+populated. The behaviour under test is unchanged; only the example moved.
+
+**Verified:** 18 credential tests, full suite 284.
+
+**Files:** `marketing/assets/nssa/` (2 new), `knowledge/credentials.yml`,
+`scripts/tests/test_credentials.py`.
+
+---
 ## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
 
 **Roman supplied NSSA's "Promotion Guidelines & Messaging" doc and the Badge
