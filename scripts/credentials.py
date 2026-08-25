@@ -11,8 +11,8 @@ rather than by convention.
     from credentials import claim, is_public_ready, resolve
 
     claim("nssa_program_design_badge", surface="blog_author_bio")
-        -> "NSSA Tutoring Program Design Badge, 2026-2029"   (when permitted)
-        -> raises CredentialNotPublic                        (when not)
+        -> the canonical claim_string from the yaml   (when permitted)
+        -> raises CredentialNotPublic / SurfaceNotApproved / Expired (when not)
 
     resolve(text, surface="...")   # substitutes {{credentials.<id>.<field>}}
 

@@ -774,16 +774,33 @@ Integrated 5 new SEO/GEO skills (sourced from aaron-he-zhu/seo-geo-claude-skills
 v1.0. Created May 11, 2026
 Foundation: Roman's MVP redefinition on May 11, 2026. "MVP isn't 3 LinkedIn posts, it's one complete journey from research to permanent owned SEO asset." Built to close the gap between content generation and durable owned assets. First test topic: Getting Down to Facts (Stanford, May 7, 2026).
 
-## Credentials (#AP044) — never write a claim from memory
+## Credentials (#AP044) — we hold the NSSA badge, and it is worth using
 
-A+ holds credentials whose exact wording and term window are load-bearing. They
-live in ONE place: `knowledge/credentials.yml`. Read the claim from there.
+A+ earned an NSSA Tutoring Program Design Badge, issued by the National Student
+Support Accelerator. In a market full of unverified tutoring vendors this is a
+real differentiator, and it belongs in marketing content and partner-facing
+copy. Use it.
 
-- Use the `claim_string` **verbatim**. It carries its term window, and a claim
-  without the date range is a defect.
-- **Check `public_ready` first.** If it is `false`, the credential's usage terms
-  are unconfirmed and it must NOT appear in anything customer- or partner-facing.
-  As of 2026-08-25 the NSSA badge is `public_ready: false`.
-- Never paraphrase, abbreviate, or restate a credential in your own words.
-- Never invent a credential, an issuer, or a date. If it is not in that file, we
-  do not claim it.
+**Read the exact wording from `knowledge/credentials.yml`** (credential id
+`nssa_program_design_badge`, field `claim_string`) and reproduce it verbatim.
+Do not type it from memory and do not copy it out of another document: that
+file is the only place the wording and the term window are maintained, and this
+badge expires.
+
+**The rules that matter:**
+
+- **The term window travels with the claim.** The years are part of it. A claim
+  without them is a defect, not a shortening.
+- **Do not embellish.** We hold a program design badge. We are NOT
+  "NSSA-certified", "NSSA-accredited", "NSSA-endorsed", an "NSSA-approved
+  provider", or "NSSA-rated". It is not a ranking and not a score.
+- **Do not use the badge IMAGE.** `logo_ready: false` in that file. NSSA's
+  guidelines for displaying their mark are unread, so text only for now.
+- **Lead with what it means, not the acronym.** Most readers have never heard of
+  NSSA. Describe it as an independent review of how a tutoring program is
+  designed, then name it. First mention gets disambiguating context, per the
+  named entity rule.
+- **It is evidence, not a personality.** One clean mention in a credibility
+  block or author bio does more than three scattered references.
+- **Check `public_ready` before using it.** It is true today. If it is ever
+  false, the credential must not appear in anything customer-facing.

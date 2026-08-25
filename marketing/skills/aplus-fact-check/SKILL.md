@@ -118,6 +118,21 @@ All three figures are valid. Use the one that matches your context:
 - Citing the published ELA case study URL → use 87.5%, 8 students
 - Making a general claim about the full Tier 3 program → use 80%, 20 students
 
+**Credentials . verified, and cleared for use:**
+
+A+ holds an NSSA Tutoring Program Design Badge (National Student Support
+Accelerator). **This is real . do not flag it as unverified and do not spend
+searches on it.** The canonical wording, the term window and the current
+clearance live in `knowledge/credentials.yml` (`nssa_program_design_badge`,
+decision `#AP044`). Check content against that file, not against memory.
+
+What to flag:
+- **A claim missing its term window.** The years are part of the claim.
+- **Wording that does not match `claim_string`.**
+- **Embellishment:** "NSSA-certified", "NSSA-accredited", "NSSA-endorsed",
+  "NSSA-approved provider", "NSSA-rated". None of those are what we hold.
+- **The badge image being used at all** while `logo_ready` is false.
+
 **Retired figure:** 81% / 21 students. This was based on incorrect headcount. Do NOT use this figure in any content. If found in existing content, flag for revision.
 
 **Dosage details (both programs):** 17 hours per student, one-to-one synchronous delivery, same tutor across the cycle.

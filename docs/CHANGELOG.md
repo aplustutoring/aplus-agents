@@ -7,6 +7,57 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — NSSA badge cleared for marketing use; image stays gated (#AP044)
+
+**Roman:** "i just want it to be known by our agents that we received the NSSA
+badge. its a big thing to include in our marketing emails and marketing content."
+
+The first pass shipped `public_ready: false`, which meant agents were *forbidden*
+from using it. That was the opposite of the intent. **`public_ready: true`.**
+Stating a credential we hold is a statement of fact and Roman is the claim
+authority.
+
+**The badge IMAGE is a separate decision and stays shut** — new `logo_ready:
+false`. Usage guidelines govern display of NSSA's *mark*: size, clear space,
+placement, whether it may sit beside our logo. Those are unread, and a trademark
+is not ours to render however we like. A factual sentence carries no such risk.
+Splitting the two means the marketing value is available now while the one thing
+that actually needs permission stays blocked.
+
+**The gap that would have broken this quietly:** content passes through
+`aplus-fact-check` before publishing, and that skill's verified-claims table
+knew nothing about the badge. The blog agent would have written a true claim and
+our own fact-checker would have flagged it as unverified, or burned searches
+trying to confirm it. The table now carries the credential, points at
+`knowledge/credentials.yml` as the source, and lists what to flag instead:
+a missing term window, wording that does not match `claim_string`, embellishment
+("NSSA-certified", "NSSA-accredited", "NSSA-endorsed", "NSSA-approved provider",
+"NSSA-rated" — none of which is what we hold), and any use of the image while
+`logo_ready` is false.
+
+**Five content skills** (b2b/b2c brand kits, blog-longform, spotlight case
+study, danielle-voice) now say the badge is a differentiator worth using, with
+guidance rather than just permission: lead with what it means before the
+acronym, because most readers have never heard of NSSA; give it one clean
+mention in a credibility block rather than three scattered ones; never
+embellish; text only.
+
+**A tension worth recording.** Writing that guidance put the claim string into
+six files, and `test_no_hardcoded_claim_strings_in_repo` caught it immediately.
+But the test was also too strict: it forbade even *naming* the credential, and a
+skill cannot teach a badge it may not name. Resolved by separating the two
+things — skills name the credential and point at
+`knowledge/credentials.yml` for the wording; the test now guards the **claim
+string with its term window**, which is the part that goes stale on renewal.
+It lives in exactly one place, plus tests and this changelog.
+
+**Verified:** 16 credential tests, full suite 282 passed.
+
+**Files:** `knowledge/credentials.yml`, `marketing/skills/aplus-fact-check/
+SKILL.md`, 5 × content `SKILL.md`, `scripts/credentials.py`,
+`scripts/tests/test_credentials.py`.
+
+---
 ## 2026-08-25 — NSSA badge: one credentials file, gated in code (#AP044)
 
 **What:** A+ earned the **NSSA Tutoring Program Design Badge, 2026-2029**. Rather

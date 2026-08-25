@@ -28,10 +28,18 @@ def creds(tmp_path, monkeypatch):
     C.reload()
 
 
-def test_real_file_is_gated_shut():
-    """The committed file must not claim publicly until Roman confirms terms."""
+def test_text_claim_is_cleared_for_use():
+    """Roman 2026-08-25 cleared the TEXT claim: agents may state it."""
     C.reload()
-    assert C.is_public_ready(CID) is False
+    assert C.is_public_ready(CID) is True
+
+
+def test_badge_image_stays_gated():
+    """The trademark image is a separate decision and is NOT cleared."""
+    C.reload()
+    c = C.get(CID)
+    assert c["logo_ready"] is False
+    assert c["asset_path"] is None, "no asset should be referenced while logo_ready is false"
 
 
 def test_real_claim_string_carries_the_term_window():
@@ -119,9 +127,16 @@ def test_days_until_expiry():
     assert C.days_until_expiry(CID, today=dt.date(2029, 9, 30)) == -30
 
 
-def test_no_hardcoded_claim_strings_in_repo():
-    """DoD: grep -ri 'program design badge' hits only the credentials file+docs."""
+def test_no_duplicated_claim_string_in_repo():
+    """The CLAIM STRING (name + term window) must exist in exactly one place.
+
+    Naming the credential in guidance is fine and necessary — a skill cannot
+    teach a badge it may not name. What must never be duplicated is the full
+    claim string, because that is what carries the term window and therefore
+    what goes stale when the badge is renewed."""
     root = Path(__file__).resolve().parents[2]
+    C.reload()
+    CLAIM = C.get(CID)["claim_string"]
     allowed = {"knowledge/credentials.yml", "docs/CHANGELOG.md",
                "scripts/tests/test_credentials.py", "scripts/credentials.py",
                "scripts/credential_expiry_check.py", "registry.yml",
@@ -136,7 +151,7 @@ def test_no_hardcoded_claim_strings_in_repo():
             text = p.read_text(errors="ignore")
         except OSError:
             continue
-        if "program design badge" in text.lower():
+        if CLAIM.lower() in text.lower():
             rel = str(p.relative_to(root))
             if rel not in allowed:
                 offenders.append(rel)
