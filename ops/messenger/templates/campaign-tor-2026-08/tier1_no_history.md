@@ -20,38 +20,44 @@ sessions, one assessment one instruction; two nominations; overflow honoured).
 
 TIER 1 LOGIC (Roman, locked): no trust to reference, so nothing to thank them
 for and nothing to reopen. **The scholarship nomination is the PRIMARY call to
-action, not a P.S.** The Badge does the credibility work a relationship would
-otherwise do, and it sits AFTER the story, as evidence, not as the opening.
+action, not a P.S.** The Badge sits AFTER the offer, as evidence, never as the
+opening credential.
 
-VOICE NOTE (danielle-voice): she is story-led, not credential-led. She opens
-from inside the classroom and pivots to the point. "Warm credibility, she is not
-selling, she is explaining." Her core POV runs underneath: one person cannot
-serve a whole population, and students get passed along instead of supported.
-Plain professional, quietly direct, ends on the human reality rather than a
-sales ask.
+THE CARD WE ARE PLAYING (Roman 2026-08-25): this gets the student STARTED and
+SUPPORTED. Be direct about it. The barrier for a struggling student is almost
+never the plan, it is that nothing ever begins. So the two sessions are named
+as a START, not as a free sample: the first finds where the student actually is,
+the second teaches to it. Then one line that support continues if it is working.
 
-Her signature opener in the skill is numeric ("32 fourth graders, 10 of whom had
-IEPs"). Compliance rule 4 bans numbers about students, so her openers here are
-written number-free. Read rule 4 as covering OUR students and outcome data
-rather than her own memoir, but there is no need to test that in an email.
+Post-session rule from knowledge/programs/teacher-scholarship.md still holds:
+never present the sessions as the end of the offer, and never LEAD with funding
+mechanics. "If it is working, we keep going" carries the continuity without
+turning a nomination ask into a payment conversation.
 
-**Subject:** Two sessions for a student you choose
+VOICE (danielle-voice): story-led, warm credibility, quietly direct, ends on the
+human reality rather than a sales ask. Her openers are written number-free
+(compliance rule 4) even though her signature style in the skill is numeric.
+
+**Subject:** A way to get one student started
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-I taught K-8 before I moved into this role. The students I still think about are
-the ones I could not get to. One teacher, one room, and a few children who
-needed more than a day could hold.
+You have a student who is behind. You probably knew which one before you
+finished reading that sentence.
 
-That is what our Teacher Scholarship Program is for. You nominate a student and
-they get two 45-minute sessions with one of our tutors. One to see where they
-actually are, one to teach.
+What stops them is usually not the plan. It is that nothing ever starts. So here
+is a start.
+
+You nominate them and they get two 45-minute sessions with one of our tutors.
+The first finds out exactly where they are. The second teaches to it.
+
+From there, if it is working, we keep going.
 
 If it helps to know who you would be sending them to, Stanford's National
 Student Support Accelerator reviewed how our tutoring program is designed and
 awarded us their Tutoring Program Design Badge for 2026 through 2029.
 
-You can nominate two students. Send me their names and one sentence on why them.
+Send me two names and one sentence on why each of them. That is the whole ask.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring
@@ -59,13 +65,13 @@ Director of School Partnerships, A+ Tutoring
 ---
 ## Follow-up (only if no reply)
 
-**Subject:** Re: Two sessions for a student you choose
+**Subject:** Re: A way to get one student started
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Still open, and it costs you a sentence.
+Still open, and it costs you two names.
 
-If nobody comes to mind right now, that is a good answer, and it means the ones
-you have are getting what they need. I will not chase you again this term.
+If nobody comes to mind, that is a good answer. It means the students you have
+are getting what they need. I will not chase you again this term.
 
 Danielle

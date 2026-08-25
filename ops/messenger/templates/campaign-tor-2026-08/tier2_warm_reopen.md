@@ -19,47 +19,50 @@ sessions, one assessment one instruction; two nominations; overflow honoured).
 
 
 TIER 2 LOGIC (Roman, locked): warm reopen, NOT a thank-you. They trusted us once
-and then stopped, and pretending otherwise is worse than naming it. Frame: you
-trusted us with a student before, here is what happened since, I would like to
-be useful again. The Badge is the "what happened since". Her own reason for
-doing this work carries the "I would like to be useful again" beat, so it does
-not have to be said outright.
+and then stopped, and pretending otherwise is worse than naming it. The Badge is
+the "what happened since". The get-started offer is the "I would like to be
+useful again".
 
-VOICE NOTE (danielle-voice): she is story-led, not credential-led. She opens
-from inside the classroom and pivots to the point. "Warm credibility, she is not
-selling, she is explaining." Her core POV runs underneath: one person cannot
-serve a whole population, and students get passed along instead of supported.
-Plain professional, quietly direct, ends on the human reality rather than a
-sales ask.
+THE CARD WE ARE PLAYING (Roman 2026-08-25): this gets the student STARTED and
+SUPPORTED. Be direct about it. The barrier for a struggling student is almost
+never the plan, it is that nothing ever begins. So the two sessions are named
+as a START, not as a free sample: the first finds where the student actually is,
+the second teaches to it. Then one line that support continues if it is working.
 
-Her signature opener in the skill is numeric ("32 fourth graders, 10 of whom had
-IEPs"). Compliance rule 4 bans numbers about students, so her openers here are
-written number-free. Read rule 4 as covering OUR students and outcome data
-rather than her own memoir, but there is no need to test that in an email.
+Post-session rule from knowledge/programs/teacher-scholarship.md still holds:
+never present the sessions as the end of the offer, and never LEAD with funding
+mechanics. "If it is working, we keep going" carries the continuity without
+turning a nomination ask into a payment conversation.
+
+VOICE (danielle-voice): story-led, warm credibility, quietly direct, ends on the
+human reality rather than a sales ask. Her openers are written number-free
+(compliance rule 4) even though her signature style in the skill is numeric.
 
 **Subject:** It has been a while
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You sent a student to us once, and we have not spoken since. I would rather say
-that plainly than write to you as though we had.
+You sent a student to us once and we have not spoken since. Saying that plainly
+seems better than writing to you as though we had.
 
-Here is what has changed since then. Stanford's National Student Support
-Accelerator reviewed how our tutoring program is designed and awarded us their
-Tutoring Program Design Badge for 2026 through 2029.
+Here is what has changed since. Stanford's National Student Support Accelerator
+reviewed how our tutoring program is designed and awarded us their Tutoring
+Program Design Badge for 2026 through 2029.
 
-What has not changed is why I do this. I taught K-8, and the students I still
-think about are the ones nobody got to in time.
+And here is what I can do now. If there is a student on your caseload this year
+who is behind and nothing has started for them, I can get them going.
 
-If there is one of those on your caseload this year, tell me about them and I
-will help.
+You nominate them and they get two 45-minute sessions with one of our tutors.
+The first finds out exactly where they are. The second teaches to it.
+
+From there, if it is working, we keep going.
+
+Tell me who, and one sentence on why them.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring
 
-*P.S. Teacher Scholarship Program: nominate a student and tell me why them.
-They get two 45-minute sessions with one of our tutors, one to see where they
-are and one to teach. You can nominate two students.*
+*P.S. Two nominations per teacher, and you do not have to use both.*
 
 ---
 ## Follow-up (only if no reply)
@@ -69,6 +72,6 @@ are and one to teach. You can nominate two students.*
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
 One question and then I will leave you to September. Is there anyone on your
-caseload this year who is behind and not getting extra support?
+caseload this year who is behind and has nothing started?
 
 Danielle
