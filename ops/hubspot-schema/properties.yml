@@ -430,6 +430,16 @@ properties:
           label: "Teacher"
         - value: support_staff
           label: "Support Staff"
+    - name: aplus_booth_photo_url
+      label: "[Agent] Booth Photo URL"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by the booth Worker (booth/worker.js photo
+        archive) and the event-photo backfill, do not edit by hand. Public URL
+        of the contact's framed booth photo, used as the personalization token
+        in event follow-up emails.
     - name: aplus_marketing_consent
       label: "Booth Marketing Consent"
       group: events
