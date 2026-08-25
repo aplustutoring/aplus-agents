@@ -7,6 +7,30 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+
+## 2026-08-25 — Charter campaign fully live + Cold Revival wave built (Roman)
+
+**What:** (1) ALL 5 campaign workflows ON (Roman's toggles): 359 of 429 gap
+families emailed (Win-back-1 259, Multi 67, Never-Started 24, No-Lesson 9);
+3 converters correctly send-blocked by exit goals (Garcia, Lujan, Miller);
+Reply-to-Paola Slack ping live. Conversions to date: 6 families, 20 POs,
+~$5.4k. (2) Never-Started AUDIT before its launch: 4 false "never started"
+pulled (Sicam, Loya, Gonzalez, Allen — sequential monthly POs prove service;
+TW match missed them, likely different email/name; pending student-name TW
+lookup). (3) NEW WAVE built on Roman's "Build it": ever-held QTL-Charter
+status-history scan (full portal, 315 ever-held; only 4 hold it now) ∪
+charter intake fingerprint (charter_school_family_/student_school) →
+**189 cold-revival prospects** (charter-interested, NEVER any charter deal,
+reachable, minus live-funnel/OPEN_DEAL/prior-repliers/tests). List 3188,
+emails 220327810721 + 220321043819 (em-dash-free per new rule), workflow
+1872725354 (OFF, pending Roman publish+toggle; goal = ANY charter deal OR
+reply). Reply-ping workflow extended to list 3188. (4) Email copy clarity
+pass (Roman): plain English, no "26/27" jargon, "at no cost to you" removed
+on Roman's veto, firstname fallback "there" everywhere; sent win-back pair
+left untouched.
+**Files:** portal-side; scratchpad tooling (uncovered_final.py,
+status_history_scan.py, build_prospects.py) — promote to scripts/ if the
+cold-revival becomes a recurring motion.
 ## 2026-08-25 — Badge files committed, with an alteration guard (#AP044)
 
 **What:** the NSSA-supplied `.png` (1200x1200) and `.svg` now live at
