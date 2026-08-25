@@ -390,6 +390,21 @@ engine order), `docs/FLEET.md`, `docs/CHANGELOG.md`.
 
 ---
 
+## 2026-08-25 — Booth Photo URL property (Summit follow-up sequence prep)
+
+**What:** NEW contact property `aplus_booth_photo_url` ("[Agent] Booth Photo
+URL", events group) — public URL of the contact's framed booth photo, the
+personalization token for event follow-up emails (Danielle's Summit sequence).
+Backfill for the 35 salvaged Summit photos + touch-email copy follow.
+
+**Why:** Roman/Danielle 2026-08-23..25: teacher follow-up sequence runs
+HubSpot-native; photo embed needs a per-contact public URL token.
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md` (81→82).
+
+---
+
 ## 2026-08-23 — PO texts ask for the schedule when the PO doesn't state one
 
 **What:** When a PO has no schedule and Teachworks has none either,
