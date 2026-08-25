@@ -1,31 +1,44 @@
 # B1: Anchor, 5+ families in 25/26, nothing yet in 26/27 (18 mailable, wave 1)
 
-Voice: danielle-voice. Sage Oak EXCLUDED. From: Danielle. HIGHEST VALUE.
-Tokens: firstname (fallback 'there'), tor_family_count.
-Rules (Roman 2026-08-24): curiosity over bullshit; school year start is busy.
+Voice: danielle-voice. Sage Oak EXCLUDED (worked separately).
+From: Danielle. Tokens: firstname ONLY (fallback 'there').
 
-THE HOOK: a teacher never finds out what happened to the students they referred.
-Nobody reports back to them. We have that data (Teachworks lesson history via
-scripts/charter_gap_analysis.py: last completed lesson, tutor, whether they
-stopped partway). Offering the ANSWER costs the teacher one word. Offering a
-"roster" asked them to do admin in September, which is the opposite.
+RULES IN FORCE
+  Roman: no numbers; thank them for the students they sent; be here to help;
+         curiosity over pitch; September is busy, so short and no admin asks.
+  Danielle (Slack 2026-08-24):
+    * "i like my voice to sound more student centered" - the thanks is for
+      trusting us with STUDENTS, never for sending us business.
+    * killed "you sent us more than almost any teacher" - no volume flattery.
+    * "How can i accurately gauge how they did besides session notes" - we do
+      NOT have per-student outcome data. The offer is SESSION NOTES, which is
+      what actually exists. Promise nothing else.
+    * scholarship covers multiple students, one session each.
+  NSSA badge (#AP044): signature credential line, not body copy. The term
+  window travels with it. Never "certified"/"accredited"/"approved provider".
 
-**CHECK BEFORE SEND:** Danielle must be able to actually answer this within a
-day when they reply. The data exists; the pull is currently manual.
+NOTE: with numbers and volume flattery both gone, this is now the SAME email as
+B2. Merging would drop wave 1 to three emails and three workflows, and B1 would
+keep its Day-8 call step (driven by segment, not copy). Flagged for Roman.
 
 **Subject:** Your students from last year
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You sent us {{contact.tor_family_count}} families last year. Some finished the
-year, some stopped partway, and I doubt anyone told you which.
+Thank you for trusting us with your students last year.
 
-I can, in one email. Want it?
+I still have their session notes. If it would help to see how each of them was
+doing when we finished, say the word and I will send them over.
 
-Danielle
+And if there is a student on your mind this year, I am here.
+
+Danielle Brodetsky
+Director of School Partnerships, A+ Tutoring
+*A+ Tutoring holds the NSSA Tutoring Program Design Badge, 2026-2029, an
+independent review of how a tutoring program is built.*
 
 *P.S. Teacher Scholarship Program: nominate a student and tell me why them.
-They get a free session with one of our tutors. Who comes to mind?*
+They get a free session with one of our tutors. You can put forward up to three.*
 
 ---
 ## Follow-up (Day 4, only if no reply)
@@ -34,10 +47,11 @@ They get a free session with one of our tutors. Who comes to mind?*
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Still happy to send it. Takes me two minutes and costs you nothing either way.
+Still happy to send the notes over. Takes me two minutes and costs you nothing
+either way.
 
 Danielle
 
 ---
 ## Day 8: task for DANIELLE (not an email)
-Call, ranked by 25/26 invoiced value. Bring the answer, not the offer.
+Call, ranked by 25/26 invoiced value. Bring the session notes, not the offer.

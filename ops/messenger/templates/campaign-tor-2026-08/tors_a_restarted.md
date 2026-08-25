@@ -1,24 +1,39 @@
 # A: Restarted 26/27 (18 mailable, wave 1)
 
-Voice: danielle-voice. Sage Oak EXCLUDED. From: Danielle.
-Tokens: firstname (fallback 'there').
-Rules (Roman 2026-08-24): curiosity over bullshit; school year start is busy.
-Under 80 words. One ask. Nothing that creates work for the teacher.
-This segment is already warm, so no hook is needed. Just be short and human.
+Voice: danielle-voice. Sage Oak EXCLUDED (worked separately).
+From: Danielle. Tokens: firstname ONLY (fallback 'there').
+
+RULES IN FORCE
+  Roman: no numbers; thank them for the students they sent; be here to help;
+         curiosity over pitch; September is busy, so short and no admin asks.
+  Danielle (Slack 2026-08-24):
+    * "i like my voice to sound more student centered" - the thanks is for
+      trusting us with STUDENTS, never for sending us business.
+    * killed "you sent us more than almost any teacher" - no volume flattery.
+    * "How can i accurately gauge how they did besides session notes" - we do
+      NOT have per-student outcome data. The offer is SESSION NOTES, which is
+      what actually exists. Promise nothing else.
+    * scholarship covers multiple students, one session each.
+  NSSA badge (#AP044): signature credential line, not body copy. The term
+  window travels with it. Never "certified"/"accredited"/"approved provider".
 
 **Subject:** Thank you
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You have already sent families our way this year. Thank you.
+Thank you for trusting us with your students this year. Teachers are how most
+of them find us.
 
-If anyone else is on your mind, tell me about them and I will take it from
-there.
+If there is another student on your mind, tell me about them and I will help
+from there.
 
-Danielle
+Danielle Brodetsky
+Director of School Partnerships, A+ Tutoring
+*A+ Tutoring holds the NSSA Tutoring Program Design Badge, 2026-2029, an
+independent review of how a tutoring program is built.*
 
 *P.S. Teacher Scholarship Program: nominate a student and tell me why them.
-They get a free session with one of our tutors. Who comes to mind?*
+They get a free session with one of our tutors. You can put forward up to three.*
 
 ---
 ## Follow-up (Day 4, only if no reply)
