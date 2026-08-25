@@ -425,9 +425,11 @@
     408016508,
     408006989,
     408016286,
-    408018696
+    408018696,
+    408069398,
+    408072190
   ],
-  "last_run_utc": "2026-08-25T18:50:55.934342+00:00",
+  "last_run_utc": "2026-08-25T19:35:54.801454+00:00",
   "pending_digest": [
     {
       "call_id": 407970807,
@@ -613,6 +615,72 @@
       "tasks_created": [
         [
           "Try Banafsheh again by phone or text to confirm how Roxane's trial session with Gigi went and lock in next session cadence",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408072190,
+      "number": "15309137693",
+      "time_pt": "12:13 PM",
+      "matched": true,
+      "contact_label": "Jeff Rice",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Emily from A+ Tutoring spoke with Jeff Rice, an event/exhibitor coordinator, about A+'s booth registration for an upcoming event. Jeff confirmed the company name listing (just 'A+ Tutoring', no 'Inc.') and flagged that the originally assigned space PC10 was next to a competing tutoring company. They agreed to move A+ to space PC6 on the other side of the room. Jeff will send a PayPal invoice shortly for payment.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for PayPal invoice from Jeff Rice and remit payment for booth space PC6",
+            "owner_hint": "Emily"
+          },
+          {
+            "item": "Confirm company listing shows as 'A+ Tutoring' (no Inc.) in event materials",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Jeff Rice is an event/exhibitor vendor coordinating booth placement, not a family, school, or tutor applicant.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "lead_status",
+          "Other",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for PayPal invoice from Jeff Rice and remit payment for booth space PC6",
+          81494333
+        ],
+        [
+          "Confirm company listing shows as 'A+ Tutoring' (no Inc.) in event materials",
           81494333
         ]
       ],
