@@ -421,9 +421,13 @@
     407898798,
     407976769,
     407970807,
-    407989547
+    407989547,
+    408016508,
+    408006989,
+    408016286,
+    408018696
   ],
-  "last_run_utc": "2026-08-25T17:17:54.237007+00:00",
+  "last_run_utc": "2026-08-25T17:57:46.460126+00:00",
   "pending_digest": [
     {
       "call_id": 407970807,
@@ -478,12 +482,154 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 408006989,
+      "number": "13234934787",
+      "time_pt": "10:29 AM",
+      "matched": true,
+      "contact_label": "Divyesh Motiwalla",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Divyesh Motiwalla regarding tutoring for his 10th-grade daughter. The call went to voicemail; Paola left a brief message asking him to call back with a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Divyesh's callback or try again in a few days if no response",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Ensure rates/packages email and tutor profile follow-through are still pending as promised on prior call",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Divyesh Motiwalla (dad) following up on prior inquiry for in-person tutoring for his 10th-grade daughter at Peacock Junior High (zip 91381), ELA + math, ~30 min each, several days/week. Prior call: quoted $130/hr in-person, $95/hr online; free online trial offered pending his wife's input and email confirmation of day/time. No answer today \u2014 voicemail only. Divyesh expects a rates email and tutor profile; he still owes us a confirmed trial day/time. Open with: 'Hi Divyesh, this is [name] from A+ Tutoring following up on Paola's message \u2014 wanted to check in on the trial session timing for your daughter and make sure you received our rates.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound call reached voicemail only; no new contact made and status remains We Connected from prior conversation.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Outbound follow-up] Paola called Divyesh to follow up on tutoring for his daughter; reached voicemail and left a message asking him to call back with a good time to connect.",
+          "what_we_can_do_to_help": "Awaiting Divyesh's callback to confirm trial day/time and next steps. Rates email and tutor profile follow-through remain pending from prior conversation.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound follow-up] Paola called Divyesh to follow up on tutoring for his daughter; reached voicemail and left a message asking him to call back with a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Awaiting Divyesh's callback to confirm trial day/time and next steps. Rates email and tutor profile follow-through remain pending from prior conversation."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Divyesh's callback or try again in a few days if no response",
+          81494333
+        ],
+        [
+          "Ensure rates/packages email and tutor profile follow-through are still pending as promised on prior call",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408016286,
+      "number": "19093804811",
+      "time_pt": "10:44 AM",
+      "matched": true,
+      "contact_label": "Banafsheh Salehi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Banafsheh Salehi to check in on Roxane's trial session with tutor Gigi. Call went to voicemail; Paola left a brief message asking Banafsheh to call back at a convenient time. No new information gathered.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Banafsheh again by phone or text to confirm how Roxane's trial session with Gigi went and lock in next session cadence",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Banafsheh Salehi following up on daughter Roxane's ISEE writing trial session with tutor Gigi \u2014 no callback yet. Banafsheh is an active family in the pipeline (5th grader Roxane at Lanai Elementary, ISEE writing prep, referred by Dr. Sara Nasserzadeh). Next attempt should be another call or a text; open with something like: 'Hi Banafsheh, this is [name] from A+ Tutoring following up on Paola's message \u2014 just wanted to hear how Roxane's session with Gigi went and figure out the best cadence going forward.' Goal is to confirm the trial landed well and schedule recurring ISEE-writing sessions.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Active customer in OPEN_DEAL pipeline; status owned by deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Roxanne",
+          "Gigi"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola called to follow up on Roxane's trial session with tutor Gigi; reached voicemail and left a message asking Banafsheh to call back when convenient.",
+          "what_we_can_do_to_help": "Continue outreach by phone and text to reach Banafsheh, confirm how Roxane's trial with Gigi went, and schedule ongoing ISEE writing prep sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola called to follow up on Roxane's trial session with tutor Gigi; reached voicemail and left a message asking Banafsheh to call back when convenient."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach by phone and text to reach Banafsheh, confirm how Roxane's trial with Gigi went, and schedule ongoing ISEE writing prep sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Banafsheh again by phone or text to confirm how Roxane's trial session with Gigi went and lock in next session cadence",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "18185830365",
       "time_pt": "7:42 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "12392712245",
+      "time_pt": "10:49 AM",
       "reason": "hang-up"
     }
   ],
