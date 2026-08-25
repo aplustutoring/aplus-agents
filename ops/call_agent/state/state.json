@@ -418,10 +418,67 @@
     407720179,
     407721970,
     407895353,
-    407898798
+    407898798,
+    407976769,
+    407970807
   ],
-  "last_run_utc": "2026-08-25T15:49:09.514569+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-25T16:42:57.463988+00:00",
+  "pending_digest": [
+    {
+      "call_id": 407970807,
+      "number": "17253478505",
+      "time_pt": "9:31 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound check-in voicemail from Yolanda at A+ Tutoring to Yesenia, a past customer, asking how her student Jesse is doing and whether she'd like to resume tutoring. No answer \u2014 message left with the callback number 818-869-1627. No response yet from the family.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for callback from Yesenia regarding resuming tutoring for Jesse; if no response in ~1 week, try another outreach attempt.",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda left a friendly voicemail for Yesenia (past customer) asking how her son Jesse is doing and inviting her to resume tutoring. No callback yet. Nothing was quoted or promised beyond the callback number (818-869-1627). If Yesenia calls back, open with: 'Hi Yesenia, thanks for calling us back \u2014 we wanted to check in on Jesse and see if you'd like to pick tutoring back up. How is he doing?' Then reassess subject/grade/modality since we don't have current details on file.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Yesenia is a past customer being re-engaged; lead status is owned by the deal pipeline, and she did not answer the call.",
+        "student_or_school_names_mentioned": [
+          "Jesse"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound re-engagement call to past customer Yesenia to check in on her student Jesse and see if she wants to resume tutoring. Reached voicemail; message left with callback number.",
+          "what_we_can_do_to_help": "If Yesenia calls back, reassess Jesse's current grade, subjects, and preferred modality, then propose a plan to restart tutoring.",
+          "student_first_name": "Jesse",
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for callback from Yesenia regarding resuming tutoring for Jesse; if no response in ~1 week, try another outreach attempt.",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18185830365",
