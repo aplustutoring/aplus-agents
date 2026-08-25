@@ -3,43 +3,46 @@
 Voice: danielle-voice. Sage Oak EXCLUDED (worked separately).
 From: Danielle. Tokens: firstname ONLY (fallback 'there').
 
-RULES IN FORCE
-  Roman: no numbers; thank them for the students they sent; be here to help;
-         curiosity over pitch; September is busy, so short and no admin asks.
-  Danielle (Slack 2026-08-24):
-    * "i like my voice to sound more student centered" - the thanks is for
-      trusting us with STUDENTS, never for sending us business.
-    * killed "you sent us more than almost any teacher" - no volume flattery.
-    * "How can i accurately gauge how they did besides session notes" - we do
-      NOT have per-student outcome data. The offer is SESSION NOTES, which is
-      what actually exists. Promise nothing else.
-    * scholarship covers multiple students, one session each.
-  NSSA badge (#AP044): signature credential line, not body copy. The term
-  window travels with it. Never "certified"/"accredited"/"approved provider".
+STRUCTURE (Roman 2026-08-25): the Badge LEADS. It was buried in the signature
+and that treated real news as fine print. It also reflects well on the teacher:
+the program they sent students to was reviewed and passed. Second paragraph
+turns it straight back to them so the email is not just about us.
 
-**Subject:** Thank you
+NSSA GUARDRAILS (#AP044, knowledge/credentials.yml)
+  * DESIGN, NOT EFFECTIVENESS. "reviewed how our program is BUILT" / "program
+    design". Never "proven results", never "Stanford-validated outcomes". These
+    emails make no outcome claim at all, so the two never collide.
+  * Never "certified" / "accredited" / "endorsed" / "approved provider".
+  * "Badge" capitalised. Term window 2026-2029 travels with the claim.
+  * Text only. No Badge image in a short personal email.
+  Roman: no numbers about students; thank them for the students they sent.
+  Danielle: student centered; no volume flattery; the offer is SESSION NOTES,
+  which is all we actually have.
+
+**Subject:** We got some good news
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Thank you for trusting us with your students this year. Teachers are how most
-of them find us.
+Stanford's National Student Support Accelerator reviewed how our tutoring
+program is built, step by step. We passed. A+ Tutoring holds their Tutoring
+Program Design Badge for 2026-2029.
+
+I wanted you to hear it from me. You trusted us with your students, and that is
+the whole reason we care about getting this right.
 
 If there is another student on your mind, tell me about them and I will help
 from there.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring
-*A+ Tutoring holds the NSSA Tutoring Program Design Badge, 2026-2029, awarded by
-the National Student Support Accelerator at Stanford University after an
-evidence-based review of our program design.*
 
 *P.S. Teacher Scholarship Program: nominate a student and tell me why them.
 They get a free session with one of our tutors. You can put forward up to three.*
 
 ---
-## Follow-up (Day 4, only if no reply)
+## Follow-up (only if no reply)
 
-**Subject:** Re: Thank you
+**Subject:** Re: We got some good news
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 

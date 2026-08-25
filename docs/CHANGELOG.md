@@ -7,6 +7,48 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Teacher emails: the Badge leads instead of hiding in the signature
+
+**Roman:** "why cant we just share it in the first emial as hey, guess who got
+this shit, woooptii what."
+
+Fair. I had put the NSSA Badge in a credential line under the signature, which
+treats real news as fine print. Worse, it wasted the best thing about the news
+for THIS audience: the program these teachers sent students to was reviewed and
+passed. That reflects on their judgment, not just ours.
+
+**All four wave-1 emails now open on it**, subject "We got some good news":
+
+> Stanford's National Student Support Accelerator reviewed how our tutoring
+> program is built, step by step. We passed. A+ Tutoring holds their Tutoring
+> Program Design Badge for 2026-2029.
+>
+> I wanted you to hear it from me. You trusted us with your students, and that
+> is the whole reason we care about getting this right.
+
+The second paragraph is what keeps this from being an email about us: it turns
+straight back to their students, which is Danielle's own note from 2026-08-24.
+Then the segment ask, one line.
+
+**The NSSA guardrails held automatically**, and it is worth recording why the
+copy is safe rather than just asserting it:
+- "reviewed how our program is BUILT" and "Program Design Badge" keep the claim
+  on DESIGN. NSSA is explicit the Badge does not denote effectiveness.
+- **These emails make no outcome claim at all** — no percentages, no RIT gains —
+  so the Badge and results never appear together. Checked programmatically: the
+  only digits in any body are 2026 and 2029.
+- No "certified", "accredited", "endorsed", "approved provider", "proven
+  results", "Stanford-validated". Also checked programmatically.
+- Term window travels. "Badge" capitalised. Text only, no image: a trademark
+  graphic in a 60-word personal note reads as marketing, which is the opposite
+  of what these are.
+
+Length went from ~60 to ~130 words. That is the real cost, and it is worth it:
+the news earns the extra paragraph, and the ask still sits in one line.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/` (4 wave-1 drafts).
+
+---
 ## 2026-08-21 — TOR name matching: 119 of 218 orphaned deals were ours all along
 
 **What:** Rewrote the name matcher in `scripts/charter_tor_segments.py`. Deals
