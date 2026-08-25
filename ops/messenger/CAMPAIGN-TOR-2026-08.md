@@ -129,6 +129,36 @@ back 2 school workflow going". Every draft now opens on "Welcome back to the
 school year" and the wave-1 subjects lead with "Welcome back", matching what
 Roman pitched to Danielle on 2026-08-20 ("Welcoming back to the school year").
 
+## A charter TOR's caseload turns over. Write to this year's.
+
+Roman 2026-08-25: "they probably don't even have the same students on their case
+this year that they had last year... they probably don't give a fuck about the
+lesson notes from last year."
+
+**Checked against the deal data, and he is right.** Of the teachers who have
+returned so far in 26/27:
+
+| Teacher | Families in 25/26 | Carried into 26/27 |
+|---|---|---|
+| Christine Gurney | 11 | 1 |
+| Christie Beadle | 8 | 0 (1 new) |
+| Mary Nieves | 6 | 2 |
+| Maya Lee | 5 | 1 |
+| Kristy Doyal | 5 | 2 |
+
+Five of the seventeen returning families are now with a **different** teacher.
+Caveat: only ~20 families have 26/27 deals so far, so this is directional rather
+than conclusive. But the risk is asymmetric — an ask aimed at this year's
+caseload works whether or not rosters persist, and an ask aimed at last year's
+roster fails if they do not.
+
+**Consequence for the copy:** last year is one line of thanks and never the ask.
+The ask is whoever is on their case NOW. Session notes are a standing offer
+mentioned once at the end, and deliberately absent from the follow-up — the
+follow-up repeats the caseload question instead. B3 drops the notes offer
+entirely: one family last year is not worth offering notes on, and raising it
+only highlights how little we did together.
+
 ## Copy
 
 Six drafts in `templates/campaign-tor-2026-08/`, written to the

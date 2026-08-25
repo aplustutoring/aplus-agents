@@ -3,21 +3,30 @@
 Voice: danielle-voice. Sage Oak EXCLUDED (worked separately).
 From: Danielle. Tokens: firstname ONLY (fallback 'there').
 
-STRUCTURE (Roman 2026-08-25): the Badge LEADS. It was buried in the signature
-and that treated real news as fine print. It also reflects well on the teacher:
-the program they sent students to was reviewed and passed. Second paragraph
-turns it straight back to them so the email is not just about us.
+THE ASK IS ABOUT THIS YEAR'S CASELOAD, NOT LAST YEAR'S STUDENTS
+Roman 2026-08-25: "they probably don't even have the same students on their case
+this year that they had last year... they probably don't give a fuck about the
+lesson notes from last year."
+
+Checked against the deal data and he is right. Of the teachers who have returned
+so far in 26/27, Christine Gurney had 11 families last year and carried 1;
+Christie Beadle had 8 and carried 0; Maya Lee had 5 and carried 1. Five of the
+17 returning families are now with a DIFFERENT teacher. A charter TOR's caseload
+turns over, so an email built on last year's roster is about children who are
+no longer theirs.
+
+So: last year is ONE line of thanks, never the ask. The ask is whoever is on
+their case NOW. Session notes are a small standing offer at the end, mentioned
+once and never pushed again in the follow-up.
 
 NSSA GUARDRAILS (#AP044, knowledge/credentials.yml)
-  * DESIGN, NOT EFFECTIVENESS. "reviewed how our program is BUILT" / "program
-    design". Never "proven results", never "Stanford-validated outcomes". These
-    emails make no outcome claim at all, so the two never collide.
-  * Never "certified" / "accredited" / "endorsed" / "approved provider".
-  * "Badge" capitalised. Term window 2026-2029 travels with the claim.
-  * Text only. No Badge image in a short personal email.
-  Roman: no numbers about students; thank them for the students they sent.
-  Danielle: student centered; no volume flattery; the offer is SESSION NOTES,
-  which is all we actually have.
+  * DESIGN, not effectiveness. No outcome claims anywhere in these emails.
+  * Never certified / accredited / endorsed / approved provider.
+  * "Badge" capitalised, term window travels, text only (no image).
+  Danielle: student centered, no volume flattery, promise only session notes.
+
+One family last year, so no session-notes aside: there is nothing worth
+offering and it would only draw attention to how little we did together.
 
 **Subject:** We got some good news
 
@@ -27,12 +36,12 @@ Stanford's National Student Support Accelerator reviewed how our tutoring
 program is built, step by step. We passed. A+ Tutoring holds their Tutoring
 Program Design Badge for 2026-2029.
 
-I wanted you to hear it from me. You trusted us with your students, and that is
-the whole reason we care about getting this right.
+I wanted you to hear it from me, because you trusted us with your students last
+year.
 
-And one question, since September is not the month for new projects: is there a
-student you are already worried about? If there is, tell me about them and I
-will help.
+You probably have a different caseload this year. If there is a student on it
+who is behind and not getting targeted support anywhere else, tell me about
+them and I will help.
 
 Danielle Brodetsky
 Director of School Partnerships, A+ Tutoring
@@ -47,7 +56,9 @@ They get a free session with one of our tutors. You can put forward up to three.
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-Still just the one question. The student who was behind in June is usually the
-same one who is behind now.
+Still just the one question: is there anyone on your caseload this year who is
+behind and not getting extra support?
+
+If not, no reply needed. I will leave you to September.
 
 Danielle

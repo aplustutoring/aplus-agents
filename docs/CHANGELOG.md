@@ -7,6 +7,45 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Teacher emails now ask about THIS year's caseload
+
+**Roman:** "they probably don't even have the same students on their case this
+year that they had last year... they probably don't give a fuck about the lesson
+notes from last year."
+
+**Checked before rewriting, and the data agrees.** Of the teachers who have
+returned in 26/27 so far: Christine Gurney had 11 families last year and carried
+1; Christie Beadle had 8 and carried 0; Maya Lee had 5 and carried 1; Mary
+Nieves 6 and carried 2. Five of the seventeen returning families are now with a
+different teacher. A charter TOR's caseload turns over, so an email built on
+last year's roster is about children who are no longer theirs.
+
+Caveat recorded in the campaign doc: only ~20 families have 26/27 deals this
+early, so this is directional. It did not change the decision, because the risk
+is asymmetric — an ask aimed at this year's caseload works either way, and one
+aimed at last year's roster fails if rosters turn over.
+
+**What changed:** the session-notes offer went from being the ask to a single
+standing line at the end, and it is gone from the follow-up entirely — the
+follow-up now repeats the caseload question. The new ask is "You probably have a
+different caseload this year. If there is a student on it who is behind and not
+getting targeted support anywhere else, tell me about them." Naming the turnover
+out loud is also a small credibility signal: it shows we know how their year
+works.
+
+B3 drops the notes offer completely. One family last year is not worth offering
+notes on, and raising it only highlights how little we did together.
+
+**Second-order effect worth noting:** this weakens the case for the B1/B2/B3
+volume split at the copy level. All three now say nearly the same thing, because
+the ask no longer depends on how many families a teacher sent us last year. The
+split still earns its keep for the Day-8 call ranking and for sequencing, but
+three near-identical emails is now a live merge question for Roman.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/` (4 drafts),
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-25 — Teacher emails: the Badge leads instead of hiding in the signature
 
 **Roman:** "why cant we just share it in the first emial as hey, guess who got
