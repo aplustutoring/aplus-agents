@@ -70,6 +70,7 @@ H = {"Authorization": f"Bearer {HUBSPOT_TOKEN}", "Content-Type": "application/js
 
 GAP_LIST_ID = 3104                 # lapsed 25/26 families (charter_gap_analysis)
 SINCE = "2025-08-01"               # start of the 25/26 attribution window
+EVER_SINCE = "2019-01-01"          # far enough back to catch "referred at some point"
 YEAR_2627 = "2026-07-01"           # a deal created on/after this is 26/27 business
 CHARTER_PIPELINES = {"907748", "72281989", "88841552", "5119061", "1066195"}
 LIST_PREFIX = "Charter TOR 26/27 - "
@@ -165,13 +166,18 @@ def looks_like_family(p):
                 or p.get("last_tutor_name") or p.get("teacher_of_record_name"))
 NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
 
+# TIERS BY RELATIONSHIP HISTORY (Roman 2026-08-25, locked). The old volume
+# split (5+ / 2-4 / 1) is RETIRED: once the ask became "who is on your caseload
+# THIS year", how many families a teacher sent last year stopped changing what
+# the email says. What still changes it is whether they have trusted us at all,
+# and how recently.
+TIER_4_MIN_FAMILIES = 5      # heavy referrers, pulled OUT for individual sends
+
 SEGMENTS = [
-    ("A",  "Restarted",           "A - Restarted 26/27"),
-    ("B1", "Anchor (5+)",         "B1 - Anchor (5+ families)"),
-    ("B2", "Multi (2-4)",         "B2 - Multi (2-4 families)"),
-    ("B3", "Single (1)",          "B3 - Single (1 family)"),
-    ("C1", "Intro - iLEAD",       "C1 - Intro (iLEAD)"),
-    ("C2", "Intro - other",       "C2 - Intro (other schools)"),
+    ("T1", "All TORs, no history",  "Tier 1 - No referral history"),
+    ("T2", "Referred, not last yr", "Tier 2 - Warm reopen"),
+    ("T3", "Last year's referrers", "Tier 3 - Last year"),
+    ("T4", "Heavy referrers",       "Tier 4 - Individual sends (NOT a campaign list)"),
 ]
 
 
@@ -261,8 +267,12 @@ def backfill_queue(tors):
 
 
 def load_charter_deals():
-    """Every charter-pipeline deal created since SINCE."""
-    since_ms = int(datetime.fromisoformat(SINCE).replace(tzinfo=timezone.utc).timestamp() * 1000)
+    """Every charter-pipeline deal, back to EVER_SINCE.
+
+    Tier 2 is "referred at some point but not last year", which cannot be
+    computed from a 25/26-only window — a teacher with no recent deal looks
+    identical to one who has never referred anybody."""
+    since_ms = int(datetime.fromisoformat(EVER_SINCE).replace(tzinfo=timezone.utc).timestamp() * 1000)
     deals, after = {}, None
     while True:
         body = {"filterGroups": [{"filters": [
@@ -381,9 +391,11 @@ def attribute(tors, deals):
 def profile(tors, deals, hits, gap):
     """Per-teacher rollup: 25/26 families+students, 26/27 families, lapsed families."""
     cutoff = datetime.fromisoformat(YEAR_2627).replace(tzinfo=timezone.utc)
+    start_2526 = datetime.fromisoformat(SINCE).replace(tzinfo=timezone.utc)
     rows = {}
     for cid, p in tors.items():
         fam25, fam2627, students, amount25 = set(), set(), {}, 0.0
+        fam_older = set()
         for did in hits.get(cid, []):
             d = deals[did]
             parts = [x.strip() for x in (d.get("dealname") or "").split(" - ")]
@@ -391,12 +403,14 @@ def profile(tors, deals, hits, gap):
             created = parse_dt(d.get("createdate"))
             if created and created >= cutoff:
                 fam2627.add(parent)
-            else:
+            elif created and created >= start_2526:
                 fam25.add(parent)
                 try:
                     amount25 += float(d.get("amount") or 0)
                 except (TypeError, ValueError):
                     pass
+            else:
+                fam_older.add(parent)          # referred, but before 25/26
             if len(parts) >= 3:
                 cand = parts[1].split(" ")[0].strip(" .,")
                 if (cand and cand.lower() not in NOT_STUDENT_TOKENS
@@ -407,6 +421,7 @@ def profile(tors, deals, hits, gap):
             "name": f"{p.get('firstname', '')} {p.get('lastname', '')}".strip(),
             "school": p.get("charter_school_teacher") or "",
             "fam25": len(fam25), "fam2627": len(fam2627),
+            "fam_older": len(fam_older),
             "students": len(students), "amount25": round(amount25),
             "lapsed": 0,          # filled by caller from associations
             "firstname": (p.get("firstname") or "").strip(),
@@ -421,15 +436,15 @@ def profile(tors, deals, hits, gap):
 
 
 def segment_of(r):
-    if r["fam2627"] > 0:
-        return "A"
-    if r["fam25"] >= 5:
-        return "B1"
-    if r["fam25"] >= 2:
-        return "B2"
-    if r["fam25"] == 1:
-        return "B3"
-    return "C1" if r["school"] == "iLEAD" else "C2"
+    """Relationship history, most-trusted first. Order matters."""
+    recent = r["fam25"] + r["fam2627"]          # trusted us this year or last
+    if recent >= TIER_4_MIN_FAMILIES:
+        return "T4"                             # heavy referrer -> individual send
+    if recent >= 1:
+        return "T3"                             # last year's referrers
+    if r["fam_older"] >= 1:
+        return "T2"                             # referred once, but not lately
+    return "T1"                                 # no referral history at all
 
 
 def mailable(r):

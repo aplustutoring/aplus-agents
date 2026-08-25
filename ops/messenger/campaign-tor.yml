@@ -1,93 +1,79 @@
-# Charter TEACHER (TOR) 26/27 outreach from Danielle — see CAMPAIGN-TOR-2026-08.md.
-# The teacher-side counterpart to campaign.yml (families, from Paola/A+ team).
+# Charter TEACHER (TOR) outreach from Danielle. See CAMPAIGN-TOR-2026-08.md.
+# The teacher-side counterpart to campaign.yml (families, from Paola).
 # Kept in a SEPARATE file so arming this never touches the live family campaign.
 #
-# Run with: python3 ops/messenger/enroll.py --config campaign-tor.yml
+# Run: python3 ops/messenger/enroll.py --config campaign-tor.yml
 #
-# DECIDED by Roman 2026-08-21:
-#   * send-from = danielle@wetutorathome.com, fromName "Danielle Brodetsky".
-#     Already proven: 30 recent marketing emails use exactly this pair. NOT
-#     success@ (her owner email), which reads as a shared mailbox under a
-#     personally-signed email.
-#   * Sage Oak is EXCLUDED at every segment (76 teachers). Roman to Danielle
-#     2026-08-20 "all charter teachers from you (except sage oak)", reconfirmed
-#     2026-08-21: "they will be separate" — the August Summit booth follow-up
-#     Danielle is running covers them.
-#   * AUDIENCE IS a_persona = "Teacher of Record/EF/ES", nothing else (Roman
-#     2026-08-24: "dont we have a persona for teachers... we created property
-#     architecture"). 1,064 contacts, 925 mailable, wave 1 = 193. The other
-#     signals only feed a backfill queue of 64 untagged people, never the send.
-#     Role mailboxes (vendors@, ap@, noreply@) still filtered: 19 carry the
-#     persona. Dual-persona contacts (TOR + Family) STAY -- persona beats
-#     heuristics (#AP030, Kristy Doyal).
-#   * Framing is BACK TO SCHOOL (Roman 2026-08-24).
-#   * CTA carries Danielle's own note (Slack 2026-08-21): make it "email me back
-#     and I will be your guide", and mention the Teacher Scholarship Program.
-#     No long dashes anywhere in the copy.
-#   * scope = WARM FIRST, then ramp. Wave 1 is A + B1 + B2 + B3 only (181
-#     mailable, all with deal history). C1 and C2 stay unbuilt until wave 1
-#     reply/bounce data lands. See the ramp in CAMPAIGN-TOR-2026-08.md.
+# HARD COMPLIANCE RULES (Roman 2026-08-25, locked). Every template obeys these:
+#   1. The Badge denotes quality of program DESIGN only. Not implementation,
+#      not effectiveness.
+#   2. No copy may imply Stanford validated our student outcomes.
+#   3. Never: certified, accredited, endorsed, approved provider.
+#   4. No numbers about students. No counts, percentages, or outcome data.
+#   5. No em dashes, ever.
+#   6. Student-centered voice. Thank teachers for trusting us with STUDENTS,
+#      never for sending business.
+#   7. Text only. No Badge image in email.
 #
-# DISARMED. Still blocked on Roman:
-#   1. approve the six copy drafts in templates/campaign-tor-2026-08/
-#   2. say GO for the list + email + workflow build (ids land below)
-#   3. flip armed: true + set launch_date
+# STRUCTURE (Roman 2026-08-25, locked): one campaign, four tiers, one shared
+# Badge paragraph. What changes per tier is the opening move and how hard the
+# ask is. Segmentation is by RELATIONSHIP HISTORY, not by volume sent last year.
+# The old 5+ / 2-4 / 1 split is RETIRED.
 armed: false
 launch_date: ""
 timezone: America/Los_Angeles
 send_from:
-  role: sales                 # roles-not-names: email/config.yaml roles.sales -> danielle
+  role: sales                 # roles-not-names: email/config.yaml roles.sales
   hubspot_owner_id: "227538487"
   from_name: "Danielle Brodetsky"
   reply_to: "danielle@wetutorathome.com"
-  task_owner_role: sales      # Day-8 call task goes to the same seat, not Paola
-
-# Wave 1 = the four history segments. C1/C2 stay wave: 2+ and are not built
-# until wave 1 reply and bounce data lands (Roman 2026-08-21).
+  task_owner_role: sales
 
 # list_id filled by scripts/charter_tor_segments.py --build-lists
-# workflow_id/email_ids filled when the HubSpot build is approved.
-# Empty workflow_id = segment skipped by enroll.py.
+# workflow_id/email_ids filled once the HubSpot build is approved.
 enrollments:
-  - segment: a_restarted
-    wave: 1        — thank you + expand
+  - segment: tier1_no_history
+    tier: 1
     list_id: ""
     workflow_id: ""
     email_ids: []
-    template: tors_a_restarted.md
-    cadence: "Day 0 email, Day 4 nudge"
-  - segment: b1_anchor
-    wave: 1          — highest value, roster offer + Day-8 call task
+    template: tier1_no_history.md
+    audience: "674 mailable. No referral history, so no trust to reference."
+    primary_cta: scholarship_nomination   # NOT a P.S. for this tier
+    cadence: "Day 0 email, one follow-up"
+
+  - segment: tier2_warm_reopen
+    tier: 2
     list_id: ""
     workflow_id: ""
     email_ids: []
-    template: tors_b1_anchor.md
-    cadence: "Day 0 email, Day 4 nudge, Day 8 call task (sales seat)"
-  - segment: b2_multi
-    wave: 1          
+    template: tier2_warm_reopen.md
+    audience: "45 mailable. Referred at some point, but not last year."
+    primary_cta: caseload_ask
+    cadence: "Day 0 email, one follow-up"
+    note: "Warm reopen, NOT a thank-you. Name the gap rather than paper over it."
+
+  - segment: tier3_last_year
+    tier: 3
     list_id: ""
     workflow_id: ""
     email_ids: []
-    template: tors_b2_multi.md
-    cadence: "Day 0 email, Day 5 nudge"
-  - segment: b3_single
-    wave: 1         
-    list_id: ""
-    workflow_id: ""
-    email_ids: []
-    template: tors_b3_single.md
-    cadence: "Day 0 email, Day 5 nudge"
-  - segment: c1_intro_ilead
-    wave: 2     — COLD, iLEAD Tier 3 case study
-    list_id: ""
-    workflow_id: ""
-    email_ids: []
-    template: tors_c1_intro_ilead.md
-    cadence: "Day 0 email only"
-  - segment: c2_intro
-    wave: 3           — COLDEST, ramp in waves (see doc)
-    list_id: ""
-    workflow_id: ""
-    email_ids: []
-    template: tors_c2_intro.md
-    cadence: "Day 0 email only, wave-ramped"
+    template: tier3_last_year.md
+    audience: >-
+      169 mailable. Last year's referrers. Roman's spec says 193; that figure
+      included the heavy referrers, who are now Tier 4 and pulled out.
+    primary_cta: caseload_ask
+    cadence: "Day 0 email, one follow-up"
+    note: "Opening paragraph is LOCKED VERBATIM. Do not edit."
+
+# TIER 4 IS NOT AN ENROLLMENT. 24 heavy referrers, pulled OUT of the campaign
+# for individual sends from Danielle with one specific personal line each.
+# They must never appear in a campaign list; if they do, that is a bug.
+# Brief: templates/campaign-tor-2026-08/tier4_individual_brief.md
+tier4_individual:
+  count: 24
+  enrolled: false
+  brief: tier4_individual_brief.md
+  selection: "5+ families across 25/26 and 26/27 (TIER_4_MIN_FAMILIES in the segmenter)"
+
+# DISARMED. Blocked on Roman: copy approval, then GO for the portal build.

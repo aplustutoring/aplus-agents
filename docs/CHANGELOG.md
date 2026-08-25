@@ -7,6 +7,74 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Teacher campaign restructured to Roman's locked spec: 4 tiers
+
+**Roman issued a locked spec.** Hard compliance rules, locked Tier 3 copy, a new
+four-tier structure, and a locked scholarship definition. Implemented in full.
+
+**Segmentation is now RELATIONSHIP HISTORY, not volume.** The 5+ / 2-4 / 1 split
+is retired. It stopped earning its keep the moment the ask became "who is on
+your caseload THIS year" — how many families a teacher sent last year no longer
+changes what the email says. What still changes it is whether they have trusted
+us at all, and how recently. The segmenter was rewritten to pull ALL charter
+deals rather than only 25/26, because "referred at some point but not last year"
+is not computable from a one-year window.
+
+| Tier | Who | Mailable | Ask |
+|---|---|---|---|
+| 1 | No referral history | 674 | **Scholarship nomination as PRIMARY CTA**, not a P.S. |
+| 2 | Referred once, not last year | 45 | Warm reopen, then this year's caseload |
+| 3 | Last year's referrers | 169 | Locked copy, this year's caseload |
+| 4 | Heavy referrers | 24 | **Pulled OUT.** Individual sends from Danielle. |
+
+**Two numbers worth correcting against the spec:**
+- Roman's Tier 3 count of 193 included the heavy referrers. With Tier 4 pulled
+  out, Tier 3 as a campaign list is **169**.
+- Tier 4 came out at **24**, inside his 15-25 estimate, at a cut of 5+ families
+  across 25/26 and 26/27. The cut is a constant in the segmenter so the lists
+  stay consistent if he wants it shorter.
+
+**Tier 4 is a correctness constraint, not a preference.** They must never appear
+in a campaign list. A merge-field email to someone who sent us five or more
+families reads as exactly what it is. `campaign-tor.yml` records them under
+`tier4_individual` with `enrolled: false` rather than as an enrollment, so there
+is no list for them to leak into.
+
+**Scholarship spec LOCKED** in `knowledge/programs/teacher-scholarship.md`,
+superseding every earlier description including my own "one free session":
+two 45-minute sessions per nominated student (one assessment, one instruction),
+two nominations per teacher. **Overflow honoured on request** — Roman: do not
+let a high-intent responder get a no. Recorded as an operational rule Danielle
+must know before send, deliberately NOT in the copy: the copy says two so the
+ask stays small and specific, and the cap yields silently when someone pushes.
+
+**Compliance is checked programmatically, not by eye.** Every tier verified for
+the banned words, for em dashes, and for stray digits. The only digits in any
+body are the Badge term years and the scholarship's session length.
+
+**One tension surfaced, not fixed here.** The locked Tier 3 copy renders the
+claim in prose ("for 2026 through 2029") rather than matching `claim_string`
+character for character. That is correct — the rule is that the Badge name and
+term window both appear — but `aplus-fact-check` on main currently says to flag
+"wording that does not match claim_string", which would flag Roman's own locked
+sentence. Needs a follow-up PR against main; noted in the campaign doc.
+
+**Charter admins spec'd separately** in `ops/messenger/CAMPAIGN-CHARTER-ADMINS.md`,
+explicitly NOT a fifth tier: they think about vendor quality across a program,
+board optics, and justifying enrichment spend, so the ask is a conversation,
+staff visibility, or vendor list placement, never a student. Badge language
+reuses cleanly and is stronger there, with the caveat that an admin justifying
+spend upward is exactly the person who wants to hear "proven results" and
+exactly the person we must not say it to. Suppression recorded: **Terri Budke
+already heard it**, Angie Covil is a target. Nothing built.
+
+**Files:** `scripts/charter_tor_segments.py`,
+`ops/messenger/templates/campaign-tor-2026-08/` (4 tiers, old 6 removed),
+`ops/messenger/campaign-tor.yml`, `ops/messenger/CAMPAIGN-TOR-2026-08.md`,
+`ops/messenger/CAMPAIGN-CHARTER-ADMINS.md` (new),
+`knowledge/programs/teacher-scholarship.md`.
+
+---
 ## 2026-08-25 — The Badge news makes the TEACHER the subject, not us
 
 **Roman:** "The first sentence about how we got the badge does not promote any
