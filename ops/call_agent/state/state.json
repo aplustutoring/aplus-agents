@@ -430,9 +430,10 @@
     408072190,
     408115255,
     408131290,
-    408143575
+    408143575,
+    408168031
   ],
-  "last_run_utc": "2026-08-25T22:00:57.150208+00:00",
+  "last_run_utc": "2026-08-25T22:46:53.593025+00:00",
   "pending_digest": [
     {
       "call_id": 407970807,
@@ -748,6 +749,80 @@
         [
           "Create invoice and charge Inna's provided credit card for 8 hours of tutoring",
           86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408168031,
+      "number": "13102931133",
+      "time_pt": "3:44 PM",
+      "matched": true,
+      "contact_label": "Marisa Zweben",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Marisa Zweben to follow up on a scheduled meeting today that was missed/late. The call went to Marisa's voicemail; Paola left a message apologizing for the late outreach and asked Marisa to let her know if she was still available. Paola also indicated she would send a follow-up text message. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Marisa a follow-up text message confirming availability to reschedule the meeting",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Monitor for Marisa's response and reschedule the intake meeting for Lucas",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Marisa Zweben (mom of Lucas Erickson, 5th grade at Wonderland Elementary Gifted Magnet) after running late for their scheduled meeting today. No live contact was made. Paola apologized on the VM and said she would also text her. Marisa now expects a text from us and a chance to reschedule. When she responds, open with an apology for the missed timing and offer 2-3 concrete reschedule windows to lock in a new meeting. We still don't have subject need or modality on file, so use the rescheduled call to gather those.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation with Marisa, so current 'Meeting Booked' status should stand until we reconnect.",
+        "student_or_school_names_mentioned": [
+          "Lucas Erickson",
+          "Wonderland Elementary Gifted Magnet"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola called Marisa to reconnect after being late for their scheduled meeting today; call went to voicemail.",
+          "what_we_can_do_to_help": "Paola left a VM and will follow up via text to reschedule the intake meeting for Lucas. Awaiting Marisa's reply to lock a new time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Marisa to reconnect after being late for their scheduled meeting today; call went to voicemail."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola left a VM and will follow up via text to reschedule the intake meeting for Lucas. Awaiting Marisa's reply to lock a new time."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Marisa a follow-up text message confirming availability to reschedule the meeting",
+          81494333
+        ],
+        [
+          "Monitor for Marisa's response and reschedule the intake meeting for Lucas",
+          81494333
         ]
       ],
       "ticket_id": null,
