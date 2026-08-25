@@ -423,3 +423,17 @@ v2.1 . Updated 2026-05-20 . Added inline-blog-body placement rule for the preset
 v2.0 . Updated 2026-05-19 . Major overhaul applying Danielle's feedback. New rules: blog-body-width dimensions (1536x1024 hero, 1200x630 social, NOT square unless Instagram); Playfair Display headings + DM Sans body across all graphics; no date on graphics; no "A+ Tutoring blog" subtitle; heavy A+ brand color use throughout (not just accent); maximum 1-2 pull-quote graphics per bundle (was 3, which is too many); 2+ data-viz graphics required per bundle; hero is photographic and homeschool-set, never classroom; LinkedIn carousel logo-overlap check required; swipe indicator only on multi-slide carousels; proper curly quotation marks when rendering quotes; verified iLEAD figures only (no 81%, no 21 students); descriptive natural-English alt text for accessibility; visual logo placement checks added to every slide pre-delivery. Replaces all v1.x conventions which lived implicitly in the brand kits.
 
 v1.x (pre-2026-05-19): graphics rules lived embedded across aplus-b2b-brand-kit, aplus-b2c-brand-kit, and the weekly bundle generators. v2.0 consolidates the rulebook into a single skill so it can be enforced by brand-check and read by every image generator.
+
+## The NSSA Badge image may not be altered (#AP044)
+
+If a graphic includes the NSSA Tutoring Program Design Badge, it must be the
+unmodified file NSSA supplied. Their terms: *"Programs are not permitted to
+alter the Badge image in any way, including text or design."*
+
+That means no recolouring to fit a palette, no cropping, no scaling that
+distorts, no retyping the text as vector, no overlaying it on a busy
+background, and no compositing it into a generated image. Place the supplied
+.png/.svg as-is or leave it out.
+
+Also: the Badge speaks to **program design**, not results. Do not lay it over a
+results slide or a stat card . see the rule in `aplus-fact-check`.

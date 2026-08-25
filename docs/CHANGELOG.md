@@ -7,6 +7,230 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Badge files committed, with an alteration guard (#AP044)
+
+**What:** the NSSA-supplied `.png` (1200x1200) and `.svg` now live at
+`marketing/assets/nssa/nssa-tutoring-program-design-badge-2026-2029.{png,svg}`,
+alongside the existing `marketing/assets/` logo convention. `asset_path` and
+`asset_path_svg` point at them, so `logo_ready: true` is now backed by files
+rather than a promise.
+
+Copied byte-for-byte from the originals on Roman's Desktop — verified identical
+by sha256 before committing, and the PNG was opened and read to confirm it is
+the real Badge (A+ Tutoring, 2026-2029) rather than a screenshot or a
+placeholder.
+
+**The guard:** NSSA permits **no alteration of the Badge image, including text
+or design**. That is a rule no code can enforce by reading a policy, so the
+sha256 of each file is recorded in `credentials.yml` and asserted by
+`test_badge_files_exist_and_are_unaltered`. A recolour to fit a palette, a crop,
+or an innocent re-export through an image tool all change the hash and fail the
+test. Verified by appending one byte to the PNG: the test failed with
+"PNG has been ALTERED", and passed again on restore.
+
+This matters because the graphics pipeline exists to composite and transform
+images. Without the guard, an automated resize is exactly how an altered
+trademark would ship without anyone deciding to alter it.
+
+**Also:** `test_null_field_never_renders_none` was pointed at
+`usage_guidelines_url`, which is the field that is null now that `asset_path` is
+populated. The behaviour under test is unchanged; only the example moved.
+
+**Verified:** 18 credential tests, full suite 284.
+
+**Files:** `marketing/assets/nssa/` (2 new), `knowledge/credentials.yml`,
+`scripts/tests/test_credentials.py`.
+
+---
+## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
+
+**Roman supplied NSSA's "Promotion Guidelines & Messaging" doc and the Badge
+image.** The terms are now encoded in `knowledge/credentials.yml` under
+`usage_rules` rather than paraphrased, and pushed into the skills that write
+copy — a rule that lives only in a yaml file never reaches the agent drafting a
+blog post.
+
+**The term that constrains us most, and was not something we would have
+guessed:**
+
+> "This Badge denotes **quality of design, not quality of implementation or
+> effectiveness**."
+
+Our content leads with outcome data — 75%, 87.5%, +19.4 RIT. Putting the Badge
+beside those figures implies Stanford validated our *results*. It did not; it
+reviewed how the program is designed. This is a live risk in exactly the assets
+we produce: the spotlight case-study credibility block sits directly above the
+results table. `aplus-fact-check` now flags the fusions specifically —
+"Stanford-validated results", "NSSA-verified outcomes", a sentence where the
+Badge is the subject and an outcome figure the object, or the Badge placed
+inside a results table rather than beside it.
+
+**Other terms now enforced:**
+- **The image may not be altered in any way**, including text or design. That
+  lands on `aplus-graphic-prompts` and the compositing pipeline: no recolouring
+  to fit a palette, no cropping, no retyping as vector, no compositing into a
+  generated image. Supplied file as-is or leave it out.
+- **"Badge" is always capitalised** (NSSA's rule, now a fact-check flag).
+- **Stanford attribution is granted** — "the National Student Support
+  Accelerator at Stanford University" is NSSA's own approved framing, and it is
+  far stronger for a teacher audience than the bare acronym. The three approved
+  messages are recorded verbatim so agents lean on the issuer's words.
+- Social attribution handles and hashtags recorded for the social skills.
+
+**`logo_ready` flipped to true, but `asset_path` is still null.** The files live
+in an NSSA-supplied Google Drive folder and are not in the repo. A consumer must
+check `asset_path`, not just `logo_ready`, or it will try to render `None` — the
+test says so explicitly and will need updating when the files land.
+
+**Superseded:** the earlier entry treating the live scholarship funnel's "more
+than one session" as an overclaim. Danielle (Slack 2026-08-24) explained it:
+teachers may nominate **multiple students, one session each**. The funnel was
+right and my reading was wrong.
+
+**Verified:** 18 credential tests (3 new, including one asserting the
+effectiveness rule actually reached the fact-check skill), full suite 284.
+
+**Files:** `knowledge/credentials.yml`, `marketing/skills/aplus-fact-check/
+SKILL.md`, `marketing/skills/aplus-graphic-prompts/SKILL.md`, 5 × content
+`SKILL.md`, `scripts/tests/test_credentials.py`.
+
+---
+## 2026-08-25 — NSSA badge cleared for marketing use; image stays gated (#AP044)
+
+**Roman:** "i just want it to be known by our agents that we received the NSSA
+badge. its a big thing to include in our marketing emails and marketing content."
+
+The first pass shipped `public_ready: false`, which meant agents were *forbidden*
+from using it. That was the opposite of the intent. **`public_ready: true`.**
+Stating a credential we hold is a statement of fact and Roman is the claim
+authority.
+
+**The badge IMAGE is a separate decision and stays shut** — new `logo_ready:
+false`. Usage guidelines govern display of NSSA's *mark*: size, clear space,
+placement, whether it may sit beside our logo. Those are unread, and a trademark
+is not ours to render however we like. A factual sentence carries no such risk.
+Splitting the two means the marketing value is available now while the one thing
+that actually needs permission stays blocked.
+
+**The gap that would have broken this quietly:** content passes through
+`aplus-fact-check` before publishing, and that skill's verified-claims table
+knew nothing about the badge. The blog agent would have written a true claim and
+our own fact-checker would have flagged it as unverified, or burned searches
+trying to confirm it. The table now carries the credential, points at
+`knowledge/credentials.yml` as the source, and lists what to flag instead:
+a missing term window, wording that does not match `claim_string`, embellishment
+("NSSA-certified", "NSSA-accredited", "NSSA-endorsed", "NSSA-approved provider",
+"NSSA-rated" — none of which is what we hold), and any use of the image while
+`logo_ready` is false.
+
+**Five content skills** (b2b/b2c brand kits, blog-longform, spotlight case
+study, danielle-voice) now say the badge is a differentiator worth using, with
+guidance rather than just permission: lead with what it means before the
+acronym, because most readers have never heard of NSSA; give it one clean
+mention in a credibility block rather than three scattered ones; never
+embellish; text only.
+
+**A tension worth recording.** Writing that guidance put the claim string into
+six files, and `test_no_hardcoded_claim_strings_in_repo` caught it immediately.
+But the test was also too strict: it forbade even *naming* the credential, and a
+skill cannot teach a badge it may not name. Resolved by separating the two
+things — skills name the credential and point at
+`knowledge/credentials.yml` for the wording; the test now guards the **claim
+string with its term window**, which is the part that goes stale on renewal.
+It lives in exactly one place, plus tests and this changelog.
+
+**Verified:** 16 credential tests, full suite 282 passed.
+
+**Files:** `knowledge/credentials.yml`, `marketing/skills/aplus-fact-check/
+SKILL.md`, 5 × content `SKILL.md`, `scripts/credentials.py`,
+`scripts/tests/test_credentials.py`.
+
+---
+## 2026-08-25 — NSSA badge: one credentials file, gated in code (#AP044)
+
+**What:** A+ earned the **NSSA Tutoring Program Design Badge, 2026-2029**. Rather
+than putting that string into agent prompts, templates and copy files, it is
+declared once in **`knowledge/credentials.yml`** and every consumer reads from
+there through `scripts/credentials.py`.
+
+**Why one file:** a claim copied into N places goes stale in N places, and this
+one has a hard expiry. Same doctrine as the HubSpot property registry: declare
+once, read everywhere, never duplicate. `grep -ri "program design badge"` is a
+test (`test_no_hardcoded_claim_strings_in_repo`), not a convention.
+
+**Where it lives, and why not `shared/`:** the #AP044 handoff proposed
+`shared/credentials.yml`. There is no `shared/` data directory at the repo root
+(`marketing/scripts/shared/` is script code), while `knowledge/` is already
+defined by its own README as "material that agents read but do not generate".
+Creating `shared/` would have been the parallel home the handoff warns against.
+
+**The gate is code, not convention.** `scripts/credentials.py` fails CLOSED and
+raises rather than emitting a partial claim, because a credential that renders
+as an empty string inside a vendor packet is worse than a loud build failure:
+- `public_ready: false` → `CredentialNotPublic`. **Currently false** and stays
+  false until Roman reads NSSA's usage terms.
+- surface not in `approved_surfaces`, or in `prohibited_surfaces` →
+  `CredentialSurfaceNotApproved`.
+- past `expires_on` → `CredentialExpired`.
+- a null field (`asset_path` today) never renders the string "None".
+
+**Two additions to the proposed schema:** `prohibited_surfaces` (call-agent
+scripts and SMS — SMS has no room for the term window, and a claim without it is
+a defect by Roman's own rule), and `expires_on_confirmed`, so the expiry guard
+can say out loud when its own input is a guess.
+
+**Expiry guard:** `scripts/credential_expiry_check.py` +
+`.github/workflows/credential-expiry.yml`, monthly, warns at 180 days, escalates
+after expiry. **Never remediates** — it does not edit copy, retire a claim, or
+flip `public_ready`. Verified against all three states by overriding today.
+
+**Wired:** messenger (`{{credentials.<id>.<field>}}` as an available merge field,
+never auto-inserted), and the skills that produce partner-facing language —
+b2b/b2c brand kits, blog-longform, spotlight case study, danielle-voice — each
+told to read the claim verbatim and to check `public_ready` first.
+
+**Found while wiring, not in the brief:**
+1. **The blog agent already writes about NSSA badging as a market trend.** A
+   published post argues "NSSA-style quality screens favor embedded providers
+   like A+", written when we did not hold the badge. It now argues for a screen
+   we passed without disclosing that. Content opportunity and a disclosure
+   question.
+2. **`aplus-research/SKILL.md` lists NSSA as a neutral primary research source.**
+   We now hold their credential. A disclosure note was added: citing NSSA for
+   field research is fine, leaning on NSSA to validate A+ is not, without saying
+   why the relationship exists.
+
+**Roman 2026-08-25:** expiry is **August 2029** (`2029-08-31`; day-of-month not
+stated, and the 180-day warning lands the same either way). Badge image files
+and usage guidelines are **not yet in hand** — both stay null, and finding a URL
+online will not be enough to flip the gate. The terms have to be read.
+
+**Correction to the #AP044 handoff (Roman 2026-08-25):** the handoff named a
+second repo, `~/code/skills`, holding "proposal or packet generators". **Neither
+exists.** `aplus-agents` is the entire surface, and a search here found no
+proposal or packet generator either — the only "proposal" files are internal
+HubSpot consolidation docs. The first version of this entry recorded those
+generators as "not reachable", which implied they were somewhere else. They are
+nowhere.
+
+Consequence recorded in `credentials.yml`: `approved_surfaces` is now annotated
+by who produces each surface. Two are agent-produced (case studies, blog author
+bio) and resolve through the gate; two are produced by Danielle **by hand**
+(charter vendor packets, intervention proposals) with this file as their
+reference; two live outside the repo entirely (website, email signature) where
+nothing here can enforce the gate, so they become a human checklist item when
+`public_ready` flips. The list is permission, not automation.
+
+**Verified:** 15 new credential tests; full suite 281 passed. `registry_check`
+clean apart from the pre-existing unregistered `automation-audit.yml`.
+
+**Files:** `knowledge/credentials.yml` (new), `scripts/credentials.py` (new),
+`scripts/credential_expiry_check.py` (new), `scripts/tests/test_credentials.py`
+(new), `.github/workflows/credential-expiry.yml` (new),
+`ops/messenger/messenger.py`, 6 × `marketing/skills/*/SKILL.md`, `registry.yml`,
+`docs/FLEET.md`.
+
+---
 ## 2026-08-24 — Spotlight Orchestrator: `--reel-only` takes a batch; the real blocker escalated
 
 **Reported:** Paola, a fifth time on the same asset — three existing case

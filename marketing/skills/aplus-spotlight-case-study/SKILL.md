@@ -343,3 +343,41 @@ This is a deviation from the B2B blog rule which says "NO attribution." For B2C 
 ### Version
 
 v2.1 patch (2026-05-27). Added grammar gate + B2C attribution rule. Surfaced during Gabriela case study Session 2 build when an early quote shipped with broken grammar ("struggles" missing "with"). Caught at human review. Rule baked in so it never happens again.
+
+## Credentials (#AP044) — we hold the NSSA Badge, and it is worth using
+
+A+ earned the NSSA Tutoring Program Design Badge, awarded by the **National
+Student Support Accelerator at Stanford University** after an evidence-based
+review of how our program is designed. In a market full of unverified tutoring
+vendors this is a real differentiator. Use it.
+
+**Read the exact wording from `knowledge/credentials.yml`** (credential id
+`nssa_program_design_badge`) and reproduce `claim_string` verbatim. That file is
+the only place the wording, the term window and NSSA's usage rules are
+maintained, and this Badge expires.
+
+**NSSA's approved framings** (lean on these, they are the issuer's own words):
+- awarded after receiving an evidence-based review
+- signifies the quality of our program design and our alignment to Tutoring
+  Quality Standards, as assessed by researchers and practitioners
+- awarded by the National Student Support Accelerator at Stanford University
+
+**The rules:**
+
+- **Design, not effectiveness.** NSSA is explicit: the Badge denotes quality of
+  design, NOT implementation or outcomes. Never write "Stanford-validated
+  results" or place the Badge inside a results claim. Our outcome figures stand
+  on the case studies; the Badge stands on the program's design. Keep them in
+  separate sentences.
+- **The term window travels with the claim.** A claim without the years is a
+  defect.
+- **Capitalise "Badge".** NSSA requires it: "the Badge", "the NSSA Tutoring
+  Program Design Badge".
+- **Do not embellish.** Not "NSSA-certified", "NSSA-accredited",
+  "NSSA-endorsed", "NSSA-approved provider", "NSSA-rated".
+- **Never alter the Badge image.** No recolouring, cropping, retyping or
+  compositing. Supplied file as-is, or no image.
+- **Lead with what it means before the acronym.** Most readers have never heard
+  of NSSA; "Stanford University's National Student Support Accelerator" does
+  more work than "NSSA".
+- **It is evidence, not a personality.** One clean mention beats three.
