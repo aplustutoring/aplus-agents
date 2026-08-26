@@ -3540,6 +3540,25 @@ def _last_lines(*streams: str | None, n: int = 3) -> str:
     return "no output"
 
 
+def _is_delivering(run: dict) -> bool:
+    """Whether this run posts its assets to Slack.
+
+    The delivery gate is --dry-run ("Run stages without HubSpot publish or Slack
+    delivery"). It is NOT --skip-hubspot, which only means "Skip HubSpot contact
+    lookup and proceed with local input only" — a read-side flag about Phase 0
+    auto-discovery that says nothing about delivery.
+
+    The reel and textstory stages read skip_hubspot for BOTH their delivery gate
+    and their alert gate until 2026-08-24, and stage_slack never read it at all.
+    So a --skip-hubspot run delivered the case study, graphics and thread to
+    Paola as normal, generated the reel in full (Gemini stills, TTS, Veo clips,
+    ffmpeg encode), then skipped the upload, suppressed the "reel is missing"
+    alert that exists to catch exactly this, and printed `Reel: ok`. That is the
+    shape of a backfill that "ran fine" and still left the thread with no video.
+    """
+    return not run.get("dry_run")
+
+
 def _post_stage_alert(text: str, label: str) -> None:
     """Post a heads-up about a NON-FATAL stage miss to the failure channel.
     No-ops without SLACK_FAILURE_CHANNEL; never raises — alerting must not
@@ -3670,7 +3689,7 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
         update_run(run["run_id"], run)
         return run
 
-    delivering = not run.get("skip_hubspot")
+    delivering = _is_delivering(run)
     blockers = _reel_blockers(Path(run["bundle_path"]), delivering)
     if blockers:
         note = "blocked before generation (" + "; ".join(blockers) + ")"
@@ -3722,7 +3741,7 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
                     raise
                 print(f"  reel: attempt {attempt} failed ({exc}) — retrying the "
                       f"resumable steps", file=sys.stderr)
-        if not run.get("skip_hubspot"):
+        if delivering:
             dcmd = ["python3", str(REEL_DIR / "deliver_reel.py"), "--bundle", bundle]
             if args.slack_channel:
                 dcmd.extend(["--channel", args.slack_channel])
@@ -3731,15 +3750,21 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
             # Delivery gets ONE attempt on purpose: a retry after a partial
             # upload would double-post the reel into Paola's review thread.
             run_step("deliver", dcmd, budget=REEL_DELIVER_TIMEOUT_S)
-        run["reel_status"] = "ok"
-        print("  reel: done")
+            run["reel_status"] = "ok"
+            print("  reel: done")
+        else:
+            # "ok" is reserved for a reel that reached Slack. One that rendered
+            # but was never posted lives only in the bundle artifact, so it must
+            # never read as a delivered one in the summary.
+            run["reel_status"] = "generated, not delivered (--dry-run)"
+            print("  reel: generated but NOT delivered (--dry-run)")
     except Exception as exc:  # noqa: BLE001 — reel is non-fatal
         run["reel_status"] = f"skipped: {exc}"
         # str(exc) already names the step and what it printed, so it stands on
         # its own as the alert's reason clause.
         alert = str(exc)
         print(f"  reel: NON-FATAL failure — {exc}", file=sys.stderr)
-    if alert and not run.get("skip_hubspot"):
+    if alert and delivering:
         _post_reel_alert(run, alert)
     update_run(run["run_id"], run)
     return run
@@ -3800,8 +3825,9 @@ def run_reel_only(args: argparse.Namespace) -> int:
     failed = [bundle for bundle, ok in results if not ok]
     if len(bundles) > 1:
         print("\n=== Reel-only recovery summary ===")
+        done = "rendered (--dry-run, not posted)" if args.dry_run else "delivered"
         for bundle, ok in results:
-            print(f"  {bundle.name}: {'delivered' if ok else 'FAILED'}")
+            print(f"  {bundle.name}: {done if ok else 'FAILED'}")
     if failed:
         if len(bundles) == 1:
             print("Reel recovery FAILED — nothing was delivered.", file=sys.stderr)
@@ -3828,10 +3854,9 @@ def _recover_one_reel(args: argparse.Namespace, bundle: Path) -> bool:
         "stage": "reel",
         "mode": "reel-only",
         "bundle_path": str(bundle),
+        # stage_reel gates Slack delivery on dry_run (see _is_delivering); in
+        # this mode that reads as "render but do not post".
         "dry_run": bool(args.dry_run),
-        # stage_reel gates Slack delivery on skip_hubspot; in this mode that is
-        # simply "render but do not post".
-        "skip_hubspot": bool(args.dry_run),
         # Recorded so a blocker note can be posted back into the thread the
         # recovery was asked to deliver into; the pipeline sets both in
         # stage_slack.
@@ -3858,7 +3883,10 @@ def _recover_one_reel(args: argparse.Namespace, bundle: Path) -> bool:
 
     status = run.get("reel_status", "skipped: stage did not run")
     print(f"Reel: {status}")
-    if status != "ok":
+    # Delivery is the success criterion, except under --dry-run, where rendering
+    # it is all that was asked for.
+    want = "generated, not delivered (--dry-run)" if args.dry_run else "ok"
+    if status != want:
         update_run(run["run_id"], {"status": "failed"})
         return False
     update_run(run["run_id"], {"status": "completed"})
@@ -3898,7 +3926,8 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
     # Ships the builder's default dynamics (parents, grandma, mom_friend,
     # kid_parent). family_group is supported but off by default.
     cmd = ["python3", str(TEXTSTORY_BUILDER), "--bundle", bundle]
-    if not run.get("skip_hubspot"):
+    delivering = _is_delivering(run)
+    if delivering:
         cmd.append("--deliver")
         if args.slack_channel:
             cmd.extend(["--channel", args.slack_channel])
@@ -3913,7 +3942,9 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
             sys.stderr.write(out)
             sys.stderr.write(r.stderr or "")
             raise RuntimeError(f"textstory builder failed (exit {r.returncode})")
-        run["textstory_status"] = "ok"
+        # Same rule as the reel: "ok" means it reached Slack.
+        run["textstory_status"] = ("ok" if delivering
+                                   else "generated, not delivered (--dry-run)")
         # exit 0 still allows a partial set (some dynamics failed) — flag it,
         # and surface the builder output so the CI log shows which/why.
         m = re.search(r"FAILED \[([^\]]+)\]", out)
@@ -3926,7 +3957,7 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
         run["textstory_status"] = f"skipped: {exc}"
         alert = "delivered ZERO videos — generation/render failed"
         print(f"  textstory: NON-FATAL failure — {exc}", file=sys.stderr)
-    if alert and not run.get("skip_hubspot"):
+    if alert and delivering:
         _post_textstory_alert(run, alert)
     update_run(run["run_id"], run)
     return run

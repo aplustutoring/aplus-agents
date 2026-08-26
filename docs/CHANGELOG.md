@@ -8,6 +8,50 @@ Newest entries first.
 
 ---
 
+## 2026-08-25 — Spotlight reel: delivery no longer gated on `--skip-hubspot`
+
+**What:** `stage_reel` and `stage_textstory` decided whether to upload to Slack
+by reading `skip_hubspot`. That flag means "Skip HubSpot contact lookup and
+proceed with local input only" (Phase 0 auto-discovery); the documented delivery
+gate is `--dry-run` ("Run stages without HubSpot publish or Slack delivery").
+Both stages now read a single helper, `_is_delivering(run)`, which keys off
+`dry_run`. Three consequences, all verified: a `--skip-hubspot` run now actually
+uploads the reel; a `--reel-only --dry-run` run no longer posts to Slack (it
+did); and a blocked reel now posts its heads-up under `--skip-hubspot` instead
+of swallowing it. `reel_status`/`textstory_status` of `"ok"` is now reserved for
+an asset that reached Slack — a rendered-but-unposted one reports
+`"generated, not delivered (--dry-run)"` — and `--reel-only` treats delivery
+(not rendering) as the success criterion except under `--dry-run`.
+
+**Why:** Paola's fifth report of missing Animated Spotlight Reels (thread
+1787612254.091039, correction `2026-08-24-spotlight-reels-not-delivered`). With
+`--skip-hubspot` set, the reel generated in full (Gemini stills, TTS, Veo clips,
+ffmpeg encode), `deliver_reel.py` was never invoked, the "reel is missing" alert
+was suppressed by that same flag, and the run printed `Reel: ok`. `stage_slack`
+never read the flag, so the case study, graphics and thread arrived normally and
+only the video was absent — exactly what Paola kept reporting. This also explains
+why PRs #95, #100, #104, #107 and #113 did not help: they hardened the alerting
+that this flag switches off. #95's changelog lists a `--skip-hubspot` scenario as
+verified, which locked the wrong behavior in as expected.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+**Verified:** the real `stage_reel` driven with `subprocess.run` and the Slack
+helpers stubbed, across four scenarios (pipeline + `--skip-hubspot`, pipeline
+with no flags, `--reel-only --dry-run`, and blocked-on-missing-key +
+`--skip-hubspot`), run against both `main` and the fix. No APIs, Slack or ffmpeg
+touched. `marketing/` has no committed test harness, so this was a scratch
+script rather than a checked-in regression test.
+
+**Not done:** no reel was produced or delivered for the three students. That
+needs Gemini/OpenAI/Slack credentials, the Drive folder IDs (FERPA-withheld to
+the Slack thread) and a workflow dispatch, none of which are available from the
+repo. Still open and unchanged by this PR: there is no GitHub Actions workflow
+that runs `--reel-only`, so the recovery path built by #100/#104/#107/#113 can
+only be run from a laptop with full credentials — Paola cannot self-serve it.
+
+---
+
 ## 2026-08-25 — Charter campaign fully live + Cold Revival wave built (Roman)
 
 **What:** (1) ALL 5 campaign workflows ON (Roman's toggles): 359 of 429 gap
