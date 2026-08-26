@@ -173,6 +173,18 @@ NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
 # and how recently.
 TIER_4_MIN_FAMILIES = 5      # heavy referrers, pulled OUT for individual sends
 
+# Tier 2 is "referred at some point, but not last year". Left implicit, that
+# means ANY prior deal however old, and the copy says "it has been a while",
+# which is true at 14 months and absurd at six years.
+#
+# Measured 2026-08-25: all 45 Tier 2 teachers last referred 1.2 to 1.4 years
+# ago. It is one clean cohort — they referred in 24/25, sat out 25/26, and it is
+# now 26/27. So this bound changes NOTHING today. It exists so that next year,
+# when the 25/26 non-returners age into this tier and the 24/25 group ages past
+# it, nobody gets a warm-reopen email about a student they placed with us
+# before the pandemic. Past the bound, a teacher is functionally cold: Tier 1.
+TIER_2_MAX_YEARS = 3
+
 SEGMENTS = [
     ("T1", "All TORs, no history",  "Tier 1 - No referral history"),
     ("T2", "Referred, not last yr", "Tier 2 - Warm reopen"),
@@ -395,7 +407,7 @@ def profile(tors, deals, hits, gap):
     rows = {}
     for cid, p in tors.items():
         fam25, fam2627, students, amount25 = set(), set(), {}, 0.0
-        fam_older = set()
+        fam_older, last_older = set(), None
         for did in hits.get(cid, []):
             d = deals[did]
             parts = [x.strip() for x in (d.get("dealname") or "").split(" - ")]
@@ -411,6 +423,8 @@ def profile(tors, deals, hits, gap):
                     pass
             else:
                 fam_older.add(parent)          # referred, but before 25/26
+                if created and (last_older is None or created > last_older):
+                    last_older = created
             if len(parts) >= 3:
                 cand = parts[1].split(" ")[0].strip(" .,")
                 if (cand and cand.lower() not in NOT_STUDENT_TOKENS
@@ -422,6 +436,9 @@ def profile(tors, deals, hits, gap):
             "school": p.get("charter_school_teacher") or "",
             "fam25": len(fam25), "fam2627": len(fam2627),
             "fam_older": len(fam_older),
+            "years_since_older": (
+                round((datetime.now(timezone.utc) - last_older).days / 365.25, 1)
+                if last_older else None),
             "students": len(students), "amount25": round(amount25),
             "lapsed": 0,          # filled by caller from associations
             "firstname": (p.get("firstname") or "").strip(),
@@ -443,6 +460,10 @@ def segment_of(r):
     if recent >= 1:
         return "T3"                             # last year's referrers
     if r["fam_older"] >= 1:
+        # too long ago to greet as a lapsed relationship: they are cold now
+        age = r.get("years_since_older")
+        if age is not None and age > TIER_2_MAX_YEARS:
+            return "T1"
         return "T2"                             # referred once, but not lately
     return "T1"                                 # no referral history at all
 
@@ -569,6 +590,12 @@ def main():
     for reason, n in collections.Counter(mailable(r) for r in rows.values()).most_common():
         if reason:
             print(f"    {n:>5}  {reason}")
+
+    t2 = [r for r in rows.values() if segment_of(r) == "T2" and not mailable(r)]
+    ages = sorted(r["years_since_older"] for r in t2 if r.get("years_since_older"))
+    if ages:
+        print(f"\n  Tier 2 recency: last referral {ages[0]} to {ages[-1]} years ago "
+              f"(bound is {TIER_2_MAX_YEARS}y; past it they fall to Tier 1)")
 
     print("\n  teachers with lapsed (gap-list) families: "
           f"{sum(1 for r in rows.values() if r['lapsed'])} "

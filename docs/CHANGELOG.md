@@ -7,6 +7,47 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Tier 2 had no recency bound, and the copy assumed one
+
+**Roman:** "For tier 2 what's the filter of how long we haven't spoken."
+
+**There wasn't one.** Tier 2 was "has a prior charter deal, none since
+2025-08-01" with no upper bound on age, while the copy said "it has been a
+while" and "we lost touch". That is true at fourteen months and absurd at six
+years, and nothing would have caught the drift.
+
+**Measured before changing anything: all 45 last referred 1.2 to 1.4 years ago.**
+One clean cohort, not a spread. They referred in 24/25, sat out 25/26 entirely,
+and it is now 26/27.
+
+Two consequences:
+
+**1. The copy got more specific, not just safer.** "You sent a student to us
+once and we have not spoken since" became "You sent a student our way two school
+years ago. Last year came and went without us." We know exactly what happened,
+so saying it precisely is both more honest and more likely to land than a vague
+gesture at the past.
+
+**2. `TIER_2_MAX_YEARS = 3` is now explicit in the segmenter.** It changes
+nothing today, because nobody is close to it. It exists for next year: when the
+25/26 non-returners age into this tier and the 24/25 cohort ages out, the bound
+stops someone receiving a warm-reopen about a student they placed with us before
+the pandemic. Past it, a teacher is functionally cold and falls to Tier 1. Every
+run now prints the tier's actual recency spread, so the bound cannot go
+invisible again.
+
+**Also, the compliance gate earned its keep twice in one session.** It caught a
+string edit that silently lowercased "Stanford's National Student Support
+Accelerator" and "Tutoring Program Design Badge" in Tier 2, and then caught an
+em dash I introduced into that file's own header note while documenting this
+change. Both were mine, and neither would have survived to a customer, which is
+the point.
+
+**Files:** `scripts/charter_tor_segments.py`,
+`ops/messenger/templates/campaign-tor-2026-08/tier2_warm_reopen.md`,
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-25 — Teacher campaign restructured to Roman's locked spec: 4 tiers
 
 **Roman issued a locked spec.** Hard compliance rules, locked Tier 3 copy, a new

@@ -38,7 +38,7 @@ What varies per tier is the opening move and how hard the ask is.
 | Tier | Who | Mailable | Opening move | Primary ask |
 |---|---|---|---|---|
 | 1 | All TORs, no referral history | 674 | No trust to reference. Badge does the credibility work. | **Scholarship nomination**, not a P.S. |
-| 2 | Referred at some point, not last year | 45 | Warm reopen, not a thank-you. Name the gap. | This year's caseload |
+| 2 | Referred in 24/25, sat out 25/26 | 45 | Warm reopen, not a thank-you. Name the skipped year. | This year's caseload |
 | 3 | Last year's referrers | 169 | **Locked opening, verbatim** | This year's caseload |
 | 4 | Heavy referrers | 24 | **Pulled OUT of the campaign** | Individual sends, one personal line each |
 
@@ -69,6 +69,23 @@ is fine and deliberate. The rule that matters is that the full Badge name and
 its term window are both present. `aplus-fact-check` currently says to flag
 "wording that does not match claim_string", which is too strict for prose. Worth
 a follow-up on main.
+
+## Tier 2's recency bound
+
+Roman asked what the filter is for "how long we haven't spoken". There was none:
+the tier was any prior deal, however old, paired with copy that says "it has
+been a while". True at fourteen months, absurd at six years.
+
+Measured 2026-08-25: **all 45 last referred 1.2 to 1.4 years ago.** One clean
+cohort, not a spread. They referred in 24/25, sat out 25/26 entirely, and it is
+now 26/27, so the copy names the skipped year instead of a vague "once".
+
+`TIER_2_MAX_YEARS = 3` is now explicit in the segmenter. It changes nothing
+today, because nobody is near it. It exists for next year, when the 25/26
+non-returners age into this tier and the 24/25 cohort ages out of it: past the
+bound a teacher is functionally cold and falls to Tier 1, so this copy can
+always assume the gap is one or two school years and never longer. Every run
+prints the tier's actual recency spread, so the bound cannot go invisible again.
 
 ## Why the ask is about THIS year
 

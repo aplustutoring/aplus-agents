@@ -23,6 +23,13 @@ and then stopped, and pretending otherwise is worse than naming it. The Badge is
 the "what happened since". The get-started offer is the "I would like to be
 useful again".
 
+RECENCY, measured 2026-08-25: all 45 last referred 1.2 to 1.4 years ago. This is
+one clean cohort, not a spread. They referred in 24/25, sat out 25/26 entirely,
+and it is now 26/27. So the copy names the skipped year instead of a vague
+"once". Bound: TIER_2_MAX_YEARS = 3 in the segmenter. Past that a teacher is
+functionally cold and falls to Tier 1, so this copy can always assume the gap is
+one or two school years and never longer.
+
 THE CARD WE ARE PLAYING (Roman 2026-08-25): this gets the student STARTED and
 SUPPORTED. Be direct about it. The barrier for a struggling student is almost
 never the plan, it is that nothing ever begins. So the two sessions are named
@@ -42,8 +49,9 @@ human reality rather than a sales ask. Her openers are written number-free
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You sent a student to us once and we have not spoken since. Saying that plainly
-seems better than writing to you as though we had.
+You sent a student our way two school years ago. Last year came and went without
+us, and saying that plainly seems better than writing to you as though it had
+not.
 
 Here is what has changed since. Stanford's National Student Support Accelerator
 reviewed how our tutoring program is designed and awarded us their Tutoring
