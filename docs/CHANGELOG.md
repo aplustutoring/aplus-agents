@@ -7,6 +7,58 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Tier 1 does not mean "never referred". It means we did not record it.
+
+**Roman:** "We only started associating charter school teachers to deals last
+school year." Measured, and exactly right:
+
+| School year | Deals | Name a teacher | Coverage |
+|---|---|---|---|
+| 2019/20 to 2022/23 | 242 | 0 | 0% |
+| 2023/24 | 909 | 1 | 0% |
+| 2024/25 | 2,105 | 528 | 25% |
+| 2025/26 | 2,221 | 2,181 | 98% |
+
+**2,727 pre-25/26 charter deals carry no teacher.** So "no referral history" was
+never a fact about the teacher, it was a fact about our record-keeping, and
+Tier 1 was silently built on it. A teacher who sent us three families in 23/24
+sat in the cold-intro tier.
+
+**Partial recovery, wired in:** family contacts carry
+`teacher_of_record_email_address` / `_name` from intake, which predates the deal
+association. That recovered **45 teachers**.
+
+**And immediately exposed a bug in my own fix.** The only date those fields
+carry is the family contact's createdate, which is a weak proxy for when the
+referral happened. **14 of the 45 had a family created within the last year** —
+current referrals, not lapsed ones — and would have received Tier 2's "it has
+been a while". They now route to Tier 3. A recovery that improves aim on 31
+people while insulting 14 is not an improvement.
+
+**Second consequence:** Tier 2's recency spread widened from a tight 1.2 to 1.4
+years to 1.2 to 2.7, because the recovered members carry the weaker proxy. The
+copy had just been sharpened to say "two school years ago", which is now wrong
+for the tail. Reverted to what is true of every member: they referred at some
+point, and not in 25/26. Precision that the data cannot support is not
+precision.
+
+**Tiers now:** T1 639, T2 69, T3 180, T4 24 (mailable).
+
+**The PO route, measured not guessed.** Roman: the only true fix is reading the
+teacher's name off each PO. Sampled 40 unattributed deals: 22% carry a fetchable
+attachment via notes, extrapolating to roughly 613 files, and that is a floor
+since POs also sit on contacts and in inboxes. Parsing is the cheap part, since
+`email/src/po_inbox.py` already extracts names in production; the backfill job
+does not exist. Written up in `docs/PO-TEACHER-BACKFILL.md` with a
+recommendation NOT to do it for this campaign: Tier 1's copy is deliberately
+history-agnostic, so an unrecorded referrer gets a slightly less warm email
+rather than a wrong one, which is a far smaller cost than the backfill.
+
+**Files:** `scripts/charter_tor_segments.py`,
+`ops/messenger/templates/campaign-tor-2026-08/tier2_warm_reopen.md`,
+`docs/PO-TEACHER-BACKFILL.md` (new).
+
+---
 ## 2026-08-25 — Tier 2 had no recency bound, and the copy assumed one
 
 **Roman:** "For tier 2 what's the filter of how long we haven't spoken."

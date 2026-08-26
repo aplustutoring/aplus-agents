@@ -23,12 +23,18 @@ and then stopped, and pretending otherwise is worse than naming it. The Badge is
 the "what happened since". The get-started offer is the "I would like to be
 useful again".
 
-RECENCY, measured 2026-08-25: all 45 last referred 1.2 to 1.4 years ago. This is
-one clean cohort, not a spread. They referred in 24/25, sat out 25/26 entirely,
-and it is now 26/27. So the copy names the skipped year instead of a vague
-"once". Bound: TIER_2_MAX_YEARS = 3 in the segmenter. Past that a teacher is
-functionally cold and falls to Tier 1, so this copy can always assume the gap is
-one or two school years and never longer.
+RECENCY, measured 2026-08-25: 1.2 to 2.7 years since last referral. NOT one
+clean cohort. The deal-derived members cluster at 1.2 to 1.4 years, but the
+members recovered from family intake fields carry a weaker date proxy and spread
+further back.
+
+So the copy may NOT name a specific number of years. What IS true of every
+member: they referred at some point, and they did not refer in 25/26. Hence
+"you sent a student our way once, and then last year came and went without us".
+An earlier draft said "two school years ago" and was wrong for the tail.
+
+Bound: TIER_2_MAX_YEARS = 3 in the segmenter. Past it a teacher is functionally
+cold and falls to Tier 1.
 
 THE CARD WE ARE PLAYING (Roman 2026-08-25): this gets the student STARTED and
 SUPPORTED. Be direct about it. The barrier for a struggling student is almost
@@ -49,9 +55,8 @@ human reality rather than a sales ask. Her openers are written number-free
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You sent a student our way two school years ago. Last year came and went without
-us, and saying that plainly seems better than writing to you as though it had
-not.
+You sent a student our way once, and then last year came and went without us.
+Saying that plainly seems better than writing to you as though it had not.
 
 Here is what has changed since. Stanford's National Student Support Accelerator
 reviewed how our tutoring program is designed and awarded us their Tutoring

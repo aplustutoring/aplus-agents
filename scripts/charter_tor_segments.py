@@ -185,6 +185,28 @@ TIER_4_MIN_FAMILIES = 5      # heavy referrers, pulled OUT for individual sends
 # before the pandemic. Past the bound, a teacher is functionally cold: Tier 1.
 TIER_2_MAX_YEARS = 3
 
+# ── DATA PROVENANCE. Read this before trusting any tier. ─────────────────────
+# Roman 2026-08-25: "we only started associating charter school teachers to
+# deals last school year." Measured, and he is right:
+#
+#     school yr   deals   name a teacher   coverage
+#     2019-2023     242              0          0%
+#     2023/24       909              1          0%
+#     2024/25      2105            528         25%
+#     2025/26      2221           2181         98%
+#     2026/27        78             78        100%
+#
+# So a deal with no teacher on it means WE DID NOT RECORD ONE, not that nobody
+# referred. Before 25/26 the deal data cannot answer "has this teacher ever
+# referred". Tier 1 is therefore "no RECORDED referral history", never "never
+# referred", and its copy must stay history-agnostic: it may not imply first
+# contact, because for several hundred of them we simply do not know.
+#
+# Second source, which predates the deal association: family contacts carry
+# teacher_of_record_email_address / _name from intake. Sparse (about 475
+# families, 258 distinct teachers) but it recovers real history the deals lost.
+# Used below. It closes part of the gap, not all of it.
+
 SEGMENTS = [
     ("T1", "All TORs, no history",  "Tier 1 - No referral history"),
     ("T2", "Referred, not last yr", "Tier 2 - Warm reopen"),
@@ -239,6 +261,29 @@ TOR_PROPS = ["email", "firstname", "lastname", "charter_school_teacher", "hs_lea
 
 
 PERSONA_TOR = "Teacher of Record/EF/ES"
+
+
+def intake_referrals():
+    """Teachers named on FAMILY contacts via legacy intake capture.
+
+    Predates the deal-level teacher association, so this is the only evidence
+    of referrals made before 25/26. Returns ({email: earliest_family_createdate},
+    {normalised name: earliest_family_createdate})."""
+    props = ["teacher_of_record_email_address", "teacher_of_record_name", "createdate"]
+    by_email, by_name = {}, {}
+    for field in ("teacher_of_record_email_address", "teacher_of_record_name"):
+        fams = search_all("contacts",
+                          [{"filters": [{"propertyName": field, "operator": "HAS_PROPERTY"}]}],
+                          props)
+        for p in fams.values():
+            created = p.get("createdate")
+            e = (p.get("teacher_of_record_email_address") or "").strip().lower()
+            n = norm_name(p.get("teacher_of_record_name"))
+            if e and created:
+                by_email[e] = min(by_email.get(e, created), created)
+            if n and " " in n and created:
+                by_name[n] = min(by_name.get(n, created), created)
+    return by_email, by_name
 
 
 def load_tors():
@@ -400,7 +445,7 @@ def attribute(tors, deals):
     return hits, unmatched, ambiguous, by_tier
 
 
-def profile(tors, deals, hits, gap):
+def profile(tors, deals, hits, gap, intake=None):
     """Per-teacher rollup: 25/26 families+students, 26/27 families, lapsed families."""
     cutoff = datetime.fromisoformat(YEAR_2627).replace(tzinfo=timezone.utc)
     start_2526 = datetime.fromisoformat(SINCE).replace(tzinfo=timezone.utc)
@@ -439,6 +484,8 @@ def profile(tors, deals, hits, gap):
             "years_since_older": (
                 round((datetime.now(timezone.utc) - last_older).days / 365.25, 1)
                 if last_older else None),
+            "intake_referral": False,
+            "intake_age_years": None,
             "students": len(students), "amount25": round(amount25),
             "lapsed": 0,          # filled by caller from associations
             "firstname": (p.get("firstname") or "").strip(),
@@ -562,7 +609,41 @@ def main():
               f"{', '.join(sorted(ambiguous)[:5])}")
 
     gap = set(list_members(GAP_LIST_ID))
+    by_email, by_name = intake_referrals()
     rows = profile(tors, deals, hits, gap)
+
+    # Referrals the deal data never recorded (pre-25/26). Only matters for
+    # teachers the deals show as having no history at all.
+    recovered = 0
+    for cid, r in rows.items():
+        if r["fam25"] or r["fam2627"] or r["fam_older"]:
+            continue
+        e = (r["email"] or "").lower()
+        n = norm_name(r["name"])
+        created = by_email.get(e) or (by_name.get(n) if " " in n else None)
+        if not created:
+            continue
+        dt_ = parse_dt(created)
+        if not dt_:
+            continue
+        # The family contact's createdate is a PROXY for when the referral
+        # happened, and a weak one: a family created five weeks ago naming this
+        # teacher means a referral that just happened, not a lapsed one. Route
+        # by age or a current referrer lands in the "it has been a while" tier.
+        age = round((datetime.now(timezone.utc) - dt_).days / 365.25, 1)
+        r["intake_referral"] = True
+        r["intake_age_years"] = age
+        if age < 1.0:
+            r["fam25"] = 1          # recent enough to be a current relationship
+        else:
+            r["fam_older"] = 1
+            r["years_since_older"] = age
+        recovered += 1
+    rec_recent = sum(1 for r in rows.values() if r.get("intake_referral") and (r.get("intake_age_years") or 9) < 1.0)
+    print(f"\n  referral history recovered from family intake fields: {recovered} "
+          f"(deals did not record teachers before 25/26)")
+    print(f"    of those, {rec_recent} are RECENT (intake family under a year old) "
+          f"and route to Tier 3, not the lapsed tier")
 
     # lapsed-family count comes from the contact-to-contact Family association
     tor_ids = list(tors)
