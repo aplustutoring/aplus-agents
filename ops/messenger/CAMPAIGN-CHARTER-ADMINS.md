@@ -47,7 +47,14 @@ worse than not sending at all.
 * Terri Budke (iLEAD) — heard it already. SUPPRESS.
 
 **Known target:**
-* Angie Covil — on the list for this campaign.
+* Angie Covil. On the list for this campaign.
+* **Lisa Barlow (iLEAD).** Roman 2026-08-25: promoted into Amy Chapin's
+  position. Her `Decision Maker/Director` persona is current and correct; the
+  "Educational Facilitator" job title on her record is the stale field, left
+  from when she was a teacher. She belongs in THIS campaign, not the teacher
+  one, and the 16 to 21 old deals naming her as Teacher of Record are correct
+  history, not a tagging error. A promotion is also a good reason to make
+  contact.
 
 Before any send, this needs a real suppression check, not a memory of one:
 Danielle and Roman list who has already been told, and those contacts are

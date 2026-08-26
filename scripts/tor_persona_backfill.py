@@ -45,10 +45,19 @@ PERSONA_TOR = "Teacher of Record/EF/ES"
 PERSONA_DM = "Decision Maker/Director"
 
 # jobtitle words that decide the persona outright
-# Conflict scan: a job title that contradicts the persona already on the record.
-# This is how Lisa Barlow was found -- tagged Decision Maker/Director, titled
-# "Educational Facilitator", and named as Teacher of Record on 16 charter deals.
-# She is one of our most active teachers and the campaign was excluding her.
+# Conflict scan: a job title that disagrees with the persona on the record.
+#
+# IT DOES NOT SAY WHICH ONE IS WRONG. An earlier version assumed the title
+# arbitrated and reported Lisa Barlow as a mis-tagged teacher. Roman
+# 2026-08-25: she was PROMOTED into Amy Chapin's position. Her persona
+# (Decision Maker/Director) is correct and current; her job title
+# ("Educational Facilitator") is the stale field, left over from when she was
+# a teacher, which is also why old deals name her as Teacher of Record.
+#
+# Promotions are exactly the case that breaks a title-wins rule, and schools
+# promote from within constantly. So a conflict is reported with BOTH values
+# and the record's last-modified date, for a human to resolve. The script does
+# not guess.
 CONFLICT_TEACHER = re.compile(r"\b(teacher|educational facilitator|facilitator|tosa|"
                               r"tor\b|instructor|faculty)\b", re.I)
 CONFLICT_DM = re.compile(r"\b(director|principal|superintendent|dean|chief|officer)\b", re.I)
@@ -281,21 +290,31 @@ def main():
         title, persona = p.get("jobtitle") or "", p.get("a_persona") or ""
         if not title:
             continue
+        # Only compare title against persona for SCHOOL-side roles. A parent who
+        # happens to be "Director of Jewish Life and Learning" somewhere else is
+        # a Family, correctly, and their day job says nothing about their
+        # relationship to us. Comparing everyone turned 7 real conflicts into 50
+        # rows of noise about parents' careers.
+        if not (PERSONA_TOR in persona or "Decision Maker" in persona):
+            continue
         if CONFLICT_TEACHER.search(title) and not CONFLICT_DM.search(title) \
                 and PERSONA_TOR not in persona:
             conflicts.append((cid, p, "title says TEACHER", PERSONA_TOR))
         elif CONFLICT_DM.search(title) and "Decision Maker" not in persona:
             conflicts.append((cid, p, "title says DIRECTOR/CHIEF", PERSONA_DM))
-    print(f"\n=== PERSONA CONTRADICTS JOB TITLE ({len(conflicts)}) ===")
-    print("  Already tagged, but tagged wrong. These are the highest-value fixes:")
-    print("  a mis-tagged teacher is silently excluded from the campaign, and a")
-    print("  mis-tagged director receives a 'welcome back, teacher' email.")
+    print(f"\n=== PERSONA AND JOB TITLE DISAGREE ({len(conflicts)}) ===")
+    print("  This does NOT say which field is wrong. A promotion leaves the TITLE")
+    print("  stale (Lisa Barlow: promoted into Amy Chapin's role, persona correct,")
+    print("  title still says Educational Facilitator). A bad import leaves the")
+    print("  PERSONA stale. Both look identical here. A human decides.")
     for cid, p, why, should in conflicts:
         deals_named = name_hits.get(" ".join(re.sub(
             r"[^a-z ]", " ", f"{p.get('firstname') or ''} {p.get('lastname') or ''}".lower()).split()), 0)
         extra = f"  [{deals_named} charter deals name them as TOR]" if deals_named else ""
         print(f"  {(p.get('firstname') or '') + ' ' + (p.get('lastname') or ''):<24} "
-              f"{(p.get('jobtitle') or ''):<38} has={p.get('a_persona')} -> should be {should}{extra}")
+              f"title={(p.get('jobtitle') or '')!r}")
+        print(f"      persona={p.get('a_persona')!r}  (title alone would suggest "
+              f"{should}){extra}")
         print(f"      https://app.hubspot.com/contacts/6312752/contact/{cid}")
 
     print(f"\n=== SEPARATE FIX: lead status contradicts the persona ({len(mismatch)}) ===")

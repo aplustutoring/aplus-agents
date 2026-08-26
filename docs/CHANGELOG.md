@@ -7,6 +7,46 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-26 — Two findings I reported were wrong. Roman corrected both.
+
+**"Lisa Barlow is a mis-tagged teacher" — wrong.** Roman: "lisa got promoted to
+Amy Chapin's position." Her `Decision Maker/Director` persona is current and
+correct. The **job title** is the stale field, left over from when she was an
+Educational Facilitator, which is also why old deals name her as Teacher of
+Record. Those deals are correct history.
+
+**The scan's logic was the actual defect.** It compared job title against
+persona and reported the persona as wrong, i.e. it assumed the title arbitrates.
+Promotions break that precisely, and schools promote from within constantly.
+Rewritten to report BOTH values and let a human decide, with Barlow named in the
+code comment as the worked example. It no longer proposes a persona.
+
+**Scoping bug found while fixing it.** Widening the scan to every persona turned
+7 real conflicts into 50, because it started flagging Family-persona parents
+whose day jobs are "Director of Jewish Life and Learning", "Associate
+Principal", "Executive Director". A parent's career says nothing about their
+relationship to us. Now restricted to school-side personas (TOR and Decision
+Maker). Back to 7, all genuine.
+
+**"Hannah Belcher, 43 deals" — overstated.** Roman: "No idea who hannah belcher
+is." She is real, `hannah.belcher@ileadexploration.org` at iLEAD, but the 43
+deals are **7 families**: charter POs are billed MONTHLY, so one student
+generates a deal a month ("Sydnee Staley - Mykah - iLead 1/2/3/4/6/7"). 40 of
+the 43 are 24/25. She is a genuine 24/25 referrer with no contact record, not
+someone Roman would necessarily know by name.
+
+Deal counts overstate a relationship anywhere they appear in a report. Tier 4
+selection already uses distinct families and was unaffected, but the orphan
+report now says so out loud.
+
+**Lisa Barlow moved to the admin campaign** (`CAMPAIGN-CHARTER-ADMINS.md`) as a
+named target rather than a teacher-campaign fix. A promotion is also a good
+reason to make contact.
+
+**Files:** `scripts/tor_persona_backfill.py`, `scripts/charter_tor_segments.py`,
+`ops/messenger/CAMPAIGN-CHARTER-ADMINS.md`.
+
+---
 ## 2026-08-25 — Dual persona verified, and it turns out to be a population of one
 
 **Roman:** "And Kristy has a dual persona right."

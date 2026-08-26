@@ -756,6 +756,8 @@ def main():
         if by_email_orphan:
             print(f"\n  ⚠ EMAIL on the deal but NO contact record: "
                   f"{len(by_email_orphan)} addresses, {sum(by_email_orphan.values())} deals")
+            print("    NB: charter POs are MONTHLY, so deal count overstates the")
+            print("    relationship. Hannah Belcher's 43 deals are 7 families.")
             print("    Actionable without guesswork: create the contact, tag the persona,")
             print("    and they fall into the right tier on the next run.")
             for n, c in sorted(by_email_orphan.items(), key=lambda kv: -kv[1])[:10]:
