@@ -28,6 +28,49 @@ def _todays_po_deals() -> list[dict]:
     return res.get("results", []) if isinstance(res, dict) else []
 
 
+def _all_po_deals() -> list[dict]:
+    """Every deal carrying a po_number (portal-wide, paginated) — the
+    duplicate check must see history, not just today."""
+    out, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "po_number", "operator": "HAS_PROPERTY"}]}],
+            "properties": ["dealname", "po_number", "createdate", "pipeline"],
+            "limit": 200}
+        if after:
+            body["after"] = after
+        res = hs._write("POST", "/crm/v3/objects/deals/search", body)
+        if not isinstance(res, dict):
+            break
+        out += res.get("results", [])
+        after = ((res.get("paging") or {}).get("next") or {}).get("after")
+        if not after:
+            break
+    return out
+
+
+def _normalize_po(raw: str) -> str:
+    """POs are stored bare (no 'PO' prefix) but normalize defensively."""
+    s = (raw or "").strip().lower()
+    for pre in ("po#", "po ", "po-", "#"):
+        if s.startswith(pre):
+            s = s[len(pre):].strip()
+    return s
+
+
+def find_duplicate_pos(deals: list[dict]) -> dict[str, list[dict]]:
+    """{po_number: [deal props, ...]} for every PO on 2+ deals.
+    EXPLICIT rule (Roman 2026-08-26): duplicate PO numbers are a red-flag
+    alert — one PO must never be billed twice."""
+    by_po: dict[str, list[dict]] = {}
+    for d in deals:
+        p = d.get("properties") or {}
+        po = _normalize_po(p.get("po_number"))
+        if po:
+            by_po.setdefault(po, []).append(p)
+    return {po: ds for po, ds in by_po.items() if len(ds) > 1}
+
+
 def _family_email(deal: dict) -> str:
     tor = ((deal.get("properties") or {}).get("teacher_of_record_email") or "").lower()
     for c in hs.get_deal_contacts(deal["id"]):
@@ -78,14 +121,36 @@ def _covered(deal: dict, invoices: list[dict], claimed: set) -> bool:
     return False
 
 
+def _dupe_lines() -> list[str]:
+    """Red-flag section: PO numbers appearing on more than one deal."""
+    try:
+        dupes = find_duplicate_pos(_all_po_deals())
+    except Exception as e:  # noqa: BLE001 — the dup check must not kill the report
+        return [f"⚠️ duplicate-PO check failed: {e}"]
+    if not dupes:
+        return []
+    lines = [f"🚩 *DUPLICATE PO NUMBERS — {len(dupes)} PO(s) on multiple deals "
+             f"(one PO must never bill twice):*"]
+    for po, ds in sorted(dupes.items(), key=lambda kv: -len(kv[1]))[:10]:
+        names = "; ".join(f"{p.get('dealname')} ({str(p.get('createdate') or '')[:10]})"
+                          for p in ds[:4])
+        lines.append(f"  • PO {po} on {len(ds)} deals: {names}")
+    if len(dupes) > 10:
+        lines.append(f"  … and {len(dupes) - 10} more")
+    return lines
+
+
 def run() -> None:
     roman = staff("roman")
     day = now_la().strftime("%a %b %-d")
+    dupe_lines = _dupe_lines()
     deals = _todays_po_deals()
     if not deals:
-        slack_client.dm(roman.get("slack_user_id"),
-                        f"📦 *PO day report — {day}*: no POs came in today.")
-        print("no POs today")
+        msg = f"📦 *PO day report — {day}*: no POs came in today."
+        if dupe_lines:
+            msg += "\n" + "\n".join(dupe_lines)
+        slack_client.dm(roman.get("slack_user_id"), msg)
+        print(msg)
         return
     fam_cache: dict = {}
     claimed: set = set()
@@ -116,6 +181,7 @@ def run() -> None:
         lines.append("Still needing a TW invoice:")
         lines += [f"  • {p.get('dealname')} — ${p.get('amount')} "
                   f"(PO {p.get('po_number')})" for p in missing]
+    lines += dupe_lines
     msg = "\n".join(lines)
     slack_client.dm(roman.get("slack_user_id"), msg)
     print(msg)

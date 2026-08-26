@@ -8,6 +8,22 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — Duplicate-PO red-flag detector in the PO day report (Roman)
+
+**What:** `email/src/po_daily_report.py` — every 6 PM PT report now runs a
+PORTAL-WIDE duplicate-PO sweep (all deals with po_number, paginated; numbers
+normalized against stray "PO "/"#" prefixes). Any PO number on 2+ deals gets
+a 🚩 section in Roman's DM (top 10 listed with deal names/dates); the check
+also runs on no-PO days and never kills the report on API failure. Origin:
+Rosa Miramontes' 24-deal renewal LOOKED duplicated (same deal names twice) —
+PO cross-reference proved all 24 POs unique (two batches per kid), but Roman:
+"EXPLICITLY WE CAN NOT HAVE DUPLICATE PO'S red flag alert." Pure helper
+find_duplicate_pos() split from fetching for tests.
+**Why:** One PO must never be billed twice; name-level similarity is not
+enough to spot it, number-level is.
+**Files:** email/src/po_daily_report.py, email/tests/test_daily_summary.py
+(suite 249 green).
+
 ## 2026-08-25 — Spotlight reel: delivery no longer gated on `--skip-hubspot`
 
 **What:** `stage_reel` and `stage_textstory` decided whether to upload to Slack
