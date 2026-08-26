@@ -7,6 +7,45 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-26 — The deal-name prefixes are pipelines, not junk. I had discarded them.
+
+**Roman:** "we would denote pipelines in the names like summer 2025 was an ilead
+program."
+
+**My previous fix was wrong in the other direction.** I had found 824 deals whose
+first name segment was not a parent, concluded they were junk, and made
+`family_key()` return None for them. That discarded 824 deals worth of REAL
+households and dropped Tier 4 from 26 to 18. I reported those eight teachers as
+"phantom relationships". They were not phantom; I had deleted their families.
+
+Measured what the prefixes actually are:
+
+| Prefix | Means | Pipeline | Deals |
+|---|---|---|---|
+| `A` | **Amy** | Amy - Charter - iLead - Level Up | 626 (616 in that pipeline) |
+| `T` | **Terri** | Terri - Charter - iLead - Level Up | 88 (82 in that pipeline) |
+| `Summer 2025` | iLEAD summer programme | Amy's Level Up | 110 (all) |
+
+So `A - Emani Newman - Zoe - iLEAD Level Up 3 (Dec) - 24/25` is the Newman
+family, student Zoe. The prefix is a reason to SHIFT the segment index by one,
+never a reason to drop the deal. Both `family_key()` and the student parse are
+now prefix-aware, verified against all five name shapes in the data.
+
+**Corrected tiers: T1 633, T2 76, T3 187, T4 23** (mailable). Orphaned deals
+fell from 161 to 118 as a side effect, because more names now resolve.
+
+**Hannah Belcher sits in Tier 3**, with 9 students across her deals.
+
+**The lesson, since I made the same class of error twice today.** Both times I
+saw data that did not match my assumed schema and treated the data as wrong:
+first the un-parseable prefixes, then Lisa Barlow's job title. In both cases the
+data was right and my model was incomplete. When a parser hits 824 rows it
+cannot explain, that is a schema I do not know about, not 824 bad rows.
+
+**Files:** `scripts/charter_tor_segments.py`,
+`ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-26 — Hannah Belcher created; two defects found doing it
 
 **Roman: "lets create a contact for hannah belcher and make all the properties

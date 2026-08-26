@@ -70,6 +70,27 @@ its term window are both present. `aplus-fact-check` currently says to flag
 "wording that does not match claim_string", which is too strict for prose. Worth
 a follow-up on main.
 
+## Deal names carry a programme prefix
+
+Roman 2026-08-26: "we would denote pipelines in the names like summer 2025 was
+an ilead program."
+
+Deal names are `Parent - Student - School N - YY/YY`, optionally prefixed with a
+programme marker:
+
+| Prefix | Means | Pipeline | Deals |
+|---|---|---|---|
+| `A` | Amy | Amy - Charter - iLead - Level Up | 626 |
+| `T` | Terri | Terri - Charter - iLead - Level Up | 88 |
+| `Summer 2025` | iLEAD summer programme | Amy's Level Up | 110 |
+
+So `A - Emani Newman - Zoe - iLEAD Level Up 3 (Dec) - 24/25` is the **Newman**
+family, student **Zoe**. The parser skips the prefix and shifts by one.
+
+An earlier pass treated these as junk and returned no family at all, which
+discarded 824 deals worth of real households and dropped Tier 4 from 26 to 18.
+The prefix is a reason to SHIFT, never a reason to drop the deal.
+
 ## Dual persona: verified on the one contact that has it
 
 Kristy Doyal is tagged `Teacher of Record/EF/ES;Family` (#AP030). Verified

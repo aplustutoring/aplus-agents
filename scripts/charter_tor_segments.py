@@ -166,32 +166,6 @@ def looks_like_family(p):
                 or p.get("last_tutor_name") or p.get("teacher_of_record_name"))
 NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
 
-# Deal names are "Parent - Student - School N - YY/YY", but 824 charter deals
-# open with something that is NOT a parent: "A" (626), "Summer 2025" (110),
-# "T" (88). Counting those as families invented relationships and could push a
-# teacher over the Tier 4 threshold on phantom households. Found 2026-08-26
-# while building Hannah Belcher's contact: 2 of her "7 families" were "A" and
-# "Summer 2025".
-NOT_FAMILY_PREFIX = re.compile(
-    r"^(?:[a-z]{1,2}|summer|winter|spring|fall|level|charter|ilead|test|tbd|new)\b"
-    r"(?:\s*\d{4})?$", re.I)
-
-
-def family_key(dealname):
-    """The parent segment of a deal name, or None when it is not a family."""
-    parts = [x.strip() for x in (dealname or "").split(" - ")]
-    if not parts or not parts[0]:
-        return None
-    head = parts[0]
-    if NOT_FAMILY_PREFIX.match(head):
-        return None
-    return head.lower()
-
-# TIERS BY RELATIONSHIP HISTORY (Roman 2026-08-25, locked). The old volume
-# split (5+ / 2-4 / 1) is RETIRED: once the ask became "who is on your caseload
-# THIS year", how many families a teacher sent last year stopped changing what
-# the email says. What still changes it is whether they have trusted us at all,
-# and how recently.
 TIER_4_MIN_FAMILIES = 5      # heavy referrers, pulled OUT for individual sends
 
 # Tier 2 is "referred at some point, but not last year". Left implicit, that
@@ -206,34 +180,61 @@ TIER_4_MIN_FAMILIES = 5      # heavy referrers, pulled OUT for individual sends
 # before the pandemic. Past the bound, a teacher is functionally cold: Tier 1.
 TIER_2_MAX_YEARS = 3
 
-# ── DATA PROVENANCE. Read this before trusting any tier. ─────────────────────
-# Roman 2026-08-25: "we only started associating charter school teachers to
-# deals last school year." Measured, and he is right:
-#
-#     school yr   deals   name a teacher   coverage
-#     2019-2023     242              0          0%
-#     2023/24       909              1          0%
-#     2024/25      2105            528         25%
-#     2025/26      2221           2181         98%
-#     2026/27        78             78        100%
-#
-# So a deal with no teacher on it means WE DID NOT RECORD ONE, not that nobody
-# referred. Before 25/26 the deal data cannot answer "has this teacher ever
-# referred". Tier 1 is therefore "no RECORDED referral history", never "never
-# referred", and its copy must stay history-agnostic: it may not imply first
-# contact, because for several hundred of them we simply do not know.
-#
-# Second source, which predates the deal association: family contacts carry
-# teacher_of_record_email_address / _name from intake. Sparse (about 475
-# families, 258 distinct teachers) but it recovers real history the deals lost.
-# Used below. It closes part of the gap, not all of it.
-
 SEGMENTS = [
     ("T1", "All TORs, no history",  "Tier 1 - No referral history"),
     ("T2", "Referred, not last yr", "Tier 2 - Warm reopen"),
     ("T3", "Last year's referrers", "Tier 3 - Last year"),
     ("T4", "Heavy referrers",       "Tier 4 - Individual sends (NOT a campaign list)"),
 ]
+
+
+
+# Deal names are "Parent - Student - School N - YY/YY", optionally prefixed with
+# a PROGRAM marker. Roman 2026-08-26: "we would denote pipelines in the names
+# like summer 2025 was an ilead program". Measured:
+#
+#   "A"           626 deals, 616 in the "Amy - Charter - iLead - Level Up" pipeline
+#   "T"            88 deals,  82 in the "Terri - Charter - iLead - Level Up" pipeline
+#   "Summer 2025" 110 deals, all in Amy's Level Up pipeline
+#
+# So A is Amy and T is Terri, the two iLEAD Level Up pipelines, and Summer 2025
+# is an iLEAD programme. The family is then the SECOND segment:
+#   "A - Emani Newman - Zoe - iLEAD Level Up 3 (Dec) - 24/25"
+#        ^family        ^student
+#
+# An earlier pass treated these prefixes as junk and returned no family at all,
+# which silently discarded 824 deals worth of real households and dropped eight
+# teachers out of Tier 4. The prefix must be SKIPPED, not used as grounds to
+# drop the deal.
+PROGRAM_PREFIX = re.compile(
+    r"^(?:[at]|summer|winter|spring|fall)(?:\s*20\d\d)?$", re.I)
+
+
+def _segments(dealname):
+    """Deal-name segments with any programme prefix stripped from the front."""
+    parts = [x.strip() for x in (dealname or "").split(" - ") if x.strip()]
+    if parts and PROGRAM_PREFIX.match(parts[0]):
+        parts = parts[1:]
+    return parts
+
+
+def family_key(dealname):
+    """The parent segment of a deal name, after skipping a programme prefix."""
+    parts = _segments(dealname)
+    return parts[0].lower() if parts else None
+
+
+def student_from(dealname, parent_first):
+    """The student segment, after skipping a programme prefix."""
+    parts = _segments(dealname)
+    if len(parts) < 2:
+        return None
+    cand = parts[1].split(" ")[0].strip(" .,")
+    key = cand.lower()
+    if (not cand or key == parent_first or key in NOT_STUDENT_TOKENS
+            or not re.match(r"^[A-Za-zÀ-ÿ'\-]+$", cand)):
+        return None
+    return cand
 
 
 def hs(method, path, **kw):
@@ -530,15 +531,12 @@ def profile(tors, deals, hits, gap, intake=None):
         fam_older, last_older = set(), None
         for did in hits.get(cid, []):
             d = deals[did]
-            parts = [x.strip() for x in (d.get("dealname") or "").split(" - ")]
             parent = family_key(d.get("dealname"))
             created = parse_dt(d.get("createdate"))
             in_2627 = bool(created and created >= cutoff)
             in_2526 = bool(created and start_2526 <= created < cutoff)
 
-            # Revenue counts even when the family name is unparseable ("A - ...",
-            # "Summer 2025 - ..."). Money is money; only the HOUSEHOLD identity
-            # is in doubt, and Tier 4 is ranked by invoiced value.
+            # Revenue counts regardless of whether the household name parses.
             if in_2526:
                 try:
                     amount25 += float(d.get("amount") or 0)
@@ -546,7 +544,7 @@ def profile(tors, deals, hits, gap, intake=None):
                     pass
 
             if parent is None:
-                pass                      # no household to count; students still parsed
+                pass                      # genuinely unparseable, not a prefix
             elif in_2627:
                 fam2627.add(parent)
             elif in_2526:
@@ -555,11 +553,9 @@ def profile(tors, deals, hits, gap, intake=None):
                 fam_older.add(parent)          # referred, but before 25/26
                 if created and (last_older is None or created > last_older):
                     last_older = created
-            if len(parts) >= 3:
-                cand = parts[1].split(" ")[0].strip(" .,")
-                if (cand and cand.lower() not in NOT_STUDENT_TOKENS
-                        and re.match(r"^[A-Za-zÀ-ÿ'\-]+$", cand)):
-                    students.setdefault(cand.lower(), cand)
+            cand = student_from(d.get("dealname"), parent.split(" ")[0] if parent else "")
+            if cand:
+                students.setdefault(cand.lower(), cand)
         rows[cid] = {
             "email": (p.get("email") or "").strip(),
             "name": f"{p.get('firstname', '')} {p.get('lastname', '')}".strip(),
