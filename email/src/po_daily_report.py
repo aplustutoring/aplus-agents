@@ -58,17 +58,35 @@ def _normalize_po(raw: str) -> str:
     return s
 
 
-def find_duplicate_pos(deals: list[dict]) -> dict[str, list[dict]]:
-    """{po_number: [deal props, ...]} for every PO on 2+ deals.
+def _is_real_po(po: str) -> bool:
+    """A real PO number contains digits and is at least 4 chars. Batch labels
+    humans typed instead ('summer2025' is digits+words but a label; 'pending',
+    'n/a', 'amy chapin po', '0', '.') are placeholder values — reported as a
+    count, not as duplicates. First live sweep 2026-08-26: ~270 deals carry
+    placeholders."""
+    if len(po) < 4 or not any(c.isdigit() for c in po):
+        return False
+    known_labels = ("summer", "pending", "n/a", "none", "tbd")
+    return not any(k in po for k in known_labels)
+
+
+def find_duplicate_pos(deals: list[dict]) -> tuple[dict[str, list[dict]], int]:
+    """(real duplicates {po: [deal props,...]}, placeholder_deal_count).
     EXPLICIT rule (Roman 2026-08-26): duplicate PO numbers are a red-flag
-    alert — one PO must never be billed twice."""
+    alert — one PO must never be billed twice. Placeholder values are a data
+    gap, not a billing violation; counted separately."""
     by_po: dict[str, list[dict]] = {}
+    placeholders = 0
     for d in deals:
         p = d.get("properties") or {}
         po = _normalize_po(p.get("po_number"))
-        if po:
-            by_po.setdefault(po, []).append(p)
-    return {po: ds for po, ds in by_po.items() if len(ds) > 1}
+        if not po:
+            continue
+        if not _is_real_po(po):
+            placeholders += 1
+            continue
+        by_po.setdefault(po, []).append(p)
+    return {po: ds for po, ds in by_po.items() if len(ds) > 1}, placeholders
 
 
 def _family_email(deal: dict) -> str:
@@ -122,21 +140,25 @@ def _covered(deal: dict, invoices: list[dict], claimed: set) -> bool:
 
 
 def _dupe_lines() -> list[str]:
-    """Red-flag section: PO numbers appearing on more than one deal."""
+    """Red-flag section: real PO numbers appearing on more than one deal,
+    plus a one-line count of placeholder PO values (data gap, not billing)."""
     try:
-        dupes = find_duplicate_pos(_all_po_deals())
+        dupes, placeholders = find_duplicate_pos(_all_po_deals())
     except Exception as e:  # noqa: BLE001 — the dup check must not kill the report
         return [f"⚠️ duplicate-PO check failed: {e}"]
-    if not dupes:
-        return []
-    lines = [f"🚩 *DUPLICATE PO NUMBERS — {len(dupes)} PO(s) on multiple deals "
-             f"(one PO must never bill twice):*"]
-    for po, ds in sorted(dupes.items(), key=lambda kv: -len(kv[1]))[:10]:
-        names = "; ".join(f"{p.get('dealname')} ({str(p.get('createdate') or '')[:10]})"
-                          for p in ds[:4])
-        lines.append(f"  • PO {po} on {len(ds)} deals: {names}")
-    if len(dupes) > 10:
-        lines.append(f"  … and {len(dupes) - 10} more")
+    lines: list[str] = []
+    if dupes:
+        lines.append(f"🚩 *DUPLICATE PO NUMBERS — {len(dupes)} PO(s) on multiple "
+                     f"deals (one PO must never bill twice):*")
+        for po, ds in sorted(dupes.items(), key=lambda kv: -len(kv[1]))[:10]:
+            names = "; ".join(f"{p.get('dealname')} ({str(p.get('createdate') or '')[:10]})"
+                              for p in ds[:4])
+            lines.append(f"  • PO {po} on {len(ds)} deals: {names}")
+        if len(dupes) > 10:
+            lines.append(f"  … and {len(dupes) - 10} more")
+    if placeholders:
+        lines.append(f"ℹ️ {placeholders} deal(s) carry a placeholder instead of a "
+                     f"real PO number (summer2025 / pending / name labels).")
     return lines
 
 
