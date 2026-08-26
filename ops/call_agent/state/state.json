@@ -442,9 +442,13 @@
     408481118,
     408495298,
     408509548,
-    408462336
+    408462336,
+    408561359,
+    408574061,
+    408580809,
+    408589394
   ],
-  "last_run_utc": "2026-08-26T18:18:25.438614+00:00",
+  "last_run_utc": "2026-08-26T20:40:54.200622+00:00",
   "pending_digest": [
     {
       "call_id": 408437038,
@@ -662,6 +666,98 @@
         [
           "Send follow-up SMS to August requesting schedule preferences",
           86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408589394,
+      "number": "17473222827",
+      "time_pt": "1:23 PM",
+      "matched": true,
+      "contact_label": "August Vouniozos",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called August to nail down scheduling for Kruz's tutoring. August confirmed he wants ELA and biology lessons, and agreed to Mondays and Tuesdays at 1pm (matching the existing Wed/Thu 1pm schedule), keeping Fridays open for art. Since the additional PO for biology hasn't arrived yet, Yolanda will schedule one ELA session and one biology session to get started, and will text August once a biology tutor is found. Karen is expected to send the additional PO covering the remaining days.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm with Karen the budgeting/PO status for biology sessions and how many sessions per week were budgeted",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Schedule Kruz for Monday and Tuesday sessions at 1pm \u2014 one ELA and one biology",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Find a biology tutor for Kruz and text August with the tutor's information once matched",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Follow up on the additional PO from the charter to cover the remaining three days",
+            "owner_hint": "Karen"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "August (Kruz's dad, existing customer, friendly and easygoing) confirmed the subjects are ELA and biology (not Pre-Algebra). We locked in Mondays and Tuesdays at 1pm \u2014 one ELA session and one biology session to start, matching the existing Wed/Thu 1pm schedule; Fridays stay open for art. Karen still needs to send the additional PO to cover biology/remaining three days \u2014 please confirm with her and loop back. August expects a text from Yolanda with the biology tutor's info once matched. Open with: 'Hi August, quick update on Kruz \u2014 we've got Mon/Tue at 1pm set and I'm finalizing the biology tutor now...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; scheduling call for ongoing tutoring \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kruz",
+          "August Vouniozos",
+          "Karen",
+          "Yolanda"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Reached August by phone. Confirmed subjects are ELA and biology (not Pre-Algebra). Kruz already has Wed/Thu 1pm sessions; August wants to add Mon/Tue at 1pm and keep Fridays open for art. Additional PO to cover biology/remaining sessions has not yet been received.",
+          "what_we_can_do_to_help": "[call] Yolanda will schedule one ELA and one biology session on Mon/Tue at 1pm to get started, confirm PO/budget details with Karen, find a biology tutor, and text August with the tutor's information once matched.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Reached August by phone. Confirmed subjects are ELA and biology (not Pre-Algebra). Kruz already has Wed/Thu 1pm sessions; August wants to add Mon/Tue at 1pm and keep Fridays open for art. Additional PO to cover biology/remaining sessions has not yet been received."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda will schedule one ELA and one biology session on Mon/Tue at 1pm to get started, confirm PO/budget details with Karen, find a biology tutor, and text August with the tutor's information once matched."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm with Karen the budgeting/PO status for biology sessions and how many sessions per week were budgeted",
+          86868539
+        ],
+        [
+          "Schedule Kruz for Monday and Tuesday sessions at 1pm \u2014 one ELA and one biology",
+          86868539
+        ],
+        [
+          "Find a biology tutor for Kruz and text August with the tutor's information once matched",
+          86868539
+        ],
+        [
+          "Follow up on the additional PO from the charter to cover the remaining three days",
+          81494333
         ]
       ],
       "ticket_id": null,
