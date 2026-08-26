@@ -434,9 +434,11 @@
     408168031,
     408169121,
     408173592,
-    408178271
+    408178271,
+    408189862,
+    408195544
   ],
-  "last_run_utc": "2026-08-25T23:53:42.876126+00:00",
+  "last_run_utc": "2026-08-26T01:01:30.473423+00:00",
   "pending_digest": [
     {
       "call_id": 407970807,
@@ -988,6 +990,153 @@
       "tasks_created": [
         [
           "Close out the Lucas Erickson opportunity in the pipeline \u2014 family is going with a prior tutor; mark as lost but keep record warm for future outreach.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408189862,
+      "number": "12673007262",
+      "time_pt": "5:07 PM",
+      "matched": true,
+      "contact_label": "Ilia Bichikashvili",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound call from A+ Tutoring to prospective contact Ilia Bichikashvili went to voicemail. No message content was captured beyond the standard voicemail greeting, and no message appears to have been left. No new information about the family, student, or tutoring needs was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt to reach Ilia Bichikashvili again by phone at a different time",
+            "owner_hint": null
+          },
+          {
+            "item": "Send a follow-up email to tuo17981@temple.edu introducing A+ Tutoring and inviting a reply",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound call to Ilia Bichikashvili hit voicemail \u2014 no message left and no info gathered. This contact has no details on file (no student, grade, subject, or source). Please try calling again at a different time of day and consider a follow-up email to tuo17981@temple.edu. Open with: 'Hi Ilia, this is [name] from A+ Tutoring following up on your inquiry \u2014 I wanted to learn a bit about the student you're looking to support so we can point you in the right direction.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call went straight to voicemail with no contact made and no information exchanged; not enough to classify the lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call on [date] went to voicemail; no message left and no new information obtained. Contact has not yet been reached.",
+          "what_we_can_do_to_help": "Retry the call at a different time of day and send an introductory follow-up email to open a conversation about the student's tutoring needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call on [date] went to voicemail; no message left and no new information obtained. Contact has not yet been reached."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry the call at a different time of day and send an introductory follow-up email to open a conversation about the student's tutoring needs."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt to reach Ilia Bichikashvili again by phone at a different time",
+          81494333
+        ],
+        [
+          "Send a follow-up email to tuo17981@temple.edu introducing A+ Tutoring and inviting a reply",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408195544,
+      "number": "12673007262",
+      "time_pt": "5:31 PM",
+      "matched": true,
+      "contact_label": "Ilia Bichikashvili",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Mandy from A+ Tutoring placed an outbound call to Ilia Bichikashvili and reached voicemail. Based on the message content (referencing students waiting to be scheduled and asking Ilia to check Slack), Ilia appears to be an A+ tutor, not a parent. Mandy left a message asking him to confirm he's okay and get back to the team about scheduling students.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue attempting to reach Ilia via Slack, phone, or email to confirm his status and availability to take on waiting students",
+            "owner_hint": "Mandy"
+          },
+          {
+            "item": "If no response soon, consider reassigning the waiting students to another tutor",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Ilia appears to be an A+ tutor who has been unresponsive for a few weeks. Mandy left a voicemail today asking him to check Slack and confirm he's okay \u2014 we have students waiting to be scheduled with him. Tone was warm/concerned, not disciplinary. If you follow up, open with: 'Hey Ilia, just checking in again \u2014 wanted to make sure you're doing okay and see if you're able to pick back up with the students waiting on your schedule.' Escalate to reassigning students if still no response in the next couple of days.",
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Voicemail context (students waiting to be scheduled, check Slack) indicates Ilia is an active A+ tutor, not a family lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Ilia went to voicemail again. Mandy left a message noting he has been unreachable for a few weeks and that students are waiting to be scheduled with him; asked him to check Slack and confirm he's okay.",
+          "what_we_can_do_to_help": "Keep attempting contact via Slack, phone, and email. If Ilia remains unresponsive, begin reassigning his waiting students to other tutors so families aren't left hanging.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Ilia went to voicemail again. Mandy left a message noting he has been unreachable for a few weeks and that students are waiting to be scheduled with him; asked him to check Slack and confirm he's okay."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Keep attempting contact via Slack, phone, and email. If Ilia remains unresponsive, begin reassigning his waiting students to other tutors so families aren't left hanging."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Tutors"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue attempting to reach Ilia via Slack, phone, or email to confirm his status and availability to take on waiting students",
+          81494333
+        ],
+        [
+          "If no response soon, consider reassigning the waiting students to another tutor",
           81494333
         ]
       ],
