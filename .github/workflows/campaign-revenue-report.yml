@@ -1,0 +1,32 @@
+name: Campaign revenue report (invoice-validated, read-only)
+
+# Attribution: campaign email -> reply -> 26/27 deal -> Teachworks invoice ->
+# paid. Reads every campaign queue list, validates each converter's deals
+# against real TW invoices in both accounts. Writes nothing; results in the
+# run log. See scripts/campaign_revenue_report.py.
+on:
+  workflow_dispatch:
+    inputs:
+      since:
+        description: "Campaign start date (deal + invoice window)"
+        default: "2026-08-18"
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv
+      - name: Revenue report
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+        run: python scripts/campaign_revenue_report.py --since "${{ inputs.since }}"
