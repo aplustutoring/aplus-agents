@@ -1,4 +1,4 @@
-# Tier 1: all TORs, no referral history (674 mailable)
+# Tier 1: all TORs, no recorded referral history (633 mailable)
 
 HARD COMPLIANCE RULES (Roman 2026-08-25, locked). Do not violate any.
   1. The Badge denotes quality of program DESIGN only. Not implementation. Not
@@ -18,37 +18,53 @@ Scholarship spec: knowledge/programs/teacher-scholarship.md (two 45-minute
 sessions, one assessment one instruction; two nominations; overflow honoured).
 
 
+
 TIER 1 LOGIC (Roman, locked): no trust to reference, so nothing to thank them
 for and nothing to reopen. **The scholarship nomination is the PRIMARY call to
-action, not a P.S.** The Badge sits AFTER the offer, as evidence, never as the
-opening credential.
+action, not a P.S.** The Badge sits after the offer, as evidence.
 
-THE CARD WE ARE PLAYING (Roman 2026-08-25): this gets the student STARTED and
-SUPPORTED. Be direct about it. The barrier for a struggling student is almost
-never the plan, it is that nothing ever begins. So the two sessions are named
-as a START, not as a free sample: the first finds where the student actually is,
-the second teaches to it. Then one line that support continues if it is working.
+Tier 1 means "no RECORDED referral history". We only began attributing teachers
+to deals in 25/26, so some of these people HAVE referred and we simply do not
+know it. The copy must never imply first contact, and this version does not.
 
-Post-session rule from knowledge/programs/teacher-scholarship.md still holds:
-never present the sessions as the end of the offer, and never LEAD with funding
-mechanics. "If it is working, we keep going" carries the continuity without
-turning a nomination ask into a payment conversation.
+POSITIVE FRAMING + CORE VALUES (Roman 2026-08-26)
+"positive approach. do you have a student that needs a little extra nudge,
+another helping hand, a caring professional, someone who will help get the work
+started, or see it to completion. someone to help hold the student accountable.
+tap into our core values."
 
-VOICE (danielle-voice): story-led, warm credibility, quietly direct, ends on the
-human reality rather than a sales ask. Her openers are written number-free
-(compliance rule 4) even though her signature style in the skill is numeric.
+The old opener ("You have a student who is behind") named a deficit and put it
+on the teacher. Replaced with an offer, phrased as a question they can say yes
+to. Nobody is accused of anything.
 
-**Subject:** A way to get one student started
+NOTE: there is no core-values document anywhere in this repo. What exists is
+Danielle's POV in marketing/skills/danielle-voice/SKILL.md, which is the same
+material and is what this copy draws on:
+  * "Caring is the differentiator, not policy."
+  * "Roundtable accountability is what makes programs work." -> holding the
+    student to it, kindly.
+  * "Real classroom experience is the credential that matters." -> our tutors
+    have taught.
+  * "Students are being passed along instead of supported." -> seeing the work
+    through to completion rather than starting and drifting.
+Writing the values down properly is worth doing; until then this is the source.
+
+Danielle's voice also bans rule-of-three lists as an AI tell, so the offer is
+written as four beats with varied rhythm, not a tidy triad.
+
+**Subject:** A helping hand for one of your students
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-You have a student who is behind. You probably knew which one before you
-finished reading that sentence.
+Do you have a student who could use a little extra nudge? Someone to sit with
+them and get the work started, stay with it until it is finished, and hold them
+to it kindly along the way.
 
-What stops them is usually not the plan. It is that nothing ever starts. So here
-is a start.
+That is the whole job. Our tutors have taught, so they know the difference
+between a student who cannot do the work and one who has stopped believing they
+can.
 
-You nominate them and they get two 45-minute sessions with one of our tutors.
+Nominate a student and they get two 45-minute sessions with one of our tutors.
 The first finds out exactly where they are. The second teaches to it.
 
 From there, if it is working, we keep going.
@@ -65,7 +81,7 @@ Director of School Partnerships, A+ Tutoring
 ---
 ## Follow-up (only if no reply)
 
-**Subject:** Re: A way to get one student started
+**Subject:** Re: A helping hand for one of your students
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 

@@ -12,6 +12,8 @@ HARD COMPLIANCE RULES (Roman 2026-08-25, locked). Do not violate any.
      Never thank them for sending business.
   7. Text only. No Badge image in email.
 
+Voice: danielle-voice. POSITIVE framing per Roman 2026-08-26: offer help,
+never name a deficit and put it on the teacher.
 Voice: danielle-voice. Sage Oak EXCLUDED. From: Danielle.
 Tokens: firstname ONLY (fallback 'there').
 Scholarship spec: knowledge/programs/teacher-scholarship.md (two 45-minute
@@ -62,8 +64,9 @@ Here is what has changed since. Stanford's National Student Support Accelerator
 reviewed how our tutoring program is designed and awarded us their Tutoring
 Program Design Badge for 2026 through 2029.
 
-And here is what I can do now. If there is a student on your caseload this year
-who is behind and nothing has started for them, I can get them going.
+And here is what I can do now. Is there a student on your caseload this year who
+could use another helping hand? Someone to get the work started with them, stay
+with it until it is finished, and hold them to it kindly.
 
 You nominate them and they get two 45-minute sessions with one of our tutors.
 The first finds out exactly where they are. The second teaches to it.
@@ -84,7 +87,7 @@ Director of School Partnerships, A+ Tutoring
 
 Hi {{ personalization_token('contact.firstname', 'there') }},
 
-One question and then I will leave you to September. Is there anyone on your
-caseload this year who is behind and has nothing started?
+One question and then I will leave you to September. Is there a student this
+year who could use an extra hand?
 
 Danielle

@@ -7,6 +7,55 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-26 — Tier 1 opens on an offer, not a deficit
+
+**Roman:** "positive approach. do you have a student that needs a little extra
+nudge, another helping hand, a caring professional, someone who will help get
+the work started, or see it to completion. someone to help hold the student
+accountable. tap into our core values."
+
+The old Tier 1 opener was "You have a student who is behind. You probably knew
+which one before you finished reading that sentence." Direct, which is what was
+asked for earlier, but it names a deficit and puts it on the teacher, and it is
+the first sentence a stranger reads from us. Replaced with an offer phrased as a
+question they can say yes to:
+
+> Do you have a student who could use a little extra nudge? Someone to sit with
+> them and get the work started, stay with it until it is finished, and hold
+> them to it kindly along the way.
+>
+> That is the whole job. Our tutors have taught, so they know the difference
+> between a student who cannot do the work and one who has stopped believing
+> they can.
+
+Tier 2's ask got the same turn: "who is behind and nothing has started for them"
+became "who could use another helping hand".
+
+**There is no core-values document in this repo.** Roman asked to tap into them
+and there is nothing to tap. What exists is Danielle's POV in
+`marketing/skills/danielle-voice/SKILL.md`, which is the same material, and is
+what this copy draws on:
+
+| Her POV | Where it lands in the copy |
+|---|---|
+| "Caring is the differentiator, not policy" | hold them to it *kindly* |
+| "Roundtable accountability is what makes programs work" | someone to hold the student to it |
+| "Real classroom experience is the credential that matters" | our tutors have taught |
+| "Students are being passed along instead of supported" | stay with it until it is finished |
+
+**Worth writing the values down properly.** Every agent that produces
+customer-facing language would use them, and right now each one is inferring
+them from a voice skill that was written for a different purpose. Same argument
+as the credentials file: declare once, read everywhere. Flagged, not built,
+because the values are Roman's to state and not mine to draft.
+
+Also noted in the template: `danielle-voice` bans rule-of-three lists as an AI
+tell, so the offer is four beats with varied rhythm rather than a tidy triad.
+
+**Files:** `ops/messenger/templates/campaign-tor-2026-08/tier1_no_history.md`,
+`tier2_warm_reopen.md`.
+
+---
 ## 2026-08-26 — The deal-name prefixes are pipelines, not junk. I had discarded them.
 
 **Roman:** "we would denote pipelines in the names like summer 2025 was an ilead
