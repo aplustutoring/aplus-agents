@@ -7,6 +7,60 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Deal attribution moves to EMAIL first. I had missed the property.
+
+**Roman:** "Also look at deal property teacher of record name and email
+properties."
+
+**I had checked and got it wrong.** An earlier session recorded "deals carry
+`teacher_of_record_name` but NOT an email, so attribution must be by name". It
+checked for `teacher_of_record_email_address`, which is the CONTACT property.
+The deal property is `teacher_of_record_email`, and it is the better field:
+
+| School year | Deals | tor_name | **tor_email** |
+|---|---|---|---|
+| 2024/25 | 2,105 | 528 (25%) | **1,127 (54%)** |
+| 2025/26 | 2,221 | 2,181 | **2,187** |
+| Total | 5,555 | 2,788 | **3,390** |
+
+605 deals carry an email and no name, and 24/25 email coverage is more than
+double, which is exactly the era where attribution was thinnest. Email is also
+an EXACT key: none of the accent folding, hyphenated surnames, "Last, First"
+reversal or shared-name ambiguity the four-tier name matcher exists to survive.
+`tor_first_name` / `tor_last_name` added as a further fallback.
+
+**Result: 205 teachers attributed to 286.** Match keys are now email=3,204,
+exact name=11, surname-subset=3. The name matcher went from carrying the load
+to being a long tail, which is where it belongs.
+
+**Secondary addresses matter too.** Kristy Doyal's deals carry
+`kristy.doyal@heartlandcharterschool.com` while her contact's primary is a gmail
+address, so she read as an orphan despite already being in the audience. Now
+every address on a contact is mapped, not just the primary. Teachers routinely
+have a school address and a personal one.
+
+**Orphans are now split by what they need**, because the two kinds are not the
+same job:
+- **EMAIL on the deal, no contact: 19 addresses, 64 deals.** Actionable with no
+  guessing. Create the contact, tag the persona, and they land in the right tier
+  next run. Biggest: **Hannah Belcher, 43 deals across both fields, no contact
+  record at all.**
+- **NAME only, no match: 28 names, 98 deals.** Needs a human.
+
+Placeholder addresses the PO flow writes (`none@wetutorathome.com`, `unknown`)
+are filtered rather than reported as teachers.
+
+**A mis-tag has a measurable cost, now quantified.** Lisa Barlow's contact
+exists, titled "Educational Facilitator", persona `Decision Maker/Director`.
+Because the audience is persona-filtered, that single wrong tag orphans **21 of
+her deals**. That is the concrete argument for fixing the 7 persona conflicts
+already listed by `scripts/tor_persona_backfill.py`.
+
+**Tiers:** T1 629, T2 76, T3 181, T4 26 mailable.
+
+**Files:** `scripts/charter_tor_segments.py`.
+
+---
 ## 2026-08-25 — Tier 1 does not mean "never referred". It means we did not record it.
 
 **Roman:** "We only started associating charter school teachers to deals last

@@ -256,6 +256,7 @@ TOR_PROPS = ["email", "firstname", "lastname", "charter_school_teacher", "hs_lea
              "a_persona", "hs_marketable_status", "hs_email_optout",
              "hs_email_hard_bounce_reason", "hubspot_owner_id", "createdate",
              "tor_family_count", "tor_student_count", "tor_families_lapsed", "tor_segment",
+             "hs_additional_emails",   # teachers use school AND personal addresses
              # non-teacher detection (see ROLE_MAILBOX / looks_like_family)
              "student_first_name", "student_names", "last_tutor_name", "teacher_of_record_name"]
 
@@ -336,7 +337,8 @@ def load_charter_deals():
             {"propertyName": "pipeline", "operator": "IN", "values": sorted(CHARTER_PIPELINES)},
             {"propertyName": "createdate", "operator": "GTE", "value": since_ms}]}],
             "properties": ["dealname", "amount", "dealstage", "pipeline", "createdate",
-                           "teacher_of_record_name"],
+                           "teacher_of_record_name", "teacher_of_record_email",
+                           "tor_first_name", "tor_last_name"],
             "limit": 100}
         if after:
             body["after"] = after
@@ -426,13 +428,65 @@ def match_one(raw, idx):
 
 
 def attribute(tors, deals):
-    """Deal -> TOR contact. Returns (hits, unmatched, ambiguous, by_tier)."""
+    """Deal -> TOR contact. EMAIL FIRST, then the name matcher.
+
+    Roman 2026-08-25 pointed at the deal-level teacher properties. There are
+    three, and the email one is both better covered and exactly matchable:
+
+        school yr   deals   tor_name   tor_EMAIL
+        2024/25      2105        528       1127
+        2025/26      2221       2181       2187
+        TOTAL        5555       2788       3390
+
+    605 deals carry an email and no name, and in 24/25 email coverage is more
+    than double, which is exactly the era where attribution was thinnest. An
+    email is also an exact key: no accent folding, no hyphenated surnames, no
+    "Last, First" reversal, no middle initials, and no ambiguity when two
+    teachers share a name.
+
+    An earlier version of this file recorded "deals carry no teacher email".
+    That was wrong: it checked `teacher_of_record_email_address`, which is the
+    CONTACT property. The deal property is `teacher_of_record_email`.
+
+    Returns (hits, unmatched, ambiguous, by_tier).
+    """
     idx = build_index(tors)
+    # Map EVERY address a contact has, not just the primary. Kristy Doyal's
+    # deals carry kristy.doyal@heartlandcharterschool.com while her contact's
+    # primary is a gmail address; without the secondaries she reads as an
+    # orphan despite being in the audience already. Teachers commonly have a
+    # school address and a personal one.
+    by_email = {}
+    for cid, p in tors.items():
+        addrs = [(p.get("email") or "")]
+        addrs += (p.get("hs_additional_emails") or "").split(";")
+        for a in addrs:
+            a = a.strip().lower()
+            if a:
+                by_email.setdefault(a, cid)
+
     hits, unmatched, ambiguous = collections.defaultdict(list), collections.Counter(), set()
     by_tier = collections.Counter()
     for did, d in deals.items():
+        # 1. exact email match. Most reliable key we have.
+        e = (d.get("teacher_of_record_email") or "").strip().lower()
+        # placeholders the PO flow writes when the teacher is unknown
+        if e in ("none@wetutorathome.com", "unknown", "none", "n/a", "na"):
+            e = ""
+        if e and e in by_email:
+            hits[by_email[e]].append(did)
+            by_tier["email"] += 1
+            continue
+
+        # 2. name, falling back to tor_first_name / tor_last_name
         raw = d.get("teacher_of_record_name")
         if not norm_name(raw):
+            first = (d.get("tor_first_name") or "").strip()
+            last = (d.get("tor_last_name") or "").strip()
+            raw = f"{first} {last}".strip()
+        if not norm_name(raw):
+            if e:
+                unmatched["@" + e] += 1  # "@" marks an EMAIL orphan, see below
             continue
         cid, tier = match_one(raw, idx)
         if not cid:
@@ -597,7 +651,7 @@ def main():
     print(f"\ncharter deals created since {SINCE}:")
     deals = load_charter_deals()
     named = sum(1 for d in deals.values() if d.get("teacher_of_record_name"))
-    print(f"  {len(deals)} deals, {named} carry teacher_of_record_name")
+    print(f"  {len(deals)} deals since {SINCE}")
 
     hits, unmatched, ambiguous, by_tier = attribute(tors, deals)
     print(f"  attributed to {len(hits)} teachers; "
@@ -693,9 +747,25 @@ def main():
         print(f"    {v:>4}  {k}")
 
     if unmatched:
-        print("\n  ⚠ top deal teacher names with NO contact record (hygiene queue):")
-        for n, c in unmatched.most_common(10):
-            print(f"    {c:>3} deals  {n}")
+        # Two kinds, and they need different work. An EMAIL orphan is a teacher
+        # we have an exact address for and simply no contact record: create it
+        # and they join the tiers immediately, no guessing. A NAME orphan needs
+        # a human to decide who is meant.
+        by_email_orphan = {k[1:]: v for k, v in unmatched.items() if k.startswith("@")}
+        by_name_orphan = {k: v for k, v in unmatched.items() if not k.startswith("@")}
+        if by_email_orphan:
+            print(f"\n  ⚠ EMAIL on the deal but NO contact record: "
+                  f"{len(by_email_orphan)} addresses, {sum(by_email_orphan.values())} deals")
+            print("    Actionable without guesswork: create the contact, tag the persona,")
+            print("    and they fall into the right tier on the next run.")
+            for n, c in sorted(by_email_orphan.items(), key=lambda kv: -kv[1])[:10]:
+                print(f"    {c:>3} deals  {n}")
+        if by_name_orphan:
+            print(f"\n  ⚠ NAME only, no contact match: "
+                  f"{len(by_name_orphan)} names, {sum(by_name_orphan.values())} deals")
+            print("    Needs a human to decide who is meant.")
+            for n, c in sorted(by_name_orphan.items(), key=lambda kv: -kv[1])[:10]:
+                print(f"    {c:>3} deals  {n}")
 
     if args.json:
         Path(args.json).write_text(json.dumps(
