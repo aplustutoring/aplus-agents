@@ -437,9 +437,14 @@
     408178271,
     408189862,
     408195544,
-    408437038
+    408437038,
+    408465845,
+    408481118,
+    408495298,
+    408509548,
+    408462336
   ],
-  "last_run_utc": "2026-08-26T16:22:44.525944+00:00",
+  "last_run_utc": "2026-08-26T18:18:25.438614+00:00",
   "pending_digest": [
     {
       "call_id": 408437038,
@@ -500,6 +505,163 @@
         [
           "Confirm with Nikita's family that the session started late but ran full time as promised",
           80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 408509548,
+      "number": "14153619796",
+      "time_pt": "11:08 AM",
+      "matched": true,
+      "contact_label": "Christin Chi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Christin Chi, an existing customer, called to check remaining hours in her package and to pause Lily's recurring tutoring sessions with Shay. Janelle confirmed 7 hours remain (after yesterday's session) and that hours do not expire. Christin asked to cancel all upcoming sessions with no feedback \u2014 just taking a pause. Janelle agreed and invited her to reach out when ready to resume.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Cancel all upcoming recurring tutoring sessions for Lily with Shay",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Notify Shay that Christin is pausing Lily's sessions indefinitely",
+            "owner_hint": "Janelle"
+          },
+          {
+            "item": "Confirm remaining balance of 7 unused hours on the package (no expiration)",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Christin Chi (returning customer, mom of Lily) called to pause Lily's recurring sessions with Shay indefinitely \u2014 no complaint, just taking a break. She confirmed the lesson yesterday and was told 7 hours remain on her package with no expiration. Please cancel all upcoming scheduled sessions and let Shay know. No callback scheduled \u2014 she'll reach out when ready to resume. If she calls back, open with: 'Hi Christin, welcome back! You still have 7 hours ready to go whenever Lily is \u2014 want to get her back on the calendar with Shay?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer pausing service \u2014 status is owned by the deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Lily",
+          "Shay"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Christin called to check her package balance and pause Lily's recurring tutoring sessions with Shay indefinitely. Confirmed lesson yesterday; 7 hours remain unused. No feedback on Shay \u2014 just taking a break.",
+          "what_we_can_do_to_help": "[call] Cancel all upcoming sessions and notify Shay of the pause. Hold the 7 remaining hours (no expiration) for whenever Christin is ready to resume.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Christin called to check her package balance and pause Lily's recurring tutoring sessions with Shay indefinitely. Confirmed lesson yesterday; 7 hours remain unused. No feedback on Shay \u2014 just taking a break."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Cancel all upcoming sessions and notify Shay of the pause. Hold the 7 remaining hours (no expiration) for whenever Christin is ready to resume."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Cancel all upcoming recurring tutoring sessions for Lily with Shay",
+          80047202
+        ],
+        [
+          "Notify Shay that Christin is pausing Lily's sessions indefinitely",
+          80047202
+        ],
+        [
+          "Confirm remaining balance of 7 unused hours on the package (no expiration)",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 408462336,
+      "number": "17473222827",
+      "time_pt": "9:52 AM",
+      "matched": true,
+      "contact_label": "August Vouniozos",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called August Vouniozos to follow up on scheduling preferences for Kruz's tutoring, but reached voicemail. She left a message noting they want to arrange extra lessons for ELA and biology and said she would call back between 4-6pm and also send a text.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call August back between 4-6pm to confirm scheduling preferences for Kruz's ELA and biology sessions",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Send follow-up SMS to August requesting schedule preferences",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda left a voicemail for August Vouniozos (parent of Kruz, 10th grade at iLEAD) following up on scheduling for tutoring. Note: Yolanda referenced ELA and biology on the voicemail, but the record shows Pre-Algebra and ELA \u2014 please confirm subjects with August. PO is in place for 3x/week 45-min sessions; we still need days/times before matching a tutor. Yolanda promised to call back between 4-6pm today and also send a text. Open with: 'Hi August, this is [name] from A+ Tutoring following up on Yolanda's voicemail \u2014 do you have a few minutes to share your preferred days and times for Kruz's sessions, and can we confirm the subjects you'd like us to cover?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal (PO received for Kruz's tutoring); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kruz",
+          "iLEAD",
+          "August Vouniozos"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda left a voicemail for August following up on scheduling preferences for Kruz's tutoring. Voicemail referenced ELA and biology as subjects (record currently shows Pre-Algebra and ELA \u2014 subjects to confirm with parent). Still awaiting preferred days/times before matching a tutor.",
+          "what_we_can_do_to_help": "Yolanda will call August back between 4-6pm and send a follow-up text to capture scheduling preferences and confirm subject needs (ELA + biology vs. ELA + Pre-Algebra), then match a tutor and start the 3x/week 45-min sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda left a voicemail for August following up on scheduling preferences for Kruz's tutoring. Voicemail referenced ELA and biology as subjects (record currently shows Pre-Algebra and ELA \u2014 subjects to confirm with parent). Still awaiting preferred days/times before matching a tutor."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda will call August back between 4-6pm and send a follow-up text to capture scheduling preferences and confirm subject needs (ELA + biology vs. ELA + Pre-Algebra), then match a tutor and start the 3x/week 45-min sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call August back between 4-6pm to confirm scheduling preferences for Kruz's ELA and biology sessions",
+          86868539
+        ],
+        [
+          "Send follow-up SMS to August requesting schedule preferences",
+          86868539
         ]
       ],
       "ticket_id": null,
