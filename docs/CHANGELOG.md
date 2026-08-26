@@ -126,6 +126,66 @@ populated. The behaviour under test is unchanged; only the example moved.
 `scripts/tests/test_credentials.py`.
 
 ---
+## 2026-08-26 — CARE core values wired into the fleet's reasoning layer
+
+**What:** New `ops/values/care-values.md` holds A+ Tutoring's vision, mission
+and the four CARE values verbatim from wetutorathome.com/about-us, in a block
+marked LOCKED. One canonical copy; the values text appears in exactly one file
+in the repo, verified by grep.
+
+Every agent whose output is **reasoned** now carries one pointer line:
+`Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.`
+
+**The brief said "every active agent". Only 6 of 26 qualify, and that is the
+right answer.** The other 20 are deterministic: syncs, sweeps, metrics, relays,
+list builders. They never call a model, so there is no reasoning for values to
+shape, and a pointer inside them is dead text a later reader mistakes for
+something load-bearing. Same for all 10 manual agents, every one of which was
+checked individually rather than assumed.
+
+**The biggest reasoning surface was not in the registry entrypoints at all.**
+`topic-gen`, `content-build` and `spotlight-orchestrator` reason through the 15
+`SKILL.md` files loaded by `SkillsRunner`, not through their .py files. That is
+where blog posts, case studies, brand checks and Danielle's voice are actually
+produced. Roman confirmed: "care reaches customer facing". All 15 carry the
+pointer.
+
+**Where two prompts existed, the split was made on what the prompt produces**,
+not on which was primary (Roman was undecided, so the rule is recorded):
+pointer where the model emits language a human reads or a judgment a human acts
+on; skip pure extraction or classification into JSON.
+- `call_agent.SUMMARY_PROMPT` — writes CRM summaries and handoff notes. Pointer.
+- `call_agent.COACHING_PROMPT` — coaches a named colleague on their own call.
+  The most values-sensitive prompt in the fleet. Pointer.
+- `feedback_agent.ANALYZE_PROMPT` — proposes fixes for a human to approve.
+  Pointer.
+- `feedback_agent.CLASSIFY_PROMPT` — **skipped.** Pure routing taxonomy (which
+  agent, what type). Emits no prose; values change nothing about it.
+- `po_inbox.PO_SYSTEM` — initially looked like pure JSON extraction, but the
+  same call drafts the real Gmail chase emails a human sends to teachers.
+  Customer-facing. Pointer.
+
+**The "how this applies to agent output" section is behavioural, not slogans.**
+Every rule in it is falsifiable against a piece of output: never state a metric
+without its source; absence of a record is not evidence of absence; say what was
+NOT done; name strengths before gaps; propose an agent before a manual
+workaround; when the data does not fit the model, the model is probably wrong.
+Several are lessons this fleet learned the hard way and had nowhere to record.
+
+**Discrepancies with the brief, for the record:** it said 5 manual agents (there
+are 10) and implied all active agents have prompts (6 do).
+
+**Convention documented in CLAUDE.md** so new agents inherit the pointer, with
+the deterministic-agent exception stated so nobody "fixes" the gap later.
+
+**Files:** `ops/values/care-values.md` (new), `email/src/classifier.py`,
+`email/src/po_inbox.py`, `ops/call_agent/call_agent.py`,
+`ops/feedback-agent/feedback_agent.py`,
+`marketing/scripts/b2c/spotlight_orchestrator.py`,
+`.github/workflows/feedback-fix.yml`, `marketing/skills/*/SKILL.md` (15),
+`CLAUDE.md`. Suite 269 green.
+
+---
 ## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
 
 **Roman supplied NSSA's "Promotion Guidelines & Messaging" doc and the Badge

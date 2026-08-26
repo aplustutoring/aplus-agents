@@ -513,7 +513,9 @@ KEY_PROPERTIES = sorted({prop for prop, _ in RECORD_FIELD_MAP.values()}
                         | {"firstname", "lastname", "email", "phone", "mobilephone",
                            "hs_lead_status"})
 
-SUMMARY_PROMPT = """You are processing a phone call ({direction_desc}) for A+ Tutoring, \
+SUMMARY_PROMPT = """Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+
+You are processing a phone call ({direction_desc}) for A+ Tutoring, \
 a K-12 tutoring company in California (families/parents, partner schools and \
 charter schools, tutor applicants). Your output updates the family's CRM \
 record, creates follow-up tasks, and feeds a daily ops digest.
@@ -758,7 +760,9 @@ def _validate_summary(d):
 
 RUBRIC_DIMENSIONS = ["U1", "U2", "U3", "U4", "U5", "S1", "S2", "S3", "S4", "V1", "V2"]
 
-COACHING_PROMPT = """You are a supportive call coach for A+ Tutoring, reviewing \
+COACHING_PROMPT = """Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+
+You are a supportive call coach for A+ Tutoring, reviewing \
 a call handled by {agent_name} ({direction_desc}). Score the call against the rubric \
 below. Apply the S-dimensions only when the call is a new inquiry or school \
 partnership; the V-dimensions only for scheduling/billing/complaint calls; \
