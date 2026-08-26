@@ -99,3 +99,26 @@ def test_po_report_invoice_number_stamp_counts():
     deal = {"properties": {"amount": "150", "invoice__": "54999",
                            "createdate": "2026-08-13T16:00:00Z"}}
     assert pr._covered(deal, [], set()) is True
+
+
+# ── duplicate-PO detector (Roman 2026-08-26: red-flag alert) ─────────────────
+
+def test_find_duplicate_pos_flags_repeats_and_normalizes():
+    from src import po_daily_report as pr
+    deals = [
+        {"properties": {"po_number": "3114164517", "dealname": "A"}},
+        {"properties": {"po_number": "3114164517", "dealname": "B"}},   # dup
+        {"properties": {"po_number": "PO 3114164518", "dealname": "C"}},
+        {"properties": {"po_number": "3114164518", "dealname": "D"}},   # dup via normalize
+        {"properties": {"po_number": "3114164519", "dealname": "E"}},   # unique
+        {"properties": {"po_number": "", "dealname": "F"}},             # ignored
+    ]
+    dupes = pr.find_duplicate_pos(deals)
+    assert set(dupes) == {"3114164517", "3114164518"}
+    assert [d["dealname"] for d in dupes["3114164517"]] == ["A", "B"]
+
+
+def test_find_duplicate_pos_clean_portal_is_empty():
+    from src import po_daily_report as pr
+    deals = [{"properties": {"po_number": str(n), "dealname": "X"}} for n in range(5)]
+    assert pr.find_duplicate_pos(deals) == {}
