@@ -70,6 +70,31 @@ its term window are both present. `aplus-fact-check` currently says to flag
 "wording that does not match claim_string", which is too strict for prose. Worth
 a follow-up on main.
 
+## Dual persona: verified on the one contact that has it
+
+Kristy Doyal is tagged `Teacher of Record/EF/ES;Family` (#AP030). Verified
+end to end on 2026-08-25:
+
+* lands in **Tier 4**, so she is pulled out of the campaign and Danielle writes
+  to her by hand. That is the right outcome: a human who knows she is both
+  handles the dual role, rather than a merge field guessing.
+* the `looks_like_family` heuristic returns False for her, because the persona
+  overrides it. Without that override she would have been silently dropped from
+  a campaign built for exactly her.
+* she is on **none** of the six family campaign lists, so no collision.
+
+**She is the only TOR + Family dual-persona contact in the portal.** One, out of
+more than eleven thousand contacts. The multi-select model works, but it is
+essentially unpopulated, which means it is not currently protecting anyone else.
+Any other teacher who is also a parent is single-tagged today and therefore
+silently missing from one campaign or the other. Worth knowing before assuming
+the persona model is catching this case generally.
+
+Note: because the audience is persona-filtered to TORs and the persona overrides
+the heuristic, `looks_like_family` can never actually fire on the current
+audience. It is kept as a guard in case the audience source changes, not because
+it does work today.
+
 ## Tier 2's recency bound
 
 Roman asked what the filter is for "how long we haven't spoken". There was none:

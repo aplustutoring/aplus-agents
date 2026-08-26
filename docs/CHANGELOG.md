@@ -7,6 +7,39 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-25 — Dual persona verified, and it turns out to be a population of one
+
+**Roman:** "And Kristy has a dual persona right."
+
+Yes, `Teacher of Record/EF/ES;Family`. Verified end to end rather than assumed:
+
+* **Tier 4**, so she is pulled OUT of the campaign for an individual send from
+  Danielle. The best available outcome for a dual-role contact: a human who
+  knows she is both writes to her.
+* `looks_like_family` returns False for her because the persona overrides the
+  heuristic. That override was added earlier today precisely so she would not be
+  dropped; confirmed it works on the real record, not just in principle.
+* She is on **none** of the six family campaign lists. No collision.
+* Her deals now attribute correctly via her school address after secondary
+  emails were added to the matcher. She had read as an orphan while sitting in
+  the audience.
+
+**The finding worth keeping: she is the ONLY TOR + Family dual-persona contact
+in the portal.** One, out of 11,000+ contacts. The #AP030 multi-select design is
+sound and now proven on a live record, but it is unpopulated, so it is not
+currently protecting anyone else. Any other teacher who is also a parent is
+single-tagged today and silently missing from either the teacher campaign or the
+family one. Recorded in the campaign doc so nobody assumes the persona model is
+catching this case generally.
+
+Also recorded: because the audience is persona-filtered and the persona
+overrides the heuristic, `looks_like_family` cannot fire on the current
+audience. Kept as a guard against a future change of audience source, not
+because it does work today.
+
+**Files:** `ops/messenger/CAMPAIGN-TOR-2026-08.md`.
+
+---
 ## 2026-08-25 — Deal attribution moves to EMAIL first. I had missed the property.
 
 **Roman:** "Also look at deal property teacher of record name and email
