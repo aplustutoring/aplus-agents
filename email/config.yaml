@@ -353,7 +353,9 @@ teachworks:
 # (e.g. "Hi Kath" → Kath), with a ticket. Falls back to `fallback` if unclear.
 internal:
   domain: wetutorathome.com
-  fallback: visionary   # seat, not a person (roles: block maps it) — Roman 2026-08-14
+  # The visionary seat does not own support tickets (Roman 2026-08-26) — anything
+  # that would have landed on him goes to his second, the operations seat.
+  fallback: operations
 
 # Confidence + autonomy thresholds (LOCKED).
 thresholds:
@@ -366,6 +368,18 @@ thresholds:
 escalation:
   level2: scheduling_lead   # watches the schedulers
   level3: operations   # last resort
+
+# Aging sweep (Roman 2026-08-26). The chain above walks the AUDIT LOG, so it only
+# ever sees tickets the email/PO agents created — hand-made CRM tickets and call
+# agent tickets were never swept at all, and four of Roman's sat 96 to 135 days
+# with zero pings. This pass reads every OPEN ticket straight from HubSpot and
+# keeps nagging on a cadence, so nothing goes quiet just because it is old.
+aging_sweep:
+  enabled: true
+  nag_after_days: 7          # open + untouched this long → DM the owner
+  supervisor_after_days: 14  # also DM level2
+  last_resort_after_days: 30 # also DM level3
+  repeat_every_days: 7       # re-nag this often — the chain above pings once per level and then goes silent forever
 
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]

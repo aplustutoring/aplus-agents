@@ -91,6 +91,93 @@ def reconcile_handled() -> int:
     return flipped
 
 
+def _owner_key_by_id(owner_id: str) -> str:
+    """HubSpot owner id → staff key, so the aging sweep can DM the owner of a
+    ticket it never saw created."""
+    for key, s in (cfg().get("staff") or {}).items():
+        if str(s.get("hubspot_owner_id") or "") == str(owner_id or ""):
+            return key
+    return ""
+
+
+def _days_since(iso: str | None, now: datetime) -> float:
+    if not iso:
+        return 0.0
+    try:
+        t = datetime.fromisoformat(str(iso).replace("Z", "+00:00"))
+    except ValueError:
+        return 0.0
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=now.tzinfo)
+    return (now - t).total_seconds() / 86400.0
+
+
+def aging_sweep() -> int:
+    """Nag on every OPEN ticket that has gone quiet, whatever created it.
+
+    The escalation chain in run() reads the audit log, so it only covers tickets
+    the agents filed, and it pings each level exactly once and then never again.
+    This pass reads HubSpot directly and re-nags on a cadence, so an old ticket
+    keeps making noise instead of going silent (Roman 2026-08-26).
+    """
+    acfg = cfg().get("aging_sweep") or {}
+    if not acfg.get("enabled"):
+        return 0
+    staff = cfg()["staff"]
+    esc = cfg().get("escalation", {})
+    nag = float(acfg.get("nag_after_days", 7))
+    sup = float(acfg.get("supervisor_after_days", 14))
+    last = float(acfg.get("last_resort_after_days", 30))
+    repeat = float(acfg.get("repeat_every_days", 7))
+    now = now_la()
+
+    try:
+        tickets = hs.search_open_tickets()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  aging sweep could not list open tickets: {e}")
+        return 0
+
+    nagged = 0
+    for t in tickets:
+        p = t.get("properties") or {}
+        quiet = _days_since(p.get("hs_lastmodifieddate"), now)
+        if quiet < nag:
+            continue
+        tid = t["id"]
+        # Cadence: one nag per repeat_every_days, however old the ticket is.
+        # No prior nag means never nagged, which must NOT read as "just nagged".
+        prior = audit.last_aging_nag(tid)
+        if prior and _days_since(prior, now) < repeat:
+            continue
+        age = _days_since(p.get("createdate"), now)
+        owner_key = _owner_key_by_id(p.get("hubspot_owner_id"))
+        subject = (p.get("subject") or "(no subject)")[:70]
+        url = hs.ticket_url(tid)
+        targets = [owner_key]
+        if age >= sup:
+            targets.append(esc.get("level2"))
+        if age >= last:
+            targets.append(esc.get("level3"))
+        seen, sent = set(), False
+        for key in targets:
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            who = staff.get(key, {})
+            if not who.get("slack_user_id"):
+                continue
+            slack_client.dm(who["slack_user_id"], (
+                f"🕸️ Ticket open {age:.0f}d, untouched {quiet:.0f}d — "
+                f"*{subject}* (owner {owner_key or 'unassigned'}). {url}"))
+            sent = True
+        if sent:
+            audit.append({"ticket_id": tid, "owner": owner_key,
+                          "action_taken": "aging_nag",
+                          "age_days": round(age, 1), "quiet_days": round(quiet, 1)})
+            nagged += 1
+    return nagged
+
+
 def run() -> None:
     print(f"=== SLA sweep ({now_la().isoformat()}) ===")
     handled = reconcile_handled()
@@ -145,6 +232,8 @@ def run() -> None:
             escalated += 1
 
     print(f"=== escalated {escalated} breach level(s) ===")
+    aged = aging_sweep()
+    print(f"=== nagged {aged} aging ticket(s) ===")
 
 
 if __name__ == "__main__":

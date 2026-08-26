@@ -622,6 +622,36 @@ def thread_has_outbound_reply(thread_id: str, exclude_message_id: str | None = N
     return False
 
 
+def search_open_tickets() -> list[dict]:
+    """EVERY open ticket in the portal, whatever created it — the agent, the call
+    agent, or a human in the CRM UI. The SLA chain above walks the audit log, so
+    it only ever sees agent-created tickets; the aging sweep uses this instead so
+    hand-made tickets cannot rot unseen (Roman 2026-08-26: four of his were 96 to
+    135 days old and had never triggered a single ping)."""
+    props = ["subject", "hubspot_owner_id", "hs_pipeline_stage",
+             "createdate", "hs_lastmodifieddate"]
+    out, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "hs_is_closed", "operator": "NEQ", "value": "true"}]}],
+            "properties": props, "limit": 100}
+        if after:
+            body["after"] = after
+        res = _get_search("/crm/v3/objects/tickets/search", body)
+        out += res.get("results", [])
+        after = (res.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            return out
+
+
+def _get_search(path: str, body: dict) -> dict:
+    """POST to a /search endpoint. Separate from _write so DRY_RUN cannot
+    short-circuit a read (search is a POST but changes nothing)."""
+    r = requests.post(f"{HS_BASE}{path}", headers=_headers(), json=body, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+
 # ── Setup helpers (used by smoke_test / id discovery) ────────────
 def list_inboxes() -> list[dict]:
     return _get("/conversations/v3/conversations/inboxes").get("results", [])

@@ -50,6 +50,53 @@ visionary → Roman).
 **Decision log** — candidate entry for the A+ Decision Log: "call check-in
 ticket follows the follow-up owner, not the Director." Not yet numbered.
 
+---
+
+## 2026-08-26 — Aging sweep: every open ticket gets nagged, not just agent-filed ones
+
+**What changed**
+- `email/src/hubspot_client.py` — new `search_open_tickets()`: every open ticket
+  in the portal, read straight from HubSpot.
+- `email/src/sla_sweep.py` — new `aging_sweep()`, called at the end of `run()`.
+- `email/src/audit.py` — new `last_aging_nag()`; added `from __future__ import
+  annotations` (the new signature uses `str | None` and CI/local run 3.11/3.9).
+- `email/config.yaml` — new `aging_sweep:` block; `internal.fallback`
+  `visionary` → `operations`.
+- `email/tests/test_aging_sweep.py` — 11 tests.
+
+**Why**
+Roman, 2026-08-26, after the L10 audit found four of his tickets aged 96 to 135
+days having never triggered a single ping. Two separate holes:
+
+1. **Coverage.** The escalation chain walks `state/audit_log.jsonl`, so it only
+   sees tickets the email/PO agents created. Tickets made by hand in the CRM and
+   tickets from the call agent were never swept at all. `aging_sweep()` reads
+   HubSpot directly instead.
+2. **It went silent.** `escalation_levels_pinged()` means each level fires once
+   and then never again, so a ticket that survives level 3 is quiet forever no
+   matter how old. The aging sweep re-nags every `repeat_every_days`.
+
+Thresholds (7d owner / 14d + supervisor / 30d + last resort / re-nag weekly) are
+the knob to tune; they are config, not code.
+
+Also locked this session: **Roman does not own support tickets.** Anything that
+would have escalated to him goes to the `operations` seat (Emily), which is why
+`internal.fallback` moved off `visionary`. His 18 open tickets were reassigned
+in HubSpot the same day — agent-routed ones back to the routing-table owner,
+hand-escalated ones to Emily. His open count went 18 → 0.
+
+**Files touched**
+- `email/src/hubspot_client.py`, `email/src/sla_sweep.py`, `email/src/audit.py`
+- `email/config.yaml`, `email/tests/test_aging_sweep.py`, `docs/CHANGELOG.md`
+
+**Verification** — `email` suite 258 passed (was 247; 11 new). A test caught a
+real bug pre-merge: a never-nagged ticket read as "nagged just now" because
+`_days_since(None)` returns 0, which would have silenced the sweep on exactly
+the tickets it exists to catch.
+
+**Decision log** — candidate: "the Director does not own support tickets;
+escalations land on Operations." Not yet numbered.
+
 ## 2026-08-25 — Spotlight reel: delivery no longer gated on `--skip-hubspot`
 
 **What:** `stage_reel` and `stage_textstory` decided whether to upload to Slack
