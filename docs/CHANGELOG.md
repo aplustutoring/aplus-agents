@@ -8,6 +8,48 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — Ticket routing: call check-ins to Paola, internal fallback names the seat
+
+**What changed**
+- `ops/call_agent/config.yml` — negative-sentiment call check-in ticket
+  `hubspot.ticket.owner`: `roman` → `paola`.
+- `email/config.yaml` — `internal.fallback`: `roman` → `visionary`.
+
+**Why**
+An L10 audit of Roman's 18 open tickets traced where they come from. Two were
+config, not human hand-off:
+
+1. The call agent's follow-up TASK went to `default_task_owner` (Paola, per the
+   2026-08-13 routing decision: "Paola does 100% of follow-up") while the
+   companion check-in TICKET for the same call was hard-wired to Roman four
+   lines below it. One call, two owners. Three such tickets were open on Roman
+   at audit time, 6 to 14 days old. The ticket now follows the task.
+2. `internal.fallback` named a person, which the accountability-chart rule
+   (Roman, 2026-08-14) reserves for the `staff:` block. `fallback` is already in
+   `_ROLE_KEYS`, so `visionary` resolves through `roles:` to the same person
+   today — this is shape, not behavior. Team change now means editing `roles:`
+   only.
+
+Not changed: the email agent's category routing was found CORRECT. business_dev
+and school_partner route to `sales` (Danielle) and complaint/unknown to
+`scheduling_lead` (Mandy), exactly as configured; the audit log confirms every
+ticket was created with the right owner. The 8 that reached Roman were
+reassigned by hand in the CRM afterward. That is a people conversation, not a
+config fix. Likewise SLA escalation never reassigns — `escalation.level3` is
+`operations` (Emily) and the sweep only DMs.
+
+**Files touched**
+- `ops/call_agent/config.yml`
+- `email/config.yaml`
+- `docs/CHANGELOG.md`
+
+**Verification** — `email` suite 247 passed; both configs re-resolved
+(`ticket.owner` == `default_task_owner` == Paola; `internal.fallback` →
+visionary → Roman).
+
+**Decision log** — candidate entry for the A+ Decision Log: "call check-in
+ticket follows the follow-up owner, not the Director." Not yet numbered.
+
 ## 2026-08-25 — Spotlight reel: delivery no longer gated on `--skip-hubspot`
 
 **What:** `stage_reel` and `stage_textstory` decided whether to upload to Slack

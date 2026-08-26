@@ -353,7 +353,7 @@ teachworks:
 # (e.g. "Hi Kath" → Kath), with a ticket. Falls back to `fallback` if unclear.
 internal:
   domain: wetutorathome.com
-  fallback: roman
+  fallback: visionary   # seat, not a person (roles: block maps it) — Roman 2026-08-14
 
 # Confidence + autonomy thresholds (LOCKED).
 thresholds:

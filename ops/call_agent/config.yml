@@ -110,7 +110,9 @@ hubspot:
     pipeline: "0"                 # Support Pipeline
     stage: "131537027"            # "Working on it"
     priority: "HIGH"
-    owner: roman
+    # Follow-up owner, matching default_task_owner above: the task and the
+    # ticket for the same call must land on one person (Roman 2026-08-26).
+    owner: paola
     check_in_business_days: 2     # companion check-in task due date
 
 slack:
