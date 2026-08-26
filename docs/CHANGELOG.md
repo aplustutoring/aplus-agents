@@ -7,6 +7,49 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-08-26 — Hannah Belcher created; two defects found doing it
+
+**Roman: "lets create a contact for hannah belcher and make all the properties
+correct."** Done. Contact `244526753383`,
+`hannah.belcher@ileadexploration.org`: persona `Teacher of Record/EF/ES`, lead
+status to match, `charter_school_teacher: iLEAD`, EF/TOR checkbox true,
+lifecycle lead. Associated as Teacher of Record to **5 families** (Sydnee
+Staley, Evelyn Rosales, Kassie Finlen, Nicole Tarro, Margarita Inostroza).
+
+Confirmed first that no contact existed under any spelling, primary or secondary
+email, or full-text search. She was genuinely absent, not a duplicate.
+
+**Defect 1, in the segmenter: 824 deals were inventing families.** Deal names
+are "Parent - Student - School N - YY/YY", but 824 charter deals open with
+something that is not a parent: `A` (626), `Summer 2025` (110), `T` (88). Those
+were being counted as households. Two of Hannah's "7 families" were `A` and
+`Summer 2025`.
+
+**Tier 4 fell from 26 to 18.** Eight teachers were in the hand-written tier on
+phantom relationships, and Danielle would have written personal notes to people
+whose "five families" included `Summer 2025`. Fixed with `family_key()`, which
+returns None for a non-family prefix. Revenue is deliberately still counted for
+those deals: only the household identity is in doubt, and Tier 4 ranks by
+invoiced value.
+
+**Defect 2, in my own association pass: one deal is not evidence.** I linked
+Dina Ramirez to Hannah because a deal named her. Checking the family properly:
+**44 of Dina's 45 deals name Peace Chen**, and exactly one names Hannah
+(2025-04-15). That single deal is a data-entry error, and I had just written it
+into the CRM as a relationship. Association removed. Associating on ANY deal is
+too weak a rule; it needs the weight of a family's deals, not one row.
+
+**Also noticed, not fixed:** two of Dina's deals name "Seventhly Chen" against
+`peace.chen@ileadexploration.org`. Same person, mangled name. Harmless because
+attribution is email-first now, but it is the kind of thing the name matcher
+used to have to survive.
+
+**Tiers after both fixes:** T1 639, T2 73, T3 188, T4 18 mailable.
+
+**Files:** `scripts/charter_tor_segments.py`. Portal: 1 contact created,
+5 associations added, 1 association removed.
+
+---
 ## 2026-08-26 — Two findings I reported were wrong. Roman corrected both.
 
 **"Lisa Barlow is a mis-tagged teacher" — wrong.** Roman: "lisa got promoted to

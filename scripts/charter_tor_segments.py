@@ -166,6 +166,27 @@ def looks_like_family(p):
                 or p.get("last_tutor_name") or p.get("teacher_of_record_name"))
 NOT_STUDENT_TOKENS = {"a", "summer", "level", "ilead", "charter"}
 
+# Deal names are "Parent - Student - School N - YY/YY", but 824 charter deals
+# open with something that is NOT a parent: "A" (626), "Summer 2025" (110),
+# "T" (88). Counting those as families invented relationships and could push a
+# teacher over the Tier 4 threshold on phantom households. Found 2026-08-26
+# while building Hannah Belcher's contact: 2 of her "7 families" were "A" and
+# "Summer 2025".
+NOT_FAMILY_PREFIX = re.compile(
+    r"^(?:[a-z]{1,2}|summer|winter|spring|fall|level|charter|ilead|test|tbd|new)\b"
+    r"(?:\s*\d{4})?$", re.I)
+
+
+def family_key(dealname):
+    """The parent segment of a deal name, or None when it is not a family."""
+    parts = [x.strip() for x in (dealname or "").split(" - ")]
+    if not parts or not parts[0]:
+        return None
+    head = parts[0]
+    if NOT_FAMILY_PREFIX.match(head):
+        return None
+    return head.lower()
+
 # TIERS BY RELATIONSHIP HISTORY (Roman 2026-08-25, locked). The old volume
 # split (5+ / 2-4 / 1) is RETIRED: once the ask became "who is on your caseload
 # THIS year", how many families a teacher sent last year stopped changing what
@@ -510,16 +531,26 @@ def profile(tors, deals, hits, gap, intake=None):
         for did in hits.get(cid, []):
             d = deals[did]
             parts = [x.strip() for x in (d.get("dealname") or "").split(" - ")]
-            parent = parts[0].lower() if parts else ""
+            parent = family_key(d.get("dealname"))
             created = parse_dt(d.get("createdate"))
-            if created and created >= cutoff:
-                fam2627.add(parent)
-            elif created and created >= start_2526:
-                fam25.add(parent)
+            in_2627 = bool(created and created >= cutoff)
+            in_2526 = bool(created and start_2526 <= created < cutoff)
+
+            # Revenue counts even when the family name is unparseable ("A - ...",
+            # "Summer 2025 - ..."). Money is money; only the HOUSEHOLD identity
+            # is in doubt, and Tier 4 is ranked by invoiced value.
+            if in_2526:
                 try:
                     amount25 += float(d.get("amount") or 0)
                 except (TypeError, ValueError):
                     pass
+
+            if parent is None:
+                pass                      # no household to count; students still parsed
+            elif in_2627:
+                fam2627.add(parent)
+            elif in_2526:
+                fam25.add(parent)
             else:
                 fam_older.add(parent)          # referred, but before 25/26
                 if created and (last_older is None or created > last_older):
