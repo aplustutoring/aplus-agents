@@ -436,10 +436,77 @@
     408173592,
     408178271,
     408189862,
-    408195544
+    408195544,
+    408437038
   ],
-  "last_run_utc": "2026-08-26T03:32:16.823498+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-08-26T16:22:44.525944+00:00",
+  "pending_digest": [
+    {
+      "call_id": 408437038,
+      "number": "18433687726",
+      "time_pt": "9:11 AM",
+      "matched": true,
+      "contact_label": "Hannah Thorn",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Hannah Thorn, an active tutor, to check on a delayed session with student Nikita. Hannah explained she was covering for her mom (who had to take her brother to the hospital during a therapy session) and was driving between parking lots looking for Wi-Fi to log in. Hannah confirmed she had already been in touch with Nikita via text and promised Nikita would get her full session time. Friendly, understanding call.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm with Nikita's family that the session started late but ran full time as promised",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Hannah (tutor) was late logging in to her session with student Nikita due to a family emergency \u2014 her mom had to take her brother to the hospital mid-therapy, so Hannah stepped in to cover the tutoring. First parking lot had no Wi-Fi so she drove to another. She already texted Nikita and promised to deliver the FULL session time. Just verify with Nikita's family/parent that the full time was honored and no makeup is needed. Tone was warm and apologetic; open with 'Thanks again for jumping in yesterday \u2014 hope your family is okay. Just confirming Nikita got her full session.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Hannah is an existing active tutor (current status Tutor-Active); call was about a scheduling hiccup, not a status change.",
+        "student_or_school_names_mentioned": [
+          "Nikita"
+        ],
+        "record_updates": {
+          "whats_going_on": "Tutor Hannah was running late to her session with Nikita due to a family emergency (covering for her mom, who took Hannah's brother to the hospital during a therapy appointment). Hannah had to relocate between parking lots to find Wi-Fi and had already texted Nikita.",
+          "what_we_can_do_to_help": "Janelle acknowledged the situation and let Hannah log in when able. Hannah committed to giving Nikita the full session time. A+ should confirm with Nikita's family that full session time was delivered.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Tutor Hannah was running late to her session with Nikita due to a family emergency (covering for her mom, who took Hannah's brother to the hospital during a therapy appointment). Hannah had to relocate between parking lots to find Wi-Fi and had already texted Nikita."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle acknowledged the situation and let Hannah log in when able. Hannah committed to giving Nikita the full session time. A+ should confirm with Nikita's family that full session time was delivered."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm with Nikita's family that the session started late but ran full time as promised",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
