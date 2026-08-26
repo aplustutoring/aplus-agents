@@ -113,12 +113,28 @@ def test_find_duplicate_pos_flags_repeats_and_normalizes():
         {"properties": {"po_number": "3114164519", "dealname": "E"}},   # unique
         {"properties": {"po_number": "", "dealname": "F"}},             # ignored
     ]
-    dupes = pr.find_duplicate_pos(deals)
+    dupes, placeholders = pr.find_duplicate_pos(deals)
     assert set(dupes) == {"3114164517", "3114164518"}
     assert [d["dealname"] for d in dupes["3114164517"]] == ["A", "B"]
+    assert placeholders == 0
+
+
+def test_find_duplicate_pos_placeholders_counted_not_flagged():
+    from src import po_daily_report as pr
+    deals = [
+        {"properties": {"po_number": "summer2025", "dealname": "A"}},
+        {"properties": {"po_number": "summer2025", "dealname": "B"}},
+        {"properties": {"po_number": "pending", "dealname": "C"}},
+        {"properties": {"po_number": "amy chapin po", "dealname": "D"}},  # no digits
+        {"properties": {"po_number": "0", "dealname": "E"}},              # too short
+        {"properties": {"po_number": "1130841", "dealname": "F"}},        # real, unique
+    ]
+    dupes, placeholders = pr.find_duplicate_pos(deals)
+    assert dupes == {}
+    assert placeholders == 5
 
 
 def test_find_duplicate_pos_clean_portal_is_empty():
     from src import po_daily_report as pr
-    deals = [{"properties": {"po_number": str(n), "dealname": "X"}} for n in range(5)]
-    assert pr.find_duplicate_pos(deals) == {}
+    deals = [{"properties": {"po_number": str(1000 + n), "dealname": "X"}} for n in range(5)]
+    assert pr.find_duplicate_pos(deals) == ({}, 0)
