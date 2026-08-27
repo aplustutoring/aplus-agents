@@ -50,10 +50,10 @@ schedulers:
   m_to_z: yolanda
 
 slack:
-  # #tutor-issues — create the channel, /invite the aplus bot, paste the
-  # channel ID here (private channels don't resolve by name for bot posts).
-  # The engine REFUSES to send anything while this is empty.
-  channel: ""
+  # #tutor-issues (created 2026-08-26, PRIVATE, aplus bot invited — verified
+  # via users.conversations). Channel ID, not name: private channels don't
+  # resolve by name for bot posts. The engine refuses to send while empty.
+  channel: "C0BSU4KGA0K"
   # Everything the engine says in Slack lands in this one channel:
   #  - the per-run ops digest (ONE message per run, never per-item DMs)
   #  - event-driven scheduler notifications for inbound family reports

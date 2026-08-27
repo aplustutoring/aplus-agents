@@ -1038,10 +1038,10 @@ agents:
     engine: Tutor issues
     name: Tutor-issue ticketing (sweep + inbound reports + intake)
     owner: roman@wetutorathome.com
-    status: draft            # NOT LIVE — schedule commented out until baseline verified + Roman flips
+    status: active           # LIVE 2026-08-26 — baseline stamped same day (0 created, 0 sent)
     trigger:
       type: cron
-      schedule: ["(disabled) 0 17 * * 1 Monday sweep", "(disabled) 0 16-0/2 * * 1-5 inbound/intake"]
+      schedule: ["0 17 * * 1 (Monday sweep, 09/10 PT)", "0 16,18,20,22,0 * * 1-5 (inbound/intake polls)"]
       events: [workflow_dispatch]           # inputs: dry_run (default TRUE), mode, force_sweep, probe_lateness
       workflow: .github/workflows/tutor-issues.yml
     entrypoint: ops/tutor-issues/tutor_issues.py
