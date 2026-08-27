@@ -1,0 +1,86 @@
+{
+  "id": "610190762",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "5",
+  "name": "Charter Schools not Students webhooi",
+  "description": "Adds to list 2499 and sends a webhook when a deal is in \"Charter Schools Marketing\" pipeline and \"Approved Vendor\" stage.",
+  "createdAt": "2024-09-12T21:44:07.256Z",
+  "updatedAt": "2024-10-15T17:32:34.056Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "3",
+  "actions": [
+    {
+      "actionId": "1",
+      "method": "POST",
+      "webhookUrl": "https://hooks.zapier.com/hooks/catch/998200/2h8smcl/",
+      "queryParams": [],
+      "type": "WEBHOOK"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "1"
+      },
+      "fields": {
+        "listId": "2499",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "pipeline",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "145539386"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "247026734"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

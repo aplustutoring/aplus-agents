@@ -157,11 +157,22 @@ def apply_labels(msg_id: str, names: list[str]) -> None:
         _post(f"/messages/{msg_id}/modify", {"addLabelIds": ids})
 
 
+def _scrub_outbound(text: str) -> str:
+    """NEVER an em dash or double hyphen in customer-facing copy (Roman
+    2026-08-24, LOCKED). The extractor prompt already says so, but prompts
+    drift (a Heartland draft shipped one on 2026-08-19) — this scrub is the
+    enforcement, applied to every draft body at the choke point."""
+    import re
+    t = (text or "").replace(" — ", ", ").replace("—", ", ")
+    t = re.sub(r"(?<=\w)\s*--\s*(?=\w)", ", ", t)
+    return re.sub(r"\s+,", ",", t)
+
+
 def create_draft_reply(thread_id: str, to_addr: str, subject: str, body: str,
                        in_reply_to: str = "", bcc: str = "") -> dict:
     """A REAL Gmail draft on the thread — sits in Drafts until a human sends it.
     bcc: the HubSpot log address, so the send lands on the contact timeline."""
-    mime = MIMEText(body)
+    mime = MIMEText(_scrub_outbound(body))
     mime["To"] = to_addr
     mime["Subject"] = subject if subject.lower().startswith("re:") else f"Re: {subject}"
     if bcc:
@@ -177,7 +188,7 @@ def create_draft(to_addr: str, subject: str, body: str, bcc: str = "") -> dict:
     """A fresh-thread Gmail draft (outreach that should NOT quote a robot
     notification thread — e.g. parent-info requests to a TOR). Returns the
     draft resource; message.threadId is the NEW thread replies will land on."""
-    mime = MIMEText(body)
+    mime = MIMEText(_scrub_outbound(body))
     mime["To"] = to_addr
     mime["Subject"] = subject
     if bcc:

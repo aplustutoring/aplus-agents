@@ -7,6 +7,943 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+
+## 2026-08-26 — PO agent refined off a 6-day audit (Roman session)
+
+Ten changes from auditing Aug 20-26 (49 PO deals, $9,178; 24 false pending
+reminders; 6 duplicate-named deals; a PO cancelled 2 hrs after intake that the
+agent acknowledged politely and did nothing about):
+
+1. **`staff` shadowing crash fixed** (`main.py`) — `staff = cfg()["staff"]`
+   in the internal-routing branch shadowed the import, so the pre-deal-lead
+   branch raised UnboundLocalError; 3 threads retried every 15 min Aug 22-25,
+   never processed. Local renamed `staff_map`.
+2. **'School N' numbering fixed** — `_next_school_seq` searched deal-name
+   tokens, limit 10, no sort: any student with 10+ historical deals ALWAYS
+   restarted at N=1 (Violet McGraw iLead 1,2,3 twice; each Saenz kid 1,2,3,4
+   twice — 24 distinct POs, zero true dupes). Now: exact-match search on
+   `student_first_name` (+last, first-only fallback), newest-first, limit 100
+   (new `hs.search_deals_by_student`), PLUS a run-scoped `_RUN_SEQ` counter so
+   same-run emails continue 4,5,6 past the search-index lag.
+3. **Two service offerings in hours computation** (Roman decision, locked):
+   $75/hour AND $60 per 45-min session (`po_inbox.service_offerings`).
+   `hours` is ALWAYS hours (4-session PO stamps 3; no new properties). Rate +
+   `rate_unit` extracted from the PO; no rate → compute only when exactly ONE
+   offering divides the amount cleanly; $300 fits both → blank + 🚩 flag.
+4. **`po_month` finally defined in the extractor prompt** (YYYY-MM, service
+   month not issue date) — it was an undefined key, so `lessons_fulfilled_date`
+   (invoice due = end of PO month) was blank on 13/15 deals; missing month now
+   ⚠️-flags into the gap DM.
+5. **Resolved parent email stamped** — the agent resolved families via TW/prior
+   deals but stamped only the raw PO field (blank on iLEAD OAs): 14/15 deals
+   missing `parent_email` the CRM already knew, gap DMs crying wolf. The
+   resolved value now backfills `po['parent_email']` pre-stamp.
+6. **Gap DM reworded** ("not in the PO and not resolvable from records") and
+   now includes the two fields Kath actually needs: hours + invoice due date.
+7. **Pending-approval sweep: 14 CALENDAR days** (`pending_portal_approval_days`,
+   was 16 business hours) — iLEAD/OPS portal approval takes ≥14 days (Roman),
+   so the old window produced only false nags.
+8. **PO cancellation handling** (`_handle_cancellation`, decisions locked:
+   zero + Kath voids): school cancellation notice → deal to its Stopped stage,
+   amount+hours zeroed, note pinned, DMs (Kath+Roman+deal owner), HIGH
+   void-TW-invoice task. Partial (billable>0) → NOTHING auto-changes, manual
+   flag. Cancelled-PO re-issue announced as re-issue, not duplicate. Ticket
+   subject "PO CANCELLED — …", HIGH.
+9. **Non-PO dispositions** via `category_hint`: vendor_compliance → HIGH ticket
+   to `compliance_owner` (sales seat — Epic California C&CP sat as generic
+   MEDIUM while blocking that school's POs); scam → LOW + sender never captured
+   as parent contact (Marcus Parker advance-fee pattern was recorded as
+   parent_email); marketing_junk → LOW.
+10. **Em-dash scrub at the Gmail-draft choke point** (`gmail_client._scrub_outbound`)
+    — the locked no-em-dash outbound rule was prompt-only and a Heartland draft
+    shipped one on 2026-08-19; now enforced in code on every draft body.
+
+**Why:** the audit showed the agent's data capture was ~50% of spec on live
+deals, its alerts fired about the wrong things, and cancellations had zero
+handling (live money risk).
+**Files:** email/src/{main,po_inbox,hubspot_client,gmail_client,config}.py,
+email/config.yaml, email/tests/test_po_inbox.py (suite 258 green),
+docs/PO-PROCESS.md (kept in sync per its header).
+**Also this session (manual, outside this PR):** Emma Savoie deal 64379560281
+stopped/zeroed + team alerted; Epic ticket 47830084212 → Danielle HIGH (via
+scratchpad script Roman ran). **Pipeline config gap flagged to Roman:** Charter
+Trad "Stopped" (13267787) is isClosed=false/10% — cancelled deals pollute the
+forecast; Level Up's is closed/0%. HubSpot-side fix, Roman's call.
+
+## 2026-08-26 — Duplicate-PO red-flag detector in the PO day report (Roman)
+
+**What:** `email/src/po_daily_report.py` — every 6 PM PT report now runs a
+PORTAL-WIDE duplicate-PO sweep (all deals with po_number, paginated; numbers
+normalized against stray "PO "/"#" prefixes). Any PO number on 2+ deals gets
+a 🚩 section in Roman's DM (top 10 listed with deal names/dates); the check
+also runs on no-PO days and never kills the report on API failure. Origin:
+Rosa Miramontes' 24-deal renewal LOOKED duplicated (same deal names twice) —
+PO cross-reference proved all 24 POs unique (two batches per kid), but Roman:
+"EXPLICITLY WE CAN NOT HAVE DUPLICATE PO'S red flag alert." Pure helper
+find_duplicate_pos() split from fetching for tests.
+**Why:** One PO must never be billed twice; name-level similarity is not
+enough to spot it, number-level is.
+**Files:** email/src/po_daily_report.py, email/tests/test_daily_summary.py
+(suite 249 green).
+
+## 2026-08-25 — Spotlight reel: delivery no longer gated on `--skip-hubspot`
+
+**What:** `stage_reel` and `stage_textstory` decided whether to upload to Slack
+by reading `skip_hubspot`. That flag means "Skip HubSpot contact lookup and
+proceed with local input only" (Phase 0 auto-discovery); the documented delivery
+gate is `--dry-run` ("Run stages without HubSpot publish or Slack delivery").
+Both stages now read a single helper, `_is_delivering(run)`, which keys off
+`dry_run`. Three consequences, all verified: a `--skip-hubspot` run now actually
+uploads the reel; a `--reel-only --dry-run` run no longer posts to Slack (it
+did); and a blocked reel now posts its heads-up under `--skip-hubspot` instead
+of swallowing it. `reel_status`/`textstory_status` of `"ok"` is now reserved for
+an asset that reached Slack — a rendered-but-unposted one reports
+`"generated, not delivered (--dry-run)"` — and `--reel-only` treats delivery
+(not rendering) as the success criterion except under `--dry-run`.
+
+**Why:** Paola's fifth report of missing Animated Spotlight Reels (thread
+1787612254.091039, correction `2026-08-24-spotlight-reels-not-delivered`). With
+`--skip-hubspot` set, the reel generated in full (Gemini stills, TTS, Veo clips,
+ffmpeg encode), `deliver_reel.py` was never invoked, the "reel is missing" alert
+was suppressed by that same flag, and the run printed `Reel: ok`. `stage_slack`
+never read the flag, so the case study, graphics and thread arrived normally and
+only the video was absent — exactly what Paola kept reporting. This also explains
+why PRs #95, #100, #104, #107 and #113 did not help: they hardened the alerting
+that this flag switches off. #95's changelog lists a `--skip-hubspot` scenario as
+verified, which locked the wrong behavior in as expected.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+**Verified:** the real `stage_reel` driven with `subprocess.run` and the Slack
+helpers stubbed, across four scenarios (pipeline + `--skip-hubspot`, pipeline
+with no flags, `--reel-only --dry-run`, and blocked-on-missing-key +
+`--skip-hubspot`), run against both `main` and the fix. No APIs, Slack or ffmpeg
+touched. `marketing/` has no committed test harness, so this was a scratch
+script rather than a checked-in regression test.
+
+**Not done:** no reel was produced or delivered for the three students. That
+needs Gemini/OpenAI/Slack credentials, the Drive folder IDs (FERPA-withheld to
+the Slack thread) and a workflow dispatch, none of which are available from the
+repo. Still open and unchanged by this PR: there is no GitHub Actions workflow
+that runs `--reel-only`, so the recovery path built by #100/#104/#107/#113 can
+only be run from a laptop with full credentials — Paola cannot self-serve it.
+
+---
+
+## 2026-08-25 — Charter campaign fully live + Cold Revival wave built (Roman)
+
+**What:** (1) ALL 5 campaign workflows ON (Roman's toggles): 359 of 429 gap
+families emailed (Win-back-1 259, Multi 67, Never-Started 24, No-Lesson 9);
+3 converters correctly send-blocked by exit goals (Garcia, Lujan, Miller);
+Reply-to-Paola Slack ping live. Conversions to date: 6 families, 20 POs,
+~$5.4k. (2) Never-Started AUDIT before its launch: 4 false "never started"
+pulled (Sicam, Loya, Gonzalez, Allen — sequential monthly POs prove service;
+TW match missed them, likely different email/name; pending student-name TW
+lookup). (3) NEW WAVE built on Roman's "Build it": ever-held QTL-Charter
+status-history scan (full portal, 315 ever-held; only 4 hold it now) ∪
+charter intake fingerprint (charter_school_family_/student_school) →
+**189 cold-revival prospects** (charter-interested, NEVER any charter deal,
+reachable, minus live-funnel/OPEN_DEAL/prior-repliers/tests). List 3188,
+emails 220327810721 + 220321043819 (em-dash-free per new rule), workflow
+1872725354 (OFF, pending Roman publish+toggle; goal = ANY charter deal OR
+reply). Reply-ping workflow extended to list 3188. (4) Email copy clarity
+pass (Roman): plain English, no "26/27" jargon, "at no cost to you" removed
+on Roman's veto, firstname fallback "there" everywhere; sent win-back pair
+left untouched.
+**Files:** portal-side; scratchpad tooling (uncovered_final.py,
+status_history_scan.py, build_prospects.py) — promote to scripts/ if the
+cold-revival becomes a recurring motion.
+## 2026-08-25 — Badge files committed, with an alteration guard (#AP044)
+
+**What:** the NSSA-supplied `.png` (1200x1200) and `.svg` now live at
+`marketing/assets/nssa/nssa-tutoring-program-design-badge-2026-2029.{png,svg}`,
+alongside the existing `marketing/assets/` logo convention. `asset_path` and
+`asset_path_svg` point at them, so `logo_ready: true` is now backed by files
+rather than a promise.
+
+Copied byte-for-byte from the originals on Roman's Desktop — verified identical
+by sha256 before committing, and the PNG was opened and read to confirm it is
+the real Badge (A+ Tutoring, 2026-2029) rather than a screenshot or a
+placeholder.
+
+**The guard:** NSSA permits **no alteration of the Badge image, including text
+or design**. That is a rule no code can enforce by reading a policy, so the
+sha256 of each file is recorded in `credentials.yml` and asserted by
+`test_badge_files_exist_and_are_unaltered`. A recolour to fit a palette, a crop,
+or an innocent re-export through an image tool all change the hash and fail the
+test. Verified by appending one byte to the PNG: the test failed with
+"PNG has been ALTERED", and passed again on restore.
+
+This matters because the graphics pipeline exists to composite and transform
+images. Without the guard, an automated resize is exactly how an altered
+trademark would ship without anyone deciding to alter it.
+
+**Also:** `test_null_field_never_renders_none` was pointed at
+`usage_guidelines_url`, which is the field that is null now that `asset_path` is
+populated. The behaviour under test is unchanged; only the example moved.
+
+**Verified:** 18 credential tests, full suite 284.
+
+**Files:** `marketing/assets/nssa/` (2 new), `knowledge/credentials.yml`,
+`scripts/tests/test_credentials.py`.
+
+---
+## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
+
+**Roman supplied NSSA's "Promotion Guidelines & Messaging" doc and the Badge
+image.** The terms are now encoded in `knowledge/credentials.yml` under
+`usage_rules` rather than paraphrased, and pushed into the skills that write
+copy — a rule that lives only in a yaml file never reaches the agent drafting a
+blog post.
+
+**The term that constrains us most, and was not something we would have
+guessed:**
+
+> "This Badge denotes **quality of design, not quality of implementation or
+> effectiveness**."
+
+Our content leads with outcome data — 75%, 87.5%, +19.4 RIT. Putting the Badge
+beside those figures implies Stanford validated our *results*. It did not; it
+reviewed how the program is designed. This is a live risk in exactly the assets
+we produce: the spotlight case-study credibility block sits directly above the
+results table. `aplus-fact-check` now flags the fusions specifically —
+"Stanford-validated results", "NSSA-verified outcomes", a sentence where the
+Badge is the subject and an outcome figure the object, or the Badge placed
+inside a results table rather than beside it.
+
+**Other terms now enforced:**
+- **The image may not be altered in any way**, including text or design. That
+  lands on `aplus-graphic-prompts` and the compositing pipeline: no recolouring
+  to fit a palette, no cropping, no retyping as vector, no compositing into a
+  generated image. Supplied file as-is or leave it out.
+- **"Badge" is always capitalised** (NSSA's rule, now a fact-check flag).
+- **Stanford attribution is granted** — "the National Student Support
+  Accelerator at Stanford University" is NSSA's own approved framing, and it is
+  far stronger for a teacher audience than the bare acronym. The three approved
+  messages are recorded verbatim so agents lean on the issuer's words.
+- Social attribution handles and hashtags recorded for the social skills.
+
+**`logo_ready` flipped to true, but `asset_path` is still null.** The files live
+in an NSSA-supplied Google Drive folder and are not in the repo. A consumer must
+check `asset_path`, not just `logo_ready`, or it will try to render `None` — the
+test says so explicitly and will need updating when the files land.
+
+**Superseded:** the earlier entry treating the live scholarship funnel's "more
+than one session" as an overclaim. Danielle (Slack 2026-08-24) explained it:
+teachers may nominate **multiple students, one session each**. The funnel was
+right and my reading was wrong.
+
+**Verified:** 18 credential tests (3 new, including one asserting the
+effectiveness rule actually reached the fact-check skill), full suite 284.
+
+**Files:** `knowledge/credentials.yml`, `marketing/skills/aplus-fact-check/
+SKILL.md`, `marketing/skills/aplus-graphic-prompts/SKILL.md`, 5 × content
+`SKILL.md`, `scripts/tests/test_credentials.py`.
+
+---
+## 2026-08-25 — NSSA badge cleared for marketing use; image stays gated (#AP044)
+
+**Roman:** "i just want it to be known by our agents that we received the NSSA
+badge. its a big thing to include in our marketing emails and marketing content."
+
+The first pass shipped `public_ready: false`, which meant agents were *forbidden*
+from using it. That was the opposite of the intent. **`public_ready: true`.**
+Stating a credential we hold is a statement of fact and Roman is the claim
+authority.
+
+**The badge IMAGE is a separate decision and stays shut** — new `logo_ready:
+false`. Usage guidelines govern display of NSSA's *mark*: size, clear space,
+placement, whether it may sit beside our logo. Those are unread, and a trademark
+is not ours to render however we like. A factual sentence carries no such risk.
+Splitting the two means the marketing value is available now while the one thing
+that actually needs permission stays blocked.
+
+**The gap that would have broken this quietly:** content passes through
+`aplus-fact-check` before publishing, and that skill's verified-claims table
+knew nothing about the badge. The blog agent would have written a true claim and
+our own fact-checker would have flagged it as unverified, or burned searches
+trying to confirm it. The table now carries the credential, points at
+`knowledge/credentials.yml` as the source, and lists what to flag instead:
+a missing term window, wording that does not match `claim_string`, embellishment
+("NSSA-certified", "NSSA-accredited", "NSSA-endorsed", "NSSA-approved provider",
+"NSSA-rated" — none of which is what we hold), and any use of the image while
+`logo_ready` is false.
+
+**Five content skills** (b2b/b2c brand kits, blog-longform, spotlight case
+study, danielle-voice) now say the badge is a differentiator worth using, with
+guidance rather than just permission: lead with what it means before the
+acronym, because most readers have never heard of NSSA; give it one clean
+mention in a credibility block rather than three scattered ones; never
+embellish; text only.
+
+**A tension worth recording.** Writing that guidance put the claim string into
+six files, and `test_no_hardcoded_claim_strings_in_repo` caught it immediately.
+But the test was also too strict: it forbade even *naming* the credential, and a
+skill cannot teach a badge it may not name. Resolved by separating the two
+things — skills name the credential and point at
+`knowledge/credentials.yml` for the wording; the test now guards the **claim
+string with its term window**, which is the part that goes stale on renewal.
+It lives in exactly one place, plus tests and this changelog.
+
+**Verified:** 16 credential tests, full suite 282 passed.
+
+**Files:** `knowledge/credentials.yml`, `marketing/skills/aplus-fact-check/
+SKILL.md`, 5 × content `SKILL.md`, `scripts/credentials.py`,
+`scripts/tests/test_credentials.py`.
+
+---
+## 2026-08-25 — NSSA badge: one credentials file, gated in code (#AP044)
+
+**What:** A+ earned the **NSSA Tutoring Program Design Badge, 2026-2029**. Rather
+than putting that string into agent prompts, templates and copy files, it is
+declared once in **`knowledge/credentials.yml`** and every consumer reads from
+there through `scripts/credentials.py`.
+
+**Why one file:** a claim copied into N places goes stale in N places, and this
+one has a hard expiry. Same doctrine as the HubSpot property registry: declare
+once, read everywhere, never duplicate. `grep -ri "program design badge"` is a
+test (`test_no_hardcoded_claim_strings_in_repo`), not a convention.
+
+**Where it lives, and why not `shared/`:** the #AP044 handoff proposed
+`shared/credentials.yml`. There is no `shared/` data directory at the repo root
+(`marketing/scripts/shared/` is script code), while `knowledge/` is already
+defined by its own README as "material that agents read but do not generate".
+Creating `shared/` would have been the parallel home the handoff warns against.
+
+**The gate is code, not convention.** `scripts/credentials.py` fails CLOSED and
+raises rather than emitting a partial claim, because a credential that renders
+as an empty string inside a vendor packet is worse than a loud build failure:
+- `public_ready: false` → `CredentialNotPublic`. **Currently false** and stays
+  false until Roman reads NSSA's usage terms.
+- surface not in `approved_surfaces`, or in `prohibited_surfaces` →
+  `CredentialSurfaceNotApproved`.
+- past `expires_on` → `CredentialExpired`.
+- a null field (`asset_path` today) never renders the string "None".
+
+**Two additions to the proposed schema:** `prohibited_surfaces` (call-agent
+scripts and SMS — SMS has no room for the term window, and a claim without it is
+a defect by Roman's own rule), and `expires_on_confirmed`, so the expiry guard
+can say out loud when its own input is a guess.
+
+**Expiry guard:** `scripts/credential_expiry_check.py` +
+`.github/workflows/credential-expiry.yml`, monthly, warns at 180 days, escalates
+after expiry. **Never remediates** — it does not edit copy, retire a claim, or
+flip `public_ready`. Verified against all three states by overriding today.
+
+**Wired:** messenger (`{{credentials.<id>.<field>}}` as an available merge field,
+never auto-inserted), and the skills that produce partner-facing language —
+b2b/b2c brand kits, blog-longform, spotlight case study, danielle-voice — each
+told to read the claim verbatim and to check `public_ready` first.
+
+**Found while wiring, not in the brief:**
+1. **The blog agent already writes about NSSA badging as a market trend.** A
+   published post argues "NSSA-style quality screens favor embedded providers
+   like A+", written when we did not hold the badge. It now argues for a screen
+   we passed without disclosing that. Content opportunity and a disclosure
+   question.
+2. **`aplus-research/SKILL.md` lists NSSA as a neutral primary research source.**
+   We now hold their credential. A disclosure note was added: citing NSSA for
+   field research is fine, leaning on NSSA to validate A+ is not, without saying
+   why the relationship exists.
+
+**Roman 2026-08-25:** expiry is **August 2029** (`2029-08-31`; day-of-month not
+stated, and the 180-day warning lands the same either way). Badge image files
+and usage guidelines are **not yet in hand** — both stay null, and finding a URL
+online will not be enough to flip the gate. The terms have to be read.
+
+**Correction to the #AP044 handoff (Roman 2026-08-25):** the handoff named a
+second repo, `~/code/skills`, holding "proposal or packet generators". **Neither
+exists.** `aplus-agents` is the entire surface, and a search here found no
+proposal or packet generator either — the only "proposal" files are internal
+HubSpot consolidation docs. The first version of this entry recorded those
+generators as "not reachable", which implied they were somewhere else. They are
+nowhere.
+
+Consequence recorded in `credentials.yml`: `approved_surfaces` is now annotated
+by who produces each surface. Two are agent-produced (case studies, blog author
+bio) and resolve through the gate; two are produced by Danielle **by hand**
+(charter vendor packets, intervention proposals) with this file as their
+reference; two live outside the repo entirely (website, email signature) where
+nothing here can enforce the gate, so they become a human checklist item when
+`public_ready` flips. The list is permission, not automation.
+
+**Verified:** 15 new credential tests; full suite 281 passed. `registry_check`
+clean apart from the pre-existing unregistered `automation-audit.yml`.
+
+**Files:** `knowledge/credentials.yml` (new), `scripts/credentials.py` (new),
+`scripts/credential_expiry_check.py` (new), `scripts/tests/test_credentials.py`
+(new), `.github/workflows/credential-expiry.yml` (new),
+`ops/messenger/messenger.py`, 6 × `marketing/skills/*/SKILL.md`, `registry.yml`,
+`docs/FLEET.md`.
+
+---
+## 2026-08-24 — Spotlight Orchestrator: `--reel-only` takes a batch; the real blocker escalated
+
+**Reported:** Paola, a fifth time on the same asset — three existing case
+studies (Amelia, Ethan, Isabella) are missing their Animated Spotlight Reels.
+Backfill request, not a bug: build the reels with the existing pipeline, match
+the Wyatt spec, do not touch the other assets in those packs.
+
+**Diagnosis (correcting the filed one):** the approved plan was, for the fourth
+session running, "locate the bundles under `marketing/aplus-content/`, run
+`build_reel.py`, deliver with `deliver_reel.py`". Re-verified here rather than
+taken on trust, and still unrunnable: `marketing/aplus-content/` does not exist
+and is gitignored (bundles are 30-day Actions artifacts built in the runner),
+and there are no Gemini/OpenAI/Slack credentials and no ffmpeg in this checkout.
+The plan's one code item — "consider adding a `--reels-only` flag so future
+single-asset backfills don't require a bespoke run" — **already shipped** on
+2026-08-20 as `--reel-only BUNDLE`. So the approved plan contained nothing this
+session could execute and nothing left to build.
+
+**Why the reels still have not arrived, plainly:** `--reel-only` cannot be run
+by the people who need it. There is no `rerender-reel` Actions workflow to match
+`rerender-textstory.yml`, and no workflow anywhere invokes `--reel-only`
+(verified: zero matches for `reel-only` under `.github/workflows/`). It is a
+command that only runs on a laptop that happens to have Veo/Gemini/OpenAI/Slack
+keys, ffmpeg, and a hand-unpacked artifact. The three sessions below each named
+this as the blocker and each was scoped out of `.github/workflows/`; this
+session was too. Four consecutive sessions have now improved a command nobody
+can invoke while the asset count delivered to Paola stayed at zero. **This is an
+escalation, not another footnote:** the next action on this agent should be the
+`rerender-reel` workflow, and it should be scoped in.
+
+**Fix (the honest minimal one, in scope):** `--reel-only` now takes one or more
+bundles, because this report is the first to ask for a batch and three bespoke
+invocations are three chances to mistype an artifact path with no single verdict
+at the end. Every bundle is preflighted before any of them generates anything,
+so a bundle unpacked one level off is named up front instead of surfacing after
+its predecessors have spent Veo credit; if any bundle fails preflight, nothing
+is generated and nothing is delivered (the approved plan's "stop and report
+exactly which student and which input is missing"). Each bundle then gets its
+own run record and its own `REEL_RECOVERY_TIMEOUT_S` budget — per student, not
+split across the batch — and a per-bundle summary plus a batch exit code at the
+end. `--reel-thread-ts` is rejected with more than one bundle: it names one case
+study's review thread, so a batch sharing it would drop every student's reel
+into one family's thread. Repeated paths collapse so a bundle named twice is not
+delivered twice. `_bundle_blockers` splits the bundle-shaped preconditions out
+of `_reel_blockers` so the batch preflight reports a verdict per student without
+repeating the run-wide env/binary blockers once per student; `_reel_blockers`
+delegates to it and its output is unchanged.
+
+**Verified:** 47 stubbed assertions across 11 scenarios with `stage_reel`, the
+run-state writers and the Slack alert faked — no Veo, Gemini, OpenAI, ffmpeg or
+Slack touched. Single-bundle behavior byte-identical (no preflight noise, no
+batch summary, the verified "Reel recovery FAILED — nothing was delivered."
+string intact); three bundles run in order with distinct run ids; a bundle
+missing `metadata.md` and a nonexistent directory each block the whole batch
+before the first generation call; a mid-batch failure still runs the bundles
+behind it, exits 1, names the failed one, and does **not** claim the batch
+delivered nothing; duplicate paths collapse to one run; `--reel-thread-ts`
+accepted for one bundle and rejected with exit 2 for two; `--dry-run` renders
+without delivering; a normal `--source` run and the standalone
+`--reel-thread-ts` guard are unaffected by the `nargs` change. Plus one real
+unstubbed run confirming the preflight rejects a bad batch with exit 1 and
+writes no run state.
+
+**The three reels are still not generated.** That is what Paola asked for and
+this session could not produce it, for the same reason as the last three: no
+bundles, no credentials, no ffmpeg here. What changed is that when the batch is
+finally runnable it is one command with one verdict.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`, `docs/CHANGELOG.md`.
+
+---
+## 2026-08-21 — Spotlight Orchestrator: the reel now names its blocker, in Paola's thread
+
+**Reported:** Paola, a fourth time on the same bundle (Amelia) — "generate and
+deliver the superhero video reel for an existing Spotlight case study, **or
+surface the specific blocker preventing it**." The second clause is the new
+part, and it is the one nothing in the three entries below has answered.
+
+**Diagnosis (correcting the filed one):** the approved plan was again "locate
+the bundle under `marketing/aplus-content/`, run `build_reel.py`, deliver with
+`deliver_reel.py`". Confirmed unrunnable here for the third session running, and
+re-verified rather than taken on trust: `marketing/aplus-content/` does not
+exist and is gitignored (the bundle is a 30-day Actions artifact built in the
+runner); `GEMINI_API_KEY`, `OPENAI_API_KEY` and `SLACK_BOT_TOKEN` are all unset
+in this checkout; `ffmpeg`/`ffprobe` are not installed. `stage_reel` is wired
+into `STAGE_ORDER` between `slack` and `textstory` and does run, so "the
+orchestrator didn't run it" remains wrong. What was still true, and is what this
+session fixes, is that when it runs and fails **nobody learns why**:
+
+1. **The alert only ever said "exit 1".** `run_step` wrote the failing step's
+   stdout/stderr to the runner log and then threw away the text, raising
+   `reel {name} failed (exit {returncode})`. That string is what reached
+   `reel_status`, the completion summary and the Slack heads-up. Whether Veo
+   refused one beat on safety grounds, a key was unset, or ffmpeg was missing,
+   the operator-visible output was identical — which is how four reports could
+   be filed about this reel without the cause ever being written down.
+2. **The heads-up goes to a channel that is unset by default.** `_post_stage_alert`
+   no-ops without `SLACK_FAILURE_CHANNEL`, and the workflow passes
+   `vars.SLACK_FAILURE_CHANNEL || ''`. Even when it is set it is an ops channel,
+   not the review thread Paola is waiting in. "Surfaced" to a channel nobody
+   reads is indistinguishable from silence — and silence is exactly what she has
+   had four times.
+3. **A run doomed by config still spent the generation budget first.** The steps
+   happen to be ordered cheapest-first only by accident: `stills`/`voice`/`clips`
+   need `GEMINI_API_KEY`, but `assemble` is the one that needs `OPENAI_API_KEY`
+   (Whisper word timings) and ffmpeg. A recovery missing only the Whisper key
+   renders 5 Gemini 2K stills, 5 TTS lines and 4 Veo clips — real money, ~10
+   minutes — and only then dies, twice, once per attempt.
+
+**Fix:** all in `stage_reel` and its alert path.
+`_reel_blockers()` pre-flights what the steps actually read — `metadata.md`,
+`GEMINI_API_KEY`, `OPENAI_API_KEY`, `ffmpeg`, `ffprobe`, and `SLACK_BOT_TOKEN`
+when the run will deliver — and names every missing one before the first step
+runs, so a run that cannot finish says so instead of buying its way to the same
+conclusion. `_have_bin` mirrors `reel_common`'s resolution order so an explicit
+`$FFMPEG`/`$FFPROBE` override is not reported as missing. `_last_lines()` keeps
+the last three non-empty lines the failing step printed — stderr first (where
+the `make_*` scripts `sys.exit()`), falling back to stdout (where `make_clips.py`
+reports `NO VIDEO (safety/RAI)` and names the refused beat) — and carries them
+into the raised error, so `reel_status` and both alerts now read
+`reel clips failed (exit 1): … struggle: NO VIDEO (safety/RAI) … WITH FAILURES
+['struggle']` instead of `exit 1`. `_post_thread_note()` posts a one-line plain
+note into the case study's own review thread whenever the reel fails and a
+thread exists, so the blocker lands where the reel was promised; the ops-channel
+heads-up is unchanged in content and still fires alongside it. Recovery wording
+now says the thread got that note rather than claiming nothing was posted to it.
+
+**Verified:** stubbed scenarios with `subprocess.run`, the state writers and both
+Slack posters faked — no Veo, Gemini, OpenAI, ffmpeg or Slack touched. Blocker
+enumeration with nothing available, with `GEMINI_API_KEY` only, and with
+everything satisfied (including the `$FFMPEG` override path and the delivering
+vs. render-only distinction for `SLACK_BOT_TOKEN`); a blocked stage returning
+without executing a single step (asserted by making `subprocess.run` raise);
+`_last_lines` preferring stderr, falling back to stdout, handling empty output
+and truncating at 400 chars; a Veo RAI refusal on the `clips` step surfacing the
+beat name in both the thread note and the ops alert after the retry; the happy
+path still running all six steps in order and posting nothing; and `--dry-run`
+still stopping after `build_reel` without requiring a Slack token.
+
+**The reel itself is still not generated** — fourth session, same three reasons:
+no bundle, no credentials, no ffmpeg in this checkout. This session answers the
+second half of what Paola asked for ("or surface the specific blocker"), not the
+first.
+
+**Left undone deliberately:** still no `rerender-reel` Actions workflow to match
+`rerender-textstory`, which is the thing that would put this recovery on a
+button in CI where the keys and ffmpeg live. Three consecutive sessions have now
+been scoped out of `.github/workflows/` and `registry.yml` (where the reel
+scripts are still absent from `spotlight-orchestrator`'s `depends_on`), and
+three consecutive reports have ended without the asset. This is the fix; it
+needs a decision from Roman rather than a fourth note here.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
+## 2026-08-21 — Spotlight Orchestrator: the reel recovery run can now finish
+
+**Reported:** Paola, a third time on the same bundle (Amelia) — asking for just
+the missing superhero reel to be generated against the existing Spotlight
+bundle, without regenerating any of the other assets.
+
+**Diagnosis (correcting the filed one):** the approved plan was to locate
+Amelia's bundle, run `make_script` → … → `build_reel` against it, and deliver
+with `deliver_reel.py`. None of that is runnable from this repo, for the reasons
+the two entries below already record: `marketing/aplus-content/` is gitignored
+and built inside the CI runner (there is no bundle here), and there is no
+`.env`, no `GEMINI_API_KEY`/`OPENAI_API_KEY`/Slack token and no `ffmpeg` in this
+checkout. The invocation the plan describes already exists too — `--reel-only`
+shipped 2026-08-20 and does exactly "reel and nothing else". So the honest
+question was not *how do we invoke it* but *does that invocation actually
+finish*, and two things say no:
+
+1. **Recovery inherited the pipeline's 900s budget.** `REEL_TIMEOUT_S` exists to
+   stop a stuck Veo poll from taking the textstory + logsheet stages and the
+   completion summary down with it. `--reel-only` has no later stages to
+   protect — the reel *is* the job — but got the same 900s ceiling, shared
+   across both attempts. A cold recovery renders 5 Gemini 2K stills, 5 TTS
+   lines and 4 Veo clips (whose submit alone backs off up to 90s × 6 on a 429)
+   before ffmpeg starts. When the first pass eats the budget the retry dies on
+   `budget exhausted before script` without running a single step, and recovery
+   mode exits 1 — Veo spend burned, nothing delivered.
+2. **A failed recovery told the operator to run the recovery.** `_post_reel_alert`
+   has one message: "download the bundle artifact from this Actions run, unpack
+   it under `marketing/aplus-content/`, then run `--reel-only …`". Correct for a
+   pipeline miss; circular for a `--reel-only` run, which is already local,
+   already has the bundle, and has no Actions artifact to fetch. It also frames
+   the failure as "*Spotlight reel is missing* — blog, graphics and text-stories
+   unaffected", i.e. as a fresh pipeline miss rather than "your recovery just
+   failed". Pointing at a recovery nobody can act on is precisely how the first
+   two reports ended with the reel still undelivered.
+
+**Fix:** `REEL_RECOVERY_TIMEOUT_S` (default 3600s, `SPOTLIGHT_REEL_RECOVERY_TIMEOUT_S`)
+applies in `--reel-only` mode; the pipeline keeps 900s unchanged, and the
+"budget exhausted" message now names whichever budget actually ran out.
+`_post_reel_alert` gets recovery wording: the recovery failed, nothing else in
+the pack was touched, nothing was posted to the student's thread, the steps
+resume so one more pass is worth it for a transient 429, and if the same step
+fails twice fix that step instead of looping. Pipeline wording is byte-identical.
+`run_reel_only` also states its premise before doing anything — "no reel in this
+bundle yet — confirmed missing", or a warning that an existing
+`spotlight-reel.mp4` will be rebuilt and delivered a second time into the
+review thread. Not blocked (a deliberate rebuild is legitimate), just never a
+surprise.
+
+**Verified:** 22 stubbed assertions across nine scenarios with `subprocess.run`,
+the state writers and the Slack alert faked — no Veo, Gemini, OpenAI, ffmpeg or
+Slack touched. Happy path (six steps in order, thread-ts passthrough, exit 0);
+recovery budget applied to generation with delivery still budgeted separately;
+pipeline mode still 900s; a slow first attempt now leaves the retry room to
+re-run every step, and the failure names the real step rather than the budget;
+a failed recovery exits 1, delivers nothing, and posts an alert with no artifact
+instructions and no prefilled restart command; pipeline alert text unchanged;
+both pre-flight messages; both bundle guards; `--reel-thread-ts` without
+`--reel-only` still exits 2.
+
+**The reel itself is still not generated.** That is the deliverable Paola asked
+for and this session could not produce it — no bundle, no credentials, no
+ffmpeg here. What changed is that the recovery run, when someone with the
+artifact and the keys does start it, is no longer capped at 15 minutes and no
+longer answers its own failure with instructions to start over.
+
+**Left undone deliberately:** still no `rerender-reel` Actions workflow to match
+`rerender-textstory` — the thing that would make this a button in CI where the
+keys and ffmpeg live, and the reason all three reports have ended without the
+asset. This session was scoped out of `.github/workflows/` and `registry.yml`
+(where the reel scripts are still missing from `depends_on`), same as the last
+one. Escalating it rather than re-noting it is the follow-up.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
+## 2026-08-20 — Spotlight Orchestrator: a missing reel can now actually be recovered
+
+**Reported:** Paola, a second time on the same bundle (Amelia) — the superhero
+reel still has not arrived. The earlier entry below made the miss *visible*; it
+did not make it *fixable*, so the deliverable never showed up.
+
+**Diagnosis (correcting the filed one):** the approved plan assumed the reel
+step had been skipped for this bundle and that the reel could be re-run against
+it from the repo. Neither holds. `stage_reel` is wired into `STAGE_ORDER` and
+`STAGE_DISPATCH` between `slack` and `textstory` and it ran — it is not skipped.
+And `marketing/aplus-content/` is gitignored and built inside the CI runner, so
+there is no bundle in this checkout to point `build_reel.py` at, and no
+Gemini/OpenAI/Slack credentials here to run it with. The real defect is the one
+underneath both: **the reel had no recovery path at all.** The textstory stage
+has had one since it shipped — the "Re-render textstories for a bundle"
+workflow pulls the bundle artifact and re-runs just that builder. The reel got
+none. The orchestrator has `--stop-after` but no way to *start* mid-pipeline, so
+the only "recovery" was a full re-run.
+
+**Why it matters:** the heads-up added below told the operator to "re-dispatch
+the Drive folder with SPOTLIGHT_REEL=1; the reel steps resume from whatever
+already rendered." Every clause of that is wrong in CI. A re-dispatch starts at
+`init` in a fresh runner, so nothing resumes — every Veo clip and VO regenerates
+from zero, at cost and with the same 429 exposure. It rewrites the HubSpot draft
+under `--force-update` and re-posts Paola's entire review thread a second time.
+And `SPOTLIGHT_REEL` is not a workflow input, so it cannot be set from the
+Actions UI at all. Faced with that, nobody ran it — which is why a visible miss
+stayed an undelivered one.
+
+**Fix:** `--reel-only BUNDLE` on the orchestrator — generate + deliver the reel
+against an already-built bundle and nothing else. `--source` is no longer
+unconditionally required (validated in `main()` instead); `--reel-thread-ts`
+lands the recovered reel in the case study's existing review thread rather than
+starting a new top-level post. Unlike the pipeline, where the reel is a
+non-fatal bonus, recovery mode exits 1 if the reel does not ship — delivering it
+is the whole point. `--dry-run` renders without posting. `_post_reel_alert` now
+names this command, prefilled with the bundle name and thread ts, instead of the
+re-dispatch advice.
+
+**Verified:** eight stubbed scenarios with `subprocess.run` and the Slack alert
+faked — no Veo, OpenAI, ffmpeg or Slack touched (happy path with thread-ts
+passthrough; flaky step rescued by the resumable retry; hard failure → exit 1,
+no delivery, alert naming the new command; delivery failure → exactly one
+delivery attempt, no double-post; `--dry-run` builds but does not post; missing
+bundle dir and bundle-without-metadata.md rejected before anything runs;
+`SPOTLIGHT_REEL=0` no longer reads as success in recovery mode) plus CLI wiring
+(arg validation, `--help`, and a normal `--source` run still reaching its
+stages).
+
+**Still not verified against Amelia's own bundle** — same reason as below: it
+lives in a 30-day Actions artifact, not in this checkout, and rendering it needs
+credentials this session does not have. What changed is that the recovery is now
+a command Roman can actually run against that artifact.
+
+**Left undone deliberately:** there is no `rerender-reel` Actions workflow to
+match `rerender-textstory` (which would download the artifact and invoke
+`--reel-only` in CI, where the keys and ffmpeg live), and the reel scripts are
+still absent from the registry's `depends_on` for `spotlight-orchestrator`. This
+session was scoped out of both `.github/workflows/` and `registry.yml`. Together
+they are the obvious follow-up: with the workflow in place the recovery is a
+button, not a local run.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
+## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
+
+**Reported:** Paola — the case study for Amelia arrived in
+#student-spotlight-ready with the blog, graphics and text-stories, but no
+superhero reel, and nothing said one had been attempted.
+
+**Diagnosis (correcting the filed one):** the reel IS wired into the
+orchestrator — `stage_reel` sits in `STAGE_ORDER`/`STAGE_DISPATCH` between
+`slack` and `textstory`, and the workflow installs ffmpeg for it. The reel
+scripts missing from the registry's `depends_on` is a documentation gap, not
+the cause. The real defect is that the stage has no failure signal at all:
+`stage_reel` caught every exception, wrote `reel_status` into
+`marketing/state/spotlight-runs.json` (gitignored — it does not survive the CI
+job), printed to stderr, and exited 0 under a "SPOTLIGHT ORCHESTRATION
+COMPLETE" banner that never mentioned the reel. The neighbouring textstory
+stage already solved exactly this with a SLACK_FAILURE_CHANNEL heads-up; the
+reel stage was never given one. On top of that a single flaky Veo beat killed
+the whole reel with no retry, and `make_clips.py` polls Veo with no ceiling of
+its own, so a stuck generation could burn the job's 30-minute timeout and take
+the later stages down with it.
+
+**Why it matters:** the reel is the only asset in the pack whose absence is
+invisible. Every other piece either lands in the thread or fails the run. A
+bonus asset being non-fatal is right; being unobservable is not — the miss
+surfaces only when a human notices the gap days later, which is exactly how
+this was found.
+
+**Fix:** in `stage_reel` — one retry of the generation steps (all of them are
+resumable, so the retry only regenerates what failed); a shared wall-clock
+budget, `SPOTLIGHT_REEL_TIMEOUT_S` (default 900s), so the stage cannot eat the
+job; delivery kept to a single attempt and budgeted separately so a retry can
+never double-post into Paola's review thread; and a Slack heads-up on failure
+via the same channel the textstory stage uses. `stage_complete` now prints the
+reel status. The textstory alert was refactored onto the shared
+`_post_stage_alert` helper with its message unchanged.
+
+**Verified:** seven stubbed scenarios against `stage_reel` (happy path, flaky
+step rescued by the resumable retry, hard failure, hang past the budget,
+delivery failure, `--skip-hubspot`, no failure channel configured) — no APIs,
+Slack or ffmpeg touched. Textstory alert text confirmed byte-identical.
+
+**NOT verified against Amelia's bundle.** Bundles are gitignored and built in
+CI (30-day Actions artifact), and re-running the reel needs Gemini/OpenAI/Slack
+credentials, so the approved plan's steps 1–3 and 5 (locate the bundle, re-run
+the pipeline standalone, diff against the last good reel, deliver to Paola)
+cannot be done from the repo. They need a re-dispatch of Amelia's Drive folder.
+
+**Left undone deliberately:** the reel scripts are still absent from the
+registry's `depends_on` for `spotlight-orchestrator` — the session was scoped
+out of `registry.yml`. Worth a one-line follow-up.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+
+---
+## 2026-08-20 — Photo booth registered (39 agents, new Events engine)
+
+**What:** `sage-oak-booth` is in `registry.yml` — the Cloudflare Worker + Pages
+booth from PR #66, under a new `Events` engine. Written by reading `worker.js`
+rather than the README, so the entry lists what it actually does: upserts the
+HubSpot contact by email with the five events-group properties, applies a
+CREATE-ONLY persona stamp by self-identified role (teacher → TOR persona + lead
+status, administrator → Decision Maker, support_staff → none, existing contacts
+never overwritten — po_inbox doctrine), logs an email engagement and a photo
+note on the contact, sends the framed photo via Resend, and sends MMS from the
+main A+ line via JustCall.
+
+**Why now:** PR #66 merged mid-session and `registry_check.py` flagged
+`booth/wrangler.toml` within a minute — the discovery heuristic added earlier
+today doing exactly its job on a real merge rather than a simulated one.
+
+**Two things recorded in the entry that are not in its README:**
+- It is hand-deployed in TWO pieces (`wrangler deploy` + `wrangler pages
+  deploy`); editing this repo makes neither live.
+- **REVIEW ITEM for Roman:** `GET /photo/<key>` is public and unauthenticated —
+  unguessable-key privacy only — and the archive copy is written with NO TTL, so
+  attendee photos stay publicly retrievable indefinitely. Reasonable for MMS
+  delivery, worth a deliberate decision for a school event.
+
+**Also flagged:** status is `active`, but this is scoped to one event. When Sage
+Oak BTSC 2026 is done it should go `unverified` or be retired rather than sit
+`active` forever.
+
+**Files:** `registry.yml`, `ops/fleet-health/fleet_brief.py` (Events in the
+engine order), `docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-25 — Booth Photo URL property (Summit follow-up sequence prep)
+
+**What:** NEW contact property `aplus_booth_photo_url` ("[Agent] Booth Photo
+URL", events group) — public URL of the contact's framed booth photo, the
+personalization token for event follow-up emails (Danielle's Summit sequence).
+Backfill for the 35 salvaged Summit photos + touch-email copy follow.
+
+**Why:** Roman/Danielle 2026-08-23..25: teacher follow-up sequence runs
+HubSpot-native; photo embed needs a per-contact public URL token.
+
+**Files:** `ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md` (81→82).
+
+---
+
+## 2026-08-23 — PO texts ask for the schedule when the PO doesn't state one
+
+**What:** When a PO has no schedule and Teachworks has none either,
+`schedule_preferences` is now stamped with a general ask (new config
+`po_inbox.schedule_ask_fallback`, worded to follow the SMS template's
+"...still works for you:" colon in workflow 1603217415) so the confirmation
+text asks the family for their schedule instead of trailing off blank. The
+old ⚠️ "set the schedule manually" note becomes an ℹ️ ticket note that does
+NOT trip the 🚩 gap DM — nothing manual remains. Suite 247 green.
+
+**Why:** Roman 2026-08-22: "If the schedule is not included in the purchase
+order, we need to include just a general phrase of please provide us your
+schedule. and that will get auto texted."
+
+**Files:** `email/src/po_inbox.py`, `email/config.yaml`,
+`email/tests/test_po_inbox.py` (blank-schedule test reworked + default test).
+
+---
+
+## 2026-08-20 — Feedback agent: the pinned channel post is not a report
+
+**What:** Intake now drops "channel furniture" before classification. A
+top-level message matching ≥2 distinct phrases from the pinned how-to-use post
+(`intake.ignore.meta_markers` in `ops/feedback-agent/config.yml`) is logged and
+skipped — nothing filed, no thread reply, marked processed so Slack retries
+don't re-run it. A companion `intake.ignore.sender_app_ids` knob ignores posts
+by a given Slack app/workflow; it ships EMPTY on purpose (below). Also withdrew
+the mis-filed report from `state/state.json` so Friday's digest doesn't count
+it against the feedback agent.
+
+**Why:** Roman posted the channel's own pinned explainer into the channel on
+2026-08-20 and the classifier filed it as an IDEA against the feedback agent
+(thread 1787258667.896529). The post is written by a human into the channel, so
+it carries no `bot_id` and the relay forwards it like any report; the classifier
+then did its job on text that describes every agent in the fleet.
+
+**Correction to the approved plan:** the plan proposed ignoring sender
+`U0AKFN28V1U` ("the Slack workflow bot at the bottom is the giveaway"). It
+isn't one — that ID is the "*Sent using* <@…>" attribution Roman's client
+appends to everything he types, including real reports (content-build carousel
+overflow 2026-08-04, call-agent exit code 2026-08-20) and his `status` queries.
+Ignoring it would have silently swallowed every report Roman files. The knob
+exists, documented, empty.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`,
+`ops/feedback-agent/config.yml`, `ops/feedback-agent/README.md`,
+`ops/feedback-agent/state/state.json`,
+`ops/feedback-agent/tests/test_meta_posts.py` (new, 7 tests green).
+
+---
+## 2026-08-20 — Screenshot relay: fix shipped, problem NOT closed
+
+**What:** Stopped debugging and wrote the state down. The relay's subtype filter
+fix is deployed (Apps Script Version 3, 2:14 PM PT) but screenshots STILL do not
+reach the agent: a screenshot posted at 2:15:57 PM produced no dispatch, while a
+plain-text reply 35 seconds earlier did. Necessary but not sufficient. Logged as
+an open weak point plus a TODO in `ARCHITECTURE.md` carrying the next diagnostic
+step (Apps Script -> Executions at 2:15:57; present = script bug, absent = Slack
+app config, most likely a missing `files:read` bot scope requiring a reinstall).
+
+**Also:** posted a correction into the pinned #agent-feedback thread. The pin
+told the team screenshots were fixed. They are not, and leaving that standing
+would have kept people posting reports into a void believing they had landed.
+The correction names Danielle's three lost reports explicitly — she has been
+reporting the same bug since Aug 13 and getting silence — and gives the
+workaround: report in text, attach the screenshot as a thread reply afterwards.
+
+**Roman should edit the pinned message itself** (it was posted under his
+account, and the API cannot edit it) to strike the "Screenshots are welcome /
+Fixed now" paragraph.
+
+**Rule going in:** do not announce this fixed again without a passing test. It
+was announced once already on a fix that was real but incomplete.
+
+**Files:** `ARCHITECTURE.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Approve + merge opened to Danielle, Paola and Emily
+
+**What:** Split `slack.approvers` out of `slack.alerts_to`. `alerts_to` still
+controls who gets @-pinged (Roman only — pinging four people on every proposal
+trains everyone to ignore pings); `approvers` controls who may fire the coding
+agent and squash-merge its PR from a thread reply. Set to Roman, Danielle, Paola,
+Emily. Falls back to `alerts_to` when unset, so older configs are unaffected.
+The proposal message now names who can act, reporter first.
+
+**Why:** Roman 2026-08-20 — "i want it that danielle or paola or emily could do
+the approve and merges." The case it unlocks: whoever reports a problem can ship
+its fix. Paola reports the missing reel, Paola approves, Paola merges — no round
+trip through Roman for work she is closest to. An unnamed permission is one
+nobody uses, hence naming the approvers in the message itself.
+
+**Not delegated:** DEMOTE registry flips stay with Roman until a Fleet Manager
+exists to verify state changes (#AP011).
+
+**Also:** posted a pinned explainer to #agent-feedback covering how to report,
+the approve/merge/no vocabulary, that screenshots now work, the FERPA rule, and
+what to do when the agent stays silent.
+
+**Files:** `ops/feedback-agent/config.yml`, `ops/feedback-agent/feedback_agent.py`,
+`docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — Feedback agent: schema debris no longer reaches HubSpot ticket subjects
+
+**What:** The classifier's free-text fields are now scrubbed of leaked schema
+fragments, the classification retries once when debris appears, and the ticket
+subject truncates on a word boundary instead of mid-token.
+
+**Why:** Caught live on Paola's spotlight report. Structured output is
+schema-constrained and `json.loads` parsed it fine — but the model lost the thread
+mid-field and wrote schema INTO a value:
+
+    summary = "...the other assets rendered successfully.','clarifying_question':"
+
+That summary flowed unvalidated into `subject: f"[AGENT] {label}: {summary[:120]}"`,
+so the drafted HubSpot ticket read `...successfully.','clari` — a corrupted subject
+line on a ticket the whole team sees.
+
+**How:** `scrub_debris()` cuts any trailing `'...','field':` fragment out of
+summary / ack_message / clarifying_question and reports which fields were dirty;
+one retry (degraded output rarely repeats), then ship the scrubbed value rather
+than fail — a slightly clipped summary still reaches a human, a crash does not.
+`truncate_words()` replaces the raw `[:120]` slice. Verified against the real
+failure plus false-positive guards: legitimate apostrophes ("Danielle's op-ed")
+and colons ("Ratio is 3:1") are untouched.
+
+**Files:** `ops/feedback-agent/feedback_agent.py`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-20 — INCIDENT: every #agent-feedback report with a screenshot was silently dropped
+
+**What:** The Slack relay dropped any message carrying a file. Slack tags an
+attachment-bearing message `subtype: "file_share"`, and the relay's filter was a
+bare `if (ev.subtype) return textOut_('ok')` — written to drop edits, deletes and
+joins. The relay answers Slack `ok`, so there was no error, no retry, and no
+Actions run. The report simply evaporated, and from the reporter's side the agent
+had ignored them.
+
+**Evidence (100% correlation across the visible channel history):** reports WITH
+a screenshot — Danielle Aug 13, Aug 17, Aug 18; Paola Aug 20 — got no agent reply
+at all. Reports WITHOUT one — Paola Aug 14, Roman Aug 20 09:21, the Aug 20 13:11
+test — were all answered within a minute.
+
+**Why it matters more than the count suggests:** people attach a screenshot
+exactly when a problem is visual and hard to put in words, so this ate the most
+careful reports. Danielle reported the LinkedIn op-ed being cut off THREE times
+(Aug 13/17/18), each with a screenshot, each into a void — while the one report
+of hers that did land (Aug 11) had its fix run die on the claude-code-action bot
+guard. She has never once seen this loop work.
+
+**Fix:** allow `file_share` and `thread_broadcast` through; keep dropping edits,
+deletes, joins and bot messages. A file-only post (screenshot, no words) now
+falls back to the file title instead of being dropped for having no text. The
+dispatch payload carries `has_files` so the agent can ask what the screenshot
+shows rather than guess — it classifies from text and does not read images.
+Filter verified against seven event shapes; the script parses.
+
+**NOT LIVE YET.** This is an Apps Script: it deploys by hand from the Apps Script
+UI, and editing the file in this repo changes nothing until someone pastes it in.
+That deploy is Roman's. (Exactly the hazard the `runtime:` field added earlier
+today exists to make visible.)
+
+**Files:** `ops/feedback-agent/relay/apps-script.gs`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-08-20 — Call agent: a 100%-failure run now exits 1
 
 **What:** `ops/call_agent/call_agent.py` counts outcomes around the per-call loop
@@ -918,6 +1855,105 @@ invoices in TW, Claude cowork records payments in TW, QBO synced manually; the
 (KEEP; `is_the_online_tutor_ready_for_onboarding` + `business_license_on_file`
 reclassified KEEP-IN-PLACE). Contacts: KEEP-IN-PLACE 185→189,
 RETIRE-CANDIDATE 99→95. Verdicts now: 25 DELETE / 43 EDIT / 4 KEEP / 15 VERIFY.
+
+---
+
+## 2026-08-12 — Booth: role picker + attendee list + short consent
+
+**What:** (1) NEW `aplus_event_role` (events group, dropdown
+Administrator/Teacher/Support Staff), declared + synced; required pill picker
+on the booth form. Role now drives the create-only persona stamp:
+teacher→TOR persona+lead status, administrator→Decision Maker/Director,
+support_staff→no stamp, missing→teacher default (verified e2e). (2) NEW
+ACTIVE list 3103 "Sage Oak BTSC 2026 — Booth Attendees" on
+aplus_event_tag=sage_oak_btsc_2026 — auto-enrolls all booth contacts;
+future events get one list per appended tag option. Enrollment verified
+(<30s); team test runs (Roman/Emily/Hugh Jazz/Danielle) already enrolled,
+personas behaved per doctrine. (3) Consent copy shortened (Roman):
+"Send my photo + A+ can reach out about tutoring for my students 📸".
+
+**Why:** Roman 2026-08-12: role segmentation + "every contact that submits
+this photo booth ends up on a hubspot list."
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`,
+`ops/hubspot-schema/consolidation/KEEPERS.md` (81→82).
+
+---
+
+## 2026-08-11 — Booth round 3: enum-write bugfix, frame design, delivery=All
+
+**What:** (1) CRITICAL FIX: worker.js wrote enum LABELS ("Print") where the
+HubSpot API takes internal VALUES ("print") — every booth submission failed
+the contact upsert silently while photos still delivered (the fleet "read
+labels" rule is about reading, not writing). Verified fixed end-to-end:
+test contact created with all 6 props + TOR persona, then archived.
+(2) Email timeline logging verified live: test submission → 1 email
+engagement on the contact (subject/SENT), then archived. BCC workaround
+declined — sender isn't a HubSpot user so BCC logging would misattribute;
+API logging is deterministic. (3) Frame redesign: both logos in the header
+band, fun banners ("Best. Year. Ever. ✨" etc.), 2026–2027 school year on
+frame/attract/email, type sized for 2x3" prints (~600dpi: old 24-30px text
+printed at ~3pt). (4) Delivery "Both" → "All 3!" (email+text+print);
+aplus_booth_delivery += all (synced; "both" kept legacy). (5) Screens
+scroll when content overflows (kiosk overflow:hidden clipped the 4-card
+delivery screen with no way to reach the rest). (6) Photo retention is
+DOCUMENTED as ephemeral: email=attachment only, text=KV 7-day TTL,
+print=nothing. Archive-all option proposed to Roman, not yet approved.
+
+**Why:** The event capture chain (contact + persona + timeline email) is the
+point of the booth; the silent enum failure was defeating exactly that.
+
+**Files:** `booth/worker.js`, `booth/index.html`,
+`ops/hubspot-schema/properties.yml`.
+
+---
+
+## 2026-08-11 — Booth round 2: branding, TOR audience, JustCall texts, email logging
+
+**What:** (1) Logos: Sage Oak pennant + white A+ on attract, color A+ in the
+email. (2) All outbound links → wetutorathome.com/home-school-tutoring
+(aplustutoring.com is NOT ours — email CTA, SMS body, photo-frame footer).
+(3) TOR audience (Roman: attendees are homeschool charter TORs, not parents):
+teacher-facing copy pitching one-on-one tutoring + intervention programs, and
+booth-CREATED contacts stamped a_persona="Teacher of Record/EF/ES" +
+hs_lead_status="Charter School Teacher TOR/EF" (create-only, mirrors
+po_inbox TOR_CREATE_PROPS; existing contacts never overwritten). (4) NEW
+"Text it" delivery via JustCall MMS from the main A+ line +18188506284:
+photo stored in Workers KV (7-day TTL, UUID keys) and served publicly at
+<worker>/photo/<uuid> as the media_url; JUSTCALL_API_KEY/SECRET set as Worker
+secrets; `aplus_booth_delivery` gained option Text(text) — declared in
+properties.yml and synced (R2 skipped: not enabled on the account, KV needs
+nothing). (5) Booth photo emails logged to the contact's HubSpot timeline
+via engagements API (assoc 198; write scope verified create+delete). (6)
+Photo canvas 1200×1500 (4:5) → 1200×1800 (2:3) to fit Roman's 2x3" portable
+printer (also fits 4x6); camera preview ratio matched.
+
+**Why:** Event capture should classify TORs correctly for the fleet, deliver
+photos the way teachers actually want them, and leave a full trail (email on
+timeline) in HubSpot.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`ops/hubspot-schema/properties.yml`.
+
+**What:** New `booth/` directory: Cloudflare Worker `sage-oak-booth`
+(worker.js — `/submit` upserts the HubSpot contact with the 4 events-group
+props from PR #65 and emails the framed photo via Resend) + kiosk front-end
+(index.html — attract → banner → camera → form → delivery, client-side photo
+composite) + wrangler.toml + README. DEPLOYED live:
+Worker `https://sage-oak-booth.nameless-mountain-bafa.workers.dev` (secrets
+HUBSPOT_TOKEN + RESEND_API_KEY set via wrangler), Pages
+`https://sage-oak-booth.pages.dev`; CONFIG.WORKER_URL and ALLOWED_ORIGIN
+cross-wired; smoke-tested (CORS preflight, input validation, Pages 200).
+Sender is `photos@wetutorathome.com` — that's the Resend-verified domain
+(aplustutoring.com is NOT verified there; Roman verified wetutorathome.com
+in-session).
+
+**Why:** Sage Oak BTSC 2026 event capture — booth attendees become HubSpot
+contacts (event-tagged, consent recorded) with zero manual entry.
+
+**Files:** `booth/worker.js`, `booth/index.html`, `booth/wrangler.toml`,
+`booth/README.md`.
 
 ---
 

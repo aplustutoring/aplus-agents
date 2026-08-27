@@ -1,0 +1,201 @@
+{
+  "id": "1853067554",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "18",
+  "name": "NOT IN USE - Teacher Scholarship Program - Teacher Workflow",
+  "description": "Using workflow - Teacher Scholarship Program - Teacher - Call & NO Call Scheduled",
+  "createdAt": "2026-07-17T18:32:07.069Z",
+  "updatedAt": "2026-07-22T20:54:23.433Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "6",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-14",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "5"
+      },
+      "fields": {
+        "object_type_id": "0-1",
+        "properties": [
+          {
+            "targetProperty": "email",
+            "value": {
+              "staticValue": "{{ enrolled_object.teacher_scholarship_nomination__student_1__parent_email }}",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "firstname",
+            "value": {
+              "staticValue": "{{ enrolled_object.teacher_scholarship_nomination__student_1__parent_first_name }}",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "lastname",
+            "value": {
+              "staticValue": "{{ enrolled_object.teacher_scholarship_nomination__student_1__parent_last_name }}",
+              "type": "STATIC_VALUE"
+            }
+          },
+          {
+            "targetProperty": "phone",
+            "value": {
+              "propertyName": "teacher_scholarship_nomination__student_1__parent_phone_number",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_last_name",
+            "value": {
+              "propertyName": "teacher_scholarship_nomination__student_1__student_first_name",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_last_name_if_diff_from_parent",
+            "value": {
+              "propertyName": "teacher_scholarship_nomination__student_1__student_last_name",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "grade_level",
+            "value": {
+              "propertyName": "teacher_scholarship_nomination__student_1__student_grade_level",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "teacher_of_record_email_address",
+            "value": {
+              "propertyName": "email",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "parent_concerns_what_can_we_do_to_help_",
+            "value": {
+              "propertyName": "teacher_scholarship_nomination__student_1__subjects_needing_support",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "student_additional_information",
+            "value": {
+              "propertyName": "teacher_scholarship_nomination__student_1__student_information_from_teacher",
+              "type": "OBJECT_PROPERTY"
+            }
+          },
+          {
+            "targetProperty": "teacher_scholarship_nomination__yesno",
+            "value": {
+              "staticValue": "Yes",
+              "type": "STATIC_VALUE"
+            }
+          }
+        ],
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 449
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "fields": {
+        "content_id": "217560540083"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "eventFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_form_id",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "ae96d30e-a13a-4565-878d-e29d16710580"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "eventTypeId": "4-1639801",
+        "operator": "HAS_COMPLETED",
+        "filterBranchType": "UNIFIED_EVENTS",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "listMembershipFilterBranches": [],
+    "type": "EVENT_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_322547788",
+      "objectTypeId": "0-2",
+      "associationTypeId": 279,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_322547790",
+      "objectTypeId": "0-47",
+      "associationTypeId": 199,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_322547789",
+      "objectTypeId": "0-3",
+      "associationTypeId": 4,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

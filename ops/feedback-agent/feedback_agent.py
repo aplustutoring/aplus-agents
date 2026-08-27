@@ -82,6 +82,39 @@ def strip_client_suffix(text):
     return re.sub(r"\s*\*Sent using\*\s*<@[^>]+>\s*$", "", (text or "").strip())
 
 
+# The app/workflow credited in that same attribution line, when we need to know
+# WHO posted rather than just to clean up the text.
+SENT_USING_RE = re.compile(r"\*Sent using\*\s*<@([A-Z0-9]+)>", re.I)
+
+
+def _norm(s):
+    """Lowercase, straight apostrophes, single spaces — Slack curls quotes and
+    wraps lines, and a marker shouldn't miss over typography."""
+    return " ".join((s or "").replace("’", "'").lower().split())
+
+
+def meta_post_reason(text, cfg):
+    """Why this top-level message is channel furniture, or None if it's a report.
+
+    2026-08-20: the channel's own pinned "How this channel works" post was filed
+    as an IDEA against this agent. It is posted BY a human INTO the channel, so
+    it carries no bot_id and the relay forwards it like any other message — the
+    classifier then does its job on instructions describing every agent, and
+    lands on the feedback agent itself. Deterministic checks only (no Claude
+    call), and conservative on purpose: a false positive here is a real report
+    that silently never happened.
+    """
+    icfg = (cfg.get("intake") or {}).get("ignore") or {}
+    m = SENT_USING_RE.search(text or "")
+    if m and m.group(1) in (icfg.get("sender_app_ids") or []):
+        return f"posted by ignored Slack app/workflow {m.group(1)}"
+    body = _norm(text)
+    hits = [mk for mk in (icfg.get("meta_markers") or []) if _norm(mk) in body]
+    if len(hits) >= (icfg.get("min_marker_hits") or 2):
+        return f"reads as the pinned channel-instructions post ({len(hits)} markers: {'; '.join(hits[:3])})"
+    return None
+
+
 # ─── Config / state ───────────────────────────────────────────────────────────
 
 def load_config():
@@ -318,7 +351,47 @@ def build_schema(agent_ids):
     }
 
 
-def classify_report(text, first_name, agents, cfg, clarification=None):
+# Structured output is schema-constrained, but the model can still lose the
+# thread mid-field and write part of the schema INTO a value — json.loads then
+# parses it happily. Seen live 2026-08-20 on Paola's spotlight report:
+#   summary = "...rendered successfully.','clarifying_question':"
+# which flowed straight into a HubSpot ticket subject via summary[:120],
+# truncating mid-debris as "...successfully.','clari". Nothing validated it.
+SCHEMA_DEBRIS = re.compile(
+    r"""['"]\s*,\s*['"][a-z_]{3,45}['"]\s*:.*$""",
+    re.IGNORECASE | re.DOTALL,
+)
+TEXT_FIELDS = ("summary", "ack_message", "clarifying_question")
+
+
+def scrub_debris(result):
+    """Cut any trailing schema fragment out of the free-text fields.
+
+    Returns the list of field names that were dirty, so the caller can decide
+    whether to retry rather than ship a mangled ticket subject.
+    """
+    dirty = []
+    for field in TEXT_FIELDS:
+        val = result.get(field)
+        if not isinstance(val, str):
+            continue
+        cleaned = SCHEMA_DEBRIS.sub("", val).rstrip().rstrip(",;:'\"")
+        if cleaned != val:
+            dirty.append(field)
+            result[field] = cleaned
+    return dirty
+
+
+def truncate_words(s, limit):
+    """Cut to `limit` chars on a word boundary — a HubSpot ticket subject is
+    read by humans, and `...successfully.','clari` is not a subject line."""
+    s = " ".join(s.split())
+    if len(s) <= limit:
+        return s
+    return s[:limit].rsplit(" ", 1)[0].rstrip(",;:.") + "…"
+
+
+def classify_report(text, first_name, agents, cfg, clarification=None, _attempt=1):
     import anthropic
 
     vocabulary = "\n".join(
@@ -347,6 +420,15 @@ def classify_report(text, first_name, agents, cfg, clarification=None):
     if resp.stop_reason == "refusal":
         raise ValueError("Claude refused to classify this report")
     result = json.loads(next(b.text for b in resp.content if b.type == "text"))
+    dirty = scrub_debris(result)
+    if dirty:
+        # One retry — degraded output usually does not repeat. If it does, ship
+        # the scrubbed version rather than fail the report: a slightly clipped
+        # summary still reaches a human, a crash does not.
+        log.warning(f"classifier leaked schema debris into {dirty} (attempt {_attempt})")
+        if _attempt == 1:
+            return classify_report(text, first_name, agents, cfg, clarification, _attempt=2)
+        log.warning("debris persisted on retry — using the scrubbed values")
     if clarification:
         result["needs_clarification"] = False   # one question max, enforced
     # Belt-and-braces: the ack must open with the reporter's name.
@@ -431,7 +513,7 @@ def build_ticket_payload(cls, first_name, permalink, agents, cfg, date_pt):
     label = agent_label(agents, cls["agent_id"])
     return {
         "properties": {
-            "subject": f"[AGENT] {label}: {cls['summary'][:120]}",
+            "subject": truncate_words(f"[AGENT] {label}: {cls['summary']}", 120),
             "content": (f"Reported by {first_name} in #agent-feedback ({date_pt}).\n\n"
                         f"{cls['summary']}\n\nThread: {permalink or 'unavailable'}\n"
                         f"Type: {cls['type']} · Severity: {cls['severity']}"),
@@ -549,8 +631,36 @@ def analyze_report(text, first_name, cls, agents, cfg):
 
 
 def approver_ids(cfg):
+    """Who may approve a fix and merge its PR from a thread reply.
+
+    `approvers` is deliberately wider than `alerts_to` (Roman 2026-08-20): the
+    person who reported a problem should be able to approve and ship its fix
+    without a round trip. Falls back to alerts_to when unset, preserving the
+    old behavior for any config that predates the split.
+    """
     people = cfg["slack"].get("people") or {}
-    return {people.get(p, "") for p in (cfg["slack"].get("alerts_to") or []) if people.get(p, "").startswith("U")}
+    names = cfg["slack"].get("approvers") or cfg["slack"].get("alerts_to") or []
+    return {people.get(p, "") for p in names if people.get(p, "").startswith("U")}
+
+
+def approver_sentence(cfg, reporter_first_name=""):
+    """One line naming who can act, with the reporter first when they qualify.
+
+    Written for the thread, not for docs: the people who can now approve are the
+    ones who report the problems, and they will not know unless the message that
+    asks for approval says their name.
+    """
+    people = cfg["slack"].get("people") or {}
+    names = cfg["slack"].get("approvers") or cfg["slack"].get("alerts_to") or []
+    labels = [n.capitalize() for n in names if people.get(n, "").startswith("U")]
+    if reporter_first_name and reporter_first_name.capitalize() in labels:
+        labels.remove(reporter_first_name.capitalize())
+        labels.insert(0, reporter_first_name.capitalize())
+    if not labels:
+        return "No approvers configured — nobody can action this."
+    if len(labels) == 1:
+        return f"{labels[0]} can approve or merge this."
+    return f"{', '.join(labels[:-1])} or {labels[-1]} can approve or merge this."
 
 
 def fire_fix_dispatch(payload):
@@ -797,6 +907,20 @@ def intake(cfg, payload, dry_run):
             save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
         log.info("status query answered")
         return
+
+    # Channel furniture (the pinned how-to-use post, workflow notices): not a
+    # report, so file nothing and reply nothing — a bot answer under the pinned
+    # instructions is the noise, not the fix. Marked processed so a Slack retry
+    # doesn't re-run the check.
+    if not is_reply:
+        meta_reason = meta_post_reason(payload["text"], cfg)
+        if meta_reason:
+            log.info(f"meta post — not filing: {meta_reason}")
+            state["processed"].append(event_key)
+            if not dry_run:
+                save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
+            return
+
     clarification = None
     if is_reply:
         # Thread replies are conversation, not new reports — except answers in
@@ -926,12 +1050,17 @@ def intake(cfg, payload, dry_run):
         try:
             analysis = analyze_report(original_text, first_name, cls, agents, cfg)
             branch = f"fix/{cls['agent_id']}-{date_pt}-{short_ts}"
-            verdict = {"execute": "Reply *approve* in this thread to execute — a fix PR follows for your merge. Anything else leaves it filed.",
-                       "needs_human_input": "Needs your input before it can run (see above) — reply here with the call.",
+            verdict = {"execute": "Reply *approve* in this thread to execute — then *merge* when the PR lands. Anything else leaves it filed.",
+                       "needs_human_input": "Needs a human call before it can run (see above) — reply here with the answer.",
                        "skip": "Recommend leaving this one filed only — reply *approve* to execute anyway."}[analysis["recommendation"]]
+            # The mention pings the alerts_to owner, but approval is open to
+            # everyone in slack.approvers — including whoever filed the report.
+            # Saying so is what makes the wider permission usable: an unnamed
+            # right is one nobody exercises.
             post_reply(payload["channel"], root_ts,
-                       f"{alert_mentions(cfg)} — proposed fix, your call:\n"
-                       f"{analysis['proposal_message']}\n{verdict}", dry_run)
+                       f"{alert_mentions(cfg)} — proposed fix:\n"
+                       f"{analysis['proposal_message']}\n{verdict}\n"
+                       f"_{approver_sentence(cfg, first_name)}_", dry_run)
             state["pending_proposals"][root_ts] = {
                 "agent": cls["agent_id"], "agent_label": label,
                 "correction_path": str(corr_path), "branch": branch,

@@ -1,0 +1,356 @@
+{
+  "id": "66170543",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "20",
+  "name": "Pipeline is \"New Tutor\", deal stage is \"Pass Phone Interview\"",
+  "description": "Sends virtual interview invites and follow-ups to deals in the \"New Tutor\" pipeline at the \"Pending Virtual Interview\" stage, updating the deal stage if the interview is missed or not scheduled.",
+  "createdAt": "2021-04-12T20:46:59.724Z",
+  "updatedAt": "2025-09-26T02:28:02.284Z",
+  "startActionId": "11",
+  "nextAvailableActionId": "25",
+  "actions": [
+    {
+      "actionId": "11",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "12"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "12",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "video_ask___pass_first_interview",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "True"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-1",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 3,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          },
+          "branchName": "Video Ask",
+          "connection": {
+            "edgeType": "STANDARD",
+            "nextActionId": "13"
+          }
+        }
+      ],
+      "defaultBranchName": "Held Phone Interview",
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "13",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "15"
+      },
+      "fields": {
+        "content_id": "68326313522"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "14",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "21"
+      },
+      "fields": {
+        "content_id": "14897136626"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "15",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "16"
+      },
+      "fields": {
+        "delta": "4320",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "16",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_activity_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Virtual Interview"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 11,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              },
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "dealstage",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "971804"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          }
+        }
+      ],
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "14"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "19",
+      "listBranches": [
+        {
+          "filterBranch": {
+            "filterBranches": [
+              {
+                "filterBranches": [
+                  {
+                    "filterBranches": [],
+                    "filters": [
+                      {
+                        "property": "hs_activity_type",
+                        "operation": {
+                          "operator": "IS_ANY_OF",
+                          "includeObjectsWithNoValueSet": false,
+                          "values": [
+                            "Virtual Interview"
+                          ],
+                          "operationType": "ENUMERATION"
+                        },
+                        "filterType": "PROPERTY"
+                      }
+                    ],
+                    "objectTypeId": "0-4",
+                    "operator": "IN_LIST",
+                    "associationTypeId": 11,
+                    "associationCategory": "HUBSPOT_DEFINED",
+                    "filterBranchType": "ASSOCIATION",
+                    "filterBranchOperator": "AND"
+                  }
+                ],
+                "filters": [],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              },
+              {
+                "filterBranches": [],
+                "filters": [
+                  {
+                    "property": "dealstage",
+                    "operation": {
+                      "operator": "IS_ANY_OF",
+                      "includeObjectsWithNoValueSet": false,
+                      "values": [
+                        "971804"
+                      ],
+                      "operationType": "ENUMERATION"
+                    },
+                    "filterType": "PROPERTY"
+                  }
+                ],
+                "filterBranchType": "AND",
+                "filterBranchOperator": "AND"
+              }
+            ],
+            "filters": [],
+            "filterBranchType": "OR",
+            "filterBranchOperator": "OR"
+          }
+        }
+      ],
+      "defaultBranch": {
+        "edgeType": "STANDARD",
+        "nextActionId": "20"
+      },
+      "type": "LIST_BRANCH"
+    },
+    {
+      "actionId": "20",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "dealstage",
+        "value": {
+          "staticValue": "16612661",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "21",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "19"
+      },
+      "fields": {
+        "delta": "4320",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [],
+      "filters": [
+        {
+          "property": "pipeline",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "971802"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        },
+        {
+          "property": "dealstage",
+          "operation": {
+            "operator": "IS_ANY_OF",
+            "includeObjectsWithNoValueSet": false,
+            "values": [
+              "971803"
+            ],
+            "operationType": "ENUMERATION"
+          },
+          "filterType": "PROPERTY"
+        }
+      ],
+      "filterBranchType": "AND",
+      "filterBranchOperator": "AND"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "hs_name",
+            "operation": {
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage",
+              "operationType": "STRING"
+            },
+            "filterType": "PROPERTY"
+          },
+          {
+            "property": "hs_value",
+            "operation": {
+              "operator": "IS_ANY_OF",
+              "includeObjectsWithNoValueSet": false,
+              "values": [
+                "971803"
+              ],
+              "operationType": "ENUMERATION"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

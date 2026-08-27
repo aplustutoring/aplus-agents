@@ -78,6 +78,18 @@ Thread replies in the channel are ignored by intake (they're conversation),
 except in threads @Fleet started with a clarifying question, where the
 reporter's answer is read.
 
+**Channel furniture is not a report (2026-08-20):** a top-level message that
+reads as the pinned how-to-use post — ≥2 distinct phrases from
+`intake.ignore.meta_markers` in [config.yml](config.yml) — is skipped before
+classification: nothing filed, no thread reply (a bot answer under the pinned
+instructions is the noise, not the fix), just a log line. Roman posting the
+explainer into the channel got filed as an IDEA against this agent; it is a
+human message with no `bot_id`, so nothing upstream drops it. The companion
+`intake.ignore.sender_app_ids` list ignores a Slack app/workflow by the ID in
+its "*Sent using* <@…>" attribution — it ships **empty**, and `U0AKFN28V1U`
+must never go in it: that is the attribution Roman's own client appends to
+every message he types, real reports included.
+
 **Status command:** a top-level message of just "status" (or "fleet status",
 "how's the fleet", "how are my agents") is answered, not filed — a thread
 reply with today's fleet rundown: latest Actions run per workflow with
@@ -182,6 +194,7 @@ one-click registry PR ready. Digest fires Friday with real counts
 | `relay/apps-script.gs` | Slack Events → `repository_dispatch` doorbell |
 | `state/state.json` | dedupe ids, pending clarifications, report log, graduation counter (committed back) |
 | `state/digest-latest.md` | Friday digest copy for the Integrator's Monday brief |
+| `tests/test_meta_posts.py` | the pinned-post guard, with real reports as the false-positive floor |
 | `../../.github/workflows/feedback-{intake,digest,close-loop}.yml` | the three triggers |
 
 **V2 candidates:** @Fleet mentions anywhere route into the same intake

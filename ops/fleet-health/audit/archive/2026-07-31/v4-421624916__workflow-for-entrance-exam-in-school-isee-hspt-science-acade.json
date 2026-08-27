@@ -1,0 +1,223 @@
+{
+  "id": "421624916",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "15",
+  "name": "Workflow for Entrance Exam (in school) (isee, hspt, science academy)- October/November",
+  "description": "Sends a series of three emails about the entrance exam on set dates, then creates a follow-up task for families with children in grades 4 to 8.",
+  "createdAt": "2023-07-13T18:35:59.193Z",
+  "updatedAt": "2023-08-18T02:50:09.047Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "9",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1698105600000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "4"
+      },
+      "fields": {
+        "content_id": "124575168659"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "5"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1699315200000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "5",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "6"
+      },
+      "fields": {
+        "content_id": "124575169540"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "6",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-35",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "7"
+      },
+      "fields": {
+        "date": {
+          "staticValue": "1701129600000",
+          "type": "STATIC_VALUE"
+        },
+        "delta": "0",
+        "time_unit": "DAYS",
+        "time_of_day": {
+          "hour": 7,
+          "minute": 30
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "7",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "8"
+      },
+      "fields": {
+        "content_id": "124575169609"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "8",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-3",
+      "fields": {
+        "task_type": "TODO",
+        "subject": "Follow- Up with Families in Workflow for Entrance Exam",
+        "body": "",
+        "associations": [
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 8
+            },
+            "value": {
+              "sourceSpec": {
+                "associationCategory": "HUBSPOT_DEFINED",
+                "associationTypeId": 279
+              },
+              "type": "COPY_ASSOCIATION"
+            }
+          },
+          {
+            "target": {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": 10
+            },
+            "value": {
+              "type": "ENROLLED_OBJECT"
+            }
+          }
+        ],
+        "use_explicit_associations": "true",
+        "owner_assignment": {
+          "value": {
+            "staticValue": "227538487",
+            "type": "STATIC_VALUE"
+          },
+          "type": "CUSTOM"
+        },
+        "priority": "NONE",
+        "due_time": {
+          "delta": 7,
+          "timeUnit": "DAYS",
+          "timeOfDay": {
+            "hour": 10,
+            "minute": 30
+          },
+          "daysOfWeek": [
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY"
+          ]
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "what_is_your_child_s_current_grade_level_",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "4",
+                  "5",
+                  "6",
+                  "7",
+                  "8"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

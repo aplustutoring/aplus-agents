@@ -1,0 +1,49 @@
+{
+  "id": "365625199",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "1",
+  "name": "Unnamed workflow - Thu Apr 20 2023 18:55:05 GMT",
+  "description": "Enrolls contacts who click a specific email link in a campaign but does not perform any actions.",
+  "uuid": "6312752-111592514453-CLICK-0qo9",
+  "createdAt": "2023-04-20T18:55:05.926Z",
+  "updatedAt": "2023-04-20T18:55:05.926Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "level": "EMAIL_API_CAMPAIGN_GROUP",
+              "emailId": "254981352",
+              "appId": "113",
+              "operator": "LINK_CLICKED",
+              "filterType": "EMAIL_EVENT"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

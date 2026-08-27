@@ -1,0 +1,24 @@
+{
+  "id": "505674532",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "2",
+  "name": "Winter Warm-Up",
+  "createdAt": "2023-11-03T22:41:39.618Z",
+  "updatedAt": "2023-11-03T22:41:50.330Z",
+  "nextAvailableActionId": "1",
+  "actions": [],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "type": "MANUAL"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

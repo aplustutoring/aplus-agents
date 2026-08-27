@@ -1,0 +1,236 @@
+{
+  "id": "551687013",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "35",
+  "name": "Pipeline is \"Charter Custom Pre-lesson",
+  "description": "Sets schedule preference properties and parent concerns for deals in the \"Pre-Lesson\" stage to update related information based on associated records.",
+  "createdAt": "2024-01-04T22:19:21.579Z",
+  "updatedAt": "2024-12-03T21:50:36.536Z",
+  "startActionId": "4",
+  "nextAvailableActionId": "38",
+  "actions": [
+    {
+      "actionId": "4",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "26"
+      },
+      "fields": {
+        "property_name": "hs_lead_status",
+        "association": {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 3
+        },
+        "value": {
+          "staticValue": "OPEN_DEAL",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "26",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "30"
+      },
+      "fields": {
+        "property_name": "what_s_going_on_",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.parent_concerns_what_can_we_do_to_help_ }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "30",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "31"
+      },
+      "fields": {
+        "property_name": "which_days_of_the_week_do_you_prefer_",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.which_days_of_the_week_do_you_prefer_ }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "31",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "32"
+      },
+      "fields": {
+        "property_name": "friday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.friday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "32",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "33"
+      },
+      "fields": {
+        "property_name": "saturday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.saturday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "33",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "34"
+      },
+      "fields": {
+        "property_name": "sunday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.sunday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "34",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "35"
+      },
+      "fields": {
+        "property_name": "monday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.monday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "35",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "36"
+      },
+      "fields": {
+        "property_name": "tuesday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.tuesday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "36",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "37"
+      },
+      "fields": {
+        "property_name": "wednesday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.wednesday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "37",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "thursday_schedule_preference",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21580718.thursday_schedule_preference }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "140397124"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_21580718",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

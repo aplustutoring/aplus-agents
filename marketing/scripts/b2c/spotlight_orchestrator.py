@@ -24,6 +24,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -168,7 +169,9 @@ def update_run(run_id: str, updates: dict) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Orchestrate a B2C spotlight case study bundle.")
-    parser.add_argument("--source", required=True, help="Raw source folder containing transcripts, lesson reports, and Paola briefs")
+    # Required for a normal run; --reel-only recovers an existing bundle and has
+    # no source folder to read (validated in main()).
+    parser.add_argument("--source", help="Raw source folder containing transcripts, lesson reports, and Paola briefs")
     parser.add_argument("--student-name", help="Student real first name (optional if HubSpot lookup can find it)")
     parser.add_argument("--school", help="School name used for slug and demographics")
     parser.add_argument("--dry-run", action="store_true", help="Run stages without HubSpot publish or Slack delivery")
@@ -176,6 +179,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-hubspot", action="store_true", help="Skip HubSpot contact lookup and proceed with local input only")
     parser.add_argument("--force-update", action="store_true", help="When a HubSpot draft already exists for the slug, refresh its body with this run's Doc 1 (PATCH) instead of reusing the stale draft. Re-runs should pass this so embed matches the current document.")
     parser.add_argument("--slack-channel", default=None, help="Override the Slack delivery channel (default: #student-spotlight-ready)")
+    parser.add_argument("--reel-only", metavar="BUNDLE", nargs="+", default=None, help="Recovery mode: skip the pipeline and run ONLY the reel stage (generate + deliver) against one or more already-built bundle directories. Use with the bundle artifacts of the runs whose reels are missing.")
+    parser.add_argument("--reel-thread-ts", default=None, help="With a single --reel-only bundle: post the recovered reel into this existing Slack thread (the case-study delivery thread) instead of starting a new one.")
     parser.add_argument("--verbose", action="store_true", help="Print extra diagnostic details")
     return parser.parse_args()
 
@@ -3435,6 +3440,226 @@ def stage_slack(args: argparse.Namespace, run: dict) -> dict:
 
 REEL_DIR = REPO_ROOT / "scripts" / "b2c" / "reel"
 
+# One retry of the generation steps. They are all resumable (make_script skips
+# an existing script.json; stills/vo/clips reuse whatever is already on disk),
+# so a second pass only regenerates the piece that failed — which is exactly
+# the shape of the failures we see (Veo 429s, a single RAI-rejected beat).
+REEL_ATTEMPTS = 2
+# Wall-clock budget for the whole reel stage, shared across both attempts.
+# make_clips.py polls Veo with no ceiling of its own, so without this a stuck
+# generation eats the job's remaining time and takes the textstory + logsheet
+# stages (and the completion summary) down with it when the runner is killed.
+REEL_TIMEOUT_S = int(os.environ.get("SPOTLIGHT_REEL_TIMEOUT_S", "900"))
+# ...but that ceiling protects stages that do not exist in --reel-only mode,
+# where the reel IS the job. Inheriting 900s there is actively harmful: a cold
+# recovery renders 5 stills, 5 TTS lines and 4 Veo clips (whose submit alone
+# backs off up to 90s x 6 on a 429) before ffmpeg starts, and because the
+# budget is shared across both attempts, a first pass that eats it leaves the
+# retry to die on "budget exhausted before script" without running a step —
+# a recovery that burns the Veo spend and still delivers nothing.
+REEL_RECOVERY_TIMEOUT_S = int(os.environ.get("SPOTLIGHT_REEL_RECOVERY_TIMEOUT_S", "3600"))
+# Delivery is budgeted separately from generation: a reel that took the whole
+# generation budget to render still deserves its trip to Slack.
+REEL_DELIVER_TIMEOUT_S = 360
+
+# What each reel step actually reads, checked BEFORE the first step runs.
+# The steps are ordered cheapest-first by accident, not by design: stills, vo
+# and clips spend real Gemini/Veo credit and ~10 minutes of wall clock, and
+# only then does assemble discover it has no Whisper key or no ffmpeg. A run
+# that cannot finish should say which key is missing instead of burning the
+# generation budget to find out (2026-08-21 — "generate the reel, or surface
+# the specific blocker preventing it").
+REEL_ENV_REQUIREMENTS = [
+    ("GEMINI_API_KEY", "stills, voice and clips"),
+    ("OPENAI_API_KEY", "assemble (Whisper word timings for the captions)"),
+]
+REEL_BIN_REQUIREMENTS = [
+    ("ffmpeg", "assemble (encode)"),
+    ("ffprobe", "assemble (clip/VO durations)"),
+]
+
+
+def _have_bin(name: str) -> bool:
+    """Mirror reel_common's resolution order: an explicit $FFMPEG/$FFPROBE
+    override wins, otherwise PATH."""
+    override = os.environ.get(name.upper())
+    if override:
+        return Path(override).exists()
+    return shutil.which(name) is not None
+
+
+def _bundle_blockers(bundle: Path) -> list[str]:
+    """Reasons THIS bundle cannot produce a reel, independent of credentials.
+
+    Split out of _reel_blockers so a multi-bundle backfill can print a verdict
+    per student without repeating the run-wide env/binary blockers once per
+    student (2026-08-24 — three missing reels asked for in one request).
+    """
+    if not bundle.is_dir():
+        return [f"{bundle} is not a directory"]
+    if not (bundle / "metadata.md").exists():
+        return [f"{bundle.name}/metadata.md is missing — the reel script "
+                "is derived from it"]
+    return []
+
+
+def _reel_blockers(bundle: Path, delivering: bool) -> list[str]:
+    """Named reasons this reel cannot be produced at all. Empty list means every
+    precondition the reel steps read is in place — it does NOT promise Veo will
+    cooperate, only that nothing is missing before we ask it to."""
+    blockers = _bundle_blockers(bundle)
+    for name, used_by in REEL_ENV_REQUIREMENTS:
+        if not os.environ.get(name):
+            blockers.append(f"{name} is not set (needed by reel:{used_by})")
+    for name, used_by in REEL_BIN_REQUIREMENTS:
+        if not _have_bin(name):
+            blockers.append(f"{name} is not installed (needed by reel:{used_by})")
+    if delivering and not os.environ.get("SLACK_BOT_TOKEN"):
+        blockers.append("SLACK_BOT_TOKEN is not set (needed by reel:deliver)")
+    return blockers
+
+
+# How much of a failed step's output to carry into the alert. Enough for a
+# Veo refusal line or a make_*.py sys.exit() message; short enough for Slack.
+REEL_ERROR_TAIL_CHARS = 400
+
+
+def _last_lines(*streams: str | None, n: int = 3) -> str:
+    """The last few non-empty output lines of a failed reel step.
+
+    Every reel step names its real blocker on the lines it prints last — the
+    sys.exit() text from the make_* scripts, or "NO VIDEO (safety/RAI)" from
+    Veo — and then that text went only to the runner log. The alert carried
+    "exit 1", which is why three separate reports could be filed about this
+    reel without anyone learning why it never rendered.
+    """
+    for s in streams:
+        lines = [ln.strip() for ln in (s or "").splitlines() if ln.strip()]
+        if lines:
+            return " / ".join(lines[-n:])[:REEL_ERROR_TAIL_CHARS]
+    return "no output"
+
+
+def _is_delivering(run: dict) -> bool:
+    """Whether this run posts its assets to Slack.
+
+    The delivery gate is --dry-run ("Run stages without HubSpot publish or Slack
+    delivery"). It is NOT --skip-hubspot, which only means "Skip HubSpot contact
+    lookup and proceed with local input only" — a read-side flag about Phase 0
+    auto-discovery that says nothing about delivery.
+
+    The reel and textstory stages read skip_hubspot for BOTH their delivery gate
+    and their alert gate until 2026-08-24, and stage_slack never read it at all.
+    So a --skip-hubspot run delivered the case study, graphics and thread to
+    Paola as normal, generated the reel in full (Gemini stills, TTS, Veo clips,
+    ffmpeg encode), then skipped the upload, suppressed the "reel is missing"
+    alert that exists to catch exactly this, and printed `Reel: ok`. That is the
+    shape of a backfill that "ran fine" and still left the thread with no video.
+    """
+    return not run.get("dry_run")
+
+
+def _post_stage_alert(text: str, label: str) -> None:
+    """Post a heads-up about a NON-FATAL stage miss to the failure channel.
+    No-ops without SLACK_FAILURE_CHANNEL; never raises — alerting must not
+    break a run that otherwise succeeded."""
+    channel = os.environ.get("SLACK_FAILURE_CHANNEL")
+    if not channel:
+        return
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
+        import slack_delivery_common as sd  # noqa: E402
+        sd.post_message(sd.resolve_channel_id(channel), text)
+        print(f"  {label}: posted heads-up to {channel}")
+    except Exception as exc:  # noqa: BLE001 — alerting must never break the run
+        print(f"  {label}: could not post heads-up — {exc}", file=sys.stderr)
+
+
+def _post_thread_note(run: dict, text: str) -> None:
+    """Post a note into the student's existing case-study review thread.
+
+    SLACK_FAILURE_CHANNEL is an ops channel and it is unset by default (the
+    workflow passes `vars.SLACK_FAILURE_CHANNEL || ''`), so every heads-up so
+    far could land nowhere at all — and even when it lands, it lands where
+    Paola is not looking. The delivery thread is where she is waiting for the
+    reel, so that is where the blocker has to appear. No-ops without a thread;
+    never raises.
+    """
+    thread_ts = run.get("slack_thread_ts")
+    if not thread_ts:
+        return
+    channel = run.get("slack_channel") or "#student-spotlight-ready"
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
+        import slack_delivery_common as sd  # noqa: E402
+        sd.post_message(sd.resolve_channel_id(channel), text, thread_ts=thread_ts)
+        print(f"  reel: posted blocker note to thread {thread_ts}")
+    except Exception as exc:  # noqa: BLE001 — alerting must never break the run
+        print(f"  reel: could not post thread note — {exc}", file=sys.stderr)
+
+
+def _post_reel_alert(run: dict, note: str) -> None:
+    """Heads-up when the (non-fatal) reel stage ships nothing. Without this the
+    miss is invisible: the reel is the only pack asset with no failure signal
+    of its own, so Paola just receives a delivery thread with no reel in it and
+    has no way to tell that one was ever attempted.
+
+    The recovery line names --reel-only, NOT a Drive re-dispatch (2026-08-20,
+    second report on the same bundle — the first heads-up pointed at a recovery
+    nobody could run, so the reel stayed undelivered). A re-dispatch reruns the
+    whole pipeline in a fresh runner: nothing "resumes" — every Veo clip and VO
+    regenerates from zero — the HubSpot draft is rewritten under --force-update,
+    and Paola's entire review thread is posted a second time. SPOTLIGHT_REEL is
+    not a workflow input either, so it could not be set from the Actions UI.
+
+    In --reel-only mode that same text becomes circular — it tells the operator
+    to fetch the artifact and run --reel-only, which is precisely the run that
+    just failed — so recovery gets its own wording (2026-08-21, third report on
+    this bundle). Naming a recovery nobody can act on is how the first two
+    reports ended with the reel still undelivered.
+
+    Both wordings are for whoever operates the recovery. Paola gets the plain
+    version in her own thread (2026-08-21, fourth report: "generate it, or
+    surface the specific blocker") — an ops channel she does not watch, unset
+    by default, is not "surfacing" anything.
+    """
+    bundle = Path(run["bundle_path"]).name
+    _post_thread_note(
+        run,
+        f":warning: The animated reel for this spotlight has not been "
+        f"delivered — {note}. Nothing else in this pack is affected. This is "
+        f"an engine-side blocker, so there is no step for you here; it is "
+        f"being picked up from the run log.",
+    )
+    if run.get("mode") == "reel-only":
+        _post_stage_alert(
+            f":warning: *Spotlight reel recovery failed* — `{bundle}`: {note}. "
+            "This was a `--reel-only` run against an already-built bundle, so "
+            "nothing else in the pack was touched; the student's review thread "
+            "got only a one-line note that the reel is still blocked. The reel "
+            "steps are resumable: re-running "
+            "the same command picks up from whatever already rendered, so a "
+            "transient Veo 429 or a timeout is worth one more pass. If it fails "
+            "on the same step twice, that step's stderr is in this run's output "
+            "— fix that before re-running.",
+            "reel",
+        )
+        return
+    cmd = f"--reel-only marketing/aplus-content/{bundle}"
+    if run.get("slack_thread_ts"):
+        cmd += f" --reel-thread-ts {run['slack_thread_ts']}"
+    _post_stage_alert(
+        f":warning: *Spotlight reel is missing* — `{bundle}`: {note}. "
+        "The blog, graphics, and text-stories for this bundle are unaffected. "
+        f"Recover without re-running the pipeline: download the `{bundle}` "
+        "bundle artifact from this Actions run (30-day retention), unpack it "
+        "under `marketing/aplus-content/`, then run `python3 "
+        f"marketing/scripts/b2c/spotlight_orchestrator.py {cmd}`. The reel "
+        "steps resume from whatever already rendered and the reel lands in "
+        "this student's existing review thread.",
+        "reel",
+    )
+
 
 def stage_reel(args: argparse.Namespace, run: dict) -> dict:
     """Generate + deliver the animated spotlight reel (independent of the comic).
@@ -3443,10 +3668,35 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
     ffmpeg missing, etc.) is logged and the run still completes. Skipped in dry
     runs and when SPOTLIGHT_REEL=0. Uses the same upstream metadata + case study;
     delivers into #student-spotlight-ready like the rest of the pack.
+
+    Non-fatal does NOT mean silent (2026-08-20 correction — Amelia's pack landed
+    with no reel and nothing said one had been attempted): the generation steps
+    get one resumable retry, the stage is bounded by REEL_TIMEOUT_S, and a reel
+    that still fails posts a heads-up to SLACK_FAILURE_CHANNEL and shows up in
+    the completion summary.
+
+    The wall-clock budget depends on the mode: in the pipeline it is there to
+    keep a stuck Veo poll from taking the later stages down, while --reel-only
+    has no later stages to protect (see REEL_RECOVERY_TIMEOUT_S).
+
+    Missing credentials and missing ffmpeg are checked up front rather than
+    discovered mid-pipeline (see REEL_ENV_REQUIREMENTS), and whatever a failing
+    step actually printed is carried into reel_status and the alert.
     """
     run.update({"stage": "reel"})
     if os.environ.get("SPOTLIGHT_REEL", "1") == "0":
         print("  reel disabled (SPOTLIGHT_REEL=0) — skipping")
+        update_run(run["run_id"], run)
+        return run
+
+    delivering = _is_delivering(run)
+    blockers = _reel_blockers(Path(run["bundle_path"]), delivering)
+    if blockers:
+        note = "blocked before generation (" + "; ".join(blockers) + ")"
+        run["reel_status"] = f"skipped: {note}"
+        print(f"  reel: {note}", file=sys.stderr)
+        if delivering:
+            _post_reel_alert(run, note)
         update_run(run["run_id"], run)
         return run
 
@@ -3458,33 +3708,189 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
         ("clips",    ["python3", str(REEL_DIR / "make_clips.py"),  "--bundle", bundle]),
         ("assemble", ["python3", str(REEL_DIR / "build_reel.py"),  "--bundle", bundle]),
     ]
+    timeout_s = (REEL_RECOVERY_TIMEOUT_S if run.get("mode") == "reel-only"
+                 else REEL_TIMEOUT_S)
+    deadline = time.monotonic() + timeout_s
+
+    def run_step(name: str, cmd: list[str], budget: float | None = None) -> None:
+        left = budget if budget is not None else deadline - time.monotonic()
+        if left <= 0:
+            raise RuntimeError(f"reel budget of {timeout_s}s exhausted before {name}")
+        print(f"  reel:{name} ...")
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=left)
+        except subprocess.TimeoutExpired:
+            raise RuntimeError(f"reel {name} timed out after {left:.0f}s")
+        if r.returncode != 0:
+            sys.stderr.write(r.stdout or "")
+            sys.stderr.write(r.stderr or "")
+            # stderr first (the make_* scripts sys.exit() there), then stdout
+            # (make_clips.py reports a refused beat on its last stdout line).
+            raise RuntimeError(f"reel {name} failed (exit {r.returncode}): "
+                               f"{_last_lines(r.stderr, r.stdout)}")
+
+    alert = None
     try:
-        for name, cmd in steps:
-            print(f"  reel:{name} ...")
-            r = subprocess.run(cmd, capture_output=True, text=True)
-            if r.returncode != 0:
-                sys.stderr.write(r.stdout or "")
-                sys.stderr.write(r.stderr or "")
-                raise RuntimeError(f"reel {name} failed (exit {r.returncode})")
-        if not run.get("skip_hubspot"):
+        for attempt in range(1, REEL_ATTEMPTS + 1):
+            try:
+                for name, cmd in steps:
+                    run_step(name, cmd)
+                break
+            except RuntimeError as exc:
+                if attempt == REEL_ATTEMPTS:
+                    raise
+                print(f"  reel: attempt {attempt} failed ({exc}) — retrying the "
+                      f"resumable steps", file=sys.stderr)
+        if delivering:
             dcmd = ["python3", str(REEL_DIR / "deliver_reel.py"), "--bundle", bundle]
             if args.slack_channel:
                 dcmd.extend(["--channel", args.slack_channel])
             if run.get("slack_thread_ts"):
                 dcmd.extend(["--thread-ts", run["slack_thread_ts"]])
-            print("  reel:deliver ...")
-            r = subprocess.run(dcmd, capture_output=True, text=True)
-            if r.returncode != 0:
-                sys.stderr.write(r.stdout or "")
-                sys.stderr.write(r.stderr or "")
-                raise RuntimeError("reel delivery failed")
-        run["reel_status"] = "ok"
-        print("  reel: done")
+            # Delivery gets ONE attempt on purpose: a retry after a partial
+            # upload would double-post the reel into Paola's review thread.
+            run_step("deliver", dcmd, budget=REEL_DELIVER_TIMEOUT_S)
+            run["reel_status"] = "ok"
+            print("  reel: done")
+        else:
+            # "ok" is reserved for a reel that reached Slack. One that rendered
+            # but was never posted lives only in the bundle artifact, so it must
+            # never read as a delivered one in the summary.
+            run["reel_status"] = "generated, not delivered (--dry-run)"
+            print("  reel: generated but NOT delivered (--dry-run)")
     except Exception as exc:  # noqa: BLE001 — reel is non-fatal
         run["reel_status"] = f"skipped: {exc}"
+        # str(exc) already names the step and what it printed, so it stands on
+        # its own as the alert's reason clause.
+        alert = str(exc)
         print(f"  reel: NON-FATAL failure — {exc}", file=sys.stderr)
+    if alert and delivering:
+        _post_reel_alert(run, alert)
     update_run(run["run_id"], run)
     return run
+
+
+def run_reel_only(args: argparse.Namespace) -> int:
+    """--reel-only: generate + deliver the reel for ALREADY-BUILT bundles.
+
+    The recovery path the reel never had. The textstory stage has had one since
+    it shipped (the "Re-render textstories for a bundle" workflow, which pulls
+    the bundle artifact and re-runs just that builder); the reel had none, so a
+    pack that landed without its reel could only be "recovered" by re-running
+    the entire pipeline — which re-drafts, re-publishes and re-posts the whole
+    case study to Paola. This runs the reel stage and nothing else.
+
+    Takes one or more bundles. Paola's backfills arrive as a batch (2026-08-24 —
+    three case studies missing their reels in a single request), and three
+    bespoke invocations mean three chances to mistype a path and no one verdict
+    at the end. Every bundle is preflighted BEFORE the first one generates
+    anything, so an artifact that was unpacked wrong is named up front instead
+    of surfacing after the bundles ahead of it have already spent Veo credit;
+    if any bundle fails preflight nothing is generated or delivered at all.
+
+    Unlike the pipeline, where the reel is a non-fatal bonus, delivering the
+    reel is the entire point here: any reel that still does not ship exits 1.
+    --dry-run renders locally without posting to Slack.
+    """
+    # resolve() first so the same bundle named two different ways (a relative
+    # path and an absolute one) collapses instead of being delivered twice.
+    bundles: list[Path] = []
+    for raw in args.reel_only:
+        bundle = Path(raw).resolve()
+        if bundle not in bundles:
+            bundles.append(bundle)
+
+    # Preflight the whole batch. Bundle-shaped problems only — credentials and
+    # ffmpeg are run-wide and stage_reel reports them once, per bundle, itself.
+    blocked = [(b, _bundle_blockers(b)) for b in bundles]
+    blocked = [(b, reasons) for b, reasons in blocked if reasons]
+    if len(bundles) > 1 or blocked:
+        for bundle in bundles:
+            reasons = dict(blocked).get(bundle)
+            print(f"  preflight {bundle.name}: "
+                  f"{'CANNOT RUN' if reasons else 'ready'}")
+            for reason in reasons or []:
+                print(f"    - {reason}", file=sys.stderr)
+    if blocked:
+        # Same guard the textstory recovery workflow uses: metadata.md is what
+        # the reel scripts read, and its absence means an artifact was unpacked
+        # one level off (dl/<name>/<name>/) rather than a genuinely empty
+        # bundle. Point --reel-only at the bundle directory, not its parent.
+        print(f"ERROR: {len(blocked)} of {len(bundles)} bundle(s) cannot produce "
+              "a reel. Nothing was generated and nothing was delivered — fix "
+              "the paths above and re-run the batch.", file=sys.stderr)
+        return 1
+
+    results = [(bundle, _recover_one_reel(args, bundle)) for bundle in bundles]
+    failed = [bundle for bundle, ok in results if not ok]
+    if len(bundles) > 1:
+        print("\n=== Reel-only recovery summary ===")
+        done = "rendered (--dry-run, not posted)" if args.dry_run else "delivered"
+        for bundle, ok in results:
+            print(f"  {bundle.name}: {done if ok else 'FAILED'}")
+    if failed:
+        if len(bundles) == 1:
+            print("Reel recovery FAILED — nothing was delivered.", file=sys.stderr)
+        else:
+            # Say which ones, and do not claim the whole batch delivered
+            # nothing — the bundles ahead of a failure did ship.
+            print(f"Reel recovery FAILED for {len(failed)} of {len(bundles)} "
+                  f"bundle(s): {', '.join(b.name for b in failed)}.",
+                  file=sys.stderr)
+        return 1
+    return 0
+
+
+def _recover_one_reel(args: argparse.Namespace, bundle: Path) -> bool:
+    """One bundle's reel-only recovery. True when the reel shipped.
+
+    Each bundle gets its own run record and its own REEL_RECOVERY_TIMEOUT_S
+    budget: in a batch the budget is per student, not split between them.
+    """
+    run = {
+        "run_id": str(uuid.uuid4()),
+        "started_at": datetime.utcnow().isoformat() + "Z",
+        "status": "running",
+        "stage": "reel",
+        "mode": "reel-only",
+        "bundle_path": str(bundle),
+        # stage_reel gates Slack delivery on dry_run (see _is_delivering); in
+        # this mode that reads as "render but do not post".
+        "dry_run": bool(args.dry_run),
+        # Recorded so a blocker note can be posted back into the thread the
+        # recovery was asked to deliver into; the pipeline sets both in
+        # stage_slack.
+        "slack_channel": args.slack_channel or "#student-spotlight-ready",
+        "slack_thread_ts": args.reel_thread_ts,
+    }
+    append_run(run)
+    print(f"=== Reel-only recovery: {bundle.name} (run_id={run['run_id']}) ===")
+    # State the premise out loud. Recovery is for a reel that never shipped; if
+    # one is already sitting in the bundle it gets rebuilt and uploaded again,
+    # which puts a second copy in the student's review thread. Not blocked (a
+    # deliberate rebuild is legitimate) but never a surprise either.
+    existing = bundle / "reel" / "spotlight-reel.mp4"
+    if existing.exists():
+        print(f"  WARNING: {existing.name} already exists "
+              f"({existing.stat().st_size} bytes) — it will be rebuilt and "
+              f"delivered again (a second copy in the thread)", file=sys.stderr)
+    else:
+        print("  no reel in this bundle yet — confirmed missing")
+    if not args.reel_thread_ts:
+        print("  no --reel-thread-ts — the reel will start its own thread "
+              "instead of nesting under the case-study delivery")
+    run = stage_reel(args, run)
+
+    status = run.get("reel_status", "skipped: stage did not run")
+    print(f"Reel: {status}")
+    # Delivery is the success criterion, except under --dry-run, where rendering
+    # it is all that was asked for.
+    want = "generated, not delivered (--dry-run)" if args.dry_run else "ok"
+    if status != want:
+        update_run(run["run_id"], {"status": "failed"})
+        return False
+    update_run(run["run_id"], {"status": "completed"})
+    return True
 
 
 TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.py"
@@ -3492,22 +3898,14 @@ TEXTSTORY_BUILDER = REPO_ROOT / "scripts" / "b2c" / "build-case-study-textstory.
 
 def _post_textstory_alert(run: dict, note: str) -> None:
     """Heads-up to the failure Slack channel when the (non-fatal) textstory
-    stage shipped fewer videos than expected — otherwise the miss is silent.
-    No-ops without SLACK_FAILURE_CHANNEL; never raises."""
-    channel = os.environ.get("SLACK_FAILURE_CHANNEL")
-    if not channel:
-        return
-    try:
-        sys.path.insert(0, str(REPO_ROOT / "scripts" / "shared"))
-        import slack_delivery_common as sd  # noqa: E402
-        bundle = Path(run["bundle_path"]).name
-        text = (f":warning: *Spotlight text-stories need attention* — `{bundle}`: {note}. "
-                "Blog, graphics, and reel are unaffected. Recover with the "
-                "“Re-render textstories for a bundle” Actions workflow.")
-        sd.post_message(sd.resolve_channel_id(channel), text)
-        print(f"  textstory: posted heads-up to {channel}")
-    except Exception as exc:  # noqa: BLE001 — alerting must never break the run
-        print(f"  textstory: could not post heads-up — {exc}", file=sys.stderr)
+    stage shipped fewer videos than expected — otherwise the miss is silent."""
+    bundle = Path(run["bundle_path"]).name
+    _post_stage_alert(
+        f":warning: *Spotlight text-stories need attention* — `{bundle}`: {note}. "
+        "Blog, graphics, and reel are unaffected. Recover with the "
+        "“Re-render textstories for a bundle” Actions workflow.",
+        "textstory",
+    )
 
 
 def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
@@ -3528,7 +3926,8 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
     # Ships the builder's default dynamics (parents, grandma, mom_friend,
     # kid_parent). family_group is supported but off by default.
     cmd = ["python3", str(TEXTSTORY_BUILDER), "--bundle", bundle]
-    if not run.get("skip_hubspot"):
+    delivering = _is_delivering(run)
+    if delivering:
         cmd.append("--deliver")
         if args.slack_channel:
             cmd.extend(["--channel", args.slack_channel])
@@ -3543,7 +3942,9 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
             sys.stderr.write(out)
             sys.stderr.write(r.stderr or "")
             raise RuntimeError(f"textstory builder failed (exit {r.returncode})")
-        run["textstory_status"] = "ok"
+        # Same rule as the reel: "ok" means it reached Slack.
+        run["textstory_status"] = ("ok" if delivering
+                                   else "generated, not delivered (--dry-run)")
         # exit 0 still allows a partial set (some dynamics failed) — flag it,
         # and surface the builder output so the CI log shows which/why.
         m = re.search(r"FAILED \[([^\]]+)\]", out)
@@ -3556,7 +3957,7 @@ def stage_textstory(args: argparse.Namespace, run: dict) -> dict:
         run["textstory_status"] = f"skipped: {exc}"
         alert = "delivered ZERO videos — generation/render failed"
         print(f"  textstory: NON-FATAL failure — {exc}", file=sys.stderr)
-    if alert and not run.get("skip_hubspot"):
+    if alert and delivering:
         _post_textstory_alert(run, alert)
     update_run(run["run_id"], run)
     return run
@@ -3637,6 +4038,11 @@ def stage_complete(args: argparse.Namespace, run: dict) -> dict:
     if run.get("brand_check_violations"):
         n = len(run["brand_check_violations"])
         print(f"Brand-check:    {n} violations cleaned from Doc 1")
+    # Bonus assets are non-fatal, so their status only ever lived in the
+    # (gitignored) run state and the stderr stream. Print it here or a missing
+    # reel reads as a clean run.
+    if run.get("reel_status"):
+        print(f"Reel:           {run['reel_status']}")
     timings = run.get("stage_timings", {})
     if timings:
         print("Stage timings:")
@@ -3683,6 +4089,27 @@ def run_stage(stage_name: str, args: argparse.Namespace, run: dict) -> dict:
 
 def main() -> int:
     args = parse_args()
+    if args.reel_only:
+        # One thread ts names ONE case study's review thread, so a batch sharing
+        # it would drop every student's reel into the same family's thread.
+        if args.reel_thread_ts and len(args.reel_only) > 1:
+            print("ERROR: --reel-thread-ts names one case study's review "
+                  "thread, so it cannot be used with multiple bundles — every "
+                  "reel would land in the same student's thread. Run the "
+                  "bundles one at a time when each needs its own thread.",
+                  file=sys.stderr)
+            return 2
+        return run_reel_only(args)
+    if not args.source:
+        print("ERROR: --source is required (or use --reel-only BUNDLE [BUNDLE "
+              "...] to recover the reels for already-built bundles).",
+              file=sys.stderr)
+        return 2
+    if args.reel_thread_ts:
+        print("ERROR: --reel-thread-ts only applies to --reel-only; a normal "
+              "run nests the reel under the thread it just posted.", file=sys.stderr)
+        return 2
+
     run = stage_init(args, load_state())
 
     if args.stop_after == "init":

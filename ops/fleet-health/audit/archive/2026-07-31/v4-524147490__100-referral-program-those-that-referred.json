@@ -1,0 +1,77 @@
+{
+  "id": "524147490",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "9",
+  "name": "$100 - REFERRAL PROGRAM - those that referred",
+  "description": "Sends a thank-you SMS to contacts on a specific list who referred others, asking if they prefer a gift card or account credit as a reward.",
+  "createdAt": "2023-11-27T17:55:08.425Z",
+  "updatedAt": "2026-04-10T17:09:33.451Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "9",
+  "actions": [
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "property_name": "hubspot_owner_id",
+        "value": {
+          "staticValue": "227538487",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 10,
+      "actionTypeId": "1-1917",
+      "fields": {
+        "phoneNumbers": "{{ _0_1.phone }}",
+        "sms": "Hey {{ _0_1.firstname }}, it's {{ _0_1.hubspot_owner_id.firstname }} with A+ Tutoring. Thank you for being a part of our referral program! Once your friend, signs up, would you like to receive a gift card or an account credit?",
+        "owner": "hubspot_owner_id",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "listId": "2256",
+              "operator": "IN_LIST",
+              "filterType": "IN_LIST"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

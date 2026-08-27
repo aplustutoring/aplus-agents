@@ -206,3 +206,41 @@ v1.1 . Updated 2026-05-19 . Typography switched from single Inter to Playfair Di
 
 v1.0 . Created May 6, 2026
 Foundation: HubSpot brand color (#ef5829) inverted to accent role + custom institutional palette
+
+## Credentials (#AP044) — we hold the NSSA Badge, and it is worth using
+
+A+ earned the NSSA Tutoring Program Design Badge, awarded by the **National
+Student Support Accelerator at Stanford University** after an evidence-based
+review of how our program is designed. In a market full of unverified tutoring
+vendors this is a real differentiator. Use it.
+
+**Read the exact wording from `knowledge/credentials.yml`** (credential id
+`nssa_program_design_badge`) and reproduce `claim_string` verbatim. That file is
+the only place the wording, the term window and NSSA's usage rules are
+maintained, and this Badge expires.
+
+**NSSA's approved framings** (lean on these, they are the issuer's own words):
+- awarded after receiving an evidence-based review
+- signifies the quality of our program design and our alignment to Tutoring
+  Quality Standards, as assessed by researchers and practitioners
+- awarded by the National Student Support Accelerator at Stanford University
+
+**The rules:**
+
+- **Design, not effectiveness.** NSSA is explicit: the Badge denotes quality of
+  design, NOT implementation or outcomes. Never write "Stanford-validated
+  results" or place the Badge inside a results claim. Our outcome figures stand
+  on the case studies; the Badge stands on the program's design. Keep them in
+  separate sentences.
+- **The term window travels with the claim.** A claim without the years is a
+  defect.
+- **Capitalise "Badge".** NSSA requires it: "the Badge", "the NSSA Tutoring
+  Program Design Badge".
+- **Do not embellish.** Not "NSSA-certified", "NSSA-accredited",
+  "NSSA-endorsed", "NSSA-approved provider", "NSSA-rated".
+- **Never alter the Badge image.** No recolouring, cropping, retyping or
+  compositing. Supplied file as-is, or no image.
+- **Lead with what it means before the acronym.** Most readers have never heard
+  of NSSA; "Stanford University's National Student Support Accelerator" does
+  more work than "NSSA".
+- **It is evidence, not a personality.** One clean mention beats three.

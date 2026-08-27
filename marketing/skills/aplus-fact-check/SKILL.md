@@ -118,6 +118,38 @@ All three figures are valid. Use the one that matches your context:
 - Citing the published ELA case study URL → use 87.5%, 8 students
 - Making a general claim about the full Tier 3 program → use 80%, 20 students
 
+**Credentials . verified, and cleared for use:**
+
+A+ holds the NSSA Tutoring Program Design Badge, awarded by the National Student
+Support Accelerator at Stanford University. **This is real . do not flag it as
+unverified and do not spend searches on it.** Canonical wording, term window and
+NSSA's own usage rules live in `knowledge/credentials.yml`
+(`nssa_program_design_badge`, decision `#AP044`). Check content against that
+file, not against memory.
+
+**THE RULE THAT MATTERS MOST . design is not effectiveness.**
+
+NSSA states it plainly: the Badge *"denotes quality of design, not quality of
+implementation or effectiveness."* Our content leads with outcome data (75%,
+87.5%, +19.4 RIT). Putting the Badge next to those figures implies Stanford
+validated our RESULTS. It did not . it reviewed how the program is designed.
+
+FLAG any construction that fuses the two, for example:
+- "Stanford-validated results" / "NSSA-verified outcomes" / "independently
+  proven results"
+- a sentence where the Badge is the subject and an outcome figure is the object
+- a credibility block where the Badge sits inside the results table rather than
+  beside it
+
+Also flag:
+- **A claim missing its term window.** The years are part of the claim.
+- **Wording that does not match `claim_string`.**
+- **Embellishment:** "NSSA-certified", "NSSA-accredited", "NSSA-endorsed",
+  "NSSA-approved provider", "NSSA-rated". None of those is what we hold.
+- **"badge" lowercase.** NSSA requires "Badge" capitalised.
+- **An altered Badge image** . recoloured, cropped, retyped, overlaid. NSSA
+  permits no alteration of any kind.
+
 **Retired figure:** 81% / 21 students. This was based on incorrect headcount. Do NOT use this figure in any content. If found in existing content, flag for revision.
 
 **Dosage details (both programs):** 17 hours per student, one-to-one synchronous delivery, same tutor across the cycle.

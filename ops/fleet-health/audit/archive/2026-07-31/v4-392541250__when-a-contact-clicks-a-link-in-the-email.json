@@ -1,0 +1,61 @@
+{
+  "id": "392541250",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "When a contact clicks a link in the email",
+  "description": "Adds contacts to a static list when they click a specific link in an email campaign.",
+  "uuid": "6312752-118366537280-CLICK-IY3B",
+  "createdAt": "2023-06-01T17:53:14.475Z",
+  "updatedAt": "2023-06-01T18:10:08.636Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "fields": {
+        "listId": "1810",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "level": "EMAIL_API_CAMPAIGN_GROUP",
+              "emailId": "260772589",
+              "appId": "113",
+              "operator": "LINK_CLICKED",
+              "filterType": "EMAIL_EVENT"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

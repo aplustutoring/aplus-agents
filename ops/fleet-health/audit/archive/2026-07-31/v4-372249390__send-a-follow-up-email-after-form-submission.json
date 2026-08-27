@@ -1,0 +1,85 @@
+{
+  "id": "372249390",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "3",
+  "name": "Send a follow-up email after form submission",
+  "description": "Sends a follow-up email and adds contacts to a list after they submit the specified form.",
+  "uuid": "6312752:121ff12b-5c71-4587-b7ee-718f302887d0:fRRI0lX9As",
+  "createdAt": "2023-05-03T00:12:33.334Z",
+  "updatedAt": "2023-05-03T00:14:37.397Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "3",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "content_id": "64274862630"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 1,
+      "actionTypeId": "0-63809083",
+      "fields": {
+        "listId": "1753",
+        "targetObject": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "formId": "121ff12b-5c71-4587-b7ee-718f302887d0",
+              "operator": "FILLED_OUT",
+              "filterType": "FORM_SUBMISSION"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "formId": "121ff12b-5c71-4587-b7ee-718f302887d0",
+            "operator": "FILLED_OUT",
+            "filterType": "FORM_SUBMISSION"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}

@@ -1,0 +1,123 @@
+{
+  "id": "551680909",
+  "isEnabled": false,
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "revisionId": "11",
+  "name": "Copy Info when Pre Lesson Deal Created",
+  "description": "copying properties from assosciated contact to deal properties when deal is in pre lesson\n",
+  "createdAt": "2024-01-04T20:19:14.494Z",
+  "updatedAt": "2024-11-12T23:01:30.169Z",
+  "startActionId": "1",
+  "nextAvailableActionId": "4",
+  "actions": [
+    {
+      "actionId": "1",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "2"
+      },
+      "fields": {
+        "property_name": "student_first_name",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21565515.student_last_name }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "3"
+      },
+      "fields": {
+        "property_name": "last_name",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21565515.lastname }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "3",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "what_s_going_on_",
+        "value": {
+          "propertyToken": "{{ fetched_objects.fetched_object_21565515.parent_concerns_what_can_we_do_to_help_ }}",
+          "type": "FETCHED_OBJECT_PROPERTY"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": false,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "dealstage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "1066196",
+                  "appointmentscheduled",
+                  "69948487",
+                  "69965353",
+                  "2265591",
+                  "47072313",
+                  "140397124",
+                  "5119062",
+                  "3067398",
+                  "907749",
+                  "51098471"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "reEnrollmentTriggersFilterBranches": [],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_21565515",
+      "objectTypeId": "0-1",
+      "associationTypeId": 3,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "type": "PLATFORM_FLOW"
+}

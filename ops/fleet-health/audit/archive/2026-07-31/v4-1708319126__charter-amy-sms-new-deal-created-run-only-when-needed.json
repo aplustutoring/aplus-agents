@@ -1,0 +1,296 @@
+{
+  "id": "1708319126",
+  "isEnabled": false,
+  "flowType": "WORKFLOW",
+  "revisionId": "9",
+  "name": "Charter Amy SMS New Deal Created  - Run only when needed",
+  "description": "Charter get started now workflow. includes RTI",
+  "createdAt": "2025-10-23T18:37:22.153Z",
+  "updatedAt": "2025-10-23T19:16:00.204Z",
+  "startActionId": "2",
+  "nextAvailableActionId": "44",
+  "actions": [
+    {
+      "actionId": "2",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "20"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "20",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-4",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "21"
+      },
+      "fields": {
+        "content_id": "198079887965"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "21",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "42"
+      },
+      "fields": {
+        "delta": "7",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "23",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-1",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "43"
+      },
+      "fields": {
+        "delta": "1",
+        "time_unit": "MINUTES"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "39",
+      "actionTypeVersion": 0,
+      "actionTypeId": "0-5",
+      "fields": {
+        "property_name": "contact_level_deal_stage",
+        "value": {
+          "staticValue": "",
+          "type": "STATIC_VALUE"
+        }
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "42",
+      "actionTypeVersion": 20,
+      "actionTypeId": "1-887",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "23"
+      },
+      "fields": {
+        "to_number": "{{ enrolled_object.phone }}",
+        "body": "Hi {{ _0_1.firstname }}, it's  A+ Tutoring. We are excited to get you started with the Level Up Program from iLead. Please let us know what your schedule preferences are for your learner(s). ",
+        "from_number": "18188691627",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    },
+    {
+      "actionId": "43",
+      "actionTypeVersion": 20,
+      "actionTypeId": "1-887",
+      "connection": {
+        "edgeType": "STANDARD",
+        "nextActionId": "39"
+      },
+      "fields": {
+        "to_number": "{{ enrolled_object.phone }}",
+        "body": "Please reply back to confirm",
+        "from_number": "18188691627",
+        "hs_target_object": "{{ enrolled_object }}"
+      },
+      "type": "SINGLE_CONNECTION"
+    }
+  ],
+  "enrollmentCriteria": {
+    "shouldReEnroll": true,
+    "listFilterBranch": {
+      "filterBranches": [
+        {
+          "filterBranches": [],
+          "filters": [
+            {
+              "property": "contact_level_deal_stage",
+              "operation": {
+                "operator": "IS_ANY_OF",
+                "includeObjectsWithNoValueSet": false,
+                "values": [
+                  "Pre-Lesson (Charter RTI)"
+                ],
+                "operationType": "ENUMERATION"
+              },
+              "filterType": "PROPERTY"
+            },
+            {
+              "property": "contact_level_deal_stage",
+              "operation": {
+                "operator": "IS_KNOWN",
+                "includeObjectsWithNoValueSet": false,
+                "operationType": "ALL_PROPERTY"
+              },
+              "filterType": "PROPERTY"
+            }
+          ],
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND"
+        }
+      ],
+      "filters": [],
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR"
+    },
+    "unEnrollObjectsNotMeetingCriteria": true,
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranches": [],
+        "filters": [
+          {
+            "property": "contact_level_deal_stage",
+            "operation": {
+              "operator": "IS_KNOWN",
+              "includeObjectsWithNoValueSet": false,
+              "operationType": "ALL_PROPERTY"
+            },
+            "filterType": "PROPERTY"
+          }
+        ],
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND"
+      }
+    ],
+    "type": "LIST_BASED"
+  },
+  "timeWindows": [
+    {
+      "day": "MONDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "TUESDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "WEDNESDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "THURSDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "FRIDAY",
+      "startTime": {
+        "hour": 8,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 18,
+        "minute": 30
+      }
+    },
+    {
+      "day": "SATURDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 0
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    },
+    {
+      "day": "SUNDAY",
+      "startTime": {
+        "hour": 10,
+        "minute": 30
+      },
+      "endTime": {
+        "hour": 17,
+        "minute": 0
+      }
+    }
+  ],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": [
+    {
+      "name": "fetched_object_198066264",
+      "objectTypeId": "0-3",
+      "associationTypeId": 4,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_198060169",
+      "objectTypeId": "0-47",
+      "associationTypeId": 199,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    },
+    {
+      "name": "fetched_object_198060168",
+      "objectTypeId": "0-2",
+      "associationTypeId": 279,
+      "associationCategory": "HUBSPOT_DEFINED",
+      "sortBy": {
+        "property": "hs_lastmodifieddate",
+        "missing": null,
+        "order": "DESC"
+      },
+      "type": "ASSOCIATION"
+    }
+  ],
+  "crmObjectCreationStatus": "COMPLETE",
+  "suppressionListIds": [],
+  "canEnrollFromSalesforce": false,
+  "type": "CONTACT_FLOW",
+  "objectTypeId": "0-1"
+}
