@@ -70,19 +70,35 @@ def _is_real_po(po: str) -> bool:
     return not any(k in po for k in known_labels)
 
 
+ACTION_SINCE = "2026-08-01"   # Roman 2026-08-26: act on Aug 2026 forward only,
+                              # no retroactive cleanup of historic data.
+
+
 def _family_key(dealname: str) -> str:
-    """Parent segment of 'Parent - Student - School N - YY/YY'."""
-    return (dealname or "").split(" - ")[0].strip().lower()
+    """STUDENT + SCHOOL segments of 'Parent - Student - School N - YY/YY' —
+    the parent name is unreliable (two parent contacts for one kid flagged a
+    false positive: Claire Dennis / Dennis Levin, same Gianna). Falls back to
+    the parent segment for short names."""
+    parts = [s.strip().lower() for s in (dealname or "").split(" - ")]
+    if len(parts) >= 3:
+        school = parts[2].split("(")[0].strip().rstrip("0123456789 ")
+        return f"{parts[1]}|{school}"
+    return parts[0] if parts else ""
 
 
 def find_duplicate_pos(deals: list[dict]) -> tuple[dict[str, list[dict]], int]:
     """(VIOLATIONS {po: [deal props,...]}, placeholder_deal_count).
 
-    Roman's rules (2026-08-26): one PO split across a family's monthly deals
-    is FINE ("splits are fine"); a duplicate is a VIOLATION when the same PO
-    number appears (a) across DIFFERENT families, or (b) on the same exact
-    dealname twice (the same deal double-created). Placeholder values are a
-    data gap, counted separately, never flagged."""
+    Roman's rules (2026-08-26):
+    - one PO split across a family's monthly deals is FINE;
+    - Heartland issues ONE PO form for MULTIPLE students, so cross-family on
+      Heartland deals is FINE;
+    - a VIOLATION is the same PO (a) across different families outside
+      Heartland, or (b) on the same exact dealname twice (deal
+      double-created), Heartland included;
+    - ACTION WINDOW: only groups touching a deal created on/after Aug 2026
+      are flagged — no retroactive cleanup.
+    Placeholder values are a data gap, counted separately, never flagged."""
     by_po: dict[str, list[dict]] = {}
     placeholders = 0
     for d in deals:
@@ -98,10 +114,14 @@ def find_duplicate_pos(deals: list[dict]) -> tuple[dict[str, list[dict]], int]:
     for po, ds in by_po.items():
         if len(ds) < 2:
             continue
-        fams = {_family_key(p.get("dealname")) for p in ds}
+        if not any(str(p.get("createdate") or "")[:10] >= ACTION_SINCE for p in ds):
+            continue                      # historic-only group: not our problem
         names = [str(p.get("dealname") or "").strip().lower() for p in ds]
         same_deal_twice = len(names) != len(set(names))
-        if len(fams) > 1 or same_deal_twice:
+        fams = {_family_key(p.get("dealname")) for p in ds}
+        all_heartland = all("heartland" in n for n in names)
+        cross_family = len(fams) > 1 and not all_heartland
+        if cross_family or same_deal_twice:
             violations[po] = ds
     return violations, placeholders
 
