@@ -374,6 +374,21 @@ escalation:
 # agent tickets were never swept at all, and four of Roman's sat 96 to 135 days
 # with zero pings. This pass reads every OPEN ticket straight from HubSpot and
 # keeps nagging on a cadence, so nothing goes quiet just because it is old.
+# Reasoning sweep (Roman 2026-08-26). Age alone is the wrong trigger: a pure
+# 24-hour rule measured on 2026-08-26 would have fired 102 DMs, 77 of them to
+# Kath, and most of hers were PO tickets whose invoice already existed. So the
+# pass reads the evidence (email direction, notes, SMS, calls, invoice proof),
+# decides what state the ticket is really in, and only then closes or pesters.
+# Pesters regardless of who owes the reply — an unanswered family is still ours.
+reasoner:
+  enabled: true
+  allow_close: false          # flip on only after a dry run Roman has read
+  close_min_confidence: 0.85  # closing needs a second system, not a hunch
+  owner_after_hours: 24
+  supervisor_after_hours: 48
+  last_resort_after_hours: 96
+  repeat_every_hours: 24      # daily drumbeat once the ladder starts
+
 aging_sweep:
   enabled: true
   nag_after_days: 7          # open + untouched this long → DM the owner

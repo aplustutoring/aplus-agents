@@ -695,6 +695,78 @@ def search_open_tickets() -> list[dict]:
             return out
 
 
+def _ticket_engagements(ticket_id: str, obj: str, props: list[str],
+                        cap: int = 25) -> list[dict]:
+    """Engagements of one kind attached to a ticket, newest-capped."""
+    try:
+        assoc = _get(f"/crm/v4/objects/tickets/{ticket_id}/associations/{obj}", {"limit": 50})
+    except requests.HTTPError:
+        return []
+    out = []
+    for r in (assoc.get("results") or [])[:cap]:
+        try:
+            d = _get(f"/crm/v3/objects/{obj}/{r['toObjectId']}",
+                     {"properties": ",".join(props)})
+        except requests.HTTPError:
+            continue
+        out.append(d.get("properties") or {})
+    return out
+
+
+def get_ticket_emails(ticket_id: str) -> list[dict]:
+    """Email engagements on a ticket. `hs_email_direction` is EMAIL for outbound
+    and INCOMING_EMAIL for inbound — there is no OUTGOING value, and reading it
+    as one silently makes every ticket look unanswered."""
+    return _ticket_engagements(ticket_id, "emails",
+                               ["hs_email_subject", "hs_email_text",
+                                "hs_email_direction", "hs_timestamp"])
+
+
+def get_ticket_notes(ticket_id: str) -> list[dict]:
+    return _ticket_engagements(ticket_id, "notes", ["hs_note_body", "hs_timestamp"])
+
+
+def get_ticket_contacts(ticket_id: str) -> list[dict]:
+    try:
+        assoc = _get(f"/crm/v4/objects/tickets/{ticket_id}/associations/contacts", {"limit": 10})
+    except requests.HTTPError:
+        return []
+    out = []
+    for r in (assoc.get("results") or [])[:5]:
+        try:
+            out.append(_get(f"/crm/v3/objects/contacts/{r['toObjectId']}",
+                            {"properties": "firstname,lastname,email,phone,mobilephone,a_persona"}))
+        except requests.HTTPError:
+            continue
+    return out
+
+
+def invoiced_po_numbers() -> set[str]:
+    """PO numbers whose deal already carries an Invoice # — proof that step 1
+    (PO → invoice) happened and the ticket is finished work nobody closed.
+
+    Checked against the Teachworks invoice cross-reference on 2026-08-26: both
+    give the same 33-of-36 answer on the open new_po queue, and this one needs a
+    single system and no amount matching to get there.
+    """
+    out, after = set(), None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "invoice__", "operator": "HAS_PROPERTY"},
+            {"propertyName": "po_number", "operator": "HAS_PROPERTY"}]}],
+            "properties": ["po_number", "invoice__"], "limit": 100}
+        if after:
+            body["after"] = after
+        res = _get_search("/crm/v3/objects/deals/search", body)
+        for d in res.get("results", []):
+            po = ((d.get("properties") or {}).get("po_number") or "").strip()
+            if po:
+                out.add(po)
+        after = (res.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            return out
+
+
 def _get_search(path: str, body: dict) -> dict:
     """POST to a /search endpoint. Separate from _write so DRY_RUN cannot
     short-circuit a read (search is a POST but changes nothing)."""

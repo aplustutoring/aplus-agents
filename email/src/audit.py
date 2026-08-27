@@ -55,6 +55,18 @@ def already_processed(message_id: str) -> bool:
     return message_id in processed_message_ids()
 
 
+def last_reasoner_pester(ticket_id: str) -> str | None:
+    """When the reasoning sweep last pestered about a ticket, so the ladder holds
+    its cadence instead of re-DMing on every run."""
+    latest = None
+    for r in _iter_records():
+        if r.get("ticket_id") == ticket_id and r.get("action_taken") == "reasoner_pester":
+            ts = r.get("timestamp")
+            if ts and (latest is None or str(ts) > str(latest)):
+                latest = ts
+    return latest
+
+
 def last_aging_nag(ticket_id: str) -> str | None:
     """Timestamp of the most recent aging nag for a ticket, so the aging sweep
     can hold to its cadence instead of re-DMing on every hourly run."""
