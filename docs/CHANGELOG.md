@@ -57,6 +57,34 @@ notification guards answer the 2026-08-25 aging-sweep near-miss (80 DMs).
 
 ---
 
+## 2026-08-27 — Cron-starvation watchdog + local PO-inbox heartbeat (Roman: "both")
+
+**What:** GitHub's schedule trigger starved the whole fleet today — the PO
+inbox's 9 AM PT window opened and no scheduled run fired for 8.5 hours
+(email-triage 10 hrs stale, call-agent 8, deal-sync 6, all mid-business-day);
+a Lake View PO (105712-C030-LVC) sat unread until a manual dispatch at 10:34.
+Two layers added:
+1. `ops/fleet-health/watchdog/cron_watchdog.py` — runs after every retry
+   sweep (fleet-retry.yml): any watched scheduled workflow silent past its
+   threshold during PT business hours (po-inbox 60 min, triage 90, deal-sync
+   60, call-agent 60) gets a catch-up `workflow_dispatch` (dispatches fire
+   even when cron starves) + ONE Slack alert per episode to the approvers.
+   Reuses sweep.py's gh/alert helpers. Limit: rides the scheduler it watches.
+2. `scripts/po-inbox-heartbeat.sh` + `scripts/launchd/com.aplus.po-inbox-heartbeat.plist`
+   — launchd on Roman's Mac, every 15 min, weekday 07:45-19:15 PT: dispatches
+   email-po-inbox.yml unless a run happened <12 min ago; a failed dispatch
+   DMs the visionary role (token from .env, role from email/config.yaml).
+   Installed to ~/Library/Application Support/aplus/ (repo copy is the
+   template). Covers TOTAL cron starvation, where layer 1 also sleeps.
+**Why:** a PO sitting unread is booked-lesson/invoice latency; retry sweeping
+only sees runs that STARTED — never-started runs were invisible before this.
+**Files:** ops/fleet-health/watchdog/cron_watchdog.py, .github/workflows/
+fleet-retry.yml, scripts/po-inbox-heartbeat.sh, scripts/launchd/….plist.
+**Also:** dispatched catch-up runs for triage/deal-sync/call-agent in session;
+the earlier manual PO-inbox dispatch created the Keesee deal ("Lake View
+Charter School 2" — the #128 numbering fix live) and routed Epic's re-sent
+C&CP as COMPLIANCE/HIGH to Danielle (dispositions live).
+
 ## 2026-08-26 — PO agent refined off a 6-day audit (Roman session)
 
 Ten changes from auditing Aug 20-26 (49 PO deals, $9,178; 24 false pending
