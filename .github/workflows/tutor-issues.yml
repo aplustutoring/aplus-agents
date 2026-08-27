@@ -1,0 +1,146 @@
+name: Tutor issues — detect + ticket
+
+# Fleet convention: agents think in Pacific Time (TZ below); crons are UTC.
+env:
+  TZ: America/Los_Angeles
+
+# NOT LIVE: the schedule stays commented out until (1) the PR is merged,
+# (2) the baseline run has stamped, and (3) Roman flips it on — same
+# enable-at-flip pattern as email-triage.yml. Scheduled runs are LIVE
+# (dry_run only applies to manual dispatch).
+# Cadence once enabled:
+#   - Mondays 17:00 UTC (09/10 PT): weekly sweep (last complete Sun-Sat week,
+#     after the Sunday notes cutoff) + inbound + intake
+#   - every 2h in the business window: inbound reports + Slack intake only
+# on:
+#   schedule:
+#     - cron: "0 17 * * 1"               # Monday sweep
+#     - cron: "0 16,18,20,22,0 * * 1-5"  # inbound/intake polls, weekdays
+on:
+  # TEMPORARY (remove on merge): pushes to the PR branch run the dry-run
+  # verification suite, because workflow_dispatch only works once the
+  # workflow exists on the default branch.
+  push:
+    branches: [worktree-tutor-issue-tickets]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (plan + report, write nothing, send nothing)"
+        required: false
+        type: boolean
+        default: true
+      mode:
+        description: "all | sweep | inbound | intake"
+        required: false
+        default: "all"
+      force_sweep:
+        description: "Run the weekly sweep even off-Monday"
+        required: false
+        type: boolean
+        default: false
+      probe_lateness:
+        description: "Dump observed Teachworks time fields (threshold evidence)"
+        required: false
+        type: boolean
+        default: false
+      assume_baselined:
+        description: "DRY-RUN diagnostic: show the full would-create distribution the baseline will suppress"
+        required: false
+        type: boolean
+        default: false
+      simulate_tutor:
+        description: "Verification: 'First Last' of a REAL tutor — runs the one-synthetic-event check instead of the normal modes"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  tutor-issues:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-tutor-issues-state
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: ops/tutor-issues
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Verification suite (push to PR branch — always dry-run)
+        if: ${{ github.event_name == 'push' }}
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+        run: |
+          echo "=== 1. baseline dry-run (expect zero creates) ==="
+          python tutor_issues.py --mode all --dry-run --force-sweep \
+            --probe-lateness --report-json report-baseline.json
+          echo "=== 2. assume-baselined dry-run (full distribution) ==="
+          python tutor_issues.py --mode all --dry-run --force-sweep \
+            --assume-baselined --report-json report-full.json
+          echo "=== 3. simulate one new qualifying event ==="
+          python tutor_issues.py --dry-run --simulate-event AUTO \
+            --report-json report-simulate.json
+
+      - name: Run engine
+        if: ${{ github.event_name != 'push' }}
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+        run: |
+          FLAGS=""
+          # Scheduled runs are live; manual dispatch defaults to dry-run.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ "${{ inputs.dry_run }}" != "false" ]; then FLAGS="$FLAGS --dry-run"; fi
+          if [ "${{ inputs.force_sweep }}" = "true" ]; then FLAGS="$FLAGS --force-sweep"; fi
+          if [ "${{ inputs.probe_lateness }}" = "true" ]; then FLAGS="$FLAGS --probe-lateness"; fi
+          if [ "${{ inputs.assume_baselined }}" = "true" ]; then FLAGS="$FLAGS --assume-baselined"; fi
+          if [ -n "${{ inputs.simulate_tutor }}" ]; then
+            sed "s/SIM_TUTOR_NAME/${{ inputs.simulate_tutor }}/" tests/sim_event.json > /tmp/sim.json
+            FLAGS="$FLAGS --simulate-event /tmp/sim.json"
+          fi
+          python tutor_issues.py --mode "${{ inputs.mode || 'all' }}" \
+            --report-json report.json $FLAGS
+
+      - name: Upload run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tutor-issues-report
+          path: ops/tutor-issues/report*.json
+          if-no-files-found: ignore
+
+      - name: Commit state changes
+        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == false) }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "tutor-issues: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              sleep 5
+            done
+          fi

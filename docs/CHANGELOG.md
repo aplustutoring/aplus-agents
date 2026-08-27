@@ -8,6 +8,38 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — Tutor-issue ticketing engine (ops/tutor-issues, PR pending)
+
+**What:** New engine logging tutor issues as HubSpot tickets on the TUTOR's
+contact record (Support Pipeline, category "Tutor Issue", owner = Operations
+role = Mandy, opens in "Working on it"). Five types via `tutor_issue_type`;
+6 new ticket properties + `tutor` ticket group + `ticket_source` option
+declared in `ops/hubspot-schema/properties.yml` (sync post-merge). Three
+sources: Monday Teachworks sweep (no-shows -> missed_lesson_or_late;
+unmarked-after-Sunday -> notes_not_completed, same definition as the
+scorecard metric), reasoned inbound family reports (triage audit log +
+HubSpot Conversations bodies, JustCall SMS; Claude extraction with the
+reasoning written into the ticket; unresolvable = NO ticket, scheduler told
+to file manually), and structured Slack intake in #tutor-issues for types
+2/4/5. Scheduler notices route Janelle/Yolanda by the A-L/M-Z student split
+(same rule as the missed-lessons sync). Guards: baseline-stamp first run,
+one open ticket per tutor/type/period (weekly sweep types, rolling-30d
+report types — Roman still to confirm), ONE digest per run, hard caps that
+refuse to act, idempotent event keys. Lateness detection is OFF pending the
+`--probe-lateness` evidence that Teachworks records an actual start.
+
+**Why:** Roman-approved policy 2026-08-26: issues we notice must become an
+auditable, silent (v1) log on the tutor record, with escalations landing on
+Operations; automated only where Teachworks proves the event, because a
+false ticket about a contractor's conduct is worse than a missed one. The
+notification guards answer the 2026-08-25 aging-sweep near-miss (80 DMs).
+
+**Files:** `ops/tutor-issues/` (engine, config, tests, README),
+`ops/hubspot-schema/properties.yml`, `registry.yml`,
+`.github/workflows/tutor-issues.yml`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-26 — PO agent refined off a 6-day audit (Roman session)
 
 Ten changes from auditing Aug 20-26 (49 PO deals, $9,178; 24 false pending
