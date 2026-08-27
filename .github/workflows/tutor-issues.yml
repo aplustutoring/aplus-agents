@@ -17,6 +17,11 @@ env:
 #     - cron: "0 17 * * 1"               # Monday sweep
 #     - cron: "0 16,18,20,22,0 * * 1-5"  # inbound/intake polls, weekdays
 on:
+  # TEMPORARY (remove on merge): pushes to the PR branch run the dry-run
+  # verification suite, because workflow_dispatch only works once the
+  # workflow exists on the default branch.
+  push:
+    branches: [worktree-tutor-issue-tickets]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -70,7 +75,29 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Verification suite (push to PR branch — always dry-run)
+        if: ${{ github.event_name == 'push' }}
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+        run: |
+          echo "=== 1. baseline dry-run (expect zero creates) ==="
+          python tutor_issues.py --mode all --dry-run --force-sweep \
+            --probe-lateness --report-json report-baseline.json
+          echo "=== 2. assume-baselined dry-run (full distribution) ==="
+          python tutor_issues.py --mode all --dry-run --force-sweep \
+            --assume-baselined --report-json report-full.json
+          echo "=== 3. simulate one new qualifying event ==="
+          python tutor_issues.py --dry-run --simulate-event AUTO \
+            --report-json report-simulate.json
+
       - name: Run engine
+        if: ${{ github.event_name != 'push' }}
         env:
           HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
           TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
@@ -99,11 +126,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tutor-issues-report
-          path: ops/tutor-issues/report.json
+          path: ops/tutor-issues/report*.json
           if-no-files-found: ignore
 
       - name: Commit state changes
-        if: ${{ github.event_name == 'schedule' || inputs.dry_run == false }}
+        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == false) }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

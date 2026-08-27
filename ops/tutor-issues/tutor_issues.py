@@ -981,8 +981,33 @@ def main():
     extra = {}
 
     if args.simulate_event:
-        with open(args.simulate_event) as f:
-            sim = json.load(f)
+        if args.simulate_event == "AUTO":
+            # Pick the first ACTIVE Teachworks employee that resolves cleanly
+            # to a HubSpot Tutors contact, so the synthetic event exercises
+            # the real resolution path end to end.
+            by_id = employees[0]
+            picked = None
+            for key in sorted(by_id):
+                emp = by_id[key]
+                if emp["status"].lower() != "active":
+                    continue
+                if not resolve_tutor({"tw_id": key}, employees, cfg).get("refused"):
+                    picked = emp
+                    break
+            if not picked:
+                raise SystemExit("simulate AUTO: no active TW employee resolves "
+                                 "to a HubSpot Tutors contact")
+            sim = {"id": "auto", "source_label": "family email",
+                   "source_id": "sim:auto",
+                   "text": (f"Hi, our tutor {picked['first']} {picked['last']} "
+                            "did not show up for my son Ben Alvarez's 4pm lesson "
+                            "today and we never heard from anyone. "
+                            "Can someone let us know what happened?")}
+            log.info(f"simulate AUTO picked tutor {picked['first']} {picked['last']} "
+                     f"(tw {picked['acct']}:{picked['id']})")
+        else:
+            with open(args.simulate_event) as f:
+                sim = json.load(f)
         _handle_report(plan, cfg, state, employees,
                        event_key=f"sim:{sim.get('id', 'event')}",
                        source_label=sim.get("source_label", "family email"),
