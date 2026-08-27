@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**40 registered agents** — 27 active · 10 manual · 3 deprecated · across 10 engines.
+**41 registered agents** — 28 active · 10 manual · 3 deprecated · across 10 engines.
 
 ## What this is
 
@@ -43,7 +43,7 @@ outranks those two. HubSpot is where humans act.
 | Call agent | 1 | 1 |
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
-| Fleet health | 5 | 4 |
+| Fleet health | 6 | 5 |
 | Charter analysis | 5 | 0 |
 | Events | 1 | 1 |
 
@@ -53,7 +53,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (16):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`.
 
-**Reports, drafts, or waits for a human (11):** `topic-gen`, `blog-metrics`, `feedback-agent`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `branch-hygiene`.
+**Reports, drafts, or waits for a human (12):** `topic-gen`, `blog-metrics`, `feedback-agent`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
 **Manual dispatch only (10):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
 
@@ -153,12 +153,14 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **credential-expiry**<br>Credential expiry check (#AP044) | manual | active | knowledge/credentials.yml | Slack: warning to CREDENTIAL_ALERT_CHANNEL when a credential is within 180 days of expiry |
 | **fleet-docs**<br>Fleet — registry check + FLEET.md | event | active | registry.yml, .github/workflows/, docs/FLEET.md | docs/FLEET.md |
 | **fleet-retry**<br>Fleet retry sweeper (every 20 min) | every 20 min, offset from agent crons | active | GitHub:actions_runs, ops/feedback-agent/config.yml | GitHub:actions_runs, Slack |
+| **pr-merge-nudge**<br>PR merge nudge (green fixes) | manual | active | GitHub: open PRs + check-run state, ops/feedback-agent/config.yml | Slack: one digest to |
 | **hubspot-schema**<br>HubSpot schema sync (manual) | manual | manual | ops/hubspot-schema/properties.yml, registry.yml, HubSpot | HubSpot |
 
 - **fleet-retry** — Excludes itself and the approved-fix executor (paid coding-agent runs are never blindly retried)
 - **credential-expiry** — NEVER REMEDIATES
 - **hubspot-schema** — Idempotent + additive only
 - **fleet-docs** — ROLLOUT: PR runs use --warn, so an unregistered workflow annotates the PR without blocking the merge
+- **pr-merge-nudge** — NEVER MERGES
 - **branch-hygiene** — Catches work stranded outside main (2026-08-05 incidents: PR #47 sat unmerged for a week; a CallRail matching fix sat unpushed locally for 16 days)
 
 ### Charter analysis
