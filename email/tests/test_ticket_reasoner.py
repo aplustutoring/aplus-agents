@@ -86,6 +86,88 @@ def test_enrich_only_marks_a_po_that_is_actually_invoiced():
     assert hit["invoice_proof"] and miss.get("invoice_proof") is None
 
 
+NOTE_BLOB = ("📧 Original email (charter@ Gmail) — from Invoice Statements "
+             "<invoices@suncoastcharter.org>\nSubject: Re: Invoice for A+ Tutoring - "
+             "Koby Wells\n\nHi, before we can process it we need the billing info "
+             "updated.")
+
+
+def _po_ev(**kw):
+    ev = {"ticket_id": "T1", "subject": "po_inbox review — Re: Invoice for A+ Tutoring",
+          "agent_filed": True,
+          "description": "From PO inbox (charter@wetutorathome.com). "
+                         "From: Invoice Statements <invoices@suncoastcharter.org> "
+                         "Subject: Re: Invoice for A+ Tutoring - Koby Wells",
+          "notes": [{"at": "", "text": NOTE_BLOB}]}
+    ev.update(kw)
+    return ev
+
+
+def test_po_ticket_reads_the_gmail_thread(monkeypatch):
+    """PO tickets have no HubSpot emails by design — the reply Kath sends leaves
+    from Gmail, so judging them on HubSpot alone reports 'no response from us'
+    on work that was in fact answered."""
+    monkeypatch.setattr(tr, "cfg", lambda: {**CFG, "po_inbox": {"address": "charter@wetutorathome.com"}})
+    monkeypatch.setattr(tr.gm, "find_thread", lambda s, sender="", **k: "TH1")
+    monkeypatch.setattr(tr.gm, "get_thread", lambda t: [
+        {"date_ms": 1_756_000_000_000, "sender": "invoices@suncoastcharter.org",
+         "body": "please update the billing name"},
+        {"date_ms": 1_756_100_000_000, "sender": "A+ Charter <charter@wetutorathome.com>",
+         "body": "Updated invoice attached, thank you"}])
+    ev = tr.enrich_gmail_thread(_po_ev())
+    assert [m["direction"] for m in ev["gmail_thread"]] == ["inbound", "outbound"]
+    assert "Updated invoice" in ev["gmail_thread"][-1]["text"]
+
+
+def test_unfindable_thread_is_unavailable_not_silence(monkeypatch):
+    """A thread we cannot locate must never read as 'nobody replied'."""
+    monkeypatch.setattr(tr, "cfg", lambda: {**CFG, "po_inbox": {"address": "charter@x.com"}})
+    monkeypatch.setattr(tr.gm, "find_thread", lambda s, sender="", **k: "")
+    assert tr.enrich_gmail_thread(_po_ev())["gmail_thread"] == "UNAVAILABLE"
+
+
+def test_gmail_failure_is_not_fatal(monkeypatch):
+    monkeypatch.setattr(tr, "cfg", lambda: {**CFG, "po_inbox": {"address": "charter@x.com"}})
+
+    def boom(*a, **k):
+        raise RuntimeError("403 delegation")
+
+    monkeypatch.setattr(tr.gm, "find_thread", boom)
+    assert tr.enrich_gmail_thread(_po_ev())["gmail_thread"] == "UNAVAILABLE"
+
+
+def test_non_po_tickets_skip_gmail(monkeypatch):
+    """Family tickets DO have HubSpot engagements; no reason to search Gmail."""
+    called = []
+    monkeypatch.setattr(tr.gm, "find_thread", lambda *a, **k: called.append(1) or "")
+    ev = tr.enrich_gmail_thread({"ticket_id": "T", "subject": "Smith — Scheduling",
+                                 "agent_filed": False, "description": "", "notes": []})
+    assert ev.get("gmail_thread") is None and called == []
+
+
+def test_subject_comes_from_the_ticket_not_the_flattened_note(monkeypatch):
+    """gather() flattens the note to one line, so "Subject:(.+)" swallows the
+    whole message — 231 chars of body ended up in the Gmail query. The ticket
+    subject is the email subject with a known prefix, so use that."""
+    seen = {}
+    monkeypatch.setattr(tr, "cfg", lambda: {**CFG, "po_inbox": {"address": "charter@x.com"}})
+    monkeypatch.setattr(tr.gm, "find_thread",
+                        lambda s, sender="", **k: seen.update(subject=s, sender=sender) or "")
+    tr.enrich_gmail_thread(_po_ev(
+        subject="po_inbox review — Re: Invoice for A+ Tutoring - Koby Wells"))
+    assert seen["subject"] == "Re: Invoice for A+ Tutoring - Koby Wells"
+    assert "suncoastcharter.org" in seen["sender"]
+
+
+def test_new_po_prefix_is_also_stripped(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(tr, "cfg", lambda: {**CFG, "po_inbox": {"address": "charter@x.com"}})
+    monkeypatch.setattr(tr.gm, "find_thread",
+                        lambda s, sender="", **k: seen.update(subject=s) or "")
+    tr.enrich_gmail_thread(_po_ev(subject="new_po — Heartland Charter School (PO PF242530)"))
+    assert seen["subject"] == "Heartland Charter School (PO PF242530)"
+
+
 def test_sms_timestamps_carry_the_time_of_day():
     """Date alone makes every message in one day sort equal. On 2026-08-26 that
     hid 'his name is Calvin and attached is his profile' and turned a completed
@@ -106,9 +188,11 @@ def test_long_sms_thread_is_not_truncated_mid_resolution(monkeypatch):
     monkeypatch.setattr(tr.hs, "get_ticket_notes", lambda t: [])
     monkeypatch.setattr(tr.hs, "get_ticket_contacts", lambda t: [
         {"properties": {"firstname": "Inna", "lastname": "V", "mobilephone": "8184623808"}}])
-    texts = [{"at": f"2026-08-25T{h:02d}:00:00", "direction": "outgoing",
-              "text": ("attached is his profile" if h == 12 else f"msg {h}")}
-             for h in range(6, 26)]
+    # relative to now, so the fixture cannot rot as the calendar moves
+    texts = [{"at": (NOW - dt.timedelta(hours=h)).strftime("%Y-%m-%dT%H:%M:%S"),
+              "direction": "outgoing",
+              "text": ("attached is his profile" if h == 20 else f"msg {h}")}
+             for h in range(1, 40)]
     ev = tr.gather(_ticket(hours=48), {"8184623808": {"texts": texts, "calls": []}})
     assert any("attached is his profile" in s["text"] for s in ev["sms"])
 

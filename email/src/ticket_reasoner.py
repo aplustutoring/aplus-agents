@@ -28,7 +28,8 @@ import re
 from collections import Counter
 from datetime import datetime, timezone
 
-from . import audit, hubspot_client as hs, justcall_client as jc, slack_client
+from . import (audit, gmail_client as gm, hubspot_client as hs,
+               justcall_client as jc, slack_client)
 from .config import ANTHROPIC_API_KEY, cfg, staff
 
 CLOSEABLE = {"RESOLVED", "NO_ACTION", "DUPLICATE"}
@@ -72,7 +73,7 @@ def gather(ticket: dict, sms_index: dict | None = None) -> dict:
         "quiet_hours": 0,
         "agent_filed": subject.startswith(AGENT_PREFIXES),
         "emails": [], "notes": [], "sms": [], "calls": [],
-        "invoice_proof": None, "duplicate_of": None,
+        "invoice_proof": None, "duplicate_of": None, "gmail_thread": None,
         # None means the pull failed, so an empty sms list proves nothing.
         "phone_evidence": "available" if sms_index is not None else "UNAVAILABLE",
     }
@@ -112,6 +113,62 @@ def gather(ticket: dict, sms_index: dict | None = None) -> dict:
                          if x.get("at", "") >= since][-40:]
             ev["calls"] = [x for x in hit.get("calls", [])
                            if x.get("at", "") >= since][-15:]
+    return ev
+
+
+# The sender is written two ways: the ticket DESCRIPTION says
+# "From: Name <addr>" while the agent's note says "— from Name". Rather than
+# matching either shape, take the first real address that is not our own inbox.
+_PO_ADDR = re.compile(r"[\w.+-]+@[\w.-]+\.\w+")
+_PO_SUBJ = re.compile(r"Subject:\s*(.+)", re.I)
+
+
+def enrich_gmail_thread(ev: dict) -> dict:
+    """For PO tickets, read the charter@ Gmail thread.
+
+    These tickets carry no HubSpot email engagements at all: the inbound mail is
+    embedded as a note and every reply Kath sends leaves from Gmail, so HubSpot
+    never sees it. Judging them on HubSpot alone made the sweep report "no
+    response from us is recorded" on 44 of Kath's 97 tickets when it simply
+    could not see her outbound (Roman, 2026-08-27).
+
+    `gmail_thread: UNAVAILABLE` means the thread could not be located, which is
+    NOT evidence that nobody replied.
+    """
+    if not ev.get("agent_filed"):
+        return ev
+    blob = ev.get("description") or ""
+    for n in ev.get("notes", []):
+        if "Original email" in n.get("text", ""):
+            blob = f"{blob}\n{n['text']}"
+            break
+    inbox_addr = (cfg().get("po_inbox", {}).get("address") or "").lower()
+    sender = next((a for a in _PO_ADDR.findall(blob)
+                   if a.lower() != inbox_addr and "wetutorathome" not in a.lower()), "")
+    # Prefer the TICKET subject: it is the email subject with a known prefix, so
+    # it needs no delimiter guessing. The note body is flattened to one line by
+    # gather(), which makes "Subject:(.+)" swallow the entire message.
+    subject = re.sub(r"^(po_inbox review|new_po)\s*[—-]\s*", "",
+                     ev.get("subject") or "", flags=re.I).strip()
+    if not subject:
+        m = _PO_SUBJ.search(blob)
+        subject = (m.group(1)[:90] if m else "")
+    ev["gmail_thread"] = "UNAVAILABLE"
+    try:
+        tid = gm.find_thread(subject, sender)
+        if not tid:
+            return ev
+        msgs = gm.get_thread(tid)
+    except Exception as e:  # noqa: BLE001 — degraded, never fatal
+        print(f"  ⚠️  gmail thread lookup failed for ticket {ev['ticket_id']}: {e}")
+        return ev
+    inbox = (cfg().get("po_inbox", {}).get("address") or "").lower()
+    ev["gmail_thread"] = [{
+        "at": datetime.fromtimestamp(m["date_ms"] / 1000, timezone.utc).isoformat(),
+        "direction": "outbound" if inbox and inbox in (m.get("sender") or "").lower() else "inbound",
+        "from": (m.get("sender") or "")[:80],
+        "text": re.sub(r"\s+", " ", m.get("body") or "")[:600],
+    } for m in msgs][-12:]
     return ev
 
 
@@ -176,6 +233,10 @@ Rules that matter here:
 - Money owed in either direction, complaints, and resignations are BALL_IN_COURT
   unless there is clear evidence they were settled.
 - Later SMS or calls about the same family can supersede an old ticket: say so.
+- PO tickets (po_inbox / new_po) have NO HubSpot emails by design; their whole
+  correspondence is in `gmail_thread`. Read that to see whether WE replied.
+  `gmail_thread: UNAVAILABLE` means the thread could not be found — that is not
+  evidence nobody replied, so cap confidence at 0.6 on those.
 - `phone_evidence: UNAVAILABLE` means the SMS/call pull FAILED. An empty sms or
   calls list then proves nothing — never read it as "no contact happened", and
   never exceed 0.6 confidence on a ticket whose story would live in texts.
@@ -200,7 +261,7 @@ def reason(ev: dict, client=None) -> dict:
     payload = {k: ev.get(k) for k in
                ("subject", "description", "age_hours", "quiet_hours",
                 "emails", "notes", "sms", "calls", "invoice_proof",
-                "phone_evidence")}
+                "phone_evidence", "gmail_thread")}
     msg = client.messages.create(
         model=c["model"], max_tokens=400, system=SYSTEM,
         messages=[{"role": "user", "content": json.dumps(payload, default=str)[:14000]}])
@@ -276,7 +337,8 @@ def run(dry_run: bool = False, limit: int | None = None) -> dict:
               f"Closing is disabled for this run.")
         sms_index, rc = None, {**rc, "allow_close": False}
 
-    evs = [enrich_invoice_proof(gather(t, sms_index), invoiced) for t in tickets]
+    evs = [enrich_invoice_proof(enrich_gmail_thread(gather(t, sms_index)), invoiced)
+           for t in tickets]
     evs = mark_duplicates(evs)
 
     tally, closed, pestered, lines = Counter(), 0, 0, []

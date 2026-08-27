@@ -52,6 +52,62 @@ ticket follows the follow-up owner, not the Director." Not yet numbered.
 
 ---
 
+## 2026-08-27 — The reasoner can read the charter@ Gmail thread (#AP-pending)
+
+**What changed**
+- `email/src/gmail_client.py` — new `get_thread()` and `find_thread()`; the
+  message parser factored out as `_parse_message()`.
+- `email/src/ticket_reasoner.py` — new `enrich_gmail_thread()`, run on every
+  PO ticket before reasoning.
+- `email/src/hubspot_client.py` — `search_open_tickets()` now fetches `content`.
+- `.github/workflows/ticket-reasoner.yml` — new, dispatchable, dry-run default.
+- `email/tests/test_ticket_reasoner.py` — 6 more tests.
+
+**Why**
+Roman, 2026-08-27, on the Koby Wells ticket: Kath sent invoice 51832 to Suncoast
+on Aug 17 and the reasoner still reported "no response from us is recorded".
+
+PO tickets carry **zero** HubSpot email engagements by design — po_inbox embeds
+the inbound mail as a NOTE ("The email lives in Gmail, not a HubSpot
+conversation") and every reply Kath sends leaves from the charter@ mailbox,
+which HubSpot never sees. So the sweep was judging 44 of Kath's 97 tickets on
+evidence that structurally cannot contain her outbound work. Its BALL_IN_COURT
+verdicts on that queue were unreliable, and right only by luck where they were
+right at all.
+
+Three defects found while wiring it:
+
+1. `search_open_tickets()` never requested `content`, so `description` was
+   empty on EVERY ticket the sweep has ever looked at — including the sender
+   address that points back to the Gmail thread.
+2. `gather()` flattens note text to a single line, so `Subject:(.+)` swallowed
+   231 characters of message body into the Gmail query. The subject now comes
+   from the TICKET subject, which is the email subject behind a known prefix.
+3. The sender is written two ways ("From: Name <addr>" in the description,
+   "— from Name" in the note), so extraction takes the first real address that
+   is not our own mailbox instead of matching either shape.
+
+`gmail_thread: UNAVAILABLE` is deliberately distinct from an empty thread and
+the model is told to cap confidence at 0.6 on it — an unlocatable thread is not
+evidence that nobody replied.
+
+**Not yet verified against live data.** The Google service-account credential
+exists only as an Actions secret, so the Gmail path cannot run locally. The new
+workflow is how it gets exercised, and `workflow_dispatch` only becomes
+available once this is on the default branch.
+
+**Files touched**
+- `email/src/gmail_client.py`, `email/src/ticket_reasoner.py`
+- `email/src/hubspot_client.py`, `.github/workflows/ticket-reasoner.yml`
+- `email/tests/test_ticket_reasoner.py`, `docs/CHANGELOG.md`
+
+**Verification** — 304 passed (was 298; 6 new).
+
+**Decision log** — candidate: "a ticket's evidence includes the mailbox it
+actually lives in; absent evidence is never read as absence of action."
+
+---
+
 ## 2026-08-26 — Reasoning sweep + the 24-hour pester policy (#AP-pending)
 
 **What changed**

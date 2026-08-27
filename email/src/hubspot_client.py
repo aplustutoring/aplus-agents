@@ -679,7 +679,11 @@ def search_open_tickets() -> list[dict]:
     it only ever sees agent-created tickets; the aging sweep uses this instead so
     hand-made tickets cannot rot unseen (Roman 2026-08-26: four of his were 96 to
     135 days old and had never triggered a single ping)."""
-    props = ["subject", "hubspot_owner_id", "hs_pipeline_stage",
+    # `content` matters: on a PO ticket the description carries the summary and
+    # the sender's address, which is the only structured pointer back to the
+    # Gmail thread. Omitting it left the reasoner judging PO tickets with an
+    # empty description (Roman, 2026-08-27).
+    props = ["subject", "content", "hubspot_owner_id", "hs_pipeline_stage",
              "createdate", "hs_lastmodifieddate"]
     out, after = [], None
     while True:

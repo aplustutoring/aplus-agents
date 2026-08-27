@@ -1,0 +1,58 @@
+name: Ticket reasoning sweep
+
+# Reads every OPEN ticket, gathers evidence across HubSpot, the charter@ Gmail
+# thread and JustCall, decides what state the ticket is really in, then closes
+# or pesters on the 24/48/96h ladder.
+#
+# Closing is double-gated: `reasoner.allow_close` in email/config.yaml AND a
+# per-ticket confidence >= reasoner.close_min_confidence. Run dry_run first --
+# it prints every verdict with its evidence and writes nothing.
+env:
+  TZ: America/Los_Angeles
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print verdicts, write nothing)"
+        required: false
+        default: "true"
+      limit:
+        description: "Only look at the first N open tickets (blank = all)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Reasoning sweep
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          # Same service account as the PO inbox — needed to read the charter@
+          # Gmail threads, which is where every PO reply actually lives.
+          GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          ARGS=""
+          if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ -n "$LIMIT" ]; then ARGS="$ARGS --limit $LIMIT"; fi
+          python -m src.ticket_reasoner $ARGS
