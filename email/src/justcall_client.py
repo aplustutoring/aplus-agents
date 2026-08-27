@@ -30,6 +30,21 @@ def _headers() -> dict:
     return {"Authorization": f"Basic {token}"}
 
 
+def _stamp(date_val, time_val) -> str:
+    """'2026-08-25' + '19:04:11' -> '2026-08-25T19:04:11'.
+
+    The date alone is not enough. A busy SMS thread resolves inside one day, so
+    storing only `sms_date` makes every message that day sort equal — which on
+    2026-08-26 hid the message reading "his name is Calvin and attached is his
+    profile" and made a finished tutor match look like an unkept promise.
+    """
+    d = str(date_val or "").strip()
+    t = str(time_val or "").strip()
+    if not d:
+        return ""
+    return f"{d}T{t}" if t else d
+
+
 def norm_number(p: str) -> str:
     """Last ten digits — the only form that matches across HubSpot's mixed
     formats (+1 626-437-1321, 6264371321, (626) 437-1321)."""
@@ -85,7 +100,7 @@ def index_by_number(since_days: int = 90) -> dict:
         if not n:
             continue
         idx.setdefault(n, {"texts": [], "calls": []})["texts"].append({
-            "at": str(t.get("sms_date") or ""),
+            "at": _stamp(t.get("sms_date"), t.get("sms_time")),
             "direction": str(t.get("direction") or "").lower(),
             "text": ((t.get("sms_info") or {}).get("body") or "")[:200]})
     for c in _pull("calls", since_days):
@@ -93,7 +108,7 @@ def index_by_number(since_days: int = 90) -> dict:
         if not n:
             continue
         idx.setdefault(n, {"texts": [], "calls": []})["calls"].append({
-            "at": str(c.get("call_date") or ""),
+            "at": _stamp(c.get("call_date"), c.get("call_time")),
             "direction": str(c.get("direction") or "").lower(),
             "seconds": (c.get("call_info") or {}).get("duration"),
             "notes": ((c.get("call_info") or {}).get("notes") or "")[:200]})

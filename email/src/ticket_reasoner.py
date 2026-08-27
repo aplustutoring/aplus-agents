@@ -103,8 +103,15 @@ def gather(ticket: dict, sms_index: dict | None = None) -> dict:
         phone = _norm_phone(cp.get("mobilephone") or cp.get("phone"))
         if phone and sms_index is not None:
             hit = sms_index.get(phone) or {}
-            ev["sms"] = [x for x in hit.get("texts", []) if x.get("at", "") >= (created.isoformat() if created else "")][-8:]
-            ev["calls"] = [x for x in hit.get("calls", []) if x.get("at", "") >= (created.isoformat() if created else "")][-5:]
+            since = created.strftime("%Y-%m-%dT%H:%M:%S") if created else ""
+            # Keep a wide window. A tutor match runs to 20+ messages in a single
+            # afternoon, and the message that settles it sits in the middle:
+            # truncating to the last 8 on 2026-08-26 cut "attached is his
+            # profile" and turned a completed match into an unkept promise.
+            ev["sms"] = [x for x in hit.get("texts", [])
+                         if x.get("at", "") >= since][-40:]
+            ev["calls"] = [x for x in hit.get("calls", [])
+                           if x.get("at", "") >= since][-15:]
     return ev
 
 

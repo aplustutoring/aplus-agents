@@ -86,6 +86,33 @@ def test_enrich_only_marks_a_po_that_is_actually_invoiced():
     assert hit["invoice_proof"] and miss.get("invoice_proof") is None
 
 
+def test_sms_timestamps_carry_the_time_of_day():
+    """Date alone makes every message in one day sort equal. On 2026-08-26 that
+    hid 'his name is Calvin and attached is his profile' and turned a completed
+    tutor match into an unkept promise."""
+    from src import justcall_client as j
+    assert j._stamp("2026-08-25", "19:04:11") == "2026-08-25T19:04:11"
+    assert j._stamp("2026-08-25", None) == "2026-08-25"
+    assert j._stamp(None, "19:04:11") == ""
+    a = j._stamp("2026-08-25", "08:00:00")
+    b = j._stamp("2026-08-25", "19:04:11")
+    assert a < b, "same-day messages must order by time"
+
+
+def test_long_sms_thread_is_not_truncated_mid_resolution(monkeypatch):
+    """A tutor match runs 20+ messages in an afternoon and the message that
+    settles it sits in the middle, so the window has to be wide."""
+    monkeypatch.setattr(tr.hs, "get_ticket_emails", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_notes", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_contacts", lambda t: [
+        {"properties": {"firstname": "Inna", "lastname": "V", "mobilephone": "8184623808"}}])
+    texts = [{"at": f"2026-08-25T{h:02d}:00:00", "direction": "outgoing",
+              "text": ("attached is his profile" if h == 12 else f"msg {h}")}
+             for h in range(6, 26)]
+    ev = tr.gather(_ticket(hours=48), {"8184623808": {"texts": texts, "calls": []}})
+    assert any("attached is his profile" in s["text"] for s in ev["sms"])
+
+
 def test_failed_phone_pull_is_flagged_not_silently_empty(monkeypatch):
     """A swallowed JustCall 400 produced 156 verdicts with the whole SMS trail
     missing on 2026-08-26. An empty sms list must be distinguishable from a
