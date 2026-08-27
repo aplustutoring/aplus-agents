@@ -114,9 +114,28 @@ def test_find_duplicate_pos_flags_repeats_and_normalizes():
         {"properties": {"po_number": "", "dealname": "F"}},             # ignored
     ]
     dupes, placeholders = pr.find_duplicate_pos(deals)
+    # A/B and C/D are different "families" (first dealname segment differs)
     assert set(dupes) == {"3114164517", "3114164518"}
     assert [d["dealname"] for d in dupes["3114164517"]] == ["A", "B"]
     assert placeholders == 0
+
+
+def test_find_duplicate_pos_family_splits_allowed():
+    from src import po_daily_report as pr
+    deals = [  # one PO split across months for ONE family: FINE (Roman)
+        {"properties": {"po_number": "pf205745", "dealname": "Ana Cruz - Leo - Pacific 1 - 26/27"}},
+        {"properties": {"po_number": "pf205745", "dealname": "Ana Cruz - Leo - Pacific 2 - 26/27"}},
+        {"properties": {"po_number": "pf205745", "dealname": "Ana Cruz - Leo - Pacific 3 - 26/27"}},
+        # same PO, DIFFERENT family: VIOLATION
+        {"properties": {"po_number": "688542458", "dealname": "Ana Cruz - Leo - Pacific 1 - 26/27"}},
+        {"properties": {"po_number": "688542458", "dealname": "Bob Diaz - Mia - Pacific 1 - 26/27"}},
+        # same PO, same family, IDENTICAL dealname twice: VIOLATION
+        {"properties": {"po_number": "298548470", "dealname": "Cara Voss - Sam - iLead 1 - 26/27"}},
+        {"properties": {"po_number": "298548470", "dealname": "Cara Voss - Sam - iLead 1 - 26/27"}},
+    ]
+    dupes, _ = pr.find_duplicate_pos(deals)
+    assert set(dupes) == {"688542458", "298548470"}
+    assert "pf205745" not in dupes
 
 
 def test_find_duplicate_pos_placeholders_counted_not_flagged():
