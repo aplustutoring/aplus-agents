@@ -300,7 +300,7 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-21-deliver-superhero-reel-request.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/106",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787357831961899"
     },
     {
@@ -365,7 +365,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 13
+    "clean_merges": 14
   },
   "pending_proposals": {
     "1786554388.265099": {
