@@ -8,6 +8,23 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — Tutor-issue ticketing LIVE
+
+**What:** Flip after the verified live baseline (run 33030729514: 0 created,
+0 refusals, nothing sent, state committed). #tutor-issues channel
+C0BSU4KGA0K wired into config; Actions schedule enabled (Monday 17:00 UTC
+sweep + 2h inbound/intake polls); temporary branch-push verification
+trigger removed; registry status active.
+
+**Why:** All launch gates from the build entry below passed. Still open for
+Roman: dedupe-period confirmation (config-tunable defaults live: weekly
+sweep types / rolling-30d report types) and the decision-log entry.
+
+**Files:** `ops/tutor-issues/config.yml`, `.github/workflows/tutor-issues.yml`,
+`registry.yml`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-26 — Tutor-issue ticketing engine (ops/tutor-issues, PR pending)
 
 **What:** New engine logging tutor issues as HubSpot tickets on the TUTOR's
