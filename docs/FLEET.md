@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**41 registered agents** — 28 active · 10 manual · 3 deprecated · across 10 engines.
+**42 registered agents** — 29 active · 10 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -46,12 +46,13 @@ outranks those two. HubSpot is where humans act.
 | Fleet health | 6 | 5 |
 | Charter analysis | 5 | 0 |
 | Events | 1 | 1 |
+| Tutor issues | 1 | 1 |
 
 ## Autonomy — what acts without asking
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (16):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`.
+**Writes to live systems on its own (17):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
 **Reports, drafts, or waits for a human (12):** `topic-gen`, `blog-metrics`, `feedback-agent`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
@@ -185,6 +186,14 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **sage-oak-booth**<br>Sage Oak BTSC 2026 photo booth | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create), Cloudflare KV (PHOTOS binding — serves GET /photo/<key>) | HubSpot:contacts, HubSpot:contacts persona stamp, CREATE-ONLY, HubSpot:emails, HubSpot:notes, Resend, JustCall, Cloudflare KV |
 
 - **sage-oak-booth** — HAND-DEPLOYED, two pieces: `npx wrangler deploy` for the Worker and `npx wrangler pages deploy` for the front-end
+
+### Tutor issues
+
+| Agent | Runs | Status | Reads | Writes |
+|---|---|---|---|---|
+| **tutor-issues**<br>Tutor-issue ticketing (sweep + inbound reports + intake) | Monday sweep, 09/10 PT | active | Teachworks, email/state/audit_log.jsonl, HubSpot, JustCall, Slack | HubSpot, Slack, ops/tutor-issues/state/ |
+
+- **tutor-issues** — Tickets on the tutor's contact record for 5 issue types; owner = Operations role (Mandy); silent internal log in v1 (nothing tutor-facing)
 
 ## Working rules every agent follows
 

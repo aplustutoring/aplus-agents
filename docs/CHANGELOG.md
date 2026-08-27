@@ -8,6 +8,145 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — Tutor-issue ticketing LIVE
+
+**What:** Flip after the verified live baseline (run 33030729514: 0 created,
+0 refusals, nothing sent, state committed). #tutor-issues channel
+C0BSU4KGA0K wired into config; Actions schedule enabled (Monday 17:00 UTC
+sweep + 2h inbound/intake polls); temporary branch-push verification
+trigger removed; registry status active.
+
+**Why:** All launch gates from the build entry below passed. Still open for
+Roman: dedupe-period confirmation (config-tunable defaults live: weekly
+sweep types / rolling-30d report types) and the decision-log entry.
+
+**Files:** `ops/tutor-issues/config.yml`, `.github/workflows/tutor-issues.yml`,
+`registry.yml`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-26 — Tutor-issue ticketing engine (ops/tutor-issues, PR pending)
+
+**What:** New engine logging tutor issues as HubSpot tickets on the TUTOR's
+contact record (Support Pipeline, category "Tutor Issue", owner = Operations
+role = Mandy, opens in "Working on it"). Five types via `tutor_issue_type`;
+6 new ticket properties + `tutor` ticket group + `ticket_source` option
+declared in `ops/hubspot-schema/properties.yml` (sync post-merge). Three
+sources: Monday Teachworks sweep (no-shows -> missed_lesson_or_late;
+unmarked-after-Sunday -> notes_not_completed, same definition as the
+scorecard metric), reasoned inbound family reports (triage audit log +
+HubSpot Conversations bodies, JustCall SMS; Claude extraction with the
+reasoning written into the ticket; unresolvable = NO ticket, scheduler told
+to file manually), and structured Slack intake in #tutor-issues for types
+2/4/5. Scheduler notices route Janelle/Yolanda by the A-L/M-Z student split
+(same rule as the missed-lessons sync). Guards: baseline-stamp first run,
+one open ticket per tutor/type/period (weekly sweep types, rolling-30d
+report types — Roman still to confirm), ONE digest per run, hard caps that
+refuse to act, idempotent event keys. Lateness detection is OFF pending the
+`--probe-lateness` evidence that Teachworks records an actual start.
+
+**Why:** Roman-approved policy 2026-08-26: issues we notice must become an
+auditable, silent (v1) log on the tutor record, with escalations landing on
+Operations; automated only where Teachworks proves the event, because a
+false ticket about a contractor's conduct is worse than a missed one. The
+notification guards answer the 2026-08-25 aging-sweep near-miss (80 DMs).
+
+**Files:** `ops/tutor-issues/` (engine, config, tests, README),
+`ops/hubspot-schema/properties.yml`, `registry.yml`,
+`.github/workflows/tutor-issues.yml`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-08-27 — Cron-starvation watchdog + local PO-inbox heartbeat (Roman: "both")
+
+**What:** GitHub's schedule trigger starved the whole fleet today — the PO
+inbox's 9 AM PT window opened and no scheduled run fired for 8.5 hours
+(email-triage 10 hrs stale, call-agent 8, deal-sync 6, all mid-business-day);
+a Lake View PO (105712-C030-LVC) sat unread until a manual dispatch at 10:34.
+Two layers added:
+1. `ops/fleet-health/watchdog/cron_watchdog.py` — runs after every retry
+   sweep (fleet-retry.yml): any watched scheduled workflow silent past its
+   threshold during PT business hours (po-inbox 60 min, triage 90, deal-sync
+   60, call-agent 60) gets a catch-up `workflow_dispatch` (dispatches fire
+   even when cron starves) + ONE Slack alert per episode to the approvers.
+   Reuses sweep.py's gh/alert helpers. Limit: rides the scheduler it watches.
+2. `scripts/po-inbox-heartbeat.sh` + `scripts/launchd/com.aplus.po-inbox-heartbeat.plist`
+   — launchd on Roman's Mac, every 15 min, weekday 07:45-19:15 PT: dispatches
+   email-po-inbox.yml unless a run happened <12 min ago; a failed dispatch
+   DMs the visionary role (token from .env, role from email/config.yaml).
+   Installed to ~/Library/Application Support/aplus/ (repo copy is the
+   template). Covers TOTAL cron starvation, where layer 1 also sleeps.
+**Why:** a PO sitting unread is booked-lesson/invoice latency; retry sweeping
+only sees runs that STARTED — never-started runs were invisible before this.
+**Files:** ops/fleet-health/watchdog/cron_watchdog.py, .github/workflows/
+fleet-retry.yml, scripts/po-inbox-heartbeat.sh, scripts/launchd/….plist.
+**Also:** dispatched catch-up runs for triage/deal-sync/call-agent in session;
+the earlier manual PO-inbox dispatch created the Keesee deal ("Lake View
+Charter School 2" — the #128 numbering fix live) and routed Epic's re-sent
+C&CP as COMPLIANCE/HIGH to Danielle (dispositions live).
+
+## 2026-08-26 — PO agent refined off a 6-day audit (Roman session)
+
+Ten changes from auditing Aug 20-26 (49 PO deals, $9,178; 24 false pending
+reminders; 6 duplicate-named deals; a PO cancelled 2 hrs after intake that the
+agent acknowledged politely and did nothing about):
+
+1. **`staff` shadowing crash fixed** (`main.py`) — `staff = cfg()["staff"]`
+   in the internal-routing branch shadowed the import, so the pre-deal-lead
+   branch raised UnboundLocalError; 3 threads retried every 15 min Aug 22-25,
+   never processed. Local renamed `staff_map`.
+2. **'School N' numbering fixed** — `_next_school_seq` searched deal-name
+   tokens, limit 10, no sort: any student with 10+ historical deals ALWAYS
+   restarted at N=1 (Violet McGraw iLead 1,2,3 twice; each Saenz kid 1,2,3,4
+   twice — 24 distinct POs, zero true dupes). Now: exact-match search on
+   `student_first_name` (+last, first-only fallback), newest-first, limit 100
+   (new `hs.search_deals_by_student`), PLUS a run-scoped `_RUN_SEQ` counter so
+   same-run emails continue 4,5,6 past the search-index lag.
+3. **Two service offerings in hours computation** (Roman decision, locked):
+   $75/hour AND $60 per 45-min session (`po_inbox.service_offerings`).
+   `hours` is ALWAYS hours (4-session PO stamps 3; no new properties). Rate +
+   `rate_unit` extracted from the PO; no rate → compute only when exactly ONE
+   offering divides the amount cleanly; $300 fits both → blank + 🚩 flag.
+4. **`po_month` finally defined in the extractor prompt** (YYYY-MM, service
+   month not issue date) — it was an undefined key, so `lessons_fulfilled_date`
+   (invoice due = end of PO month) was blank on 13/15 deals; missing month now
+   ⚠️-flags into the gap DM.
+5. **Resolved parent email stamped** — the agent resolved families via TW/prior
+   deals but stamped only the raw PO field (blank on iLEAD OAs): 14/15 deals
+   missing `parent_email` the CRM already knew, gap DMs crying wolf. The
+   resolved value now backfills `po['parent_email']` pre-stamp.
+6. **Gap DM reworded** ("not in the PO and not resolvable from records") and
+   now includes the two fields Kath actually needs: hours + invoice due date.
+7. **Pending-approval sweep: 14 CALENDAR days** (`pending_portal_approval_days`,
+   was 16 business hours) — iLEAD/OPS portal approval takes ≥14 days (Roman),
+   so the old window produced only false nags.
+8. **PO cancellation handling** (`_handle_cancellation`, decisions locked:
+   zero + Kath voids): school cancellation notice → deal to its Stopped stage,
+   amount+hours zeroed, note pinned, DMs (Kath+Roman+deal owner), HIGH
+   void-TW-invoice task. Partial (billable>0) → NOTHING auto-changes, manual
+   flag. Cancelled-PO re-issue announced as re-issue, not duplicate. Ticket
+   subject "PO CANCELLED — …", HIGH.
+9. **Non-PO dispositions** via `category_hint`: vendor_compliance → HIGH ticket
+   to `compliance_owner` (sales seat — Epic California C&CP sat as generic
+   MEDIUM while blocking that school's POs); scam → LOW + sender never captured
+   as parent contact (Marcus Parker advance-fee pattern was recorded as
+   parent_email); marketing_junk → LOW.
+10. **Em-dash scrub at the Gmail-draft choke point** (`gmail_client._scrub_outbound`)
+    — the locked no-em-dash outbound rule was prompt-only and a Heartland draft
+    shipped one on 2026-08-19; now enforced in code on every draft body.
+
+**Why:** the audit showed the agent's data capture was ~50% of spec on live
+deals, its alerts fired about the wrong things, and cancellations had zero
+handling (live money risk).
+**Files:** email/src/{main,po_inbox,hubspot_client,gmail_client,config}.py,
+email/config.yaml, email/tests/test_po_inbox.py (suite 258 green),
+docs/PO-PROCESS.md (kept in sync per its header).
+**Also this session (manual, outside this PR):** Emma Savoie deal 64379560281
+stopped/zeroed + team alerted; Epic ticket 47830084212 → Danielle HIGH (via
+scratchpad script Roman ran). **Pipeline config gap flagged to Roman:** Charter
+Trad "Stopped" (13267787) is isClosed=false/10% — cancelled deals pollute the
+forecast; Level Up's is closed/0%. HubSpot-side fix, Roman's call.
+
 ## 2026-08-26 — Duplicate-PO red-flag detector in the PO day report (Roman)
 
 **What:** `email/src/po_daily_report.py` — every 6 PM PT report now runs a
@@ -126,6 +265,85 @@ populated. The behaviour under test is unchanged; only the example moved.
 `scripts/tests/test_credentials.py`.
 
 ---
+## 2026-08-27 — [fix] po_inbox tests: stop calling the live HubSpot API
+
+**What:** the two tests #128 added for the re-issued-PO refinement
+(`test_po_number_dedupe_blocks_second_deal`,
+`test_no_scheduler_dm_when_nothing_created`) stubbed deal search and creation
+but not `hs.stage_label`, whose first call fetches `/crm/v3/pipelines/deals`
+LIVE. In CI that 401s and both tests die before their assertions; on any
+machine with a token in env they would query the production portal on every
+test run. Two-line fix: stub `stage_label` in both. 131 po_inbox tests green,
+full suite 289.
+
+**How it got to main:** #128 merged from another session with the 2 tests red,
+and this session's own merge pipeline masked the failure locally by piping
+pytest through `tail` (the exit-code rule, violated in a shell one-liner).
+Found while bisecting after clearing the PR queue.
+
+**Flagged, not fixed (the other session's code):** `stage_label` itself has no
+error guard, unlike `pipeline_label` beside it — a pipelines-fetch blip in
+production raises mid-PO-processing on the dupe path.
+
+**Files:** `email/tests/test_po_inbox.py`.
+## 2026-08-26 — CARE core values wired into the fleet's reasoning layer
+
+**What:** New `ops/values/care-values.md` holds A+ Tutoring's vision, mission
+and the four CARE values verbatim from wetutorathome.com/about-us, in a block
+marked LOCKED. One canonical copy; the values text appears in exactly one file
+in the repo, verified by grep.
+
+Every agent whose output is **reasoned** now carries one pointer line:
+`Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.`
+
+**The brief said "every active agent". Only 6 of 26 qualify, and that is the
+right answer.** The other 20 are deterministic: syncs, sweeps, metrics, relays,
+list builders. They never call a model, so there is no reasoning for values to
+shape, and a pointer inside them is dead text a later reader mistakes for
+something load-bearing. Same for all 10 manual agents, every one of which was
+checked individually rather than assumed.
+
+**The biggest reasoning surface was not in the registry entrypoints at all.**
+`topic-gen`, `content-build` and `spotlight-orchestrator` reason through the 15
+`SKILL.md` files loaded by `SkillsRunner`, not through their .py files. That is
+where blog posts, case studies, brand checks and Danielle's voice are actually
+produced. Roman confirmed: "care reaches customer facing". All 15 carry the
+pointer.
+
+**Where two prompts existed, the split was made on what the prompt produces**,
+not on which was primary (Roman was undecided, so the rule is recorded):
+pointer where the model emits language a human reads or a judgment a human acts
+on; skip pure extraction or classification into JSON.
+- `call_agent.SUMMARY_PROMPT` — writes CRM summaries and handoff notes. Pointer.
+- `call_agent.COACHING_PROMPT` — coaches a named colleague on their own call.
+  The most values-sensitive prompt in the fleet. Pointer.
+- `feedback_agent.ANALYZE_PROMPT` — proposes fixes for a human to approve.
+  Pointer.
+- `feedback_agent.CLASSIFY_PROMPT` — **skipped.** Pure routing taxonomy (which
+  agent, what type). Emits no prose; values change nothing about it.
+- `po_inbox.PO_SYSTEM` — initially looked like pure JSON extraction, but the
+  same call drafts the real Gmail chase emails a human sends to teachers.
+  Customer-facing. Pointer.
+
+**The "how this applies to agent output" section is behavioural, not slogans.**
+Every rule in it is falsifiable against a piece of output: never state a metric
+without its source; absence of a record is not evidence of absence; say what was
+NOT done; name strengths before gaps; propose an agent before a manual
+workaround; when the data does not fit the model, the model is probably wrong.
+Several are lessons this fleet learned the hard way and had nowhere to record.
+
+**Discrepancies with the brief, for the record:** it said 5 manual agents (there
+are 10) and implied all active agents have prompts (6 do).
+
+**Convention documented in CLAUDE.md** so new agents inherit the pointer, with
+the deterministic-agent exception stated so nobody "fixes" the gap later.
+
+**Files:** `ops/values/care-values.md` (new), `email/src/classifier.py`,
+`email/src/po_inbox.py`, `ops/call_agent/call_agent.py`,
+`ops/feedback-agent/feedback_agent.py`,
+`marketing/scripts/b2c/spotlight_orchestrator.py`,
+`.github/workflows/feedback-fix.yml`, `marketing/skills/*/SKILL.md` (15),
+`CLAUDE.md`. Suite 269 green.
 ## 2026-08-27 — NEW AGENT: pr-merge-nudge — green fixes stop rotting in the queue
 
 **Why:** the feedback loop produces [fix]/[correction] PRs faster than they get
@@ -641,6 +859,84 @@ they are the obvious follow-up: with the workflow in place the recovery is a
 button, not a local run.
 
 **Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`.
+## 2026-08-21 — Spotlight Orchestrator: the reel retry can now actually clear a refused beat
+
+**Reported:** Paola, a THIRD time on the same bundle (Amelia) — she approved a
+one-shot reel delivery on 2026-08-20 and the reel still has not landed in Slack.
+
+**Diagnosis (correcting the filed one, twice over):**
+
+1. *There is no approval handler.* The approved plan asked us to "trace the
+   approval handler in `spotlight_orchestrator.py` to confirm it dispatches to
+   `build_reel.py` + `deliver_reel.py` for a one-shot approval." No such path
+   exists. `spotlight-orchestrator` is triggered only by `repository_dispatch` /
+   `workflow_dispatch` from the Drive watcher; nothing in the engine consumes a
+   Slack approval. (The `await-slack-approval.py` / `approval-poll.yml`
+   machinery belongs to the B2B content-build engine and is not in this agent's
+   dependency graph.) So Paola's approval could not start anything — it was
+   approval for a human to run a recovery, and no human ran one.
+2. *The reel could not be re-delivered from the repo.* Plan step 3 pointed at
+   `marketing/aplus-content/<amelia-bundle>/`. That directory does not exist in
+   the checkout and is gitignored — bundles are built inside the CI runner and
+   survive only as a 30-day Actions artifact. Same wall the 2026-08-20 session
+   hit.
+
+**What we found underneath, and fixed:** the resumable retry added on
+2026-08-20 cannot clear the failure class its own comment names. It cites "a
+single RAI-rejected beat" — but a second pass re-submits the *byte-identical*
+still and motion prompt to Veo, precisely because the steps are resumable
+(`make_stills` reuses the still on disk). A beat Veo refuses on safety/RAI
+grounds is therefore refused again, forever, and no number of retries or Drive
+re-dispatches will ever produce that reel. Two sessions of recovery tooling sit
+on top of a retry that is a no-op for half the failures it was written for.
+
+**Fix:** break the determinism. `make_clips.py` now records the beat keys it
+could not render to `{bundle}/reel/work/clip_failures.json` (rewritten every
+pass, empty list included, so a stale file can't be misread). `make_stills.py`
+gains `--only key ...`, mirroring `make_clips.py`, and deliberately keeps the
+existing anchor even under `--force` when `--only` is given — a fresh anchor
+would relock the hero to a different face and the regenerated beat would no
+longer match the beats already rendered. `stage_reel` reads the failures file
+after a failed attempt and re-renders exactly those stills before retrying, so
+attempt 2 hands Veo a different image. The regen is best-effort: if it fails,
+the plain retry still happens. Failure text (run state, stderr, the Slack
+heads-up, the completion summary) now names the refused beats, so "reel clips
+failed (exit 1)" no longer means a trip to the Actions log to learn which of
+the four it was.
+
+**Verified:** 18 assertions across three stubbed suites — no Veo, Gemini,
+OpenAI, ffmpeg or Slack touched. `make_stills --only` (regen one beat, several
+beats, anchor preserved, bare `--force` unchanged, no-flags resume unchanged,
+missing anchor still generated, unknown key rejected); `make_clips` failures
+file (RAI-refused beat recorded + exit 1, clean pass records `[]`, stale file
+cleared on the all-present early return); `stage_reel` (happy path byte-for-byte
+unchanged, refused beat → regen → retry delivers, permanent refusal → no
+delivery + alert naming the beat, non-clip failure → plain retry with no
+invented regen, failed regen doesn't consume the retry, delivery still gets
+exactly one attempt, `--skip-hubspot` and `SPOTLIGHT_REEL=0` unchanged, and
+`_failed_clip_keys` tolerating junk/missing input).
+
+**NOT verified against Amelia's bundle, and Amelia's reel is still not
+delivered.** Same wall as the two entries below: the bundle is a CI artifact,
+not a checkout, and rendering needs Gemini/OpenAI/Slack credentials this session
+does not have. This change makes the *next* run able to recover itself; it does
+not retroactively produce the reel Paola has now asked for three times.
+
+**Left undone deliberately — and this is now the blocking item.** Producing
+Amelia's reel needs a runnable surface, and there still isn't one: PR #100
+(`--reel-only`) is open and unmerged, and there is no `rerender-reel` Actions
+workflow to match `rerender-textstory` (which is how the textstory stage has
+always been recoverable — download the artifact, re-run one builder, in CI where
+the keys and ffmpeg live). This session was scoped out of `.github/workflows/`
+and `registry.yml`, as the last two were. Three corrections have now been closed
+with code while the deliverable stayed undelivered; the next one should merge
+#100 and add the workflow rather than add more orchestrator logic. The reel
+scripts are also still missing from the registry's `depends_on` for
+`spotlight-orchestrator`.
+
+**Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`,
+`marketing/scripts/b2c/reel/make_stills.py`,
+`marketing/scripts/b2c/reel/make_clips.py`.
 
 ---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss
@@ -914,7 +1210,35 @@ today exists to make visible.)
 **Files:** `ops/feedback-agent/relay/apps-script.gs`, `docs/CHANGELOG.md`.
 
 ---
+## 2026-08-20 — Call agent: a 100%-failure run now exits 1
 
+**What:** `ops/call_agent/call_agent.py` counts outcomes around the per-call loop
+(attempted / succeeded / skipped / failed) and, when at least one call raised and
+none succeeded, logs `RUN FAILED — 0/N calls succeeded`, posts a one-line alert to
+`slack.alert_channel` (the private #calls channel), and `sys.exit(1)`. The digest
+still posts and state is still saved first, so the failing run reports what it saw
+and stays idempotent. New `ops/call_agent/tests/test_exit_code.py` covers it.
+
+**Why:** Reported as a correction — process_call exceptions are caught per call so
+one bad call can't kill the run, but nothing tracked whether ANY call succeeded, so
+a run that failed every call exited 0 and the Actions retry sweeper stayed silent.
+Total failure was indistinguishable from a quiet day.
+
+**Scope note (differs slightly from the approved plan):** the approved condition was
+`attempted > 0 and succeeded == 0`. That would fire on a day where every call was
+legitimately skipped — hang-up, no recording, no transcript are normal outcomes, and
+an all-hang-ups afternoon is common. The condition shipped is `failed > 0 and
+succeeded == 0`, which is the reported failure mode without the false alarm.
+
+**Known gap (not fixed here):** failed calls are still marked processed, so a
+sweeper retry of the same window is a no-op. The nonzero exit is a signal to a human,
+not yet a self-healing retry. Worth a follow-up decision on whether failures should
+stay off the processed list.
+
+**Files:** `ops/call_agent/call_agent.py`, `ops/call_agent/tests/test_exit_code.py`,
+`docs/CHANGELOG.md`.
+
+---
 ## 2026-08-20 — `runtime:` — the fleet is not all GitHub Actions
 
 **What:** Added a required `runtime:` field (`github-actions` | `cloudflare-worker`
