@@ -70,11 +70,19 @@ def _is_real_po(po: str) -> bool:
     return not any(k in po for k in known_labels)
 
 
+def _family_key(dealname: str) -> str:
+    """Parent segment of 'Parent - Student - School N - YY/YY'."""
+    return (dealname or "").split(" - ")[0].strip().lower()
+
+
 def find_duplicate_pos(deals: list[dict]) -> tuple[dict[str, list[dict]], int]:
-    """(real duplicates {po: [deal props,...]}, placeholder_deal_count).
-    EXPLICIT rule (Roman 2026-08-26): duplicate PO numbers are a red-flag
-    alert — one PO must never be billed twice. Placeholder values are a data
-    gap, not a billing violation; counted separately."""
+    """(VIOLATIONS {po: [deal props,...]}, placeholder_deal_count).
+
+    Roman's rules (2026-08-26): one PO split across a family's monthly deals
+    is FINE ("splits are fine"); a duplicate is a VIOLATION when the same PO
+    number appears (a) across DIFFERENT families, or (b) on the same exact
+    dealname twice (the same deal double-created). Placeholder values are a
+    data gap, counted separately, never flagged."""
     by_po: dict[str, list[dict]] = {}
     placeholders = 0
     for d in deals:
@@ -86,7 +94,16 @@ def find_duplicate_pos(deals: list[dict]) -> tuple[dict[str, list[dict]], int]:
             placeholders += 1
             continue
         by_po.setdefault(po, []).append(p)
-    return {po: ds for po, ds in by_po.items() if len(ds) > 1}, placeholders
+    violations: dict[str, list[dict]] = {}
+    for po, ds in by_po.items():
+        if len(ds) < 2:
+            continue
+        fams = {_family_key(p.get("dealname")) for p in ds}
+        names = [str(p.get("dealname") or "").strip().lower() for p in ds]
+        same_deal_twice = len(names) != len(set(names))
+        if len(fams) > 1 or same_deal_twice:
+            violations[po] = ds
+    return violations, placeholders
 
 
 def _family_email(deal: dict) -> str:
