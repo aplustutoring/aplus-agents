@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**41 registered agents** — 27 active · 10 manual · 3 deprecated · across 11 engines.
+**41 registered agents** — 28 active · 10 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -46,7 +46,7 @@ outranks those two. HubSpot is where humans act.
 | Fleet health | 5 | 4 |
 | Charter analysis | 5 | 0 |
 | Events | 1 | 1 |
-| Tutor issues | 1 | 0 |
+| Tutor issues | 1 | 1 |
 
 ## Autonomy — what acts without asking
 
@@ -189,7 +189,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
-| **tutor-issues**<br>Tutor-issue ticketing (sweep + inbound reports + intake) | disabled) 0 17 * * 1 Monday sweep | draft | Teachworks, email/state/audit_log.jsonl, HubSpot, JustCall, Slack | HubSpot, Slack, ops/tutor-issues/state/ |
+| **tutor-issues**<br>Tutor-issue ticketing (sweep + inbound reports + intake) | Monday sweep, 09/10 PT | active | Teachworks, email/state/audit_log.jsonl, HubSpot, JustCall, Slack | HubSpot, Slack, ops/tutor-issues/state/ |
 
 - **tutor-issues** — Tickets on the tutor's contact record for 5 issue types; owner = Operations role (Mandy); silent internal log in v1 (nothing tutor-facing)
 
