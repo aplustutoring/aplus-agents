@@ -453,9 +453,12 @@
     408625471,
     408632710,
     408642684,
-    408655426
+    408655426,
+    408712645,
+    408715904,
+    408672188
   ],
-  "last_run_utc": "2026-08-27T00:16:43.802115+00:00",
+  "last_run_utc": "2026-08-27T06:57:41.035058+00:00",
   "pending_digest": [
     {
       "call_id": 408437038,
@@ -1269,6 +1272,12 @@
       "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "12673007262",
+      "time_pt": "5:33 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
