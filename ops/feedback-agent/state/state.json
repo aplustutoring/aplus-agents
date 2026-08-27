@@ -270,7 +270,7 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-not-delivered.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/101",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787327572959279"
     },
     {
@@ -365,7 +365,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 12
+    "clean_merges": 13
   },
   "pending_proposals": {
     "1786554388.265099": {
