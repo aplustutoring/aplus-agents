@@ -293,6 +293,28 @@ properties:
       type: date
       fieldType: date
     # — tutor —
+    - name: tutor_roster_status
+      label: "[Agent] Tutor Roster Status"
+      group: tutor
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by scripts/tutor_roster_check.py, do not edit
+        by hand. Ground truth for tutor liveness (Roman 2026-08-25): matched
+        by email against the Teachworks EMPLOYEE roster in BOTH accounts.
+        Active in either account = Active. HubSpot lead status
+        "Tutor-Active" is a hint only; this field wins.
+      options:
+        - value: "Active (online)"
+          label: "Active (online)"
+        - value: "Active (in person)"
+          label: "Active (in person)"
+        - value: "Active (both)"
+          label: "Active (both)"
+        - value: "Inactive (both)"
+          label: "Inactive (both)"
+        - value: "Not found"
+          label: "Not found"
     - name: a__pay_per_hour
       label: "A+ Pay Per Hour"
       group: tutor
@@ -430,6 +452,16 @@ properties:
           label: "Teacher"
         - value: support_staff
           label: "Support Staff"
+    - name: aplus_booth_photo_url
+      label: "[Agent] Booth Photo URL"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by the booth Worker (booth/worker.js photo
+        archive) and the event-photo backfill, do not edit by hand. Public URL
+        of the contact's framed booth photo, used as the personalization token
+        in event follow-up emails.
     - name: aplus_marketing_consent
       label: "Booth Marketing Consent"
       group: events

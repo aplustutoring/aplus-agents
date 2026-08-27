@@ -655,6 +655,32 @@ agents:
   # workflow_dispatch (scripts/ + email/) — built 2026-08 for the charter 26/27
   # renewal push. They are one-shot reports, not scheduled agents: no cron, no
   # state, and every write is an explicit opt-in input (default dry-run).
+  - id: credential-expiry
+    runtime: github-actions
+    engine: Fleet health
+    name: Credential expiry check (#AP044)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: schedule
+      cron: "0 16 1 * *"          # 1st of each month, 09:00 PT
+      events: [workflow_dispatch]
+      workflow: .github/workflows/credential-expiry.yml
+    entrypoint: scripts/credential_expiry_check.py
+    reads:
+      - knowledge/credentials.yml   # the fleet's single source of credential truth
+    writes:
+      - "Slack: warning to CREDENTIAL_ALERT_CHANNEL when a credential is within 180 days of expiry"
+    depends_on:
+      - scripts/credentials.py      # loader + public_ready gate
+      - "secrets: SLACK_BOT_TOKEN, CREDENTIAL_ALERT_CHANNEL"
+    notes: >
+      NEVER REMEDIATES. Warns only: it does not edit copy, retire a claim, or
+      flip public_ready. A lapsing credential is a human decision. Consumers of
+      the claim (blog boilerplate, case-study credibility block, messenger merge
+      field, partner packets) resolve it through scripts/credentials.py, which
+      fails closed on public_ready, unapproved surface, and expiry.
+
   - id: charter-gap-analysis
     runtime: github-actions
     engine: Charter analysis

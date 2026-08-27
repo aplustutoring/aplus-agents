@@ -243,6 +243,14 @@ b2c_deal:
 po_inbox:
   address: "charter@wetutorathome.com"
   owner: charter_admin
+  # When a PO has no schedule and Teachworks has none either, this phrase is
+  # stamped into the deal's schedule_preferences so the confirmation SMS asks
+  # the family instead of ending blank. It renders after "...confirm that this
+  # schedule still works for you:" in workflow 1603217415 — word it to follow
+  # that colon.
+  schedule_ask_fallback: >-
+    we don't have your schedule on file yet! Please reply with the days and
+    times that work best for your student
   deal_pipeline_id: "907748"   # Charter Schools - Traditional Vendor Funds
   waiting_for_po_stage: ""     # stage retired 2026-06-11 (deals moved to Stopped) — POs now CREATE deals
   advance_to_stage: "907749"   # Pre-Lesson (where new PO deals are created)
@@ -288,7 +296,12 @@ po_inbox:
     notify_charter_sales_after_hours: 24  # info still missing 24h after the email → charter sales
   # Pending order-agreement POs with no approval signal (duplicate alert =
   # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
-  pending_sweep_business_hours: 16
+  # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
+  # original email (Roman, 2026-08-26) — nagging earlier is pure false alarm.
+  pending_portal_approval_days: 14
+  # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
+  # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
+  compliance_owner: sales
   # ROLE mapping — functional keys name roles, never people (Roman 2026-08-14);
   # change the person here, not in code.
   # ANYTHING missing on PO intake (fields not in the PO, unmatched TOR/parent,
@@ -312,6 +325,17 @@ po_inbox:
     parent_phone: "parent_phone"
     tor_name: "teacher_of_record_name"     # "Name of the TOR for the student on this PO"
     tor_email: "teacher_of_record_email"   # PO email, or resolved from the matched TOR contact
+  # The two charter service offerings (Roman, 2026-08-26). When a PO states an
+  # amount but no rate, hours are computed ONLY if exactly one offering divides
+  # the amount cleanly (whole sessions / quarter hours) — otherwise the deal is
+  # flagged instead of guessed ($300 = 4 hrs OR 5 sessions; both fit). hours is
+  # always stored as HOURS: a 4-session PO stamps 3.
+  service_offerings:
+    - rate: 75
+      unit: hour            # the 99% case: $75/hour charter families
+    - rate: 60
+      unit: session         # the push: $60 per 45-minute session
+      session_hours: 0.75
   # New PO + student has NO upcoming Teachworks lessons → post here (scheduling
   # nudge). Students already on the calendar stay quiet. Empty = #email-agent.
   no_lessons_channel: ""

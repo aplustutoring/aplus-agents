@@ -33,7 +33,27 @@
     "Ev0BSHPY1GTS",
     "Ev0BRRC8UQV7",
     "Ev0BRE0TQ031",
-    "Ev0BRP53JBGB"
+    "Ev0BRP53JBGB",
+    "Ev0BRE4GDUB1",
+    "Ev0BRVK8QPAN",
+    "Ev0BRS02TG69",
+    "Ev0BRPJZB0HH",
+    "Ev0BRYCZPXQ9",
+    "Ev0BS06RV3CL",
+    "Ev0BRUH8QRPX",
+    "Ev0BRUHM0UDB",
+    "Ev0BSSRJ9P0Q",
+    "Ev0BSE5QKYUR",
+    "Ev0BSG0L2LC9",
+    "Ev0BS7R3JU0K",
+    "Ev0BT8DT6D1N",
+    "Ev0BT8E9BMQQ",
+    "Ev0BSE412GR0",
+    "Ev0BSG2U6YKB",
+    "Ev0BSHS33XK6",
+    "Ev0BSP7NU5K8",
+    "Ev0BST53E6UR",
+    "Ev0BSR8D381G"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -235,7 +255,7 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-20-spotlight-superhero-reel-not-delivered.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/99",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787266823934319"
     },
     {
@@ -250,12 +270,102 @@
       "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-not-delivered.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/101",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787327572959279"
+    },
+    {
+      "date": "2026-08-21",
+      "ts": "1787331004.597459",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-21-spotlight-reel-only-rerun.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/103",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787331004597459"
+    },
+    {
+      "date": "2026-08-21",
+      "ts": "1787357831.961899",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-21-deliver-superhero-reel-request.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/106",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787357831961899"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787594850.024069",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-08-24-content-build-post-fails-error.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/109",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787594850024069"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787610648.745369",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "email-deal-sync",
+      "type": "WRONG",
+      "severity": "critical",
+      "correction_path": "corrections/email-deal-sync/2026-08-24-deals-assigned-by-teacher-name.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/111",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787610648745369?thread_ts=1787610648.745369&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787610808.300769",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-24-missing-animated-reels-backfill.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/112",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787610808300769"
+    },
+    {
+      "date": "2026-08-24",
+      "ts": "1787612254.091039",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "spotlight-orchestrator",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/spotlight-orchestrator/2026-08-24-spotlight-reels-not-delivered.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/114",
+      "ticket": "drafted",
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787612254091039"
     }
   ],
   "graduation": {
-    "clean_merges": 8
+    "clean_merges": 14
   },
   "pending_proposals": {
     "1786554388.265099": {
@@ -274,6 +384,41 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-12T17:12:40.185678+00:00",
       "reporter": "Danielle"
+    },
+    "1787594850.024069": {
+      "agent": "content-build",
+      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
+      "correction_path": "corrections/content-build/2026-08-24-content-build-post-fails-error.md",
+      "branch": "fix/content-build-2026-08-24-024069",
+      "diagnosis": "A specific blog draft (the Title III EL post) is failing to publish to HubSpot \u2014 most likely a HubSpot API rejection (invalid field, oversized content, or slug/title collision) surfacing from publish-to-hubspot.py during the Saturday content-build run. Without the actual error text we can't pin the exact cause, but the failure is in the publish step, not generation.",
+      "fix_plan": [
+        "Pull the last content-build workflow run log from GitHub Actions and grab the exact HubSpot API error/response body for this post.",
+        "Inspect marketing/scripts/shared/publish-to-hubspot.py error handling \u2014 confirm it surfaces the HubSpot response payload (status + body) into logs/Slack, not just a generic 'error message'.",
+        "Reproduce locally by re-running blog_publish.py against the Title III EL draft to isolate whether it's a payload issue (title length, HTML, tags, campaign_id) vs. an auth/rate-limit issue.",
+        "Apply the targeted fix (e.g. sanitize HTML in embed-pull-quotes.py or fix-links.py output, retry with corrected field, or bump slug) and re-run content-build for just that topic.",
+        "Add a clearer failure message + the failing post title to the Slack notification in deliver-to-slack.py so Danielle sees the real reason next time."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-24T18:08:21.631177+00:00",
+      "reporter": "Danielle"
+    },
+    "1787610648.745369": {
+      "agent": "email-deal-sync",
+      "agent_label": "Deal sync (HubSpot \u2192 Teachworks) + invoice sweep",
+      "correction_path": "corrections/email-deal-sync/2026-08-24-deals-assigned-by-teacher-name.md",
+      "branch": "fix/email-deal-sync-2026-08-24-745369",
+      "diagnosis": "Roman is asking a diagnostic question about three specific names (likely deals or contacts flagged by the sync) \u2014 not reporting a concrete bug. Without knowing whether these are deal names, contact names, or students, we can't localize a root cause in deal_sync.py.",
+      "fix_plan": [
+        "Ask Roman what these three names refer to (deals? contacts? students flagged in Slack?) and what the expected vs actual assignment/contact was.",
+        "Once identified, pull the deal records via HubSpot API (or FORCE_DEAL_ID dry-run in email-deal-sync.yml) to see hubspot_owner_id and associated primary contact.",
+        "Trace through deal_sync.py's contact-resolution path (family upsert by email + charter parent-match guard) to see why the wrong contact/owner was picked.",
+        "If it's a charter parent-mismatch or family-email collision, add or tighten a guard in deal_sync.py and log a needs-review Slack flag instead of writing."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-24T22:35:00.570147+00:00",
+      "reporter": "Roman"
     }
   }
 }

@@ -236,3 +236,13 @@ v1.1 . Updated 2026-05-22 . Added topic registry rules (`marketing/state/topic-r
 
 v1.0 . Created May 8, 2026
 Foundation: Topic categories A-E and keyword set defined in conversation with Roman May 8, 2026
+
+## Disclosure: NSSA is no longer a neutral third party to us (#AP044)
+
+This skill lists NSSA (National Student Support Accelerator) as a primary
+research source. As of 2026 A+ holds an NSSA credential (see
+`knowledge/credentials.yml`). When citing NSSA research in customer-facing
+content, that relationship should be disclosed rather than presented as an
+independent authority endorsing us. Citing NSSA for neutral field research is
+still fine; leaning on NSSA to validate A+ specifically is not, without saying
+why the relationship exists.

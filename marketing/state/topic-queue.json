@@ -13,7 +13,12 @@
       "roman_take": "The compliance angle is a distraction \u2014 the real question is whether your intervention plan can *spend the money on something that reclassifies kids*, because Title III's political runway is shrinking and unspent dollars are the fastest way to lose future access.",
       "danielle_take": "Walk through the practical Title III workflow \u2014 application timing, allowable use categories, and how to structure a small-group EL intervention scope that survives a CARS audit.",
       "redundancy_max_similarity": 0.6525275249517798,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-22T08:33:15.153832-07:00",
+      "post_date": "2026-08-24",
+      "bundle_dir": "aplus-content/2026-08-24-california-title-iii-el-rfa",
+      "hubspot_post_id": "220083313691"
     },
     {
       "slot": 2,
@@ -30,7 +35,12 @@
       "roman_take": "The NCB moratorium lift is a stress test \u2014 networks that scale without ESSA-aligned Tier 2/3 intervention baked into the launch will hit an accountability wall by year two.",
       "danielle_take": "When a new NCB campus opens in August, the operational question isn't \"do we have tutoring vendors?\" \u2014 it's \"is our intervention delivery documented to the standard CARS will ask for next spring?\" \u2014 and here's how iEM partners already have that answer.",
       "redundancy_max_similarity": 0.7441688977844084,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-22T09:00:21.055760-07:00",
+      "post_date": "2026-08-26",
+      "bundle_dir": "aplus-content/2026-08-26-ilead-flex-ncb-charter-approval",
+      "hubspot_post_id": "220086263573"
     },
     {
       "slot": 3,
@@ -46,7 +56,12 @@
       "roman_take": "Conviction cut \u2014 \"This is what happens when the growth story matters more than the student. Charter schools were the harder customer, so they got dropped. We built A+ the opposite way.\" Direct, no hedging.",
       "danielle_take": "Implementation cut \u2014 What she's already telling her partner schools (Ocean Grove, South Sutter, Visions, Heartland, Pacific Coast Academy) about vendor risk when Title III and Title I dollars are on the line, and the operational questions a Special Programs Coordinator should be asking their current tutoring provider this month. ---",
       "redundancy_max_similarity": 0.5641963249382891,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-22T09:17:43.110342-07:00",
+      "post_date": "2026-08-28",
+      "bundle_dir": "aplus-content/2026-08-28-varsity-tutors-k12-exit-charter",
+      "hubspot_post_id": "220086263925"
     }
   ],
   "slack": {
