@@ -953,6 +953,32 @@ agents:
       both directions, required fields (incl. engine), unique ids, entrypoints
       exist, FLEET.md current. The main-branch commit carries [skip ci].
 
+  - id: pr-merge-nudge
+    runtime: github-actions
+    engine: Fleet health
+    name: PR merge nudge (green fixes)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      cron: "5 16 * * 1,3,5"       # Mon/Wed/Fri 9:05 AM PT
+      events: [workflow_dispatch]
+      workflow: .github/workflows/pr-merge-nudge.yml
+    entrypoint: ops/fleet-health/pr_merge_nudge.py
+    reads:
+      - "GitHub: open PRs + check-run state"
+      - ops/feedback-agent/config.yml        # approver roster (roles, not names)
+    writes:
+      - "Slack: one digest to #agent-feedback when green [fix]/[correction] PRs sit past 3 days; silent when clean"
+    depends_on:
+      - "secrets: SLACK_BOT_TOKEN (GITHUB_TOKEN is ambient)"
+    notes: >
+      NEVER MERGES. The 2026-08-20 grant lets Danielle/Paola/Emily approve and
+      merge fix PRs, but nobody was prompted, so fixes rotted (six days on
+      2026-08-26 while their bugs kept firing). This prompts; the click stays
+      human. Non-fix PRs are branch-hygiene's beat and are excluded to keep the
+      ping meaningful.
+
   - id: branch-hygiene
     runtime: github-actions
     engine: Fleet health

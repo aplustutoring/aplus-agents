@@ -344,6 +344,36 @@ the deterministic-agent exception stated so nobody "fixes" the gap later.
 `marketing/scripts/b2c/spotlight_orchestrator.py`,
 `.github/workflows/feedback-fix.yml`, `marketing/skills/*/SKILL.md` (15),
 `CLAUDE.md`. Suite 269 green.
+## 2026-08-27 — NEW AGENT: pr-merge-nudge — green fixes stop rotting in the queue
+
+**Why:** the feedback loop produces [fix]/[correction] PRs faster than they get
+merged. On 2026-08-26: ten open PRs, six of them fixes with green CI, the oldest
+six days — while the bugs they fix kept firing. The 2026-08-20 grant lets
+Danielle, Paola and Emily approve+merge exactly these, but nobody is prompted,
+so nobody merges. The bottleneck was attention, not permission.
+
+**What:** `ops/fleet-health/pr_merge_nudge.py` + Mon/Wed/Fri 9:05 AM PT
+workflow. Finds open PRs that are (a) non-draft, (b) older than 3 days,
+(c) titled [fix]/[correction], (d) mergeable with a GREEN check suite, and posts
+ONE digest to #agent-feedback pinging the approver roster with one-click links.
+Fix PRs with failing/pending checks are listed without a ping — they need work,
+not approval. Silence means clean.
+
+**Never remediates:** it does not merge, approve, close or comment. The click
+stays human. Approvers come from `ops/feedback-agent/config.yml` (roles, not
+names) — the same roster that holds the merge grant, so a roster change
+propagates automatically.
+
+**Scope kept sharp on purpose:** non-fix PRs are branch-hygiene's beat and are
+excluded; Mon/Wed/Fri not daily, because pinging four people daily trains
+everyone to ignore the ping (same reasoning as alerts_to staying narrow).
+
+**Validated against the live queue before shipping:** dry-run found exactly the
+right four (#93 6d, #102 5d, #101 5d, #106 4d, all green) and correctly excluded
+the two 2-day-old corrections still inside the bound.
+
+**Files:** `ops/fleet-health/pr_merge_nudge.py` (new),
+`.github/workflows/pr-merge-nudge.yml` (new), `registry.yml`, `docs/FLEET.md`.
 
 ---
 ## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
