@@ -50,6 +50,7 @@ ticket_fields:
     tutor_document: "Tutor Issue"
     recruitment: "GENERAL_INQUIRY"
     charter_newsletter: "GENERAL_INQUIRY"
+    review_received: "Review"      # option added to hs_ticket_category 2026-08-26
     unknown: "GENERAL_INQUIRY"
   # cancellation's category depends on its TYPE (drives the cancellation-rate KPI).
   cancellation_category_map:
@@ -122,6 +123,7 @@ roles:
   charter_admin: kath       # PO → invoice, tickets, billing
   sales: danielle           # partnerships / school partners / biz dev
   charter_sales: paola      # family follow-up / sales support
+  quality: paola            # reviews / service quality (Roman 2026-08-26)
 
 # ── Routing table (LOCKED) ───────────────────────────────────────
 # owner: a staff key above, or the special token "assigned_scheduler" /
@@ -142,6 +144,7 @@ routing:
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
   recruitment:         { owner: scheduling_lead,             sla_hours: 1.5, draft: true,  priority: low }
   charter_newsletter:  { owner: sales,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
+  review_received:     { owner: quality,        sla_hours: 8,   draft: false, priority: normal }  # respond ON the platform, not by email
   junk:                { owner: null,              sla_hours: null, draft: false, auto_archive: true }
   unknown:             { owner: scheduling_lead,             sla_hours: 4,   draft: false, review: true }  # Mandy owns the Stuck queue
 
@@ -370,6 +373,16 @@ teachworks:
 internal:
   domain: wetutorathome.com
   fallback: roman
+
+# Review-platform notification senders (review_received category). Never
+# create a HubSpot contact for these no-reply addresses (the CallRail/
+# JustCall junk-contact lesson); the ticket is tied to the FAMILY the
+# classifier's reviewer_name resolves to — or left unassociated (flagged in
+# the ticket body) when the match isn't exact and unique.
+review_platforms:
+  sender_domains:
+    - google.com
+    - yelp.com
 
 # Confidence + autonomy thresholds (LOCKED).
 thresholds:

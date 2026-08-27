@@ -19,6 +19,8 @@ groups:
       label: Fleet automation
     - name: tutor
       label: Tutor
+    - name: review
+      label: Review
   contacts:
     - name: master
       label: Master
@@ -150,6 +152,48 @@ properties:
         dedupe period key this ticket covers — ISO week (e.g. 2026-W35) for
         the weekly Teachworks detectors, rolling-30d anchor date for the
         report-driven types.
+
+    # ── Review tickets (email engine, Roman approved 2026-08-26). A ticket
+    # tied to the FAMILY contact when a review-notification email arrives
+    # (Google/Yelp), so reviews are trackable on the board.
+    - name: review_platform
+      label: "[Agent] Review platform"
+      group: review
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (triage,
+        review_received category). Which platform the review landed on.
+      options:
+        - value: google
+          label: "Google"
+        - value: yelp
+          label: "Yelp"
+        - value: other
+          label: "Other"
+
+    - name: review_rating
+      label: "[Agent] Review rating"
+      group: review
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (triage,
+        review_received category). Star rating (1-5) when the notification
+        states it; unset when unknown.
+
+    - name: review_reviewer_name
+      label: "[Agent] Review reviewer name"
+      group: review
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (triage,
+        review_received category). Reviewer display name as the platform
+        shows it (may be partial, e.g. "Maria A."). The family association
+        is only made on an exact unique contact match; this field preserves
+        the raw name either way.
+
 
   contacts:
     # ── LABEL CONVENTION (Roman 2026-08-14): every property an AGENT writes
