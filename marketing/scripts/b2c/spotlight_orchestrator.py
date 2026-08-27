@@ -1832,6 +1832,7 @@ def _build_draft_system_prompt() -> str:
     skill = load_skill("aplus-spotlight-case-study")
     inclusive = load_skill("aplus-inclusive-language")
     return (
+        "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
         "You are the A+ Tutoring spotlight case-study drafting agent. "
         "Follow the SKILL spec below verbatim — the 8-section Hero's Journey "
         "structure, the 1,200-1,500 word count, the pull-quote grammar gate, "
@@ -3445,6 +3446,14 @@ REEL_DIR = REPO_ROOT / "scripts" / "b2c" / "reel"
 # so a second pass only regenerates the piece that failed — which is exactly
 # the shape of the failures we see (Veo 429s, a single RAI-rejected beat).
 REEL_ATTEMPTS = 2
+# ...with one caveat that made the retry useless for half of that shape: a
+# plain second pass re-submits the SAME still and motion prompt to Veo, so a
+# beat Veo refuses (safety/RAI, or a persistent generation error) fails
+# identically forever. Resumability is what causes it — make_stills reuses the
+# still, so nothing about the input changes. Before retrying we regenerate the
+# stills for exactly the beats that failed, which gives Veo a different image
+# to animate. Same anchor, so the hero stays consistent across the reel.
+REEL_FAILED_CLIPS = "clip_failures.json"
 # Wall-clock budget for the whole reel stage, shared across both attempts.
 # make_clips.py polls Veo with no ceiling of its own, so without this a stuck
 # generation eats the job's remaining time and takes the textstory + logsheet
@@ -3598,6 +3607,18 @@ def _post_thread_note(run: dict, text: str) -> None:
         print(f"  reel: could not post thread note — {exc}", file=sys.stderr)
 
 
+def _failed_clip_keys(bundle: str) -> list[str]:
+    """Beat keys make_clips.py could not render on its last pass. Absent or
+    unreadable file -> no keys: the caller falls back to a plain retry rather
+    than failing on a diagnostic."""
+    path = Path(bundle) / "reel" / "work" / REEL_FAILED_CLIPS
+    try:
+        keys = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return []
+    return [str(k) for k in keys] if isinstance(keys, list) else []
+
+
 def _post_reel_alert(run: dict, note: str) -> None:
     """Heads-up when the (non-fatal) reel stage ships nothing. Without this the
     miss is invisible: the reel is the only pack asset with no failure signal
@@ -3730,6 +3751,7 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
                                f"{_last_lines(r.stderr, r.stdout)}")
 
     alert = None
+    refused: list[str] = []
     try:
         for attempt in range(1, REEL_ATTEMPTS + 1):
             try:
@@ -3739,6 +3761,23 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
             except RuntimeError as exc:
                 if attempt == REEL_ATTEMPTS:
                     raise
+                # See REEL_FAILED_CLIPS: re-running with the same still would
+                # reproduce a Veo refusal exactly, so regenerate those stills
+                # first. Best-effort — if the regen itself fails we still take
+                # the plain retry rather than losing the attempt.
+                refused = _failed_clip_keys(bundle)
+                if refused:
+                    print(f"  reel: Veo produced nothing for {refused} — "
+                          f"regenerating those stills before the retry",
+                          file=sys.stderr)
+                    try:
+                        run_step("stills:regen",
+                                 ["python3", str(REEL_DIR / "make_stills.py"),
+                                  "--bundle", bundle, "--force", "--only", *refused])
+                    except RuntimeError as regen_exc:
+                        print(f"  reel: still regen failed ({regen_exc}) — "
+                              f"retrying with the existing stills anyway",
+                              file=sys.stderr)
                 print(f"  reel: attempt {attempt} failed ({exc}) — retrying the "
                       f"resumable steps", file=sys.stderr)
         if delivering:
@@ -3765,6 +3804,18 @@ def stage_reel(args: argparse.Namespace, run: dict) -> dict:
         alert = str(exc)
         print(f"  reel: NON-FATAL failure — {exc}", file=sys.stderr)
     if alert and delivering:
+
+
+        # Name the beats Veo would not animate. "reel {name} failed (exit 1)"
+        # on its own sends the next person to the Actions log to find out which
+        # of the four beats it was; with the keys in hand they can re-render
+        # just those stills and rebuild.
+        refused = _failed_clip_keys(bundle) or refused
+        detail = f" (Veo refused: {', '.join(refused)})" if refused else ""
+        run["reel_status"] = f"skipped: {exc}{detail}"
+        alert = f"no reel was delivered — {exc}{detail}"
+        print(f"  reel: NON-FATAL failure — {exc}{detail}", file=sys.stderr)
+    if alert and not run.get("skip_hubspot"):
         _post_reel_alert(run, alert)
     update_run(run["run_id"], run)
     return run

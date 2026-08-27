@@ -17,6 +17,8 @@ groups:
   tickets:
     - name: fleet_automation
       label: Fleet automation
+    - name: tutor
+      label: Tutor
   contacts:
     - name: master
       label: Master
@@ -54,6 +56,8 @@ properties:
           label: "Call agent"
         - value: email_engine
           label: "Email engine"
+        - value: tutor_issues
+          label: "Tutor issues (ops/tutor-issues)"
 
     - name: source_agent
       label: Source agent
@@ -68,6 +72,84 @@ properties:
       options:
         - value: UNKNOWN
           label: "Unregistered automation"
+
+    # ── Tutor-issue ticketing (ops/tutor-issues, Roman approved 2026-08-26).
+    # Tickets logged on the TUTOR's contact record when we notice an issue.
+    # Silent internal log in v1 — nothing tutor-facing reads these.
+    - name: tutor_issue_type
+      label: "[Agent] Tutor issue type"
+      group: tutor
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. Which
+        of the five tutor-issue types this ticket logs. Types 1/3 are
+        auto-detected from Teachworks; 2/4/5 come from structured intake or
+        inbound family reports. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: missed_lesson_or_late
+          label: "Missed lesson / late"
+        - value: tutor_change_requested
+          label: "Tutor change requested"
+        - value: notes_not_completed
+          label: "Lesson notes not completed"
+        - value: scheduling_flip_flop
+          label: "Scheduling flip-flop"
+        - value: tech_issue_unreported
+          label: "Tech issue not reported"
+
+    - name: tutor_issue_source_ids
+      label: "[Agent] Tutor issue source records"
+      group: tutor
+      type: string
+      fieldType: textarea
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. Audit
+        trail: the system records that prove the issue — Teachworks lesson
+        ids (tw:<acct>:<lesson_id>), HubSpot conversation/ticket ids
+        (hsconv:<thread_id>, hsticket:<id>), JustCall SMS ids (jcsms:<id>),
+        or Slack intake permalinks. One per line; recurrence appends.
+
+    - name: tutor_issue_detected_at
+      label: "[Agent] Tutor issue detected at"
+      group: tutor
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. When
+        the FIRST qualifying event behind this ticket was detected (UTC).
+
+    - name: tutor_issue_last_event_at
+      label: "[Agent] Tutor issue last event at"
+      group: tutor
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. When
+        the most recent qualifying event was detected (UTC). Recurrence
+        updates this instead of opening a second ticket.
+
+    - name: tutor_issue_occurrences
+      label: "[Agent] Tutor issue occurrences"
+      group: tutor
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. How
+        many qualifying events this ticket has absorbed (dedupe rule: one
+        open ticket per tutor per issue type per period).
+
+    - name: tutor_issue_period
+      label: "[Agent] Tutor issue period"
+      group: tutor
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. The
+        dedupe period key this ticket covers — ISO week (e.g. 2026-W35) for
+        the weekly Teachworks detectors, rolling-30d anchor date for the
+        report-driven types.
 
   contacts:
     # ── LABEL CONVENTION (Roman 2026-08-14): every property an AGENT writes
@@ -293,6 +375,28 @@ properties:
       type: date
       fieldType: date
     # — tutor —
+    - name: tutor_roster_status
+      label: "[Agent] Tutor Roster Status"
+      group: tutor
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by scripts/tutor_roster_check.py, do not edit
+        by hand. Ground truth for tutor liveness (Roman 2026-08-25): matched
+        by email against the Teachworks EMPLOYEE roster in BOTH accounts.
+        Active in either account = Active. HubSpot lead status
+        "Tutor-Active" is a hint only; this field wins.
+      options:
+        - value: "Active (online)"
+          label: "Active (online)"
+        - value: "Active (in person)"
+          label: "Active (in person)"
+        - value: "Active (both)"
+          label: "Active (both)"
+        - value: "Inactive (both)"
+          label: "Inactive (both)"
+        - value: "Not found"
+          label: "Not found"
     - name: a__pay_per_hour
       label: "A+ Pay Per Hour"
       group: tutor

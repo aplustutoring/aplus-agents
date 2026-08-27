@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- PO-inbox heartbeat: every 15 min, dispatch the GitHub workflow if GitHub's
+     own cron hasn't (see scripts/po-inbox-heartbeat.sh for the guards).
+     The script runs from an INSTALLED copy (not the repo checkout, which may
+     be mid-rebase/stale) — re-run the install to pick up script changes.
+     Install:  mkdir -p ~/Library/Application\ Support/aplus
+               cp scripts/po-inbox-heartbeat.sh ~/Library/Application\ Support/aplus/
+               cp scripts/launchd/com.aplus.po-inbox-heartbeat.plist ~/Library/LaunchAgents/
+               launchctl load ~/Library/LaunchAgents/com.aplus.po-inbox-heartbeat.plist
+     Remove:   launchctl unload ~/Library/LaunchAgents/com.aplus.po-inbox-heartbeat.plist -->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.aplus.po-inbox-heartbeat</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/romanslavinsky/Library/Application Support/aplus/po-inbox-heartbeat.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>900</integer>
+    <key>RunAtLoad</key>
+    <false/>
+    <key>StandardErrorPath</key>
+    <string>/Users/romanslavinsky/Library/Logs/aplus-po-heartbeat.log</string>
+</dict>
+</plist>

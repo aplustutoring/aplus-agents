@@ -34,7 +34,8 @@ GOOGLE_SHEETS_CREDS = os.getenv("GOOGLE_SHEETS_CREDS", "")
 # in these keys; at load time each role resolves to its staff key via the
 # roles: block, so every consumer keeps working with resolved people.
 _ROLE_KEYS = {"owner", "recipient", "assign_to", "cc_owner_dms_to", "fallback",
-              "level2", "level3", "a_to_l", "m_to_z", "charter_sales"}
+              "level2", "level3", "a_to_l", "m_to_z", "charter_sales",
+              "compliance_owner"}
 _ROLE_LIST_KEYS = {"missing_info_dms"}
 
 

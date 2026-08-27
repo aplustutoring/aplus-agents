@@ -384,11 +384,15 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     internal_routed = False
     if email and idomain and email.lower().endswith("@" + idomain):
         rcpt = (result.get("internal_recipient") or "").strip().lower()
-        staff = cfg()["staff"]
-        key = next((k for k, s in staff.items()
+        # NOTE: named staff_map, NOT `staff` — assigning to `staff` here would
+        # shadow the config.staff import for the WHOLE function, so the pre-deal
+        # lead branch above crashed with UnboundLocalError on every charter-sales
+        # routing (3 threads stuck in a 15-min retry loop, 2026-08-22..25).
+        staff_map = cfg()["staff"]
+        key = next((k for k, s in staff_map.items()
                     if rcpt and (s.get("name", "").lower() == rcpt or k == rcpt)), None)
         key = key or icfg.get("fallback", "visionary")
-        decision.owner_key, decision.owner, decision.review = key, staff.get(key), False
+        decision.owner_key, decision.owner, decision.review = key, staff_map.get(key), False
         internal_routed = True
 
     # #3 Teachworks notice → link the ticket to the FAMILY contact (so the owner can

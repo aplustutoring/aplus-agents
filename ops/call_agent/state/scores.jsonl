@@ -192,3 +192,12 @@
 {"call_id": 408189862, "date_pt": "2026-08-25", "agent": "Mandy Thwaites", "direction": "outgoing", "overall": null, "scores": {}}
 {"call_id": 408195544, "date_pt": "2026-08-25", "agent": "Mandy Thwaites", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 5, "U3": 4, "U5": 3, "S4": 2, "V1": 4}}
 {"call_id": 408437038, "date_pt": "2026-08-26", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 4.2, "scores": {"U1": 5, "U2": 5, "U3": 4, "U5": 4, "V1": 4, "V2": 3}}
+{"call_id": 408509548, "date_pt": "2026-08-26", "agent": "Janelle Alinea", "direction": "incoming", "overall": 3.7, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 3, "V1": 4, "V2": 3}}
+{"call_id": 408462336, "date_pt": "2026-08-26", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 4.2, "scores": {"U1": 5, "U3": 4, "U5": 4, "S4": 4}}
+{"call_id": 408589394, "date_pt": "2026-08-26", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 3, "U5": 3}}
+{"call_id": 408657719, "date_pt": "2026-08-26", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 4.2, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 3, "U5": 4, "S1": 5, "S2": 5, "S3": 5, "S4": 4}}
+{"call_id": 408609444, "date_pt": "2026-08-26", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 3, "U5": 3, "S1": 2, "S2": 2, "S4": 2}}
+{"call_id": 408625471, "date_pt": "2026-08-26", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 4, "U2": 3, "U3": 3, "U5": 4, "V1": 4, "V2": 4}}
+{"call_id": 408632710, "date_pt": "2026-08-26", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 408642684, "date_pt": "2026-08-26", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.4, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 2, "U5": 3, "S1": 3, "S2": 4, "S3": 4, "S4": 3}}
+{"call_id": 408655426, "date_pt": "2026-08-26", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.8, "scores": {"U1": 4, "U3": 4, "U5": 4, "S4": 3}}

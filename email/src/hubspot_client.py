@@ -283,36 +283,29 @@ def search_deals_by_name(token: str, pipeline_id: str | None = None,
 
 # Deal-level student-name properties. `student_last_name_if_diff_from_parent`
 # exists precisely because the family surname often is NOT the student's, which
-# is the case the parent-surname search can never handle.
+# is the case a parent-surname search can never handle.
 STUDENT_FIRST_PROP = "student_first_name"
 STUDENT_LAST_PROP = "student_last_name_if_diff_from_parent"
 
 
-def search_deals_by_student(student_first: str, student_last: str,
-                            limit: int = 30) -> list[dict]:
-    """Deals whose STUDENT-NAME PROPERTIES name this student (Roman 2026-08-26).
-
-    Beats both existing lookups. Searching contacts by `lastname` assumes the
-    parent shares the student's surname (Giada Di Nardo's parent is Leeanne
-    Gonzales; Matthew Rose's is Megan Miller). Searching DEAL NAMES is text
-    matching over a convention that carries typos — four consecutive Doyal deals
-    are named "…- Copper -…" while the property still reads "Cooper".
-
-    Returns ONLY deals matching first AND last name: a first-name-only match is
-    not evidence ("Cooper" alone spans three unrelated families).
-    """
-    if not student_first or not student_last:
-        return []
-    body = {"filterGroups": [{"filters": [
-        {"propertyName": STUDENT_FIRST_PROP, "operator": "EQ",
-         "value": student_first.strip()}]}],
-        "properties": ["dealname", STUDENT_FIRST_PROP, STUDENT_LAST_PROP,
-                       "pipeline", "dealstage", "createdate"],
-        "limit": limit}
-    res = _get_search("/crm/v3/objects/deals/search", body)
-    sl = student_last.strip().lower()
-    return [d for d in res.get("results", [])
-            if ((d.get("properties") or {}).get(STUDENT_LAST_PROP) or "").strip().lower() == sl]
+def search_deals_by_student(first: str, last: str | None = None) -> list[dict]:
+    """Deals whose student_first_name (and optionally the last-name property)
+    match EXACTLY — the reliable way to pull one student's deal history.
+    Name-token search can't do this: limit-10 with no sort returns an arbitrary
+    old slice, and common first names collide (searching 'Roman' returns Roman
+    Kushnir, Roman Slavinsky, Arlyn Roman... — the Saenz/McGraw duplicate-name
+    bug, 2026-08-26). Sorted newest-first, limit 100 (largest per-student
+    history seen is ~29)."""
+    filters = [{"propertyName": "student_first_name", "operator": "EQ", "value": first}]
+    if last:
+        filters.append({"propertyName": "student_last_name_if_diff_from_parent",
+                        "operator": "EQ", "value": last})
+    body = {"filterGroups": [{"filters": filters}],
+            "properties": ["dealname", "pipeline", "dealstage", "createdate"],
+            "sorts": [{"propertyName": "createdate", "direction": "DESCENDING"}],
+            "limit": 100}
+    res = _write("POST", "/crm/v3/objects/deals/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
 
 
 def is_family_contact(props: dict, tor_email: str = "") -> bool:
@@ -339,7 +332,8 @@ def find_deals_by_po_number(po_number: str) -> list[dict]:
         return []
     body = {"filterGroups": [{"filters": [
         {"propertyName": "po_number", "operator": "EQ", "value": po_number.strip()}]}],
-        "properties": ["dealname", "po_number", "pipeline", "dealstage"], "limit": 10}
+        "properties": ["dealname", "po_number", "pipeline", "dealstage", "amount",
+                       "hubspot_owner_id", "invoice__"], "limit": 10}
     res = _write("POST", "/crm/v3/objects/deals/search", body)
     return res.get("results", []) if isinstance(res, dict) else []
 

@@ -170,3 +170,11 @@ Tell Roman:
 ## Version
 
 v1.0 (2026-05-27). Initial orchestrator. Chains aplus-spotlight-case-study (drafting) + aplus-b2c-hashtag-analyst (hashtags) + the graphics/publish/delivery scripts into one end-to-end pipeline. Built after the Gabriela case proved every individual piece. Next iteration should generalize the per-bundle graphics scripts into shared scripts/ versions so Phase 4 stops requiring per-bundle copies.
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

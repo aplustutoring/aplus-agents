@@ -16,6 +16,30 @@ the main checkout are allowed only when that is the session's sole task surface.
 (Why: on 2026-08-11 two concurrent sessions collided — one session's po_inbox
 commit landed on the other's PR branch and had to be untangled by hand.)
 
+## CARE core values (mandatory for any agent that reasons)
+
+A+ Tutoring's vision, mission and CARE values live in ONE file:
+`ops/values/care-values.md`. The verbatim block in it is LOCKED and must never
+be reworded, paraphrased, or copied into a prompt, skill or template.
+
+**Every agent whose output is reasoned rather than computed carries this line in
+its prompt:**
+
+> Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+
+That applies to new agents by default. Placement follows each agent's existing
+prompt convention (top of the system string, or the first line of a prompt
+block).
+
+**Deterministic agents do NOT get the pointer.** Syncs, sweeps, metrics, relays
+and list builders produce no language for values to shape, and a pointer inside
+them is dead text that a later reader mistakes for something load-bearing. As of
+2026-08-26 that is 20 of the 26 active agents and all 10 manual ones.
+
+The skills in `marketing/skills/` are the reasoning layer for the content
+engines (they are loaded by `SkillsRunner`, not by the .py entrypoints), so they
+carry the pointer too.
+
 ## Key context for any session
 - HubSpot property registry: `ops/hubspot-schema/properties.yml` is the source of truth,
   synced to portal 6312752 by `create_properties.py` (additive only). Declare new

@@ -24,8 +24,7 @@ def _contact(cid, first, last, email, persona="Family"):
 
 
 def _wire(monkeypatch, deals, contacts_by_deal):
-    monkeypatch.setattr(hs, "_get_search",
-                        lambda path, body: {"results": deals})
+    monkeypatch.setattr(hs, "search_deals_by_student", lambda f, l=None: deals)
     monkeypatch.setattr(hs, "get_deal_contacts",
                         lambda did: contacts_by_deal.get(did, []))
 
@@ -114,18 +113,19 @@ def test_a_tie_refuses_to_guess(monkeypatch):
         {"student_first": "Rayven", "student_last": "Holloway"}) is None
 
 
-def test_first_name_alone_is_never_accepted(monkeypatch):
-    """'Cooper' alone spans three unrelated families, so the client filters the
-    search down to first AND last name before anything is counted."""
-    monkeypatch.setattr(hs, "_get_search", lambda path, body: {"results": [
-        _deal("1", "Carol Hamasaki - Cooper", "Cooper", None),
-        _deal("2", "Natalie Stockstill - Cooper Stockstill", "Cooper", "Stockstill")]})
-    assert hs.search_deals_by_student("Cooper", "Doyal") == []
-
-
-def test_no_student_last_name_means_no_lookup(monkeypatch):
-    assert hs.search_deals_by_student("Cooper", "") == []
+def test_first_name_alone_is_never_used_for_PARENT_resolution(monkeypatch):
+    """`search_deals_by_student` deliberately allows a first-name-only lookup —
+    deal SEQUENCE NUMBERING needs it for older deals that never got the
+    last-name stamp. Parent resolution must not: 'Cooper' alone spans three
+    unrelated families, so a wrong match would name the deal, and address the
+    family's scheduling SMS, after the wrong parent."""
+    called = []
+    monkeypatch.setattr(hs, "search_deals_by_student",
+                        lambda f, l=None: called.append((f, l)) or [])
     assert po_inbox._parent_from_student_deals({"student_first": "Cooper"}) is None
+    assert po_inbox._parent_from_student_deals(
+        {"student_first": "Cooper", "student_last": ""}) is None
+    assert called == [], "no lookup may run without BOTH names"
 
 
 def test_no_matching_deals_falls_through(monkeypatch):
@@ -143,14 +143,15 @@ def test_lookup_failure_is_not_fatal(monkeypatch):
         {"student_first": "Giada", "student_last": "Di Nardo"}) is None
 
 
-# ── the client-side narrowing ───────────────────────────────────────────────
-def test_search_narrows_on_the_student_last_name(monkeypatch):
-    monkeypatch.setattr(hs, "_get_search", lambda path, body: {"results": [
-        _deal("1", "keep", "Cooper", "Doyal"),
-        _deal("2", "drop", "Cooper", "Stockstill"),
-        _deal("3", "keep, case-insensitive", "Cooper", " doyal ")]})
-    got = hs.search_deals_by_student("Cooper", "Doyal")
-    assert [d["id"] for d in got] == ["1", "3"]
+# ── the search itself ───────────────────────────────────────────────────────
+def test_search_filters_on_both_name_properties(monkeypatch):
+    """Narrowing happens server-side, so both properties must reach HubSpot."""
+    seen = {}
+    monkeypatch.setattr(hs, "_write",
+                        lambda m, p, body=None: seen.update(body or {}) or {"results": []})
+    hs.search_deals_by_student("Cooper", "Doyal")
+    props = [f["propertyName"] for f in seen["filterGroups"][0]["filters"]]
+    assert props == [hs.STUDENT_FIRST_PROP, hs.STUDENT_LAST_PROP]
 
 
 def test_is_family_contact_rules():
