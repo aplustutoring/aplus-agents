@@ -28,7 +28,7 @@ VALID_CATEGORIES = {
     "reschedule", "scheduling", "cancellation", "tutor_issue",
     "school_partner", "business_dev", "complaint", "payment_dispute",
     "tor_inquiry", "new_po", "tutor_document", "recruitment",
-    "charter_newsletter", "junk", "unknown",
+    "charter_newsletter", "review_received", "junk", "unknown",
 }
 
 

@@ -424,6 +424,23 @@ def contact_deal_names(contact_id: str) -> list[str]:
     return names
 
 
+def find_contact_by_name(firstname: str, lastname: str) -> list[dict]:
+    """Exact first+last contact search (review reviewer → family). Case-exact
+    per HubSpot EQ semantics; the caller associates only on a UNIQUE result."""
+    if not (firstname and lastname):
+        return []
+    body = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "firstname", "operator": "EQ", "value": firstname},
+            {"propertyName": "lastname", "operator": "EQ", "value": lastname},
+        ]}],
+        "properties": ["email", "firstname", "lastname", "a_persona"],
+        "limit": 5,
+    }
+    res = _write("POST", "/crm/v3/objects/contacts/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
+
+
 def find_family_contact(student_first: str, lastname: str) -> list[dict]:
     """Find the PARENT family contact to link a Teachworks-notice ticket to.
 
@@ -540,7 +557,8 @@ def contact_enrichment(contact_id: str) -> dict:
 def create_ticket(subject: str, owner_id: str | None, stage_id: str,
                    description: str, contact_id: str | None,
                    priority: str | None = None, category: str | None = None,
-                   source: str | None = None) -> dict:
+                   source: str | None = None,
+                   extra_props: dict | None = None) -> dict:
     hs = cfg()["hubspot"]
     props = {
         "subject": subject,
@@ -548,6 +566,8 @@ def create_ticket(subject: str, owner_id: str | None, stage_id: str,
         "hs_pipeline_stage": stage_id,
         "content": description,
     }
+    if extra_props:
+        props.update(extra_props)
     if owner_id and owner_id != "REPLACE":
         props["hubspot_owner_id"] = owner_id
     if priority:

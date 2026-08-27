@@ -8,6 +8,33 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — Review tickets tied to families (email engine, PR pending)
+
+**What:** New `review_received` triage category: Google/Yelp
+review-notification emails become HubSpot tickets (category "Review",
+owner = quality role = Paola, 8 business-hr SLA, no draft — replies happen
+on the platform). The ticket is tied to the FAMILY contact via an exact
+unique first+last match on the classifier-extracted reviewer name; a
+partial name ("Maria A.") or ambiguous match leaves the ticket
+unassociated with the reason in its notes. Platform no-reply senders
+never become contacts (CallRail/JustCall junk-contact lesson). New ticket
+properties review_platform / review_rating / review_reviewer_name declared
+in properties.yml (tickets group `review`); "Review" option added to
+hs_ticket_category in-portal (additive PATCH, Roman-authorized). 9 new
+tests (suite 269 green).
+
+**Why:** Roman 2026-08-26: "tickets tied to families when they leave a
+review allows us to better track". No review notifications exist in inbox
+history — Roman must point Google Business Profile + Yelp notification
+emails at admin@wetutorathome.com for the category to ever fire.
+
+**Files:** `email/rules.md`, `email/config.yaml`, `email/src/classifier.py`,
+`email/src/main.py`, `email/src/hubspot_client.py`,
+`email/tests/test_review_received.py`, `ops/hubspot-schema/properties.yml`,
+`docs/CHANGELOG.md`.
+
+---
+
 ## 2026-08-26 — Tutor-issue ticketing LIVE
 
 **What:** Flip after the verified live baseline (run 33030729514: 0 created,

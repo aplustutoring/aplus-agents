@@ -8,10 +8,13 @@ reply.
 
 Return a SINGLE JSON object: `category`, `risk`, `confidence`, `routing_target`,
 `sla_tier`, `draft_reply`, `reason`, `cancellation_reason`, `cancellation_type`,
-`parent_last_name`, `student_first_name`, `internal_recipient`. No prose, no code fences.
+`parent_last_name`, `student_first_name`, `internal_recipient`, `review_platform`,
+`review_rating`, `reviewer_name`. No prose, no code fences.
 (`cancellation_type` = one_time|pause|stop for cancellations, else "". `parent_last_name`
 = the family/parent surname from the email content — "Layla Schnider has cancelled" →
-"Schnider" — for the A-L/M-Z split. `student_first_name` = "Layla". Never tutor/staff names.)
+"Schnider" — for the A-L/M-Z split. `student_first_name` = "Layla". Never tutor/staff names.
+`review_platform`/`review_rating`/`reviewer_name` are for `review_received` only, else
+""/null — see that category.)
 
 ---
 
@@ -121,6 +124,21 @@ Examples:
 - "I'm a credentialed math teacher interested in tutoring for you — are you hiring?"
 - "Do you have openings for Spanish tutors? Here's my resume."
 - "How do I apply to become an A+ tutor?"
+
+### `review_received` — a customer review landed, 8 business hrs → Paola
+An AUTOMATED notification from a review platform (Google Business Profile, Yelp, or
+similar) saying someone left A+ a review. The sender is the platform's no-reply
+address, not a person. Examples:
+- "Maria Alvarez left you a new review on Google" (from google.com)
+- "You have a new 5-star review on Yelp"
+- "Someone reviewed A+ Tutoring — see what they said"
+**Extract:** `review_platform` = google|yelp|other; `review_rating` = the star count
+as a number if the notification shows it, else null; `reviewer_name` = the reviewer's
+display name exactly as shown (may be partial like "Maria A."), else "".
+Do NOT put the reviewer's name in `parent_last_name` unless the notification clearly
+shows a full surname. A person EMAILING US their feedback directly is `complaint`
+(negative) or general correspondence — this category is only for platform
+notifications about a posted review.
 
 ### `junk` — auto-archive
 Spam, cold vendor pitches, marketing blasts, SEO/lead-gen solicitations, unrelated mail,
