@@ -281,6 +281,26 @@ def search_deals_by_name(token: str, pipeline_id: str | None = None,
     return res.get("results", []) if isinstance(res, dict) else []
 
 
+def search_deals_by_student(first: str, last: str | None = None) -> list[dict]:
+    """Deals whose student_first_name (and optionally the last-name property)
+    match EXACTLY — the reliable way to pull one student's deal history.
+    Name-token search can't do this: limit-10 with no sort returns an arbitrary
+    old slice, and common first names collide (searching 'Roman' returns Roman
+    Kushnir, Roman Slavinsky, Arlyn Roman... — the Saenz/McGraw duplicate-name
+    bug, 2026-08-26). Sorted newest-first, limit 100 (largest per-student
+    history seen is ~29)."""
+    filters = [{"propertyName": "student_first_name", "operator": "EQ", "value": first}]
+    if last:
+        filters.append({"propertyName": "student_last_name_if_diff_from_parent",
+                        "operator": "EQ", "value": last})
+    body = {"filterGroups": [{"filters": filters}],
+            "properties": ["dealname", "pipeline", "dealstage", "createdate"],
+            "sorts": [{"propertyName": "createdate", "direction": "DESCENDING"}],
+            "limit": 100}
+    res = _write("POST", "/crm/v3/objects/deals/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
+
+
 def find_deals_by_po_number(po_number: str) -> list[dict]:
     """Deals whose po_number PROPERTY matches exactly — the canonical PO lookup
     (5k+ deals carry this field; far more reliable than deal-name matching)."""
@@ -288,7 +308,8 @@ def find_deals_by_po_number(po_number: str) -> list[dict]:
         return []
     body = {"filterGroups": [{"filters": [
         {"propertyName": "po_number", "operator": "EQ", "value": po_number.strip()}]}],
-        "properties": ["dealname", "po_number", "pipeline", "dealstage"], "limit": 10}
+        "properties": ["dealname", "po_number", "pipeline", "dealstage", "amount",
+                       "hubspot_owner_id", "invoice__"], "limit": 10}
     res = _write("POST", "/crm/v3/objects/deals/search", body)
     return res.get("results", []) if isinstance(res, dict) else []
 

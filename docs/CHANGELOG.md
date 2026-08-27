@@ -8,6 +8,68 @@ Newest entries first.
 
 ---
 
+## 2026-08-26 — PO agent refined off a 6-day audit (Roman session)
+
+Ten changes from auditing Aug 20-26 (49 PO deals, $9,178; 24 false pending
+reminders; 6 duplicate-named deals; a PO cancelled 2 hrs after intake that the
+agent acknowledged politely and did nothing about):
+
+1. **`staff` shadowing crash fixed** (`main.py`) — `staff = cfg()["staff"]`
+   in the internal-routing branch shadowed the import, so the pre-deal-lead
+   branch raised UnboundLocalError; 3 threads retried every 15 min Aug 22-25,
+   never processed. Local renamed `staff_map`.
+2. **'School N' numbering fixed** — `_next_school_seq` searched deal-name
+   tokens, limit 10, no sort: any student with 10+ historical deals ALWAYS
+   restarted at N=1 (Violet McGraw iLead 1,2,3 twice; each Saenz kid 1,2,3,4
+   twice — 24 distinct POs, zero true dupes). Now: exact-match search on
+   `student_first_name` (+last, first-only fallback), newest-first, limit 100
+   (new `hs.search_deals_by_student`), PLUS a run-scoped `_RUN_SEQ` counter so
+   same-run emails continue 4,5,6 past the search-index lag.
+3. **Two service offerings in hours computation** (Roman decision, locked):
+   $75/hour AND $60 per 45-min session (`po_inbox.service_offerings`).
+   `hours` is ALWAYS hours (4-session PO stamps 3; no new properties). Rate +
+   `rate_unit` extracted from the PO; no rate → compute only when exactly ONE
+   offering divides the amount cleanly; $300 fits both → blank + 🚩 flag.
+4. **`po_month` finally defined in the extractor prompt** (YYYY-MM, service
+   month not issue date) — it was an undefined key, so `lessons_fulfilled_date`
+   (invoice due = end of PO month) was blank on 13/15 deals; missing month now
+   ⚠️-flags into the gap DM.
+5. **Resolved parent email stamped** — the agent resolved families via TW/prior
+   deals but stamped only the raw PO field (blank on iLEAD OAs): 14/15 deals
+   missing `parent_email` the CRM already knew, gap DMs crying wolf. The
+   resolved value now backfills `po['parent_email']` pre-stamp.
+6. **Gap DM reworded** ("not in the PO and not resolvable from records") and
+   now includes the two fields Kath actually needs: hours + invoice due date.
+7. **Pending-approval sweep: 14 CALENDAR days** (`pending_portal_approval_days`,
+   was 16 business hours) — iLEAD/OPS portal approval takes ≥14 days (Roman),
+   so the old window produced only false nags.
+8. **PO cancellation handling** (`_handle_cancellation`, decisions locked:
+   zero + Kath voids): school cancellation notice → deal to its Stopped stage,
+   amount+hours zeroed, note pinned, DMs (Kath+Roman+deal owner), HIGH
+   void-TW-invoice task. Partial (billable>0) → NOTHING auto-changes, manual
+   flag. Cancelled-PO re-issue announced as re-issue, not duplicate. Ticket
+   subject "PO CANCELLED — …", HIGH.
+9. **Non-PO dispositions** via `category_hint`: vendor_compliance → HIGH ticket
+   to `compliance_owner` (sales seat — Epic California C&CP sat as generic
+   MEDIUM while blocking that school's POs); scam → LOW + sender never captured
+   as parent contact (Marcus Parker advance-fee pattern was recorded as
+   parent_email); marketing_junk → LOW.
+10. **Em-dash scrub at the Gmail-draft choke point** (`gmail_client._scrub_outbound`)
+    — the locked no-em-dash outbound rule was prompt-only and a Heartland draft
+    shipped one on 2026-08-19; now enforced in code on every draft body.
+
+**Why:** the audit showed the agent's data capture was ~50% of spec on live
+deals, its alerts fired about the wrong things, and cancellations had zero
+handling (live money risk).
+**Files:** email/src/{main,po_inbox,hubspot_client,gmail_client,config}.py,
+email/config.yaml, email/tests/test_po_inbox.py (suite 258 green),
+docs/PO-PROCESS.md (kept in sync per its header).
+**Also this session (manual, outside this PR):** Emma Savoie deal 64379560281
+stopped/zeroed + team alerted; Epic ticket 47830084212 → Danielle HIGH (via
+scratchpad script Roman ran). **Pipeline config gap flagged to Roman:** Charter
+Trad "Stopped" (13267787) is isClosed=false/10% — cancelled deals pollute the
+forecast; Level Up's is closed/0%. HubSpot-side fix, Roman's call.
+
 ## 2026-08-26 — Duplicate-PO red-flag detector in the PO day report (Roman)
 
 **What:** `email/src/po_daily_report.py` — every 6 PM PT report now runs a
