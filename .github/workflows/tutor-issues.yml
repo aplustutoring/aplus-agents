@@ -4,24 +4,16 @@ name: Tutor issues — detect + ticket
 env:
   TZ: America/Los_Angeles
 
-# NOT LIVE: the schedule stays commented out until (1) the PR is merged,
-# (2) the baseline run has stamped, and (3) Roman flips it on — same
-# enable-at-flip pattern as email-triage.yml. Scheduled runs are LIVE
-# (dry_run only applies to manual dispatch).
-# Cadence once enabled:
+# LIVE since 2026-08-26 (baseline stamped the same day: 0 created, 0 sent).
+# Scheduled runs are LIVE (dry_run only applies to manual dispatch).
+# Cadence (UTC):
 #   - Mondays 17:00 UTC (09/10 PT): weekly sweep (last complete Sun-Sat week,
 #     after the Sunday notes cutoff) + inbound + intake
 #   - every 2h in the business window: inbound reports + Slack intake only
-# on:
-#   schedule:
-#     - cron: "0 17 * * 1"               # Monday sweep
-#     - cron: "0 16,18,20,22,0 * * 1-5"  # inbound/intake polls, weekdays
 on:
-  # TEMPORARY (remove on merge): pushes to the PR branch run the dry-run
-  # verification suite, because workflow_dispatch only works once the
-  # workflow exists on the default branch.
-  push:
-    branches: [worktree-tutor-issue-tickets]
+  schedule:
+    - cron: "0 17 * * 1"               # Monday sweep
+    - cron: "0 16,18,20,22,0 * * 1-5"  # inbound/intake polls, weekdays
   workflow_dispatch:
     inputs:
       dry_run:
@@ -75,29 +67,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Verification suite (push to PR branch — always dry-run)
-        if: ${{ github.event_name == 'push' }}
-        env:
-          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
-          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
-          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
-          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
-        run: |
-          echo "=== 1. baseline dry-run (expect zero creates) ==="
-          python tutor_issues.py --mode all --dry-run --force-sweep \
-            --probe-lateness --report-json report-baseline.json
-          echo "=== 2. assume-baselined dry-run (full distribution) ==="
-          python tutor_issues.py --mode all --dry-run --force-sweep \
-            --assume-baselined --report-json report-full.json
-          echo "=== 3. simulate one new qualifying event ==="
-          python tutor_issues.py --dry-run --simulate-event AUTO \
-            --report-json report-simulate.json
-
       - name: Run engine
-        if: ${{ github.event_name != 'push' }}
         env:
           HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
           TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
