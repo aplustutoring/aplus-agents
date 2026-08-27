@@ -219,3 +219,11 @@ v1.2 . Updated May 11, 2026 (clarified iLEAD AV data: 81% is the combined 21-stu
 v1.1 . Updated May 8, 2026 (added hard differentiation rule + fixed em dash in example phrasings)
 v1.0 . Created May 6, 2026
 Foundation: 10-question brand voice interview with Roman Slavinsky
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

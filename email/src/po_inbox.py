@@ -29,6 +29,7 @@ from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 
 PO_SYSTEM = (
+    "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
     "include PDF/image attachments (the actual PO document) — read them; PO details "
     "usually live there, not in the body. "
