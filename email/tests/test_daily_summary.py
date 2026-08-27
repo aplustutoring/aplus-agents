@@ -105,13 +105,14 @@ def test_po_report_invoice_number_stamp_counts():
 
 def test_find_duplicate_pos_flags_repeats_and_normalizes():
     from src import po_daily_report as pr
+    NEW = "2026-08-20T10:00:00Z"
     deals = [
-        {"properties": {"po_number": "3114164517", "dealname": "A"}},
-        {"properties": {"po_number": "3114164517", "dealname": "B"}},   # dup
-        {"properties": {"po_number": "PO 3114164518", "dealname": "C"}},
-        {"properties": {"po_number": "3114164518", "dealname": "D"}},   # dup via normalize
-        {"properties": {"po_number": "3114164519", "dealname": "E"}},   # unique
-        {"properties": {"po_number": "", "dealname": "F"}},             # ignored
+        {"properties": {"po_number": "3114164517", "createdate": NEW, "dealname": "A"}},
+        {"properties": {"po_number": "3114164517", "createdate": NEW, "dealname": "B"}},   # dup
+        {"properties": {"po_number": "PO 3114164518", "createdate": NEW, "dealname": "C"}},
+        {"properties": {"po_number": "3114164518", "createdate": NEW, "dealname": "D"}},   # dup via normalize
+        {"properties": {"po_number": "3114164519", "createdate": NEW, "dealname": "E"}},   # unique
+        {"properties": {"po_number": "", "createdate": NEW, "dealname": "F"}},             # ignored
     ]
     dupes, placeholders = pr.find_duplicate_pos(deals)
     # A/B and C/D are different "families" (first dealname segment differs)
@@ -122,20 +123,42 @@ def test_find_duplicate_pos_flags_repeats_and_normalizes():
 
 def test_find_duplicate_pos_family_splits_allowed():
     from src import po_daily_report as pr
+    NEW = "2026-08-20T10:00:00Z"
     deals = [  # one PO split across months for ONE family: FINE (Roman)
-        {"properties": {"po_number": "pf205745", "dealname": "Ana Cruz - Leo - Pacific 1 - 26/27"}},
-        {"properties": {"po_number": "pf205745", "dealname": "Ana Cruz - Leo - Pacific 2 - 26/27"}},
-        {"properties": {"po_number": "pf205745", "dealname": "Ana Cruz - Leo - Pacific 3 - 26/27"}},
+        {"properties": {"po_number": "pf205745", "createdate": NEW, "dealname": "Ana Cruz - Leo - Pacific 1 - 26/27"}},
+        {"properties": {"po_number": "pf205745", "createdate": NEW, "dealname": "Ana Cruz - Leo - Pacific 2 - 26/27"}},
+        {"properties": {"po_number": "pf205745", "createdate": NEW, "dealname": "Ana Cruz - Leo - Pacific 3 - 26/27"}},
         # same PO, DIFFERENT family: VIOLATION
-        {"properties": {"po_number": "688542458", "dealname": "Ana Cruz - Leo - Pacific 1 - 26/27"}},
-        {"properties": {"po_number": "688542458", "dealname": "Bob Diaz - Mia - Pacific 1 - 26/27"}},
+        {"properties": {"po_number": "688542458", "createdate": NEW, "dealname": "Ana Cruz - Leo - Pacific 1 - 26/27"}},
+        {"properties": {"po_number": "688542458", "createdate": NEW, "dealname": "Bob Diaz - Mia - Pacific 1 - 26/27"}},
         # same PO, same family, IDENTICAL dealname twice: VIOLATION
-        {"properties": {"po_number": "298548470", "dealname": "Cara Voss - Sam - iLead 1 - 26/27"}},
-        {"properties": {"po_number": "298548470", "dealname": "Cara Voss - Sam - iLead 1 - 26/27"}},
+        {"properties": {"po_number": "298548470", "createdate": NEW, "dealname": "Cara Voss - Sam - iLead 1 - 26/27"}},
+        {"properties": {"po_number": "298548470", "createdate": NEW, "dealname": "Cara Voss - Sam - iLead 1 - 26/27"}},
     ]
     dupes, _ = pr.find_duplicate_pos(deals)
     assert set(dupes) == {"688542458", "298548470"}
     assert "pf205745" not in dupes
+
+
+def test_find_duplicate_pos_heartland_multifamily_and_action_window():
+    from src import po_daily_report as pr
+    NEW, OLD = "2026-08-20T10:00:00Z", "2026-03-01T10:00:00Z"
+    deals = [
+        # Heartland one-form-many-students: cross-family FINE
+        {"properties": {"po_number": "pf900001", "createdate": NEW, "dealname": "A Mom - Kid1 - Heartland 1 (Sep) 26/27"}},
+        {"properties": {"po_number": "pf900001", "createdate": NEW, "dealname": "B Mom - Kid2 - Heartland 1 (Sep) 26/27"}},
+        # Heartland identical dealname twice: still a VIOLATION
+        {"properties": {"po_number": "pf900002", "createdate": NEW, "dealname": "C Mom - Kid3 - Heartland 2 (Sep) 26/27"}},
+        {"properties": {"po_number": "pf900002", "createdate": NEW, "dealname": "C Mom - Kid3 - Heartland 2 (Sep) 26/27"}},
+        # historic-only duplicate: OUTSIDE action window, ignored
+        {"properties": {"po_number": "555001", "createdate": OLD, "dealname": "D Mom - Kid4 - Sage Oak 1 - 25/26"}},
+        {"properties": {"po_number": "555001", "createdate": OLD, "dealname": "E Mom - Kid5 - Sage Oak 1 - 25/26"}},
+        # two parent contacts, same student+school: same family, FINE
+        {"properties": {"po_number": "pf307511", "createdate": NEW, "dealname": "Claire Dennis - Gianna - Blue Ridge (January)"}},
+        {"properties": {"po_number": "pf307511", "createdate": NEW, "dealname": "Dennis Levin - Gianna - Blue Ridge (January)"}},
+    ]
+    dupes, _ = pr.find_duplicate_pos(deals)
+    assert set(dupes) == {"pf900002"}
 
 
 def test_find_duplicate_pos_placeholders_counted_not_flagged():
