@@ -118,16 +118,27 @@ def enrich_invoice_proof(ev: dict, invoiced_pos: set[str]) -> dict:
 
 
 def mark_duplicates(evs: list[dict]) -> list[dict]:
-    """Two open tickets for one PO number, or for one email thread, are the same
-    work. The older one keeps the history; the newer ones are noise."""
-    by_po, by_subject = {}, {}
+    """Two open tickets carrying the SAME PO NUMBER are the same work. The older
+    one keeps the history; the newer one is noise.
+
+    PO number is the only key used, deliberately. The 2026-08-26 dry run tried
+    matching on subject text too and moved to close ticket 45243331980 — one of
+    two tickets both titled "Eddie Sumlin" from the same referral partner, but
+    for different students (CNA support on Saturdays vs a new intake for
+    Kaliyah P). Closing it would have destroyed a live referral. Subject text is
+    not identity, and `source_thread_id` — which would be — is populated on zero
+    open tickets, so there is no thread key to fall back on yet.
+    """
+    by_po = {}
     for ev in sorted(evs, key=lambda e: -e["age_hours"]):
+        ev["duplicate_of"] = None
         m = re.search(r"\(PO ([A-Za-z0-9\-]+)\)", ev["subject"])
-        key = ("po", m.group(1)) if m else ("subj", ev["subject"].lower())
-        table = by_po if m else by_subject
-        ev["duplicate_of"] = table.get(key)
-        if key not in table:
-            table[key] = ev["ticket_id"]
+        if not m:
+            continue
+        po = m.group(1)
+        ev["duplicate_of"] = by_po.get(po)
+        if po not in by_po:
+            by_po[po] = ev["ticket_id"]
     return evs
 
 

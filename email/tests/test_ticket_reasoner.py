@@ -86,6 +86,17 @@ def test_enrich_only_marks_a_po_that_is_actually_invoiced():
     assert hit["invoice_proof"] and miss.get("invoice_proof") is None
 
 
+def test_same_subject_is_not_a_duplicate(monkeypatch):
+    """Caught by the 2026-08-26 dry run: two tickets both titled "Eddie Sumlin"
+    from one referral partner are DIFFERENT students (CNA support vs a new
+    intake for Kaliyah P). Closing on subject text would destroy a live
+    referral, so only a shared PO number counts as identity."""
+    evs = tr.mark_duplicates([
+        {"ticket_id": "A", "subject": "Eddie Sumlin", "age_hours": 4000},
+        {"ticket_id": "B", "subject": "Eddie Sumlin", "age_hours": 2600}])
+    assert all(e["duplicate_of"] is None for e in evs)
+
+
 def test_duplicates_keep_the_oldest_ticket(monkeypatch):
     evs = tr.mark_duplicates([
         {"ticket_id": "new", "subject": "new_po — x (PO 555)", "age_hours": 10},

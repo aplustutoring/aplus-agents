@@ -52,6 +52,66 @@ ticket follows the follow-up owner, not the Director." Not yet numbered.
 
 ---
 
+## 2026-08-26 — Reasoning sweep + the 24-hour pester policy (#AP-pending)
+
+**What changed**
+- `email/src/ticket_reasoner.py` — new. Gathers evidence per open ticket across
+  HubSpot (email direction, notes, contacts) and JustCall (texts, calls), adds
+  the invoice proof, classifies, then closes or pesters.
+- `email/src/justcall_client.py` — new, read-only SMS/call index by number.
+- `email/src/hubspot_client.py` — `get_ticket_emails/notes/contacts`,
+  `invoiced_po_numbers()`.
+- `email/src/audit.py` — `last_reasoner_pester()`.
+- `email/config.yaml` — new `reasoner:` block.
+- `email/tests/test_ticket_reasoner.py` — 21 tests.
+
+**Why**
+Roman asked for a 24-hour pester policy. There was none: the SLA chain fires on
+per-category hours, pings each level once, then goes silent forever, and only
+ever saw agent-filed tickets. But a PURE 24-hour rule is wrong too — measured on
+the live queue it fires 102 DMs, 77 of them to Kath, and most of hers are PO
+tickets whose invoice already exists. Pestering someone about finished work is
+how a bot gets muted. So the trigger is the ticket's real STATE, not its age.
+
+Ladder (Roman 2026-08-26): 24h owner, 48h + supervisor, 96h + last resort, daily
+after. Pesters regardless of who owes the reply.
+
+Closing is double-gated: `allow_close` is OFF, and a close also needs confidence
+>= 0.85. Hard evidence short-circuits the model entirely — an invoiced PO and a
+same-PO duplicate never need a judgment call.
+
+`invoiced_po_numbers()` reads HubSpot's own Invoice # field rather than matching
+Teachworks invoice amounts. Cross-checked on the open queue: identical 33-of-36
+answer, one system instead of two, no ambiguous amount matching.
+
+**What the dry run caught (this is why it was run)**
+`mark_duplicates` originally keyed on subject text as well as PO number, and
+moved to close ticket 45243331980 — one of two tickets both titled "Eddie
+Sumlin" from the same referral partner but for DIFFERENT students (CNA support
+on Saturdays vs a new intake for Kaliyah P). Closing it would have destroyed a
+live referral that has already sat 111 days. Dedup is now PO-number only;
+`source_thread_id` would be the right second key but is populated on zero open
+tickets, same unwritten #AP007 convention as `ticket_source`.
+
+**Dry-run result, 156 open tickets, nothing written**
+BALL_IN_COURT 48, RESOLVED 29, WAITING 24, NO_ACTION 20, UNCLEAR 18, DUPLICATE
+17 → would close 61, pester 86, leave 9. Queue 156 → 95. Checked against the 14
+tickets identified by hand as genuinely unresolved: after the dedup fix it closes
+none of them.
+
+**Files touched**
+- `email/src/ticket_reasoner.py`, `email/src/justcall_client.py`
+- `email/src/hubspot_client.py`, `email/src/audit.py`, `email/config.yaml`
+- `email/tests/test_ticket_reasoner.py`, `docs/CHANGELOG.md`
+
+**Verification** — 292 passed (was 271; 21 new).
+
+**Decision log** — candidates: "tickets are pestered on a 24/48/96h ladder then
+daily, regardless of who owes the reply"; "a ticket is triaged on its evidence,
+not its age"; "only a shared PO number proves two tickets are duplicates."
+
+---
+
 ## 2026-08-26 — Parent resolution from deal student-name properties (#AP-pending)
 
 **What changed**
