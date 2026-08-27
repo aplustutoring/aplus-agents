@@ -265,6 +265,29 @@ populated. The behaviour under test is unchanged; only the example moved.
 `scripts/tests/test_credentials.py`.
 
 ---
+## 2026-08-27 — [fix] po_inbox tests: stop calling the live HubSpot API
+
+**What:** the two tests #128 added for the re-issued-PO refinement
+(`test_po_number_dedupe_blocks_second_deal`,
+`test_no_scheduler_dm_when_nothing_created`) stubbed deal search and creation
+but not `hs.stage_label`, whose first call fetches `/crm/v3/pipelines/deals`
+LIVE. In CI that 401s and both tests die before their assertions; on any
+machine with a token in env they would query the production portal on every
+test run. Two-line fix: stub `stage_label` in both. 131 po_inbox tests green,
+full suite 289.
+
+**How it got to main:** #128 merged from another session with the 2 tests red,
+and this session's own merge pipeline masked the failure locally by piping
+pytest through `tail` (the exit-code rule, violated in a shell one-liner).
+Found while bisecting after clearing the PR queue.
+
+**Flagged, not fixed (the other session's code):** `stage_label` itself has no
+error guard, unlike `pipeline_label` beside it — a pipelines-fetch blip in
+production raises mid-PO-processing on the dupe path.
+
+**Files:** `email/tests/test_po_inbox.py`.
+
+---
 ## 2026-08-25 — NSSA guidelines received: design is not effectiveness (#AP044)
 
 **Roman supplied NSSA's "Promotion Guidelines & Messaging" doc and the Badge
