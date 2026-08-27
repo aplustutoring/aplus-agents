@@ -1031,3 +1031,41 @@ agents:
       on manual dispatch; live needs confirm=LAUNCH. Already-enrolled contacts
       error harmlessly. First use: charter 26/27 re-engagement pilot, 2026-08-18
       (list 3146 -> workflow 1868435042). See ops/messenger/CAMPAIGN-2026-08-17.md.
+
+  # ───────────────────────── Tutor issues ─────────────────────────
+  - id: tutor-issues
+    runtime: github-actions
+    engine: Tutor issues
+    name: Tutor-issue ticketing (sweep + inbound reports + intake)
+    owner: roman@wetutorathome.com
+    status: active           # LIVE 2026-08-26 — baseline stamped same day (0 created, 0 sent)
+    trigger:
+      type: cron
+      schedule: ["0 17 * * 1 (Monday sweep, 09/10 PT)", "0 16,18,20,22,0 * * 1-5 (inbound/intake polls)"]
+      events: [workflow_dispatch]           # inputs: dry_run (default TRUE), mode, force_sweep, probe_lateness
+      workflow: .github/workflows/tutor-issues.yml
+    entrypoint: ops/tutor-issues/tutor_issues.py
+    reads:
+      - Teachworks                           # lessons + employees, BOTH accounts (missed/unmarked proof)
+      - email/state/audit_log.jsonl          # triage classifications (tutor_issue/scheduling/complaint)
+      - HubSpot                              # conversations bodies, contacts (a_persona=Tutors), open tickets
+      - JustCall                             # inbound SMS on monitored lines
+      - Slack                                # #tutor-issues structured intake
+    writes:
+      - HubSpot                              # tickets on TUTOR contact records (category "Tutor Issue")
+      - Slack                                # ONE digest per run + event-driven scheduler notices
+      - ops/tutor-issues/state/
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON, ANTHROPIC_API_KEY, SLACK_BOT_TOKEN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET"
+      - ops/tutor-issues/config.yml
+      - ops/hubspot-schema/properties.yml    # tutor_issue_* ticket properties
+    notes: >
+      Tickets on the tutor's contact record for 5 issue types; owner =
+      Operations role (Mandy); silent internal log in v1 (nothing
+      tutor-facing). Auto-detects only what Teachworks proves (no-shows,
+      unmarked-after-Sunday); family email/SMS reports get a reasoning pass
+      (create + tell the scheduler, or refuse + hand to the scheduler);
+      types 2/4/5 also via structured Slack intake. Guards: baseline-stamp
+      first run, one open ticket per tutor/type/period, one digest per run,
+      hard caps abort loudly, idempotent reruns. Unresolvable tutor = NO
+      ticket, flagged (refusal is a signal, a guess is a landmine).

@@ -38,6 +38,13 @@ FLAGS / MODES:
   CHECK_ONLY=true  CI smoke mode: confirm secrets/config wired, no reads/writes
                    (matches ops/scorecard convention).
 
+EXIT CODES:
+  0  healthy run — including a quiet day (no calls) or a day where every call
+     was legitimately skipped (hang-up / no recording / no transcript).
+  1  every call the run attempted raised (0 successes, >=1 failure). The digest
+     still posts and state is still saved; the nonzero exit is what wakes the
+     Actions retry sweeper. A private Slack alert fires alongside it.
+
 JustCall API notes (verified against developer.justcall.io, 2026-07):
   - GET /v2.1/calls               list; call_direction=Incoming, from/to_datetime,
                                   justcall_number, page/per_page (max 100).
@@ -1926,6 +1933,17 @@ def main():
              f"{len(failures)} failed, {n_missed} missed-call alert{'s' if n_missed != 1 else ''}, "
              f"{n_spam} likely-spam abandoned suppressed")
 
+    # Health verdict for the exit code. process_call failures are caught per
+    # call so one bad call can't kill the run — but that also meant a run where
+    # EVERY call blew up still exited 0 and the Actions retry sweeper stayed
+    # quiet (correction 2026-08-20). Skips (hang-up, no recording, no
+    # transcript) are normal outcomes, not failures, so an all-skips day is
+    # still a healthy run; only "we attempted work and nothing but exceptions
+    # came back" is a broken one.
+    attempted = len(entries) + len(skipped) + len(failures)
+    succeeded = len(entries)
+    zero_success = bool(failures) and succeeded == 0
+
     # Digest: pending entries/skips/failures from earlier --no-digest runs
     # flush with this one.
     all_entries = state.get("pending_digest", []) + entries
@@ -1972,6 +1990,24 @@ def main():
     if not args.dry_run:
         state["last_run_utc"] = now_utc.isoformat()
         save_state(state, cfg["state"]["path"], cfg["state"]["max_processed_ids"])
+
+    # Digest and state are already handled above — fail loudly only at the end,
+    # so a broken run still reports what it saw and stays idempotent.
+    if zero_success:
+        log.error(f"RUN FAILED — 0/{attempted} calls succeeded "
+                  f"({len(failures)} failed, {len(skipped)} skipped)")
+        alert = (f":rotating_light: *Call agent: 0/{attempted} calls succeeded* "
+                 f"({len(failures)} failed, {len(skipped)} skipped) — {run_date_pt} run")
+        alert_channel = cfg["slack"]["alert_channel"]
+        if args.dry_run or not alert_channel:
+            log.info(f"  zero-success alert"
+                     f"{' (DRY RUN)' if args.dry_run else ' (alert_channel unset)'}:\n{alert}")
+        else:
+            try:  # the exit code is the real signal; Slack is best-effort
+                post_to_slack(alert, alert_channel)
+            except Exception as e:
+                log.warning(f"  zero-success alert post failed: {e}")
+        sys.exit(1)
 
     log.info("Call agent run complete.")
 
