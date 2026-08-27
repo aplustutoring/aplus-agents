@@ -7,6 +7,23 @@ from src import deal_sync as dsy_mod, gmail_client as gmc, po_inbox as po
 
 
 @pytest.fixture(autouse=True)
+def _reset_run_seq():
+    # 'School N' numbering is RUN-scoped (module-level _RUN_SEQ) — clear it so
+    # each test counts from its own mocked search results.
+    po._RUN_SEQ.clear()
+    yield
+    po._RUN_SEQ.clear()
+
+
+@pytest.fixture(autouse=True)
+def _default_student_search(monkeypatch):
+    # _next_school_seq now searches by student NAME PROPERTIES; default to no
+    # history so legacy tests keep N=1. Seq tests override with real rows.
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda first, last=None: [], raising=False)
+
+
+@pytest.fixture(autouse=True)
 def _stub_immediate_tw_sync(monkeypatch):
     # _handle_deal chains straight into the Teachworks sync — stub it so these
     # tests stay unit-scoped (deal_sync has its own suite).
@@ -424,7 +441,7 @@ def test_missing_grade_flagged_for_manual_fill(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
     notes = []
     po._handle_deal(_po(), notes)   # no grade in the PO
-    assert any("Not in the PO: grade" in n for n in notes)
+    assert any("not resolvable from records: grade" in n for n in notes)
 
 
 def test_no_upcoming_lessons_posts_to_channel(monkeypatch):
@@ -747,8 +764,9 @@ def test_deal_name_parent_student_school_seq_year(monkeypatch):
 def test_deal_name_seq_counts_existing_school_year_deals(monkeypatch):
     # student already has "iLead 1" this school year → the new deal is "iLead 2"
     created = []
-    monkeypatch.setattr(po.hs, "search_deals_by_name",
-                        lambda t, p=None, s=None: [_deal("D0", "Maria Diaz - Ana Diaz - iLead 1 - 26/27")])
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda first, last=None: [_deal("D0", "Maria Diaz - Ana Diaz - iLead 1 - 26/27")])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C1", "properties":
                                                     {"firstname": "Maria", "lastname": "Diaz"}})
@@ -1398,7 +1416,9 @@ def test_hours_stated_never_overwritten(monkeypatch):
     assert captured[0]["number_of_hours_in_this_po"] == "10"
 
 
-def test_no_rate_no_computation(monkeypatch):
+def test_no_rate_unique_offering_fit_computes(monkeypatch):
+    # no rate stated, $150 divides cleanly ONLY at $75/hr (2.5 sessions at
+    # $60 isn't whole) → hours filled at the standard offering, noted as such
     captured = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "create_deal",
@@ -1406,8 +1426,49 @@ def test_no_rate_no_computation(monkeypatch):
                         captured.append(extra_props) or {"id": "D1"})
     notes = []
     po._handle_deal(_po(hours="", rate="", amount="150"), notes)
+    assert captured[0]["number_of_hours_in_this_po"] == "2"
+    assert any("standard" in n and "$75/hr" in n for n in notes)
+
+
+def test_no_rate_ambiguous_amount_stays_blank(monkeypatch):
+    # $300 = 4 hrs at $75/hr OR 5 sessions (3.75 hrs) at $60/session — both
+    # fit, so hours stay BLANK and the ambiguity is flagged (never guessed)
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="", amount="300"), notes)
     assert "number_of_hours_in_this_po" not in captured[0]
-    assert not any("Hours computed" in n for n in notes)
+    assert any("fits more than one offering" in n for n in notes)
+
+
+def test_no_rate_no_offering_fit_stays_blank(monkeypatch):
+    # $158 matches neither offering → blank + flagged for manual fill
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="", amount="158"), notes)
+    assert "number_of_hours_in_this_po" not in captured[0]
+    assert any("matches no standard offering" in n for n in notes)
+
+
+def test_session_rate_converts_to_hours(monkeypatch):
+    # $60 per 45-min SESSION: a $240 PO = 4 sessions = 3 HOURS on the deal
+    # (Roman, 2026-08-26: hours is always hours — a 4-session PO stamps 3)
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    notes = []
+    po._handle_deal(_po(hours="", rate="60", rate_unit="session", amount="240"), notes)
+    assert captured[0]["number_of_hours_in_this_po"] == "3"
+    assert any("4 sessions" in n for n in notes)
 
 
 def test_fractional_hours_computed(monkeypatch):
@@ -1467,29 +1528,32 @@ def test_missing_tor_flagged_for_manual_fill(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D22"})
     notes = []
     po._handle_deal(_po(), notes)   # no TOR in the PO at all
-    missing = [n for n in notes if "Not in the PO" in n]
+    missing = [n for n in notes if "not resolvable from records" in n]
     assert missing and "tor_name" in missing[0] and "tor_email" in missing[0]
 
 
 def test_multi_po_seq_base_counted_once(monkeypatch):
     # the Zackarias 1,2,4,7,9 bug: the search index catches up mid-run and
-    # re-counting per sibling inflates N — the base must be searched ONCE
-    calls = {"n": 0}
-    def growing_index(t, p=None, s=None):
-        if t != "Zack":          # only the student-name seq search sees the index
-            return []
-        out = [_deal(f"D{i}", f"Mari - Zack - iLead {i + 1} - 26/27")
-               for i in range(calls["n"])]
-        calls["n"] += 1          # each later search finds one more just-created sibling
-        return out
+    # re-counting per sibling inflates N — the base is searched ONCE per
+    # (student, school, year) run key; siblings never re-search. The index
+    # 'grows' as deals are created, but only a re-search could see that.
+    index: list = []
+    searches = {"n": 0}
+    def live_index(first, last=None):
+        searches["n"] += 1
+        return list(index) if first == "Zack" else []
     created = []
-    monkeypatch.setattr(po.hs, "search_deals_by_name", growing_index)
+    def create(name, pl, st, amt=None, **k):
+        created.append(name)
+        index.append(_deal(f"D{len(index)}", name))   # index catches up mid-run
+        return {"id": "D"}
+    monkeypatch.setattr(po.hs, "search_deals_by_student", live_index)
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C1", "properties":
                                                     {"firstname": "Mari", "lastname": "Barajas"}})
-    monkeypatch.setattr(po.hs, "create_deal",
-                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    monkeypatch.setattr(po.hs, "create_deal", create)
     po._handle_deal(_po(student_first="Zack", student_last="Barajas",
                         po_number="", parent_email="mom@x.com", pos=[
         {"po_number": "A1", "amount": "100", "po_month": "2026-08"},
@@ -1497,6 +1561,7 @@ def test_multi_po_seq_base_counted_once(monkeypatch):
         {"po_number": "A3", "amount": "100", "po_month": "2026-10"}]), [])
     seqs = [n.split(" - ")[2] for n in created]
     assert seqs == ["iLead 1", "iLead 2", "iLead 3"]   # contiguous, no gaps
+    assert searches["n"] <= 2   # one seed (+ the first-name-only fallback), never per sibling
 
 
 # ── TOR self-healing (Mary Nieves SMS incident, 2026-08-13) ──────────────────
@@ -2008,3 +2073,98 @@ def test_find_family_by_student_prefers_lessons_and_tutor(monkeypatch):
                         [{"id": 2, "first_name": "Matthew", "last_name": "Rose", "customer_id": 20}]
                         if e == "students" else [])
     assert twc.find_family_by_student("Matthew", "Rose") is None
+
+
+# ── 2026-08-26 refinements: run-scoped numbering, cancellations, scrub ──
+
+def test_seq_continues_across_emails_same_run(monkeypatch):
+    # the McGraw double-1,2,3 bug: two PO emails 30s apart in ONE run — the
+    # search index can't see the first email's deals yet, but the run-scoped
+    # counter must keep counting 3, 4 instead of restarting at 1
+    monkeypatch.setattr(po.hs, "search_deals_by_student", lambda f, l=None: [])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties":
+                                                    {"firstname": "Maria", "lastname": "Diaz"}})
+    created = []
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D"})
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
+        {"po_number": "B1", "amount": "150", "po_month": "2026-08"},
+        {"po_number": "B2", "amount": "150", "po_month": "2026-09"}]), [])
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", pos=[
+        {"po_number": "B3", "amount": "150", "po_month": "2026-10"},
+        {"po_number": "B4", "amount": "150", "po_month": "2026-11"}]), [])
+    seqs = [n.split(" iLead ")[1].split(" ")[0] for n in created]
+    assert seqs == ["1", "2", "3", "4"]
+
+
+def _cancel_po(**kw):
+    base = {"is_po": False, "is_cancellation": True, "po_number": "1433577",
+            "billable_stated": "0", "school": "Ocean Grove",
+            "summary": "Service PO Cancellation, 0 sessions billable"}
+    base.update(kw)
+    return base
+
+
+def _stopped_pipeline(monkeypatch):
+    monkeypatch.setattr(po.hs, "find_stop_stage",
+                        lambda pl, pats: ("13267787", "Stopped"))
+
+
+def test_cancellation_zeroes_and_stops_deal(monkeypatch):
+    patched, notes_added, dms, tasks = [], [], [], []
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [
+        {"id": "D9", "properties": {"dealname": "P - S - OG 1 - 26/27",
+                                    "pipeline": "907748", "dealstage": "907749",
+                                    "amount": "90", "hubspot_owner_id": "80047202",
+                                    "invoice__": "54321"}}])
+    _stopped_pipeline(monkeypatch)
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, p, b=None: patched.append((m, p, b)) or {"id": "X"})
+    monkeypatch.setattr(po.hs, "add_deal_note", lambda d, b, **k: notes_added.append(b) or {})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda s, b, o, due, priority=None: tasks.append((s, priority)) or {})
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)) or {"ok": True})
+    notes = []
+    po._handle_cancellation(_cancel_po(), notes)
+    deal_patch = next(b for m, p, b in patched if p.endswith("/deals/D9"))
+    assert deal_patch["properties"]["amount"] == "0"
+    assert deal_patch["properties"]["number_of_hours_in_this_po"] == "0"
+    assert deal_patch["properties"]["dealstage"] == "13267787"
+    assert notes_added and "CANCELLED" in notes_added[0]
+    assert any("54321" in t for _, t in dms)          # invoice number in the alert
+    assert tasks and tasks[0][1] == "HIGH"            # void-invoice task for Kath
+    assert any("CANCELLED" in n for n in notes)
+
+
+def test_partial_cancellation_touches_nothing(monkeypatch):
+    patched, dms = [], []
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [
+        {"id": "D9", "properties": {"dealname": "P - S - OG 1 - 26/27",
+                                    "pipeline": "907748", "dealstage": "907749",
+                                    "amount": "300", "hubspot_owner_id": ""}}])
+    _stopped_pipeline(monkeypatch)
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, p, b=None: patched.append((m, p)) or {"id": "X"})
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append(t) or {"ok": True})
+    notes = []
+    po._handle_cancellation(_cancel_po(billable_stated="3"), notes)
+    assert not any(p.endswith("/deals/D9") for m, p in patched)   # no mutation
+    assert any("PARTIAL" in n for n in notes)
+    assert dms and all("manual" in t for t in dms)
+
+
+def test_cancellation_without_matching_deal_flags(monkeypatch):
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    notes = []
+    po._handle_cancellation(_cancel_po(), notes)
+    assert any(n.startswith("⚠️") and "NO deal" in n for n in notes)
+
+
+def test_outbound_scrub_removes_em_dashes():
+    from src import gmail_client as g
+    out = g._scrub_outbound("Thanks — we will resubmit -- next week.")
+    assert "—" not in out and "--" not in out
+    assert "Thanks, we will resubmit" in out
