@@ -37,25 +37,33 @@ def norm_number(p: str) -> str:
     return d[-10:] if len(d) >= 10 else ""
 
 
+class JustCallUnavailable(RuntimeError):
+    """The API could not be read. Raised rather than returning an empty index,
+    because 'no texts exist' and 'we could not fetch the texts' lead to opposite
+    conclusions — on 2026-08-26 a swallowed 400 produced 156 ticket verdicts
+    with the whole SMS trail missing and nothing said so."""
+
+
 def _pull(kind: str, since_days: int) -> list[dict]:
     if not os.getenv("JUSTCALL_API_KEY"):
-        return []
-    now = datetime.now(timezone.utc)
-    start = now - timedelta(days=min(since_days, MAX_LOOKBACK_DAYS))
+        raise JustCallUnavailable("JUSTCALL_API_KEY is not set")
+    start = datetime.now(timezone.utc) - timedelta(days=min(since_days, MAX_LOOKBACK_DAYS))
     out, page = [], 0
     while page <= 90:
         try:
+            # from_datetime ONLY. Sending to_datetime as UTC-now fails whenever
+            # UTC has rolled past the account's local midnight: JustCall answers
+            # "to_datetime cannot be in the future" and the whole pull dies.
             r = requests.get(f"{BASE}/{kind}", headers=_headers(), timeout=40,
                              params={"per_page": 100, "page": page,
-                                     "from_datetime": start.strftime("%Y-%m-%d 00:00:00"),
-                                     "to_datetime": now.strftime("%Y-%m-%d %H:%M:%S")})
-        except requests.RequestException:
-            return out
+                                     "from_datetime": start.strftime("%Y-%m-%d 00:00:00")})
+        except requests.RequestException as e:
+            raise JustCallUnavailable(f"{kind}: {e}") from e
         if r.status_code == 429:
             time.sleep(3)
             continue
         if r.status_code >= 300:
-            return out
+            raise JustCallUnavailable(f"{kind}: HTTP {r.status_code} {r.text[:160]}")
         j = r.json()
         rows = j.get("data") or []
         out += rows
@@ -66,7 +74,11 @@ def _pull(kind: str, since_days: int) -> list[dict]:
 
 
 def index_by_number(since_days: int = 90) -> dict:
-    """{last-10-digits: {"texts": [...], "calls": [...]}} over the window."""
+    """{last-10-digits: {"texts": [...], "calls": [...]}} over the window.
+
+    Raises JustCallUnavailable rather than returning {} when the API cannot be
+    read — the caller must be able to tell a quiet phone from a broken pull.
+    """
     idx: dict = {}
     for t in _pull("texts", since_days):
         n = norm_number(t.get("contact_number"))

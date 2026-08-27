@@ -73,6 +73,8 @@ def gather(ticket: dict, sms_index: dict | None = None) -> dict:
         "agent_filed": subject.startswith(AGENT_PREFIXES),
         "emails": [], "notes": [], "sms": [], "calls": [],
         "invoice_proof": None, "duplicate_of": None,
+        # None means the pull failed, so an empty sms list proves nothing.
+        "phone_evidence": "available" if sms_index is not None else "UNAVAILABLE",
     }
     lm = _ts(p.get("hs_lastmodifieddate"))
     if lm:
@@ -167,6 +169,9 @@ Rules that matter here:
 - Money owed in either direction, complaints, and resignations are BALL_IN_COURT
   unless there is clear evidence they were settled.
 - Later SMS or calls about the same family can supersede an old ticket: say so.
+- `phone_evidence: UNAVAILABLE` means the SMS/call pull FAILED. An empty sms or
+  calls list then proves nothing — never read it as "no contact happened", and
+  never exceed 0.6 confidence on a ticket whose story would live in texts.
 - Only use confidence above 0.85 when a second system proves it.
 Be terse and concrete. Quote what you saw."""
 
@@ -185,9 +190,10 @@ def reason(ev: dict, client=None) -> dict:
 
     client = client or Anthropic(api_key=ANTHROPIC_API_KEY)
     c = cfg()["classifier"]
-    payload = {k: ev[k] for k in
+    payload = {k: ev.get(k) for k in
                ("subject", "description", "age_hours", "quiet_hours",
-                "emails", "notes", "sms", "calls", "invoice_proof")}
+                "emails", "notes", "sms", "calls", "invoice_proof",
+                "phone_evidence")}
     msg = client.messages.create(
         model=c["model"], max_tokens=400, system=SYSTEM,
         messages=[{"role": "user", "content": json.dumps(payload, default=str)[:14000]}])
@@ -253,7 +259,15 @@ def run(dry_run: bool = False, limit: int | None = None) -> dict:
     if limit:
         tickets = tickets[:limit]
     invoiced = hs.invoiced_po_numbers()
-    sms_index = jc.index_by_number(since_days=90)
+    try:
+        sms_index = jc.index_by_number(since_days=90)
+    except jc.JustCallUnavailable as e:
+        # Degraded, not fatal — but it must be LOUD and it must stop the sweep
+        # closing anything. A lot of A+ support happens by text, so without it
+        # "no evidence" is meaningless.
+        print(f"  ⚠️  JustCall unavailable ({e}) — SMS and call evidence is MISSING. "
+              f"Closing is disabled for this run.")
+        sms_index, rc = None, {**rc, "allow_close": False}
 
     evs = [enrich_invoice_proof(gather(t, sms_index), invoiced) for t in tickets]
     evs = mark_duplicates(evs)

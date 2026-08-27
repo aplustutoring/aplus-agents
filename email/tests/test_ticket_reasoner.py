@@ -86,6 +86,80 @@ def test_enrich_only_marks_a_po_that_is_actually_invoiced():
     assert hit["invoice_proof"] and miss.get("invoice_proof") is None
 
 
+def test_failed_phone_pull_is_flagged_not_silently_empty(monkeypatch):
+    """A swallowed JustCall 400 produced 156 verdicts with the whole SMS trail
+    missing on 2026-08-26. An empty sms list must be distinguishable from a
+    failed pull, or the model reads absence as evidence."""
+    monkeypatch.setattr(tr.hs, "get_ticket_emails", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_notes", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_contacts", lambda t: [])
+    assert tr.gather(_ticket(), None)["phone_evidence"] == "UNAVAILABLE"
+    assert tr.gather(_ticket(), {})["phone_evidence"] == "available"
+
+
+def test_phone_outage_disables_closing(monkeypatch):
+    """Degraded evidence must not close tickets."""
+    closed = []
+    monkeypatch.setattr(tr, "cfg", lambda: CFG)
+    monkeypatch.setattr(tr, "staff", lambda k: (CFG["staff"].get(k) or {}))
+    monkeypatch.setattr(tr.hs, "search_open_tickets", lambda: [_ticket()])
+    monkeypatch.setattr(tr.hs, "invoiced_po_numbers", lambda: set())
+    monkeypatch.setattr(tr.hs, "get_ticket_emails", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_notes", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_contacts", lambda t: [])
+    monkeypatch.setattr(tr.hs, "ticket_url", lambda t: "u")
+    monkeypatch.setattr(tr.hs, "update_ticket_stage", lambda t, s: closed.append(t))
+    monkeypatch.setattr(tr.hs, "add_ticket_note", lambda t, b: None)
+    monkeypatch.setattr(tr.audit, "append", lambda r: None)
+    monkeypatch.setattr(tr.audit, "last_reasoner_pester", lambda t: None)
+    monkeypatch.setattr(tr.slack_client, "dm", lambda u, m: None)
+    monkeypatch.setattr(tr, "reason", lambda ev, client=None: HIGH)
+
+    def boom(since_days=90):
+        raise tr.jc.JustCallUnavailable("HTTP 400 to_datetime cannot be in the future")
+
+    monkeypatch.setattr(tr.jc, "index_by_number", boom)
+    out = tr.run(dry_run=False)
+    assert closed == [] and out["closed"] == 0
+
+
+def test_justcall_client_never_sends_to_datetime(monkeypatch):
+    """Sending to_datetime as UTC-now 400s whenever UTC has passed the account's
+    local midnight, which killed the whole pull."""
+    from src import justcall_client as j
+    seen = {}
+
+    class R:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"data": []}
+
+    monkeypatch.setenv("JUSTCALL_API_KEY", "k")
+    monkeypatch.setenv("JUSTCALL_API_SECRET", "s")
+    monkeypatch.setattr(j.requests, "get",
+                        lambda url, **kw: (seen.update(kw.get("params", {})), R)[1])
+    j._pull("texts", 90)
+    assert "from_datetime" in seen and "to_datetime" not in seen
+
+
+def test_justcall_failure_raises_rather_than_returning_empty(monkeypatch):
+    from src import justcall_client as j
+
+    class R:
+        status_code = 400
+        text = "to_datetime cannot be in the future"
+
+    monkeypatch.setenv("JUSTCALL_API_KEY", "k")
+    monkeypatch.setattr(j.requests, "get", lambda url, **kw: R)
+    try:
+        j._pull("texts", 90)
+    except j.JustCallUnavailable:
+        return
+    raise AssertionError("a failed pull must raise, not return []")
+
+
 def test_same_subject_is_not_a_duplicate(monkeypatch):
     """Caught by the 2026-08-26 dry run: two tickets both titled "Eddie Sumlin"
     from one referral partner are DIFFERENT students (CNA support vs a new
