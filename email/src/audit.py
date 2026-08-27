@@ -6,6 +6,8 @@ state/cursor.json      — last processed Conversations position.
 Idempotency: a message_id already present in the audit log is never reprocessed,
 even if the cursor is lost.
 """
+from __future__ import annotations
+
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -51,6 +53,30 @@ def processed_message_ids() -> set[str]:
 
 def already_processed(message_id: str) -> bool:
     return message_id in processed_message_ids()
+
+
+def last_reasoner_pester(ticket_id: str) -> str | None:
+    """When the reasoning sweep last pestered about a ticket, so the ladder holds
+    its cadence instead of re-DMing on every run."""
+    latest = None
+    for r in _iter_records():
+        if r.get("ticket_id") == ticket_id and r.get("action_taken") == "reasoner_pester":
+            ts = r.get("timestamp")
+            if ts and (latest is None or str(ts) > str(latest)):
+                latest = ts
+    return latest
+
+
+def last_aging_nag(ticket_id: str) -> str | None:
+    """Timestamp of the most recent aging nag for a ticket, so the aging sweep
+    can hold to its cadence instead of re-DMing on every hourly run."""
+    latest = None
+    for r in _iter_records():
+        if r.get("ticket_id") == ticket_id and r.get("action_taken") == "aging_nag":
+            ts = r.get("timestamp")
+            if ts and (latest is None or str(ts) > str(latest)):
+                latest = ts
+    return latest
 
 
 def escalation_levels_pinged(ticket_id: str) -> set[int]:

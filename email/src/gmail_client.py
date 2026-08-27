@@ -11,6 +11,7 @@ API controls → Domain-wide delegation. See SETUP.md §7.
 from __future__ import annotations
 
 import base64
+import re
 from email.mime.text import MIMEText
 from functools import lru_cache
 
@@ -62,9 +63,46 @@ def list_messages(query: str, max_results: int = 50) -> list[dict]:
     return out[:max_results]
 
 
-def get_message(msg_id: str) -> dict:
-    """Full message → {id, threadId, sender, subject, date_ms, body}."""
-    m = _get(f"/messages/{msg_id}", {"format": "full"})
+def get_thread(thread_id: str) -> list[dict]:
+    """Every message in a thread, oldest first, as get_message dicts.
+
+    PO tickets carry no HubSpot email engagements — the inbound mail is embedded
+    as a note and any REPLY Kath sends goes out from this Gmail mailbox, so
+    HubSpot never sees it. Reading the thread is the only way to know whether we
+    answered; without it a handled ticket looks abandoned.
+    """
+    t = _get(f"/threads/{thread_id}", {"format": "full"})
+    out = []
+    for m in t.get("messages", []):
+        try:
+            out.append(_parse_message(m))
+        except Exception:  # noqa: BLE001 — one bad part must not lose the thread
+            continue
+    return sorted(out, key=lambda x: x.get("date_ms") or 0)
+
+
+def find_thread(subject: str, sender: str = "", newer_than_days: int = 120) -> str:
+    """Locate a PO thread from what the ticket recorded about it. Returns a
+    thread id, or "" when the search is ambiguous or finds nothing — the caller
+    must treat "" as 'unknown', never as 'no reply was sent'."""
+    subject = re.sub(r'^(re|fwd):\s*', '', (subject or "").strip(), flags=re.I)
+    if not subject:
+        return ""
+    q = f'subject:"{subject[:120]}" newer_than:{newer_than_days}d'
+    if sender and "@" in sender:
+        addr = re.search(r'[\w.+-]+@[\w.-]+', sender)
+        if addr:
+            q += f' from:{addr.group(0)}'
+    try:
+        stubs = list_messages(q, max_results=10)
+    except Exception:  # noqa: BLE001
+        return ""
+    threads = {s.get("threadId") for s in stubs if s.get("threadId")}
+    return threads.pop() if len(threads) == 1 else ""
+
+
+def _parse_message(m: dict) -> dict:
+    """A raw Gmail message resource → the dict shape the agents consume."""
     headers = {h["name"].lower(): h["value"] for h in m.get("payload", {}).get("headers", [])}
 
     def _text(part) -> str:
@@ -87,6 +125,11 @@ def get_message(msg_id: str) -> dict:
             p.get("filename") for p in (m.get("payload", {}).get("parts") or [])
         ),
     }
+
+
+def get_message(msg_id: str) -> dict:
+    """Full message → {id, threadId, sender, subject, date_ms, body}."""
+    return _parse_message(_get(f"/messages/{msg_id}", {"format": "full"}))
 
 
 # Attachment types the PO extractor can read (Claude reads PDFs + images natively).

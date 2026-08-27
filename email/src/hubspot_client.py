@@ -281,6 +281,13 @@ def search_deals_by_name(token: str, pipeline_id: str | None = None,
     return res.get("results", []) if isinstance(res, dict) else []
 
 
+# Deal-level student-name properties. `student_last_name_if_diff_from_parent`
+# exists precisely because the family surname often is NOT the student's, which
+# is the case a parent-surname search can never handle.
+STUDENT_FIRST_PROP = "student_first_name"
+STUDENT_LAST_PROP = "student_last_name_if_diff_from_parent"
+
+
 def search_deals_by_student(first: str, last: str | None = None) -> list[dict]:
     """Deals whose student_first_name (and optionally the last-name property)
     match EXACTLY — the reliable way to pull one student's deal history.
@@ -299,6 +306,23 @@ def search_deals_by_student(first: str, last: str | None = None) -> list[dict]:
             "limit": 100}
     res = _write("POST", "/crm/v3/objects/deals/search", body)
     return res.get("results", []) if isinstance(res, dict) else []
+
+
+def is_family_contact(props: dict, tor_email: str = "") -> bool:
+    """Is this deal contact the FAMILY (not the school's Teacher of Record)?
+
+    A TOR tag alone is not disqualifying: in homeschool charters the parent
+    frequently IS the EF/ES, so they carry both labels (Kristy Doyal, whose
+    a_persona reads "Teacher of Record/EF/ES;Family"). Only a contact tagged TOR
+    and NOT Family is the school's staff.
+    """
+    email = ((props or {}).get("email") or "").strip().lower()
+    if not email or "@" not in email:
+        return False
+    if tor_email and email == tor_email.strip().lower():
+        return False
+    persona = (props or {}).get("a_persona") or ""
+    return not ("Teacher of Record" in persona and "Family" not in persona)
 
 
 def find_deals_by_po_number(po_number: str) -> list[dict]:
@@ -641,6 +665,112 @@ def thread_has_outbound_reply(thread_id: str, exclude_message_id: str | None = N
                 continue
             return True
     return False
+
+
+def search_open_tickets() -> list[dict]:
+    """EVERY open ticket in the portal, whatever created it — the agent, the call
+    agent, or a human in the CRM UI. The SLA chain above walks the audit log, so
+    it only ever sees agent-created tickets; the aging sweep uses this instead so
+    hand-made tickets cannot rot unseen (Roman 2026-08-26: four of his were 96 to
+    135 days old and had never triggered a single ping)."""
+    # `content` matters: on a PO ticket the description carries the summary and
+    # the sender's address, which is the only structured pointer back to the
+    # Gmail thread. Omitting it left the reasoner judging PO tickets with an
+    # empty description (Roman, 2026-08-27).
+    props = ["subject", "content", "hubspot_owner_id", "hs_pipeline_stage",
+             "createdate", "hs_lastmodifieddate"]
+    out, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "hs_is_closed", "operator": "NEQ", "value": "true"}]}],
+            "properties": props, "limit": 100}
+        if after:
+            body["after"] = after
+        res = _get_search("/crm/v3/objects/tickets/search", body)
+        out += res.get("results", [])
+        after = (res.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            return out
+
+
+def _ticket_engagements(ticket_id: str, obj: str, props: list[str],
+                        cap: int = 25) -> list[dict]:
+    """Engagements of one kind attached to a ticket, newest-capped."""
+    try:
+        assoc = _get(f"/crm/v4/objects/tickets/{ticket_id}/associations/{obj}", {"limit": 50})
+    except requests.HTTPError:
+        return []
+    out = []
+    for r in (assoc.get("results") or [])[:cap]:
+        try:
+            d = _get(f"/crm/v3/objects/{obj}/{r['toObjectId']}",
+                     {"properties": ",".join(props)})
+        except requests.HTTPError:
+            continue
+        out.append(d.get("properties") or {})
+    return out
+
+
+def get_ticket_emails(ticket_id: str) -> list[dict]:
+    """Email engagements on a ticket. `hs_email_direction` is EMAIL for outbound
+    and INCOMING_EMAIL for inbound — there is no OUTGOING value, and reading it
+    as one silently makes every ticket look unanswered."""
+    return _ticket_engagements(ticket_id, "emails",
+                               ["hs_email_subject", "hs_email_text",
+                                "hs_email_direction", "hs_timestamp"])
+
+
+def get_ticket_notes(ticket_id: str) -> list[dict]:
+    return _ticket_engagements(ticket_id, "notes", ["hs_note_body", "hs_timestamp"])
+
+
+def get_ticket_contacts(ticket_id: str) -> list[dict]:
+    try:
+        assoc = _get(f"/crm/v4/objects/tickets/{ticket_id}/associations/contacts", {"limit": 10})
+    except requests.HTTPError:
+        return []
+    out = []
+    for r in (assoc.get("results") or [])[:5]:
+        try:
+            out.append(_get(f"/crm/v3/objects/contacts/{r['toObjectId']}",
+                            {"properties": "firstname,lastname,email,phone,mobilephone,a_persona"}))
+        except requests.HTTPError:
+            continue
+    return out
+
+
+def invoiced_po_numbers() -> set[str]:
+    """PO numbers whose deal already carries an Invoice # — proof that step 1
+    (PO → invoice) happened and the ticket is finished work nobody closed.
+
+    Checked against the Teachworks invoice cross-reference on 2026-08-26: both
+    give the same 33-of-36 answer on the open new_po queue, and this one needs a
+    single system and no amount matching to get there.
+    """
+    out, after = set(), None
+    while True:
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "invoice__", "operator": "HAS_PROPERTY"},
+            {"propertyName": "po_number", "operator": "HAS_PROPERTY"}]}],
+            "properties": ["po_number", "invoice__"], "limit": 100}
+        if after:
+            body["after"] = after
+        res = _get_search("/crm/v3/objects/deals/search", body)
+        for d in res.get("results", []):
+            po = ((d.get("properties") or {}).get("po_number") or "").strip()
+            if po:
+                out.add(po)
+        after = (res.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            return out
+
+
+def _get_search(path: str, body: dict) -> dict:
+    """POST to a /search endpoint. Separate from _write so DRY_RUN cannot
+    short-circuit a read (search is a POST but changes nothing)."""
+    r = requests.post(f"{HS_BASE}{path}", headers=_headers(), json=body, timeout=30)
+    r.raise_for_status()
+    return r.json()
 
 
 # ── Setup helpers (used by smoke_test / id discovery) ────────────

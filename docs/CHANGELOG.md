@@ -8,6 +8,310 @@ Newest entries first.
 
 ---
 
+## 2026-08-27 — The reasoner can read the charter@ Gmail thread (#AP-pending)
+
+**What changed**
+- `email/src/gmail_client.py` — new `get_thread()` and `find_thread()`; the
+  message parser factored out as `_parse_message()`.
+- `email/src/ticket_reasoner.py` — new `enrich_gmail_thread()`, run on every
+  PO ticket before reasoning.
+- `email/src/hubspot_client.py` — `search_open_tickets()` now fetches `content`.
+- `.github/workflows/ticket-reasoner.yml` — new, dispatchable, dry-run default.
+- `email/tests/test_ticket_reasoner.py` — 6 more tests.
+
+**Why**
+Roman, 2026-08-27, on the Koby Wells ticket: Kath sent invoice 51832 to Suncoast
+on Aug 17 and the reasoner still reported "no response from us is recorded".
+
+PO tickets carry **zero** HubSpot email engagements by design — po_inbox embeds
+the inbound mail as a NOTE ("The email lives in Gmail, not a HubSpot
+conversation") and every reply Kath sends leaves from the charter@ mailbox,
+which HubSpot never sees. So the sweep was judging 44 of Kath's 97 tickets on
+evidence that structurally cannot contain her outbound work. Its BALL_IN_COURT
+verdicts on that queue were unreliable, and right only by luck where they were
+right at all.
+
+Three defects found while wiring it:
+
+1. `search_open_tickets()` never requested `content`, so `description` was
+   empty on EVERY ticket the sweep has ever looked at — including the sender
+   address that points back to the Gmail thread.
+2. `gather()` flattens note text to a single line, so `Subject:(.+)` swallowed
+   231 characters of message body into the Gmail query. The subject now comes
+   from the TICKET subject, which is the email subject behind a known prefix.
+3. The sender is written two ways ("From: Name <addr>" in the description,
+   "— from Name" in the note), so extraction takes the first real address that
+   is not our own mailbox instead of matching either shape.
+
+`gmail_thread: UNAVAILABLE` is deliberately distinct from an empty thread and
+the model is told to cap confidence at 0.6 on it — an unlocatable thread is not
+evidence that nobody replied.
+
+**Not yet verified against live data.** The Google service-account credential
+exists only as an Actions secret, so the Gmail path cannot run locally. The new
+workflow is how it gets exercised, and `workflow_dispatch` only becomes
+available once this is on the default branch.
+
+**Files touched**
+- `email/src/gmail_client.py`, `email/src/ticket_reasoner.py`
+- `email/src/hubspot_client.py`, `.github/workflows/ticket-reasoner.yml`
+- `email/tests/test_ticket_reasoner.py`, `docs/CHANGELOG.md`
+
+**Verification** — 304 passed (was 298; 6 new).
+
+**Decision log** — candidate: "a ticket's evidence includes the mailbox it
+actually lives in; absent evidence is never read as absence of action."
+
+
+---
+
+## 2026-08-27 — Cron-starvation watchdog + local PO-inbox heartbeat (Roman: "both")
+
+**What:** GitHub's schedule trigger starved the whole fleet today — the PO
+inbox's 9 AM PT window opened and no scheduled run fired for 8.5 hours
+(email-triage 10 hrs stale, call-agent 8, deal-sync 6, all mid-business-day);
+a Lake View PO (105712-C030-LVC) sat unread until a manual dispatch at 10:34.
+Two layers added:
+1. `ops/fleet-health/watchdog/cron_watchdog.py` — runs after every retry
+   sweep (fleet-retry.yml): any watched scheduled workflow silent past its
+   threshold during PT business hours (po-inbox 60 min, triage 90, deal-sync
+   60, call-agent 60) gets a catch-up `workflow_dispatch` (dispatches fire
+   even when cron starves) + ONE Slack alert per episode to the approvers.
+   Reuses sweep.py's gh/alert helpers. Limit: rides the scheduler it watches.
+2. `scripts/po-inbox-heartbeat.sh` + `scripts/launchd/com.aplus.po-inbox-heartbeat.plist`
+   — launchd on Roman's Mac, every 15 min, weekday 07:45-19:15 PT: dispatches
+   email-po-inbox.yml unless a run happened <12 min ago; a failed dispatch
+   DMs the visionary role (token from .env, role from email/config.yaml).
+   Installed to ~/Library/Application Support/aplus/ (repo copy is the
+   template). Covers TOTAL cron starvation, where layer 1 also sleeps.
+**Why:** a PO sitting unread is booked-lesson/invoice latency; retry sweeping
+only sees runs that STARTED — never-started runs were invisible before this.
+**Files:** ops/fleet-health/watchdog/cron_watchdog.py, .github/workflows/
+fleet-retry.yml, scripts/po-inbox-heartbeat.sh, scripts/launchd/….plist.
+**Also:** dispatched catch-up runs for triage/deal-sync/call-agent in session;
+the earlier manual PO-inbox dispatch created the Keesee deal ("Lake View
+Charter School 2" — the #128 numbering fix live) and routed Epic's re-sent
+C&CP as COMPLIANCE/HIGH to Danielle (dispositions live).
+
+---
+
+
+## 2026-08-26 — Ticket routing: call check-ins to Paola, internal fallback names the seat
+
+**What changed**
+- `ops/call_agent/config.yml` — negative-sentiment call check-in ticket
+  `hubspot.ticket.owner`: `roman` → `paola`.
+- `email/config.yaml` — `internal.fallback`: `roman` → `visionary`.
+
+**Why**
+An L10 audit of Roman's 18 open tickets traced where they come from. Two were
+config, not human hand-off:
+
+1. The call agent's follow-up TASK went to `default_task_owner` (Paola, per the
+   2026-08-13 routing decision: "Paola does 100% of follow-up") while the
+   companion check-in TICKET for the same call was hard-wired to Roman four
+   lines below it. One call, two owners. Three such tickets were open on Roman
+   at audit time, 6 to 14 days old. The ticket now follows the task.
+2. `internal.fallback` named a person, which the accountability-chart rule
+   (Roman, 2026-08-14) reserves for the `staff:` block. `fallback` is already in
+   `_ROLE_KEYS`, so `visionary` resolves through `roles:` to the same person
+   today — this is shape, not behavior. Team change now means editing `roles:`
+   only.
+
+Not changed: the email agent's category routing was found CORRECT. business_dev
+and school_partner route to `sales` (Danielle) and complaint/unknown to
+`scheduling_lead` (Mandy), exactly as configured; the audit log confirms every
+ticket was created with the right owner. The 8 that reached Roman were
+reassigned by hand in the CRM afterward. That is a people conversation, not a
+config fix. Likewise SLA escalation never reassigns — `escalation.level3` is
+`operations` (Emily) and the sweep only DMs.
+
+**Files touched**
+- `ops/call_agent/config.yml`
+- `email/config.yaml`
+- `docs/CHANGELOG.md`
+
+**Verification** — `email` suite 247 passed; both configs re-resolved
+(`ticket.owner` == `default_task_owner` == Paola; `internal.fallback` →
+visionary → Roman).
+
+**Decision log** — candidate entry for the A+ Decision Log: "call check-in
+ticket follows the follow-up owner, not the Director." Not yet numbered.
+
+
+---
+
+## 2026-08-26 — Reasoning sweep + the 24-hour pester policy (#AP-pending)
+
+**What changed**
+- `email/src/ticket_reasoner.py` — new. Gathers evidence per open ticket across
+  HubSpot (email direction, notes, contacts) and JustCall (texts, calls), adds
+  the invoice proof, classifies, then closes or pesters.
+- `email/src/justcall_client.py` — new, read-only SMS/call index by number.
+- `email/src/hubspot_client.py` — `get_ticket_emails/notes/contacts`,
+  `invoiced_po_numbers()`.
+- `email/src/audit.py` — `last_reasoner_pester()`.
+- `email/config.yaml` — new `reasoner:` block.
+- `email/tests/test_ticket_reasoner.py` — 21 tests.
+
+**Why**
+Roman asked for a 24-hour pester policy. There was none: the SLA chain fires on
+per-category hours, pings each level once, then goes silent forever, and only
+ever saw agent-filed tickets. But a PURE 24-hour rule is wrong too — measured on
+the live queue it fires 102 DMs, 77 of them to Kath, and most of hers are PO
+tickets whose invoice already exists. Pestering someone about finished work is
+how a bot gets muted. So the trigger is the ticket's real STATE, not its age.
+
+Ladder (Roman 2026-08-26): 24h owner, 48h + supervisor, 96h + last resort, daily
+after. Pesters regardless of who owes the reply.
+
+Closing is double-gated: `allow_close` is OFF, and a close also needs confidence
+>= 0.85. Hard evidence short-circuits the model entirely — an invoiced PO and a
+same-PO duplicate never need a judgment call.
+
+`invoiced_po_numbers()` reads HubSpot's own Invoice # field rather than matching
+Teachworks invoice amounts. Cross-checked on the open queue: identical 33-of-36
+answer, one system instead of two, no ambiguous amount matching.
+
+**What the dry run caught (this is why it was run)**
+`mark_duplicates` originally keyed on subject text as well as PO number, and
+moved to close ticket 45243331980 — one of two tickets both titled "Eddie
+Sumlin" from the same referral partner but for DIFFERENT students (CNA support
+on Saturdays vs a new intake for Kaliyah P). Closing it would have destroyed a
+live referral that has already sat 111 days. Dedup is now PO-number only;
+`source_thread_id` would be the right second key but is populated on zero open
+tickets, same unwritten #AP007 convention as `ticket_source`.
+
+**Dry-run result, 156 open tickets, nothing written**
+BALL_IN_COURT 48, RESOLVED 29, WAITING 24, NO_ACTION 20, UNCLEAR 18, DUPLICATE
+17 → would close 61, pester 86, leave 9. Queue 156 → 95. Checked against the 14
+tickets identified by hand as genuinely unresolved: after the dedup fix it closes
+none of them.
+
+**Files touched**
+- `email/src/ticket_reasoner.py`, `email/src/justcall_client.py`
+- `email/src/hubspot_client.py`, `email/src/audit.py`, `email/config.yaml`
+- `email/tests/test_ticket_reasoner.py`, `docs/CHANGELOG.md`
+
+**Verification** — 292 passed (was 271; 21 new).
+
+**Decision log** — candidates: "tickets are pestered on a 24/48/96h ladder then
+daily, regardless of who owes the reply"; "a ticket is triaged on its evidence,
+not its age"; "only a shared PO number proves two tickets are duplicates."
+
+
+---
+
+## 2026-08-26 — Parent resolution from deal student-name properties (#AP-pending)
+
+**What changed**
+- `email/src/hubspot_client.py` — new `search_deals_by_student()` (matches the
+  deal properties `student_first_name` + `student_last_name_if_diff_from_parent`,
+  first AND last, never first alone) and `is_family_contact()`.
+- `email/src/po_inbox.py` — new `_parent_from_student_deals()`, tried first
+  inside `_find_parent_via_deals()`; the deal-NAME search stays as fallback.
+- `email/conftest.py` — autouse fixture blocking live HTTP in unit tests.
+- `email/tests/test_parent_from_deals.py` — 13 tests.
+
+**Why**
+Roman's idea, 2026-08-26: if a PO names a student, look that name up in the
+DEAL student-name properties. Measured against the 19 deals flagged NEEDS PARENT
+since 2026-08-01, it reaches the correct parent for all nine families and
+resolves 18 of 19 uniquely. It beats both existing lookups because:
+
+- searching contacts by `lastname` assumes the family shares the student's
+  surname. Giada Di Nardo's parent is Leeanne Gonzales (0 matches) and Matthew
+  Rose's is Megan Miller (3 matches, and it picked the wrong one — Dina Rose, a
+  2022 contact — then named five deals after her);
+- searching deal NAMES is text matching over a convention that carries typos:
+  four consecutive Doyal deals read "Copper" while the property reads "Cooper";
+- the old guard rejected a lone surname match unless the parent record already
+  named THAT student, which a new sibling never does. All three Czaja children
+  were flagged despite Angela Czaja being in HubSpot since January.
+
+Two guards, both load-bearing: only a STRICT frequency winner is accepted (a tie
+falls through to NEEDS PARENT), and a first-name-only match is never accepted
+("Cooper" alone spans three unrelated families).
+
+Also fixed: `is_family_contact()` no longer drops a parent tagged Teacher of
+Record. In homeschool charters the parent frequently IS the EF/ES — Kristy
+Doyal's `a_persona` reads "Teacher of Record/EF/ES;Family" — and the old filter
+excluded every TOR-tagged contact, discarding real parents.
+
+**Test-harness fix (found doing the above)**
+`DRY_RUN` only short-circuits WRITES, and `config.py` calls `load_dotenv()` at
+import, so a local test run carried a real HubSpot token and the suite was
+quietly making live API calls; CI was making calls that could only fail. The new
+autouse fixture blocks `requests.*` outright. Suite runtime went 17.02s → 0.27s
+with no test failing, which shows none of that traffic was ever needed.
+
+**Known data bug (not fixed here)**
+Deal `57397570424` is Payton Curtis's but carries
+`student_last_name_if_diff_from_parent = "Doyal"`. That mis-stamp is what drags
+Anita Curtis into Cooper Doyal's candidate set, and similar contamination on the
+Heartland deals is what makes Rayven Holloway tie 7-7. Worth a cleanup pass —
+several things read that field.
+
+**Files touched**
+- `email/src/hubspot_client.py`, `email/src/po_inbox.py`
+- `email/conftest.py`, `email/tests/test_parent_from_deals.py`, `docs/CHANGELOG.md`
+
+**Verification** — 271 passed (was 258; 13 new).
+
+**Decision log** — candidate: "resolve a PO's parent from the deal student-name
+properties, and never guess on a tie." Not yet numbered.
+
+
+---
+
+## 2026-08-26 — Aging sweep: every open ticket gets nagged, not just agent-filed ones
+
+**What changed**
+- `email/src/hubspot_client.py` — new `search_open_tickets()`: every open ticket
+  in the portal, read straight from HubSpot.
+- `email/src/sla_sweep.py` — new `aging_sweep()`, called at the end of `run()`.
+- `email/src/audit.py` — new `last_aging_nag()`; added `from __future__ import
+  annotations` (the new signature uses `str | None` and CI/local run 3.11/3.9).
+- `email/config.yaml` — new `aging_sweep:` block; `internal.fallback`
+  `visionary` → `operations`.
+- `email/tests/test_aging_sweep.py` — 11 tests.
+
+**Why**
+Roman, 2026-08-26, after the L10 audit found four of his tickets aged 96 to 135
+days having never triggered a single ping. Two separate holes:
+
+1. **Coverage.** The escalation chain walks `state/audit_log.jsonl`, so it only
+   sees tickets the email/PO agents created. Tickets made by hand in the CRM and
+   tickets from the call agent were never swept at all. `aging_sweep()` reads
+   HubSpot directly instead.
+2. **It went silent.** `escalation_levels_pinged()` means each level fires once
+   and then never again, so a ticket that survives level 3 is quiet forever no
+   matter how old. The aging sweep re-nags every `repeat_every_days`.
+
+Thresholds (7d owner / 14d + supervisor / 30d + last resort / re-nag weekly) are
+the knob to tune; they are config, not code.
+
+Also locked this session: **Roman does not own support tickets.** Anything that
+would have escalated to him goes to the `operations` seat (Emily), which is why
+`internal.fallback` moved off `visionary`. His 18 open tickets were reassigned
+in HubSpot the same day — agent-routed ones back to the routing-table owner,
+hand-escalated ones to Emily. His open count went 18 → 0.
+
+**Files touched**
+- `email/src/hubspot_client.py`, `email/src/sla_sweep.py`, `email/src/audit.py`
+- `email/config.yaml`, `email/tests/test_aging_sweep.py`, `docs/CHANGELOG.md`
+
+**Verification** — `email` suite 258 passed (was 247; 11 new). A test caught a
+real bug pre-merge: a never-nagged ticket read as "nagged just now" because
+`_days_since(None)` returns 0, which would have silenced the sweep on exactly
+the tickets it exists to catch.
+
+**Decision log** — candidate: "the Director does not own support tickets;
+escalations land on Operations." Not yet numbered.
+
+---
+
+
 ## 2026-08-26 — Tutor-issue ticketing LIVE
 
 **What:** Flip after the verified live baseline (run 33030729514: 0 created,
@@ -22,6 +326,7 @@ sweep types / rolling-30d report types) and the decision-log entry.
 
 **Files:** `ops/tutor-issues/config.yml`, `.github/workflows/tutor-issues.yml`,
 `registry.yml`, `docs/CHANGELOG.md`.
+
 
 ---
 
@@ -55,35 +360,8 @@ notification guards answer the 2026-08-25 aging-sweep near-miss (80 DMs).
 `ops/hubspot-schema/properties.yml`, `registry.yml`,
 `.github/workflows/tutor-issues.yml`, `docs/CHANGELOG.md`.
 
+
 ---
-
-## 2026-08-27 — Cron-starvation watchdog + local PO-inbox heartbeat (Roman: "both")
-
-**What:** GitHub's schedule trigger starved the whole fleet today — the PO
-inbox's 9 AM PT window opened and no scheduled run fired for 8.5 hours
-(email-triage 10 hrs stale, call-agent 8, deal-sync 6, all mid-business-day);
-a Lake View PO (105712-C030-LVC) sat unread until a manual dispatch at 10:34.
-Two layers added:
-1. `ops/fleet-health/watchdog/cron_watchdog.py` — runs after every retry
-   sweep (fleet-retry.yml): any watched scheduled workflow silent past its
-   threshold during PT business hours (po-inbox 60 min, triage 90, deal-sync
-   60, call-agent 60) gets a catch-up `workflow_dispatch` (dispatches fire
-   even when cron starves) + ONE Slack alert per episode to the approvers.
-   Reuses sweep.py's gh/alert helpers. Limit: rides the scheduler it watches.
-2. `scripts/po-inbox-heartbeat.sh` + `scripts/launchd/com.aplus.po-inbox-heartbeat.plist`
-   — launchd on Roman's Mac, every 15 min, weekday 07:45-19:15 PT: dispatches
-   email-po-inbox.yml unless a run happened <12 min ago; a failed dispatch
-   DMs the visionary role (token from .env, role from email/config.yaml).
-   Installed to ~/Library/Application Support/aplus/ (repo copy is the
-   template). Covers TOTAL cron starvation, where layer 1 also sleeps.
-**Why:** a PO sitting unread is booked-lesson/invoice latency; retry sweeping
-only sees runs that STARTED — never-started runs were invisible before this.
-**Files:** ops/fleet-health/watchdog/cron_watchdog.py, .github/workflows/
-fleet-retry.yml, scripts/po-inbox-heartbeat.sh, scripts/launchd/….plist.
-**Also:** dispatched catch-up runs for triage/deal-sync/call-agent in session;
-the earlier manual PO-inbox dispatch created the Keesee deal ("Lake View
-Charter School 2" — the #128 numbering fix live) and routed Epic's re-sent
-C&CP as COMPLIANCE/HIGH to Danielle (dispositions live).
 
 ## 2026-08-26 — PO agent refined off a 6-day audit (Roman session)
 
@@ -147,6 +425,9 @@ scratchpad script Roman ran). **Pipeline config gap flagged to Roman:** Charter
 Trad "Stopped" (13267787) is isClosed=false/10% — cancelled deals pollute the
 forecast; Level Up's is closed/0%. HubSpot-side fix, Roman's call.
 
+---
+
+
 ## 2026-08-26 — Duplicate-PO red-flag detector in the PO day report (Roman)
 
 **What:** `email/src/po_daily_report.py` — every 6 PM PT report now runs a
@@ -162,6 +443,8 @@ find_duplicate_pos() split from fetching for tests.
 enough to spot it, number-level is.
 **Files:** email/src/po_daily_report.py, email/tests/test_daily_summary.py
 (suite 249 green).
+
+---
 
 ## 2026-08-25 — Spotlight reel: delivery no longer gated on `--skip-hubspot`
 
