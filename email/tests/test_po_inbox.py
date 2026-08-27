@@ -122,6 +122,9 @@ def test_multi_match_surfaces(monkeypatch):
 
 def test_po_number_dedupe_blocks_second_deal(monkeypatch):
     created = []
+    # stage_label fetches /crm/v3/pipelines/deals LIVE — unstubbed it 401s in CI
+    # and would hit the real portal on any machine with a token in env.
+    monkeypatch.setattr(po.hs, "stage_label", lambda pipeline, stage: "presented")
     monkeypatch.setattr(po.hs, "search_deals_by_name",
                         lambda t, p=None, s=None: [{"id": "X", "properties": {"dealname": "PCA - Carson - PO 53779"}}])
     monkeypatch.setattr(po.hs, "create_deal",
@@ -1029,6 +1032,9 @@ def test_scheduler_dm_once_per_email_with_pending_flag(monkeypatch):
 
 
 def test_no_scheduler_dm_when_nothing_created(monkeypatch):
+    # stage_label fetches /crm/v3/pipelines/deals LIVE — unstubbed it 401s in CI
+    # and would hit the real portal on any machine with a token in env.
+    monkeypatch.setattr(po.hs, "stage_label", lambda pipeline, stage: "presented")
     # duplicate PO → no deal → no scheduler DM (only the duplicate alert to Kath)
     dms = []
     monkeypatch.setattr(po.hs, "search_deals_by_name",
