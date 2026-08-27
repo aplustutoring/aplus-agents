@@ -52,6 +52,67 @@ ticket follows the follow-up owner, not the Director." Not yet numbered.
 
 ---
 
+## 2026-08-26 — Parent resolution from deal student-name properties (#AP-pending)
+
+**What changed**
+- `email/src/hubspot_client.py` — new `search_deals_by_student()` (matches the
+  deal properties `student_first_name` + `student_last_name_if_diff_from_parent`,
+  first AND last, never first alone) and `is_family_contact()`.
+- `email/src/po_inbox.py` — new `_parent_from_student_deals()`, tried first
+  inside `_find_parent_via_deals()`; the deal-NAME search stays as fallback.
+- `email/conftest.py` — autouse fixture blocking live HTTP in unit tests.
+- `email/tests/test_parent_from_deals.py` — 13 tests.
+
+**Why**
+Roman's idea, 2026-08-26: if a PO names a student, look that name up in the
+DEAL student-name properties. Measured against the 19 deals flagged NEEDS PARENT
+since 2026-08-01, it reaches the correct parent for all nine families and
+resolves 18 of 19 uniquely. It beats both existing lookups because:
+
+- searching contacts by `lastname` assumes the family shares the student's
+  surname. Giada Di Nardo's parent is Leeanne Gonzales (0 matches) and Matthew
+  Rose's is Megan Miller (3 matches, and it picked the wrong one — Dina Rose, a
+  2022 contact — then named five deals after her);
+- searching deal NAMES is text matching over a convention that carries typos:
+  four consecutive Doyal deals read "Copper" while the property reads "Cooper";
+- the old guard rejected a lone surname match unless the parent record already
+  named THAT student, which a new sibling never does. All three Czaja children
+  were flagged despite Angela Czaja being in HubSpot since January.
+
+Two guards, both load-bearing: only a STRICT frequency winner is accepted (a tie
+falls through to NEEDS PARENT), and a first-name-only match is never accepted
+("Cooper" alone spans three unrelated families).
+
+Also fixed: `is_family_contact()` no longer drops a parent tagged Teacher of
+Record. In homeschool charters the parent frequently IS the EF/ES — Kristy
+Doyal's `a_persona` reads "Teacher of Record/EF/ES;Family" — and the old filter
+excluded every TOR-tagged contact, discarding real parents.
+
+**Test-harness fix (found doing the above)**
+`DRY_RUN` only short-circuits WRITES, and `config.py` calls `load_dotenv()` at
+import, so a local test run carried a real HubSpot token and the suite was
+quietly making live API calls; CI was making calls that could only fail. The new
+autouse fixture blocks `requests.*` outright. Suite runtime went 17.02s → 0.27s
+with no test failing, which shows none of that traffic was ever needed.
+
+**Known data bug (not fixed here)**
+Deal `57397570424` is Payton Curtis's but carries
+`student_last_name_if_diff_from_parent = "Doyal"`. That mis-stamp is what drags
+Anita Curtis into Cooper Doyal's candidate set, and similar contamination on the
+Heartland deals is what makes Rayven Holloway tie 7-7. Worth a cleanup pass —
+several things read that field.
+
+**Files touched**
+- `email/src/hubspot_client.py`, `email/src/po_inbox.py`
+- `email/conftest.py`, `email/tests/test_parent_from_deals.py`, `docs/CHANGELOG.md`
+
+**Verification** — 271 passed (was 258; 13 new).
+
+**Decision log** — candidate: "resolve a PO's parent from the deal student-name
+properties, and never guess on a tie." Not yet numbered.
+
+---
+
 ## 2026-08-26 — Aging sweep: every open ticket gets nagged, not just agent-filed ones
 
 **What changed**

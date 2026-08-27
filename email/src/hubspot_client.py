@@ -281,6 +281,57 @@ def search_deals_by_name(token: str, pipeline_id: str | None = None,
     return res.get("results", []) if isinstance(res, dict) else []
 
 
+# Deal-level student-name properties. `student_last_name_if_diff_from_parent`
+# exists precisely because the family surname often is NOT the student's, which
+# is the case the parent-surname search can never handle.
+STUDENT_FIRST_PROP = "student_first_name"
+STUDENT_LAST_PROP = "student_last_name_if_diff_from_parent"
+
+
+def search_deals_by_student(student_first: str, student_last: str,
+                            limit: int = 30) -> list[dict]:
+    """Deals whose STUDENT-NAME PROPERTIES name this student (Roman 2026-08-26).
+
+    Beats both existing lookups. Searching contacts by `lastname` assumes the
+    parent shares the student's surname (Giada Di Nardo's parent is Leeanne
+    Gonzales; Matthew Rose's is Megan Miller). Searching DEAL NAMES is text
+    matching over a convention that carries typos — four consecutive Doyal deals
+    are named "…- Copper -…" while the property still reads "Cooper".
+
+    Returns ONLY deals matching first AND last name: a first-name-only match is
+    not evidence ("Cooper" alone spans three unrelated families).
+    """
+    if not student_first or not student_last:
+        return []
+    body = {"filterGroups": [{"filters": [
+        {"propertyName": STUDENT_FIRST_PROP, "operator": "EQ",
+         "value": student_first.strip()}]}],
+        "properties": ["dealname", STUDENT_FIRST_PROP, STUDENT_LAST_PROP,
+                       "pipeline", "dealstage", "createdate"],
+        "limit": limit}
+    res = _get_search("/crm/v3/objects/deals/search", body)
+    sl = student_last.strip().lower()
+    return [d for d in res.get("results", [])
+            if ((d.get("properties") or {}).get(STUDENT_LAST_PROP) or "").strip().lower() == sl]
+
+
+def is_family_contact(props: dict, tor_email: str = "") -> bool:
+    """Is this deal contact the FAMILY (not the school's Teacher of Record)?
+
+    A TOR tag alone is not disqualifying: in homeschool charters the parent
+    frequently IS the EF/ES, so they carry both labels (Kristy Doyal, whose
+    a_persona reads "Teacher of Record/EF/ES;Family"). Only a contact tagged TOR
+    and NOT Family is the school's staff.
+    """
+    email = ((props or {}).get("email") or "").strip().lower()
+    if not email or "@" not in email:
+        return False
+    if tor_email and email == tor_email.strip().lower():
+        return False
+    persona = (props or {}).get("a_persona") or ""
+    return not ("Teacher of Record" in persona and "Family" not in persona)
+
+
 def find_deals_by_po_number(po_number: str) -> list[dict]:
     """Deals whose po_number PROPERTY matches exactly — the canonical PO lookup
     (5k+ deals carry this field; far more reliable than deal-name matching)."""

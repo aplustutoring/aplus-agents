@@ -21,6 +21,7 @@ import json
 import re
 import sys
 import traceback
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 
 from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
@@ -1143,6 +1144,53 @@ def _sweep_pending_pos() -> None:
                       "po_number": (r.get("po_number") or "").strip()})
 
 
+def _parent_from_student_deals(po: dict):
+    """Resolve the parent from the DEAL student-name PROPERTIES (Roman 2026-08-26).
+
+    Tried before the deal-NAME search below because it is the only lookup that
+    survives the two things that actually break parent resolution:
+
+      • the family surname differing from the student's — searching contacts by
+        `lastname` returns nothing for Giada Di Nardo (parent Leeanne Gonzales)
+        and returns the WRONG person for Matthew Rose, where it once matched a
+        2022 contact named Dina Rose and named five deals after her;
+      • typos in the deal name — four consecutive Doyal deals read "Copper"
+        while `student_first_name` still reads "Cooper".
+
+    Measured over the 19 deals flagged NEEDS PARENT since 2026-08-01: 18 resolve
+    to the correct parent, 1 (Rayven Holloway) ties and is deliberately left for
+    a human. Returns (contact, deal_name) or None.
+    """
+    sf = (po.get("student_first") or "").strip()
+    sl = (po.get("student_last") or "").strip()
+    t_email = (po.get("tor_email") or "").strip().lower()
+    if not sf or not sl:
+        return None
+    try:
+        deals = hs.search_deals_by_student(sf, sl)
+    except Exception as e:  # noqa: BLE001 — parent resolution is best-effort
+        print(f"  ⚠️  student-property parent lookup failed (non-fatal): {e}")
+        return None
+    tally, seen = Counter(), {}
+    for d in deals[:8]:
+        for c in hs.get_deal_contacts(d["id"]):
+            if not hs.is_family_contact(c.get("properties") or {}, t_email):
+                continue
+            cid = str(c.get("id"))
+            tally[cid] += 1
+            seen[cid] = (c, (d.get("properties") or {}).get("dealname", "?"))
+    if not tally:
+        return None
+    ranked = tally.most_common()
+    # A STRICT winner only. A tie means either two families share the student
+    # name or a deal is mis-stamped (deal 57397570424 is Payton Curtis's but
+    # carries student_last_name "Doyal"), and guessing would name the deal —
+    # and address the family's SMS — after the wrong parent.
+    if len(ranked) > 1 and ranked[0][1] == ranked[1][1]:
+        return None
+    return seen[ranked[0][0]]
+
+
 def _find_parent_via_deals(po: dict):
     """POs typically DON'T include parent info — Kath's manual fix was to
     look the student up in HubSpot and read the parent off their prior deal
@@ -1152,6 +1200,11 @@ def _find_parent_via_deals(po: dict):
     deals' non-TOR contacts — a UNIQUE parent across matches resolves it;
     anything ambiguous falls through to the last-name search, then manual.
     Returns (contact, deal_name) or None."""
+    # Structured student-name properties first; the deal-NAME search below is
+    # the fallback for deals that predate those properties being filled.
+    via_props = _parent_from_student_deals(po)
+    if via_props:
+        return via_props
     sf = (po.get("student_first") or "").strip()
     sl = (po.get("student_last") or "").strip().lower()
     t_email = (po.get("tor_email") or "").strip().lower()
@@ -1167,10 +1220,7 @@ def _find_parent_via_deals(po: dict):
         for d in narrowed[:6]:
             for c in hs.get_deal_contacts(d["id"]):
                 props = c.get("properties") or {}
-                em = (props.get("email") or "").lower()
-                if t_email and em == t_email:
-                    continue                      # the TOR is on deals too — never the parent
-                if "Teacher of Record" in (props.get("a_persona") or ""):
+                if not hs.is_family_contact(props, t_email):
                     continue
                 parents[str(c.get("id"))] = (c, (d.get("properties") or {}).get("dealname", "?"))
         if len(parents) == 1:
