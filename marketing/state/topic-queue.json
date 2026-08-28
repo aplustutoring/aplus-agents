@@ -1,87 +1,76 @@
 {
-  "current_week": "2026-08-20",
+  "current_week": "2026-08-28",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "California's Title III EL RFA is live \u2014 the money is on the table, and most of our partners aren't reaching for it",
-      "category": "A (Federal/state K-12 funding) \u2014 **from the lens**",
-      "sources": [],
-      "why_matters": "Five active partners (Ocean Grove, South Sutter, Visions, Heartland, Pacific Coast Academy) have confirmed Title III Immigrant receipt; 18 partners have never applied; two schools on the pipeline (Community Collaborative Charter, Cabrillo Point) have unspent Title III Immigrant funds sitting there. An RFA release with an application window is the single most actionable Category A signal of the past two weeks, and it lands during a federal moment where \"the proposed 2025\u20132026 federal budget would eliminate Title III entirely, cutting almost $890 million in supports for MLs\" \u2014 meaning California's state-administered Title III window may be the last clean draw before federal contraction.",
-      "angle": "\"The Title III RFA is live. Here's the 3-question checklist every EL coordinator should run this week.\" Anchor to A+'s LTEL reclassification case data.",
-      "roman_take": "The compliance angle is a distraction \u2014 the real question is whether your intervention plan can *spend the money on something that reclassifies kids*, because Title III's political runway is shrinking and unspent dollars are the fastest way to lose future access.",
-      "danielle_take": "Walk through the practical Title III workflow \u2014 application timing, allowable use categories, and how to structure a small-group EL intervention scope that survives a CARS audit.",
-      "redundancy_max_similarity": 0.6525275249517798,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-08-22T08:33:15.153832-07:00",
-      "post_date": "2026-08-24",
-      "bundle_dir": "aplus-content/2026-08-24-california-title-iii-el-rfa",
-      "hubspot_post_id": "220083313691"
+      "headline": "Title I oversight moves from U.S. Department of Education to Department of Labor \u2014 what this means for California charter funding (LIKELY NEW)",
+      "category": "A (federal funding)",
+      "sources": [
+        "https://edsource.org/2026/california-title-i-funding-shift/749281"
+      ],
+      "why_matters": "California educates more low-income students than any state in the nation, and millions of children rely on federal Title I funding for early literacy, tutoring, bilingual instruction, counseling and after-school programs. Those dollars have flowed through a governance system designed to align federal education policy with state agencies, county offices of education and local school districts for decades, and the Trump administration's decision to move oversight of Title I from the U.S. Department of Education to the Department of Labor is not a routine bureaucratic adjustment. Every A+ Tier A partner that receives Title I is exposed to this shift. This is the story special programs coordinators are already asking about.",
+      "angle": "Plain-English translation of what the DOL move actually changes for California charters \u2014 timing of allocations, reporting expectations, and where risk sits in the next disbursement cycle.",
+      "roman_take": "The conviction cut \u2014 governance disruption is not an excuse to slow intervention; it's the reason to lock in evidence-based tutoring now, before compliance ambiguity eats the school year.",
+      "danielle_take": "The implementation cut \u2014 the four operational questions a charter director should be asking her business office this week about Title I FY26-27 flow, and how to keep intervention plans on track through the transition.",
+      "redundancy_max_similarity": 0.5508332820424889,
+      "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "iLEAD Flex opens as the 7th school in the iLEAD network \u2014 NCB moratorium lift is now producing real charter expansion",
-      "category": "C (Tier A partner expansion \u2014 iLEAD network) + A (state charter policy)",
+      "headline": "iLEAD's 7th school clears Antelope Valley Union HSD \u2014 expansion inside a low-proficiency district",
+      "category": "C (partner news, Tier A) \u2014 also intersects Tier C prospect Antelope Valley Learning Academy",
       "sources": [
         "https://www.avpress.com/news/district-board-grants-approval-to-ilead-flex/article_92bad1f1-c392-4a2c-ad41-1e8dfd841dcb.html",
-        "https://www.prnewswire.com/news-releases/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster-302804663.html"
+        "https://www.morningstar.com/news/pr-newswire/20260618cl83853/ilead-schools-and-school-pathways-expand-their-partnership-with-the-launch-of-ilead-flex-in-lancaster",
+        "https://www.usnews.com/education/k12/california/ilead-lancaster-charter-232554"
       ],
-      "why_matters": "iLEAD is a Tier A partner (iLEAD Hybrid, Online, Exploration, Lancaster, Antelope Valley \u2014 plus APLUS+ member). The Antelope Valley Union High School District board unanimously approved the charter petition for iLEAD Flex, the seventh school in the iLEAD network, integrating project-based curriculum with social-emotional learning across a tuition-free TK-12 model. The California moratorium on new non-classroom-based (NCB) charter schools was lifted this year, and iLEAD is now expanding into new communities under its tuition-free TK-12 model spanning classroom-based, hybrid, online, and independent home study. This is a direct partner-expansion signal in a cluster A+ already serves, and it opens a warm door on intervention services for the new site.",
-      "angle": "Celebrate iLEAD's expansion as evidence that flex-based, learner-centered charter models are meeting real demand in Lancaster \u2014 and remind the market what strong intervention plumbing has to be in place from day one at a new NCB site.",
-      "roman_take": "The NCB moratorium lift is a stress test \u2014 networks that scale without ESSA-aligned Tier 2/3 intervention baked into the launch will hit an accountability wall by year two.",
-      "danielle_take": "When a new NCB campus opens in August, the operational question isn't \"do we have tutoring vendors?\" \u2014 it's \"is our intervention delivery documented to the standard CARS will ask for next spring?\" \u2014 and here's how iEM partners already have that answer.",
-      "redundancy_max_similarity": 0.7441688977844084,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-08-22T09:00:21.055760-07:00",
-      "post_date": "2026-08-26",
-      "bundle_dir": "aplus-content/2026-08-26-ilead-flex-ncb-charter-approval",
-      "hubspot_post_id": "220086263573"
+      "why_matters": "iLEAD is a Tier A partner across multiple locations, and the Antelope Valley Union High School District board unanimously approved the charter petition for iLEAD Flex. As the seventh school in the iLEAD network, iLEAD Flex aims to integrate a robust project-based curriculum with social-emotional learning, offering tuition-free TK-12 public education. That's a Tier A partner adding a new school inside a community where the existing Ilead Lancaster Charter serves 795 students K-8, and 10% of students scored at or above the proficient level for math, and 17% scored at or above that level for reading (US News, drawing on state-reported data). Expansion into a proficiency gap this wide is a live intervention story, and Antelope Valley Learning Academy (Tier C prospect, CSI Grad status) sits in the same catchment.",
+      "angle": "New iLEAD school opening in Lancaster in August 2026 \u2014 celebrate the expansion, then reframe the moment as \"expansion is Day 1; the intervention plan is Day 30.\" Position A+ as the partner iLEAD-family schools already trust for high-dosage tutoring in ELA and math.",
+      "roman_take": "Conviction angle \u2014 the charter movement's job is not just to open more seats but to prove those seats produce readers and math thinkers; expansion is the easy part, reclassification and proficiency are the scoreboard.",
+      "danielle_take": "Implementation angle \u2014 what a Year 1 charter should build into its intervention stack from Day 1 (MTSS scaffolding, NWEA baseline, Title I/II/III braid, small-group tutoring cadence) so it doesn't inherit its neighbor's proficiency gap.",
+      "redundancy_max_similarity": 0.6811799764202109,
+      "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "Varsity Tutors just walked away from the K-12 schools market. What that tells charter directors about the \"platform tutoring\" bet.",
-      "category": "D (industry/competitor moves)",
+      "headline": "Varsity Tutors for Schools shut down \u2014 and the reason cited was evidence",
+      "category": "D (industry/competitor moves) \u2014 primary lens hit",
       "sources": [
-        "https://marketbrief.edweek.org/education-market/varsity-tutors-for-schools-exit-hints-at-shift-in-tutoring-market/2026/08"
+        "https://www.the74million.org/article/major-virtual-tutoring-provider-shuts-down-experts-cite-lack-of-evidence/",
+        "https://govspend.com/blog/varsity-tutors-for-schools-shuts-down-where-online-tutoring-demand-goes-next/"
       ],
-      "why_matters": "At the end of July, Varsity Tutors \u2014 one of the nation's largest virtual tutoring providers \u2014 told its school customers it would discontinue Varsity for Schools effective immediately, and in a shareholder letter said the decision would let it shift focus back to its original consumer model selling directly to parents and college students. Matthew Kraft, a Brown University education and economics professor who has studied and evaluated tutoring programs serving public school districts, said the move signals a shift in the tutoring market that K-12 will continue to see unfold. This is the single highest-differentiation moment A+ will get all quarter: a top-of-market competitor is publicly admitting the mass-virtual, platform-tutoring model doesn't work well enough in schools to keep running. A+ has spent years building the opposite model \u2014 embedded, human, relationship-based, tied to Title III and MTSS. Charter directors reading this news are asking themselves right now: \"What does our tutoring vendor's business model actually incentivize them to do next year?\" A+ has an answer only A+ can credibly give.",
-      "angle": "\"The country's biggest virtual tutoring platform just told districts it's done. Here's what we think that means for charter schools that are still building their intervention model for 25-26.\" Then a short list of what to look for in a partner that isn't structured around the same exit incentives.",
-      "roman_take": "Conviction cut \u2014 \"This is what happens when the growth story matters more than the student. Charter schools were the harder customer, so they got dropped. We built A+ the opposite way.\" Direct, no hedging.",
-      "danielle_take": "Implementation cut \u2014 What she's already telling her partner schools (Ocean Grove, South Sutter, Visions, Heartland, Pacific Coast Academy) about vendor risk when Title III and Title I dollars are on the line, and the operational questions a Special Programs Coordinator should be asking their current tutoring provider this month. ---",
-      "redundancy_max_similarity": 0.5641963249382891,
-      "redundancy_bypassed": false,
-      "staged": true,
-      "staged_at": "2026-08-22T09:17:43.110342-07:00",
-      "post_date": "2026-08-28",
-      "bundle_dir": "aplus-content/2026-08-28-varsity-tutors-k12-exit-charter",
-      "hubspot_post_id": "220086263925"
+      "why_matters": "This is the strongest differentiation moment of the year for any intervention provider that actually has data. Varsity Tutors for Schools saw a steep decline in business as pandemic aid ran out and districts demanded more proof of learning gains for students, and Nerdy's projected revenue drop was $12 million to $15 million with $2 million to $4 million in exit-related costs from canceling contracts early. There is also a direct partner-cluster tie: Antelope Valley Union High School District's $1,499,900 agreement ran through May 31, 2026, before the shutdown \u2014 that district's geography overlaps A+'s iLEAD footprint and our Tier C prospect Antelope Valley Learning Academy.",
+      "angle": "The market just answered the \"does evidence matter?\" question. A+ posts what our LTEL reclassification and NWEA growth data actually look like, side by side with the industry standard of \"minutes logged.\"",
+      "roman_take": "Conviction post \u2014 the tutoring industry spent five years mistaking scale for effectiveness, and the bill just came due. Districts are not anti-tutoring; they are anti-vague.",
+      "danielle_take": "Implementation post \u2014 what a charter director should ask their next tutoring vendor on Monday morning (reclassification rate targets, per-student progress reporting cadence, exit criteria). Concrete replacement-vendor checklist. ---",
+      "redundancy_max_similarity": 0.4280703963052539,
+      "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1787275829.206459",
-    "posted_at": "2026-08-20T18:25:27.928018-07:00",
+    "message_ts": "1787912469.982629",
+    "posted_at": "2026-08-28T03:15:49.571240-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1787275829.392169"
+        "ts": "1787912470.086239"
       },
       {
         "slot": 2,
-        "ts": "1787275829.614819"
+        "ts": "1787912470.212679"
       },
       {
         "slot": 3,
-        "ts": "1787275829.871229"
+        "ts": "1787912470.334369"
       }
     ],
     "processed_reply_ts": []
@@ -90,7 +79,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-08-20T18:25:27.928018-07:00",
+    "approved_at": "2026-08-28T03:15:49.571240-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null

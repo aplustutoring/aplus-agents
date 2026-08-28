@@ -1388,6 +1388,22 @@
       "brand_pass": true,
       "seo_issues": 0,
       "flags": []
+    },
+    {
+      "ts": "2026-08-28T03:15:49.571240-07:00",
+      "kind": "topic_gen",
+      "week": "2026-08-28",
+      "lenses": [
+        "policy_funding_hawk",
+        "target_school_radar",
+        "competitive_intel"
+      ],
+      "topics_produced": 3,
+      "topics_rejected_redundant": 0,
+      "topics_posted": 3,
+      "refresh_mode": false,
+      "slack_channel": "C0B4K9K0162",
+      "slack_ts": "1787912469.982629"
     }
   ]
 }
