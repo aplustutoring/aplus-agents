@@ -54,7 +54,8 @@
     "Ev0BSP7NU5K8",
     "Ev0BST53E6UR",
     "Ev0BSR8D381G",
-    "Ev0BUBFTBNL8"
+    "Ev0BUBFTBNL8",
+    "Ev0BTMESBFS8"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -378,6 +379,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787947921422959"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787954945.643559",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Kath",
+      "reporter_slack_id": "U05NW5H3SLC",
+      "agent": "email-po-inbox",
+      "type": "BROKEN",
+      "severity": "critical",
+      "correction_path": "corrections/email-po-inbox/2026-08-28-po-received-no-hubspot-deal.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/140",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787954945643559"
     }
   ],
   "graduation": {
@@ -435,6 +451,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-24T22:35:00.570147+00:00",
       "reporter": "Roman"
+    },
+    "1787954945.643559": {
+      "agent": "email-po-inbox",
+      "agent_label": "Charter PO inbox (charter@wetutorathome.com)",
+      "correction_path": "corrections/email-po-inbox/2026-08-28-po-received-no-hubspot-deal.md",
+      "branch": "fix/email-po-inbox-2026-08-28-643559",
+      "diagnosis": "The PO arrived 26+ minutes ago but the deal still isn't in HubSpot, suggesting either the cron didn't fire this cycle, the PO extractor failed silently on Lia Beck's attachment, or deal creation errored without alerting. Most likely lives in po_inbox.py's extract\u2192create path or the Sonnet extractor returning unparseable output.",
+      "fix_plan": [
+        "Pull the last two GitHub Actions runs of .github/workflows/email-po-inbox.yml and check whether Lia Beck's message was fetched, classified as PO, and reached the extractor.",
+        "In email/src/po_inbox.py, trace the Lia Beck message ID through classify\u2192extract\u2192create_deal; log the Claude Sonnet extractor's raw output to see if fields (po_number, hours, student) parsed.",
+        "If extractor failed, inspect the PO attachment (PDF/image quality, unusual layout) and adjust the extractor prompt or add a fallback; if HubSpot create failed, check hubspot_client.py error handling.",
+        "Add a hard failure alert: if a message is classified PO but deal creation doesn't complete within one run, DM Kath+Roman with the message ID and error \u2014 silent failures are the real bug here.",
+        "Manually create Lia Beck's deal in HB now so Kath is unblocked, then backfill root cause."
+      ],
+      "risk": "medium",
+      "recommendation": "execute",
+      "proposed_utc": "2026-08-28T22:09:59.633941+00:00",
+      "reporter": "Kath"
     }
   }
 }
