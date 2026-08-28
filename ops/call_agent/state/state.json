@@ -484,9 +484,11 @@
     409125252,
     409125921,
     409126342,
-    409128909
+    409128909,
+    409149522,
+    409148974
   ],
-  "last_run_utc": "2026-08-28T00:19:11.722817+00:00",
+  "last_run_utc": "2026-08-28T08:45:32.719640+00:00",
   "pending_digest": [
     {
       "call_id": 408991207,
@@ -1787,6 +1789,69 @@
         [
           "Await callback from Garciacontreras; if no response in a few days, attempt another outreach or try email if available.",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409148974,
+      "number": "13108006569",
+      "time_pt": "5:59 PM",
+      "matched": true,
+      "contact_label": "Josh Kingman",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ made an outbound follow-up call to Josh Kingman regarding an outstanding payment. Josh mentioned the family has been swamped and battling a cold, but confirmed he received our payment link and promised to pay by tomorrow. Short call focused on payment collection, not intake.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm payment is received from Josh tomorrow; follow up if not paid",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Josh Kingman (existing family, phone 310-800-6569) was reached on an outbound call by Yolanda about an outstanding payment. He confirmed he received our payment link and promised to pay by tomorrow. He also mentioned the family has been swamped and dealing with a cold, so tone was friendly but a bit rushed. If payment doesn't come through tomorrow, open with something warm like: 'Hi Josh, hope you're all feeling better \u2014 just circling back on the payment link you mentioned you'd take care of yesterday.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer calling about billing/payment \u2014 status owned by deal pipeline, do not change.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Josh re: outstanding payment. Family has been swamped and fighting a cold. Josh confirmed he received the payment link and committed to paying by tomorrow.",
+          "what_we_can_do_to_help": "Watch for Josh's payment tomorrow; if it doesn't arrive, follow up gently given the family is under the weather. Once billing is squared away, we can refocus on supporting the student.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Josh re: outstanding payment. Family has been swamped and fighting a cold. Josh confirmed he received the payment link and committed to paying by tomorrow."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Watch for Josh's payment tomorrow; if it doesn't arrive, follow up gently given the family is under the weather. Once billing is squared away, we can refocus on supporting the student."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm payment is received from Josh tomorrow; follow up if not paid",
+          86868539
         ]
       ],
       "ticket_id": null,
