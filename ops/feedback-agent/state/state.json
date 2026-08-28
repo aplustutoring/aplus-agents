@@ -53,7 +53,8 @@
     "Ev0BSHS33XK6",
     "Ev0BSP7NU5K8",
     "Ev0BST53E6UR",
-    "Ev0BSR8D381G"
+    "Ev0BSR8D381G",
+    "Ev0BUBFTBNL8"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -362,6 +363,21 @@
       "ticket": "drafted",
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787612254091039"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787947921.422959",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "UNKNOWN",
+      "type": "IDEA",
+      "severity": "low",
+      "correction_path": "corrections/UNKNOWN/2026-08-28-channel-usage-announcement.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/137",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787947921422959"
     }
   ],
   "graduation": {
