@@ -57,7 +57,8 @@
     "Ev0BUBFTBNL8",
     "Ev0BTMESBFS8",
     "Ev0BTHQU9THQ",
-    "Ev0BTMGC7U2G"
+    "Ev0BTMGC7U2G",
+    "Ev0BTHT5KX8S"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -411,6 +412,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787955533940299?thread_ts=1787955533.940299&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787956680.113379",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Kath",
+      "reporter_slack_id": "U05NW5H3SLC",
+      "agent": "email-deal-sync",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-student-parent-contact-ilead-mismatch.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/142",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787956680113379"
     }
   ],
   "graduation": {
@@ -504,6 +520,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-28T22:21:54.747077+00:00",
       "reporter": "Janelle"
+    },
+    "1787956680.113379": {
+      "agent": "email-deal-sync",
+      "agent_label": "Deal sync (HubSpot \u2192 Teachworks) + invoice sweep",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-student-parent-contact-ilead-mismatch.md",
+      "branch": "fix/email-deal-sync-2026-08-28-113379",
+      "diagnosis": "The family upsert in deal_sync likely matched Ibraheem to the wrong parent contact (or created a new contact) instead of attaching him under Blanca Siddique, and the EF (enrollment/referral field) didn't pick up 'iLead Katherine Edge' \u2014 either the HubSpot deal wasn't linked to Blanca's contact, or the family-by-email matcher chose a different contact. Root cause almost certainly lives in the contact resolution + student attach path in email/src/deal_sync.py (possibly with EF/source mapping in config.yaml).",
+      "fix_plan": [
+        "Pull the HubSpot deal for Ibraheem Siddique and confirm the associated contact \u2014 is it Blanca Siddique, or a different/missing contact? Also confirm the deal's EF/source field reads 'iLead Katherine Edge'.",
+        "In Teachworks, manually re-parent Ibraheem's student record under Blanca Siddique's customer account and set EF to 'iLead Katherine Edge' to unblock Kath now.",
+        "In email/src/deal_sync.py, review the family upsert / contact-match logic \u2014 specifically how it picks the parent contact when a deal has multiple associations or when the student surname matches an existing family; add a preference for the HubSpot-associated primary contact over email-based fuzzy match.",
+        "Verify EF propagation from HubSpot deal \u2192 Teachworks customer field in deal_sync.py (and any field map in email/config.yaml); make sure the iLead source is written on create AND on update.",
+        "Backfill: run FORCE_DEAL_ID on Ibraheem's deal once fixed to confirm the sync now lands correctly, and spot-check 2\u20133 recent iLead deals for the same pattern."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-28T22:38:50.520132+00:00",
+      "reporter": "Kath"
     }
   }
 }
