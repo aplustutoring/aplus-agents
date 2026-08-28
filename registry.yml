@@ -514,6 +514,22 @@ agents:
     entrypoint: email/src/sla_sweep.py
     reads: [HubSpot:tickets]
     writes: [Slack, HubSpot:tickets]
+  - id: task-completion-sweep
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Task-completion sweep (team HubSpot tasks)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["weekdays 8 AM PT"], repo: aplustutoring/aplus-agents, workflow: .github/workflows/task-sweep.yml}
+    entrypoint: email/src/task_sweep.py
+    reads: [HubSpot:tasks, email/state/audit_log.jsonl]
+    writes: [Slack, email/state/audit_log.jsonl]
+    notes: >
+      First agent to READ HubSpot Tasks back (two agents create them; nothing
+      checked completion). Digest to #agent-feedback (silent when clean), ONE
+      bundled DM per owner past 3d overdue on a 3d cadence, Monday on-time/late
+      scoreboard. 30-day horizon: the 717-task historical backlog is counted
+      weekly, never itemized or DM'd. Never writes to HubSpot.
   - id: email-weekly-digest
     runtime: github-actions
     engine: Email / inbox ops

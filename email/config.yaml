@@ -412,6 +412,24 @@ aging_sweep:
   last_resort_after_days: 30 # also DM level3
   repeat_every_days: 7       # re-nag this often — the chain above pings once per level and then goes silent forever
 
+# Task-completion sweep (Roman 2026-08-28). Agents and humans create HubSpot
+# Tasks, but nothing ever read one back — an overdue task made no noise
+# anywhere. Weekday-morning digest to #agent-feedback (silent when clean),
+# owner DM only past dm_after_days, weekly on-time/late scoreboard on Mondays.
+task_sweep:
+  enabled: true
+  channel: "C0BL05MCJ4B"      # #agent-feedback (private; ID so the bot can post)
+  monitor: [visionary, sales, charter_sales, scheduler_a_l]  # seats, not names
+  dm_after_days: 3            # overdue this long → DM the owner
+  dm_repeat_days: 3           # re-DM cadence (audit-log-held, like aging_sweep)
+  horizon_days: 30            # overdue past this = stale backlog: weekly count line
+                              # only, never itemized/DM'd. On 2026-08-28 the four
+                              # monitored owners held 717 open tasks, mostly
+                              # months-to-years old; nagging those buries the signal.
+  per_person_cap: 8           # digest lists at most this many tasks per owner
+  dm_list_cap: 10             # a DM itemizes at most this many; ONE DM per owner per run
+  weekly_stats_weekday: 0     # Monday → append last-7-days completion scoreboard
+
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]
 

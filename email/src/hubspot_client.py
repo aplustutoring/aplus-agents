@@ -56,6 +56,11 @@ def contact_url(contact_id: str) -> str:
     return f"https://app.hubspot.com/contacts/{portal}/record/0-1/{contact_id}"
 
 
+def task_url(task_id: str) -> str:
+    portal = cfg()["hubspot"]["portal_id"]
+    return f"https://app.hubspot.com/contacts/{portal}/record/0-27/{task_id}"
+
+
 # ── Scope probe (used by smoke test) ─────────────────────────────
 def check_scopes() -> dict:
     """Verify the token can reach Conversations + Tickets + Contacts. Read-only."""
@@ -691,6 +696,65 @@ def search_open_tickets() -> list[dict]:
         after = (res.get("paging") or {}).get("next", {}).get("after")
         if not after:
             return out
+
+
+_TASK_PROPS = ["hs_task_subject", "hs_task_status", "hs_task_priority",
+               "hs_timestamp", "hs_createdate", "hs_task_completion_date",
+               "hubspot_owner_id"]
+
+
+def _search_all(path: str, filters: list[dict], props: list[str]) -> list[dict]:
+    """Paginated CRM search with one filter group."""
+    out, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": filters}], "properties": props, "limit": 100}
+        if after:
+            body["after"] = after
+        res = _get_search(path, body)
+        out += res.get("results", [])
+        after = (res.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            return out
+
+
+def search_open_tasks(owner_ids: list[str]) -> list[dict]:
+    """Every not-yet-completed Task owned by the given owners, whoever created it
+    (an agent, a workflow, or a human in the CRM UI). Needs the tasks read scope
+    on the private app — create_task above only exercises write."""
+    return _search_all("/crm/v3/objects/tasks/search", [
+        {"propertyName": "hs_task_status", "operator": "NOT_IN",
+         "values": ["COMPLETED", "DEFERRED"]},
+        {"propertyName": "hubspot_owner_id", "operator": "IN", "values": owner_ids},
+    ], _TASK_PROPS)
+
+
+def search_open_tasks_created_before(cutoff_ms: int) -> list[dict]:
+    """Every not-yet-completed Task in the portal created before the cutoff
+    (epoch ms), any owner or none — the backlog bulk-closer reads these."""
+    return _search_all("/crm/v3/objects/tasks/search", [
+        {"propertyName": "hs_task_status", "operator": "NOT_IN",
+         "values": ["COMPLETED", "DEFERRED"]},
+        {"propertyName": "hs_createdate", "operator": "LT", "value": str(cutoff_ms)},
+    ], _TASK_PROPS)
+
+
+def batch_complete_tasks(task_ids: list[str]) -> None:
+    """Mark tasks COMPLETED, 100 per batch call (DRY_RUN-aware via _write)."""
+    for i in range(0, len(task_ids), 100):
+        chunk = task_ids[i:i + 100]
+        _write("POST", "/crm/v3/objects/tasks/batch/update", {
+            "inputs": [{"id": tid, "properties": {"hs_task_status": "COMPLETED"}}
+                       for tid in chunk]})
+
+
+def search_completed_tasks(owner_ids: list[str], since_ms: int) -> list[dict]:
+    """Tasks the given owners completed since the timestamp (epoch ms) — the
+    weekly on-time/late scoreboard reads these."""
+    return _search_all("/crm/v3/objects/tasks/search", [
+        {"propertyName": "hs_task_status", "operator": "EQ", "value": "COMPLETED"},
+        {"propertyName": "hs_task_completion_date", "operator": "GTE", "value": str(since_ms)},
+        {"propertyName": "hubspot_owner_id", "operator": "IN", "values": owner_ids},
+    ], _TASK_PROPS)
 
 
 def _ticket_engagements(ticket_id: str, obj: str, props: list[str],

@@ -8,6 +8,42 @@ Newest entries first.
 
 ---
 
+## 2026-08-28 — Task-completion sweep + 1,025-task backlog closure (#AP-pending)
+
+**What changed**
+- New agent `task-completion-sweep` — the first agent that READS HubSpot Tasks
+  back (two agents create them; nothing ever checked completion). Weekday
+  8 AM PT: digest to #agent-feedback per owner (overdue + due today, silent
+  when clean), ONE bundled DM per owner once a task is 3+ days overdue
+  (3-day audit-held cadence, never one DM per task), Monday on-time/late
+  completion scoreboard. Monitors seats visionary/sales/charter_sales/
+  scheduler_a_l (roles, not names). Deterministic — no CARE pointer.
+- 30-day horizon: tasks overdue longer are "stale backlog" — weekly count
+  line only, never itemized or DM'd. Day-one reality check: 717 open tasks
+  for the four seats, 246 overdue inside the horizon; per-task DMs would
+  have repeated the reasoner's 102-DM mistake.
+- Backlog remediation (Roman, in-session): `close_stale_tasks.py` bulk-closed
+  all 1,025 open tasks created before 2026-08-01 (any owner, incl. ex-staff
+  and 59 unassigned). Every id is in the audit log as `task_bulk_closed`;
+  the weekly scoreboard excludes those ids so they never read as
+  "completed late". Portal open-task count: 1,745 → 712.
+- `hubspot_client.py`: `search_open_tasks()`, `search_completed_tasks()`,
+  `search_open_tasks_created_before()`, `batch_complete_tasks()`,
+  `task_url()`, shared `_search_all()`. Tasks read scope verified live (200).
+- `config.py`: `monitor` added to `_ROLE_LIST_KEYS`.
+
+**Why:** Tasks were a write-only medium — an overdue task made no noise
+anywhere, and the backlog had grown to 1,745 with 2019-era entries drowning
+any live signal.
+
+**Files:** `email/src/task_sweep.py`, `email/src/close_stale_tasks.py`,
+`email/src/hubspot_client.py`, `email/src/audit.py`, `email/src/config.py`,
+`email/config.yaml`, `email/tests/test_task_sweep.py` (16 tests; suite 331
+green), `.github/workflows/task-sweep.yml`, `registry.yml`,
+`email/state/audit_log.jsonl` (11 bulk-close records).
+
+---
+
 ## 2026-08-27 — The reasoner can read the charter@ Gmail thread (#AP-pending)
 
 **What changed**
