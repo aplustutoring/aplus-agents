@@ -1296,12 +1296,11 @@ def _parent_from_student_deals(po: dict):
 
 def _find_parent_via_deals(po: dict):
     """POs typically DON'T include parent info — Kath's manual fix was to
-    look the student up in HubSpot and read the parent off their prior deal
-    (deals are named 'Parent - Student - School (Month)' and carry the family
-    contact). Mechanized: search deals by the student's first name, narrow to
-    names also containing the student's last name when possible, collect the
-    deals' non-TOR contacts — a UNIQUE parent across matches resolves it;
-    anything ambiguous falls through to the last-name search, then manual.
+    look the student up in HubSpot and read the parent off their prior deal.
+    Mechanized: EXACT search on the student name properties (first + last;
+    compound surnames retry each part), collect the deals' non-TOR contacts —
+    a UNIQUE parent across matches resolves it; anything ambiguous or
+    last-name-less falls through to the next step, then the parent chase.
     Returns (contact, deal_name) or None."""
     # Structured student-name properties first; the deal-NAME search below is
     # the fallback for deals that predate those properties being filled.
@@ -1309,18 +1308,27 @@ def _find_parent_via_deals(po: dict):
     if via_props:
         return via_props
     sf = (po.get("student_first") or "").strip()
-    sl = (po.get("student_last") or "").strip().lower()
+    sl = (po.get("student_last") or "").strip()
     t_email = (po.get("tor_email") or "").strip().lower()
-    if not sf:
+    # LAST NAME REQUIRED (2026-08-28, the Mateo Murray-Fiore incident): a
+    # first-name-only match across deal names resolved the WRONG Mateo (Luis
+    # Ramirez's private-pay son) and the deal, TW family, and SMS all keyed on
+    # the wrong parent. No last-name agreement → no guess → parent chase.
+    if not sf or not sl:
         return None
     try:
-        cands = hs.search_deals_by_name(sf)
+        import re as _re
+        cands = hs.search_deals_by_student(sf, sl)
+        # compound surname: the PO's 'Murray-Fiore' vs our stamped 'Fiore' —
+        # retry each part, still an EXACT property match, never first-name-only
+        for part in _re.split(r"[-\s]+", sl):
+            if cands or not part or part.lower() == sl.lower():
+                continue
+            cands = hs.search_deals_by_student(sf, part)
         if not cands:
             return None
-        narrowed = [d for d in cands
-                    if sl and sl in ((d.get("properties") or {}).get("dealname") or "").lower()] or cands
         parents = {}
-        for d in narrowed[:6]:
+        for d in cands[:6]:
             for c in hs.get_deal_contacts(d["id"]):
                 props = c.get("properties") or {}
                 if not hs.is_family_contact(props, t_email):
