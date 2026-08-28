@@ -56,18 +56,14 @@
     "Ev0BSR8D381G",
     "Ev0BUBFTBNL8",
     "Ev0BTMESBFS8",
-    "Ev0BTHQU9THQ"
+    "Ev0BTHQU9THQ",
+    "Ev0BTMGC7U2G"
   ],
   "awaiting": {
     "1785537854.599709": {
       "user": "U05NA7UMSSV",
       "text": "status *Sent using* <@U0AKFN28V1U>",
       "asked_utc": "2026-07-31T22:44:47.124156+00:00"
-    },
-    "1787955533.940299": {
-      "user": "U08S3CG8XNY",
-      "text": "Need Parent for Ibraheem Siddique in HB",
-      "asked_utc": "2026-08-28T22:19:30.136182+00:00"
     }
   },
   "reports": [
@@ -400,6 +396,21 @@
       "ticket": "drafted",
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787954945643559"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787955533.940299",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Janelle",
+      "reporter_slack_id": "U08S3CG8XNY",
+      "agent": "email-deal-sync",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-hubspot-deal-missing-parent-name.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/141",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787955533940299?thread_ts=1787955533.940299&cid=C0BL05MCJ4B"
     }
   ],
   "graduation": {
@@ -475,6 +486,24 @@
       "recommendation": "execute",
       "proposed_utc": "2026-08-28T22:09:59.633941+00:00",
       "reporter": "Kath"
+    },
+    "1787955533.940299": {
+      "agent": "email-deal-sync",
+      "agent_label": "Deal sync (HubSpot \u2192 Teachworks) + invoice sweep",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-hubspot-deal-missing-parent-name.md",
+      "branch": "fix/email-deal-sync-2026-08-28-940299",
+      "diagnosis": "The deal-sync agent created/updated a student (Ibraheem Siddique) in HubSpot without linking a Parent contact \u2014 likely because the HubSpot deal lacks an associated primary contact, or the contact association wasn't picked up when the family was upserted. This lives in the HubSpot\u2192Teachworks family upsert path in deal_sync.py (and its HubSpot contact lookup).",
+      "fix_plan": [
+        "Pull the Ibraheem Siddique deal in HubSpot and confirm whether a Parent contact is actually associated (deal\u2192contact association) \u2014 if missing, that's a data-entry gap, not a code bug.",
+        "In email/src/deal_sync.py, review the family upsert path: when a deal has no primary/parent contact resolvable via hubspot_client.get_deal_contacts, the agent should flag needs-review in Slack instead of silently syncing the student parent-less.",
+        "If the guard is missing or too lenient, add an explicit check: no parent email/contact \u2192 skip TW write + post a Slack needs-review with deal link and student name.",
+        "Backfill: manually add the Parent contact in HubSpot on Ibraheem's deal, then run the workflow with FORCE_DEAL_ID to re-sync and confirm the parent lands in Teachworks.",
+        "Add a one-line audit log in audit.py when a deal is skipped for missing parent so we can spot the pattern next time."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-28T22:21:54.747077+00:00",
+      "reporter": "Janelle"
     }
   }
 }
