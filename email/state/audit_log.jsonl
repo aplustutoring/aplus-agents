@@ -22860,3 +22860,5 @@
 {"ticket_id": "48019538442", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-28T18:54:02.489939+00:00"}
 {"ticket_id": "48041343816", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-08-28T18:54:02.737311+00:00"}
 {"ticket_id": "47845535313", "owner": "kath", "action_taken": "aging_nag", "age_days": 7.0, "quiet_days": 7.0, "timestamp": "2026-08-28T18:54:07.608031+00:00"}
+{"message_id": "deal:64434753107", "source": "deal_sync", "deal_id": "64434753107", "deal_name": "Blanca Perez - Joseph", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 1696854, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-28T19:35:57.859130+00:00"}
+{"message_id": "deal:64472613662", "source": "deal_sync", "deal_id": "64472613662", "deal_name": "Boston Powers - Iuri", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2159885, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-08-28T19:35:59.419859+00:00"}
