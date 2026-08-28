@@ -564,7 +564,7 @@ def contact_enrichment(contact_id: str) -> dict:
 def create_ticket(subject: str, owner_id: str | None, stage_id: str,
                    description: str, contact_id: str | None,
                    priority: str | None = None, category: str | None = None,
-                   source: str | None = None) -> dict:
+                   source: str | None = None, extra_props: dict | None = None) -> dict:
     hs = cfg()["hubspot"]
     props = {
         "subject": subject,
@@ -580,6 +580,12 @@ def create_ticket(subject: str, owner_id: str | None, stage_id: str,
         props["hs_ticket_category"] = category
     if source:
         props["source_type"] = source
+    # Declared agent properties (ops/hubspot-schema/properties.yml): po_work_type,
+    # ticket_source, source_agent. Empty values are dropped so a blank never
+    # overwrites a real one.
+    for k, v in (extra_props or {}).items():
+        if v:
+            props[k] = v
 
     payload: dict = {"properties": props}
     if contact_id:
@@ -596,6 +602,18 @@ def create_ticket(subject: str, owner_id: str | None, stage_id: str,
             # Bad owner id must never drop an email — create unassigned (owner still gets the Slack DM).
             print(f"    ⚠️  invalid owner_id {owner_id}; creating ticket UNASSIGNED")
             props.pop("hubspot_owner_id", None)
+            return _write("POST", "/crm/v3/objects/tickets", payload)
+        # An agent property that has not been synced to the portal yet must not
+        # drop the email either. properties.yml is declarative and the sync is a
+        # separate step, so code can legitimately run ahead of the schema —
+        # retry without the extras rather than lose the ticket.
+        if (e.response is not None and e.response.status_code == 400
+                and extra_props and "PROPERTY_DOESNT_EXIST" in body):
+            missing = [k for k in extra_props if k in body]
+            print(f"    ⚠️  ticket property not in the portal yet ({', '.join(missing) or 'unknown'}); "
+                  f"creating without it — run ops/hubspot-schema/create_properties.py")
+            for k in extra_props:
+                props.pop(k, None)
             return _write("POST", "/crm/v3/objects/tickets", payload)
         raise
 

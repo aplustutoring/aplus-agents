@@ -302,6 +302,35 @@ po_inbox:
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales
+  # ── Non-PO work types (Roman approved 2026-08-27) ───────────────────────
+  # Every charter@ ticket used to be stamped new_deal_po, so no routing rule
+  # matched, no owner was derived, and it fell to whoever owns the inbox with
+  # no SLA and no done-state. Measured over 845 tickets since 2026-06-01: a
+  # ticket with a real category closed in a median of 0.25 days (92%); one in
+  # the catch-all took 2.15 days (80%). Counts below are the open queue on
+  # 2026-08-27, from the agent's own "Not a PO:" summaries.
+  #
+  # owner: a ROLE. category: an EXISTING hs_ticket_category option value —
+  # never invent one, the enumeration is closed (ops/hubspot-schema).
+  work_types:
+    purchase_order:     { owner: charter_admin, priority: MEDIUM, category: new_deal_po }
+    po_cancellation:    { owner: charter_admin, priority: HIGH,   category: cancel_service }
+    # 7 open, median 14d. Schools chasing or confirming payment, year-end
+    # reconciliation. Had no owner: was split across Kath, Paola, Mandy, Janelle.
+    ar_followup:        { owner: charter_admin, priority: HIGH,   category: billing_refund }
+    # 2 open. "Reissue under our new legal name before we can pay you" — the
+    # Suncoast/Koby Wells case, $1,330 held up 10 days by a Bill To edit.
+    invoice_correction: { owner: charter_admin, priority: HIGH,   category: billing_refund }
+    # Unsigned agreements, COI, W-9. Blocks or reshapes POs, so it stays HIGH
+    # and goes to sales — Roman moved the Granite Mountain COI there by hand.
+    vendor_compliance:  { owner: sales,         priority: HIGH,   category: GENERAL_INQUIRY }
+    # 11 open. Approvals, portal logins, welcome packets, renewals.
+    vendor_onboarding:  { owner: charter_admin, priority: MEDIUM, category: GENERAL_INQUIRY }
+    parent_info_reply:  { owner: charter_admin, priority: MEDIUM, category: new_deal_po }
+    family_inquiry:     { owner: charter_sales, priority: HIGH,   category: GENERAL_INQUIRY }
+    marketing_junk:     { owner: charter_admin, priority: LOW,    category: GENERAL_INQUIRY }
+    scam:               { owner: charter_admin, priority: LOW,    category: GENERAL_INQUIRY }
+    other:              { owner: charter_admin, priority: MEDIUM, category: GENERAL_INQUIRY }
   # ROLE mapping — functional keys name roles, never people (Roman 2026-08-14);
   # change the person here, not in code.
   # ANYTHING missing on PO intake (fields not in the PO, unmatched TOR/parent,
