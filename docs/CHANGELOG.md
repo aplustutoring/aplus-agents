@@ -65,6 +65,32 @@ actually lives in; absent evidence is never read as absence of action."
 
 ---
 
+## 2026-08-28 — Parent resolution: never guess across families (Mateo Murray-Fiore)
+
+**What:** PO 3114179131 (Mateo Murray-Fiore, iLEAD) resolved the WRONG parent —
+Luis Ramirez, whose private-pay son is a different Mateo. Deal, TW family
+(customer 2159873), and the SMS parent_email all keyed on him. Two compounding
+causes, both fixed:
+1. `teachworks_client.find_family_by_student` queried TW with the PO's exact
+   surname ('Murray-Fiore'); TW has 'Fiore' → zero candidates, so the surest
+   source (Sarah Fiore's family, real lesson history, TOR Emma Luckey) was
+   skipped. NOW: exact surname first, then each hyphen/space part; first name
+   stays exact and lesson-history scoring still gates every candidate.
+2. `po_inbox._find_parent_via_deals` used the limit-10 unsorted deal-NAME
+   token search (same disease as the numbering bug, second call site) plus an
+   `or cands` fallback that matched on FIRST NAME ALONE when the last name hit
+   nothing — that fallback picked Luis. NOW: exact student-property search
+   (search_deals_by_student, compound parts retried), the first-name-only
+   fallback is DELETED, and a missing last name returns None → parent chase.
+**Why:** a wrong family is worse than no family — chase beats guess, always.
+**Remediation (in session, Roman-approved):** deal 64464582696 repointed to
+Sarah Fiore (association + parent_email + rename) with an explanatory note;
+Kath had detached Luis; Roman deleted the mistaken TW student. Kath DM'd to
+check SMS flow 1603217415 for a Luis enrollment and watch for a duplicate
+'Mateo Murray-Fiore' TW student on the next deal-sync pass.
+**Files:** email/src/{teachworks_client,po_inbox}.py,
+email/tests/test_po_inbox.py (320 green), docs/PO-PROCESS.md (Stage 2 synced).
+
 ## 2026-08-27 — Cron-starvation watchdog + local PO-inbox heartbeat (Roman: "both")
 
 **What:** GitHub's schedule trigger starved the whole fleet today — the PO
