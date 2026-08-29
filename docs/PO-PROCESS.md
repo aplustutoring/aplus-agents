@@ -124,13 +124,22 @@ Also attached to the deal:
    is empty · **🚩 missing-info DM to Kath AND Roman** listing every gap
    (missing fields, unmatched TOR/parent, NEEDS PARENT, blank schedule, failed
    uploads).
-4. **SMS** (HubSpot flow 1603217415, contact-based): the parent enrolls,
-   branches on the tutored property — "Yes" texts right away; "No" emails staff
-   internally, waits, then texts. The text: *"We received your Purchase Order.
-   Wanted to confirm that this schedule still works for you:
-   {{schedule_preference}}"*. The flow clears its trigger at the end, so the
-   next PO re-arms it — **one text per kid per PO event, structurally never
-   daily.**
+4. **SMS** — AGENT-OWNED as of 2026-08-29 (Roman, after HubSpot flow
+   1603217415 died silently on an Aug 13 edit and no charter family was
+   texted for two weeks). `email/src/sms.py` sweeps Pre-Lesson deals in the
+   configured pipelines every deal-sync cycle (~15 min) and texts the family
+   via JustCall (`sms:` in config.yaml): tutored **"Yes"** → text now;
+   **"No"** → DM the deal's owner first, text on the NEXT sweep; **unset** →
+   no text, audited (the gap DM already fired). The text: *"We received your
+   Purchase Order. Wanted to confirm that this schedule still works for you:
+   {schedule_preferences}"* (blank schedule → the ask-fallback line).
+   Guardrails: one text per deal ever, **one text per family per 24h** (a
+   4-PO email never sends 4 texts), quiet hours 8am-8pm PT, a hard
+   `start_date` fence so pre-cutover backlogs can never be texted, em-dash
+   scrub, 3-strike send retry then a manual-text flag to Kath. The old
+   HubSpot flow stays OFF; a pipeline's flow must be off BEFORE it is listed
+   in `sms.pipelines` (that ordering is what makes double-texting
+   impossible). Sweep watches DEALS, so manually created deals text too.
 
 ## Stage 5 — Kath: convert the PO to a Teachworks invoice (same day)
 

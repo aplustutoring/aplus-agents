@@ -98,6 +98,24 @@ google_sheets:
   dashboard_sheet_id: "1_eSSJ5EtlENv_idZ3LHHeK5_Pc1Jstlb-fYdx_6HfPw"
   dashboard_tab: "Email Agent"
 
+# ── Agent-owned transactional SMS (Roman 2026-08-28: replace workflow SMS) ──
+# Sweeps Pre-Lesson deals in each listed pipeline every deal-sync cycle and
+# texts the family via JustCall. Phase 1 = Charter Trad only; the dead HubSpot
+# flow (1603217415) stays OFF — turn a pipeline's flow off BEFORE listing it
+# here (that ordering is what makes double-texting impossible).
+sms:
+  enabled: true
+  justcall_number: "+18188691627"   # the line schedulers answer; replies thread there
+  start_date: "2026-08-29"          # HARD fence: deals created before this never text
+  send_hour_start_pt: 8             # quiet hours: no sends outside 8am-8pm PT
+  send_hour_end_pt: 20
+  fallback_alert: charter_admin     # role DM'd on 3x send failure / no owner match
+  opt_out_property: ""              # contact property that suppresses sends, if set
+  pipelines:
+    "907748": { template: charter_po }   # Charter Trad — phase 1
+  templates:
+    charter_po: "Hi {first_name}, it's A+ Tutoring. We received your Purchase Order. Wanted to confirm that this schedule still works for you: {schedule_preferences}"
+
 # ── Staff registry ───────────────────────────────────────────────
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
 staff:

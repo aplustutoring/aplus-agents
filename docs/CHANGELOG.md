@@ -126,6 +126,33 @@ actually lives in; absent evidence is never read as absence of action."
 
 ---
 
+## 2026-08-28 — Transactional SMS moves from HubSpot workflows to the agent
+
+**What:** `email/src/sms.py` — a deal-driven SMS sweep run from deal_sync
+every ~15 min, sending via JustCall (line +18188691627, the one schedulers
+answer). Phase 1 covers Charter Trad (pipeline 907748). Branch semantics
+mirror the old flow in tested code: tutored Yes → text now; No → DM the
+deal's owner, text next sweep; unset → skip, audited. Guardrails: one text
+per deal (audit key), one per FAMILY per 24h (4-PO emails send 1 text),
+quiet hours 8-20 PT, `sms.start_date` hard fence (2026-08-29 — the backlog
+can never be texted), opt-out property hook, em-dash scrub, 3-strike retry
+then manual-text flag. Config under `sms:` in config.yaml.
+**Why:** the HubSpot flow chain (stamp deal → stage-copy workflow → contact
+flow → self-clearing trigger property) died silently on an Aug 13 edit — no
+charter family texted for two weeks, zero alerts. Workflows are unversioned,
+untested, and fail silent; the agent is none of those. Sweeping DEALS also
+covers manually created deals — the Free Trial pipeline was NEVER wired to
+any SMS flow (Yolanda's Perez/Motiwalla/Villarroel report).
+**Cutover:** flow 1603217415 is already dead (left disabled-in-effect); a
+pipeline's flow must be OFF before it's added to `sms.pipelines`. Phase 2/3:
+gold/in-person + trial pipelines, then retire the stage-copy workflow and
+`contact_level_deal_stage`. 54 stale enrollment flags remain to clear
+(scripts ready; classifier blocked in-session, Roman runs them).
+**Files:** email/src/{sms,config,deal_sync}.py, email/config.yaml,
+email/tests/test_sms.py (10 new; suite 342 green), docs/PO-PROCESS.md.
+**Decision to log:** transactional SMS is agent-owned; workflows are for
+nothing customer-facing that the fleet can do in code.
+
 ## 2026-08-28 — Parent resolution: never guess across families (Mateo Murray-Fiore)
 
 **What:** PO 3114179131 (Mateo Murray-Fiore, iLEAD) resolved the WRONG parent —
