@@ -439,7 +439,13 @@ reasoner:
   repeat_every_hours: 24      # daily drumbeat once the ladder starts
 
 aging_sweep:
-  enabled: true
+  # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
+  # hours, 59 of them from this sweep, and zero replies from her in the last 400
+  # messages. A targeted question about a $1,330 invoice scrolled out of view
+  # within a day. The reasoning sweep supersedes this — it asks whether a ticket
+  # is really open before it says anything, where this one only asks how old it
+  # is. Do not re-enable both at once.
+  enabled: false
   nag_after_days: 7          # open + untouched this long → DM the owner
   supervisor_after_days: 14  # also DM level2
   last_resort_after_days: 30 # also DM level3
