@@ -56,13 +56,18 @@ call's native AI transcript, and turns each call into CRM actions:
   anchors in rubric.md — no code changes needed. Coaching failures never fail
   call processing.
 
-A **scheduled poller, not a webhook** — one Python script
-(`call_agent.py`) run by `.github/workflows/call-agent.yml` every 15 min
-during business hours (~8 AM–8 PM PT, `--no-digest`: coaching cards and
-alerts post per call for near-real-time feedback) plus a daily ~5:30 PM PT
-digest run that flushes held entries. Same pattern as `ops/scorecard`.
-Calls whose JustCall AI transcript isn't ready yet are retried on later
-polls within `transcript_grace_minutes` (must stay < `overlap_minutes`). HubSpot stays the single source of truth for
+A **webhook-triggered poller** (since 2026-08-28) — one Python script
+(`call_agent.py`) run by `.github/workflows/call-agent.yml`. JustCall fires a
+webhook when a call completes; the `webhook-relay/` Cloudflare Worker waits
+~6 min for the AI transcript, then dispatches the workflow with
+`no_digest=true` (coaching cards and alerts post per call, minutes after
+hangup; digest entries held in state). A daily ~5:30 PM PT digest cron
+flushes held entries AND is the backstop sweep if the relay drops anything.
+(The previous every-15-min poll crons were replaced because GitHub honored
+only a handful per day — hours-long processing gaps.)
+Calls whose JustCall AI transcript isn't ready yet write `state/retry_wanted`,
+which makes the workflow ask the relay for another run in 10 min, within
+`transcript_grace_minutes` (must stay < `overlap_minutes`). HubSpot stays the single source of truth for
 families/communication; this agent only *adds* engagements, never edits
 contact data.
 
@@ -135,6 +140,7 @@ evaluation returns (v2):
 |---|---|
 | `call_agent.py` | The whole pipeline (fetch → transcript → summarize → HubSpot → digest) |
 | `config.yml` | Monitored numbers, guardrails, model, Slack channel, state path |
+| `webhook-relay/` | Cloudflare Worker: JustCall call-completed webhook → delayed `workflow_dispatch` (see its README) |
 | `.env.example` | Env var names for local runs |
 | `state/state.json` | Cursor + processed call IDs + held digest entries (committed back by the workflow) |
 
@@ -183,12 +189,15 @@ python3 call_agent.py --dry-run
 **Smoke test** (no reads/writes at all, scorecard `CHECK_ONLY` convention):
 dispatch with `check_only=true`, or locally `CHECK_ONLY=true python3 call_agent.py`.
 
-**Go live:** set repo variable `CALL_AGENT_LIVE=true`. The daily cron
-(~5:30 PM PT) then writes to HubSpot/Slack and commits state back.
+**Go live:** set repo variable `CALL_AGENT_LIVE=true`. Webhook-triggered runs
+and the daily digest cron (~5:30 PM PT) then write to HubSpot/Slack and commit
+state back. Event-driven triggering additionally needs the relay deployed and
+JustCall webhooks pointed at it — one-time setup in
+[webhook-relay/README.md](webhook-relay/README.md).
 
 Flags: `--since 2026-07-09T00:00:00` (UTC cursor override),
 `--no-digest` (process but hold digest entries in state for a later run —
-for multi-run-per-day schedules; the next digest-posting run flushes them).
+webhook-relay runs use this; the next digest-posting run flushes them).
 
 ## How a run works
 

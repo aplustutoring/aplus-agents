@@ -1875,7 +1875,7 @@ def main():
     mc_types = [t.lower() for t in mc_cfg.get("alert_types", [])]
 
     entries, skipped, failures = [], [], []
-    n_missed, n_spam = 0, 0
+    n_missed, n_spam, n_grace = 0, 0, 0
     for call in calls:
         cid = call.get("id")
         if cid in processed_ids:
@@ -1919,6 +1919,7 @@ def main():
                 grace = jc.get("transcript_grace_minutes", 45)
                 if call_dt and (now_utc - call_dt) < timedelta(minutes=grace):
                     log.info(f"  call {cid}: transcript not ready yet — retrying next run")
+                    n_grace += 1
                     continue  # not marked processed
             (entries if kind == "entry" else skipped).append(payload)
         except Exception as e:  # one bad call must never kill the run
@@ -1931,7 +1932,19 @@ def main():
 
     log.info(f"Run summary: {len(entries)} processed, {len(skipped)} skipped, "
              f"{len(failures)} failed, {n_missed} missed-call alert{'s' if n_missed != 1 else ''}, "
-             f"{n_spam} likely-spam abandoned suppressed")
+             f"{n_spam} likely-spam abandoned suppressed, "
+             f"{n_grace} awaiting transcript (grace retry)")
+
+    # Webhook-trigger mode has no polling cron, so "retrying next run" needs a
+    # next run to exist. The marker file asks the Actions workflow to schedule
+    # one via the webhook relay (see webhook-relay/README.md). Never committed:
+    # the state-commit step adds only state.json and scores.jsonl.
+    if not args.dry_run:
+        marker = Path(cfg["state"]["path"]).parent / "retry_wanted"
+        if n_grace:
+            marker.write_text(str(n_grace))
+        else:
+            marker.unlink(missing_ok=True)
 
     # Health verdict for the exit code. process_call failures are caught per
     # call so one bad call can't kill the run — but that also meant a run where

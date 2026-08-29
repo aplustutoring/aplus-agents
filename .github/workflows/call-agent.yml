@@ -1,4 +1,4 @@
-name: Call agent — 15-min polls + daily digest (~5:30 PM PT)
+name: Call agent — webhook-triggered polls + daily digest (~5:30 PM PT)
 
 # Fleet convention: agents think in Pacific Time. Naive datetime.now()/
 # date.today() in the scripts resolve to PT, keeping human-facing labels and
@@ -6,16 +6,17 @@ name: Call agent — 15-min polls + daily digest (~5:30 PM PT)
 env:
   TZ: America/Los_Angeles
 
-# Fixed-UTC crons pinned to PDT (scorecard convention — winter runs ~1h
-# earlier in PT, harmless, avoids dual-cron double-runs).
-#
-# Two run modes, decided by which cron fired (github.event.schedule):
-#   - POLL runs (every 15 min, ~8 AM–8 PM PT): process new calls with
-#     --no-digest. Coaching cards + negative-sentiment alerts post per call
-#     (near-real-time feedback for whoever answered); digest entries are held
-#     in state.
+# Trigger model (2026-08-28 — replaced the every-15-min poll crons):
+#   - EVENT runs: JustCall fires a webhook when a call completes ->
+#     ops/call_agent/webhook-relay (Cloudflare Worker) waits a few minutes for
+#     the AI transcript, then hits workflow_dispatch with no_digest=true.
+#     Coaching cards + alerts post per call, minutes after hangup; digest
+#     entries are held in state. GitHub was honoring only ~4 of the ~50 daily
+#     poll crons (hours-long gaps), which is WHY the crons had to go.
 #   - DIGEST run (30 0 = ~5:30 PM PT): processes + flushes all held entries
-#     as the daily digest. Manual dispatches also post the digest.
+#     as the daily digest. Also the backstop sweep: anything a webhook ever
+#     drops is at most one day late. Human manual dispatches also post the
+#     digest (no_digest defaults false).
 #
 # SAFETY DEFAULT: runs in --dry-run until the repo *variable* CALL_AGENT_LIVE
 # is set to "true" (Settings -> Secrets and variables -> Actions -> Variables).
@@ -24,9 +25,6 @@ env:
 on:
   schedule:
     - cron: "30 0 * * *"        # DIGEST: 00:30 UTC = 17:30 PDT / 16:30 PST daily
-    - cron: "*/15 15-23 * * *"  # polls 8:00 AM–4:45 PM PDT
-    - cron: "0,15,45 0 * * *"   # polls 5:00/5:15/5:45 PM PDT (5:30 is the digest run)
-    - cron: "*/15 1-2 * * *"    # polls 6:00–7:45 PM PDT
     - cron: "0 16 * * 1"        # WEEKLY SCORECARD: Mon 9 AM PDT / 8 AM PST
   workflow_dispatch:
     inputs:
@@ -42,6 +40,10 @@ on:
         description: "Optional manual cursor override (UTC ISO, e.g. 2026-07-09T00:00:00)"
         type: string
         default: ""
+      no_digest:
+        description: "Hold digest entries for the daily flush (webhook-relay poll runs pass true)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write   # state file commit-back (topic-gen pattern)
@@ -81,9 +83,9 @@ jobs:
           if [ -n "${{ inputs.since }}" ]; then
             ARGS="$ARGS --since ${{ inputs.since }}"
           fi
-          # Scheduled poll runs hold digest entries; only the 00:30 UTC cron
-          # (and manual dispatches) post the daily digest.
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" != "30 0 * * *" ]; then
+          # Webhook-relay poll runs (no_digest=true) hold digest entries; the
+          # 00:30 UTC cron and human manual dispatches post the daily digest.
+          if [ "${{ inputs.no_digest }}" = "true" ]; then
             ARGS="$ARGS --no-digest"
           fi
           # Monday 16:00 UTC cron posts the weekly per-person scorecard instead
@@ -92,6 +94,24 @@ jobs:
             ARGS="--weekly-scorecard"
           fi
           python3 call_agent.py $ARGS
+      # "Transcript not ready — retrying next run" needs a next run to exist
+      # now that the poll crons are gone. The agent drops state/retry_wanted
+      # when calls are inside the transcript grace window; this asks the relay
+      # to dispatch again in 10 minutes. Best-effort: if the relay is down or
+      # the secrets aren't set, the daily digest run sweeps the call up.
+      - name: Schedule retry for pending transcripts
+        env:
+          RELAY_URL: ${{ secrets.CALL_RELAY_URL }}
+          RELAY_TOKEN: ${{ secrets.CALL_RELAY_TOKEN }}
+        run: |
+          if [ -f state/retry_wanted ]; then
+            if [ -n "$RELAY_URL" ] && [ -n "$RELAY_TOKEN" ]; then
+              curl -fsS -m 15 -X POST "$RELAY_URL/redispatch?token=$RELAY_TOKEN&delay=10" \
+                || echo "redispatch request failed — daily digest run is the backstop"
+            else
+              echo "retry wanted but CALL_RELAY_URL/CALL_RELAY_TOKEN unset — daily digest run is the backstop"
+            fi
+          fi
       - name: Commit state changes
         working-directory: .
         run: |

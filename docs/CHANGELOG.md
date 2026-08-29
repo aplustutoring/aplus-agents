@@ -8,6 +8,40 @@ Newest entries first.
 
 ---
 
+## 2026-08-28 — Call agent goes event-driven: JustCall webhook replaces the 15-min poll crons (#AP-pending)
+
+**What changed**
+- `ops/call_agent/webhook-relay/` (NEW) — Cloudflare Worker
+  `call-agent-webhook-relay`: JustCall call-completed/missed-call webhooks →
+  ~6-min delay (Durable Object alarm, coalesced) → `workflow_dispatch` on
+  `call-agent.yml` with `dry_run=false, no_digest=true`. Plus `/redispatch`
+  for transcript retries. Secrets: GITHUB_TOKEN (fine-grained, Actions RW,
+  this repo only) + WEBHOOK_TOKEN.
+- `.github/workflows/call-agent.yml` — the three poll crons are GONE; only
+  the 00:30 UTC digest cron (now also the backstop sweep) and the Monday
+  scorecard cron remain. New `no_digest` dispatch input; new best-effort step
+  that POSTs `/redispatch?delay=10` when `state/retry_wanted` exists.
+- `ops/call_agent/call_agent.py` — counts grace-window transcript retries and
+  writes/clears `state/retry_wanted` (live runs only; never committed).
+- `registry.yml` — call-agent trigger rewritten (event + cron); new
+  `call-agent-webhook-relay` entry (deterministic relay, no CARE pointer).
+- `docs/FLEET.md` regenerated; both call_agent READMEs updated.
+
+**Why**
+GitHub Actions honored only ~4 of the ~50 daily scheduled poll runs
+(2026-08-28: nothing between 5:27 AM and mid-afternoon PT, so Boston Powers'
+morning calls sat unprocessed for 8+ hours; Abraham Park's 8/27 calls
+processed 6 hours late). Cron throttling is GitHub-side and worsens with the
+fleet's cron count — polling harder was not fixable. Event-driven triggering
+lands coaching cards and follow-up tasks minutes after hangup and *reduces*
+Actions usage. The agent stays idempotent (cursor + processed-ID state), so
+duplicate/coalesced/dropped dispatches are all safe, and the daily digest
+cron sweeps anything the relay misses.
+
+**Not done in this PR (Roman's one-time setup, webhook-relay/README.md):**
+deploy the Worker, create the PAT, set the two Worker secrets + two repo
+secrets, add the two JustCall webhooks.
+
 ## 2026-08-27 — Charter mail is routed by what it IS, not stamped new_deal_po (#AP-pending)
 
 **What changed**

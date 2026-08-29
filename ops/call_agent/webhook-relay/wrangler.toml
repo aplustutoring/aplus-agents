@@ -1,0 +1,25 @@
+name = "call-agent-webhook-relay"
+main = "worker.js"
+compatibility_date = "2026-08-28"
+
+[vars]
+GITHUB_REPO = "aplustutoring/aplus-agents"
+WORKFLOW_FILE = "call-agent.yml"
+# Minutes to wait after a completed-call webhook before dispatching the
+# workflow — covers JustCall's AI-transcript lag. The agent's own
+# transcript_grace_minutes retry (via /redispatch) catches slow ones.
+DEFAULT_DELAY_MINUTES = "6"
+
+# Alarm-based dispatch coalescing lives in one Durable Object instance.
+# SQLite-backed class — runs on the Workers free plan.
+[[durable_objects.bindings]]
+name = "DISPATCHER"
+class_name = "Dispatcher"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Dispatcher"]
+
+# Secrets (never in this file — set via CLI):
+#   wrangler secret put GITHUB_TOKEN    # fine-grained PAT, Actions read+write on aplustutoring/aplus-agents ONLY
+#   wrangler secret put WEBHOOK_TOKEN   # random string, shared with JustCall webhook URLs + repo secret CALL_RELAY_TOKEN
