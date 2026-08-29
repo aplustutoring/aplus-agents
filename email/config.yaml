@@ -427,7 +427,11 @@ escalation:
 # Pesters regardless of who owes the reply — an unanswered family is still ours.
 reasoner:
   enabled: true
-  allow_close: false          # flip on only after a dry run Roman has read
+  # Roman approved 2026-08-28 after reading the 2026-08-27 dry run (Actions run
+  # 33121995796): 158 tickets, 71 closes, and zero of the 13 hand-verified
+  # unresolved tickets touched. Closing still needs confidence >= the threshold
+  # below AND a verdict in RESOLVED / NO_ACTION / DUPLICATE.
+  allow_close: true
   close_min_confidence: 0.85  # closing needs a second system, not a hunch
   owner_after_hours: 24
   supervisor_after_hours: 48
