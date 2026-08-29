@@ -509,9 +509,14 @@
     409466116,
     409523616,
     409545929,
-    409548893
+    409548893,
+    409550747,
+    409552053,
+    409561776,
+    409550496,
+    409554695
   ],
-  "last_run_utc": "2026-08-28T23:58:13.544021+00:00",
+  "last_run_utc": "2026-08-29T05:22:21.355214+00:00",
   "pending_digest": [
     {
       "call_id": 409377790,
@@ -1648,6 +1653,135 @@
         [
           "Email Ana with tutor profile match once identified",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409550496,
+      "number": "18188261069",
+      "time_pt": "5:07 PM",
+      "matched": true,
+      "contact_label": "Blanca Perez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Yolanda at A+ Tutoring to Blanca Perez regarding tutoring for her son Joseph. Blanca did not answer; Yolanda left a voicemail asking Blanca to confirm receipt of SMS messages and review the tutor profile for Peter Ashley, proposing a Tuesday 3:30 start. No live contact was made.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Blanca's response on the Peter Ashley tutor profile and Tuesday 3:30 start time; continue follow-up outreach if no reply",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda left another voicemail for Blanca Perez (mom of Joseph, 4th grade at CWC, ELA/math support). We've sent SMS messages and shared tutor Peter Ashley's profile, and proposed starting Tuesday at 3:30. Blanca hasn't responded across multiple outreach attempts (8/11, 8/18, 8/20). She now needs to review Peter's profile and confirm Tuesday 3:30. If she calls back, open with: 'Hi Blanca, thanks for getting back to us \u2014 did you get a chance to look at Peter Ashley's profile? We'd love to lock in Tuesday at 3:30 for Joseph.' Prior availability noted: today or Thursday after 4PM if Tuesday doesn't work.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing open deal in pipeline; outbound voicemail with no live contact \u2014 status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Joseph",
+          "Peter Ashley"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Yolanda left a voicemail for Blanca confirming SMS outreach and asking her to review tutor Peter Ashley's profile, with a proposed start of Tuesday at 3:30. No live contact made.",
+          "what_we_can_do_to_help": "Hold Tuesday 3:30 tentatively with tutor Peter Ashley for Joseph pending Blanca's confirmation; continue follow-up via call/SMS until she responds.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Yolanda left a voicemail for Blanca confirming SMS outreach and asking her to review tutor Peter Ashley's profile, with a proposed start of Tuesday at 3:30. No live contact made."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Hold Tuesday 3:30 tentatively with tutor Peter Ashley for Joseph pending Blanca's confirmation; continue follow-up via call/SMS until she responds."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Blanca's response on the Peter Ashley tutor profile and Tuesday 3:30 start time; continue follow-up outreach if no reply",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409554695,
+      "number": "13104631221",
+      "time_pt": "5:54 PM",
+      "matched": true,
+      "contact_label": "Aly Daly",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound call to Aly Daly to follow up on scheduling for Everson's math and Italian tutoring. The call was intercepted by a call-screening service; Janelle left her name and company but did not reach Aly live. No new information was obtained.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry contact with Aly via SMS and/or another call to confirm Tuesday 9am math with Jonathan and finalize Italian time with Cynthia",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Aly Daly uses a call-screening service; Janelle left her name/company but didn't reach Aly live. We're still waiting to confirm Everson's Tuesday 9am math start with Jonathan and to finalize Italian scheduling with Cynthia. Best next move: send an SMS summarizing the proposed Tuesday 9am math slot and ask for her preferred Italian times. Open with: 'Hi Aly, Janelle at A+ following up \u2014 just want to lock in Everson's Tuesday 9am math with Jonathan and pin down an Italian time with Cynthia.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an open deal; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Janelle called Aly for scheduling follow-up; reached her call-screening service again and left name/company. No live conversation; Tuesday 9am math with Jonathan and Italian scheduling with Cynthia still unconfirmed.",
+          "what_we_can_do_to_help": "[outbound call] Janelle to try SMS next given repeated screening-service intercepts, and continue attempting to confirm Tuesday 9am math with Jonathan and finalize Italian time with Cynthia.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Janelle called Aly for scheduling follow-up; reached her call-screening service again and left name/company. No live conversation; Tuesday 9am math with Jonathan and Italian scheduling with Cynthia still unconfirmed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Janelle to try SMS next given repeated screening-service intercepts, and continue attempting to confirm Tuesday 9am math with Jonathan and finalize Italian time with Cynthia."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry contact with Aly via SMS and/or another call to confirm Tuesday 9am math with Jonathan and finalize Italian time with Cynthia",
+          80047202
         ]
       ],
       "ticket_id": null,
