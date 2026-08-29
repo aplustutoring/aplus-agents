@@ -77,7 +77,17 @@ PO_SYSTEM = (
     "Coach'-style prose, prepaid bulk-session requests from free-mail addresses, sender "
     "name not matching the address), 'marketing_junk' (unsolicited ads, directory "
     "listings, vendor-spotlight or newsletter broadcasts with no action required), "
+    "'ar_followup' (a school or its AP department chasing, disputing or confirming "
+    "payment on invoices we already sent — 'outstanding invoices', 'paid via ACH on', "
+    "check numbers, remittance advice, or a year-end reconciliation statement request), "
+    "'invoice_correction' (they will pay but need the invoice CHANGED first — a new "
+    "legal name, billing address, PO number or line-item fix, then resubmitted), "
+    "'vendor_onboarding' (we have been approved or renewed as a vendor and there is "
+    "setup to do — portal logins or credentials, welcome packets, account activation, "
+    "renewal paperwork that is NOT a signature request), "
     "'family_inquiry' (a real family asking about service), or 'other'. "
+    "ar_followup and invoice_correction are about money we are OWED; use "
+    "vendor_compliance only for documents we must SIGN or PROVIDE to keep selling. "
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
     "the school staff, TOR, or education specialist; empty string for anything not stated. "
     "If the email is a REPLY providing a family's contact details (we ask TORs for parent "
@@ -1855,28 +1865,56 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
     subject = (f"new_po — {po.get('school') or m['sender'][:40]}"
                + (f" (PO {po['po_number']})" if po.get("po_number") else "")) if po.get("is_po") \
               else f"po_inbox review — {m['subject'][:50]}"
-    priority, ticket_owner = "MEDIUM", owner
-    if record["category"] == "po_cancellation":
+    # The work type drives owner, priority and category from config (Roman
+    # 2026-08-27). Before this, EVERY charter@ ticket was stamped new_deal_po —
+    # including the 42 of 93 open ones whose own description read "Not a PO:" —
+    # so no routing rule matched and the ticket fell to the inbox owner with no
+    # SLA and no done-state.
+    work_type = ("purchase_order" if po.get("is_po") else
+                 "po_cancellation" if record["category"] == "po_cancellation" else
+                 record.get("category") if record.get("category") == "parent_info_reply" else
+                 hint or "other")
+    wt_cfg = (pc.get("work_types") or {}).get(work_type, {})
+    priority = wt_cfg.get("priority", "MEDIUM")
+    ticket_owner = staff(wt_cfg["owner"]) if wt_cfg.get("owner") else owner
+    ticket_owner = ticket_owner or owner
+    category = wt_cfg.get("category", "new_deal_po")
+    record["po_work_type"] = work_type
+
+    # Subject prefix + the note that tells the owner what they are looking at.
+    # Owner/priority/category come from work_types above, not from here.
+    if work_type == "po_cancellation":
         subject = (f"PO CANCELLED — {po.get('school') or m['sender'][:40]}"
                    + (f" (PO {po['po_number']})" if po.get("po_number") else ""))
-        priority = "HIGH"
-    elif hint == "vendor_compliance":
+    elif work_type == "vendor_compliance":
         subject = f"COMPLIANCE — {m['subject'][:50]}"
-        priority = "HIGH"
-        ticket_owner = staff(pc.get("compliance_owner", "sales")) or owner
         note_parts.append(f"📋 Vendor/compliance item — routed to "
                           f"{ticket_owner.get('name', 'the compliance seat')}: unsigned "
                           f"agreements and rule changes block or reshape POs.")
-    elif hint == "scam":
+    elif work_type == "ar_followup":
+        subject = f"AR — {m['subject'][:50]}"
+        note_parts.append("💵 Money we are OWED: a school or its AP department is "
+                          "chasing, disputing or confirming payment. Reconcile against "
+                          "the Teachworks invoice before replying — several of these "
+                          "turned out to be paid on their side and unrecorded on ours.")
+    elif work_type == "invoice_correction":
+        subject = f"INVOICE FIX — {m['subject'][:50]}"
+        note_parts.append("🧾 They will pay once the invoice is corrected and resent. "
+                          "Fix it in Teachworks, resubmit, then stamp Invoice # on the "
+                          "deal. Suncoast held $1,330 for 10 days over a Bill To name.")
+    elif work_type == "vendor_onboarding":
+        subject = f"VENDOR SETUP — {m['subject'][:50]}"
+        note_parts.append("🏫 We are approved or renewed and there is setup to finish "
+                          "(portal login, welcome packet, account activation). Unfinished "
+                          "onboarding blocks the school's POs from reaching us.")
+    elif work_type == "scam":
         subject = f"SUSPECTED SCAM — {m['subject'][:50]}"
-        priority = "LOW"
         note_parts.append("🎣 Scam pattern (advance-fee / bulk-prepay shape) — do not "
                           "reply with location or banking details; archive after a glance. "
                           "Sender address deliberately NOT captured as a parent contact.")
         record["parent_email"] = ""
-    elif hint == "marketing_junk":
+    elif work_type == "marketing_junk":
         subject = f"marketing/junk — {m['subject'][:50]}"
-        priority = "LOW"
     if closed_thread and not po.get("is_po") and record["category"] != "po_cancellation":
         subject = f"PO-thread reply — {m['subject'][:50]}"
         note_parts.insert(0, "↩️ Reply on an ALREADY-PROCESSED PO thread — check it for "
@@ -1891,7 +1929,14 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             + f"\nSLA due: {sla_due.isoformat()}")
     ticket = hs.create_ticket(subject, ticket_owner["hubspot_owner_id"],
                               cfg()["hubspot"]["ticket_stages"]["needs_approval"], desc, None,
-                              priority=priority, category="new_deal_po", source="EMAIL")
+                              priority=priority, category=category, source="EMAIL",
+                              # #AP007 — declared in properties.yml since the Feedback
+                              # Agent and never written by this engine until now, which
+                              # is why every dedup and origin report had to guess from
+                              # the subject line.
+                              extra_props={"po_work_type": work_type,
+                                           "ticket_source": "email_engine",
+                                           "source_thread_id": m.get("threadId", "")})
     record["ticket_id"] = ticket.get("id")
     record["sla_due"] = sla_due.isoformat()
 

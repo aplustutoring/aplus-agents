@@ -8,6 +8,67 @@ Newest entries first.
 
 ---
 
+## 2026-08-27 — Charter mail is routed by what it IS, not stamped new_deal_po (#AP-pending)
+
+**What changed**
+- `ops/hubspot-schema/properties.yml` — declares `po_work_type` (11 options).
+- `email/config.yaml` — new `po_inbox.work_types`: owner, priority and
+  hs_ticket_category per work type.
+- `email/src/po_inbox.py` — the extractor prompt gains `ar_followup`,
+  `invoice_correction` and `vendor_onboarding`; owner/priority/category now come
+  from config instead of being hardcoded; the ticket carries `po_work_type`,
+  `ticket_source` and `source_thread_id`.
+- `email/src/hubspot_client.py` — `create_ticket(extra_props=...)`, and a 400 on
+  an unsynced property retries without it rather than losing the ticket.
+- `email/tests/test_po_work_types.py` — 12 tests.
+
+**Why**
+`po_inbox` filed every charter@ ticket with `category="new_deal_po"` hardcoded at
+the call site. On 2026-08-27 that was 93 open tickets — and **42 of them carried
+"Not a PO:" in their own description**. The agent works out what each one is,
+writes it in prose, and the next line threw it away.
+
+The cost is measurable. Across 845 tickets created since 2026-06-01:
+
+| bucket | n | closed | median time to close |
+|---|---|---|---|
+| a real hs_ticket_category | 157 | 92% | **0.25 days** |
+| the catch-all | 688 | 80% | 2.15 days |
+
+8.6x slower and 12 points less likely to close, on 81% of the queue. The
+mechanism: a constant category means no routing rule matches, so no owner is
+derived, so it lands on whoever owns the inbox (Kath) with no SLA and no
+done-state. That one line is why Kath held 95 tickets covering work that was
+never hers, why the Granite Mountain COI sat 14 days with no compliance owner,
+and why AR chasing was split across four people.
+
+The three new types come from the corpus, not from imagination — they are what
+the agent's own "Not a PO:" summaries already said: vendor_onboarding 11 open,
+ar_followup 7 (median 14d), invoice_correction 2 (Suncoast held $1,330 for ten
+days over a Bill To name).
+
+Also finally writes `ticket_source` and `source_thread_id`, declared for #AP007
+and written on zero tickets until now — which is why dedup could only key on the
+PO number and the reasoner had to find Gmail threads by searching the subject.
+
+**Needs the schema sync.** `po_work_type` must exist in portal 6312752 before
+the stamp lands: run `.github/workflows/hubspot-schema.yml` (dry-run first). Until
+it does, `create_ticket` drops the stamp and logs a warning rather than failing —
+tickets keep flowing either way.
+
+**Files touched**
+- `ops/hubspot-schema/properties.yml`, `email/config.yaml`
+- `email/src/po_inbox.py`, `email/src/hubspot_client.py`
+- `email/tests/test_po_work_types.py`, `docs/CHANGELOG.md`
+
+**Verification** — 328 passed (was 316; 12 new). Config is asserted against the
+real closed `hs_ticket_category` enumeration so an invented value fails the suite.
+
+**Decision log** — candidate: "charter inbox mail is categorised by work type;
+the agent's own classification is stamped, not discarded."
+
+---
+
 ## 2026-08-27 — The reasoner can read the charter@ Gmail thread (#AP-pending)
 
 **What changed**

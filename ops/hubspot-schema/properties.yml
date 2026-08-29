@@ -73,6 +73,47 @@ properties:
         - value: UNKNOWN
           label: "Unregistered automation"
 
+    # ── PO-inbox work type (Roman approved 2026-08-27).
+    # Every ticket the PO inbox filed was stamped hs_ticket_category=new_deal_po,
+    # including the 42 of 93 whose own description read "Not a PO:". Measured over
+    # 845 tickets since 2026-06-01, a ticket carrying a real category closed in a
+    # median of 0.25 days at a 92% rate; one in the catch-all took 2.15 days at
+    # 80%. The extractor already works the type out and writes it in prose — this
+    # is where it goes so routing, SLA and a done-state can key off it.
+    - name: po_work_type
+      label: "[Agent] PO inbox work type"
+      group: fleet_automation
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/po_inbox.py. What a charter@ inbox
+        ticket actually is, as opposed to hs_ticket_category which only has a
+        coarse New Deal / PO option. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: purchase_order
+          label: "Purchase order"
+        - value: po_cancellation
+          label: "PO cancellation"
+        - value: ar_followup
+          label: "AR follow-up / reconciliation"
+        - value: invoice_correction
+          label: "Invoice correction / reissue"
+        - value: vendor_compliance
+          label: "Vendor compliance (agreement, COI, W-9)"
+        - value: vendor_onboarding
+          label: "Vendor onboarding / renewal"
+        - value: parent_info_reply
+          label: "Parent info reply"
+        - value: family_inquiry
+          label: "Family inquiry"
+        - value: marketing_junk
+          label: "Marketing / junk"
+        - value: scam
+          label: "Suspected scam"
+        - value: other
+          label: "Other non-PO"
+
     # ── Tutor-issue ticketing (ops/tutor-issues, Roman approved 2026-08-26).
     # Tickets logged on the TUTOR's contact record when we notice an issue.
     # Silent internal log in v1 — nothing tutor-facing reads these.
