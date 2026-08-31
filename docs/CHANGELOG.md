@@ -8,6 +8,26 @@ Newest entries first.
 
 ---
 
+## 2026-08-31 — Task sweep: auto-close finished invoice tasks + watch Kath
+
+**What:** `task_sweep._autoclose_done_tasks` — an open "Convert PO to TW
+invoice" task whose deal already carries an `Invoice #` is DONE; the sweep
+closes it (audited `task_autoclosed`) BEFORE bucketing, so nobody is nagged
+about finished work. `charter_admin` (Kath) joins `task_sweep.monitor`.
+**Why:** on 2026-08-31 ten of her invoice tasks sat NOT_STARTED while every
+one of their invoices — 54528 through 54537, consecutive — was already
+created. She does the work; the task list keeps the phantom. Kath was also
+the ONE seat nobody monitored, and she holds the entire PO→invoice money
+path. Adding her without the auto-close would have shipped pure noise, so
+the order matters: close the phantoms first, then watch the seat.
+**Notes:** the PO parser anchors on the subject's trailing comma — a
+digit-leading rule silently skipped Blue Ridge's `PF593736`, and a bare
+`\bPO\s+` grabbed the literal "PO to" from "Convert PO to TW invoice"
+(caught by the first test run). Lookup failures never kill the sweep;
+`autoclose_invoice_tasks: false` reverts to report-only.
+**Files:** email/src/task_sweep.py, email/config.yaml,
+email/tests/test_task_sweep.py (6 new; suite 355 green).
+
 ## 2026-08-28 — Task-completion sweep + 1,025-task backlog closure (#AP-pending)
 
 **What changed**

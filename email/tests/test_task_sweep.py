@@ -169,3 +169,82 @@ def test_disabled_config_is_a_noop(monkeypatch):
     dms, posts, _ = _setup(monkeypatch, [_task("T1")], cfg=cfg)
     ts.run()
     assert posts == [] and dms == []
+
+
+# ── auto-close: the task list must not nag about provably finished work ──
+# (2026-08-31: ten "Convert PO to TW invoice" tasks sat NOT_STARTED while
+#  their invoices 54528-54537 were already filled in.)
+
+INV_SUBJECT = "Convert PO to TW invoice — Jil Beck (iLEAD, PO 3114181734, $480.0)"
+
+
+def _wire_deals(monkeypatch, invoice_by_po):
+    closed = []
+    monkeypatch.setattr(ts.hs, "find_deals_by_po_number",
+                        lambda po: ([{"id": "D1", "properties":
+                                      {"invoice__": invoice_by_po[po]}}]
+                                    if po in invoice_by_po else []))
+    monkeypatch.setattr(ts.hs, "batch_complete_tasks", lambda ids: closed.extend(ids))
+    return closed
+
+
+def test_invoiced_task_is_closed_and_never_nagged(monkeypatch):
+    t = _task("T1", due_days_ago=5, subject=INV_SUBJECT)
+    dms, posts, records = _setup(monkeypatch, [t])
+    closed = _wire_deals(monkeypatch, {"3114181734": "54531"})
+    ts.run()
+    assert closed == ["T1"]                       # closed in HubSpot
+    assert posts == [] and dms == []              # and absent from digest/DMs
+    assert any(r["action_taken"] == "task_autoclosed" and r["invoice"] == "54531"
+               for r in records)
+
+
+def test_uninvoiced_task_still_nags(monkeypatch):
+    t = _task("T2", due_days_ago=5, subject=INV_SUBJECT)
+    dms, posts, _ = _setup(monkeypatch, [t])
+    closed = _wire_deals(monkeypatch, {})          # deal has no Invoice # yet
+    ts.run()
+    assert closed == []
+    assert posts and "T2" not in str(closed)
+
+
+def test_non_invoice_tasks_are_never_autoclosed(monkeypatch):
+    t = _task("T3", due_days_ago=5, subject="Call the family back")
+    _setup(monkeypatch, [t])
+    closed = _wire_deals(monkeypatch, {"3114181734": "54531"})
+    ts.run()
+    assert closed == []
+
+
+def test_autoclose_can_be_disabled(monkeypatch):
+    cfg = {**CFG, "task_sweep": {**CFG["task_sweep"],
+                                 "autoclose_invoice_tasks": False}}
+    t = _task("T4", due_days_ago=5, subject=INV_SUBJECT)
+    _setup(monkeypatch, [t], cfg=cfg)
+    closed = _wire_deals(monkeypatch, {"3114181734": "54531"})
+    ts.run()
+    assert closed == []
+
+
+def test_autoclose_reads_letter_leading_po_numbers(monkeypatch):
+    # Blue Ridge (PF593736) and Lake View (105712-C029-LVC) keep letters in the
+    # number; the parser must not be digits-only, and must never grab the
+    # literal "PO to" out of "Convert PO to TW invoice".
+    for po in ("PF593736", "105712-C029-LVC"):
+        subject = f"Convert PO to TW invoice — Kid (School, PO {po}, $150)"
+        t = _task("TX", due_days_ago=5, subject=subject)
+        _setup(monkeypatch, [t])
+        closed = _wire_deals(monkeypatch, {po: "54999"})
+        ts.run()
+        assert closed == ["TX"], f"failed to parse PO {po}"
+
+
+def test_autoclose_survives_a_lookup_failure(monkeypatch):
+    t = _task("T5", due_days_ago=5, subject=INV_SUBJECT)
+    dms, posts, _ = _setup(monkeypatch, [t])
+    def boom(po):
+        raise RuntimeError("hubspot down")
+    monkeypatch.setattr(ts.hs, "find_deals_by_po_number", boom)
+    monkeypatch.setattr(ts.hs, "batch_complete_tasks", lambda ids: None)
+    ts.run()                                       # must not raise
+    assert posts                                   # digest still goes out

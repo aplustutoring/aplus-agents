@@ -12,10 +12,16 @@ monitored seats straight from HubSpot each weekday morning and:
 3. On the weekly stats day, appends a completion scoreboard to the digest:
    tasks each owner completed in the last 7 days, on time vs late.
 
-Deterministic sweep — no reasoning, no CARE pointer, never writes to HubSpot.
+Deterministic sweep — no reasoning, no CARE pointer. The ONE write it makes is
+auto-closing tasks whose completion signal already exists in the CRM (see
+_autoclose_done_tasks): on 2026-08-31 ten "Convert PO to TW invoice" tasks sat
+NOT_STARTED while every one of their invoices (54528-54537) was already filled
+in — Kath does the work, the task list keeps the phantom. Nagging someone about
+finished work is how a queue stops being read at all.
 """
 from __future__ import annotations
 
+import re
 from datetime import datetime, timedelta
 
 from . import audit, hubspot_client as hs, slack_client
@@ -151,6 +157,58 @@ def _days_since_iso(iso: str | None, now: datetime) -> float:
     return (now - t).total_seconds() / 86400.0 if t else 1e9
 
 
+# The subject reads "Convert PO to TW invoice — Student (School, PO 123, $60)",
+# so the real number is always COMMA-terminated. Anchoring on that comma beats
+# a digit-leading rule: it excludes the literal "PO to" of the prefix (which
+# matched on this test's first run) while still accepting letter-leading PO
+# numbers like Blue Ridge's PF593736 and Lake View's 105712-C029-LVC.
+_PO_IN_SUBJECT = re.compile(r"\bPO\s+([A-Za-z0-9][A-Za-z0-9-]*),")
+
+
+def _autoclose_done_tasks(tasks: list[dict], tcfg: dict) -> set[str]:
+    """Close invoice-conversion tasks whose deal ALREADY carries an Invoice #.
+
+    The task says "do X"; the deal proves X is done. Kath fills Invoice # (the
+    real completion signal) and moves on, leaving the task open forever — ten
+    such phantoms on 2026-08-31, all with invoices already created. Returns
+    the ids closed so this run's digest/DMs ignore them."""
+    if not tcfg.get("autoclose_invoice_tasks", True):
+        return set()
+    marker = (tcfg.get("invoice_task_marker") or "convert po to tw invoice").lower()
+    done: set[str] = set()
+    for t in tasks:
+        p = t.get("properties") or {}
+        subject = (p.get("hs_task_subject") or "")
+        if marker not in subject.lower():
+            continue
+        m = _PO_IN_SUBJECT.search(subject)
+        if not m:
+            continue
+        po_num = m.group(1).strip().rstrip(",")
+        try:
+            deals = hs.find_deals_by_po_number(po_num)
+        except Exception as e:  # noqa: BLE001 — never let a lookup kill the sweep
+            print(f"  ⚠️  autoclose lookup failed for PO {po_num}: {e}")
+            continue
+        if not deals:
+            continue
+        inv = ((deals[0].get("properties") or {}).get("invoice__") or "").strip()
+        if not inv:
+            continue
+        done.add(str(t["id"]))
+        audit.append({"message_id": f"task-autoclosed:{t['id']}", "source": "task_sweep",
+                      "action_taken": "task_autoclosed", "task_id": str(t["id"]),
+                      "po_number": po_num, "invoice": inv, "subject": subject[:120]})
+    if done:
+        try:
+            hs.batch_complete_tasks(sorted(done))
+            print(f"  ✅ auto-closed {len(done)} invoice task(s) already invoiced")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  auto-close batch failed: {e}")
+            return set()
+    return done
+
+
 def run() -> None:
     tcfg = cfg().get("task_sweep") or {}
     now = now_la()
@@ -167,6 +225,11 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  could not list open tasks (missing tasks read scope?): {e}")
         return
+    # Close what is provably already done BEFORE bucketing, so nobody is
+    # nagged about work whose completion is sitting in the CRM.
+    closed = _autoclose_done_tasks(tasks, tcfg)
+    if closed:
+        tasks = [t for t in tasks if str(t["id"]) not in closed]
     buckets = _bucket_open_tasks(tasks, owners, now,
                                  int(tcfg.get("horizon_days", 30)))
 

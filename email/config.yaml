@@ -466,7 +466,15 @@ aging_sweep:
 task_sweep:
   enabled: true
   channel: "C0BL05MCJ4B"      # #agent-feedback (private; ID so the bot can post)
-  monitor: [visionary, sales, charter_sales, scheduler_a_l]  # seats, not names
+  # seats, not names. charter_admin added 2026-08-31: she holds every
+  # PO→invoice task (the money path) and was the one seat nobody watched.
+  # Safe to watch only because autoclose_invoice_tasks (below) clears the
+  # phantoms first — ten of her open tasks were already-done invoices.
+  monitor: [visionary, sales, charter_sales, scheduler_a_l, charter_admin]
+  # An open "Convert PO to TW invoice" task whose deal already carries an
+  # Invoice # is DONE — close it instead of nagging. false = report only.
+  autoclose_invoice_tasks: true
+  invoice_task_marker: "Convert PO to TW invoice"
   dm_after_days: 3            # overdue this long → DM the owner
   dm_repeat_days: 3           # re-DM cadence (audit-log-held, like aging_sweep)
   horizon_days: 30            # overdue past this = stale backlog: weekly count line
