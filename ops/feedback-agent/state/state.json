@@ -59,7 +59,8 @@
     "Ev0BTHQU9THQ",
     "Ev0BTMGC7U2G",
     "Ev0BTHT5KX8S",
-    "Ev0BTQASAS83"
+    "Ev0BTQASAS83",
+    "Ev0BTGDM0Z0F"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -554,24 +555,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-28T22:38:50.520132+00:00",
       "reporter": "Kath"
-    },
-    "1788190269.210389": {
-      "agent": "content-build",
-      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
-      "correction_path": "corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md",
-      "branch": "fix/content-build-2026-08-31-210389",
-      "diagnosis": "The weekly-content social captions are being generated (or hardcoded) with the wrong CTA per platform \u2014 Instagram should say 'link in story' and Facebook should say 'link in comments'. Most likely this lives in the caption/copy generation inside deliver-to-slack.py or content-build.py, or in a caption template used for the weekly content post.",
-      "fix_plan": [
-        "Grep marketing/scripts/b2b/ for existing caption strings like 'link in bio', 'link in comments', 'link in story' to locate where per-platform captions are assembled.",
-        "In the weekly-content caption builder (likely marketing/scripts/b2b/deliver-to-slack.py or content-build.py), branch by platform: Instagram \u2192 'link in story', Facebook \u2192 'link in comments'.",
-        "If captions come from a template/prompt (skill:aplus-blog-longform or a caption template file), update the template to emit the correct per-platform CTA instead.",
-        "Run the content-build workflow in dry-run against last week's slate and confirm the IG and FB drafts in HubSpot show the correct CTAs.",
-        "Ship; watch this Saturday's run and confirm with Danielle."
-      ],
-      "risk": "low",
-      "recommendation": "execute",
-      "proposed_utc": "2026-08-31T15:32:05.325231+00:00",
-      "reporter": "Danielle"
     }
   }
 }
