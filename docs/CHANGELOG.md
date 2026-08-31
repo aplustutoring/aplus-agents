@@ -41,6 +41,140 @@ any live signal.
 `email/config.yaml`, `email/tests/test_task_sweep.py` (16 tests; suite 331
 green), `.github/workflows/task-sweep.yml`, `registry.yml`,
 `email/state/audit_log.jsonl` (11 bulk-close records).
+## 2026-08-31 — Gmail cursor overlap window (the Lia Beck miss)
+
+**What:** the PO inbox poll now queries `cursor_overlap_seconds` (default
+3600) BEHIND its cursor (`_inbox_query`); re-listed mail is free via the
+already_processed guard. **Why:** on 8/28 two OPS emails (sisters Jil and
+Lia Beck, same parent, same TOR) landed 2 minutes apart; the poll that
+processed Jil's advanced the cursor past Lia's arrival — her email sat
+invisible to `after:` for 3 days while everyone (Kath, Roman, and Friday's
+session) hunted for it. Any message landing behind the cursor (processing
+races, Gmail search-index lag) was permanently lost; now anything within an
+hour is self-healing. **Recovery (in session):** cursor rewound on a side
+branch (lia-recover) + dispatch → Lia's 4 deals created correctly (POs
+3114181748-51, $240 = 4 sessions = 3 hrs each, Sept-Dec, Evelin Jimenez
+resolved). That run's state push died on the cursor conflict, so its audit
+records were reconstructed by hand in this commit (po_processed marker + 4
+pending_po_opened rows, sla 2026-09-14) — without them the pending-approval
+sweep would never remind about Lia's OAs. Delete branch lia-recover after
+merge. **Files:** email/src/po_inbox.py, email/config.yaml,
+email/state/audit_log.jsonl (reconstruction), email/tests/test_po_inbox.py
+(suite 334 green).
+
+## 2026-08-31 — The weekly FB/IG caption gets a per-platform link line (content-build)
+
+**What changed**
+- `marketing/scripts/b2b/deliver-to-slack.py` — "Reply 5 — Facebook + Instagram
+  post" is now two replies: Instagram (ends `Link in story.`) and Facebook (ends
+  `Link in comments.`). New `append_link_cta()` inserts that line above the
+  caption's trailing hashtags line; new `piece_body()` centralizes body assembly
+  so the dry-run preview and the real delivery cannot drift apart. Blog assets
+  renumbered to Reply 7 and the stale module docstring now matches `PIECES`.
+- `marketing/scripts/b2b/content-build.py` — the `fb-ig-post.md` caption prompt
+  is told not to write its own link-location phrasing, so the model cannot emit a
+  "link in bio" that contradicts the appended line.
+- `marketing/scripts/b2b/build-qa-checklist.py` — one checklist line for it.
+
+**Why**
+Danielle reported (Slack `1788190269.210389`, correction
+`corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md`) that the
+Instagram caption should say "link in story" and Facebook "link in comments".
+
+The reported diagnosis assumed a per-platform CTA branch had the two platforms
+swapped. There was no branch. `content-build.py` generated ONE caption and
+`deliver-to-slack.py` shipped it as a single "post the SAME caption + image to
+both" reply, so no correct phrasing was reachable for either platform: whatever
+the model happened to write was pasted verbatim into both. Splitting the reply is
+what makes Danielle's request expressible at all, and it matches how every other
+piece in the bundle already works (one reply per destination, copy-paste ready).
+
+The line is appended deterministically rather than prompted for, because a caption
+that names the wrong place to find the link is worse than one that omits it.
+## 2026-08-27 — Email agent: campaign-reply categories for the NSSA badge sends
+
+**What:** Two new classifier categories, `campaign_family` (families replying to a
+marketing/announcement email: sign-ups, added sessions, referrals — owner
+`charter_sales`, 90 min, high priority, draft on) and `campaign_school`
+(TORs/EFs/ESs/directors replying: congrats, badge questions, shareable-material
+asks — owner `sales`, 8 business hrs, draft on). Added an "Active campaigns"
+section to `rules.md` describing the three NSSA badge announcement sends
+(subjects, audiences, "just reply" CTA) so the classifier recognizes campaign
+traffic; the block is meant to be updated as campaigns launch and retire.
+Congrats-only replies get a warm thank-you draft at low risk. School replies
+that are real program/PO business still classify `school_partner`.
+
+**Why:** Roman 2026-08-27 — the NSSA badge announcement (3 segmented sends,
+~7,250 recipients, lists 3196/3197/3198) uses reply-as-CTA, and replies land in
+the agent-triaged admin inbox (info@ is an alias of admin@). Without campaign
+awareness, family sign-up replies would route to the schedulers instead of
+Paola, and teacher replies would land inconsistently. Routing-table addition
+approved by Roman in-session (routing table otherwise LOCKED June 9).
+
+**Files:** `email/rules.md`, `email/src/classifier.py`, `email/config.yaml`
+(routing + category_map). Tests: classifier/router/orchestration suites green
+(43 passed).
+
+---
+
+## 2026-08-27 — Charter mail is routed by what it IS, not stamped new_deal_po (#AP-pending)
+
+**What changed**
+- `ops/hubspot-schema/properties.yml` — declares `po_work_type` (11 options).
+- `email/config.yaml` — new `po_inbox.work_types`: owner, priority and
+  hs_ticket_category per work type.
+- `email/src/po_inbox.py` — the extractor prompt gains `ar_followup`,
+  `invoice_correction` and `vendor_onboarding`; owner/priority/category now come
+  from config instead of being hardcoded; the ticket carries `po_work_type`,
+  `ticket_source` and `source_thread_id`.
+- `email/src/hubspot_client.py` — `create_ticket(extra_props=...)`, and a 400 on
+  an unsynced property retries without it rather than losing the ticket.
+- `email/tests/test_po_work_types.py` — 12 tests.
+
+**Why**
+`po_inbox` filed every charter@ ticket with `category="new_deal_po"` hardcoded at
+the call site. On 2026-08-27 that was 93 open tickets — and **42 of them carried
+"Not a PO:" in their own description**. The agent works out what each one is,
+writes it in prose, and the next line threw it away.
+
+The cost is measurable. Across 845 tickets created since 2026-06-01:
+
+| bucket | n | closed | median time to close |
+|---|---|---|---|
+| a real hs_ticket_category | 157 | 92% | **0.25 days** |
+| the catch-all | 688 | 80% | 2.15 days |
+
+8.6x slower and 12 points less likely to close, on 81% of the queue. The
+mechanism: a constant category means no routing rule matches, so no owner is
+derived, so it lands on whoever owns the inbox (Kath) with no SLA and no
+done-state. That one line is why Kath held 95 tickets covering work that was
+never hers, why the Granite Mountain COI sat 14 days with no compliance owner,
+and why AR chasing was split across four people.
+
+The three new types come from the corpus, not from imagination — they are what
+the agent's own "Not a PO:" summaries already said: vendor_onboarding 11 open,
+ar_followup 7 (median 14d), invoice_correction 2 (Suncoast held $1,330 for ten
+days over a Bill To name).
+
+Also finally writes `ticket_source` and `source_thread_id`, declared for #AP007
+and written on zero tickets until now — which is why dedup could only key on the
+PO number and the reasoner had to find Gmail threads by searching the subject.
+
+**Needs the schema sync.** `po_work_type` must exist in portal 6312752 before
+the stamp lands: run `.github/workflows/hubspot-schema.yml` (dry-run first). Until
+it does, `create_ticket` drops the stamp and logs a warning rather than failing —
+tickets keep flowing either way.
+
+**Files touched**
+- `ops/hubspot-schema/properties.yml`, `email/config.yaml`
+- `email/src/po_inbox.py`, `email/src/hubspot_client.py`
+- `email/tests/test_po_work_types.py`, `docs/CHANGELOG.md`
+
+**Verification** — 328 passed (was 316; 12 new). Config is asserted against the
+real closed `hs_ticket_category` enumeration so an invented value fails the suite.
+
+**Decision log** — candidate: "charter inbox mail is categorised by work type;
+the agent's own classification is stamped, not discarded."
 
 ---
 
@@ -100,6 +234,32 @@ actually lives in; absent evidence is never read as absence of action."
 
 
 ---
+
+## 2026-08-28 — Parent resolution: never guess across families (Mateo Murray-Fiore)
+
+**What:** PO 3114179131 (Mateo Murray-Fiore, iLEAD) resolved the WRONG parent —
+Luis Ramirez, whose private-pay son is a different Mateo. Deal, TW family
+(customer 2159873), and the SMS parent_email all keyed on him. Two compounding
+causes, both fixed:
+1. `teachworks_client.find_family_by_student` queried TW with the PO's exact
+   surname ('Murray-Fiore'); TW has 'Fiore' → zero candidates, so the surest
+   source (Sarah Fiore's family, real lesson history, TOR Emma Luckey) was
+   skipped. NOW: exact surname first, then each hyphen/space part; first name
+   stays exact and lesson-history scoring still gates every candidate.
+2. `po_inbox._find_parent_via_deals` used the limit-10 unsorted deal-NAME
+   token search (same disease as the numbering bug, second call site) plus an
+   `or cands` fallback that matched on FIRST NAME ALONE when the last name hit
+   nothing — that fallback picked Luis. NOW: exact student-property search
+   (search_deals_by_student, compound parts retried), the first-name-only
+   fallback is DELETED, and a missing last name returns None → parent chase.
+**Why:** a wrong family is worse than no family — chase beats guess, always.
+**Remediation (in session, Roman-approved):** deal 64464582696 repointed to
+Sarah Fiore (association + parent_email + rename) with an explanatory note;
+Kath had detached Luis; Roman deleted the mistaken TW student. Kath DM'd to
+check SMS flow 1603217415 for a Luis enrollment and watch for a duplicate
+'Mateo Murray-Fiore' TW student on the next deal-sync pass.
+**Files:** email/src/{teachworks_client,po_inbox}.py,
+email/tests/test_po_inbox.py (320 green), docs/PO-PROCESS.md (Stage 2 synced).
 
 ## 2026-08-27 — Cron-starvation watchdog + local PO-inbox heartbeat (Roman: "both")
 

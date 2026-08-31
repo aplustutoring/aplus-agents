@@ -190,16 +190,32 @@ def find_family_by_student(student_first: str, student_last: str,
         return None
     hint = (tutor_hint or "").strip().lower()
     hint_parts = [p for p in re.split(r"[\s,]+", hint) if p]
+    # Schools and Teachworks disagree on compound surnames constantly — the PO
+    # says 'Murray-Fiore', TW has 'Fiore' (the 2026-08-28 wrong-family incident:
+    # the exact-name query returned nothing, so a weaker fallback guessed the
+    # wrong Mateo). Query the exact surname first, then each hyphen/space part;
+    # first name stays exact and the lesson-history scoring below still gates
+    # every candidate, so a same-named stranger with no history can't win.
+    last_queries = [student_last] + [
+        p for p in re.split(r"[-\s]+", (student_last or "").strip())
+        if p and p.lower() != sl]
     best, best_score = None, 0
+    seen_students: set = set()
     for acct, token in accounts().items():
-        try:
-            studs = tw_get("students", {"first_name": student_first, "last_name": student_last},
-                           token=token)
-        except Exception:  # noqa: BLE001
-            continue
-        for s in studs:
+        studs = []
+        for lq in last_queries:
+            try:
+                studs += [(s, lq) for s in
+                          tw_get("students", {"first_name": student_first, "last_name": lq},
+                                 token=token)]
+            except Exception:  # noqa: BLE001
+                continue
+        for s, lq in studs:
+            if (acct, s.get("id")) in seen_students:
+                continue
+            seen_students.add((acct, s.get("id")))
             if (s.get("first_name") or "").strip().lower() != sf or \
-               (s.get("last_name") or "").strip().lower() != sl:
+               (s.get("last_name") or "").strip().lower() != lq.strip().lower():
                 continue
             try:
                 lessons = tw_get("lessons", {"student_id": s["id"]}, token=token)

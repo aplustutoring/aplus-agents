@@ -408,6 +408,36 @@ def test_nothing_happens_before_24_hours(monkeypatch):
     assert out["lines"][0]["action"] == "none"
 
 
+def test_close_only_mode_sends_no_dms(monkeypatch):
+    """The first live pass must close without pestering: 83 of 161 open tickets
+    were past the ladder, and firing those with the first bulk close would put
+    ~50 DMs on one person in a minute."""
+    closed, dms = [], []
+    monkeypatch.setattr(tr, "cfg", lambda: CFG)
+    monkeypatch.setattr(tr, "staff", lambda k: (CFG["staff"].get(k) or {}))
+    monkeypatch.setattr(tr.hs, "search_open_tickets", lambda: [_ticket(hours=200)])
+    monkeypatch.setattr(tr.hs, "invoiced_po_numbers", lambda: set())
+    monkeypatch.setattr(tr.hs, "get_ticket_emails", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_notes", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_contacts", lambda t: [])
+    monkeypatch.setattr(tr.hs, "ticket_url", lambda t: "u")
+    monkeypatch.setattr(tr.hs, "update_ticket_stage", lambda t, s: closed.append(t))
+    monkeypatch.setattr(tr.hs, "add_ticket_note", lambda t, b: None)
+    monkeypatch.setattr(tr.jc, "index_by_number", lambda since_days=90: {})
+    monkeypatch.setattr(tr.audit, "append", lambda r: None)
+    monkeypatch.setattr(tr.audit, "last_reasoner_pester", lambda t: None)
+    monkeypatch.setattr(tr.slack_client, "dm", lambda u, m: dms.append(u))
+
+    monkeypatch.setattr(tr, "reason", lambda ev, client=None: BALL)
+    tr.run(dry_run=False, pester=False)
+    assert dms == [], "close-only must not DM"
+
+    monkeypatch.setattr(tr, "reason", lambda ev, client=None: HIGH)
+    out = tr.run(dry_run=False, pester=False)
+    assert closed and out["closed"] == 1, "close-only must still close"
+    assert dms == []
+
+
 def test_waiting_still_pesters(monkeypatch):
     """Roman 2026-08-26: pester regardless of who owes the reply."""
     waiting = {"verdict": "WAITING", "confidence": 0.9, "reason": "family went quiet"}

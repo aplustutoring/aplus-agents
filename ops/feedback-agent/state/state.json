@@ -53,7 +53,15 @@
     "Ev0BSHS33XK6",
     "Ev0BSP7NU5K8",
     "Ev0BST53E6UR",
-    "Ev0BSR8D381G"
+    "Ev0BSR8D381G",
+    "Ev0BUBFTBNL8",
+    "Ev0BTMESBFS8",
+    "Ev0BTHQU9THQ",
+    "Ev0BTMGC7U2G",
+    "Ev0BTHT5KX8S",
+    "Ev0BTQASAS83",
+    "Ev0BTGDM0Z0F",
+    "Ev0BTXR5ECAW"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -362,6 +370,81 @@
       "ticket": "drafted",
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787612254091039"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787947921.422959",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "UNKNOWN",
+      "type": "IDEA",
+      "severity": "low",
+      "correction_path": "corrections/UNKNOWN/2026-08-28-channel-usage-announcement.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/137",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787947921422959"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787954945.643559",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Kath",
+      "reporter_slack_id": "U05NW5H3SLC",
+      "agent": "email-po-inbox",
+      "type": "BROKEN",
+      "severity": "critical",
+      "correction_path": "corrections/email-po-inbox/2026-08-28-po-received-no-hubspot-deal.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/140",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787954945643559"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787955533.940299",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Janelle",
+      "reporter_slack_id": "U08S3CG8XNY",
+      "agent": "email-deal-sync",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-hubspot-deal-missing-parent-name.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/141",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787955533940299?thread_ts=1787955533.940299&cid=C0BL05MCJ4B"
+    },
+    {
+      "date": "2026-08-28",
+      "ts": "1787956680.113379",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Kath",
+      "reporter_slack_id": "U05NW5H3SLC",
+      "agent": "email-deal-sync",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-student-parent-contact-ilead-mismatch.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/142",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787956680113379"
+    },
+    {
+      "date": "2026-08-31",
+      "ts": "1788190269.210389",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/147",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788190269210389"
     }
   ],
   "graduation": {
@@ -419,6 +502,60 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-24T22:35:00.570147+00:00",
       "reporter": "Roman"
+    },
+    "1787954945.643559": {
+      "agent": "email-po-inbox",
+      "agent_label": "Charter PO inbox (charter@wetutorathome.com)",
+      "correction_path": "corrections/email-po-inbox/2026-08-28-po-received-no-hubspot-deal.md",
+      "branch": "fix/email-po-inbox-2026-08-28-643559",
+      "diagnosis": "The PO arrived 26+ minutes ago but the deal still isn't in HubSpot, suggesting either the cron didn't fire this cycle, the PO extractor failed silently on Lia Beck's attachment, or deal creation errored without alerting. Most likely lives in po_inbox.py's extract\u2192create path or the Sonnet extractor returning unparseable output.",
+      "fix_plan": [
+        "Pull the last two GitHub Actions runs of .github/workflows/email-po-inbox.yml and check whether Lia Beck's message was fetched, classified as PO, and reached the extractor.",
+        "In email/src/po_inbox.py, trace the Lia Beck message ID through classify\u2192extract\u2192create_deal; log the Claude Sonnet extractor's raw output to see if fields (po_number, hours, student) parsed.",
+        "If extractor failed, inspect the PO attachment (PDF/image quality, unusual layout) and adjust the extractor prompt or add a fallback; if HubSpot create failed, check hubspot_client.py error handling.",
+        "Add a hard failure alert: if a message is classified PO but deal creation doesn't complete within one run, DM Kath+Roman with the message ID and error \u2014 silent failures are the real bug here.",
+        "Manually create Lia Beck's deal in HB now so Kath is unblocked, then backfill root cause."
+      ],
+      "risk": "medium",
+      "recommendation": "execute",
+      "proposed_utc": "2026-08-28T22:09:59.633941+00:00",
+      "reporter": "Kath"
+    },
+    "1787955533.940299": {
+      "agent": "email-deal-sync",
+      "agent_label": "Deal sync (HubSpot \u2192 Teachworks) + invoice sweep",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-hubspot-deal-missing-parent-name.md",
+      "branch": "fix/email-deal-sync-2026-08-28-940299",
+      "diagnosis": "The deal-sync agent created/updated a student (Ibraheem Siddique) in HubSpot without linking a Parent contact \u2014 likely because the HubSpot deal lacks an associated primary contact, or the contact association wasn't picked up when the family was upserted. This lives in the HubSpot\u2192Teachworks family upsert path in deal_sync.py (and its HubSpot contact lookup).",
+      "fix_plan": [
+        "Pull the Ibraheem Siddique deal in HubSpot and confirm whether a Parent contact is actually associated (deal\u2192contact association) \u2014 if missing, that's a data-entry gap, not a code bug.",
+        "In email/src/deal_sync.py, review the family upsert path: when a deal has no primary/parent contact resolvable via hubspot_client.get_deal_contacts, the agent should flag needs-review in Slack instead of silently syncing the student parent-less.",
+        "If the guard is missing or too lenient, add an explicit check: no parent email/contact \u2192 skip TW write + post a Slack needs-review with deal link and student name.",
+        "Backfill: manually add the Parent contact in HubSpot on Ibraheem's deal, then run the workflow with FORCE_DEAL_ID to re-sync and confirm the parent lands in Teachworks.",
+        "Add a one-line audit log in audit.py when a deal is skipped for missing parent so we can spot the pattern next time."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-28T22:21:54.747077+00:00",
+      "reporter": "Janelle"
+    },
+    "1787956680.113379": {
+      "agent": "email-deal-sync",
+      "agent_label": "Deal sync (HubSpot \u2192 Teachworks) + invoice sweep",
+      "correction_path": "corrections/email-deal-sync/2026-08-28-student-parent-contact-ilead-mismatch.md",
+      "branch": "fix/email-deal-sync-2026-08-28-113379",
+      "diagnosis": "The family upsert in deal_sync likely matched Ibraheem to the wrong parent contact (or created a new contact) instead of attaching him under Blanca Siddique, and the EF (enrollment/referral field) didn't pick up 'iLead Katherine Edge' \u2014 either the HubSpot deal wasn't linked to Blanca's contact, or the family-by-email matcher chose a different contact. Root cause almost certainly lives in the contact resolution + student attach path in email/src/deal_sync.py (possibly with EF/source mapping in config.yaml).",
+      "fix_plan": [
+        "Pull the HubSpot deal for Ibraheem Siddique and confirm the associated contact \u2014 is it Blanca Siddique, or a different/missing contact? Also confirm the deal's EF/source field reads 'iLead Katherine Edge'.",
+        "In Teachworks, manually re-parent Ibraheem's student record under Blanca Siddique's customer account and set EF to 'iLead Katherine Edge' to unblock Kath now.",
+        "In email/src/deal_sync.py, review the family upsert / contact-match logic \u2014 specifically how it picks the parent contact when a deal has multiple associations or when the student surname matches an existing family; add a preference for the HubSpot-associated primary contact over email-based fuzzy match.",
+        "Verify EF propagation from HubSpot deal \u2192 Teachworks customer field in deal_sync.py (and any field map in email/config.yaml); make sure the iLead source is written on create AND on update.",
+        "Backfill: run FORCE_DEAL_ID on Ibraheem's deal once fixed to confirm the sync now lands correctly, and spot-check 2\u20133 recent iLead deals for the same pattern."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-08-28T22:38:50.520132+00:00",
+      "reporter": "Kath"
     }
   }
 }

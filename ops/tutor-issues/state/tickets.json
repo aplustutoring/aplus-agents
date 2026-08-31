@@ -1,1 +1,30 @@
-{}
+{
+  "160188575761:notes_not_completed": {
+    "period": "2026-W35",
+    "ticket_id": "48110285644"
+  },
+  "1732451:notes_not_completed": {
+    "period": "2026-W35",
+    "ticket_id": "48116701286"
+  },
+  "186566583627:missed_lesson_or_late": {
+    "period": "2026-W35",
+    "ticket_id": "48110130701"
+  },
+  "186566583627:notes_not_completed": {
+    "period": "2026-W35",
+    "ticket_id": "48106027526"
+  },
+  "201330834081:missed_lesson_or_late": {
+    "period": "2026-W35",
+    "ticket_id": "48109200919"
+  },
+  "211349476205:notes_not_completed": {
+    "period": "2026-W35",
+    "ticket_id": "48108891487"
+  },
+  "2651951:missed_lesson_or_late": {
+    "period": "2026-W35",
+    "ticket_id": "48097082280"
+  }
+}

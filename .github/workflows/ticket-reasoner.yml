@@ -21,6 +21,10 @@ on:
         description: "Only look at the first N open tickets (blank = all)"
         required: false
         default: ""
+      no_pester:
+        description: "Close only, send no DMs (use for the first live pass)"
+        required: false
+        default: "false"
 
 permissions:
   contents: read
@@ -51,8 +55,10 @@ jobs:
           JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
           DRY_RUN: ${{ inputs.dry_run }}
           LIMIT: ${{ inputs.limit }}
+          NO_PESTER: ${{ inputs.no_pester }}
         run: |
           ARGS=""
           if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
           if [ -n "$LIMIT" ]; then ARGS="$ARGS --limit $LIMIT"; fi
+          if [ "$NO_PESTER" = "true" ]; then ARGS="$ARGS --no-pester"; fi
           python -m src.ticket_reasoner $ARGS

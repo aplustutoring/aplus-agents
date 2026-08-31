@@ -314,7 +314,16 @@ def _due_for_pester(tid: str, now: datetime) -> bool:
 
 
 # ── the sweep ───────────────────────────────────────────────────────────────
-def run(dry_run: bool = False, limit: int | None = None) -> dict:
+def run(dry_run: bool = False, limit: int | None = None,
+        pester: bool = True) -> dict:
+    """pester=False closes without DMing anyone.
+
+    The first live pass has to be close-only. On 2026-08-27 the queue held 161
+    open tickets, 83 of them past the 24h ladder — firing those alongside the
+    first bulk close would put ~50 DMs on Kath in one minute, which is how a bot
+    gets muted before it has proved anything. Close first, let the queue fall to
+    roughly 90, then turn the ladder on.
+    """
     rc = cfg().get("reasoner", {})
     if not rc.get("enabled") and not dry_run:
         print("reasoner disabled in config")
@@ -354,7 +363,7 @@ def run(dry_run: bool = False, limit: int | None = None) -> dict:
             if not dry_run and rc.get("allow_close"):
                 _close(ev, v)
                 closed += 1
-        elif ev["age_hours"] >= float(rc.get("owner_after_hours", 24)):
+        elif pester and ev["age_hours"] >= float(rc.get("owner_after_hours", 24)):
             targets = pester_targets(ev["age_hours"], owner_key)
             if targets and _due_for_pester(ev["ticket_id"], now):
                 act = "PESTER " + ",".join(targets)
@@ -419,5 +428,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--no-pester", action="store_true",
+                    help="close only; send no DMs (use for the first live pass)")
     a = ap.parse_args()
-    run(dry_run=a.dry_run, limit=a.limit)
+    run(dry_run=a.dry_run, limit=a.limit, pester=not a.no_pester)

@@ -46,6 +46,8 @@ ticket_fields:
     tor_inquiry: "new_deal_po"
     school_partner: "new_deal_po"
     business_dev: "GENERAL_INQUIRY"
+    campaign_family: "GENERAL_INQUIRY"
+    campaign_school: "GENERAL_INQUIRY"
     scheduling: "GENERAL_INQUIRY"
     tutor_document: "Tutor Issue"
     recruitment: "GENERAL_INQUIRY"
@@ -137,6 +139,8 @@ routing:
   payment_dispute:     { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }
   school_partner:      { owner: sales,          sla_hours: 1.5, draft: true,  priority: high }
   business_dev:        { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
+  campaign_family:     { owner: charter_sales,  sla_hours: 1.5, draft: true,  priority: high }    # campaign replies: sign-ups/referrals (Roman 2026-08-27)
+  campaign_school:     { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # campaign replies from TORs/school staff
   tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
@@ -299,9 +303,42 @@ po_inbox:
   # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
   # original email (Roman, 2026-08-26) — nagging earlier is pure false alarm.
   pending_portal_approval_days: 14
+  # Gmail poll re-reads this many seconds BEFORE the cursor (the Lia Beck miss,
+  # 2026-08-28: a message landing behind the cursor was invisible forever).
+  # Re-listed mail is deduped by the audit log, so a wide window is free.
+  cursor_overlap_seconds: 3600
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales
+  # ── Non-PO work types (Roman approved 2026-08-27) ───────────────────────
+  # Every charter@ ticket used to be stamped new_deal_po, so no routing rule
+  # matched, no owner was derived, and it fell to whoever owns the inbox with
+  # no SLA and no done-state. Measured over 845 tickets since 2026-06-01: a
+  # ticket with a real category closed in a median of 0.25 days (92%); one in
+  # the catch-all took 2.15 days (80%). Counts below are the open queue on
+  # 2026-08-27, from the agent's own "Not a PO:" summaries.
+  #
+  # owner: a ROLE. category: an EXISTING hs_ticket_category option value —
+  # never invent one, the enumeration is closed (ops/hubspot-schema).
+  work_types:
+    purchase_order:     { owner: charter_admin, priority: MEDIUM, category: new_deal_po }
+    po_cancellation:    { owner: charter_admin, priority: HIGH,   category: cancel_service }
+    # 7 open, median 14d. Schools chasing or confirming payment, year-end
+    # reconciliation. Had no owner: was split across Kath, Paola, Mandy, Janelle.
+    ar_followup:        { owner: charter_admin, priority: HIGH,   category: billing_refund }
+    # 2 open. "Reissue under our new legal name before we can pay you" — the
+    # Suncoast/Koby Wells case, $1,330 held up 10 days by a Bill To edit.
+    invoice_correction: { owner: charter_admin, priority: HIGH,   category: billing_refund }
+    # Unsigned agreements, COI, W-9. Blocks or reshapes POs, so it stays HIGH
+    # and goes to sales — Roman moved the Granite Mountain COI there by hand.
+    vendor_compliance:  { owner: sales,         priority: HIGH,   category: GENERAL_INQUIRY }
+    # 11 open. Approvals, portal logins, welcome packets, renewals.
+    vendor_onboarding:  { owner: charter_admin, priority: MEDIUM, category: GENERAL_INQUIRY }
+    parent_info_reply:  { owner: charter_admin, priority: MEDIUM, category: new_deal_po }
+    family_inquiry:     { owner: charter_sales, priority: HIGH,   category: GENERAL_INQUIRY }
+    marketing_junk:     { owner: charter_admin, priority: LOW,    category: GENERAL_INQUIRY }
+    scam:               { owner: charter_admin, priority: LOW,    category: GENERAL_INQUIRY }
+    other:              { owner: charter_admin, priority: MEDIUM, category: GENERAL_INQUIRY }
   # ROLE mapping — functional keys name roles, never people (Roman 2026-08-14);
   # change the person here, not in code.
   # ANYTHING missing on PO intake (fields not in the PO, unmatched TOR/parent,
@@ -398,7 +435,11 @@ escalation:
 # Pesters regardless of who owes the reply — an unanswered family is still ours.
 reasoner:
   enabled: true
-  allow_close: false          # flip on only after a dry run Roman has read
+  # Roman approved 2026-08-28 after reading the 2026-08-27 dry run (Actions run
+  # 33121995796): 158 tickets, 71 closes, and zero of the 13 hand-verified
+  # unresolved tickets touched. Closing still needs confidence >= the threshold
+  # below AND a verdict in RESOLVED / NO_ACTION / DUPLICATE.
+  allow_close: true
   close_min_confidence: 0.85  # closing needs a second system, not a hunch
   owner_after_hours: 24
   supervisor_after_hours: 48
@@ -406,7 +447,13 @@ reasoner:
   repeat_every_hours: 24      # daily drumbeat once the ladder starts
 
 aging_sweep:
-  enabled: true
+  # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
+  # hours, 59 of them from this sweep, and zero replies from her in the last 400
+  # messages. A targeted question about a $1,330 invoice scrolled out of view
+  # within a day. The reasoning sweep supersedes this — it asks whether a ticket
+  # is really open before it says anything, where this one only asks how old it
+  # is. Do not re-enable both at once.
+  enabled: false
   nag_after_days: 7          # open + untouched this long → DM the owner
   supervisor_after_days: 14  # also DM level2
   last_resort_after_days: 30 # also DM level3

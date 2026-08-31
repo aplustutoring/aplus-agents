@@ -486,10 +486,856 @@
     409126342,
     409128909,
     409149522,
-    409148974
+    409148974,
+    409303295,
+    409307228,
+    409377790,
+    409406362,
+    409431377,
+    409431054,
+    409454046,
+    409502284,
+    409519306,
+    409518366,
+    409518818,
+    409408591,
+    409410759,
+    409420667,
+    409422802,
+    409425445,
+    409433978,
+    409438406,
+    409464911,
+    409466116,
+    409523616,
+    409545929,
+    409548893,
+    409550747,
+    409552053,
+    409561776,
+    409550496,
+    409554695,
+    409634441,
+    409685297,
+    409711345,
+    409704266,
+    409709712,
+    409938106,
+    409954200,
+    409966558,
+    410006928,
+    410010876,
+    409924332,
+    409929101,
+    409957448,
+    409972903,
+    409985942,
+    409986424,
+    409988888,
+    410008105
   ],
-  "last_run_utc": "2026-08-28T12:27:38.254760+00:00",
-  "pending_digest": [],
-  "pending_skipped": [],
+  "last_run_utc": "2026-08-31T20:43:55.474081+00:00",
+  "pending_digest": [
+    {
+      "call_id": 409938106,
+      "number": "Restricted",
+      "time_pt": "9:45 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Cynthia Vittorini, an A+ tutor calling from Italy, phoned in trying to reach Mandy for help completing the mandated reporter / child abuse prevention training required by the charter schools. Sandra (Yolanda) could not transfer the call, so she walked Cynthia through logging into the training site and selecting the correct California course. Cynthia had accidentally enrolled in several wrong courses (PA, law enforcement, etc.) and needed to remove them before adding the correct California general training. She ended the call to remove the extra courses and said she would call back.",
+        "caller_type": "tutor applicant",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Fix phone system so calls can be transferred to Mandy (transfer failed during this call)",
+            "owner_hint": null
+          },
+          {
+            "item": "Have Mandy follow up with Cynthia (via WhatsApp since she is in Italy) to confirm she got the correct California mandated reporter training completed",
+            "owner_hint": "Mandy"
+          },
+          {
+            "item": "Be ready for Cynthia's callback to continue walking her through selecting the correct California child abuse prevention training",
+            "owner_hint": "Sandra/Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Cynthia Vittorini (A+ tutor, currently in Italy, teaches Italian) called trying to reach Mandy for help completing the charter-school-required mandated reporter / child abuse prevention training that Mandy wants done today. Call transfer to Mandy failed \u2014 please check the phone system. Cynthia was tired and a bit frazzled but polite and cooperative. Sandra walked her through logging into the mandated reporter training portal; Cynthia had mistakenly added several wrong courses (PA version, law enforcement, etc.) which were blocking her from selecting the correct 'Child Abuse \u2014 California / General Training \u2014 School Personnel' course (~30 min, ~$5-6 for the certificate). She hung up to remove the extra courses and said she'd call right back. Mandy \u2014 since transfers are broken, reach out to Cynthia directly on WhatsApp to confirm she landed in the right California course and completed it. Open with: 'Hi Cynthia, it's Mandy \u2014 Sandra filled me in, sorry about the transfer trouble. Did you get the extra courses removed and land in the California School Personnel one?'",
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Caller is an active A+ tutor completing charter-school-required mandated reporter training so she can teach students.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Fix phone system so calls can be transferred to Mandy (transfer failed during this call)",
+          81494333
+        ],
+        [
+          "Have Mandy follow up with Cynthia (via WhatsApp since she is in Italy) to confirm she got the correct California mandated reporter training completed",
+          81494333
+        ],
+        [
+          "Be ready for Cynthia's callback to continue walking her through selecting the correct California child abuse prevention training",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 409954200,
+      "number": "393520387322",
+      "time_pt": "10:12 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Cynthia, a tutor with A+ currently in Rome, Italy, called back after being on hold to get help completing the mandated reporter training Mandy had emailed her about. Janelle walked her through selecting California (not Florida) in the training catalog and locating both the Child Abuse California and Child Abuse Prevention trainings. Cynthia successfully added both courses and was about to start the videos. She asked Janelle to let Mandy know she got it, and was told to call back if she needs more help.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Let Mandy know that Cynthia successfully located and added the two mandated reporter trainings (Child Abuse California and Child Abuse Prevention) and is starting them tonight from Rome.",
+            "owner_hint": "Janelle"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Mandy \u2014 Cynthia (tutor, currently in Rome, Italy, based in Florida) called in frustrated but left in good spirits. She had trouble with the mandated reporter portal defaulting to Florida and not finding the 'school personnel' path, but Janelle walked her through switching the state to California and she successfully added both the Child Abuse California training and the Child Abuse Prevention training. She was about to start the video courses around 7:27pm Rome time. She asked us to tell you she got it. No action needed unless she calls back stuck on the videos \u2014 Janelle or Yolanda offered to help if she does.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Caller is an existing A+ tutor (Cynthia) handling onboarding compliance training; tutor status is owned elsewhere and this is not a prospective family inquiry.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Let Mandy know that Cynthia successfully located and added the two mandated reporter trainings (Child Abuse California and Child Abuse Prevention) and is starting them tonight from Rome.",
+          80047202
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 409966558,
+      "number": "18186367106",
+      "time_pt": "10:43 AM",
+      "matched": true,
+      "contact_label": "Vaisfeld,Anna N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Anna Vaisfeld called as a new prospective family whose daughter is enrolled with Elite Academic Academy (charter homeschool). She asked about A+ being a vendor and learned the charter-funded rate ($75/hr) is online only, while in-person is $130/hr out of pocket. Her daughter is ahead of grade level and she wanted enrichment, ideally in person in Sherman Oaks. Paola offered a free online trial and to check in-person tutor availability by ZIP, but Anna declined for now and said she'd keep looking and call back.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Log inquiry in CRM and keep contact warm for potential callback; no immediate outreach requested (caller declined email follow-up).",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family uses Elite Academic Academy charter instructional funds, making this a charter-funded prospective family inquiry.",
+        "student_or_school_names_mentioned": [
+          "Elite Academic Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Anna called as a new prospect; her daughter is enrolled with Elite Academic Academy (charter homeschool) and is ahead of grade level. Anna wanted enrichment tutoring, ideally in person in Sherman Oaks, and was disappointed that the charter-funded rate only covers online.",
+          "what_we_can_do_to_help": "Quoted $75/hr online (charter-funded) and $130/hr in person (out of pocket); offered a free online trial and to check in-person tutor availability by ZIP in Sherman Oaks. Anna declined email follow-up and said she'd call back if interested \u2014 keep record warm for potential re-engagement.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Elite Academic Academy",
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Anna called as a new prospect; her daughter is enrolled with Elite Academic Academy (charter homeschool) and is ahead of grade level. Anna wanted enrichment tutoring, ideally in person in Sherman Oaks, and was disappointed that the charter-funded rate only covers online."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted $75/hr online (charter-funded) and $130/hr in person (out of pocket); offered a free online trial and to check in-person tutor availability by ZIP in Sherman Oaks. Anna declined email follow-up and said she'd call back if interested \u2014 keep record warm for potential re-engagement."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Elite Academic Academy"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my Charter School"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Log inquiry in CRM and keep contact warm for potential callback; no immediate outreach requested (caller declined email follow-up).",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 409924332,
+      "number": "18587171695",
+      "time_pt": "9:32 AM",
+      "matched": true,
+      "contact_label": "Tina Kapadia",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Tina Kapadia to follow up on her inquiry about tutoring for her kindergarten daughter Amaia. Tina wants in-person reading and writing support at home, about 30-60 min once a week, to keep Amaia ahead \u2014 she previously did Kumon but transport was inconvenient. Paola quoted $95/hr online and $130/hr in-person, mentioned package discounts, and collected ZIP 91367 to check tutor availability. Tina declined online (wants to limit screen time given Amaia's age). Paola will email rates and confirm tutor availability.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check in-person tutor availability in ZIP 91367 for reading/writing support for a kindergartener",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Email Tina rate sheet ($95 online / $130 in-person, package options) and tutor-availability confirmation",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Tina Kapadia (warm, easygoing) is a prospective in-person family for her kindergartener Amaia at Lupin Hill Elementary (ZIP 91367). She wants ~30-60 min once/week of reading and writing enrichment at home to keep Amaia ahead \u2014 she did Kumon before but drop-off logistics were tough. She declined online because Amaia is young and she wants to limit screen time. Paola quoted $130/hr in-person and $95/hr online with package discounts, and promised an email with rates plus confirmation of tutor availability in 91367. Tina now expects that email. Open with: 'Hi Tina, following up on your call with Paola \u2014 here are our in-person rates and I've checked on a tutor near 91367 for Amaia...'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective family; enrichment (not test prep or charter), so We Connected fits. Note: schema value used as listed.",
+        "student_or_school_names_mentioned": [
+          "Amaia",
+          "Lupin Hill"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call: Tina confirmed she wants in-person reading & writing enrichment for kindergartener Amaia (~30-60 min, once/week) at home in ZIP 91367. Previously did Kumon but logistics were hard; Amaia is ahead, goal is to keep her advancing. Declined online due to screen-time concerns.",
+          "what_we_can_do_to_help": "Check in-person tutor availability in 91367 and email Tina rates ($130/hr in-person, package discounts) plus tutor confirmation, then schedule a first in-person reading/writing session for Amaia.",
+          "student_first_name": "Amaia",
+          "student_last_name": null,
+          "grade_level": "Kindergarten",
+          "student_school": "Lupin Hill",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call: Tina confirmed she wants in-person reading & writing enrichment for kindergartener Amaia (~30-60 min, once/week) at home in ZIP 91367. Previously did Kumon but logistics were hard; Amaia is ahead, goal is to keep her advancing. Declined online due to screen-time concerns."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check in-person tutor availability in 91367 and email Tina rates ($130/hr in-person, package discounts) plus tutor confirmation, then schedule a first in-person reading/writing session for Amaia."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in-person tutor availability in ZIP 91367 for reading/writing support for a kindergartener",
+          81494333
+        ],
+        [
+          "Email Tina rate sheet ($95 online / $130 in-person, package options) and tutor-availability confirmation",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409929101,
+      "number": "13108941830",
+      "time_pt": "9:43 AM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed an outbound follow-up call to Hope regarding the outstanding payment link for Luna's 20-hour package renewal and to confirm whether today's lesson should proceed. Hope answered, was apologetic, and explained her husband has been swamped with a house purchase and likely forgot to complete the payment. She said she would call him immediately to sort it out and follow up with Yolanda via text. Friendly, positive tone; no payment confirmed yet.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Await Hope's text/callback confirming husband has completed the payment link for Luna's 20-hour renewal",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "If no update by end of day, follow up again with Hope and/or Josh (310-800-6569) to lock in payment",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Decide whether to hold or proceed with today's scheduled lesson pending payment status",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Once payment clears, split the 20 hours between Luna and Ocean and finalize Ocean's enrollment",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an active deal/renewal cycle \u2014 lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Luna",
+          "Ocean"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda reached Hope on the outbound follow-up about Luna's outstanding 20-hour renewal payment. Hope was surprised the payment link hadn't been completed and explained her husband has been swamped with buying a house and likely forgot; she said she'd call him right away and text Yolanda back. Warm, cooperative tone \u2014 no payment confirmed on the call.",
+          "what_we_can_do_to_help": "Stand by for Hope's text/callback confirming Josh completes the payment link; if nothing comes through by end of day, follow up again with Hope and/or Josh at 310-800-6569. Once payment clears, split the 20 hours between Luna and Ocean (30-min reading sessions for Ocean) and finalize Ocean's enrollment.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda reached Hope on the outbound follow-up about Luna's outstanding 20-hour renewal payment. Hope was surprised the payment link hadn't been completed and explained her husband has been swamped with buying a house and likely forgot; she said she'd call him right away and text Yolanda back. Warm, cooperative tone \u2014 no payment confirmed on the call."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Stand by for Hope's text/callback confirming Josh completes the payment link; if nothing comes through by end of day, follow up again with Hope and/or Josh at 310-800-6569. Once payment clears, split the 20 hours between Luna and Ocean (30-min reading sessions for Ocean) and finalize Ocean's enrollment."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Hope's text/callback confirming husband has completed the payment link for Luna's 20-hour renewal",
+          86868539
+        ],
+        [
+          "If no update by end of day, follow up again with Hope and/or Josh (310-800-6569) to lock in payment",
+          86868539
+        ],
+        [
+          "Decide whether to hold or proceed with today's scheduled lesson pending payment status",
+          86868539
+        ],
+        [
+          "Once payment clears, split the 20 hours between Luna and Ocean and finalize Ocean's enrollment",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409957448,
+      "number": "19093804811",
+      "time_pt": "10:31 AM",
+      "matched": true,
+      "contact_label": "Banafsheh Salehi",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Banafsheh Salehi regarding Roxane's trial session with tutor Gigi. The call went to voicemail and Paola left a message asking how the trial went and whether Banafsheh wants to move forward with additional sessions. No return commitment or callback time was set.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue outreach to Banafsheh by phone/text to confirm how Roxane's trial with Gigi went and discuss adding ongoing ISEE writing prep sessions",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Banafsheh Salehi (mom of Roxane, 5th grade at Lanai Elementary, ISEE writing prep with tutor Gigi) has been hard to reach \u2014 multiple voicemails over the past week from Yolanda and Paola. Paola left another VM today asking about Roxane's trial and whether mom wants to add sessions. A package link was previously sent and has been expiring; TC form still outstanding. Open with: 'Hi Banafsheh, it's [name] from A+ Tutoring following up on Paola's message \u2014 we'd love to hear how Roxane's trial with Gigi went and help you get the TC form and package squared away so we can lock in her next sessions.' Be ready to renew the package link and walk her through the TC form.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an open deal (trial already completed with tutor Gigi); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Roxane",
+          "Roxanne"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola called Banafsheh to follow up on Roxane's trial session with tutor Gigi and gauge interest in adding more sessions; reached voicemail and left a message asking her to call back when convenient.",
+          "what_we_can_do_to_help": "Keep trying Banafsheh by phone and text to confirm how Roxane's trial with Gigi went, address any concerns, help her complete the TC form, renew the expiring package link, and schedule ongoing ISEE writing prep sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola called Banafsheh to follow up on Roxane's trial session with tutor Gigi and gauge interest in adding more sessions; reached voicemail and left a message asking her to call back when convenient."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Keep trying Banafsheh by phone and text to confirm how Roxane's trial with Gigi went, address any concerns, help her complete the TC form, renew the expiring package link, and schedule ongoing ISEE writing prep sessions."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue outreach to Banafsheh by phone/text to confirm how Roxane's trial with Gigi went and discuss adding ongoing ISEE writing prep sessions",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409972903,
+      "number": "16266848404",
+      "time_pt": "10:53 AM",
+      "matched": true,
+      "contact_label": "Abigail Villa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Abigail Villa to follow up on Malinale's tutoring session with Sonia. Abigail confirmed things went well and wants tutoring to continue, plus wants to set up sessions for siblings Ezekiel (with Sonia if available) and Zahavi (with Frederick). Paola will contact the charter EFs \u2014 Alicia Escobar (for Malinale & Ezekiel) and Ana Lucero (for Zahavi) \u2014 to request POs, then scheduling will book sessions once POs arrive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Alicia Escobar (EF) to request POs for continued tutoring for Malinale and Ezekiel",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Email Ana Lucero (EF) to request PO for Zahavi's tutoring with Frederick",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once POs received, scheduling team to book: Malinale 1x/week math with Sonia; Ezekiel 1x/week (math or any subject needed) preferably with Sonia if available; Zahavi 1x/week math with Frederick, Wednesdays at 11 AM if possible",
+            "owner_hint": "Scheduling team"
+          },
+          {
+            "item": "Confirm Sonia's availability to also take on Ezekiel",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Abigail Villa (mom) was upbeat and happy \u2014 Malinale's trial with Sonia went well and she wants ongoing tutoring for all three kids through their charter EFs. Promised: Paola will email Alicia Escobar (EF for Malinale & Ezekiel) and Ana Lucero (EF for Zahavi) to request POs. Plan is Malinale 1x/week math with Sonia; Ezekiel 1x/week with Sonia if available (math or any subject he needs); Zahavi 1x/week math with Frederick, ideally Wednesdays 11 AM (his prior routine \u2014 he's self-sufficient in that slot while mom is in meetings). Abigail expects us to loop in the EFs, secure POs, then scheduling will reach out to lock times. Suggested opener: 'Hi Abigail \u2014 quick update: I've reached out to Alicia and Ana Lucero for the POs so we can get Malinale, Ezekiel, and Zahavi's sessions on the calendar.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer family (OPEN_DEAL) \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Malinale",
+          "Ezekiel",
+          "Zahavi",
+          "Sonia",
+          "Frederick",
+          "Alicia Escobar",
+          "Ana Lucero"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Paola reached Abigail to debrief Malinale's first session with Sonia \u2014 mom said it went well and wants tutoring to continue. Abigail also wants to re-start sessions for siblings Ezekiel (1x/week, math or any subject, preferably with Sonia) and Zahavi (1x/week math with Frederick, Wednesdays 11 AM per last year's routine \u2014 Zahavi is big on routine and works independently in that slot). Malinale and Ezekiel are funded through EF Alicia Escobar; Zahavi through EF Ana Lucero.",
+          "what_we_can_do_to_help": "[call] Paola to email Alicia Escobar (Malinale & Ezekiel) and Ana Lucero (Zahavi) to request POs. Confirm Sonia's availability to also tutor Ezekiel. Once POs are in hand, scheduling to book: Malinale 1x/week math w/ Sonia; Ezekiel 1x/week w/ Sonia if possible; Zahavi 1x/week math w/ Frederick, targeting Wed 11 AM.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Paola reached Abigail to debrief Malinale's first session with Sonia \u2014 mom said it went well and wants tutoring to continue. Abigail also wants to re-start sessions for siblings Ezekiel (1x/week, math or any subject, preferably with Sonia) and Zahavi (1x/week math with Frederick, Wednesdays 11 AM per last year's routine \u2014 Zahavi is big on routine and works independently in that slot). Malinale and Ezekiel are funded through EF Alicia Escobar; Zahavi through EF Ana Lucero."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Paola to email Alicia Escobar (Malinale & Ezekiel) and Ana Lucero (Zahavi) to request POs. Confirm Sonia's availability to also tutor Ezekiel. Once POs are in hand, scheduling to book: Malinale 1x/week math w/ Sonia; Ezekiel 1x/week w/ Sonia if possible; Zahavi 1x/week math w/ Frederick, targeting Wed 11 AM."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Alicia Escobar (EF) to request POs for continued tutoring for Malinale and Ezekiel",
+          81494333
+        ],
+        [
+          "Email Ana Lucero (EF) to request PO for Zahavi's tutoring with Frederick",
+          81494333
+        ],
+        [
+          "Once POs received, scheduling team to book: Malinale 1x/week math with Sonia; Ezekiel 1x/week (math or any subject needed) preferably with Sonia if available; Zahavi 1x/week math with Frederick, Wednesdays at 11 AM if possible",
+          81494333
+        ],
+        [
+          "Confirm Sonia's availability to also take on Ezekiel",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409985942,
+      "number": "13234934787",
+      "time_pt": "11:18 AM",
+      "matched": true,
+      "contact_label": "Divyesh Motiwalla",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ made an outbound follow-up call to Divyesh Motiwalla to check whether he had reviewed the tutor profile sent for his daughter (Yolanda said 'Ashley' but this appears to refer to Autumn). She left a voicemail noting the tutor is available at 3:30 or 4:30 and asking Divyesh to confirm which time works. Yolanda said she would call back around 4PM. No response from Divyesh yet.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Divyesh back around 4PM to confirm tutor time slot (3:30 or 4:30) for Autumn's trial session",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Confirm the tutor profile was actually sent and that the child name referenced (Yolanda said 'Ashley') is corrected to Autumn in any outgoing communication",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda left a voicemail for Divyesh Motiwalla (dad of Autumn, 10th grade at Peacock Junior High, 91381) following up on the tutor profile we sent. She offered two trial times \u2014 3:30 or 4:30 \u2014 and told him she'd call back around 4PM today. Note: Yolanda referred to the student as 'Ashley' on the voicemail, but the student is Autumn \u2014 double-check before any further outreach so we don't confuse the family. Divyesh had previously confirmed a Tuesday 4PM trial, so clarify whether these new time options replace or refine that. Open with: 'Hi Divyesh, this is [name] from A+ Tutoring following up on Yolanda's message \u2014 wanted to lock in Autumn's trial time, 3:30 or 4:30, whichever works best.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing open deal / active family already in scheduling for a trial session; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Autumn Motiwalla",
+          "Peacock Junior High"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound follow-up] Yolanda called Divyesh to check on the tutor profile we sent for Autumn and left a voicemail offering trial times of 3:30 or 4:30. Yolanda mistakenly referred to the student as 'Ashley' on the message. She will call back around 4PM.",
+          "what_we_can_do_to_help": "Yolanda to call Divyesh back around 4PM to confirm which trial time (3:30 or 4:30) works. Verify the tutor profile was sent and ensure future communications use the correct student name (Autumn, not Ashley).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound follow-up] Yolanda called Divyesh to check on the tutor profile we sent for Autumn and left a voicemail offering trial times of 3:30 or 4:30. Yolanda mistakenly referred to the student as 'Ashley' on the message. She will call back around 4PM."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to call Divyesh back around 4PM to confirm which trial time (3:30 or 4:30) works. Verify the tutor profile was sent and ensure future communications use the correct student name (Autumn, not Ashley)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Divyesh back around 4PM to confirm tutor time slot (3:30 or 4:30) for Autumn's trial session",
+          86868539
+        ],
+        [
+          "Confirm the tutor profile was actually sent and that the child name referenced (Yolanda said 'Ashley') is corrected to Autumn in any outgoing communication",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 409988888,
+      "number": "13607133605",
+      "time_pt": "11:20 AM",
+      "matched": true,
+      "contact_label": "Joo Kang",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Joo Kang to follow up on their prior inquiry about tutoring for 3rd-grader Joah at Harvest Ridge Charter. Joo asked about in-person tutoring, tutor selection/certification, and rates; Paola quoted $75/hr online and $130/hr in-person charter rates and offered a free online trial (declined for now). Joo confirmed the focus is grammar and reading comprehension tied to their co-op syllabus, and provided ZIP 95661. Paola promised to email rates and check in-person tutor availability in that ZIP.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Joo the charter rate sheet ($75/hr online, $130/hr in-person)",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 95661 and confirm back with Joo",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Follow up to see if family wants to proceed and reoffer the free online trial as a backup option",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Joo Kang (parent of Joah, 3rd grade at Harvest Ridge Charter \u2014 charter/instructional funds) was warm and receptive on our outbound follow-up with Paola. She wants IN-PERSON tutoring focused on grammar and reading comprehension tied to the co-op's weekly syllabus (literature + grammar books, read passages and answer comprehension Qs). Paola quoted charter rates: $75/hr online and $130/hr in-person, and offered a free online trial which Joo declined for now but said she'd think about. Joo gave ZIP 95661 (Roseville area) \u2014 we need to verify whether we actually have an in-person tutor there; prior record note says we do NOT have in-person coverage in her area, so be ready to gently steer her back to the online free trial if that's still true. She also asked if we're the same company as 'Firefly Tutors' / 'Present Plus in-home' \u2014 Paola clarified we're separate. Next step promised: Paola will email the rate sheet and confirm tutor availability. Open with: 'Hi Joo, following up as promised on in-person tutor availability in 95661 for Joah\u2026' then deliver the availability answer and, if none, pivot to the free online trial.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family explicitly pays through Harvest Ridge Charter (instructional funds); charter rates were quoted.",
+        "student_or_school_names_mentioned": [
+          "Joah",
+          "Harvest Ridge Charter",
+          "Firefly Tutors",
+          "Present Plus In-Home Tutor"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up: Joo confirmed Joah (3rd grade, Harvest Ridge Charter) needs help with grammar and reading comprehension tied to their co-op's weekly syllabus (separate literature and grammar books \u2014 read passage, answer comprehension questions). She strongly prefers in-person tutoring; ZIP is 95661 (Roseville). She asked about tutor vetting (certified teachers, background checks, profile review) and confirmed we're separate from Firefly Tutors / Present Plus In-Home.",
+          "what_we_can_do_to_help": "Paola quoted charter rates ($75/hr online, $130/hr in-person) and will email the rate sheet plus confirm in-person tutor availability in 95661. Free online trial was offered as a fallback; Joo declined for now but is open to reconsidering. Next step: confirm 95661 in-person coverage and, if unavailable, re-pitch the free online trial.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up: Joo confirmed Joah (3rd grade, Harvest Ridge Charter) needs help with grammar and reading comprehension tied to their co-op's weekly syllabus (separate literature and grammar books \u2014 read passage, answer comprehension questions). She strongly prefers in-person tutoring; ZIP is 95661 (Roseville). She asked about tutor vetting (certified teachers, background checks, profile review) and confirmed we're separate from Firefly Tutors / Present Plus In-Home."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted charter rates ($75/hr online, $130/hr in-person) and will email the rate sheet plus confirm in-person tutor availability in 95661. Free online trial was offered as a fallback; Joo declined for now but is open to reconsidering. Next step: confirm 95661 in-person coverage and, if unavailable, re-pitch the free online trial."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Joo the charter rate sheet ($75/hr online, $130/hr in-person)",
+          81494333
+        ],
+        [
+          "Check in-person tutor availability in ZIP 95661 and confirm back with Joo",
+          81494333
+        ],
+        [
+          "Follow up to see if family wants to proceed and reoffer the free online trial as a backup option",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410008105,
+      "number": "13103395546",
+      "time_pt": "11:55 AM",
+      "matched": true,
+      "contact_label": "Aaron Zimmerman",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Yolanda from A+ called Aaron Zimmerman to follow up. Aaron pivoted the conversation to a new tutoring need for his son Max, who is taking a challenging high school number theory course. Aaron prefers online sessions in the evenings (~5-6pm) after Max's practice, and wants tutor info sent via text. Yolanda agreed to find a qualified math tutor and text him the match.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Find a math tutor with number theory expertise for Max (high school level)",
+            "owner_hint": "Yolanda"
+          },
+          {
+            "item": "Text Aaron the matched tutor's info (not email)",
+            "owner_hint": "Yolanda"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Aaron Zimmerman (existing family \u2014 daughter Evie is in pre-calc with Alexander Hawksley) called about a SECOND student: his son Max, who needs help with a challenging high school number theory course. Aaron is pleasant and easygoing. He prefers online sessions on weekday evenings around 5-6pm (Max has practice after school). He wants the tutor match sent via TEXT, not email. He expects Yolanda to find a math tutor with number theory background and text him the info; scheduling will be worked out directly with the tutor. Open with: 'Hi Aaron \u2014 following up on Max's number theory tutoring. I've found [tutor name] who has strong background in number theory...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal (Evie already working with Alexander Hawksley); status is owned by the deal pipeline. New sibling inquiry should be handled as an add-on, not a lead status change.",
+        "student_or_school_names_mentioned": [
+          "Max",
+          "Evie",
+          "Oakwood"
+        ],
+        "record_updates": {
+          "whats_going_on": "Aaron called about a second student, his son Max (high school), who is taking a challenging number theory course and needs a math tutor with that expertise. Prefers online, weekday evenings around 5-6pm after Max's practice.",
+          "what_we_can_do_to_help": "Match Max with a math tutor experienced in number theory; text Aaron the tutor info (his preferred contact method) so scheduling can be arranged directly.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Aaron called about a second student, his son Max (high school), who is taking a challenging number theory course and needs a math tutor with that expertise. Prefers online, weekday evenings around 5-6pm after Max's practice."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Max with a math tutor experienced in number theory; text Aaron the tutor info (his preferred contact method) so scheduling can be arranged directly."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Find a math tutor with number theory expertise for Max (high school level)",
+          86868539
+        ],
+        [
+          "Text Aaron the matched tutor's info (not email)",
+          86868539
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
+  "pending_skipped": [
+    {
+      "number": "13103395546",
+      "time_pt": "11:54 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18187231740",
+      "time_pt": "11:20 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }

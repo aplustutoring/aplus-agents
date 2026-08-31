@@ -87,6 +87,33 @@ Cancelling session(s), pausing, or ending service (not a billing dispute, not a 
 `cancellation` — never junk. Set the type from the stated reason.
 **Always populate `cancellation_reason`** with the stated reason (verbatim if short).
 
+### `campaign_family` — 90 min → family follow-up (charter sales)
+A FAMILY (parent/guardian) replying to one of our marketing or announcement emails
+(see "Active campaigns" below) — wanting to sign up, restart service, add sessions,
+refer another family, use charter instructional funds, or asking a follow-up question
+about the announcement. Signals: the thread contains our campaign email (quoted text,
+campaign subject line, or an explicit mention of it), and the sender is a family.
+Examples:
+- "Just saw your Stanford badge email — we'd love to get started, my daughter is in 4th grade."
+- "Congrats! Can you add a second weekly session for Mateo?"
+- "Replying like the email said: my neighbor is looking for a math tutor, can I refer her?"
+A congratulations-only reply with NO ask is still `campaign_family`: risk low, and the
+draft is a short warm thank-you.
+A new-booking email that is NOT a reply to a campaign stays `scheduling`. A complaint in
+reply to a campaign email is still `complaint`.
+
+### `campaign_school` — 8 business hrs → sales
+A Teacher of Record / EF / ES, coordinator, or school leader replying to one of our
+marketing or announcement emails (see "Active campaigns"): congratulations, questions
+about the badge or announcement, requests for shareable material, or light referral
+interest. Examples:
+- "Congratulations on the NSSA badge! Great news for our families."
+- "Can you send a one-pager on the badge I can share with my families?"
+- "What does the Stanford review actually cover? A parent asked me."
+A congratulations-only reply with no ask: risk low, warm thank-you draft.
+A school reply that is really program/contract/PO business (adding students, budgets,
+rates, meetings) is `school_partner`, not `campaign_school` — school_partner outranks it.
+
 ### `business_dev` — 8 business hrs → Danielle
 Partnership, collaboration, or business-development interest with plausible value to A+:
 someone building a product for tutoring companies, a podcast/press/speaking invitation,
@@ -143,6 +170,27 @@ Examples:
 
 ### `unknown`
 Anything you cannot confidently place, OR confidence below 0.7. Ticket only, no draft.
+
+---
+
+## Active campaigns (for `campaign_family` / `campaign_school`)
+
+Keep this list current: add a block when a campaign launches, remove it when replies
+stop. A reply matching a campaign here classifies as `campaign_family` (families) or
+`campaign_school` (school personnel) per the rules above.
+
+### NSSA Tutoring Program Design Badge announcement (launched Aug 2026)
+A+ earned the Tutoring Program Design Badge from Stanford's National Student Support
+Accelerator (NSSA), valid 2026-2029. Three versions went out, all with the CTA
+"just reply to this email":
+- To families with active service — subject "Stanford Just Recognized the Way We Tutor"
+  (replies = sign-ups, added sessions, referrals)
+- To Teachers of Record / EFs / ESs / directors — subject "A+ Tutoring Earns Stanford's
+  NSSA Tutoring Program Design Badge"
+- To prospective families — subject "Choosing a Tutor Is Hard. Stanford Just Made It
+  Easier." (replies = new sign-ups; may mention charter instructional funds)
+Any reply referencing the badge, NSSA, Stanford, or quoting these emails is campaign
+traffic even if the subject line was changed.
 
 ---
 
