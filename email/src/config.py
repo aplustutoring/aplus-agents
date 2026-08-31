@@ -36,7 +36,7 @@ GOOGLE_SHEETS_CREDS = os.getenv("GOOGLE_SHEETS_CREDS", "")
 _ROLE_KEYS = {"owner", "recipient", "assign_to", "cc_owner_dms_to", "fallback",
               "level2", "level3", "a_to_l", "m_to_z", "charter_sales",
               "compliance_owner"}
-_ROLE_LIST_KEYS = {"missing_info_dms"}
+_ROLE_LIST_KEYS = {"missing_info_dms", "monitor"}
 
 
 def _resolve_roles(node, roles: dict) -> None:

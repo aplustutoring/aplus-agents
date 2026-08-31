@@ -8,6 +8,59 @@ Newest entries first.
 
 ---
 
+## 2026-08-31 — Task sweep: auto-close finished invoice tasks + watch Kath
+
+**What:** `task_sweep._autoclose_done_tasks` — an open "Convert PO to TW
+invoice" task whose deal already carries an `Invoice #` is DONE; the sweep
+closes it (audited `task_autoclosed`) BEFORE bucketing, so nobody is nagged
+about finished work. `charter_admin` (Kath) joins `task_sweep.monitor`.
+**Why:** on 2026-08-31 ten of her invoice tasks sat NOT_STARTED while every
+one of their invoices — 54528 through 54537, consecutive — was already
+created. She does the work; the task list keeps the phantom. Kath was also
+the ONE seat nobody monitored, and she holds the entire PO→invoice money
+path. Adding her without the auto-close would have shipped pure noise, so
+the order matters: close the phantoms first, then watch the seat.
+**Notes:** the PO parser anchors on the subject's trailing comma — a
+digit-leading rule silently skipped Blue Ridge's `PF593736`, and a bare
+`\bPO\s+` grabbed the literal "PO to" from "Convert PO to TW invoice"
+(caught by the first test run). Lookup failures never kill the sweep;
+`autoclose_invoice_tasks: false` reverts to report-only.
+**Files:** email/src/task_sweep.py, email/config.yaml,
+email/tests/test_task_sweep.py (6 new; suite 355 green).
+
+## 2026-08-28 — Task-completion sweep + 1,025-task backlog closure (#AP-pending)
+
+**What changed**
+- New agent `task-completion-sweep` — the first agent that READS HubSpot Tasks
+  back (two agents create them; nothing ever checked completion). Weekday
+  8 AM PT: digest to #agent-feedback per owner (overdue + due today, silent
+  when clean), ONE bundled DM per owner once a task is 3+ days overdue
+  (3-day audit-held cadence, never one DM per task), Monday on-time/late
+  completion scoreboard. Monitors seats visionary/sales/charter_sales/
+  scheduler_a_l (roles, not names). Deterministic — no CARE pointer.
+- 30-day horizon: tasks overdue longer are "stale backlog" — weekly count
+  line only, never itemized or DM'd. Day-one reality check: 717 open tasks
+  for the four seats, 246 overdue inside the horizon; per-task DMs would
+  have repeated the reasoner's 102-DM mistake.
+- Backlog remediation (Roman, in-session): `close_stale_tasks.py` bulk-closed
+  all 1,025 open tasks created before 2026-08-01 (any owner, incl. ex-staff
+  and 59 unassigned). Every id is in the audit log as `task_bulk_closed`;
+  the weekly scoreboard excludes those ids so they never read as
+  "completed late". Portal open-task count: 1,745 → 712.
+- `hubspot_client.py`: `search_open_tasks()`, `search_completed_tasks()`,
+  `search_open_tasks_created_before()`, `batch_complete_tasks()`,
+  `task_url()`, shared `_search_all()`. Tasks read scope verified live (200).
+- `config.py`: `monitor` added to `_ROLE_LIST_KEYS`.
+
+**Why:** Tasks were a write-only medium — an overdue task made no noise
+anywhere, and the backlog had grown to 1,745 with 2019-era entries drowning
+any live signal.
+
+**Files:** `email/src/task_sweep.py`, `email/src/close_stale_tasks.py`,
+`email/src/hubspot_client.py`, `email/src/audit.py`, `email/src/config.py`,
+`email/config.yaml`, `email/tests/test_task_sweep.py` (16 tests; suite 331
+green), `.github/workflows/task-sweep.yml`, `registry.yml`,
+`email/state/audit_log.jsonl` (11 bulk-close records).
 ## 2026-08-31 — Gmail cursor overlap window (the Lia Beck miss)
 
 **What:** the PO inbox poll now queries `cursor_overlap_seconds` (default
