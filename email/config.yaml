@@ -46,6 +46,8 @@ ticket_fields:
     tor_inquiry: "new_deal_po"
     school_partner: "new_deal_po"
     business_dev: "GENERAL_INQUIRY"
+    campaign_family: "GENERAL_INQUIRY"
+    campaign_school: "GENERAL_INQUIRY"
     scheduling: "GENERAL_INQUIRY"
     tutor_document: "Tutor Issue"
     recruitment: "GENERAL_INQUIRY"
@@ -137,6 +139,8 @@ routing:
   payment_dispute:     { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }
   school_partner:      { owner: sales,          sla_hours: 1.5, draft: true,  priority: high }
   business_dev:        { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
+  campaign_family:     { owner: charter_sales,  sla_hours: 1.5, draft: true,  priority: high }    # campaign replies: sign-ups/referrals (Roman 2026-08-27)
+  campaign_school:     { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # campaign replies from TORs/school staff
   tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }

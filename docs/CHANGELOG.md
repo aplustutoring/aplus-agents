@@ -37,6 +37,31 @@ piece in the bundle already works (one reply per destination, copy-paste ready).
 
 The line is appended deterministically rather than prompted for, because a caption
 that names the wrong place to find the link is worse than one that omits it.
+## 2026-08-27 — Email agent: campaign-reply categories for the NSSA badge sends
+
+**What:** Two new classifier categories, `campaign_family` (families replying to a
+marketing/announcement email: sign-ups, added sessions, referrals — owner
+`charter_sales`, 90 min, high priority, draft on) and `campaign_school`
+(TORs/EFs/ESs/directors replying: congrats, badge questions, shareable-material
+asks — owner `sales`, 8 business hrs, draft on). Added an "Active campaigns"
+section to `rules.md` describing the three NSSA badge announcement sends
+(subjects, audiences, "just reply" CTA) so the classifier recognizes campaign
+traffic; the block is meant to be updated as campaigns launch and retire.
+Congrats-only replies get a warm thank-you draft at low risk. School replies
+that are real program/PO business still classify `school_partner`.
+
+**Why:** Roman 2026-08-27 — the NSSA badge announcement (3 segmented sends,
+~7,250 recipients, lists 3196/3197/3198) uses reply-as-CTA, and replies land in
+the agent-triaged admin inbox (info@ is an alias of admin@). Without campaign
+awareness, family sign-up replies would route to the schedulers instead of
+Paola, and teacher replies would land inconsistently. Routing-table addition
+approved by Roman in-session (routing table otherwise LOCKED June 9).
+
+**Files:** `email/rules.md`, `email/src/classifier.py`, `email/config.yaml`
+(routing + category_map). Tests: classifier/router/orchestration suites green
+(43 passed).
+
+---
 
 ## 2026-08-27 — Charter mail is routed by what it IS, not stamped new_deal_po (#AP-pending)
 
