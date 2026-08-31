@@ -1996,6 +1996,18 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
     return record
 
 
+def _inbox_query(since: int, pc: dict) -> str:
+    """The Gmail poll query — always reaches an OVERLAP window BEHIND the
+    cursor (the Lia Beck miss, 2026-08-28: two OPS emails landed 2 minutes
+    apart; the poll that processed the first advanced the cursor past the
+    second's arrival, and Gmail's search index can also lag fresh mail —
+    either way a message can land behind the cursor and become permanently
+    invisible to `after:`). Re-listed mail is free: the already_processed
+    guard skips it before any work happens."""
+    overlap = int(pc.get("cursor_overlap_seconds", 3600))
+    return f"in:inbox after:{max(0, since - overlap)}"
+
+
 def run() -> None:
     pc = cfg().get("po_inbox", {})
     if not pc.get("address"):
@@ -2025,7 +2037,7 @@ def run() -> None:
         print(f"po_inbox: baseline set ({since}); new mail picked up next run")
         return
     try:
-        stubs = gm.list_messages(f"in:inbox after:{since}")
+        stubs = gm.list_messages(_inbox_query(since, pc))
     except Exception as e:  # noqa: BLE001 — most likely DWD not granted yet
         if "unauthorized_client" in str(e):
             print("po_inbox: Gmail delegation not granted yet (SETUP §7a) — skipping cleanly")

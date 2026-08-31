@@ -303,6 +303,10 @@ po_inbox:
   # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
   # original email (Roman, 2026-08-26) — nagging earlier is pure false alarm.
   pending_portal_approval_days: 14
+  # Gmail poll re-reads this many seconds BEFORE the cursor (the Lia Beck miss,
+  # 2026-08-28: a message landing behind the cursor was invisible forever).
+  # Re-listed mail is deduped by the audit log, so a wide window is free.
+  cursor_overlap_seconds: 3600
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales
