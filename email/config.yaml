@@ -306,6 +306,35 @@ po_inbox:
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales
+  # ── Non-PO work types (Roman approved 2026-08-27) ───────────────────────
+  # Every charter@ ticket used to be stamped new_deal_po, so no routing rule
+  # matched, no owner was derived, and it fell to whoever owns the inbox with
+  # no SLA and no done-state. Measured over 845 tickets since 2026-06-01: a
+  # ticket with a real category closed in a median of 0.25 days (92%); one in
+  # the catch-all took 2.15 days (80%). Counts below are the open queue on
+  # 2026-08-27, from the agent's own "Not a PO:" summaries.
+  #
+  # owner: a ROLE. category: an EXISTING hs_ticket_category option value —
+  # never invent one, the enumeration is closed (ops/hubspot-schema).
+  work_types:
+    purchase_order:     { owner: charter_admin, priority: MEDIUM, category: new_deal_po }
+    po_cancellation:    { owner: charter_admin, priority: HIGH,   category: cancel_service }
+    # 7 open, median 14d. Schools chasing or confirming payment, year-end
+    # reconciliation. Had no owner: was split across Kath, Paola, Mandy, Janelle.
+    ar_followup:        { owner: charter_admin, priority: HIGH,   category: billing_refund }
+    # 2 open. "Reissue under our new legal name before we can pay you" — the
+    # Suncoast/Koby Wells case, $1,330 held up 10 days by a Bill To edit.
+    invoice_correction: { owner: charter_admin, priority: HIGH,   category: billing_refund }
+    # Unsigned agreements, COI, W-9. Blocks or reshapes POs, so it stays HIGH
+    # and goes to sales — Roman moved the Granite Mountain COI there by hand.
+    vendor_compliance:  { owner: sales,         priority: HIGH,   category: GENERAL_INQUIRY }
+    # 11 open. Approvals, portal logins, welcome packets, renewals.
+    vendor_onboarding:  { owner: charter_admin, priority: MEDIUM, category: GENERAL_INQUIRY }
+    parent_info_reply:  { owner: charter_admin, priority: MEDIUM, category: new_deal_po }
+    family_inquiry:     { owner: charter_sales, priority: HIGH,   category: GENERAL_INQUIRY }
+    marketing_junk:     { owner: charter_admin, priority: LOW,    category: GENERAL_INQUIRY }
+    scam:               { owner: charter_admin, priority: LOW,    category: GENERAL_INQUIRY }
+    other:              { owner: charter_admin, priority: MEDIUM, category: GENERAL_INQUIRY }
   # ROLE mapping — functional keys name roles, never people (Roman 2026-08-14);
   # change the person here, not in code.
   # ANYTHING missing on PO intake (fields not in the PO, unmatched TOR/parent,
@@ -373,7 +402,9 @@ teachworks:
 # (e.g. "Hi Kath" → Kath), with a ticket. Falls back to `fallback` if unclear.
 internal:
   domain: wetutorathome.com
-  fallback: roman
+  # The visionary seat does not own support tickets (Roman 2026-08-26) — anything
+  # that would have landed on him goes to his second, the operations seat.
+  fallback: operations
 
 # Confidence + autonomy thresholds (LOCKED).
 thresholds:
@@ -386,6 +417,43 @@ thresholds:
 escalation:
   level2: scheduling_lead   # watches the schedulers
   level3: operations   # last resort
+
+# Aging sweep (Roman 2026-08-26). The chain above walks the AUDIT LOG, so it only
+# ever sees tickets the email/PO agents created — hand-made CRM tickets and call
+# agent tickets were never swept at all, and four of Roman's sat 96 to 135 days
+# with zero pings. This pass reads every OPEN ticket straight from HubSpot and
+# keeps nagging on a cadence, so nothing goes quiet just because it is old.
+# Reasoning sweep (Roman 2026-08-26). Age alone is the wrong trigger: a pure
+# 24-hour rule measured on 2026-08-26 would have fired 102 DMs, 77 of them to
+# Kath, and most of hers were PO tickets whose invoice already existed. So the
+# pass reads the evidence (email direction, notes, SMS, calls, invoice proof),
+# decides what state the ticket is really in, and only then closes or pesters.
+# Pesters regardless of who owes the reply — an unanswered family is still ours.
+reasoner:
+  enabled: true
+  # Roman approved 2026-08-28 after reading the 2026-08-27 dry run (Actions run
+  # 33121995796): 158 tickets, 71 closes, and zero of the 13 hand-verified
+  # unresolved tickets touched. Closing still needs confidence >= the threshold
+  # below AND a verdict in RESOLVED / NO_ACTION / DUPLICATE.
+  allow_close: true
+  close_min_confidence: 0.85  # closing needs a second system, not a hunch
+  owner_after_hours: 24
+  supervisor_after_hours: 48
+  last_resort_after_hours: 96
+  repeat_every_hours: 24      # daily drumbeat once the ladder starts
+
+aging_sweep:
+  # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
+  # hours, 59 of them from this sweep, and zero replies from her in the last 400
+  # messages. A targeted question about a $1,330 invoice scrolled out of view
+  # within a day. The reasoning sweep supersedes this — it asks whether a ticket
+  # is really open before it says anything, where this one only asks how old it
+  # is. Do not re-enable both at once.
+  enabled: false
+  nag_after_days: 7          # open + untouched this long → DM the owner
+  supervisor_after_days: 14  # also DM level2
+  last_resort_after_days: 30 # also DM level3
+  repeat_every_days: 7       # re-nag this often — the chain above pings once per level and then goes silent forever
 
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]

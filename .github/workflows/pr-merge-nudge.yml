@@ -1,0 +1,45 @@
+name: Fleet — PR merge nudge (green fixes)
+
+# Green-suite [fix]/[correction] PRs older than 3 days get one Slack digest
+# pinging the approver roster (ops/feedback-agent/config.yml). NEVER merges —
+# the click stays human. Silence means the queue is clean.
+# Mon/Wed/Fri 9:05 AM PT: often enough that nothing rots a week, rare enough
+# that the ping stays meaningful (pinging daily trains everyone to ignore it).
+on:
+  schedule:
+    - cron: "5 16 * * 1,3,5"
+  workflow_dispatch:
+    inputs:
+      stale_days:
+        description: "Nudge PRs older than this many days"
+        default: "3"
+      dry_run:
+        description: "Print instead of posting"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+  statuses: read
+
+jobs:
+  nudge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml requests
+      - name: Nudge stale green fix PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          python3 ops/fleet-health/pr_merge_nudge.py \
+            --stale-days "${{ inputs.stale_days || '3' }}" \
+            ${{ inputs.dry_run == true && '--dry-run' || '' }}

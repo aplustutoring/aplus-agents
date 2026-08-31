@@ -1388,6 +1388,73 @@
       "brand_pass": true,
       "seo_issues": 0,
       "flags": []
+    },
+    {
+      "ts": "2026-08-28T03:15:49.571240-07:00",
+      "kind": "topic_gen",
+      "week": "2026-08-28",
+      "lenses": [
+        "policy_funding_hawk",
+        "target_school_radar",
+        "competitive_intel"
+      ],
+      "topics_produced": 3,
+      "topics_rejected_redundant": 0,
+      "topics_posted": 3,
+      "refresh_mode": false,
+      "slack_channel": "C0B4K9K0162",
+      "slack_ts": "1787912469.982629"
+    },
+    {
+      "ts": "2026-08-29T11:34:09.575640-07:00",
+      "kind": "content_build",
+      "week": "2026-08-28",
+      "slot": 1,
+      "post_date": "2026-08-31",
+      "headline": "Title I oversight moves from U.S. Department of Education to Department of Labor \u2014 what this means for California charter funding (LIKELY NEW)",
+      "bundle_dir": "aplus-content/2026-08-31-title-i-labor-california-charters",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "220640356377",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-29T11:51:46.375602-07:00",
+      "kind": "content_build",
+      "week": "2026-08-28",
+      "slot": 2,
+      "post_date": "2026-09-02",
+      "headline": "iLEAD's 7th school clears Antelope Valley Union HSD \u2014 expansion inside a low-proficiency district",
+      "bundle_dir": "aplus-content/2026-09-02-ilead-flex-lancaster-year-one",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "220641035119",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-08-29T12:15:20.144550-07:00",
+      "kind": "content_build",
+      "week": "2026-08-28",
+      "slot": 3,
+      "post_date": "2026-09-04",
+      "headline": "Varsity Tutors for Schools shut down \u2014 and the reason cited was evidence",
+      "bundle_dir": "aplus-content/2026-09-04-varsity-tutors-shutdown-evidence",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "220644114799",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }

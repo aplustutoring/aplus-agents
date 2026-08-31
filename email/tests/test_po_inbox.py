@@ -122,6 +122,9 @@ def test_multi_match_surfaces(monkeypatch):
 
 def test_po_number_dedupe_blocks_second_deal(monkeypatch):
     created = []
+    # stage_label fetches /crm/v3/pipelines/deals LIVE — unstubbed it 401s in CI
+    # and would hit the real portal on any machine with a token in env.
+    monkeypatch.setattr(po.hs, "stage_label", lambda pipeline, stage: "presented")
     monkeypatch.setattr(po.hs, "search_deals_by_name",
                         lambda t, p=None, s=None: [{"id": "X", "properties": {"dealname": "PCA - Carson - PO 53779"}}])
     monkeypatch.setattr(po.hs, "create_deal",
@@ -674,8 +677,9 @@ def _contact(cid, email, first, last, persona=""):
 def test_parent_resolved_from_prior_deal(monkeypatch):
     # PO has NO parent info; student has a prior deal → parent read off it.
     created = []
-    monkeypatch.setattr(po.hs, "search_deals_by_name",
-                        lambda t, p=None, s=None: [_deal("D-old", "Maria Diaz - Ana - iLead (Jul) 25/26")])
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda f, l=None: [_deal("D-old", "Maria Diaz - Ana - iLead (Jul) 25/26")])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "get_deal_contacts",
                         lambda did: [_contact("C-mom", "maria@x.com", "Maria", "Diaz", "Family"),
                                      _contact("C-tor", "tor@school.org", "Terri", "Tor",
@@ -696,8 +700,9 @@ def test_prior_deal_tor_never_picked_as_parent(monkeypatch):
     # The only non-TOR-filterable signal is persona/email — a deal whose only
     # contacts are TORs must NOT resolve, falling through to last-name search.
     fell_through = []
-    monkeypatch.setattr(po.hs, "search_deals_by_name",
-                        lambda t, p=None, s=None: [_deal("D-old", "Ana deal")])
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda f, l=None: [_deal("D-old", "Ana deal")])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "get_deal_contacts",
                         lambda did: [_contact("C-tor", "tor@school.org", "Terri", "Tor",
                                               "Teacher of Record/EF/ES")])
@@ -712,8 +717,9 @@ def test_prior_deal_tor_never_picked_as_parent(monkeypatch):
 def test_ambiguous_prior_deals_fall_through(monkeypatch):
     # Two different parents across matching deals → ambiguous → last-name path.
     fell_through = []
-    monkeypatch.setattr(po.hs, "search_deals_by_name",
-                        lambda t, p=None, s=None: [_deal("D1", "P1 - Ana"), _deal("D2", "P2 - Ana")])
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda f, l=None: [_deal("D1", "P1 - Ana"), _deal("D2", "P2 - Ana")])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "get_deal_contacts",
                         lambda did: [_contact(f"C-{did}", f"{did}@x.com", "P", did)])
     monkeypatch.setattr(po.hs, "find_family_contact",
@@ -725,17 +731,22 @@ def test_ambiguous_prior_deals_fall_through(monkeypatch):
 
 
 def test_prior_deal_narrowed_by_student_lastname(monkeypatch):
-    # Common first name over-matches; deals containing the student LAST name win.
-    monkeypatch.setattr(po.hs, "search_deals_by_name",
-                        lambda t, p=None, s=None: [_deal("D-other", "Kim Lee - Ana - PCA"),
-                                                   _deal("D-right", "Maria Diaz - Ana Diaz - iLead")])
+    # Common first name over-matches; the EXACT first+last property search only
+    # ever sees this student's own deals (post-Mateo-incident contract).
+    searched = []
+    def by_student(first, last=None):
+        searched.append((first, last))
+        return [_deal("D-right", "Maria Diaz - Ana Diaz - iLead")] if last == "Diaz" else []
+    monkeypatch.setattr(po.hs, "search_deals_by_student", by_student)
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     calls = []
     monkeypatch.setattr(po.hs, "get_deal_contacts",
                         lambda did: calls.append(did) or [_contact("C-mom", "m@x.com", "Maria", "Diaz")])
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D-new"})
     notes = []
     po._handle_deal(_po(parent_email="", po_number=""), notes)
-    assert calls == ["D-right"]          # narrowed to the lastname-matching deal only
+    assert ("Ana", "Diaz") in searched
+    assert calls == ["D-right"]          # only this student's own deal is consulted
 
 
 # ── deal naming: "Parent - Student - School N - YY/YY" (Roman, 2026-08-10) ───
@@ -1029,6 +1040,9 @@ def test_scheduler_dm_once_per_email_with_pending_flag(monkeypatch):
 
 
 def test_no_scheduler_dm_when_nothing_created(monkeypatch):
+    # stage_label fetches /crm/v3/pipelines/deals LIVE — unstubbed it 401s in CI
+    # and would hit the real portal on any machine with a token in env.
+    monkeypatch.setattr(po.hs, "stage_label", lambda pipeline, stage: "presented")
     # duplicate PO → no deal → no scheduler DM (only the duplicate alert to Kath)
     dms = []
     monkeypatch.setattr(po.hs, "search_deals_by_name",
@@ -1322,8 +1336,9 @@ def test_currently_tutored_uses_prior_deal_parent_email(monkeypatch):
     # parent resolved from a prior deal (no email in the PO) → THAT email drives
     # the calendar check and the property
     captured, checked = [], []
-    monkeypatch.setattr(po.hs, "search_deals_by_name",
-                        lambda t, p=None, s=None: [_deal("D-old", "Maria Diaz - Ana Diaz - iLead")])
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda f, l=None: [_deal("D-old", "Maria Diaz - Ana Diaz - iLead")])
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "get_deal_contacts",
                         lambda did: [_contact("C-mom", "maria@x.com", "Maria", "Diaz", "Family")])
     monkeypatch.setattr(po.tw, "student_lesson_activity",
@@ -2168,3 +2183,66 @@ def test_outbound_scrub_removes_em_dashes():
     out = g._scrub_outbound("Thanks — we will resubmit -- next week.")
     assert "—" not in out and "--" not in out
     assert "Thanks, we will resubmit" in out
+
+
+# ── 2026-08-28: parent resolution — the Mateo Murray-Fiore incident ──
+
+def test_tw_lookup_matches_compound_surname_part(monkeypatch):
+    # PO says 'Murray-Fiore', Teachworks has 'Fiore' — the part retry must find
+    # the real family (real lesson history still required)
+    from src import teachworks_client as twc
+    monkeypatch.setattr(twc, "accounts", lambda: {"online": "tok"})
+    def _get(endpoint, params=None, token=None):
+        if endpoint == "students":
+            if params.get("last_name") == "Fiore":
+                return [{"id": 5, "first_name": "Mateo", "last_name": "Fiore",
+                         "customer_id": 50}]
+            return []                       # exact 'Murray-Fiore' query misses
+        if endpoint == "lessons":
+            return [{"from_date": "2026-06-01", "employee_name": "Luckey, Emma"}] * 4
+        if endpoint == "customers":
+            return [{"id": 50, "first_name": "Sarah", "last_name": "Fiore",
+                     "email": "sfiore1822@gmail.com"}]
+        return []
+    monkeypatch.setattr(twc, "tw_get", _get)
+    fam = twc.find_family_by_student("Mateo", "Murray-Fiore", tutor_hint="Emma Luckey")
+    assert fam and fam["email"] == "sfiore1822@gmail.com"
+    assert fam["tutor_match"] is True
+
+
+def test_prior_deal_lookup_never_guesses_on_first_name_alone(monkeypatch):
+    # THE incident: 'Mateo Murray-Fiore' matched nothing by last name, and the
+    # old first-name-only fallback resolved a DIFFERENT Mateo's parent (Luis
+    # Ramirez). Property search finding nothing must return None — chase, not guess.
+    monkeypatch.setattr(po.hs, "search_deals_by_student", lambda f, l=None: [])
+    called = {"name_search": 0}
+    monkeypatch.setattr(po.hs, "search_deals_by_name",
+                        lambda t, p=None, s=None: called.__setitem__("name_search", 1) or
+                        [_deal("D1", "Luis Ramirez - Mateo")])
+    assert po._find_parent_via_deals(
+        {"student_first": "Mateo", "student_last": "Murray-Fiore"}) is None
+    assert called["name_search"] == 0   # the token search is out of this path entirely
+
+
+def test_prior_deal_lookup_retries_surname_parts(monkeypatch):
+    # 'Murray-Fiore' misses on the exact property, hits on the 'Fiore' part →
+    # unique parent resolves
+    def by_student(first, last=None):
+        if first == "Mateo" and last == "Fiore":
+            return [_deal("D7", "Sarah Fiore - Mateo - iLead 1 (May) 25/26")]
+        return []
+    monkeypatch.setattr(po.hs, "search_deals_by_student", by_student)
+    monkeypatch.setattr(po.hs, "get_deal_contacts", lambda did: [
+        {"id": "C50", "properties": {"email": "sfiore1822@gmail.com",
+                                     "firstname": "Sarah", "lastname": "Fiore",
+                                     "a_persona": "Family"}}])
+    got = po._find_parent_via_deals(
+        {"student_first": "Mateo", "student_last": "Murray-Fiore"})
+    assert got and got[0]["properties"]["email"] == "sfiore1822@gmail.com"
+
+
+def test_prior_deal_lookup_requires_last_name(monkeypatch):
+    monkeypatch.setattr(po.hs, "search_deals_by_student",
+                        lambda f, l=None: [_deal("D1", "Luis Ramirez - Mateo")])
+    assert po._find_parent_via_deals({"student_first": "Mateo",
+                                      "student_last": ""}) is None

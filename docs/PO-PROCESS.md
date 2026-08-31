@@ -42,12 +42,19 @@ Tried in order; the first hit wins:
 1. **Parent email in the PO** → find the contact, or create it
    (`a_persona=Family`, phone included).
 2. **The student in Teachworks** → search both TW accounts by the student's
-   exact name; a student with real lesson history gives us their family
-   (parent name/email/phone) directly — and if the PO's tutor is that
-   student's last tutor, it's decisive. 0-lesson shell records never count;
-   a tutor mismatch is flagged for verification. (Matthew Rose, 2026-08-18:
-   104 lessons with Jacquelyn Lemerond → Megan Miller, no chase needed.)
-3. **The student's prior deal** → its non-TOR contact, if unique.
+   exact name, then — schools and TW disagree on compound surnames — by each
+   part of a hyphenated/spaced last name ('Murray-Fiore' also tries 'Murray'
+   and 'Fiore'; first name stays exact). A student with real lesson history
+   gives us their family (parent name/email/phone) directly — and if the PO's
+   tutor is that student's last tutor, it's decisive. 0-lesson shell records
+   never count; a tutor mismatch is flagged for verification. (Matthew Rose,
+   2026-08-18: 104 lessons with Jacquelyn Lemerond → Megan Miller, no chase.)
+3. **The student's prior deal** → its non-TOR contact, if unique. Matched by
+   EXACT student-name properties (first + last, compound-surname parts
+   retried) — **never by first name alone**: a first-name deal-name search
+   resolved the wrong Mateo's parent on 2026-08-28 (Luis Ramirez instead of
+   Sarah Fiore), mis-keying the deal, TW family, and SMS. No last-name
+   agreement → this step returns nothing and the chase runs instead.
 4. **Family-contact match** by student name — a lone surname hit only counts
    when that contact's student fields or deal names carry the student's first
    name (the "Dina Rose" collision).

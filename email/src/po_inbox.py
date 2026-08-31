@@ -21,6 +21,7 @@ import json
 import re
 import sys
 import traceback
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 
 from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
@@ -29,6 +30,7 @@ from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 
 PO_SYSTEM = (
+    "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
     "include PDF/image attachments (the actual PO document) — read them; PO details "
     "usually live there, not in the body. "
@@ -75,7 +77,17 @@ PO_SYSTEM = (
     "Coach'-style prose, prepaid bulk-session requests from free-mail addresses, sender "
     "name not matching the address), 'marketing_junk' (unsolicited ads, directory "
     "listings, vendor-spotlight or newsletter broadcasts with no action required), "
+    "'ar_followup' (a school or its AP department chasing, disputing or confirming "
+    "payment on invoices we already sent — 'outstanding invoices', 'paid via ACH on', "
+    "check numbers, remittance advice, or a year-end reconciliation statement request), "
+    "'invoice_correction' (they will pay but need the invoice CHANGED first — a new "
+    "legal name, billing address, PO number or line-item fix, then resubmitted), "
+    "'vendor_onboarding' (we have been approved or renewed as a vendor and there is "
+    "setup to do — portal logins or credentials, welcome packets, account activation, "
+    "renewal paperwork that is NOT a signature request), "
     "'family_inquiry' (a real family asking about service), or 'other'. "
+    "ar_followup and invoice_correction are about money we are OWED; use "
+    "vendor_compliance only for documents we must SIGN or PROVIDE to keep selling. "
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
     "the school staff, TOR, or education specialist; empty string for anything not stated. "
     "If the email is a REPLY providing a family's contact details (we ask TORs for parent "
@@ -1245,34 +1257,91 @@ def _sweep_pending_pos() -> None:
                       "po_number": (r.get("po_number") or "").strip()})
 
 
-def _find_parent_via_deals(po: dict):
-    """POs typically DON'T include parent info — Kath's manual fix was to
-    look the student up in HubSpot and read the parent off their prior deal
-    (deals are named 'Parent - Student - School (Month)' and carry the family
-    contact). Mechanized: search deals by the student's first name, narrow to
-    names also containing the student's last name when possible, collect the
-    deals' non-TOR contacts — a UNIQUE parent across matches resolves it;
-    anything ambiguous falls through to the last-name search, then manual.
-    Returns (contact, deal_name) or None."""
+def _parent_from_student_deals(po: dict):
+    """Resolve the parent from the DEAL student-name PROPERTIES (Roman 2026-08-26).
+
+    Tried before the deal-NAME search below because it is the only lookup that
+    survives the two things that actually break parent resolution:
+
+      • the family surname differing from the student's — searching contacts by
+        `lastname` returns nothing for Giada Di Nardo (parent Leeanne Gonzales)
+        and returns the WRONG person for Matthew Rose, where it once matched a
+        2022 contact named Dina Rose and named five deals after her;
+      • typos in the deal name — four consecutive Doyal deals read "Copper"
+        while `student_first_name` still reads "Cooper".
+
+    Measured over the 19 deals flagged NEEDS PARENT since 2026-08-01: 18 resolve
+    to the correct parent, 1 (Rayven Holloway) ties and is deliberately left for
+    a human. Returns (contact, deal_name) or None.
+    """
     sf = (po.get("student_first") or "").strip()
-    sl = (po.get("student_last") or "").strip().lower()
+    sl = (po.get("student_last") or "").strip()
     t_email = (po.get("tor_email") or "").strip().lower()
-    if not sf:
+    if not sf or not sl:
         return None
     try:
-        cands = hs.search_deals_by_name(sf)
+        deals = hs.search_deals_by_student(sf, sl)
+    except Exception as e:  # noqa: BLE001 — parent resolution is best-effort
+        print(f"  ⚠️  student-property parent lookup failed (non-fatal): {e}")
+        return None
+    tally, seen = Counter(), {}
+    for d in deals[:8]:
+        for c in hs.get_deal_contacts(d["id"]):
+            if not hs.is_family_contact(c.get("properties") or {}, t_email):
+                continue
+            cid = str(c.get("id"))
+            tally[cid] += 1
+            seen[cid] = (c, (d.get("properties") or {}).get("dealname", "?"))
+    if not tally:
+        return None
+    ranked = tally.most_common()
+    # A STRICT winner only. A tie means either two families share the student
+    # name or a deal is mis-stamped (deal 57397570424 is Payton Curtis's but
+    # carries student_last_name "Doyal"), and guessing would name the deal —
+    # and address the family's SMS — after the wrong parent.
+    if len(ranked) > 1 and ranked[0][1] == ranked[1][1]:
+        return None
+    return seen[ranked[0][0]]
+
+
+def _find_parent_via_deals(po: dict):
+    """POs typically DON'T include parent info — Kath's manual fix was to
+    look the student up in HubSpot and read the parent off their prior deal.
+    Mechanized: EXACT search on the student name properties (first + last;
+    compound surnames retry each part), collect the deals' non-TOR contacts —
+    a UNIQUE parent across matches resolves it; anything ambiguous or
+    last-name-less falls through to the next step, then the parent chase.
+    Returns (contact, deal_name) or None."""
+    # Structured student-name properties first; the deal-NAME search below is
+    # the fallback for deals that predate those properties being filled.
+    via_props = _parent_from_student_deals(po)
+    if via_props:
+        return via_props
+    sf = (po.get("student_first") or "").strip()
+    sl = (po.get("student_last") or "").strip()
+    t_email = (po.get("tor_email") or "").strip().lower()
+    # LAST NAME REQUIRED (2026-08-28, the Mateo Murray-Fiore incident): a
+    # first-name-only match across deal names resolved the WRONG Mateo (Luis
+    # Ramirez's private-pay son) and the deal, TW family, and SMS all keyed on
+    # the wrong parent. No last-name agreement → no guess → parent chase.
+    if not sf or not sl:
+        return None
+    try:
+        import re as _re
+        cands = hs.search_deals_by_student(sf, sl)
+        # compound surname: the PO's 'Murray-Fiore' vs our stamped 'Fiore' —
+        # retry each part, still an EXACT property match, never first-name-only
+        for part in _re.split(r"[-\s]+", sl):
+            if cands or not part or part.lower() == sl.lower():
+                continue
+            cands = hs.search_deals_by_student(sf, part)
         if not cands:
             return None
-        narrowed = [d for d in cands
-                    if sl and sl in ((d.get("properties") or {}).get("dealname") or "").lower()] or cands
         parents = {}
-        for d in narrowed[:6]:
+        for d in cands[:6]:
             for c in hs.get_deal_contacts(d["id"]):
                 props = c.get("properties") or {}
-                em = (props.get("email") or "").lower()
-                if t_email and em == t_email:
-                    continue                      # the TOR is on deals too — never the parent
-                if "Teacher of Record" in (props.get("a_persona") or ""):
+                if not hs.is_family_contact(props, t_email):
                     continue
                 parents[str(c.get("id"))] = (c, (d.get("properties") or {}).get("dealname", "?"))
         if len(parents) == 1:
@@ -1796,28 +1865,56 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
     subject = (f"new_po — {po.get('school') or m['sender'][:40]}"
                + (f" (PO {po['po_number']})" if po.get("po_number") else "")) if po.get("is_po") \
               else f"po_inbox review — {m['subject'][:50]}"
-    priority, ticket_owner = "MEDIUM", owner
-    if record["category"] == "po_cancellation":
+    # The work type drives owner, priority and category from config (Roman
+    # 2026-08-27). Before this, EVERY charter@ ticket was stamped new_deal_po —
+    # including the 42 of 93 open ones whose own description read "Not a PO:" —
+    # so no routing rule matched and the ticket fell to the inbox owner with no
+    # SLA and no done-state.
+    work_type = ("purchase_order" if po.get("is_po") else
+                 "po_cancellation" if record["category"] == "po_cancellation" else
+                 record.get("category") if record.get("category") == "parent_info_reply" else
+                 hint or "other")
+    wt_cfg = (pc.get("work_types") or {}).get(work_type, {})
+    priority = wt_cfg.get("priority", "MEDIUM")
+    ticket_owner = staff(wt_cfg["owner"]) if wt_cfg.get("owner") else owner
+    ticket_owner = ticket_owner or owner
+    category = wt_cfg.get("category", "new_deal_po")
+    record["po_work_type"] = work_type
+
+    # Subject prefix + the note that tells the owner what they are looking at.
+    # Owner/priority/category come from work_types above, not from here.
+    if work_type == "po_cancellation":
         subject = (f"PO CANCELLED — {po.get('school') or m['sender'][:40]}"
                    + (f" (PO {po['po_number']})" if po.get("po_number") else ""))
-        priority = "HIGH"
-    elif hint == "vendor_compliance":
+    elif work_type == "vendor_compliance":
         subject = f"COMPLIANCE — {m['subject'][:50]}"
-        priority = "HIGH"
-        ticket_owner = staff(pc.get("compliance_owner", "sales")) or owner
         note_parts.append(f"📋 Vendor/compliance item — routed to "
                           f"{ticket_owner.get('name', 'the compliance seat')}: unsigned "
                           f"agreements and rule changes block or reshape POs.")
-    elif hint == "scam":
+    elif work_type == "ar_followup":
+        subject = f"AR — {m['subject'][:50]}"
+        note_parts.append("💵 Money we are OWED: a school or its AP department is "
+                          "chasing, disputing or confirming payment. Reconcile against "
+                          "the Teachworks invoice before replying — several of these "
+                          "turned out to be paid on their side and unrecorded on ours.")
+    elif work_type == "invoice_correction":
+        subject = f"INVOICE FIX — {m['subject'][:50]}"
+        note_parts.append("🧾 They will pay once the invoice is corrected and resent. "
+                          "Fix it in Teachworks, resubmit, then stamp Invoice # on the "
+                          "deal. Suncoast held $1,330 for 10 days over a Bill To name.")
+    elif work_type == "vendor_onboarding":
+        subject = f"VENDOR SETUP — {m['subject'][:50]}"
+        note_parts.append("🏫 We are approved or renewed and there is setup to finish "
+                          "(portal login, welcome packet, account activation). Unfinished "
+                          "onboarding blocks the school's POs from reaching us.")
+    elif work_type == "scam":
         subject = f"SUSPECTED SCAM — {m['subject'][:50]}"
-        priority = "LOW"
         note_parts.append("🎣 Scam pattern (advance-fee / bulk-prepay shape) — do not "
                           "reply with location or banking details; archive after a glance. "
                           "Sender address deliberately NOT captured as a parent contact.")
         record["parent_email"] = ""
-    elif hint == "marketing_junk":
+    elif work_type == "marketing_junk":
         subject = f"marketing/junk — {m['subject'][:50]}"
-        priority = "LOW"
     if closed_thread and not po.get("is_po") and record["category"] != "po_cancellation":
         subject = f"PO-thread reply — {m['subject'][:50]}"
         note_parts.insert(0, "↩️ Reply on an ALREADY-PROCESSED PO thread — check it for "
@@ -1832,7 +1929,14 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             + f"\nSLA due: {sla_due.isoformat()}")
     ticket = hs.create_ticket(subject, ticket_owner["hubspot_owner_id"],
                               cfg()["hubspot"]["ticket_stages"]["needs_approval"], desc, None,
-                              priority=priority, category="new_deal_po", source="EMAIL")
+                              priority=priority, category=category, source="EMAIL",
+                              # #AP007 — declared in properties.yml since the Feedback
+                              # Agent and never written by this engine until now, which
+                              # is why every dedup and origin report had to guess from
+                              # the subject line.
+                              extra_props={"po_work_type": work_type,
+                                           "ticket_source": "email_engine",
+                                           "source_thread_id": m.get("threadId", "")})
     record["ticket_id"] = ticket.get("id")
     record["sla_due"] = sla_due.isoformat()
 
