@@ -8,6 +8,27 @@ Newest entries first.
 
 ---
 
+## 2026-08-31 — Gmail cursor overlap window (the Lia Beck miss)
+
+**What:** the PO inbox poll now queries `cursor_overlap_seconds` (default
+3600) BEHIND its cursor (`_inbox_query`); re-listed mail is free via the
+already_processed guard. **Why:** on 8/28 two OPS emails (sisters Jil and
+Lia Beck, same parent, same TOR) landed 2 minutes apart; the poll that
+processed Jil's advanced the cursor past Lia's arrival — her email sat
+invisible to `after:` for 3 days while everyone (Kath, Roman, and Friday's
+session) hunted for it. Any message landing behind the cursor (processing
+races, Gmail search-index lag) was permanently lost; now anything within an
+hour is self-healing. **Recovery (in session):** cursor rewound on a side
+branch (lia-recover) + dispatch → Lia's 4 deals created correctly (POs
+3114181748-51, $240 = 4 sessions = 3 hrs each, Sept-Dec, Evelin Jimenez
+resolved). That run's state push died on the cursor conflict, so its audit
+records were reconstructed by hand in this commit (po_processed marker + 4
+pending_po_opened rows, sla 2026-09-14) — without them the pending-approval
+sweep would never remind about Lia's OAs. Delete branch lia-recover after
+merge. **Files:** email/src/po_inbox.py, email/config.yaml,
+email/state/audit_log.jsonl (reconstruction), email/tests/test_po_inbox.py
+(suite 334 green).
+
 ## 2026-08-31 — The weekly FB/IG caption gets a per-platform link line (content-build)
 
 **What changed**
