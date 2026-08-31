@@ -8,6 +8,36 @@ Newest entries first.
 
 ---
 
+## 2026-08-31 — The weekly FB/IG caption gets a per-platform link line (content-build)
+
+**What changed**
+- `marketing/scripts/b2b/deliver-to-slack.py` — "Reply 5 — Facebook + Instagram
+  post" is now two replies: Instagram (ends `Link in story.`) and Facebook (ends
+  `Link in comments.`). New `append_link_cta()` inserts that line above the
+  caption's trailing hashtags line; new `piece_body()` centralizes body assembly
+  so the dry-run preview and the real delivery cannot drift apart. Blog assets
+  renumbered to Reply 7 and the stale module docstring now matches `PIECES`.
+- `marketing/scripts/b2b/content-build.py` — the `fb-ig-post.md` caption prompt
+  is told not to write its own link-location phrasing, so the model cannot emit a
+  "link in bio" that contradicts the appended line.
+- `marketing/scripts/b2b/build-qa-checklist.py` — one checklist line for it.
+
+**Why**
+Danielle reported (Slack `1788190269.210389`, correction
+`corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md`) that the
+Instagram caption should say "link in story" and Facebook "link in comments".
+
+The reported diagnosis assumed a per-platform CTA branch had the two platforms
+swapped. There was no branch. `content-build.py` generated ONE caption and
+`deliver-to-slack.py` shipped it as a single "post the SAME caption + image to
+both" reply, so no correct phrasing was reachable for either platform: whatever
+the model happened to write was pasted verbatim into both. Splitting the reply is
+what makes Danielle's request expressible at all, and it matches how every other
+piece in the bundle already works (one reply per destination, copy-paste ready).
+
+The line is appended deterministically rather than prompted for, because a caption
+that names the wrong place to find the link is worse than one that omits it.
+
 ## 2026-08-27 — Charter mail is routed by what it IS, not stamped new_deal_po (#AP-pending)
 
 **What changed**

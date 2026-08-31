@@ -191,6 +191,8 @@ def _generate_oped_assets(runner: SkillsRunner, bundle_dir: Path, topic: dict, b
          f"academic). A scroll-stopping first line, 2-3 short lines on why it matters for California students "
          f"and schools, and a soft CTA to read the blog.\n"
          f"About 70-110 words. Do NOT use em dashes. "
+         f"Do NOT say WHERE the link is. No 'link in bio', no 'link in comments', no 'link in story'. "
+         f"That line differs per platform and deliver-to-slack.py appends the right one.\n"
          f"Then on a NEW final line output EXACTLY 10 relevant hashtags (a mix of education, tutoring, charter "
          f"school, and California K-12 tags), space-separated, each starting with #.\n"
          f"Output ONLY the caption followed by the single hashtags line.\n\nBlog excerpt:\n{excerpt}"),
