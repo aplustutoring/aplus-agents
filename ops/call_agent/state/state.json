@@ -532,9 +532,16 @@
     409985942,
     409986424,
     409988888,
-    410008105
+    410008105,
+    410097422,
+    410098845,
+    410099726,
+    410112961,
+    410099091,
+    410100140,
+    410100243
   ],
-  "last_run_utc": "2026-08-31T20:43:55.474081+00:00",
+  "last_run_utc": "2026-09-01T00:07:15.629660+00:00",
   "pending_digest": [
     {
       "call_id": 409938106,
@@ -1323,6 +1330,201 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 410097422,
+      "number": "18189153885",
+      "time_pt": "2:39 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Inbound call from a prospective charter family (iLEAD / SCVi) asking about pricing and tutoring model for her 4th grader. Roman quoted $60 for 45-min sessions and $75 for 60-min, recommended 45-min sessions for younger students, and explained A+ offers personalized 1:1 support (either on the family's curriculum or a mutually agreed one). Caller (Rachel?) confirmed she is with SCVi iLEAD. Call ended cordially with no next step booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with the caller to confirm charter enrollment via SCVi iLEAD and offer to send a proposal / start the instructional funds process",
+            "owner_hint": "Roman"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Prospective charter family called in \u2014 friendly, price-shopping tone. Parent (may be named Rachel \u2014 confirm) has a 4th grader and is enrolled with SCVi (iLEAD charter). Roman quoted pricing ($60 / 45 min, $75 / 60 min) and recommended 45-min sessions for a 4th grader, and explained our 1:1 personalized model (support their curriculum or a mutually agreed one \u2014 no preset curriculum). No assessment or session was booked. She now expects us to be available when she's ready; she did not commit to next steps. Suggested opener: \"Hi, this is ___ from A+ Tutoring following up on your call with Roman about 4th-grade tutoring through SCVi iLEAD \u2014 I'd love to help you get set up using your instructional funds. Can I grab your student's name and a good time for a quick assessment?\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Parent explicitly stated she is with SCVi (iLEAD charter) and is inquiring about tutoring paid through the charter \u2014 qualifies as a charter (instructional funds) lead.",
+        "student_or_school_names_mentioned": [
+          "SCVi",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Parent (possibly Rachel) called asking about pricing and tutoring approach for her 4th grader. Family is enrolled with SCVi (iLEAD charter) and is exploring using instructional funds for tutoring. No student name captured, no session booked.",
+          "what_we_can_do_to_help": "Follow up to confirm charter enrollment with SCVi iLEAD, walk her through the instructional funds process, and recommend 45-min 1:1 sessions (aligned to her child's curriculum or a mutually agreed plan). Offer to schedule an assessment to match with a tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "4",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with the caller to confirm charter enrollment via SCVi iLEAD and offer to send a proposal / start the instructional funds process",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 410098845,
+      "number": "13234934787",
+      "time_pt": "2:42 PM",
+      "matched": true,
+      "contact_label": "Divyesh Motiwalla",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Divyesh Motiwalla (existing customer, dad of Autumn) called in asking to speak with Paola about tomorrow's free trial/evaluation session. Roman attempted to transfer him to Paola, but the connection appears to have failed \u2014 neither party could hear each other after the transfer. The call ended without Divyesh actually connecting with Paola to discuss the trial.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Paola to call Divyesh back ASAP to discuss tomorrow's free trial session for Autumn (call dropped during transfer attempt)",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola \u2014 Divyesh called in asking specifically for you about the free trial/evaluation session scheduled for tomorrow for his daughter Autumn (10th grade, Peacock Junior High). Roman tried to transfer him but the call dropped and neither side could hear each other. Tone was calm/neutral. He expects to reach you to confirm details for tomorrow's trial. Please call him back at +13234934787 right away. Open with: \"Hi Divyesh, it's Paola \u2014 sorry about the dropped transfer earlier. I wanted to make sure we're all set for Autumn's trial tomorrow \u2014 do you have a few minutes to confirm the time and logistics?\" Recent context: Yolanda left him a VM 8/31 offering 3:30 or 4:30 trial times; trial was originally set for Tuesday 4PM per 8/27 call. Confirm which time is locked in and that the tutor profile has been sent.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal (trial already booked); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Autumn",
+          "Peacock Junior High"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Inbound] Divyesh called in asking to speak with Paola about tomorrow's free trial/evaluation session for Autumn. Roman attempted to transfer to Paola but the call dropped \u2014 neither side could hear each other and the call ended without him connecting.",
+          "what_we_can_do_to_help": "Paola to call Divyesh back ASAP at +13234934787 to confirm tomorrow's trial time (3:30 or 4:30) and finalize logistics. Confirm tutor profile was sent and that the correct student name (Autumn) is being used.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Inbound] Divyesh called in asking to speak with Paola about tomorrow's free trial/evaluation session for Autumn. Roman attempted to transfer to Paola but the call dropped \u2014 neither side could hear each other and the call ended without him connecting."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to call Divyesh back ASAP at +13234934787 to confirm tomorrow's trial time (3:30 or 4:30) and finalize logistics. Confirm tutor profile was sent and that the correct student name (Autumn) is being used."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Paola to call Divyesh back ASAP to discuss tomorrow's free trial session for Autumn (call dropped during transfer attempt)",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 410112961,
+      "number": "17142442863",
+      "time_pt": "3:27 PM",
+      "matched": true,
+      "contact_label": "Adrienne Quarry",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Adrienne Quarry called ahead of her daughter Perla's first ACT tutoring session tonight at 5pm. Perla completed a practice test but forgot to submit the answer key that the tutor wanted in advance. Adrienne asked whether the tutor could proceed with a general lesson (focused on math, her known weak area) and tailor future sessions once the key is submitted. Mandy confirmed that was fine and said she'd let the tutor know.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Notify tonight's tutor that Perla's practice-test answer key won't be available before the 5pm session \u2014 proceed with a general lesson focused on math, and tailor once the key is submitted.",
+            "owner_hint": "Mandy"
+          },
+          {
+            "item": "Follow up with Perla/Adrienne to get the practice-test answer key submitted so the tutor can diagnose and target future sessions.",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Adrienne (mom of Perla Elbaz, ACT prep senior at Louisville) called in friendly/relaxed to flag that Perla didn't get her practice-test answer key over to the tutor before tonight's 5pm first session. Mandy promised the tutor would be told to pivot to a general lesson tonight (mom noted math is the priority weak area) and tailor from there once the key is in. Please (1) message tonight's tutor before 5pm with this heads-up, and (2) ping Perla directly at 818-298-9582 to collect the answer key so session 2 can be targeted. If following up with Adrienne, open with: \"Just confirming your tutor is all set for 5pm tonight \u2014 he'll start with a general math-focused lesson and we'll dial it in once Perla gets us that answer key.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer \u2014 first tutoring session is tonight; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Perla Elbaz",
+          "Louisville"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Mom called ahead of Perla's first ACT tutoring session tonight at 5pm. Perla completed the practice test but did not submit the answer key in advance as the tutor had requested; mom reiterated math is the priority area.",
+          "what_we_can_do_to_help": "[call] Told tutor to pivot tonight's first session to a general (math-focused) lesson and tailor future sessions once Perla's practice-test answer key is submitted. Will chase the answer key from Perla (818-298-9582) so the tutor can diagnose and target.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Mom called ahead of Perla's first ACT tutoring session tonight at 5pm. Perla completed the practice test but did not submit the answer key in advance as the tutor had requested; mom reiterated math is the priority area."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Told tutor to pivot tonight's first session to a general (math-focused) lesson and tailor future sessions once Perla's practice-test answer key is submitted. Will chase the answer key from Perla (818-298-9582) so the tutor can diagnose and target."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Notify tonight's tutor that Perla's practice-test answer key won't be available before the 5pm session \u2014 proceed with a general lesson focused on math, and tailor once the key is submitted.",
+          81494333
+        ],
+        [
+          "Follow up with Perla/Adrienne to get the practice-test answer key submitted so the tutor can diagnose and target future sessions.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
@@ -1335,6 +1537,16 @@
       "number": "18187231740",
       "time_pt": "11:20 AM",
       "reason": "hang-up"
+    },
+    {
+      "number": "3234934787",
+      "time_pt": "2:46 PM",
+      "reason": "no transcript"
+    },
+    {
+      "number": "3234934787",
+      "time_pt": "2:49 PM",
+      "reason": "no transcript"
     }
   ],
   "pending_failures": []
