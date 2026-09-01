@@ -545,9 +545,19 @@
     410423496,
     410427241,
     410458522,
-    410462597
+    410462597,
+    410517343,
+    410538374,
+    410555487,
+    410555279,
+    410557115,
+    410562393,
+    410489528,
+    410511946,
+    410524356,
+    410541330
   ],
-  "last_run_utc": "2026-09-01T18:17:18.985716+00:00",
+  "last_run_utc": "2026-09-01T21:14:34.127014+00:00",
   "pending_digest": [
     {
       "call_id": 410409885,
@@ -841,6 +851,499 @@
         [
           "Continue follow-up outreach to Namit via text and/or email since voicemail was left",
           81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410538374,
+      "number": "16616003017",
+      "time_pt": "1:07 PM",
+      "matched": true,
+      "contact_label": "Deborah Hoffstead",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Grandmother Deborah Hoffstead called on behalf of her junior granddaughter Makayla, who needs ACT prep with a target score of 35. Roman explained the online 1-on-1 model, pricing starting at $68/hr, and the diagnostic-first approach. Deborah is doing legwork for the busy parents and asked Roman to email pricing and a practice ACT. She found A+ via Yelp (top 10 for Santa Clarita).",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Deborah a full-length practice ACT diagnostic and the pricing list",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Deborah/Makayla's parents after diagnostic is returned to plan tutoring sessions toward the target score of 35",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Deborah Hoffstead (grandmother, warm and engaged, experienced with ACT tutoring \u2014 her own kids and Makayla's mom went through it) called for her junior granddaughter Makayla. Makayla needs ACT prep with a goal score of 35. Deborah is doing the legwork because the parents are busy, so she'll need to loop them in before anything is booked. Roman promised to email a full-length practice ACT and our pricing list (quoted starting at $68/hr, online 1-on-1, diagnostic-first model). She found us on Yelp (Santa Clarita top 10). Open with: 'Hi Deborah, Roman asked me to follow up \u2014 did you get the practice ACT and pricing we sent for Makayla? Have you had a chance to run it by her parents?' Then confirm parents are on board and get the diagnostic scheduled.",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "ACT test prep inquiry \u2014 diagnostic practice test is being sent as the next step, matching QTL - Diagnostic Sent.",
+        "student_or_school_names_mentioned": [
+          "Makayla"
+        ],
+        "record_updates": {
+          "whats_going_on": "Grandmother Deborah called for junior granddaughter Makayla, who needs ACT prep with a target score of 35. Deborah is doing legwork for the busy parents and will run our info by them. She's experienced with tutoring \u2014 her own kids and Makayla's mom used ACT tutoring successfully.",
+          "what_we_can_do_to_help": "Send Deborah a full-length practice ACT and pricing list. After diagnostic is returned, evaluate baseline and plan 1-on-1 online sessions toward the 35 goal, with independent practice between sessions. Follow up to confirm parents are aligned before booking.",
+          "student_first_name": "Makayla",
+          "student_last_name": null,
+          "grade_level": "11",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": "Yelp!",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Grandmother Deborah called for junior granddaughter Makayla, who needs ACT prep with a target score of 35. Deborah is doing legwork for the busy parents and will run our info by them. She's experienced with tutoring \u2014 her own kids and Makayla's mom used ACT tutoring successfully."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Deborah a full-length practice ACT and pricing list. After diagnostic is returned, evaluate baseline and plan 1-on-1 online sessions toward the 35 goal, with independent practice between sessions. Follow up to confirm parents are aligned before booking."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Deborah a full-length practice ACT diagnostic and the pricing list",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Deborah/Makayla's parents after diagnostic is returned to plan tutoring sessions toward the target score of 35",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 410555487,
+      "number": "18183314733",
+      "time_pt": "1:37 PM",
+      "matched": true,
+      "contact_label": "May Wong",
+      "no_next_step": false,
+      "summary": {
+        "summary": "May Wong, an existing customer, called after receiving a text that her daughter Isabella's tutoring hours were down to 44. Yolanda clarified that May actually has 44.5 hours remaining in her store package plus 1 additional hour in her success package. They agreed to apply the success package hour to Isabella's two upcoming half-hour sessions on 9/1/2026 and 9/2/2026 with tutor Ayesha, then resume drawing from the store package. May was relieved and happy with the tutoring, expressing love for the tutor.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Apply the 1 hour from May Wong's success package to Isabella's two half-hour sessions on 9/1/2026 and 9/2/2026 with Ayesha, then resume billing from the store package.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "May Wong (Isabella's mom, existing happy customer) called confused about a text saying she was down to 44 hours. Yolanda clarified she has 44.5 hours in the store package plus 1 hour in the success package. Yolanda PROMISED to apply the 1 success-package hour to Isabella's two upcoming 30-min sessions with Ayesha on 9/1/2026 and 9/2/2026, then resume drawing from the store package. May is warm and relieved \u2014 she loves Ayesha. No further action needed from her; just make sure the hours are coded correctly on those two sessions in the system. If following up, open with: 'Hi May, just confirming Isabella's sessions on 9/1 and 9/2 with Ayesha are set to pull from your success package hour as we discussed.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer with an ongoing tutoring package; status is owned by the deal pipeline and should not be changed.",
+        "student_or_school_names_mentioned": [
+          "Isabella",
+          "Ayesha"
+        ],
+        "record_updates": {
+          "whats_going_on": "May called after a text alert about hours running low. Clarified she has 44.5 hours in the store package plus 1 hour in the success package. Isabella continues weekly 30-min sessions with tutor Ayesha and family is very happy with the tutoring.",
+          "what_we_can_do_to_help": "Apply the remaining 1 hour from the success package to Isabella's 9/1/2026 and 9/2/2026 sessions with Ayesha, then continue drawing from the store package. Continue proactive hour-balance reminders \u2014 May appreciates them.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "May called after a text alert about hours running low. Clarified she has 44.5 hours in the store package plus 1 hour in the success package. Isabella continues weekly 30-min sessions with tutor Ayesha and family is very happy with the tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Apply the remaining 1 hour from the success package to Isabella's 9/1/2026 and 9/2/2026 sessions with Ayesha, then continue drawing from the store package. Continue proactive hour-balance reminders \u2014 May appreciates them."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Apply the 1 hour from May Wong's success package to Isabella's two half-hour sessions on 9/1/2026 and 9/2/2026 with Ayesha, then resume billing from the store package.",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 410489528,
+      "number": "18182248797",
+      "time_pt": "11:52 AM",
+      "matched": true,
+      "contact_label": "Roni Beck",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Roni Beck about her open tutoring inquiry. Roni acknowledged the email but said she's had a busy few weeks and hasn't been able to book. She asked Paola to call her back today after 4pm to discuss further. Paola agreed and ended the call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Call Roni Beck back today after 4:00pm to continue the tutoring consult conversation",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Paola already owns this \u2014 she promised Roni Beck a callback TODAY after 4:00pm. Roni is warm but has been busy and hasn't gotten around to booking from the email link; she was apologetic and friendly. We still have no student details (name, grade, subject, modality) \u2014 the callback is the consult opportunity to gather those and discuss scheduling. Open with: \"Hi Roni, it's Paola from A+ Tutoring calling back as promised \u2014 is now still a good time to chat about tutoring for your family?\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective parent Roni Beck; not a charter or diagnostic case based on available info, and a callback is set for later today.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up \u2014 connected live with Roni. She's had a busy few weeks and hasn't booked from the email yet but is still interested. No student details gathered yet.",
+          "what_we_can_do_to_help": "Paola to call Roni back today after 4:00pm to run the consult, gather student/grade/subject/modality details, and get a plan scheduled.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up \u2014 connected live with Roni. She's had a busy few weeks and hasn't booked from the email yet but is still interested. No student details gathered yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to call Roni back today after 4:00pm to run the consult, gather student/grade/subject/modality details, and get a plan scheduled."
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Roni Beck back today after 4:00pm to continue the tutoring consult conversation",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410511946,
+      "number": "18189153885",
+      "time_pt": "12:27 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to a prospective family who had previously expressed interest in tutoring. The call went to voicemail and Paola left a brief message asking the family to call back to connect. No details about the student or family needs were exchanged.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with the prospective family if they do not return Paola's voicemail",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left an outbound voicemail for a prospective family at (818) 915-3885 who had previously expressed interest in tutoring. No contact was made and no details were discussed. The family now has Paola's voicemail inviting them to call back. If they don't respond in a few days, try another outreach \u2014 open with something like: 'Hi, this is [name] from A+ Tutoring following up on Paola's message and your interest in tutoring for your family \u2014 I'd love to learn a bit about what you're looking for.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound call went to voicemail; no conversation occurred, so no new qualification information was gathered.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola placed an outbound follow-up call regarding the family's prior interest in tutoring; reached voicemail and left a message asking them to call back.",
+          "what_we_can_do_to_help": "Await callback and continue outreach attempts to learn about the student's needs and propose a tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with the prospective family if they do not return Paola's voicemail",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410524356,
+      "number": "17072356998",
+      "time_pt": "12:43 PM",
+      "matched": true,
+      "contact_label": "Emma  De La Cruz Ponce",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Janelle from A+ called Emma De La Cruz Ponce as a referral follow-up from Emma's relative Carmen Hurtado de la Cruz. Emma's daughter Leah is a 1st grader at Santa Rosa Language Academy (formerly Cesar Chavez Language Academy), a Spanish-immersion school, and needs support in Spanish and some math. Emma wants to start with a trial session paid out of pocket (not charter POs) and is available Mondays or Tuesdays after 3PM, targeting next week. Janelle will text to confirm the trial day/time and share the tutor profile.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Book trial session for Leah (Spanish + some math) on Monday or Tuesday next week after 3PM and text Emma to confirm day/time",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send tutor profile/bio to Emma via SMS once matched",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Update record: correct student name to Leah, school to Santa Rosa Language Academy (formerly Cesar Chavez Language Academy), subject to Spanish + Math, note referral from relative Carmen Hurtado de la Cruz, paying out of pocket (not charter)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Leia",
+            "correct": "Leah"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Emma De La Cruz Ponce is a warm, friendly new parent referred by her relative Carmen Hurtado de la Cruz. Her daughter Leah is in 1st grade at Santa Rosa Language Academy (Spanish-immersion school in Santa Rosa, formerly Cesar Chavez Language Academy) and needs help in Spanish and some math. Janelle offered a complimentary trial session; Emma wants Monday or Tuesday after 3PM, so target next week. Emma will pay out of pocket \u2014 she is NOT using charter POs. Janelle promised to text Emma to lock in the day/time and share the matched tutor's profile, and reminded her of the 24-hour cancellation policy. Open with: 'Hi Emma, this is [name] from A+ Tutoring following up on Janelle's call \u2014 I'd love to lock in Leah's trial for next Monday or Tuesday after 3PM and send over her tutor's profile.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective parent; she confirmed she'll pay out of pocket rather than use charter instructional funds, so not QTL-Charter. No diagnostic needed \u2014 subject-based tutoring for a 1st grader.",
+        "student_or_school_names_mentioned": [
+          "Leah",
+          "Emma De La Cruz Ponce",
+          "Carmen Hurtado de la Cruz",
+          "Santa Rosa Language Academy",
+          "Cesar Chavez Language Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Referral from relative Carmen Hurtado de la Cruz. Daughter Leah is in 1st grade at Santa Rosa Language Academy, a Spanish-immersion school, and needs support in Spanish with some math. Mom will pay out of pocket (not charter POs) and wants to start with a trial before committing.",
+          "what_we_can_do_to_help": "Offering a complimentary trial session for Leah in Spanish + math. Availability: Mondays or Tuesdays after 3PM, targeting next week. Janelle to text Emma to confirm day/time and send tutor profile.",
+          "student_first_name": "Leah",
+          "student_last_name": null,
+          "grade_level": "1",
+          "student_school": "Santa Rosa Language Academy",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From a Friend",
+          "referral_name": "Carmen Hurtado de la Cruz",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Referral from relative Carmen Hurtado de la Cruz. Daughter Leah is in 1st grade at Santa Rosa Language Academy, a Spanish-immersion school, and needs support in Spanish with some math. Mom will pay out of pocket (not charter POs) and wants to start with a trial before committing."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Offering a complimentary trial session for Leah in Spanish + math. Availability: Mondays or Tuesdays after 3PM, targeting next week. Janelle to text Emma to confirm day/time and send tutor profile."
+        ],
+        [
+          "student_school",
+          "Sta Rosa Language Academy",
+          "Santa Rosa Language Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Carmen Hurtado de la Cruz"
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Leia",
+          "Leah",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Book trial session for Leah (Spanish + some math) on Monday or Tuesday next week after 3PM and text Emma to confirm day/time",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Send tutor profile/bio to Emma via SMS once matched",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Update record: correct student name to Leah, school to Santa Rosa Language Academy (formerly Cesar Chavez Language Academy), subject to Spanish + Math, note referral from relative Carmen Hurtado de la Cruz, paying out of pocket (not charter)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410541330,
+      "number": "17072356998",
+      "time_pt": "1:16 PM",
+      "matched": true,
+      "contact_label": "Emma  De La Cruz Ponce",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ called Emma back to confirm the spelling of her daughter Leah's last name. Emma confirmed it is Guerrero (G-U-E-R-R-E-R-O). Janelle told Emma she'll receive a confirmation text shortly. Quick, friendly call to close a data gap on the record.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Emma the confirmation text for Leah's trial session (day/time + tutor profile)",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Leia",
+            "correct": "Leah Guerrero"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Janelle just called Emma De La Cruz Ponce to confirm her daughter's last name \u2014 it's Leah Guerrero (G-U-E-R-R-E-R-O). Emma is expecting a confirmation text shortly with the trial day/time (Mon or Tues after 3PM next week, Spanish + some math) and the tutor's profile. Please make sure that text goes out today. If you need to open with her, something like: 'Hi Emma, this is [name] from A+ \u2014 following up on Leah's trial, here's the day/time and her tutor's profile.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we've spoken with; trial pending, paying out of pocket (not charter), no diagnostic needed.",
+        "student_or_school_names_mentioned": [
+          "Leah Guerrero",
+          "Santa Rosa Language Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Quick callback to confirm student's last name \u2014 it's Leah Guerrero (G-U-E-R-R-E-R-O). Trial in Spanish + some math still pending confirmation text.",
+          "what_we_can_do_to_help": "Janelle to send Emma the trial confirmation text (day/time + tutor profile) shortly.",
+          "student_first_name": "Leah",
+          "student_last_name": "Guerrero",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Quick callback to confirm student's last name \u2014 it's Leah Guerrero (G-U-E-R-R-E-R-O). Trial in Spanish + some math still pending confirmation text."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle to send Emma the trial confirmation text (day/time + tutor profile) shortly."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Guerrero"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Leia",
+          "Leah",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send Emma the confirmation text for Leah's trial session (day/time + tutor profile)",
+          80047202,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
