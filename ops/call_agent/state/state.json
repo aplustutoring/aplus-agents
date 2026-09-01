@@ -539,10 +539,321 @@
     410112961,
     410099091,
     410100140,
-    410100243
+    410100243,
+    410376813,
+    410409885,
+    410423496,
+    410427241,
+    410458522,
+    410462597
   ],
-  "last_run_utc": "2026-09-01T05:59:34.049238+00:00",
-  "pending_digest": [],
-  "pending_skipped": [],
+  "last_run_utc": "2026-09-01T18:17:18.985716+00:00",
+  "pending_digest": [
+    {
+      "call_id": 410409885,
+      "number": "13108737344",
+      "time_pt": "9:31 AM",
+      "matched": true,
+      "contact_label": "Johnique Shackelford",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Johnique Shackelford to follow up on her inquiry about tutoring for her 5th-grade son Coyote, who attends Sage Oak Charter and needs to close reading and math gaps per his iReady. Paola explained the charter rate ($75/hr or $60/45min) and recommended starting with three 45-minute online sessions per week. Johnique provided her Sage Oak EF Kristin Wolven's contact (kwolven@sageoak.education) and asked A+ to loop the EF in to confirm available funds/PO. She also confirmed she'd like tutoring to use the school's recommended curriculum.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Johnique the current charter rate sheet/pricing information.",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Email Johnique and Kristin Wolven (kwolven@sageoak.education) together to request a PO and confirm available funds/hours for Coyote.",
+            "owner_hint": "Paola"
+          },
+          {
+            "item": "Once PO/funds are confirmed, match Coyote with a tutor for 3x/week 45-minute online sessions and send tutor profile for parent review; plan to incorporate Sage Oak's recommended curriculum.",
+            "owner_hint": null
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Johnique Shackelford (mom of Coyote, 5th grade at Sage Oak Charter, IEP, iReady ~1st grade reading / 2nd grade math) was warm and ready to move forward. Paola quoted the charter rate ($75/hr or $60/45min) and recommended 3x/week 45-min online sessions; mom agreed with that cadence. Mom expects (1) a pricing/rate email to her, and (2) a joint email looping in her Sage Oak EF Kristin Wolven (kwolven@sageoak.education) to request a PO and confirm how many hours are available (she thinks ~$400/month but isn't sure). She also wants tutoring to use Sage Oak's recommended curriculum, which we confirmed we can do. Her Sept 14 meeting is still on the calendar \u2014 consider whether it's still needed once PO is in motion. Suggested opener: \"Hi Johnique, following up from Paola's call \u2014 here's our charter rate info, and I'm looping in Kristin Wolven to get Coyote's PO started.\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Charter family (Sage Oak) actively moving forward with PO request; status stays QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "Coyote",
+          "Sage Oak Charter School",
+          "Kristin Wolven"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with mom Johnique to follow up on her inquiry for Coyote (5th grade, Sage Oak, needs to close iReady gaps in reading and math). She wants to start ASAP and use max available charter funds; believes Sage Oak allocates ~$400/month but is unsure of exact amount. Provided EF contact Kristin Wolven (kwolven@sageoak.education) so we can request a PO.",
+          "what_we_can_do_to_help": "Send Johnique our charter rate info ($75/hr or $60/45min), then loop in EF Kristin Wolven to request a PO and confirm available hours. Plan is 3x/week 45-minute online 1:1 sessions in Reading/ELA and Math, incorporating Sage Oak's recommended curriculum.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": "Kristin Wolven",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with mom Johnique to follow up on her inquiry for Coyote (5th grade, Sage Oak, needs to close iReady gaps in reading and math). She wants to start ASAP and use max available charter funds; believes Sage Oak allocates ~$400/month but is unsure of exact amount. Provided EF contact Kristin Wolven (kwolven@sageoak.education) so we can request a PO."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Johnique our charter rate info ($75/hr or $60/45min), then loop in EF Kristin Wolven to request a PO and confirm available hours. Plan is 3x/week 45-minute online 1:1 sessions in Reading/ELA and Math, incorporating Sage Oak's recommended curriculum."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Kristin Wolven"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Johnique the current charter rate sheet/pricing information.",
+          81494333
+        ],
+        [
+          "Email Johnique and Kristin Wolven (kwolven@sageoak.education) together to request a PO and confirm available funds/hours for Coyote.",
+          81494333
+        ],
+        [
+          "Once PO/funds are confirmed, match Coyote with a tutor for 3x/week 45-minute online sessions and send tutor profile for parent review; plan to incorporate Sage Oak's recommended curriculum.",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410423496,
+      "number": "16503050039",
+      "time_pt": "10:03 AM",
+      "matched": true,
+      "contact_label": "Aamer Khani",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Aamer Khani to follow up on his tutoring inquiry for his son Adil. Aamer was at work and couldn't talk in depth, but Paola confirmed she had sent him an email yesterday with details (referencing Tuesday 11:15 availability). Aamer said he'd check the email once he got home and respond with his preference for continuing by phone or email. No concrete next step was locked in.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Aamer's email reply and follow up if no response within a couple of days",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Aamer Khani (dad of Adil, 9th grader at Pacific Charter Institute, needs ELA support online) was reached but at work \u2014 polite, receptive, but couldn't talk. Paola told him she sent an email yesterday with details including a Tuesday 11:15 availability; he'll review once home and reply with whether he prefers phone or email going forward. He now expects to review the email and respond on his own timeline. If he hasn't replied in 2-3 days, follow up \u2014 open with: \"Hi Aamer, just checking in to see if you had a chance to review the email I sent about Adil's tutoring \u2014 happy to jump on a quick call or keep it over email, whichever works best for you.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with the parent about their pending inquiry; not a charter instructional-funds family and no diagnostic required, so We Connected fits. (Note: schema requires exact value \u2014 using We Connected.)",
+        "student_or_school_names_mentioned": [
+          "Adil",
+          "Pacific Charter Institute"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reached Aamer briefly; he was at work and couldn't talk. Confirmed he received (or will review) Paola's email from yesterday outlining next steps and a Tuesday 11:15 availability for Adil's ELA tutoring.",
+          "what_we_can_do_to_help": "Await Aamer's email reply on preferred communication channel and lock in the Tuesday 11:15 session or propose alternatives; follow up in a few days if no response.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reached Aamer briefly; he was at work and couldn't talk. Confirmed he received (or will review) Paola's email from yesterday outlining next steps and a Tuesday 11:15 availability for Adil's ELA tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Await Aamer's email reply on preferred communication channel and lock in the Tuesday 11:15 session or propose alternatives; follow up in a few days if no response."
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Aamer's email reply and follow up if no response within a couple of days",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410458522,
+      "number": "17149042565",
+      "time_pt": "11:05 AM",
+      "matched": true,
+      "contact_label": "Claire Alarcon",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Claire Alarcon regarding her prior interest in tutoring for her son. The call went to voicemail; Paola left a brief message asking Claire to call back to connect. No new information was exchanged.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Claire's callback; if no response in a few days, attempt another outreach (call/email/text).",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Claire Alarcon following up on her interest in tutoring for her son (name/grade/subject not yet captured \u2014 record shows 'From my Charter School' so she may be a charter family). No callback time set. Claire now expects a return call from A+. If picking this up, open with: 'Hi Claire, this is [name] from A+ Tutoring following up on Paola's message about tutoring for your son \u2014 do you have a couple minutes to share what he's working on?' Aim to capture grade, school, subject need, and whether she plans to use charter instructional funds.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail only; no live conversation occurred, so keep current ATTEMPTED_TO_CONTACT status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola placed a follow-up outbound call to Claire regarding tutoring interest for her son; reached voicemail and left a message asking Claire to call back.",
+          "what_we_can_do_to_help": "Continue outreach attempts to connect live, then gather son's grade, school, subject need, and confirm whether charter instructional funds will be used.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed a follow-up outbound call to Claire regarding tutoring interest for her son; reached voicemail and left a message asking Claire to call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach attempts to connect live, then gather son's grade, school, subject need, and confirm whether charter instructional funds will be used."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Claire's callback; if no response in a few days, attempt another outreach (call/email/text).",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410462597,
+      "number": "13104674479",
+      "time_pt": "11:11 AM",
+      "matched": true,
+      "contact_label": "Namit Joshi",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Namit Joshi regarding tutoring for his son Arnav. The call went to voicemail; Paola left a message asking Namit to share a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue follow-up outreach to Namit via text and/or email since voicemail was left",
+            "owner_hint": "Paola"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Namit Joshi is a prospective parent interested in tutoring for his 5th-grade son Arnav (Science Academy test prep). Paola left a voicemail today asking for a good time to connect \u2014 no response yet. Namit hasn't spoken with us live. Suggest following up via text/email to increase chances of reply. Open with: 'Hi Namit, this is [name] from A+ Tutoring following up on Paola's voicemail about Science Academy test prep for Arnav \u2014 what's the best time to give you a quick call?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only; no live contact made and caller's current status reflects prior disposition. Not enough new info to change status.",
+        "student_or_school_names_mentioned": [
+          "Arnav",
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up by Paola went to voicemail again. Left a message asking Namit to share a good time to connect regarding tutoring for Arnav.",
+          "what_we_can_do_to_help": "Continue multi-channel follow-up (text/email in addition to phone) to reconnect with Namit on Science Academy test prep for Arnav.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up by Paola went to voicemail again. Left a message asking Namit to share a good time to connect regarding tutoring for Arnav."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue multi-channel follow-up (text/email in addition to phone) to reconnect with Namit on Science Academy test prep for Arnav."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue follow-up outreach to Namit via text and/or email since voicemail was left",
+          81494333
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
+  "pending_skipped": [
+    {
+      "number": "12139255266",
+      "time_pt": "10:12 AM",
+      "reason": "no transcript"
+    }
+  ],
   "pending_failures": []
 }
