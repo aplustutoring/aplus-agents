@@ -114,6 +114,24 @@ const ROLE_CREATE_PROPS = {
   student: { a_persona: "Student" },
 };
 
+/**
+ * Which seat owns the lead (Roman 2026-09-01): teachers and school staff to
+ * sales, families to charter sales. Seats, not people — the ids live in
+ * wrangler.toml so a team change never touches code.
+ */
+const ROLE_SEAT = {
+  teacher: "OWNER_SALES",
+  administrator: "OWNER_SALES",
+  support_staff: "OWNER_SALES",
+  parent: "OWNER_CHARTER_SALES",
+  student: "OWNER_CHARTER_SALES",
+};
+
+export function ownerForRole(env, role) {
+  const seat = ROLE_SEAT[role];
+  return (seat && env[seat]) || "";
+}
+
 async function upsertContact(env, properties, { role, eventTag }) {
   const headers = {
     Authorization: `Bearer ${env.HUBSPOT_TOKEN}`,
@@ -150,9 +168,13 @@ async function upsertContact(env, properties, { role, eventTag }) {
     };
   }
 
+  // Owner is CREATE-ONLY, like the persona stamp. An existing family may already
+  // be worked by someone; reassigning them from a booth tablet would silently
+  // take a live relationship off whoever owns it.
   const createProps = {
     ...properties,
     aplus_event_tag: eventTag,
+    hubspot_owner_id: ownerForRole(env, role),
     ...(ROLE_CREATE_PROPS[role] || {}),
   };
   for (const k of Object.keys(createProps)) if (createProps[k] === "") delete createProps[k];
