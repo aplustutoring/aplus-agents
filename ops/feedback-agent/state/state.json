@@ -64,7 +64,8 @@
     "Ev0BTXR5ECAW",
     "Ev0BV33RJ68Y",
     "Ev0BTTCENURM",
-    "Ev0BUCK81RL4"
+    "Ev0BUCK81RL4",
+    "Ev0BUATMA0BT"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -461,12 +462,12 @@
       "correction_path": "corrections/call-agent/2026-09-01-scheduling-items-misrouted-to-digest.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/156",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788290216784979"
     }
   ],
   "graduation": {
-    "clean_merges": 14
+    "clean_merges": 15
   },
   "pending_proposals": {
     "1786554388.265099": {
