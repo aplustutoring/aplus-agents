@@ -555,9 +555,17 @@
     410489528,
     410511946,
     410524356,
-    410541330
+    410541330,
+    410575225,
+    410581872,
+    410597365,
+    410601242,
+    410603410,
+    410575787,
+    410591818,
+    410613558
   ],
-  "last_run_utc": "2026-09-01T21:14:34.127014+00:00",
+  "last_run_utc": "2026-09-01T23:22:21.506115+00:00",
   "pending_digest": [
     {
       "call_id": 410409885,
@@ -1344,6 +1352,351 @@
           "Send Emma the confirmation text for Leah's trial session (day/time + tutor profile)",
           80047202,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410575225,
+      "number": "18186251729",
+      "time_pt": "2:16 PM",
+      "matched": true,
+      "contact_label": "Melinda Kier",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Melinda Kier, a retired special education teacher living in Simi Valley, called to inquire about tutoring positions with A+. Roman (owner) directed her to the Become a Tutor application on the website. Melinda has mild/moderate credential, master's in special ed, reading and autism certificates, and prefers online work, but Roman explained A+ only hires online tutors outside California and their need in her area is in-person in student homes. Melinda said in-home doesn't work for her but agreed to submit an application anyway.",
+        "caller_type": "tutor applicant",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for Melinda Kier's tutor application submission and review her credentials (retired special ed teacher, mild/moderate credential, master's in SPED, reading & autism certs) for potential in-person Simi Valley placement fit",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Melinda Kerr",
+            "correct": "Melinda Kier"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Melinda Kier (note spelling \u2014 not Kerr) is a retired special ed teacher in Simi Valley who called asking how we select tutors. Roman (owner) took the call and pointed her to the Become a Tutor application. She has strong credentials: mild/moderate SPED credential, master's in special education, reading and autism certificates, experience across LAUSD, Gilroy, and Hawaii. She prefers online tutoring but Roman explained we only hire online tutors outside CA; our need in her area is our in-home model, which she said won't work for her. She still said she'd submit an application. If her application comes in, review it \u2014 she could be a fit for in-person Simi Valley families if she reconsiders. No callback promised. Open with: 'Hi Melinda, this is ___ from A+ Tutoring following up on your conversation with Roman and your application.'",
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Caller is a prospective tutor applicant who was directed to submit the tutor application.",
+        "student_or_school_names_mentioned": [
+          "Los Angeles Unified",
+          "Gilroy",
+          "Simi Valley"
+        ],
+        "record_updates": {
+          "whats_going_on": "Melinda Kier called inquiring about tutoring positions. Retired special ed teacher in Simi Valley with mild/moderate credential, master's in SPED, reading and autism certificates. Prefers online but our online roles are out-of-state only; she declined the in-home model but said she'd still submit an application.",
+          "what_we_can_do_to_help": "Review her tutor application when it arrives; she could be a strong in-person SPED fit in the Simi Valley area if she reconsiders the in-home model.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Melinda Kier called inquiring about tutoring positions. Retired special ed teacher in Simi Valley with mild/moderate credential, master's in SPED, reading and autism certificates. Prefers online but our online roles are out-of-state only; she declined the in-home model but said she'd still submit an application."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Review her tutor application when it arrives; she could be a strong in-person SPED fit in the Simi Valley area if she reconsiders the in-home model."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Tutors"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Melinda Kier's tutor application submission and review her credentials (retired special ed teacher, mild/moderate credential, master's in SPED, reading & autism certs) for potential in-person Simi Valley placement fit",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 410575787,
+      "number": "16093065606",
+      "time_pt": "2:16 PM",
+      "matched": true,
+      "contact_label": "Kurt Levy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle called tutor Kurt Levy to follow up on student match messages sent via Slack. Kurt explained he's booked all week with existing students, has family visiting, and is away this weekend \u2014 he'll be more available next week. He asked Janelle to send an email reminder and said he'll review the Slack messages and update his Teachworks availability calendar when he gets home. Tone was friendly and cooperative.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Kurt an email reminder to review the Slack student match messages and update his Teachworks availability calendar",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Kurt next week when his schedule frees up to confirm student assignments",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Kurt is an active tutor we reached out to about matching him with new students posted in Slack. He was friendly but explained he's fully booked this week (tutoring tonight, tomorrow, Thursday), has a family member visiting, and is away this weekend \u2014 not available until next week. He previously indicated Tuesdays and Fridays as his availability. He asked us to email him a reminder to check the Slack messages and update his Teachworks availability calendar. He mentioned finishing up with three senior students this week, so his calendar should open up. Open with: 'Hi Kurt, just following up on the reminder email \u2014 wanted to check in now that this week is wrapping up and see which of the student matches you can take on.'",
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Kurt is an active tutor on our roster; status remains Tutor-Active.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound call to tutor Kurt about Slack student matches. Kurt is booked with existing students all week (finishing up with three seniors), has family visiting, and is away this weekend. Not available until next week. Previously listed availability as Tuesdays and Fridays.",
+          "what_we_can_do_to_help": "Send Kurt an email reminder to check the Slack student match messages and update his Teachworks availability calendar. Circle back next week when his current students wrap up to confirm which new matches he can take.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to tutor Kurt about Slack student matches. Kurt is booked with existing students all week (finishing up with three seniors), has family visiting, and is away this weekend. Not available until next week. Previously listed availability as Tuesdays and Fridays."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Kurt an email reminder to check the Slack student match messages and update his Teachworks availability calendar. Circle back next week when his current students wrap up to confirm which new matches he can take."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Kurt an email reminder to review the Slack student match messages and update his Teachworks availability calendar",
+          80047202,
+          "follow_up"
+        ],
+        [
+          "Follow up with Kurt next week when his schedule frees up to confirm student assignments",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410591818,
+      "number": "18184304241",
+      "time_pt": "3:00 PM",
+      "matched": true,
+      "contact_label": "Neta",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Neda regarding her prior interest in tutoring for her family (3rd and 4th graders, Dustin and Daniel). Call went to voicemail; Paola left a message asking Neda to call back with a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with Neda if she does not return the voicemail",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Neda (parent of 3rd and 4th graders, Dustin and Daniel, currently at Dixie) following up on her prior tutoring inquiry. No callback time was set and no new details gathered \u2014 Neda has not yet been reached live. She now expects a callback opportunity on her terms. If she calls back, open warmly with: 'Hi Neda, this is [name] from A+ Tutoring returning your call \u2014 thanks so much for getting back to us. I'd love to hear a bit more about what you're looking for for Dustin and Daniel.' Confirm grades, subjects (ELA/Math), online vs in-person preference, and how she heard about us.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail only \u2014 did not actually connect with Neda, so keep her in ATTEMPTED_TO_CONTACT until a live conversation happens.",
+        "student_or_school_names_mentioned": [
+          "Dustin",
+          "Daniel",
+          "Dixie"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up attempt \u2014 reached voicemail. Left a message asking Neda to call back with a good time to connect about tutoring for her family.",
+          "what_we_can_do_to_help": "Continue outreach attempts to reach Neda live so we can learn more about Dustin and Daniel's needs (subjects, modality) and propose a fit.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up attempt \u2014 reached voicemail. Left a message asking Neda to call back with a good time to connect about tutoring for her family."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach attempts to reach Neda live so we can learn more about Dustin and Daniel's needs (subjects, modality) and propose a fit."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with Neda if she does not return the voicemail",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410613558,
+      "number": "18182248797",
+      "time_pt": "4:13 PM",
+      "matched": true,
+      "contact_label": "Roni Beck",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Roni Beck to run the consult on her tutoring inquiry. Roni shared that her 8th grader Lani attends Portola, is doing geometry, needs support to close gaps and get advanced, and they want in-person tutoring in the 91607 area. Paola explained the model (vetted professional/teacher tutors, profile sent before booking, $130/hr in-person with package discounts, $95/hr online with a free online trial available). Roni asked Paola to email both in-person and online packages so she can review with her husband; she said $130 is on the higher side but isn't saying no.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Roni both in-person ($130/hr) and online ($95/hr) package/pricing options for review with her husband",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91607 for an 8th-grade geometry student at Portola",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Roni after she reviews packages to see if she wants to move forward and/or try the free online trial session",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roni Beck (warm, friendly) is a prospective parent looking for in-person tutoring for her 8th grader Lani at Portola School, ZIP 91607, in geometry \u2014 needs current support plus filling gaps from last year and getting ahead. Paola quoted $130/hr in-person and $95/hr online, explained our model (vetted teachers/professionals, tutor profile sent for approval before booking, packages discount the hourly rate), and offered a free online trial. Roni asked us to email both in-person and online package sheets so she can review with her husband; she flagged $130 as on the higher side but is not a no. She now expects that pricing email from Paola and will come back with a decision. Open with: \"Hi Roni, following up on the packages Paola sent over \u2014 any questions from you and your husband on the in-person or online options for Lani? Happy to also set up that free online trial if you'd like to see how it feels.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family, spoke live, not charter and no diagnostic/test-prep need \u2014 standard We Connected. (Existing status confirmed.)",
+        "student_or_school_names_mentioned": [
+          "Lani Beck",
+          "Portola"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up \u2014 connected with Roni and ran the consult. Student is Lani, 8th grade at Portola, currently in geometry; needs support to strengthen current work, fill gaps from last year, and push toward advanced. Family wants in-person tutoring at home; ZIP 91607. Roni will review pricing with her husband; noted $130/hr feels on the higher side but she's not ruling it out.",
+          "what_we_can_do_to_help": "Paola quoted $130/hr in-person and $95/hr online, explained our matching model (vetted teachers/professionals, tutor profile sent before booking) and offered a free online trial. Next: Paola to email both in-person and online package options, check in-person tutor availability in 91607 for 8th-grade geometry, and follow up once Roni and her husband have reviewed.",
+          "student_first_name": "Lani",
+          "student_last_name": "Beck",
+          "grade_level": "8",
+          "student_school": "Portola",
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up \u2014 connected with Roni and ran the consult. Student is Lani, 8th grade at Portola, currently in geometry; needs support to strengthen current work, fill gaps from last year, and push toward advanced. Family wants in-person tutoring at home; ZIP 91607. Roni will review pricing with her husband; noted $130/hr feels on the higher side but she's not ruling it out."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $130/hr in-person and $95/hr online, explained our matching model (vetted teachers/professionals, tutor profile sent before booking) and offered a free online trial. Next: Paola to email both in-person and online package options, check in-person tutor availability in 91607 for 8th-grade geometry, and follow up once Roni and her husband have reviewed."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Lani"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Beck"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "8"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Portola"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Roni both in-person ($130/hr) and online ($95/hr) package/pricing options for review with her husband",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91607 for an 8th-grade geometry student at Portola",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Roni after she reviews packages to see if she wants to move forward and/or try the free online trial session",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,

@@ -260,3 +260,7 @@
 {"call_id": 410511946, "date_pt": "2026-09-01", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
 {"call_id": 410524356, "date_pt": "2026-09-01", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 5, "U2": 4, "U3": 4, "U4": 4, "U5": 4, "S1": 2, "S2": 2, "S3": 2, "S4": 3}}
 {"call_id": 410541330, "date_pt": "2026-09-01", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 4.2, "scores": {"U1": 4, "U2": 4, "U3": 5, "U4": 4, "U5": 4}}
+{"call_id": 410575225, "date_pt": "2026-09-01", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 2.5, "scores": {"U1": 3, "U2": 2, "U3": 3, "U4": 1, "U5": 3, "S1": 3, "S2": 3, "S4": 2}}
+{"call_id": 410575787, "date_pt": "2026-09-01", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.5, "scores": {"U1": 5, "U2": 4, "U3": 3, "U5": 2}}
+{"call_id": 410591818, "date_pt": "2026-09-01", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 410613558, "date_pt": "2026-09-01", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 5, "U2": 4, "U3": 4, "U4": 3, "U5": 3, "S1": 2, "S2": 3, "S3": 4, "S4": 2}}
