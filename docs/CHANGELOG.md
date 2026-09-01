@@ -8,6 +8,45 @@ Newest entries first.
 
 ---
 
+## 2026-09-01 — Call agent: scheduling-vs-follow-up task routing + name-correction propagation
+
+**What changed**
+- `ops/call_agent/call_agent.py`
+  - `SUMMARY_PROMPT` step 3 gains a routing taxonomy: every action item is
+    tagged `scheduling` (trial/session logistics) or `follow_up` (sales,
+    billing, complaints, partnerships), with the tie-breaker "who physically
+    does it — if it's whoever owns the calendar, it's scheduling".
+  - New `SUMMARY_PROMPT` step 8 + `name_corrections` schema field: the model
+    records any name the call corrected and must use the corrected name
+    everywhere. `_apply_name_corrections()` sweeps summary, action items,
+    handoff note, names-mentioned and the free-text record fields afterwards.
+  - `task_subject()` prefixes scheduling items with `[Scheduling] `;
+    `_resolve_owner()` takes a route and sends them to
+    `hubspot.scheduling_task_owner` when configured (that beats the
+    Roman-answered handoff rule — the handoff rule is about follow-up).
+  - Digest header counts scheduling-routed tasks separately.
+- `ops/call_agent/config.yml` — new `hubspot.scheduling_task_owner`, empty.
+- `ops/call_agent/tests/test_action_routing.py` — 19 new tests.
+- `ops/call_agent/README.md` — routing + name-correction behavior documented.
+
+**Why**
+Paola's 2026-09-01 correction (thread `1788290216.784979`): the agent was
+proposing tasks for scheduling-team work — send a tutor profile, text a family
+to confirm a trial, call back about a dropped transfer about a booked session —
+so they sat in her follow-up queue instead of the scheduling team's. Separately,
+a child's name corrected to "Autumn" on the call still went out under the old
+name in the next-step language: the prompt never said a correction has to
+propagate, and nothing enforced it after generation.
+
+**Open item for Roman**
+`scheduling_task_owner` ships EMPTY because nobody has confirmed the scheduling
+team's HubSpot owner id (Divyesh? a shared `scheduling@` seat?). Until it is
+set, scheduling items still land on Paola — but prefixed `[Scheduling] ` and
+counted separately in the digest, so they are sortable out of her queue today.
+Setting it is a one-line config edit once Roman confirms.
+
+---
+
 ## 2026-08-31 — Blue Ridge BTSC 2026 "Spin Back to School" booth (schema PR)
 
 **What changed**
