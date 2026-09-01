@@ -61,7 +61,8 @@
     "Ev0BTHT5KX8S",
     "Ev0BTQASAS83",
     "Ev0BTGDM0Z0F",
-    "Ev0BTXR5ECAW"
+    "Ev0BTXR5ECAW",
+    "Ev0BV33RJ68Y"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -445,6 +446,21 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788190269210389"
+    },
+    {
+      "date": "2026-09-01",
+      "ts": "1788290216.784979",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "call-agent",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/call-agent/2026-09-01-scheduling-items-misrouted-to-digest.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/156",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788290216784979"
     }
   ],
   "graduation": {
@@ -556,6 +572,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-28T22:38:50.520132+00:00",
       "reporter": "Kath"
+    },
+    "1788290216.784979": {
+      "agent": "call-agent",
+      "agent_label": "Call agent \u2014 daily digest (~5:30 PM PT)",
+      "correction_path": "corrections/call-agent/2026-09-01-scheduling-items-misrouted-to-digest.md",
+      "branch": "fix/call-agent-2026-09-01-784979",
+      "diagnosis": "The call-agent is proposing/creating HubSpot tasks for scheduling-team actions (send tutor profile, text family to confirm trial, callback for dropped transfer) that should route to the scheduling team, not be owned by the call-agent's task output. Also, a name correction (child name to 'Autumn') wasn't applied to outgoing/next-step language \u2014 likely the summarization prompt in call_agent.py or config.yml doesn't scope task ownership or enforce corrected names in follow-up text.",
+      "fix_plan": [
+        "In ops/call_agent/call_agent.py (or ops/call_agent/config.yml if prompts are externalized), update the task-generation prompt to explicitly route scheduling-type follow-ups (trial confirmations, logistics texts, sending tutor profiles, callbacks about scheduled trials) to the scheduling team \u2014 either by assigning the HubSpot task owner to the scheduling queue or by prefixing the task title with '[Scheduling]'.",
+        "Add a short taxonomy in the prompt listing which action types belong to scheduling vs. the call agent's own follow-ups, with the four examples from Paola's report as few-shot guidance.",
+        "Enforce name-correction propagation: when the transcript contains a corrected child/family name, require the model to use the corrected name in every generated task/note/text draft. Add a validation step post-generation that swaps any stale name if a correction was detected.",
+        "Confirm with Roman the exact HubSpot task owner id / queue for the scheduling team (Divyesh? scheduling@?) before wiring the assignment.",
+        "Add a test case in ops/call_agent/tests/ covering a call with scheduling follow-ups + a name correction, asserting task ownership routing and corrected-name usage."
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-09-01T19:17:52.094516+00:00",
+      "reporter": "Paola"
     }
   }
 }
