@@ -8,6 +8,64 @@ Newest entries first.
 
 ---
 
+## 2026-08-31 — Blue Ridge BTSC 2026 "Spin Back to School" booth (schema PR)
+
+**What changed**
+- `ops/hubspot-schema/properties.yml` — 3 enum option additions + 1 new property:
+  `aplus_event_tag` gains `blue_ridge_btsc_2026`; `aplus_event_role` gains
+  `parent` and `student`; new `aplus_booth_prize` (single-line text, EVENT-TEMP).
+- `booth/blue-ridge/worker.js` — new Worker, HubSpot upsert only.
+- `booth/blue-ridge/test-worker.mjs` — 24 tests.
+- `booth/blue-ridge/{wrangler.toml,DEPLOY.md}`.
+
+**Why**
+Lead magnet for the Blue Ridge back-to-school event, modeled on the Sage Oak
+booth (`booth/`). Spin first, capture second: the prize is gated behind the
+redeem form. v1 is HubSpot capture only — no email, MMS or print, because the
+prize is physical and handed over at the table.
+
+`aplus_booth_prize` is new because nothing existing fits. `aplus_booth_goal` was
+NOT reused: it holds photo-banner text and overloading it would corrupt the Sage
+Oak capture. Kept out of KEEPERS.md deliberately — single-event capture, not
+agent vocabulary, and a review-for-archive candidate once the event is
+reconciled.
+
+`aplus_event_role` needed parent and student because Sage Oak was school staff
+only and this event is open to families. The original three options are
+untouched; the UI's "Teacher / School Staff" maps to `teacher`.
+
+**Two Sage Oak bugs fixed here**
+
+1. *Enum labels written instead of values.* The Sage Oak build wrote labels and
+   HubSpot silently rejected them. Writes now take internal values
+   (`teacher`, `blue_ridge_btsc_2026`, `"true"`), and the test asserts that no
+   human-facing label appears in any write payload, for every role.
+2. *Event tag overwritten instead of appended (#AP032).* `aplus_event_tag` is
+   `fieldType: checkbox`, so a flat PATCH replaces the whole set. Sage Oak's
+   Worker searches with `properties: ["email"]` and writes the tag flat —
+   correct as the only event, wrong the moment a second exists. This Worker
+   reads the current value and unions, so a returning Sage Oak attendee ends up
+   carrying both tags.
+
+**Schema gate.** `create_properties.py` does NOT run until Roman merges this PR.
+The Worker is safe to deploy first regardless: an unsynced property returns
+`PROPERTY_DOESNT_EXIST`, and the Worker drops that key and retries so the lead
+is still captured.
+
+**Files touched**
+- `ops/hubspot-schema/properties.yml`
+- `booth/blue-ridge/worker.js`, `test-worker.mjs`, `wrangler.toml`, `DEPLOY.md`
+- `docs/CHANGELOG.md`
+
+**Verification** — `node booth/blue-ridge/test-worker.mjs`: 24 passed. The tests
+read `properties.yml` directly, so a manifest and Worker that disagree fail.
+
+**Decision log** — #AP032 (append-only event tag) is now enforced in code and
+covered by a test. Candidate entry: "event-temp properties are declared in
+properties.yml but deliberately excluded from KEEPERS.md."
+
+---
+
 ## 2026-08-31 — Task sweep: auto-close finished invoice tasks + watch Kath
 
 **What:** `task_sweep._autoclose_done_tasks` — an open "Convert PO to TW

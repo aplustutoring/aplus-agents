@@ -1,0 +1,14 @@
+name = "blue-ridge-booth"
+main = "worker.js"
+compatibility_date = "2026-08-31"
+
+[vars]
+# Set to the deployed Pages URL after `wrangler pages project create blue-ridge-booth`
+ALLOWED_ORIGIN = "https://blue-ridge-booth.pages.dev"
+
+# No KV, no Resend, no JustCall: v1 is a HubSpot upsert only. The Sage Oak booth
+# needed all three for photo delivery; this one hands the visitor a physical
+# prize at the table, so there is nothing to send.
+
+# Secrets (never in this file — set via CLI):
+#   wrangler secret put HUBSPOT_TOKEN
