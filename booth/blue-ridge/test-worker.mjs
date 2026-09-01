@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import worker, { mergeEventTags, withoutUnsyncedProps } from "./worker.js";
+import worker, { mergeEventTags, withoutUnsyncedProps, ownerForRole } from "./worker.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
@@ -87,7 +87,8 @@ async function submit(payload, { existingTag = null, found = false } = {}) {
   const res = await worker.fetch(new Request("https://w/submit", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  }), { HUBSPOT_TOKEN: "t", ALLOWED_ORIGIN: "*" });
+  }), { HUBSPOT_TOKEN: "t", ALLOWED_ORIGIN: "*",
+        OWNER_SALES: "227538487", OWNER_CHARTER_SALES: "81494333" });
   const write = sent.find((s) => s.method === "PATCH" || (s.method === "POST" && !String(s.url).includes("/search")));
   return { res, sent, props: write?.body?.properties || {} };
 }
@@ -164,6 +165,41 @@ await ta("an update never blanks a field with an empty string", async () => {
                                  { found: true, existingTag: "sage_oak_btsc_2026" });
   assert.ok(!("phone" in props));
   assert.ok(!("aplus_booth_prize" in props));
+});
+
+// ── lead routing: teachers -> sales, families -> charter sales ─────────────
+console.log("\nowner routing (Roman 2026-09-01)");
+const ENV = { OWNER_SALES: "227538487", OWNER_CHARTER_SALES: "81494333" };
+t("teacher and school staff route to the sales seat", () => {
+  for (const r of ["teacher", "administrator", "support_staff"]) {
+    assert.equal(ownerForRole(ENV, r), "227538487", r);
+  }
+});
+t("families route to the charter sales seat", () => {
+  for (const r of ["parent", "student"]) {
+    assert.equal(ownerForRole(ENV, r), "81494333", r);
+  }
+});
+t("an unknown role gets no owner rather than a wrong one", () => {
+  assert.equal(ownerForRole(ENV, "visitor"), "");
+  assert.equal(ownerForRole(ENV, undefined), "");
+});
+t("a missing var yields no owner, never the literal seat name", () => {
+  assert.equal(ownerForRole({}, "teacher"), "");
+});
+
+await ta("a NEW teacher is assigned to sales", async () => {
+  const { props } = await submit({ ...BASE, role: "teacher" });
+  assert.equal(props.hubspot_owner_id, "227538487");
+});
+await ta("a NEW parent is assigned to charter sales", async () => {
+  const { props } = await submit({ ...BASE, role: "parent" });
+  assert.equal(props.hubspot_owner_id, "81494333");
+});
+await ta("an EXISTING contact is never reassigned", async () => {
+  const { props } = await submit({ ...BASE, role: "parent" }, { found: true });
+  assert.ok(!("hubspot_owner_id" in props),
+            "owner must be create-only: a live relationship is not reassigned from a booth");
 });
 
 // ── create-only persona stamp ───────────────────────────────────────────────
