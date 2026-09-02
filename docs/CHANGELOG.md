@@ -8,6 +8,61 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — Teachworks invoice due dates sync to the deal, so "ready to submit" is a HubSpot view
+
+**What changed**
+- `scripts/tw_invoice_due_sync.py` — new. Reads Teachworks invoice due dates,
+  matches them to 26/27 charter deals on `Invoice #`, writes `invoice_due_date`.
+- `.github/workflows/tw-invoice-due-sync.yml` — new. Manual (dry-run default)
+  plus 6am PT weekdays.
+
+**Why**
+Roman locked the rule on 2026-09-02: **an invoice is ready to submit once it is
+at least one day past its due date.** Simpler than anything proposed before it —
+no Teachworks hours lookup, no service-month inference.
+
+The catch was that the due date lives on the Teachworks invoice, submission
+happens in the OPS portal (which we cannot read), and HubSpot knew neither.
+`invoice_due_date` already exists on the deal, correctly labelled, populated on
+75 of 157 26/27 deals and never written by an agent.
+
+Copying the authoritative date across turns "what should Kath submit today?"
+into a plain saved view she can keep open:
+
+    Invoice #              is known
+    Invoice Submitted Date is empty
+    Invoice Due Date       is before today
+
+No new property, no new tool for her to learn, and the date comes from the
+system that owns it. Deliberately chose `invoice_due_date` over
+`lessons_fulfilled_date` — the latter is an *expected* date the PO doc has Kath
+confirm, not the invoice's actual due date.
+
+**What the rule showed on real data**
+Applying it by hand first (joining the 2026-09-01 Teachworks xref to HubSpot):
+of 138 invoiced-but-unsubmitted 26/27 deals, **1 is genuinely past due** —
+invoice 54421, Angela Czaja / Charlotte Czaja, Heartland, due 2026-08-14, $300.
+The other 91 matched deals are simply not due yet. The $31,974 previously
+described as "delivered but not billed" was mostly not billable.
+
+46 deals had no due date on file because the xref only covered families with PO
+deals since 2026-08-07. That blind spot is exactly what this sync removes.
+
+**Files touched**
+- `scripts/tw_invoice_due_sync.py`
+- `.github/workflows/tw-invoice-due-sync.yml`
+- `docs/CHANGELOG.md`
+
+**Verification** — script and workflow parse; dry run is the default and the
+Teachworks side is read-only. Needs a dry run in Actions (tokens are Actions
+secrets) before the first `--apply`.
+
+**Decision log** — candidate: "an invoice is ready to submit once it is at least
+one day past its due date; the due date is the Teachworks invoice's, synced to
+`invoice_due_date`."
+
+---
+
 ## 2026-09-02 (evening) — CORRECTION: deal `school_name` is a live Teacher Scholarship field, not dead; two test contacts deleted
 
 **What:** Reverses this morning's RETIRE call on deal property `school_name` in
