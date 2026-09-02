@@ -574,9 +574,16 @@
     410857405,
     410918360,
     410924795,
-    410927109
+    410927109,
+    411060683,
+    411014079,
+    411017215,
+    411020027,
+    411024133,
+    411026139,
+    411038155
   ],
-  "last_run_utc": "2026-09-02T18:30:16.143775+00:00",
+  "last_run_utc": "2026-09-02T21:20:30.600016+00:00",
   "pending_digest": [
     {
       "call_id": 410918360,
@@ -716,6 +723,602 @@
           "Have billing pull the list of open Gorman invoices from last school year so we're ready when Carissa calls back.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411060683,
+      "number": "17253478505",
+      "time_pt": "2:01 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yesenia Sanchez, mom of student Jesse Delgado, called to confirm A+ received a purchase order she submitted for math tutoring. Janelle checked and the PO has not yet been received; Janelle committed to follow up internally and with Jesse's teacher Rebecca. Yesenia also provided an updated phone number (ending 8505) and shared scheduling preferences: Thursdays or Fridays at 11am or 12pm. Tone was friendly and cooperative.",
+        "caller_type": "parent",
+        "intent": "school partnership",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up internally to check on the status of the charter purchase order for Jesse Delgado (math tutoring)",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Jesse's teacher Rebecca regarding the purchase order submission",
+            "owner_hint": "Rebecca (teacher)",
+            "route": "follow_up"
+          },
+          {
+            "item": "Update contact phone number to the new number ending in 8505 and confirm going forward",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Note scheduling preference (Thursdays/Fridays at 11am or 12pm) for when tutoring is booked",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yesenia Sanchez (mom, friendly) called to confirm we received her charter purchase order for math tutoring for her son Jesse Delgado. I checked and we have NOT received the PO yet. Promised her we would follow up internally and also reach out to the teacher Rebecca (still her TOR) to track it down. She also updated her phone to the number ending 8505 \u2014 call/text her there going forward. She is not ready to schedule yet but her preference is Thursdays or Fridays at 11am or 12pm (Jesse has other classes earlier). Open with: 'Hi Yesenia, this is [name] from A+ Tutoring following up on Jesse's purchase order for math\u2026' and give her a status update on the PO with Rebecca.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Parent is using charter-school instructional funds (purchase order submitted through teacher Rebecca) to pay for Jesse's math tutoring.",
+        "student_or_school_names_mentioned": [
+          "Jesse Delgado",
+          "Yesenia Sanchez",
+          "Rebecca (teacher)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mom Yesenia Sanchez called to confirm the charter purchase order she submitted for son Jesse Delgado (math tutoring) via teacher Rebecca. PO has not yet been received on our end. Mom is not ready to schedule yet but prefers Thursdays or Fridays at 11am or 12pm.",
+          "what_we_can_do_to_help": "Follow up internally on the missing purchase order and reach out to teacher Rebecca to confirm submission status. Once PO is received, schedule Jesse for math tutoring Thu/Fri at 11 or 12.",
+          "student_first_name": "Jesse",
+          "student_last_name": "Delgado",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": "Rebecca",
+          "email_correction": null,
+          "phone_correction": "Number ending 8505 (confirmed working on this call)"
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up internally to check on the status of the charter purchase order for Jesse Delgado (math tutoring)",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Jesse's teacher Rebecca regarding the purchase order submission",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Update contact phone number to the new number ending in 8505 and confirm going forward",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Note scheduling preference (Thursdays/Fridays at 11am or 12pm) for when tutoring is booked",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 411014079,
+      "number": "18312344415",
+      "time_pt": "12:42 PM",
+      "matched": true,
+      "contact_label": "Dawn Jackson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound follow-up call to Dawn Jackson, an Education Specialist at Ocean Grove Charter School, and reached her voicemail. Janelle left a message about resuming tutoring support for a student named Brian and asked Dawn to call back at her convenience. No live conversation occurred; awaiting Dawn's callback.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Dawn Jackson's callback regarding tutoring support for Brian; if no response in a few days, try again.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Janelle left a voicemail for Dawn Jackson (Education Specialist, Ocean Grove Charter School) about resuming tutoring for a student named Brian. Dawn hasn't responded yet \u2014 she expects a callback from Janelle at 818-850-6284. If she calls back, open with: 'Hi Dawn, thanks for returning Janelle's call \u2014 she wanted to check in on how Brian is doing and see how A+ can support him again through Ocean Grove.' If no response in a few days, try Dawn again.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Dawn is an existing Ocean Grove Charter TOR/EF contact already correctly tagged as Charter School Teacher TOR/EF; voicemail-only outbound call provides no reason to change status.",
+        "student_or_school_names_mentioned": [
+          "Brian",
+          "Ocean Grove Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle left a voicemail for Dawn (EF at Ocean Grove Charter) following up about resuming tutoring for her student Brian. Awaiting Dawn's callback.",
+          "what_we_can_do_to_help": "Resume tutoring support for Brian through Ocean Grove Charter once Dawn confirms interest and current needs.",
+          "student_first_name": "Brian",
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Ocean Grove Charter School",
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle left a voicemail for Dawn (EF at Ocean Grove Charter) following up about resuming tutoring for her student Brian. Awaiting Dawn's callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Resume tutoring support for Brian through Ocean Grove Charter once Dawn confirms interest and current needs."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Brian"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Ocean Grove Charter School"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Dawn Jackson's callback regarding tutoring support for Brian; if no response in a few days, try again.",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411017215,
+      "number": "19495737703",
+      "time_pt": "12:48 PM",
+      "matched": true,
+      "contact_label": "Catherine Guerra",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from A+ to Catherine Guerra (Sky Mountain charter TOR/EF contact regarding student Elizabeth) went to voicemail. The voicemail greeting identified the number as 'Kat in Creative Kingdom Arts,' and the mailbox was full so no message could be left. No contact was made and no information was exchanged.",
+        "caller_type": "school/charter contact",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry Catherine Guerra by phone later; mailbox was full so no voicemail could be left",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Catherine a follow-up email at cguerra@ieminc.org since phone attempt failed",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Verify the phone number on file (949-573-7703) \u2014 voicemail greeting said 'Kat in Creative Kingdom Arts,' which may or may not be Catherine; confirm we have the right number",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound attempt to Catherine Guerra (Sky Mountain charter TOR/EF, student Elizabeth, 10th grade, algebra foundations plan already drafted) hit a voicemail greeting for 'Kat in Creative Kingdom Arts' with a full mailbox \u2014 no message left, no contact made. Please retry by phone later today/tomorrow and also send an email to cguerra@ieminc.org as a backup. Worth confirming the phone number is still hers (the greeting name didn't match). Suggested opener when you reach her: 'Hi Catherine, this is [name] with A+ Tutoring \u2014 I tried you earlier but couldn't leave a message. I wanted to follow up on Elizabeth's algebra tutoring plan and next steps for getting her started.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "No contact was made \u2014 outbound call hit a full voicemail box. Catherine is already correctly set as Charter School Teacher TOR/EF; nothing on this call changes that.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound attempt to Catherine \u2014 call went to a voicemail greeting for 'Kat in Creative Kingdom Arts' and the mailbox was full, so no message could be left. No contact made; will need to retry and/or email.",
+          "what_we_can_do_to_help": "Retry Catherine by phone and follow up via email at cguerra@ieminc.org to confirm next steps on Elizabeth's algebra tutoring plan; also verify the phone number on file is still correct.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound attempt to Catherine \u2014 call went to a voicemail greeting for 'Kat in Creative Kingdom Arts' and the mailbox was full, so no message could be left. No contact made; will need to retry and/or email."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry Catherine by phone and follow up via email at cguerra@ieminc.org to confirm next steps on Elizabeth's algebra tutoring plan; also verify the phone number on file is still correct."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry Catherine Guerra by phone later; mailbox was full so no voicemail could be left",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Catherine a follow-up email at cguerra@ieminc.org since phone attempt failed",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Verify the phone number on file (949-573-7703) \u2014 voicemail greeting said 'Kat in Creative Kingdom Arts,' which may or may not be Catherine; confirm we have the right number",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411020027,
+      "number": "18183009602",
+      "time_pt": "12:51 PM",
+      "matched": true,
+      "contact_label": "Jessica Alegria",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Jessica Alegria to follow up on tutoring now that school is back in session, referencing her son Amir. Jessica said today was Amir's first day of school and they're undecided about tutoring \u2014 they'll wait to see how he does on testing this week and decide within the month whether to use school funds for tutoring or something else. Janelle offered continued support and left the door open. Note: the record on file references a different student (David, grade 2 at Elite); this call is about Amir, so factual student fields should not be overwritten.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Jessica in ~3-4 weeks to see if she's decided whether to use school funds for tutoring for Amir this year.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jessica Alegria (existing/past contact) was warm and appreciative on an outbound check-in from Janelle. The student in question on this call is her son Amir \u2014 NOT David, who is the student on the current record (likely a sibling), so don't confuse them. Amir just started school today; Jessica is undecided about tutoring and is waiting to see this week's testing results before deciding whether to spend school funds on tutoring or something else. She promised to let us know within about a month. Nothing was quoted or booked. When you follow up in ~3-4 weeks, open with something like: 'Hi Jessica, it's ___ from A+ following up on our chat with Janelle \u2014 how did Amir's testing go, and have you had a chance to think about tutoring this year?' Offer to help as soon as she's ready.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with the parent on an outbound follow-up; she's an interested prospective/returning family still deciding, not yet booked and not charter-funded confirmed for this year.",
+        "student_or_school_names_mentioned": [
+          "Amir"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up with Jessica about her son Amir (sibling of David already on record). Amir started school today; Jessica is undecided about tutoring this year and is waiting on this week's testing results to decide whether to use school funds for tutoring or something else. She said she'll let us know within a month.",
+          "what_we_can_do_to_help": "Check back in with Jessica in about 3-4 weeks once testing results are in to see if Amir will need tutoring support and whether school funds will be used; be ready to move quickly if she says yes.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up with Jessica about her son Amir (sibling of David already on record). Amir started school today; Jessica is undecided about tutoring this year and is waiting on this week's testing results to decide whether to use school funds for tutoring or something else. She said she'll let us know within a month."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check back in with Jessica in about 3-4 weeks once testing results are in to see if Amir will need tutoring support and whether school funds will be used; be ready to move quickly if she says yes."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Jessica in ~3-4 weeks to see if she's decided whether to use school funds for tutoring for Amir this year.",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411024133,
+      "number": "18189748119",
+      "time_pt": "1:00 PM",
+      "matched": true,
+      "contact_label": "Michele Archer",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound call to Michele Archer regarding her grandson's tutoring inquiry. The call went to an automated voicemail system, and the mailbox was full so no message could be left. No contact was made.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry calling Michele Archer later; mailbox was full so no voicemail could be left",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Michele a follow-up email or text since her voicemail is unavailable",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Tried to reach Michele Archer (grandmother inquiring about ELA in-person tutoring for her grandson Kade, 1st grade at Carpenter). Call went straight to an automated voicemail and the mailbox was full \u2014 no message left. She is not expecting anything specific yet. Try again by phone later today/tomorrow, and in parallel send a friendly email/text to michelempcc@yahoo.com introducing yourself and offering to talk through options for Kade. Opener suggestion: 'Hi Michele, this is [name] with A+ Tutoring following up on your inquiry about ELA support for Kade \u2014 I tried your phone but couldn't leave a message, so wanted to reach out here.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Could not connect \u2014 mailbox full, no conversation took place, so existing 'We Connected' status stands.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Attempted outbound follow-up call to Michele re: tutoring for her grandson Kade; call routed to automated voicemail and mailbox was full, so no message could be left.",
+          "what_we_can_do_to_help": "Retry phone outreach and send a parallel email/text to re-engage Michele about ELA in-person tutoring for Kade.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Attempted outbound follow-up call to Michele re: tutoring for her grandson Kade; call routed to automated voicemail and mailbox was full, so no message could be left."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry phone outreach and send a parallel email/text to re-engage Michele about ELA in-person tutoring for Kade."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry calling Michele Archer later; mailbox was full so no voicemail could be left",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Michele a follow-up email or text since her voicemail is unavailable",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411026139,
+      "number": "18189748119",
+      "time_pt": "1:03 PM",
+      "matched": true,
+      "contact_label": "Michele Archer",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola (A+) placed an outbound follow-up call to Michele Archer about tutoring for her grandson Kade. Michele had understood the scheduled time as 2pm her time (it was 2pm Central / 1pm PT) and was just wrapping up a meeting. She asked Paola to call back in 15 minutes, and Paola agreed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Michele Archer back in ~15 minutes to continue the tutoring conversation for her grandson Kade",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Clarify timezone (PT vs CT) in future scheduling communications to avoid confusion",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Paola already owns this \u2014 she promised Michele Archer a callback in ~15 minutes. Michele was polite but a bit rushed, coming out of a meeting, and there was a timezone mix-up (she read the confirmation email as 2pm her time; we meant 2pm CT / 1pm PT). When you call back, open warmly with something like: 'Hi Michele, it's Paola from A+ Tutoring calling you back as promised \u2014 sorry again for the timezone mix-up on the email.' Then move into discovery about her grandson Kade (currently listed as 1st grade at Carpenter, ELA, in-person per the record) to confirm needs and next steps.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Brief live conversation with prospective family; no qualifying details yet exchanged, and a callback was agreed to in 15 minutes.",
+        "student_or_school_names_mentioned": [
+          "Kade",
+          "Carpenter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reached Michele on outbound follow-up. She had misread the scheduled callback time (thought 2pm PT; it was 2pm CT / 1pm PT) and was just finishing a meeting, so she asked for a callback in 15 minutes.",
+          "what_we_can_do_to_help": "Paola to call Michele back in ~15 minutes to continue the conversation about tutoring for her grandson Kade. Going forward, spell out timezone explicitly (PT) in scheduling emails to this family.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reached Michele on outbound follow-up. She had misread the scheduled callback time (thought 2pm PT; it was 2pm CT / 1pm PT) and was just finishing a meeting, so she asked for a callback in 15 minutes."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to call Michele back in ~15 minutes to continue the conversation about tutoring for her grandson Kade. Going forward, spell out timezone explicitly (PT) in scheduling emails to this family."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Michele Archer back in ~15 minutes to continue the tutoring conversation for her grandson Kade",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Clarify timezone (PT vs CT) in future scheduling communications to avoid confusion",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411038155,
+      "number": "18189748119",
+      "time_pt": "1:20 PM",
+      "matched": true,
+      "contact_label": "Michele Archer",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Michele Archer regarding tutoring for her 6-year-old grandson Kade Hutchinson, a 1st grader at Carpenter Charter in Studio City. Michele wants in-person tutoring at her home (ZIP 91604) for reading and spelling, once a week, preferably Thursdays at 4:30pm PT (not Wednesdays due to soccer). Paola quoted $130/hour for in-person tutoring, explained the package structure and tutor-profile process, and promised to check tutor availability and send rate information. Michele wants to start as soon as possible; Paola committed to an update today or tomorrow morning.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Michele the in-person tutoring rates ($130/hr) and package options",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check tutor availability in 91604 for in-person reading/spelling tutoring, Thursdays at 4:30pm PT (any weekday except Wednesday as backup)",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Michele today or tomorrow morning with tutor availability update and send tutor profile for her approval",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Michele Archer (grandmother, warm and eager) wants in-person tutoring ASAP for her 6-year-old grandson Kade Hutchinson, 1st grader at Carpenter Charter in Studio City (ZIP 91604). Need is reading and spelling \u2014 he's strong in math but struggling with sounding out and remembering spellings. She wants sessions at her home, once a week, Thursdays at 4:30pm PT preferred (so it's fresh before Friday spelling tests); not Wednesdays (soccer). Paola quoted $130/hr in-person with package discounts and explained we send tutor profiles for approval before starting. Michele expects (1) an email with rates/packages and (2) a callback today or tomorrow morning confirming a tutor. Open with: 'Hi Michele, it's [name] from A+ Tutoring following up on your conversation with Paola \u2014 I have an update on a reading/spelling tutor for Kade for Thursdays at 4:30.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; not charter-funded and no diagnostic needed \u2014 standard ELA tutoring inquiry.",
+        "student_or_school_names_mentioned": [
+          "Kade Hutchinson",
+          "Carpenter Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Connected with Michele (grandmother) on outbound follow-up. She wants in-person tutoring at her home (ZIP 91604) for her 6-year-old grandson Kade Hutchinson, 1st grader at Carpenter Charter in Studio City. Need is reading and spelling \u2014 he's doing well in math but struggling to sound out words and retain spellings. Wants to start ASAP, once a week, Thursday 4:30pm PT preferred (before Friday spelling tests); not Wednesdays due to soccer.",
+          "what_we_can_do_to_help": "Paola quoted $130/hr in-person with package discounts and to send rates by email. Next: check tutor availability in 91604 for Thursdays at 4:30pm PT, send tutor profile for Michele's approval, and follow up with an update today or tomorrow morning.",
+          "student_first_name": "Kade",
+          "student_last_name": "Hutchinson",
+          "grade_level": "1",
+          "student_school": "Carpenter Charter",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected with Michele (grandmother) on outbound follow-up. She wants in-person tutoring at her home (ZIP 91604) for her 6-year-old grandson Kade Hutchinson, 1st grader at Carpenter Charter in Studio City. Need is reading and spelling \u2014 he's doing well in math but struggling to sound out words and retain spellings. Wants to start ASAP, once a week, Thursday 4:30pm PT preferred (before Friday spelling tests); not Wednesdays due to soccer."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $130/hr in-person with package discounts and to send rates by email. Next: check tutor availability in 91604 for Thursdays at 4:30pm PT, send tutor profile for Michele's approval, and follow up with an update today or tomorrow morning."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Kade"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Hutchinson"
+        ],
+        [
+          "student_school",
+          "Carpenter",
+          "Carpenter Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Michele the in-person tutoring rates ($130/hr) and package options",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check tutor availability in 91604 for in-person reading/spelling tutoring, Thursdays at 4:30pm PT (any weekday except Wednesday as backup)",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Michele today or tomorrow morning with tutor availability update and send tutor profile for her approval",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
