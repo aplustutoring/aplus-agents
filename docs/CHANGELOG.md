@@ -8,6 +8,38 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 (evening) — CORRECTION: deal `school_name` is a live Teacher Scholarship field, not dead; two test contacts deleted
+
+**What:** Reverses this morning's RETIRE call on deal property `school_name` in
+`deals-proposal.md` (KEEPER again, with the writer and readers named). Roman asked to
+archive it; the pre-archive look showed all 6 deals carrying it are in pipeline
+918901819 "Teacher Scholarship Program Tracking - Families", one created today. A scan
+of all 128 forms and 235 workflows found the writer: workflow 1861452046 "Teacher
+Scholarship – Create Student Deal per Form Submission" maps contact `student_school` →
+deal `school_name` on deal create, and WF-01 (1858089740) and WF-03 (1859135906) read
+`{{ enrolled_object.school_name }}` in their notification emails. Archiving would have
+silently blanked the school on every future Teacher Scholarship family deal and email.
+Not archived. Instead relabeled in-portal to "Teacher Scholarship Student School" (Roman, same session) so it reads as what it is; internal name `school_name` unchanged, so the three workflows are unaffected; `properties.yml` label updated to match. Also on Roman's instruction: soft-deleted two Teacher-persona test
+contacts created 2026-08-12 by the Teacher Scholarship alpha run, `daniellebrodetsky@
+gmail.com` (241417873326) and `hugh.jazz@gmail.com` (241380683818); no deals or
+associations; restorable 90 days. PR #160 merged (squash, c40c845).
+
+**Why the morning call was wrong:** the "nothing writes it" claim came from
+`grep`-ing the repo and counting charter-pipeline deals since Aug 2025. The writer is a
+HubSpot workflow, not repo code, and the deals are in a non-charter pipeline. Lesson,
+per the investigation rule: a "dead property" verdict needs a portal-wide writer scan
+(forms + workflows), not a repo grep + one pipeline. `find_school_name_writer.py`
+(session scratchpad) is the pattern; worth promoting into `ops/fleet-health/audit/`
+before the next retire pass.
+
+**Options if `school_name` should still go (Roman's call, not done):** remap workflow
+1861452046 to write `student_school`, update the two email bodies, then archive. Or
+leave it: it does a real job today.
+
+**Files:** `ops/hubspot-schema/consolidation/deals-proposal.md`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-02 (later) — School stamp widened to every teacher; generic inboxes flagged
 
 **What:** `scripts/teacher_school_stamp.py` v2 now resolves a teacher's school from
