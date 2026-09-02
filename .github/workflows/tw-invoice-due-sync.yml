@@ -1,0 +1,57 @@
+name: TW invoice due-date sync
+
+# Copies Teachworks invoice DUE DATES onto their HubSpot charter deals, so
+# "what should Kath submit today?" is a plain HubSpot view instead of a
+# cross-system lookup:
+#
+#   Invoice #            is known
+#   Invoice Submitted Date  is empty
+#   Invoice Due Date     is before today
+#
+# Read-only against Teachworks; writes exactly one HubSpot field.
+# See scripts/tw_invoice_due_sync.py.
+env:
+  TZ: America/Los_Angeles
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Write invoice_due_date (unchecked = dry run)"
+        type: boolean
+        default: false
+      since:
+        description: "School year start"
+        default: "2026-08-01"
+  schedule:
+    # 6am PT weekdays — the queue is ready before anyone opens it.
+    - cron: "0 13 * * 1-5"
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install requests python-dotenv
+      - name: Sync due dates
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          APPLY: ${{ inputs.apply }}
+          SINCE: ${{ inputs.since || '2026-08-01' }}
+        run: |
+          ARGS="--since $SINCE"
+          # scheduled runs apply; manual runs honour the checkbox
+          if [ "$APPLY" = "true" ] || [ "${{ github.event_name }}" = "schedule" ]; then
+            ARGS="$ARGS --apply"
+          fi
+          python3 scripts/tw_invoice_due_sync.py $ARGS
