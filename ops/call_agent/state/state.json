@@ -570,10 +570,159 @@
     410627220,
     410630803,
     410645447,
-    410646802
+    410646802,
+    410857405,
+    410918360,
+    410924795,
+    410927109
   ],
-  "last_run_utc": "2026-09-02T05:23:50.535289+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-02T18:30:16.143775+00:00",
+  "pending_digest": [
+    {
+      "call_id": 410918360,
+      "number": "16692556326",
+      "time_pt": "10:00 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Annalee Baroni to follow up on her tutoring inquiry for physical geography, and Annalee added that she also needs English composition support. Paola explained our model, quoted $95/hr online and $130/hr in-person (with package discounts), and Annalee expressed a strong preference for in-person due to Wi-Fi/nonverbal concerns. Annalee's ZIP is 91423. Paola will check in-person tutor availability there, prioritizing English composition with physical geography as a bonus, and email details.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Check in-person tutor availability in ZIP 91423 for English composition (primary), ideally also able to cover physical geography",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Email Annalee our in-person rates ($130/hr) and package options, plus online rates ($95/hr) as backup",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Annalee once tutor availability is confirmed to see if she wants to move forward",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Annalee Baroni is a prospective tutoring client (appears to be the student herself, likely older/college level based on subjects) in ZIP 91423. Tone was polite and engaged but hesitant about online \u2014 she specifically pushed back on online due to Wi-Fi issues and difficulty with nonverbal cues, so in-person is strongly preferred. She originally asked about physical geography but expanded the ask to English composition; by end of call she deprioritized geography and said English is the primary need, with geography a nice-to-have. Paola quoted $95/hr online and $130/hr in-person, mentioned package discounts, and promised to email details plus check in-person tutor availability in 91423. Annalee expects an email from Paola with in-person tutor availability and rates. Open with: \"Hi Annalee, following up on your conversation with Paola \u2014 I checked our in-person tutors in the 91423 area for English composition...\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective family about tutoring; not charter, not test prep/diagnostic \u2014 standard connected lead.",
+        "student_or_school_names_mentioned": [
+          "Annalee Baroni"
+        ],
+        "record_updates": {
+          "whats_going_on": "Annalee is seeking tutoring support, primarily in English composition, with physical geography as a secondary need. She strongly prefers in-person over online, citing Wi-Fi reliability and difficulty with nonverbal communication over video. She is located in ZIP 91423.",
+          "what_we_can_do_to_help": "Check in-person tutor availability in the 91423 area for English composition (ideally a tutor who can also cover physical geography). Email Annalee in-person rates ($130/hr) and package options, with online ($95/hr) as a fallback, then follow up to confirm next steps.",
+          "student_first_name": "Annalee",
+          "student_last_name": "Baroni",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in-person tutor availability in ZIP 91423 for English composition (primary), ideally also able to cover physical geography",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email Annalee our in-person rates ($130/hr) and package options, plus online rates ($95/hr) as backup",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Annalee once tutor availability is confirmed to see if she wants to move forward",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410927109,
+      "number": "19093076312",
+      "time_pt": "10:17 AM",
+      "matched": true,
+      "contact_label": "Karla Diaz Salazar",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Danielle from A+ Tutoring called Gorman Learning Charter Network to follow up on unpaid invoices from last school year that Dina Kiosi had originally emailed about but never followed up on. The front office receptionist Christy Gore said Carissa Hartwell now handles vendor billing and transferred the call. Danielle reached Carissa's voicemail and left a message with her callback number (818-573-6258) and email danielle@signwetutorathome.com requesting a return call about the open invoices.",
+        "caller_type": "school/charter contact",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Carissa Hartwell at Gorman Learning Charter Network re: open invoices from last school year; if no response in a few days, follow up again by phone or email.",
+            "owner_hint": "Danielle Brodetsky",
+            "route": "follow_up"
+          },
+          {
+            "item": "Have billing pull the list of open Gorman invoices from last school year so we're ready when Carissa calls back.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Danielle called Gorman Learning Charter Network to chase unpaid invoices from last school year. Original contact was Dina Kiosi, but the receptionist (Christy Gore) said billing has moved to Carissa Hartwell in Vendor Course Instruction. Danielle left Carissa a voicemail with her callback number (818-573-6258) and email (danielle@signwetutorathome.com). Carissa now expects a callback from us \u2014 actually, she'll call Danielle back. If she doesn't respond within a few business days, follow up. Have the open-invoice list ready before returning the call. Karla Diaz Salazar (whose contact record this is) was NOT part of this call \u2014 she is a Gorman TOR/EF on a separate track; do not change her lead status. Open with: 'Hi Carissa, this is Danielle from A+ Tutoring following up on the voicemail I left about last year's open Gorman invoices \u2014 do you have a minute to walk through them?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "This outbound call was to Gorman's front office and billing (Christy Gore, Carissa Hartwell) about a vendor AR issue, not to Karla Diaz Salazar, the person on this contact record. Her existing status (Charter School Teacher TOR/EF) should not change.",
+        "student_or_school_names_mentioned": [
+          "Gorman Learning Charter Network"
+        ],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Carissa Hartwell at Gorman Learning Charter Network re: open invoices from last school year; if no response in a few days, follow up again by phone or email.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Have billing pull the list of open Gorman invoices from last school year so we're ready when Carissa calls back.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
