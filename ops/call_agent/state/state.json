@@ -581,9 +581,18 @@
     411020027,
     411024133,
     411026139,
-    411038155
+    411038155,
+    411069877,
+    411074524,
+    411078045,
+    411080651,
+    411096937,
+    411091478,
+    411092221,
+    411096215,
+    411096154
   ],
-  "last_run_utc": "2026-09-02T21:20:30.600016+00:00",
+  "last_run_utc": "2026-09-02T23:30:30.828313+00:00",
   "pending_digest": [
     {
       "call_id": 410918360,
@@ -1324,8 +1333,263 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 411078045,
+      "number": "17707438687",
+      "time_pt": "2:47 PM",
+      "matched": true,
+      "contact_label": "Fleming,Rhoda N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Rhoda Fleming called asking whether A+ Tutoring offers SIE (Securities Industry Essentials) exam prep. Roman initially misheard as SAT, then clarified. Roman confirmed A+ does not tutor that exam. Call ended politely with no further action.",
+        "caller_type": "other",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Caller asked about SIE (securities license) exam prep, which is outside A+'s K-12 scope. Not a viable lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Rhoda called asking if we tutor for the SIE (Securities Industry Essentials) licensing exam. This is an adult professional certification, outside our K-12 scope.",
+          "what_we_can_do_to_help": "Declined politely \u2014 A+ does not offer SIE/securities license tutoring. No further action needed unless she has a K-12 student in the future.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Rhoda called asking if we tutor for the SIE (Securities Industry Essentials) licensing exam. This is an adult professional certification, outside our K-12 scope."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Declined politely \u2014 A+ does not offer SIE/securities license tutoring. No further action needed unless she has a K-12 student in the future."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 411091478,
+      "number": "16262212281",
+      "time_pt": "3:31 PM",
+      "matched": true,
+      "contact_label": "Mabel Gloria",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound call to Mabel Gloria to follow up on a meeting that was booked for today. The call went to voicemail and Paola left a message asking Mabel to let her know a good time to connect. No new information about the family, student, or program need was gathered on this call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Mabel to return Paola's voicemail; if no response by tomorrow, attempt another outreach (call/text/email) to reschedule the missed meeting.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a warm voicemail for Mabel Gloria following up on a meeting that was booked for today but which Mabel appears to have missed. No contact was actually made and no new details were gathered. Mabel now expects a call back from us at her convenience. If she doesn't return the voicemail by tomorrow, follow up again \u2014 open with something like: 'Hi Mabel, this is [name] with A+ Tutoring following up on the meeting we had on the calendar with Paola \u2014 we'd love to find a new time that works better for you.' Existing record shows she found us via a Facebook Group; no student details on file yet, so use the reconnect to learn about her child and what she's looking for.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola called Mabel to follow up on a meeting booked for today; reached voicemail and left a message asking Mabel to share a good time to connect.",
+          "what_we_can_do_to_help": "Await Mabel's callback and reschedule the intro meeting; on reconnect, gather student details (name, grade, school, subject need, modality) so we can recommend a fit.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Mabel to follow up on a meeting booked for today; reached voicemail and left a message asking Mabel to share a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Await Mabel's callback and reschedule the intro meeting; on reconnect, gather student details (name, grade, school, subject need, modality) so we can recommend a fit."
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Mabel to return Paola's voicemail; if no response by tomorrow, attempt another outreach (call/text/email) to reschedule the missed meeting.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411096215,
+      "number": "13107757873",
+      "time_pt": "3:43 PM",
+      "matched": true,
+      "contact_label": "Lindsey Williams",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola followed up with Lindsey Williams about starting tutoring for her 9th-grade son Graham at North Hollywood High (STEM program, honors). Lindsey wants to prioritize Algebra 1 support with a high-energy tutor who can teach tricks and align with how the school teaches, plus build study habits. Paola pitched an online tutor she thinks would be a great fit and offered a free trial; Lindsey agreed to try online. They tentatively targeted Tuesday at 4:00 PM (next Tuesday) for the trial, and Paola committed to have scheduling reach out within a day since Lindsey travels internationally next week.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Have scheduling contact Lindsey today/tomorrow to confirm Tuesday 4:00 PM free online trial for Graham (Algebra 1) before she leaves the country next week",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Lindsey the recommended online tutor's profile for review before the trial session",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Match Graham with the high-energy online Algebra 1 tutor Paola had in mind and confirm Tuesday 4:00 PM availability",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Lindsey Williams (warm, engaged) agreed on this call to a free online trial session for her son Graham, 9th grade in the STEM honors program at North Hollywood High. Start with Algebra 1 (he has a low B; struggling with equations/inequalities/linear functions); Biology is currently fine (A). She wants a high-energy tutor who can teach tricks of the trade and align with how the school teaches math. She was originally interested in in-person but agreed to try online because Paola recommended a specific online tutor as a great fit \u2014 if the trial doesn't land, we promised to look for an in-person tutor instead. Target: next Tuesday at 4:00 PM (Tuesdays after 4 are his best day; Mondays are blocked by soccer practices). IMPORTANT: Lindsey travels out of the country next week, so confirmation + tutor profile must go out within the next day. She expects scheduling to reach out ASAP to confirm details and send the tutor's profile before the session. Open with: \"Hi Lindsey, this is [name] from A+ with scheduling \u2014 Paola filled me in. I want to get Graham's free Tuesday 4 PM online trial locked in before your trip and send over the tutor's profile for you to review.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective parent; not charter-funded and no diagnostic required \u2014 standard connect. (Existing OPEN_DEAL, but agent instructed to still set a family status.)",
+        "student_or_school_names_mentioned": [
+          "Graham Williams",
+          "North Hollywood High School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call with Lindsey re: Graham (9th grade, STEM honors program at North Hollywood High). He struggled with math/science last year; currently has a low B in Algebra 1 (equations, inequalities, linear functions) and is doing well in Biology (A). Lindsey wants to start with Algebra 1, needs a high-energy tutor who can teach tricks and align with how the school teaches, plus build study habits. Originally wanted in-person but agreed to try an online tutor Paola recommended. Lindsey travels internationally next week, so setup must happen within a day. Tuesdays after 4 PM are Graham's availability (Mondays blocked by soccer).",
+          "what_we_can_do_to_help": "Scheduling to reach out to Lindsey today/tomorrow to confirm a free online trial session Tuesday at 4:00 PM with the recommended high-energy Algebra 1 tutor, send the tutor's profile for review, and get everything set before her international trip. If the online trial isn't a fit, pivot to sourcing an in-person tutor.",
+          "student_first_name": "Graham",
+          "student_last_name": "Williams",
+          "grade_level": "9",
+          "student_school": "North Hollywood High School",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call with Lindsey re: Graham (9th grade, STEM honors program at North Hollywood High). He struggled with math/science last year; currently has a low B in Algebra 1 (equations, inequalities, linear functions) and is doing well in Biology (A). Lindsey wants to start with Algebra 1, needs a high-energy tutor who can teach tricks and align with how the school teaches, plus build study habits. Originally wanted in-person but agreed to try an online tutor Paola recommended. Lindsey travels internationally next week, so setup must happen within a day. Tuesdays after 4 PM are Graham's availability (Mondays blocked by soccer)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling to reach out to Lindsey today/tomorrow to confirm a free online trial session Tuesday at 4:00 PM with the recommended high-energy Algebra 1 tutor, send the tutor's profile for review, and get everything set before her international trip. If the online trial isn't a fit, pivot to sourcing an in-person tutor."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Williams"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "North Hollywood High School"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Have scheduling contact Lindsey today/tomorrow to confirm Tuesday 4:00 PM free online trial for Graham (Algebra 1) before she leaves the country next week",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Lindsey the recommended online tutor's profile for review before the trial session",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Match Graham with the high-energy online Algebra 1 tutor Paola had in mind and confirm Tuesday 4:00 PM availability",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "16262212281",
+      "time_pt": "3:34 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "15165823813",
+      "time_pt": "3:50 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
