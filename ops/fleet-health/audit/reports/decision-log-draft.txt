@@ -44,8 +44,7 @@ STATUS: DRAFT — pending approval (fill/adjust after Roman's checkbox pass)
 TAG: fleet / audit / hubspot
 
 ======
-2026-09-02 | #AP-NEXT (assign at append time — the Google Doc is the authority on
-  the current number; highest referenced in-repo is #AP044)
+2026-09-02 | #AP046  [APPENDED to the Decision Log 2026-09-02 — do not re-append]
 DECISION: Marketing-campaign replies are a first-class routing category, and the
   LOCKED routing table is amended to carry them. Two categories: campaign_family
   (a family replying to an announcement or marketing send — sign-ups, added
@@ -76,6 +75,7 @@ WHY: The NSSA Badge announcement (3 segmented sends, 7,268 recipients,
 EVIDENCE: PR #134 (categories, merged 2026-08-31), PR #159 (evidence rule).
   Campaign result: 40.0% open on the school list, 14.3% on active families,
   unsubscribes 1.6%, spam effectively zero, one same-day family referral.
-OWNER: Roman
-STATUS: DRAFT — pending approval
+OWNER: Roman (decision); Paola (campaign_family queue); Danielle (campaign_school queue)
+STATUS: Locked and live in the email agent. Appended to the Google Doc as #AP046
+  on 2026-09-02, verified present (single occurrence).
 TAG: email-agent / routing / campaigns
