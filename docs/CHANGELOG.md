@@ -8,6 +8,29 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — Campaign routing logged as #AP046
+
+**What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+
+Decision Log as **#AP046**, and marked the staging entry in
+`ops/fleet-health/audit/reports/decision-log-draft.txt` as appended so it cannot
+be posted twice.
+
+**Why:** CLAUDE.md requires a Decision Log entry when a decision is locked; the
+routing table was amended twice in three days. The number was read from the live
+document rather than guessed: the Doc was at #AP045, while the in-repo staging
+file was stale at #AP017 and code references reached #AP044.
+
+**Note for a future session:** the staging file's format (pipe-separated header,
+wrapped field bodies) does NOT match the live Doc, which uses
+`Month DD, YYYY · #APxxx` with single-line fields. Match the Doc when appending.
+Also worth revisiting: #AP044's STATUS still says NSSA badge assets and usage
+guidelines are unconfirmed. Both are now in hand as of this campaign.
+
+**Files:** `ops/fleet-health/audit/reports/decision-log-draft.txt`,
+`docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-02 — Teachworks invoice due dates sync to the deal, so "ready to submit" is a HubSpot view
 
 **What changed**
