@@ -8,6 +8,25 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — NSSA campaign routing staged for the Decision Log
+
+**What:** Appended a draft entry to
+`ops/fleet-health/audit/reports/decision-log-draft.txt` covering both amendments
+to the LOCKED routing table: the `campaign_family` / `campaign_school` categories
+(PR #134) and the evidence rule that gates them (PR #159), recorded as one
+decision with its correction. Number left as #AP-NEXT: the Google Doc is the
+authority on the current sequence, and the staging file is stale at #AP017 while
+in-repo references already reach #AP044.
+
+**Why:** CLAUDE.md requires a Decision Log entry when a decision is locked, and
+the routing table has now been amended twice in three days. Roman assigns the
+number and appends via the existing Zapier Google Docs pipe.
+
+**Files:** `ops/fleet-health/audit/reports/decision-log-draft.txt`,
+`docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-01 — Call agent: scheduling-vs-follow-up task routing + name-correction propagation
 
 **What changed**
