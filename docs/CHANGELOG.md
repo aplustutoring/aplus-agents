@@ -8,6 +8,31 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — `/council` command: fixed seats, evidence first, one verdict
+
+**What:** New Claude Code command `.claude/commands/council.md`. `/council <question
+or thesis> [--save]` convenes seven fixed seats (sales seat, charter_sales seat, Ops /
+PO desk, Finance / data, Risk / brand, the customer's chair, Devil's advocate), each
+of which must cite a fact from the repo or a read-only portal query and take a
+position, then converges on a verdict, a plan table, the fixes that must be true
+before go, and one go line. `--save` writes the output to `docs/councils/`. Roles, not
+names; labels, not values; no em dashes; CARE pointer at the top (it reasons). First
+saved council: `docs/councils/2026-09-02-charter-teacher-outreach.md`.
+
+**Why:** Roman 2026-09-02, while planning charter teacher outreach: "I would like a
+#council command and analysis." His thesis (teachers who already worked with us get a
+plain referral ask, cold teachers get the Teacher Scholarship program as the door) was
+tested seat by seat and held with two changes: the scholarship's own pipeline (13
+teacher deals, 11 sitting at "sent flyer"; 10 family deals, 3 unresponsive) says it must
+be sent as a two-minute nomination, not a call, and IEM's ~300 teachers are a network
+conversation, not an email list. A single perspective writes the plan; the council makes
+the seats that pay for it (ops, the customer, finance) speak before the send.
+
+**Files:** `.claude/commands/council.md` (new), `docs/councils/2026-09-02-charter-teacher-outreach.md`
+(new), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-02 — Campaign routing logged as #AP046
 
 **What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+
