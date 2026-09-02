@@ -1,0 +1,169 @@
+# Canonical charter-school names for the free-text deal field `student_school`.
+#
+# Why this file exists (Roman 2026-09-02): 2,377 charter deals since Aug 2025
+# carry 50 raw spellings of ~25 schools; 1,494 of them (63%) are iLEAD under 14
+# spellings. `student_school` stays free text because po_inbox writes whatever
+# the PO says (deal_property_map, locked rules 11-12) — so the fix is a lookup
+# every consumer shares, not an enum that would break those writes.
+#
+# DECISION (Roman 2026-09-02): iLEAD is ONE bucket. Exploration / Hybrid /
+# Antelope Valley / Lancaster / "California Charters" all canonicalise to
+# "iLEAD". Everything else stays at school level; `network` is informational
+# (it lets a future list roll IEM or PCI schools up without a new decision).
+#
+# Matching is exact after lower-casing and collapsing whitespace — NOT fuzzy.
+# A spelling that is not listed here is reported by the consumer, never guessed,
+# so this file stays complete. Add the raw spelling under the right school.
+#
+# Consumers: scripts/teacher_school_stamp.py (first), scripts/charter_gap_*.py
+# (next). Load with `load_school_aliases()` from scripts/teacher_school_stamp.py.
+
+schools:
+  - canonical: iLEAD
+    network: iLEAD
+    aliases:
+      - iLEAD
+      - iLead
+      - ILEAD
+      - Charter - iLEAD
+      - iLEAD California Charters
+      - iLEAD California Charter
+      - LEAD California Charters
+      - iLead Exploration
+      - iCC1 for iLEAD Hybrid Exploration
+      - iLEAD Antelope Valley
+      - iLead Antelope Valley
+      - iLEAD Hybrid Antelope Valley
+      - iLead AV Exploration
+      - iLEAD Lancaster
+      - iLead Lancaster
+
+  - canonical: Visions In Education
+    aliases:
+      - Visions In Education
+      - Visions in Education
+
+  - canonical: Elite Academic Academy
+    aliases:
+      - Elite Academic Academy
+      - Elite Academic
+      - Elite Academy
+
+  - canonical: Heartland Charter School
+    aliases:
+      - Heartland Charter School
+
+  - canonical: Heartwood Charter School
+    aliases:
+      - Heartwood Charter School
+      - Heartwood
+
+  - canonical: Gorman Learning Center
+    aliases:
+      - Gorman Learning Center
+      - Gorman
+
+  - canonical: Ocean Grove Charter School
+    network: IEM
+    aliases:
+      - Ocean Grove Charter School
+      - Ocean Grove
+      - Ocean Grove Charter Schoo
+
+  - canonical: Sky Mountain Charter School
+    network: IEM
+    aliases:
+      - Sky Mountain Charter School
+      - Sky Mountain
+
+  - canonical: South Sutter Charter School
+    network: IEM
+    aliases:
+      - South Sutter Charter School
+      - South Sutter
+
+  - canonical: Lake View Charter School
+    network: IEM
+    aliases:
+      - Lake View Charter School
+
+  - canonical: Compass Charter Schools
+    aliases:
+      - Compass Charter Schools
+      - Compass
+
+  - canonical: Sage Oak Charter Schools
+    aliases:
+      - Sage Oak Charter Schools
+      - Sage Oak Charter School
+      - Sage Oak
+
+  - canonical: Pacific Coast Academy
+    aliases:
+      - Pacific Coast Academy
+
+  - canonical: Rio Valley Charter School
+    network: Pacific Charter Institute
+    aliases:
+      - Rio Valley Charter School
+
+  - canonical: Heritage Peak Charter School
+    network: Pacific Charter Institute
+    aliases:
+      - Heritage Peak Charter School
+
+  - canonical: Taylion Homeschool
+    aliases:
+      - Taylion Homeschool
+
+  - canonical: Granite Mountain Charter School
+    aliases:
+      - Granite Mountain Charter School
+      - Granite Mountain
+
+  - canonical: Horizon Charter Schools
+    aliases:
+      - Horizon Charter School
+
+  - canonical: Blue Ridge Academy
+    aliases:
+      - Blue Ridge Academy
+
+  - canonical: Forest Charter School
+    aliases:
+      - Forest Charter School
+
+  - canonical: Arete Charter Academy
+    aliases:
+      - Arete Charter Academy
+
+  - canonical: Suncoast Preparatory Academy
+    aliases:
+      - Suncoast Preparatory Academy
+
+  - canonical: Keesee
+    aliases:
+      - Keesee
+
+# Email-domain fallback for a TEACHER contact who is not named as TOR on any
+# charter deal. Deals win whenever they exist (157/159 of Pile 1 on 2026-09-02);
+# this only catches the remainder. ieminc.org maps to the network because IEM
+# staff serve several schools and the domain cannot tell them apart.
+domains:
+  ileadexploration.org: iLEAD
+  ileadav.org: iLEAD
+  ileadlancaster.org: iLEAD
+  viedu.org: Visions In Education
+  eliteacademic.com: Elite Academic Academy
+  gormanlc.org: Gorman Learning Center
+  sageoak.education: Sage Oak Charter Schools
+  pacificcoastacademy.org: Pacific Coast Academy
+  heartlandcharterschool.com: Heartland Charter School
+  heartwoodcharterschool.org: Heartwood Charter School
+  compasscharters.org: Compass Charter Schools
+  theblueridgeacademy.com: Blue Ridge Academy
+  granitemountainschool.com: Granite Mountain Charter School
+  forestcharter.com: Forest Charter School
+  taylion.com: Taylion Homeschool
+  hcs.k12.ca.us: Horizon Charter Schools
+  ieminc.org: IEM

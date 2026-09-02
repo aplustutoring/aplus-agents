@@ -8,6 +8,49 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — Teachers get a canonical school; iLEAD is one bucket; `school_name` retired (#AP-pending)
+
+**What:** Teacher (TOR/EF/ES) contacts now carry `[Agent] School` (`school_canonical`,
+`tor` group, declared in `properties.yml`, created in-portal by `create_properties.py`).
+It is derived from the charter DEALS the teacher is named on
+(`teacher_of_record_email` → `student_school`), not from the Family↔TOR association,
+and normalised through a new shared lookup `ops/hubspot-schema/school-aliases.yml`
+(23 canonical schools, 46 raw spellings, 17 email-domain fallbacks). New script
+`scripts/teacher_school_stamp.py` (read-only by default, `--execute` writes with a
+pre-write backup, `--all-tor` widens from list 3110 to every TOR persona). First run
+stamped all **159** contacts on list 3110 (157 via deals, 2 via domain, 0 unresolved,
+0 unknown spellings). In `deals-proposal.md`, deal property `school_name` flips from
+KEEPER to RETIRE (6 deals all-time, 0 since Aug 2025, nothing writes it; archive
+in-portal is Roman's action).
+
+**Why:** Roman 2026-09-02, after the Pile 1 breakdown: teacher contacts had no usable
+school (`student_school` filled on 15/159, `company` 26/159), so every teacher cut was
+an email-domain guess. Deal analysis showed `student_school` is 96% filled on 2,377
+charter deals since Aug 2025 but under 50 spellings, 14 of them iLEAD (63% of deals).
+Locked decisions: **iLEAD is ONE bucket** (Exploration / Hybrid / Antelope Valley /
+Lancaster / "California Charters" all → "iLEAD"); everything else stays school-level
+with `network` recorded informationally (IEM, Pacific Charter Institute). The alias
+file, not an enum, is the fix because `po_inbox` writes `student_school` free-text from
+the PO (locked rules 11-12) and an enum would break those writes. Unknown spellings
+are reported and skipped, never guessed, so the file stays complete.
+
+**Also this session (data, not code):** all 1,085 TOR-persona contacts reassigned to
+owner Danielle (227538487) on 2026-09-01 — 795 had been owned by deactivated staff
+(Janina 621, Melanie 167, Rafa 7). Pre-change owners backed up in the session
+scratchpad (`owners_backup_TOR_2026-09-01.json`).
+
+**Open:** `--all-tor` dry run reaches 973/1,086 (222 deal, 751 domain); 113 unresolved
+on unknown domains (excelacademy.education, brightonhallschool.org, …) — not executed,
+Roman approved Pile 1 only. Two Pile 1 rows are not teachers (`poinquiries@ieminc.org`
+shared inbox) — persona hygiene. `jedge@ieminc.org` resolves to iLEAD (4 deals) over
+South Sutter (3) — most-common rule, worth a human look.
+
+**Files:** `ops/hubspot-schema/school-aliases.yml` (new), `scripts/teacher_school_stamp.py`
+(new), `ops/hubspot-schema/properties.yml`, `ops/hubspot-schema/consolidation/deals-proposal.md`,
+`docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-01 — Call agent: scheduling-vs-follow-up task routing + name-correction propagation
 
 **What changed**

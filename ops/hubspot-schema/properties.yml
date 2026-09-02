@@ -415,6 +415,19 @@ properties:
       group: tor
       type: date
       fieldType: date
+    - name: school_canonical
+      label: "[Agent] School"
+      group: tor
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/teacher_school_stamp.py, do not
+        edit by hand. Canonical charter school for a TEACHER contact, derived
+        from the charter deals the teacher is named on (teacher_of_record_email
+        → student_school) and normalised through
+        ops/hubspot-schema/school-aliases.yml. iLEAD is ONE bucket (Roman
+        2026-09-02). Email-domain fallback only when no deal names the teacher.
+        Distinct from the family intake field student_school.
     # — tutor —
     - name: tutor_roster_status
       label: "[Agent] Tutor Roster Status"
