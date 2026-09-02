@@ -123,6 +123,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true", help="write invoice_due_date")
     ap.add_argument("--since", default="2026-08-01", help="school year start")
+    ap.add_argument("--debug", action="store_true", help="print TW invoice shape")
     args = ap.parse_args()
     today = dt.date.today()
     since = dt.datetime.fromisoformat(args.since).replace(tzinfo=dt.timezone.utc)
@@ -130,18 +131,30 @@ def main() -> None:
     accounts = tw_accounts()
     if not accounts:
         sys.exit("No Teachworks token in the environment.")
+    # Index by EVERY identifier the invoice carries. Teachworks exposes both an
+    # internal id and a human invoice number, and which one Kath types into the
+    # deal's Invoice # varies; keying on one of them matched 1 deal out of 157.
     due_by_invoice: dict[str, dt.date] = {}
     for name, token in accounts.items():
         rows = tw_invoices(token)
+        if rows and args.debug:
+            print(f"  sample invoice keys: {sorted(rows[0].keys())}")
+            for r in rows[:3]:
+                print(f"    id={r.get('id')!r} number={r.get('number')!r} "
+                      f"invoice_number={r.get('invoice_number')!r} "
+                      f"due_date={r.get('due_date')!r}")
         n = 0
         for i in rows:
-            num = str(i.get("invoice_number") or i.get("number") or i.get("id") or "").strip()
             d = as_date(i.get("due_date") or i.get("due"))
-            if num and d:
-                due_by_invoice[num] = d
-                n += 1
+            if not d:
+                continue
+            for key in (i.get("invoice_number"), i.get("number"), i.get("id")):
+                k = str(key or "").strip()
+                if k:
+                    due_by_invoice[k] = d
+            n += 1
         print(f"teachworks[{name}]: {len(rows)} invoices, {n} with a due date")
-    print(f"due dates indexed: {len(due_by_invoice)}\n")
+    print(f"due-date keys indexed: {len(due_by_invoice)}\n")
 
     deals = hs_charter_deals(since)
     prop = lambda d, k: (d["properties"].get(k) or "").strip()
@@ -162,6 +175,9 @@ def main() -> None:
 
     print(f"  invoice # stamped, due date found : {len(deals) - len(unmatched)}")
     print(f"  invoice # stamped, NO TW match    : {len(unmatched)}")
+    if unmatched and args.debug:
+        print("   unmatched Invoice # values (first 15):",
+              [prop(d, "invoice__") for d in unmatched[:15]])
     print(f"  due date to write / correct       : {len(to_stamp)}\n")
 
     # what this unlocks: the queue Kath actually works

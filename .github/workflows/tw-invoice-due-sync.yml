@@ -23,6 +23,10 @@ on:
       since:
         description: "School year start"
         default: "2026-08-01"
+      debug:
+        description: "Print the Teachworks invoice shape and unmatched values"
+        type: boolean
+        default: false
   schedule:
     # 6am PT weekdays — the queue is ready before anyone opens it.
     - cron: "0 13 * * 1-5"
@@ -48,10 +52,12 @@ jobs:
           TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           APPLY: ${{ inputs.apply }}
           SINCE: ${{ inputs.since || '2026-08-01' }}
+          DEBUG: ${{ inputs.debug }}
         run: |
           ARGS="--since $SINCE"
           # scheduled runs apply; manual runs honour the checkbox
           if [ "$APPLY" = "true" ] || [ "${{ github.event_name }}" = "schedule" ]; then
             ARGS="$ARGS --apply"
           fi
+          if [ "$DEBUG" = "true" ]; then ARGS="$ARGS --debug"; fi
           python3 scripts/tw_invoice_due_sync.py $ARGS
