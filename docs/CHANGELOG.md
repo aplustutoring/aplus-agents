@@ -8,6 +8,50 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 (later) — School stamp widened to every teacher; generic inboxes flagged
+
+**What:** `scripts/teacher_school_stamp.py` v2 now resolves a teacher's school from
+three HubSpot sources in order of specificity, never guessing: (1) charter deals the
+teacher is named on, unanimous wins outright; (2) the contact intake enumeration
+`charter_school_teacher` (read as LABEL), which is filled on 1,075/1,086 teachers and
+agreed with deals 217/218 times — it now beats a SPLIT deal vote; (3) a verified email
+domain. Deal ↔ intake disagreements are reported. Network-level labels (IEM, Pacific
+Charter Institute, iLEAD) are not disagreements with their own schools. New
+`[Agent] Generic Inbox` (`generic_inbox`, boolean, `tor` group) is set to Yes from the
+email local-part (purchasing@, invoices@, studentservices@, info@, noreply@, vendors@,
+ap@ …) so teacher outreach lists can exclude shared mailboxes; they still get a school.
+Internal test contacts (@wetutorathome.com) and no-email contacts are skipped.
+`school-aliases.yml` grew to 32 canonical schools / 82 spellings / 32 domains: every
+intake label added as an alias; IEM and Pacific Charter Institute added as buckets for
+central-office staff; 9 new schools (Excel Academy Charter School, Julian Charter
+School, Springs Charter Schools, The Cottonwood School, BEST Academy, Epic California
+Academy, Brighton Hall School, + Rio Valley/Heritage Peak spellings). Run with
+`--all-tor --execute`: **922 contacts written (921 school, 30 generic flag)**, 157
+already correct from the morning run, **6 unresolved**, 2 skipped. Re-run: 0 pending.
+
+**Why:** Roman 2026-09-02: "Widen the script … you have to be smart, the excel academy
+emails are for excel academy maybe their email domain is different from web, assume
+nothing. Figure out a way to keep generic inboxes separate." The morning `--all-tor`
+dry run left 113 unresolved on domains not in the alias file. Rather than assume a
+domain = a school, each new domain was verified two ways: the contacts' own intake
+label agreed with the domain 100% (excelacademy.education = Excel 26/26, jcs-inc.org =
+Julian 15/15, springscs.org = Springs 14/14, …) and the domain's website title named
+the school (curl, `<title>`). Vendors are deliberately not schools: dennis@mrdmath.com
+stays unresolved.
+
+**Unresolved (6), left alone on purpose:** 5 personal Gmail/Yahoo addresses with the
+teacher persona and no intake label (one is Danielle's own personal Gmail, one is
+"Hugh Jazz" — persona hygiene), and the Mr. D Math vendor. **Skipped (2):** Joyce
+Showers (no email), paola+testheartlandef@ (test). **One disagreement:**
+jedge@ieminc.org — deals split iLEAD 4 / South Sutter 3, intake says IEM → IEM.
+
+**Files:** `scripts/teacher_school_stamp.py`, `ops/hubspot-schema/school-aliases.yml`,
+`ops/hubspot-schema/properties.yml` (generic_inbox declared + school_canonical
+description), `ops/fleet-health/audit/backups/2026-09-02-teacher-school-stamp/`
+(pre-write backup for the 922), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-02 — Teachers get a canonical school; iLEAD is one bucket; `school_name` retired (#AP-pending)
 
 **What:** Teacher (TOR/EF/ES) contacts now carry `[Agent] School` (`school_canonical`,

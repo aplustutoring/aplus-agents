@@ -426,8 +426,25 @@ properties:
         from the charter deals the teacher is named on (teacher_of_record_email
         → student_school) and normalised through
         ops/hubspot-schema/school-aliases.yml. iLEAD is ONE bucket (Roman
-        2026-09-02). Email-domain fallback only when no deal names the teacher.
+        2026-09-02). Falls back to the intake enumeration charter_school_teacher (LABEL), then a verified email domain; disagreements are reported.
         Distinct from the family intake field student_school.
+    - name: generic_inbox
+      label: "[Agent] Generic Inbox"
+      group: tor
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by scripts/teacher_school_stamp.py, do not
+        edit by hand. Yes when the contact is a shared/role mailbox at a
+        school (purchasing@, invoices@, studentservices@, info@, noreply@ …)
+        rather than a person. Set from the email local-part. Teacher outreach
+        lists must EXCLUDE these (Roman 2026-09-02: "keep generic inboxes
+        separate"); PO/invoice routing may still want them.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     # — tutor —
     - name: tutor_roster_status
       label: "[Agent] Tutor Roster Status"
