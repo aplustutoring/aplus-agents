@@ -23968,3 +23968,4 @@
 {"ticket_id": "48105293351", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-02T20:01:33.072304+00:00"}
 {"ticket_id": "48117670729", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-02T20:01:34.245246+00:00"}
 {"ticket_id": "48117670729", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-02T20:01:35.210726+00:00"}
+{"message_id": "deal:64576268331", "source": "deal_sync", "deal_id": "64576268331", "deal_name": "Kelly Kingsbury - Blue Ridge", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2165100, "tw_action": "created", "tw_student_created": "Blue", "action_taken": "tw_synced", "timestamp": "2026-09-02T21:20:38.399742+00:00"}
