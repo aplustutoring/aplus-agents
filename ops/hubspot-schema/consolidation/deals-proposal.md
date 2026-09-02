@@ -72,7 +72,7 @@ Stay exactly where they are. Programs stay grouped as programs, not personas (lo
 | `reason_for_stopping` | Reason for Stopping | dealinformation | KEEPER: Churn reason |  |
 | `saturday_schedule_preference` | Saturday Schedule Preference | scheduling_information | KEEPER: Per-day schedule preference on deal |  |
 | `schedule_preferences` | Schedule Preferences | dealinformation | KEEPER: Stamped on B2C deal create (email engine main.py) 【code: email】 |  |
-| `school_name` | School Name | dealinformation | RETIRE (Roman 2026-09-02): 6 deals all-time, 0 since Aug 2025; nothing writes it. `student_school` (4,672 deals, 96% of charter deals) is the school field. Archive in-portal. |  |
+| `school_name` | School Name | dealinformation | KEEPER: Teacher Scholarship family-deal school. WRITTEN by workflow 1861452046 "Teacher Scholarship – Create Student Deal per Form Submission" (contact `student_school` → deal `school_name`, pipeline 918901819); READ by WF-01 (1858089740) and WF-03 (1859135906) notification emails. NOT used on charter pipelines (there `student_school` is the field). A 2026-09-02 RETIRE call was reversed the same day after the writer was found — do not archive without remapping those three workflows first. |  |
 | `should_this_deal_be_posted_to_a_slack_channel_` | Should this deal be posted to a Slack Channel? | custom_deal_properties | KEEPER: Slack routing flag |  |
 | `slp_tutor_pay` | SLP Tutor Pay | tutor_info | Created with Monday-sync tutor batch 2025-11 — verify Used-in with aplus_contractor_pay |  |
 | `start_of_tutoring_for_this_deal` | Start Date for Tutoring for this Deal | deal_activity | KEEPER: Deal service window start |  |
