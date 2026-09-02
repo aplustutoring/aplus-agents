@@ -8,6 +8,44 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — Sage Oak booth: append the event tag instead of replacing it (#AP032)
+
+**What changed**
+- `booth/worker.js` — adds `mergeEventTags()`, fetches `aplus_event_tag` in the
+  contact search, and unions on update instead of writing flat.
+- `booth/test-worker.mjs` — new, 7 tests.
+
+**Why**
+`aplus_event_tag` is `fieldType: checkbox` (multi-select), so a flat PATCH
+replaces the whole set. The Sage Oak booth searched with
+`properties: ["email"]` and wrote the tag flat — correct while it was the only
+event, a data-loss bug the moment Blue Ridge shipped. A teacher who attended
+Blue Ridge and then hit the Sage Oak booth again would have had
+`blue_ridge_btsc_2026` silently erased.
+
+Ported from `booth/blue-ridge/worker.js`, where the same logic is already live
+and was verified against production on 2026-09-01 (a contact seeded with
+sage_oak came back `sage_oak_btsc_2026;blue_ridge_btsc_2026`).
+
+**Also done this session (data, no code)**
+- The 26 Blue Ridge booth leads were assigned to Danielle (Roman 2026-09-02).
+  24 were unassigned because the owner-routing Worker was never redeployed;
+  the routing itself is merged and takes effect on the next `wrangler deploy`.
+- Backfilled `po_work_type` + `ticket_source` on the 12 remaining PO-inbox
+  tickets that predate PR #136, classified only from the subject prefix and the
+  agent's own "Not a PO:" summary. 4 purchase_order, 2 ar_followup, 2 other,
+  1 each marketing_junk / vendor_onboarding / scam / po_cancellation.
+
+**Files touched**
+- `booth/worker.js`, `booth/test-worker.mjs`, `docs/CHANGELOG.md`
+
+**Verification** — `node booth/test-worker.mjs`: 7 passed, including that the
+search requests the tag (without it the merge has nothing to merge).
+
+**Decision log** — #AP032 is now enforced in both booths and covered by tests.
+
+---
+
 ## 2026-09-01 — Call agent: scheduling-vs-follow-up task routing + name-correction propagation
 
 **What changed**

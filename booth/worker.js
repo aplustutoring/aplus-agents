@@ -158,6 +158,22 @@ const ROLE_CREATE_PROPS = {
   support_staff: {},
 };
 
+/**
+ * aplus_event_tag is a MULTI-SELECT (fieldType: checkbox) and is append-only
+ * per #AP032. A flat PATCH replaces the whole set, which was harmless while
+ * Sage Oak was the only event and became a data-loss bug the moment Blue Ridge
+ * shipped: a teacher who attended both would have had Sage Oak erased on their
+ * second visit. Ported from booth/blue-ridge/worker.js (Roman 2026-09-02).
+ */
+export function mergeEventTags(existing, newTag) {
+  const have = String(existing || "")
+    .split(";")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (newTag && !have.includes(newTag)) have.push(newTag);
+  return have.join(";");
+}
+
 async function upsertContact(env, properties, role) {
   const headers = {
     Authorization: `Bearer ${env.HUBSPOT_TOKEN}`,
@@ -170,7 +186,9 @@ async function upsertContact(env, properties, role) {
     headers,
     body: JSON.stringify({
       filterGroups: [{ filters: [{ propertyName: "email", operator: "EQ", value: properties.email }] }],
-      properties: ["email"],
+      // aplus_event_tag comes back so the merge below can union rather than
+      // replace — see mergeEventTags.
+      properties: ["email", "aplus_event_tag"],
       limit: 1,
     }),
   });
@@ -178,11 +196,18 @@ async function upsertContact(env, properties, role) {
   const found = await search.json();
 
   if (found.total > 0) {
-    const id = found.results[0].id;
+    const hit = found.results[0];
+    const id = hit.id;
     const upd = await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/${id}`, {
       method: "PATCH",
       headers,
-      body: JSON.stringify({ properties }),
+      body: JSON.stringify({
+        properties: {
+          ...properties,
+          aplus_event_tag: mergeEventTags(hit.properties?.aplus_event_tag,
+                                          properties.aplus_event_tag),
+        },
+      }),
     });
     if (!upd.ok) throw new Error(`HubSpot update ${upd.status}: ${await upd.text()}`);
     return { action: "updated", id };
