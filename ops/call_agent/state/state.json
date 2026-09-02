@@ -568,9 +568,11 @@
     410623856,
     410626002,
     410627220,
-    410630803
+    410630803,
+    410645447,
+    410646802
   ],
-  "last_run_utc": "2026-09-02T01:16:25.567055+00:00",
+  "last_run_utc": "2026-09-02T02:35:32.788734+00:00",
   "pending_digest": [
     {
       "call_id": 410409885,
@@ -1915,6 +1917,122 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 410646802,
+      "number": "13238044959",
+      "time_pt": "6:21 PM",
+      "matched": true,
+      "contact_label": "David Lascher",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle called existing customer David Lascher to confirm a tutoring session for his daughter Chelsea tonight at 8PM with tutor Alexander. Card on file (Amex ending 6006) will be used; David questioned the $95 hourly rate believing it was $85, and Janelle offered package options ($88/hr for 8, $83/hr for 20, $73/hr for 50) but David wants to see how tonight goes first before committing. He declined Saturday English with Shay for now, wanting to start with math only; physiology tutor still pending as Crystal didn't confirm. Janelle will send the lesson link and a way for David to send worksheets from Chelsea.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Add tonight's 8PM session with Alexander for Chelsea and send the lesson link to dlasch@mac.com",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Check whether the $85/hour rate David remembers can be honored and get back to him with an answer",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send David a way to upload/share the worksheets Chelsea wants to work on tonight",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Continue sourcing an in-person physiology tutor since Crystal did not confirm comfort with the subject",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Hold off on booking Saturday English with Shay \u2014 revisit after math sessions get going",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Hannah",
+            "correct": "Chelsea"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "David Lascher (returning customer, calm/friendly but price-sensitive) is booked for tonight 8PM online math with Alexander for his daughter Chelsea. Card on file is Amex ending 6006. He pushed back on the $95/hr hourly rate insisting it has always been $85 \u2014 Janelle said she'd double-check what she can do; he expects an answer. Package options were quoted (8hr @ $88, 20hr @ $83, 50hr @ $73) but he wants to see how tonight goes with Alexander before committing to a package. He declined Saturday English with Shay for now \u2014 math only to start. Still need an in-person physiology tutor (Crystal declined). Send him tonight's lesson link and a channel to share Chelsea's worksheets. Open with: \"Hi David, following up on tonight's session with Alexander and the rate question you raised \u2014 here's where we landed\u2026\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/active customer with an open deal; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Chelsea Lascher",
+          "Alexander",
+          "Crystal",
+          "Shay"
+        ],
+        "record_updates": {
+          "whats_going_on": "Booked online math session tonight 8PM with Alexander for daughter Chelsea (different student from Chelsea on record). David questioned the hourly rate \u2014 believes it has always been $85, our records show $95. Also need in-person physiology tutor (Crystal declined) and had considered Saturday English with Shay but holding off; math only to start.",
+          "what_we_can_do_to_help": "Confirm/adjust the hourly rate for David and communicate back. Send lesson link and a way for him to upload Chelsea's worksheets. Continue sourcing an in-person physiology tutor. Revisit English with Shay once math is going well. Offer package pricing (8hr/$88, 20hr/$83, 50hr/$73) once he sees fit with Alexander.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Booked online math session tonight 8PM with Alexander for daughter Chelsea (different student from Chelsea on record). David questioned the hourly rate \u2014 believes it has always been $85, our records show $95. Also need in-person physiology tutor (Crystal declined) and had considered Saturday English with Shay but holding off; math only to start."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm/adjust the hourly rate for David and communicate back. Send lesson link and a way for him to upload Chelsea's worksheets. Continue sourcing an in-person physiology tutor. Revisit English with Shay once math is going well. Offer package pricing (8hr/$88, 20hr/$83, 50hr/$73) once he sees fit with Alexander."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add tonight's 8PM session with Alexander for Chelsea and send the lesson link to dlasch@mac.com",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Check whether the $85/hour rate David remembers can be honored and get back to him with an answer",
+          80047202,
+          "follow_up"
+        ],
+        [
+          "Send David a way to upload/share the worksheets Chelsea wants to work on tonight",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Continue sourcing an in-person physiology tutor since Crystal did not confirm comfort with the subject",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Hold off on booking Saturday English with Shay \u2014 revisit after math sessions get going",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1927,6 +2045,11 @@
       "number": "19092134868",
       "time_pt": "5:06 PM",
       "reason": "hang-up"
+    },
+    {
+      "number": "13238044959",
+      "time_pt": "6:21 PM",
+      "reason": "no transcript"
     }
   ],
   "pending_failures": []
