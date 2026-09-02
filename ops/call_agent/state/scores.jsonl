@@ -268,3 +268,12 @@
 {"call_id": 410626002, "date_pt": "2026-09-01", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 5, "U2": 4, "U3": 4, "U5": 3, "S4": 2}}
 {"call_id": 410630803, "date_pt": "2026-09-01", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 1}}
 {"call_id": 410646802, "date_pt": "2026-09-01", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U2": 3, "U3": 3, "U4": 4, "U5": 3, "V1": 2, "V2": 2}}
+{"call_id": 410918360, "date_pt": "2026-09-02", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.9, "scores": {"U1": 4, "U2": 3, "U3": 3, "U4": 2, "U5": 3, "S1": 2, "S2": 3, "S3": 4, "S4": 2}}
+{"call_id": 410927109, "date_pt": "2026-09-02", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.4, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 3, "U5": 3, "V1": 4, "V2": 2}}
+{"call_id": 411060683, "date_pt": "2026-09-02", "agent": "Janelle Alinea", "direction": "incoming", "overall": 3.6, "scores": {"U1": 5, "U2": 3, "U3": 4, "U4": 4, "U5": 3, "V1": 3, "V2": 3}}
+{"call_id": 411014079, "date_pt": "2026-09-02", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.6, "scores": {"U1": 5, "U3": 4, "U4": 4, "U5": 3, "S4": 2}}
+{"call_id": 411017215, "date_pt": "2026-09-02", "agent": "Janelle Alinea", "direction": "outgoing", "overall": null, "scores": {}}
+{"call_id": 411020027, "date_pt": "2026-09-02", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 2, "S1": 2, "S4": 2}}
+{"call_id": 411024133, "date_pt": "2026-09-02", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": null, "scores": {}}
+{"call_id": 411026139, "date_pt": "2026-09-02", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 4.2, "scores": {"U1": 4, "U2": 5, "U3": 4, "U5": 4, "S4": 4}}
+{"call_id": 411038155, "date_pt": "2026-09-02", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 2, "U2": 4, "U3": 4, "U4": 2, "U5": 4, "S1": 3, "S2": 3, "S3": 4, "S4": 4}}
