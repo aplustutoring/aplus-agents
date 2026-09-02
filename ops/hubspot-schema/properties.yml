@@ -713,7 +713,7 @@ properties:
       type: enumeration
       fieldType: booleancheckbox
     - name: school_name
-      label: "School Name"
+      label: "Teacher Scholarship Student School"   # relabeled in-portal 2026-09-02 (Roman); internal name is legacy, workflows unaffected
       group: dealinformation
       type: string
       fieldType: text

@@ -19,7 +19,7 @@ Scholarship – Create Student Deal per Form Submission" maps contact `student_s
 deal `school_name` on deal create, and WF-01 (1858089740) and WF-03 (1859135906) read
 `{{ enrolled_object.school_name }}` in their notification emails. Archiving would have
 silently blanked the school on every future Teacher Scholarship family deal and email.
-Not archived. Also on Roman's instruction: soft-deleted two Teacher-persona test
+Not archived. Instead relabeled in-portal to "Teacher Scholarship Student School" (Roman, same session) so it reads as what it is; internal name `school_name` unchanged, so the three workflows are unaffected; `properties.yml` label updated to match. Also on Roman's instruction: soft-deleted two Teacher-persona test
 contacts created 2026-08-12 by the Teacher Scholarship alpha run, `daniellebrodetsky@
 gmail.com` (241417873326) and `hugh.jazz@gmail.com` (241380683818); no deals or
 associations; restorable 90 days. PR #160 merged (squash, c40c845).
