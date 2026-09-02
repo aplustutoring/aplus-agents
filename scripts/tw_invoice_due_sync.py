@@ -65,9 +65,15 @@ def tw_accounts() -> dict:
 
 
 def tw_invoices(token: str) -> list[dict]:
-    """Every invoice on one Teachworks account (80/page)."""
+    """Every invoice on one Teachworks account (80/page).
+
+    The cap matters: at 200 pages the first run stopped at exactly 16,000
+    invoices, which is 200 x 80 — it had truncated before reaching the current
+    school year, so the recent invoices were simply absent rather than
+    mismatched.
+    """
     out, page = [], 1
-    while page <= 200:
+    while page <= 1000:
         r = requests.get(f"{TW_BASE}/invoices", timeout=40,
                          headers={"Authorization": f"Token token={token}",
                                   "Content-Type": "application/json"},
@@ -148,12 +154,18 @@ def main() -> None:
             d = as_date(i.get("due_date") or i.get("due"))
             if not d:
                 continue
-            for key in (i.get("invoice_number"), i.get("number"), i.get("id")):
+            # formatted_number is the human invoice number Kath types onto the
+            # deal (e.g. "54396"). `number` is a small per-account sequence
+            # (2, 3, 4...) and `id` is internal, so neither ever matches.
+            for key in (i.get("formatted_number"), i.get("invoice_number"),
+                        i.get("number"), i.get("id")):
                 k = str(key or "").strip()
                 if k:
                     due_by_invoice[k] = d
             n += 1
         print(f"teachworks[{name}]: {len(rows)} invoices, {n} with a due date")
+        if len(rows) >= 1000 * 80:
+            print(f"  ⚠️  hit the page cap on {name} — invoices may be missing")
     print(f"due-date keys indexed: {len(due_by_invoice)}\n")
 
     deals = hs_charter_deals(since)
