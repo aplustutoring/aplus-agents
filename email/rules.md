@@ -87,18 +87,40 @@ Cancelling session(s), pausing, or ending service (not a billing dispute, not a 
 `cancellation` — never junk. Set the type from the stated reason.
 **Always populate `cancellation_reason`** with the stated reason (verbatim if short).
 
+### Campaign replies: the evidence rule (read before using either campaign category)
+
+`campaign_family` and `campaign_school` require **positive evidence in the email itself**
+that it is a reply to one of our campaign sends. Exactly one of:
+- quoted text from the campaign email in the thread, or
+- the campaign's subject line in the Subject (including "Re:" forms), or
+- an explicit mention of its subject matter (e.g. the Badge, NSSA, Stanford, the award).
+
+**Timing and list membership are NOT evidence.** An email is not campaign traffic merely
+because it arrived hours or days after a send, or because the sender is on the list that
+was mailed. Our busiest inboxes run all day; most of what arrives after a send has
+nothing to do with it. A short pleasant note ("Thank you so much!", "You're most
+welcome", "Got it") carries no campaign signal at all and is the single most common way
+this goes wrong.
+
+With none of the three signals present, **ignore the campaign entirely and classify the
+email on its content** — `scheduling`, `complaint`, `school_partner`, `unknown`, and so
+on. Misrouting a real request into a campaign bucket costs more than missing a
+congratulations note: the campaign categories are a courtesy lane, not a work queue.
+(Roman 2026-09-02, after the NSSA send: two of four tagged replies were ordinary
+tutoring correspondence that happened to arrive the same afternoon.)
+
 ### `campaign_family` — 90 min → family follow-up (charter sales)
 A FAMILY (parent/guardian) replying to one of our marketing or announcement emails
 (see "Active campaigns" below) — wanting to sign up, restart service, add sessions,
 refer another family, use charter instructional funds, or asking a follow-up question
-about the announcement. Signals: the thread contains our campaign email (quoted text,
-campaign subject line, or an explicit mention of it), and the sender is a family.
+about the announcement. Requires the evidence rule above to be satisfied AND the sender
+to be a family. Without that evidence it is not campaign traffic, whatever the timing.
 Examples:
 - "Just saw your Stanford badge email — we'd love to get started, my daughter is in 4th grade."
 - "Congrats! Can you add a second weekly session for Mateo?"
 - "Replying like the email said: my neighbor is looking for a math tutor, can I refer her?"
-A congratulations-only reply with NO ask is still `campaign_family`: risk low, and the
-draft is a short warm thank-you.
+A congratulations-only reply that satisfies the evidence rule is still
+`campaign_family`: risk low, and the draft is a short warm thank-you.
 A new-booking email that is NOT a reply to a campaign stays `scheduling`. A complaint in
 reply to a campaign email is still `complaint`.
 
@@ -110,9 +132,13 @@ interest. Examples:
 - "Congratulations on the NSSA badge! Great news for our families."
 - "Can you send a one-pager on the badge I can share with my families?"
 - "What does the Stanford review actually cover? A parent asked me."
-A congratulations-only reply with no ask: risk low, warm thank-you draft.
+Requires the evidence rule above. A congratulations-only reply that names the Badge,
+NSSA, Stanford or the award: risk low, warm thank-you draft.
 A school reply that is really program/contract/PO business (adding students, budgets,
 rates, meetings) is `school_partner`, not `campaign_school` — school_partner outranks it.
+NOT `campaign_school`: "You're most welcome, Yolanda" from a school contact the day of a
+send. No campaign signal, so it is classified on content (here, ordinary tutoring
+correspondence) and routed accordingly.
 
 ### `business_dev` — 8 business hrs → Danielle
 Partnership, collaboration, or business-development interest with plausible value to A+:
@@ -179,7 +205,7 @@ Keep this list current: add a block when a campaign launches, remove it when rep
 stop. A reply matching a campaign here classifies as `campaign_family` (families) or
 `campaign_school` (school personnel) per the rules above.
 
-### NSSA Tutoring Program Design Badge announcement (launched Aug 2026)
+### NSSA Tutoring Program Design Badge announcement (sent 2026-08-31 / 09-01)
 A+ earned the Tutoring Program Design Badge from Stanford's National Student Support
 Accelerator (NSSA), valid 2026-2029. Three versions went out, all with the CTA
 "just reply to this email":
@@ -189,8 +215,10 @@ Accelerator (NSSA), valid 2026-2029. Three versions went out, all with the CTA
   NSSA Tutoring Program Design Badge"
 - To prospective families — subject "Choosing a Tutor Is Hard. Stanford Just Made It
   Easier." (replies = new sign-ups; may mention charter instructional funds)
-Any reply referencing the badge, NSSA, Stanford, or quoting these emails is campaign
-traffic even if the subject line was changed.
+Any reply referencing the Badge, NSSA, Stanford, or quoting these emails is campaign
+traffic even if the subject line was changed. A reply that references none of them is
+NOT campaign traffic, no matter how soon after the send it arrived: see the evidence
+rule. Retire this block once badge replies stop arriving.
 
 ---
 

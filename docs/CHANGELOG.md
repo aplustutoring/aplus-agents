@@ -8,6 +8,35 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — Campaign replies need evidence, not just timing
+
+**What:** `email/rules.md` gains a shared "Campaign replies: the evidence rule"
+section gating both `campaign_family` and `campaign_school`. A reply is campaign
+traffic only with positive evidence in the email itself: quoted campaign text, the
+campaign subject line, or an explicit mention of its subject matter (the Badge,
+NSSA, Stanford, the award). Timing and list membership are explicitly declared NOT
+evidence, with the common failure named outright (short pleasant notes: "Thank you
+so much!", "You're most welcome"). With no signal, the email is classified on its
+content and the campaign is ignored. Both category blocks point at the gate,
+`campaign_school` carries a worked negative example, and the NSSA block in Active
+campaigns records the real send dates plus a retire-when-replies-stop note.
+
+**Why:** Roman 2026-09-02. Of the first four replies the agent tagged as NSSA
+campaign traffic, Danielle confirmed Erica Porter's was ordinary tutoring
+correspondence, and Jaclyn Bershadsky's arrived before the leads send even went
+out. The original rules listed the positive signals but never said timing and list
+membership were insufficient, so the classifier filled the gap itself. Misrouting a
+real request into a courtesy lane costs more than missing a congratulations note.
+
+**Verified:** the live classifier was re-run against all three real emails.
+Erica Porter and Jaclyn Bershadsky now return `unknown` (human review) instead of a
+campaign category; Alyson Cruz's genuine Badge reply stays `campaign_school` with
+confidence rising 0.82 to 0.92. Suite green (355 passed).
+
+**Files:** `email/rules.md`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-01 — Call agent: scheduling-vs-follow-up task routing + name-correction propagation
 
 **What changed**
