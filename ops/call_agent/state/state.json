@@ -563,9 +563,14 @@
     410603410,
     410575787,
     410591818,
-    410613558
+    410613558,
+    410635136,
+    410623856,
+    410626002,
+    410627220,
+    410630803
   ],
-  "last_run_utc": "2026-09-01T23:22:21.506115+00:00",
+  "last_run_utc": "2026-09-02T01:16:25.567055+00:00",
   "pending_digest": [
     {
       "call_id": 410409885,
@@ -1702,6 +1707,214 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 410623856,
+      "number": "13107757873",
+      "time_pt": "4:55 PM",
+      "matched": true,
+      "contact_label": "Lindsey Williams",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Lindsey Williams to follow up on her interest in tutoring for her son Graham. Lindsey was busy wrapping up work and asked to reschedule the conversation for tomorrow after 3:00 PM. She confirmed she still wants to start tutoring and has questions to discuss. Paola agreed to call back tomorrow after 3:00.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Call Lindsey Williams back tomorrow after 3:00 PM to discuss tutoring for Graham and answer her questions",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Paola already committed to calling Lindsey back \u2014 she's expecting the callback tomorrow after 3:00 PM. Lindsey was friendly but rushed (mid-work). She confirmed she does want to start tutoring for her son Graham (9th grade, needs Algebra 1, Biology, plus executive functioning/study skills support per prior notes) and has questions to ask. Open with: 'Hi Lindsey, it's Paola from A+ Tutoring following up as promised \u2014 is now still a good time to talk through tutoring for Graham?' Be ready to discuss program fit, pricing, and next steps.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; not charter and no diagnostic required \u2014 standard connect.",
+        "student_or_school_names_mentioned": [
+          "Graham"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reached Lindsey on follow-up call; she confirmed she still wants to move forward with tutoring for Graham but was busy with work. Asked us to call back tomorrow after 3:00 PM to go over her questions.",
+          "what_we_can_do_to_help": "Call Lindsey back tomorrow after 3:00 PM to answer her questions and get Graham started with tutoring.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reached Lindsey on follow-up call; she confirmed she still wants to move forward with tutoring for Graham but was busy with work. Asked us to call back tomorrow after 3:00 PM to go over her questions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Call Lindsey back tomorrow after 3:00 PM to answer her questions and get Graham started with tutoring."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Lindsey Williams back tomorrow after 3:00 PM to discuss tutoring for Graham and answer her questions",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410626002,
+      "number": "12132605347",
+      "time_pt": "5:01 PM",
+      "matched": true,
+      "contact_label": "Naveh  Hall",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Naveh Hall to follow up on tutoring for her three kids (Salome, Kaleb, Joshua) at Excel Academy. Naveh was busy and quickly said they won't be going with A+ Tutoring this year. Call ended politely with no further action requested.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Mark Naveh Hall as unqualified/lost \u2014 family declined A+ Tutoring for this year",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Naveh explicitly declined moving forward with A+ Tutoring this year for her three kids at Excel Academy.",
+        "student_or_school_names_mentioned": [
+          "Salome Hall",
+          "Kaleb Hall",
+          "Joshua Hall",
+          "Excel Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola called Naveh to follow up on tutoring for her three kids. Naveh said they will not be going with A+ Tutoring this year and ended the call politely.",
+          "what_we_can_do_to_help": "No further outreach needed at this time \u2014 family declined for this year. Can revisit next school year if appropriate.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Naveh to follow up on tutoring for her three kids. Naveh said they will not be going with A+ Tutoring this year and ended the call politely."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "No further outreach needed at this time \u2014 family declined for this year. Can revisit next school year if appropriate."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Mark Naveh Hall as unqualified/lost \u2014 family declined A+ Tutoring for this year",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 410630803,
+      "number": "13109386211",
+      "time_pt": "5:20 PM",
+      "matched": true,
+      "contact_label": "Shelby Perezselsky",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Shelby Perezselsky regarding tutoring sessions for her daughter Amelia. The call went to voicemail, and Paola left a brief message asking Shelby to call back at a convenient time. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up again with Shelby to connect about tutoring for Amelia if no callback received",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Shelby Perezselsky about tutoring for her daughter Amelia (Pre-K, homeschool via Blue Ridge Academy charter). No callback time was set. Shelby is a charter-funded family who previously discussed needing foundational reading/math support since mom is juggling homeschooling Amelia with other young kids at home. Open with: 'Hi Shelby, this is [name] from A+ Tutoring following up on Paola's message about getting Amelia started with tutoring sessions \u2014 is now a good time to chat about scheduling?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation, so keep existing QTL - Charter status.",
+        "student_or_school_names_mentioned": [
+          "Amelia",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail following up on tutoring sessions for Amelia; awaiting callback from Shelby.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail following up on tutoring sessions for Amelia; awaiting callback from Shelby."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up again with Shelby to connect about tutoring for Amelia if no callback received",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1709,6 +1922,11 @@
       "number": "12139255266",
       "time_pt": "10:12 AM",
       "reason": "no transcript"
+    },
+    {
+      "number": "19092134868",
+      "time_pt": "5:06 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
