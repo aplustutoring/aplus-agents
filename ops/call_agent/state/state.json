@@ -594,9 +594,15 @@
     411128932,
     411408670,
     411426062,
-    411432907
+    411432907,
+    411468107,
+    411476646,
+    411497174,
+    411514497,
+    411518737,
+    411524673
   ],
-  "last_run_utc": "2026-09-03T18:26:17.589163+00:00",
+  "last_run_utc": "2026-09-03T21:16:12.097736+00:00",
   "pending_digest": [
     {
       "call_id": 411426062,
@@ -690,12 +696,604 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 411468107,
+      "number": "18186428228",
+      "time_pt": "11:38 AM",
+      "matched": true,
+      "contact_label": "Kasgarli,Emel N/A",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Miran Mavlan called about prep tutoring for her 5th-grade daughter Aliye (currently at Haskell magnet) for the North Hollywood STEM Magnet Science Academy entrance exam in early December. Paola explained the process: diagnostic first, then specialist call to design a schedule, one tutor covering both math and science, online only, $95/hr with package discounts. Miran emphasized time pressure and wants the tutor with the highest passing rate for this specific exam. Paola committed to emailing rates and the diagnostic today and sending a confirmation text.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Miran (bilge306@hotmail.com) the current rates and the diagnostic exam link for Aliye today",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Miran a confirmation text after the email goes out so she knows to check her inbox",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once diagnostic is returned, book a specialist call to review results and propose a schedule",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Flag to scheduling: match Aliye with the tutor who has the strongest track record prepping students for the North Hollywood STEM Magnet Science Academy entrance exam (parent open to a higher rate for the best tutor)",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Correct the parent contact name in HubSpot from 'Miran Mavlan' to 'Miran Mavlan'",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Kasgarli, Emel",
+            "correct": "Miran Mavlan"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Miran Mavlan (mom, warm and engaged but time-crunched) called about her 5th-grade daughter Aliye, currently at Haskell magnet, prepping for the North Hollywood STEM Magnet Science Academy entrance exam in early December. Paola promised to email rates and the diagnostic today to bilge306@hotmail.com and follow up with a confirming text. Quoted $95/hr online with package discounts; explained one tutor covers both math and science, after-school hours, online only. Aliye is a strong student (Stanford 10: 99th %ile science/ELA, 88th %ile math) \u2014 mom wants your BEST tutor for this specific exam and is willing to pay a higher rate; please surface the tutor with the strongest track record on this test. Note: HubSpot has the parent as 'Miran Mavlan' \u2014 correct name is Miran Mavlan. Next step is diagnostic return \u2192 specialist call. Open with: 'Hi Miran, this is ___ from A+ Tutoring following up on your call with Paola about Aliye's STEM Magnet prep \u2014 I want to make sure the diagnostic reached you and talk through timing since the exam is just a few weeks out.'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family; A+ is sending a diagnostic to evaluate the student before proposing a plan for STEM Magnet entrance-exam prep.",
+        "student_or_school_names_mentioned": [
+          "Aliye Mavlan",
+          "Haskell magnet school",
+          "North Hollywood STEM Magnet Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mom Miran Mavlan called about prepping her 5th-grade daughter Aliye (currently at Haskell magnet) for the North Hollywood STEM Magnet Science Academy entrance exam in early December. Aliye is a strong student (Stanford 10: 99th %ile science/ELA, 88th %ile math) but the family just learned of the exam and is crunched for time. Mom specifically wants our best/highest-track-record tutor for this entrance exam and is open to a higher rate.",
+          "what_we_can_do_to_help": "Send the diagnostic and current rates to bilge306@hotmail.com today (Paola also texting to confirm). After diagnostic returns, book specialist call to review and propose an after-school online schedule with one tutor covering both math and science. Scheduling to prioritize matching Aliye with the tutor with the strongest STEM Magnet entrance-exam track record. Quoted $95/hr online with package discounts.",
+          "student_first_name": "Aliye",
+          "student_last_name": "Mavlan",
+          "grade_level": "5",
+          "student_school": "Haskell magnet school",
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mom Miran Mavlan called about prepping her 5th-grade daughter Aliye (currently at Haskell magnet) for the North Hollywood STEM Magnet Science Academy entrance exam in early December. Aliye is a strong student (Stanford 10: 99th %ile science/ELA, 88th %ile math) but the family just learned of the exam and is crunched for time. Mom specifically wants our best/highest-track-record tutor for this entrance exam and is open to a higher rate."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send the diagnostic and current rates to bilge306@hotmail.com today (Paola also texting to confirm). After diagnostic returns, book specialist call to review and propose an after-school online schedule with one tutor covering both math and science. Scheduling to prioritize matching Aliye with the tutor with the strongest STEM Magnet entrance-exam track record. Quoted $95/hr online with package discounts."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Aliye"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Mavlan"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Haskell magnet school"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Miran (bilge306@hotmail.com) the current rates and the diagnostic exam link for Aliye today",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Miran a confirmation text after the email goes out so she knows to check her inbox",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once diagnostic is returned, book a specialist call to review results and propose a schedule",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Flag to scheduling: match Aliye with the tutor who has the strongest track record prepping students for the North Hollywood STEM Magnet Science Academy entrance exam (parent open to a higher rate for the best tutor)",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Correct the parent contact name in HubSpot from 'Miran Mavlan' to 'Miran Mavlan'",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 411476646,
+      "number": "13108941830",
+      "time_pt": "12:02 PM",
+      "matched": true,
+      "contact_label": "Hope Mclendon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed another outbound follow-up call to Hope regarding Luna's unpaid 20-hour package renewal; reached voicemail. Yolanda left a message explaining A+ can no longer hold Luna's lesson slot on the calendar since two lessons (8/19 and 8/31) have already been taken against the unpaid renewal. She said she'd text the details and call back around 4pm to check in on whether the family wants to resume. No payment or decision confirmed on this call.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Text Hope the details about the two lessons already taken (8/19 and 8/31) against the unpaid renewal and that Luna's slot can no longer be held",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Call Hope back around 4pm today to confirm whether the family wants to resume lessons and complete payment",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "If reached, also try Josh directly at 310-800-6569 to close out payment on the 20-hour package",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Release Luna's standing lesson slot on the calendar since the renewal remains unpaid",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Existing customer follow-up \u2014 Luna's family (mom Hope Mclendon, dad Josh) still hasn't completed payment on the 20-hour renewal, but Luna has already taken two lessons against it (8/19 and 8/31). Yolanda left a voicemail today letting Hope know we can't keep Luna's recurring slot on the calendar any longer, promised a text with the details, and told her she'd call back around 4pm. Hope now expects (1) a text laying out the two used lessons + payment link and (2) a 4pm callback from Yolanda. If Hope doesn't pick up at 4pm, try Josh directly at 310-800-6569. Ocean (age 5, sister) is still waiting to be enrolled once payment clears. Suggested opener: 'Hi Hope, it's Yolanda following up on the voicemail and text from earlier \u2014 wanted to see how you'd like to move forward with Luna's lessons so we can get her back on the calendar.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an active deal/renewal cycle \u2014 lead status is owned by the deal pipeline and should not be changed from a billing follow-up call.",
+        "student_or_school_names_mentioned": [
+          "Luna"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda placed another outbound follow-up to Hope on Luna's unpaid 20-hour renewal; reached voicemail. Left a message explaining A+ can no longer hold Luna's calendar slot because two lessons (8/19 and 8/31) have already been taken against the unpaid package, and said she'd text the details and call back around 4pm.",
+          "what_we_can_do_to_help": "Text Hope a summary of the two lessons already taken against the unpaid renewal plus the payment link, then call back at 4pm today. If Hope doesn't answer, try Josh directly at 310-800-6569. Release Luna's standing calendar slot until payment is resolved; once payment clears, restore Luna's schedule and finalize Ocean's enrollment (30-min reading sessions).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda placed another outbound follow-up to Hope on Luna's unpaid 20-hour renewal; reached voicemail. Left a message explaining A+ can no longer hold Luna's calendar slot because two lessons (8/19 and 8/31) have already been taken against the unpaid package, and said she'd text the details and call back around 4pm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Text Hope a summary of the two lessons already taken against the unpaid renewal plus the payment link, then call back at 4pm today. If Hope doesn't answer, try Josh directly at 310-800-6569. Release Luna's standing calendar slot until payment is resolved; once payment clears, restore Luna's schedule and finalize Ocean's enrollment (30-min reading sessions)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Hope the details about the two lessons already taken (8/19 and 8/31) against the unpaid renewal and that Luna's slot can no longer be held",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Call Hope back around 4pm today to confirm whether the family wants to resume lessons and complete payment",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "If reached, also try Josh directly at 310-800-6569 to close out payment on the 20-hour package",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Release Luna's standing lesson slot on the calendar since the renewal remains unpaid",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411497174,
+      "number": "18184233444",
+      "time_pt": "12:30 PM",
+      "matched": true,
+      "contact_label": "Young ho Yoo",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola (A+) called Young ho Yoo to follow up on his tutoring inquiry. Young confirmed he wants Science Academy test prep for his 5th-grade son Kyle and Algebra 1 tutoring for his 7th-grade daughter Kaylee, both online. Paola explained the $95/hr rate, package discounts, and the free diagnostic process, and committed to emailing the diagnostics for both students plus package pricing. Young was engaged and wants to move forward quickly.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Young ho the Science Academy prep diagnostic exam for Kyle (5th grade) and the Algebra 1 diagnostic for Kaylee (7th grade).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Young ho the package pricing options via email for review.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once diagnostics are returned, book a test review call with the specialist to recommend a plan.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Young ho Yoo (dad) was warm and ready to move forward. He has two students: son Kyle Yoo, 5th grade at Porter Ranch Community School, needs Science Academy entrance exam prep; daughter Kaylee Yoo, 7th grade, needs Algebra 1 tutoring. All online. Paola quoted $95/hr and told him packages give a better rate, can be shared across both kids, and don't expire \u2014 pricing is being emailed. She promised to send the Science Academy diagnostic for Kyle and an Algebra 1 diagnostic for Kaylee (both free); next step after they complete them is a test-review call with a specialist to map out the plan. Young expects the diagnostics and pricing in his inbox today. When following up, open with: 'Hi Young, checking in \u2014 did you get the diagnostics and pricing Paola sent for Kyle and Kaylee? Happy to walk you through the packages and get the review call on the calendar.'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family; diagnostics are being sent for both Science Academy prep (Kyle) and Algebra 1 (Kaylee) before A+ proposes a plan.",
+        "student_or_school_names_mentioned": [
+          "Kyle Yoo",
+          "Kaylee Yoo",
+          "Porter Ranch Community School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Young ho confirmed two students: son Kyle Yoo (5th, Porter Ranch Community School) needs Science Academy entrance exam prep, and daughter Kaylee Yoo (7th) needs Algebra 1 tutoring. Wants online, one-on-one, and is ready to move forward quickly.",
+          "what_we_can_do_to_help": "Paola quoted $95/hr online and explained shareable, non-expiring packages. Sending Science Academy diagnostic for Kyle and Algebra 1 diagnostic for Kaylee, plus pricing; after diagnostics are completed, book a specialist test-review call to recommend the plan.",
+          "student_first_name": null,
+          "student_last_name": "Yoo",
+          "grade_level": "5",
+          "student_school": "Porter Ranch Community School",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Young ho confirmed two students: son Kyle Yoo (5th, Porter Ranch Community School) needs Science Academy entrance exam prep, and daughter Kaylee Yoo (7th) needs Algebra 1 tutoring. Wants online, one-on-one, and is ready to move forward quickly."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted $95/hr online and explained shareable, non-expiring packages. Sending Science Academy diagnostic for Kyle and Algebra 1 diagnostic for Kaylee, plus pricing; after diagnostics are completed, book a specialist test-review call to recommend the plan."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Yoo"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Young ho the Science Academy prep diagnostic exam for Kyle (5th grade) and the Algebra 1 diagnostic for Kaylee (7th grade).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Young ho the package pricing options via email for review.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once diagnostics are returned, book a test review call with the specialist to recommend a plan.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411514497,
+      "number": "12098171687",
+      "time_pt": "1:00 PM",
+      "matched": true,
+      "contact_label": "Sarah Sheridan",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Sarah Sheridan for their booked meeting to follow up on tutoring interest for her two children. Sarah shared that Blake (4th grade, IEP, dyslexia) needs reading comprehension and basic math help, and Chase (2nd grade, possibly dyslexic) needs significant reading support and confidence building. Both attend Visions Academy (charter), and Holly Oregel is their teacher who referred A+. Paola quoted the charter rate ($75/hr or $60/45min, splittable into 30-min sessions), and Sarah agreed to a 1-hour weekly session for Blake and two 30-minute sessions for Chase. Paola will email Sarah with rates and loop in Holly to request the PO.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Sarah the rates/pricing email and cc Holly Oregel (horegel@ziedu.org) to request PO for Blake (1 hour/week) and Chase (two 30-min sessions/week)",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is approved, begin tutor matching for Blake (reading comprehension + basic math) and Chase (reading, letter recognition, fluency)",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Collect Sarah's preferred days/times for sessions to coordinate tutor availability",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sarah Sheridan is a warm, engaged Visions Academy charter parent referred by teacher Holly Oregel (horegel@ziedu.org). She has two kids: Blake (4th grade, IEP, dyslexia \u2014 needs reading comprehension and basic addition/subtraction help) and Chase (2nd grade, possibly dyslexic but not tested yet by choice, reading at ~kindergarten level, struggles with letter recognition/sounds, atrocious handwriting, easily overwhelmed). Paola quoted the charter rate ($75/hr or $60/45min, splittable). Agreed plan: 1-hour/week for Blake, two 30-min sessions/week for Chase. Paola committed to sending a pricing email to Sarah with Holly cc'd to kick off the PO. Sarah expects that email shortly and then to be matched with tutors and scheduled. Open with: 'Hi Sarah, following up on the note Paola sent you and Holly about Blake and Chase \u2014 wanted to check in on the PO and get your preferred days/times so we can start tutor matching.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via charter (Visions Academy) instructional funds; already correctly set to QTL - Charter and confirmed on this call.",
+        "student_or_school_names_mentioned": [
+          "Blake Sheridan",
+          "Chase Sheridan",
+          "Visions Academy",
+          "Holly Oregel"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with Sarah about her two kids at Visions Academy. Blake (4th grade, IEP, dyslexia) needs reading comprehension support and help with basic addition/subtraction \u2014 not at grade level, wants to build confidence. Chase (2nd grade, suspected dyslexia but not yet tested by parent's choice) is reading at roughly kindergarten level, struggles with letter recognition/sounds/handwriting, and gets overwhelmed easily \u2014 recently scored 118/211 on a fluency test.",
+          "what_we_can_do_to_help": "Charter-funded tutoring at $75/hr (or $60/45min), splittable. Agreed plan: 1 hour/week for Blake and two 30-minute sessions/week for Chase (shorter blocks due to attention span). Paola to email Sarah with rates and cc teacher Holly Oregel (horegel@ziedu.org) to request the PO, then scheduling will match tutors and coordinate days/times.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Visions Academy",
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": "Holly Oregel",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with Sarah about her two kids at Visions Academy. Blake (4th grade, IEP, dyslexia) needs reading comprehension support and help with basic addition/subtraction \u2014 not at grade level, wants to build confidence. Chase (2nd grade, suspected dyslexia but not yet tested by parent's choice) is reading at roughly kindergarten level, struggles with letter recognition/sounds/handwriting, and gets overwhelmed easily \u2014 recently scored 118/211 on a fluency test."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Charter-funded tutoring at $75/hr (or $60/45min), splittable. Agreed plan: 1 hour/week for Blake and two 30-minute sessions/week for Chase (shorter blocks due to attention span). Paola to email Sarah with rates and cc teacher Holly Oregel (horegel@ziedu.org) to request the PO, then scheduling will match tutors and coordinate days/times."
+        ],
+        [
+          "student_school",
+          "Visions",
+          "Visions Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Holly Oregel"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "how_did_you_hear",
+          "From my School",
+          "From my Charter School",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send Sarah the rates/pricing email and cc Holly Oregel (horegel@ziedu.org) to request PO for Blake (1 hour/week) and Chase (two 30-min sessions/week)",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once PO is approved, begin tutor matching for Blake (reading comprehension + basic math) and Chase (reading, letter recognition, fluency)",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Collect Sarah's preferred days/times for sessions to coordinate tutor availability",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411524673,
+      "number": "15627250152",
+      "time_pt": "1:16 PM",
+      "matched": true,
+      "contact_label": "Kaati Coppel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Kaati Coppel to follow up on her interest in tutoring for her three children: Lofi (5th grade, math and writing), Niua (2nd grade, math facts and writing), and Bo (kindergarten, phonics/sight words/letter recognition). They are a Taylion charter family. Paola explained the charter rate ($75/hr, $37.50 per 30-min), the Lesson Space online platform, assessments, and the tutor-matching process. Kaati is prioritizing in-person tutoring in San Pedro (which A+ does not offer) but is open to a free online trial; she asked Paola to save her info and email the details. No trial was booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Kaati a recap with pricing ($75/hr charter rate, $37.50 per 30 min), how online sessions work on Lesson Space, and the assessment links for Lofi (5th \u2013 math & writing) and Niua (2nd \u2013 math & writing)",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Kaati in about a week to see if she wants to move forward with a free online trial while she waits on in-person options",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Update HubSpot with corrected student names/needs: Lofi (5th, math & writing), Niua (2nd, math facts & writing), Bo (K, phonics/sight words/letter recognition)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Lofu",
+            "correct": "Lofi"
+          },
+          {
+            "wrong": "Noah",
+            "correct": "Niua"
+          },
+          {
+            "wrong": "Bill",
+            "correct": "Bo"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Kaati Coppel is a Taylion charter parent with three kids: Lofi (5th \u2013 math & writing, currently using IEW elsewhere, struggles with division and writing), Niua (2nd \u2013 math facts and writing), and Bo (kindergarten \u2013 phonics, sight words, letter recognition). Tone was warm and interested. Paola quoted the charter rate of $75/hr ($37.50 per 30 min), explained Lesson Space, tutor matching, and assessments, and offered a free 1-hour trial (splittable across students). Kaati is prioritizing in-person tutoring in San Pedro (we don't cover that area) before committing, but was open to an online trial and asked us to email her info. She now expects an email recap with pricing, platform details, and assessment links for Lofi and Niua. Open with: 'Hi Kaati, Paola here following up \u2014 I just sent over the info and assessments we talked about for Lofi and Niua; whenever you're ready, I can set up that free trial online while you keep looking for in-person options.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Family is a Taylion charter family; already correctly set to QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "Lofi",
+          "Niua",
+          "Bo",
+          "Taylion"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with Kaati. Confirmed three students at Taylion: Lofi (5th \u2013 math & writing, struggling with division and writing, currently using IEW), Niua (2nd \u2013 math facts and writing), and Bo (kindergarten \u2013 phonics, sight words, letter recognition). Kaati is prioritizing in-person tutoring in San Pedro and waiting on callbacks before committing, but is open to trying online with us.",
+          "what_we_can_do_to_help": "Email Kaati pricing recap ($75/hr charter rate, $37.50 per 30 min), Lesson Space overview, and assessments for Lofi and Niua. Offer a free 1-hour online trial (splittable across students) and follow up in about a week to check on her in-person search and interest in the trial.",
+          "student_first_name": "Lofi",
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": "Taylion",
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with Kaati. Confirmed three students at Taylion: Lofi (5th \u2013 math & writing, struggling with division and writing, currently using IEW), Niua (2nd \u2013 math facts and writing), and Bo (kindergarten \u2013 phonics, sight words, letter recognition). Kaati is prioritizing in-person tutoring in San Pedro and waiting on callbacks before committing, but is open to trying online with us."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Email Kaati pricing recap ($75/hr charter rate, $37.50 per 30 min), Lesson Space overview, and assessments for Lofi and Niua. Offer a free 1-hour online trial (splittable across students) and follow up in about a week to check on her in-person search and interest in the trial."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Lofu, Niua and Bo",
+          "Lofi",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Email Kaati a recap with pricing ($75/hr charter rate, $37.50 per 30 min), how online sessions work on Lesson Space, and the assessment links for Lofi (5th \u2013 math & writing) and Niua (2nd \u2013 math & writing)",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Kaati in about a week to see if she wants to move forward with a free online trial while she waits on in-person options",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Update HubSpot with corrected student names/needs: Lofi (5th, math & writing), Niua (2nd, math facts & writing), Bo (K, phonics/sight words/letter recognition)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "13237061274",
       "time_pt": "10:50 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "15627250152",
+      "time_pt": "1:15 PM",
       "reason": "hang-up"
     }
   ],
