@@ -11,19 +11,28 @@ invoice to the school in the OPS portal -> net 30.
 The submit step happens in OPS, which we cannot read, so HubSpot only knows
 about it if someone records it. And the rule for WHEN to submit (Roman,
 2026-09-02) is "at least one day past the invoice due date" — but the due date
-lives on the Teachworks invoice, not in HubSpot. `invoice_due_date` exists on
-the deal and was populated on 75 of 157 26/27 deals, never by an agent.
+lives on the Teachworks invoice, not in HubSpot. `lessons_fulfilled_date` exists on
+the deal was populated on 75 of 157 26/27 deals, never by an agent.
 
 So: copy the authoritative due date across. That turns "what should Kath submit
 today?" into a plain HubSpot view she can keep open:
 
     Pipeline is a charter pipeline
-    Invoice #            is known
-    Invoice Submitted Date  is empty
-    Invoice Due Date     is before today
+    Invoice #                        is known
+    Invoice Submitted Date           is empty
+    Expected Lessons Fulfilled Date  is before today
 
 No new property, no new tool for her to learn, and the date comes from the
 system that actually owns it.
+
+Target field: `lessons_fulfilled_date` ("Expected Lessons Fulfilled Date"),
+which docs/PO-PROCESS.md already defines as "the last day of the PO's service
+month - the invoice due date. Prefilled by the agent; Kath confirms." It was
+never actually prefilled by anything until now.
+
+NOT `invoice_due_date`: despite the better label, HubSpot reports it
+readOnlyValue=True and rejects every write with READ_ONLY_VALUE. It is a
+HubSpot-managed field, not ours to set.
 
 Read-only against Teachworks. Writes exactly one HubSpot field.
 
@@ -98,7 +107,7 @@ def hs_charter_deals(since: dt.datetime) -> list[dict]:
             {"propertyName": "createdate", "operator": "GTE",
              "value": str(int(since.timestamp() * 1000))},
             {"propertyName": "pipeline", "operator": "IN", "values": CHARTER_PIPELINES}]}],
-            "properties": ["dealname", "invoice__", "invoice_due_date",
+            "properties": ["dealname", "invoice__", "lessons_fulfilled_date",
                            "invoice_submitted_date", "dealstage", "amount",
                            "hubspot_owner_id"], "limit": 100}
         if after:
@@ -127,7 +136,7 @@ def as_date(v) -> dt.date | None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--apply", action="store_true", help="write invoice_due_date")
+    ap.add_argument("--apply", action="store_true", help="write lessons_fulfilled_date")
     ap.add_argument("--since", default="2026-08-01", help="school year start")
     ap.add_argument("--debug", action="store_true", help="print TW invoice shape")
     args = ap.parse_args()
@@ -182,7 +191,7 @@ def main() -> None:
         if not due:
             unmatched.append(d)
             continue
-        if as_date(prop(d, "invoice_due_date")) != due:
+        if as_date(prop(d, "lessons_fulfilled_date")) != due:
             to_stamp.append((d, due))
 
     print(f"  invoice # stamped, due date found : {len(deals) - len(unmatched)}")
@@ -211,19 +220,19 @@ def main() -> None:
               f"inv#{prop(d,'invoice__'):<8}{d['properties']['dealname'][:42]}")
 
     if not args.apply:
-        print(f"\nDRY RUN — would write invoice_due_date on {len(to_stamp)} deals.")
+        print(f"\nDRY RUN — would write lessons_fulfilled_date on {len(to_stamp)} deals.")
         return
 
     ok = 0
     for d, due in to_stamp:
         r = requests.patch(f"https://api.hubapi.com/crm/v3/objects/deals/{d['id']}",
                            headers=H, timeout=30,
-                           json={"properties": {"invoice_due_date": due.isoformat()}})
+                           json={"properties": {"lessons_fulfilled_date": due.isoformat()}})
         if r.status_code < 300:
             ok += 1
         else:
             print(f"   FAIL {d['id']}: {r.status_code} {r.text[:90]}")
-    print(f"\nstamped invoice_due_date on {ok}/{len(to_stamp)} deals")
+    print(f"\nstamped lessons_fulfilled_date on {ok}/{len(to_stamp)} deals")
 
 
 if __name__ == "__main__":
