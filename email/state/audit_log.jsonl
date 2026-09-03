@@ -24045,3 +24045,6 @@
 {"message_id": "parent-chase-resolved:64595424038", "source": "po_inbox", "action_taken": "parent_chase_resolved", "deal_id": "64595424038", "thread_id": "1a06570b7e5f929d", "resolved_via": "deal no longer NEEDS PARENT (human fixed)", "timestamp": "2026-09-03T16:21:43.433444+00:00"}
 {"message_id": "parent-chase-resolved:64602093180", "source": "po_inbox", "action_taken": "parent_chase_resolved", "deal_id": "64602093180", "thread_id": "1a06570b7e5f929d", "resolved_via": "deal no longer NEEDS PARENT (human fixed)", "timestamp": "2026-09-03T16:21:43.567409+00:00"}
 {"message_id": "parent-chase-resolved:64600229770", "source": "po_inbox", "action_taken": "parent_chase_resolved", "deal_id": "64600229770", "thread_id": "1a06570b7e5f929d", "resolved_via": "deal no longer NEEDS PARENT (human fixed)", "timestamp": "2026-09-03T16:21:43.683337+00:00"}
+{"ticket_id": "48100078153", "thread_id": "11142572933", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-03T16:37:35.898052+00:00"}
+{"ticket_id": "48133212550", "thread_id": "11151935345", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-03T16:37:58.235767+00:00"}
+{"ticket_id": "48148568639", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-03T16:42:27.736562+00:00"}
