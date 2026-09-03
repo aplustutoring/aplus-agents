@@ -108,7 +108,7 @@ google_sheets:
 sms:
   enabled: true
   justcall_number: "+18188691627"   # the line schedulers answer; replies thread there
-  start_date: "2026-08-29"          # HARD fence: deals created before this never text
+  start_date: "2026-09-03"          # HARD fence: deals created before this never text (go-live day, Roman)
   send_hour_start_pt: 8             # quiet hours: no sends outside 8am-8pm PT
   send_hour_end_pt: 20
   fallback_alert: charter_admin     # role DM'd on 3x send failure / no owner match
