@@ -2246,3 +2246,13 @@ def test_prior_deal_lookup_requires_last_name(monkeypatch):
                         lambda f, l=None: [_deal("D1", "Luis Ramirez - Mateo")])
     assert po._find_parent_via_deals({"student_first": "Mateo",
                                       "student_last": ""}) is None
+
+
+def test_gmail_query_overlaps_behind_cursor():
+    # the Lia Beck miss (2026-08-28): a message landing behind the cursor was
+    # invisible to `after:` forever — the poll must query an overlap window
+    # before the cursor; already-processed dedupe absorbs the re-listed mail
+    assert po._inbox_query(1787953324, {"cursor_overlap_seconds": 3600}) \
+        == "in:inbox after:1787949724"
+    assert po._inbox_query(1787953324, {}) == "in:inbox after:1787949724"  # default 3600
+    assert po._inbox_query(100, {}) == "in:inbox after:0"                  # floor at 0

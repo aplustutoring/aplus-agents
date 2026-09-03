@@ -415,6 +415,36 @@ properties:
       group: tor
       type: date
       fieldType: date
+    - name: school_canonical
+      label: "[Agent] School"
+      group: tor
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/teacher_school_stamp.py, do not
+        edit by hand. Canonical charter school for a TEACHER contact, derived
+        from the charter deals the teacher is named on (teacher_of_record_email
+        → student_school) and normalised through
+        ops/hubspot-schema/school-aliases.yml. iLEAD is ONE bucket (Roman
+        2026-09-02). Falls back to the intake enumeration charter_school_teacher (LABEL), then a verified email domain; disagreements are reported.
+        Distinct from the family intake field student_school.
+    - name: generic_inbox
+      label: "[Agent] Generic Inbox"
+      group: tor
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by scripts/teacher_school_stamp.py, do not
+        edit by hand. Yes when the contact is a shared/role mailbox at a
+        school (purchasing@, invoices@, studentservices@, info@, noreply@ …)
+        rather than a person. Set from the email local-part. Teacher outreach
+        lists must EXCLUDE these (Roman 2026-09-02: "keep generic inboxes
+        separate"); PO/invoice routing may still want them.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     # — tutor —
     - name: tutor_roster_status
       label: "[Agent] Tutor Roster Status"
@@ -532,6 +562,8 @@ properties:
       options:
         - value: sage_oak_btsc_2026
           label: "Sage Oak BTSC 2026"
+        - value: blue_ridge_btsc_2026
+          label: "Blue Ridge BTSC 2026"
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events
@@ -575,6 +607,13 @@ properties:
           label: "Teacher"
         - value: support_staff
           label: "Support Staff"
+        # Blue Ridge BTSC 2026 opened the booth to families, not just school
+        # staff (Sage Oak was teachers only). Appended, never renamed — the
+        # three above stay exactly as they are.
+        - value: parent
+          label: "Parent"
+        - value: student
+          label: "Student"
     - name: aplus_booth_photo_url
       label: "[Agent] Booth Photo URL"
       group: events
@@ -585,6 +624,21 @@ properties:
         archive) and the event-photo backfill, do not edit by hand. Public URL
         of the contact's framed booth photo, used as the personalization token
         in event follow-up emails.
+    # EVENT-TEMP — Blue Ridge BTSC 2026 prize wheel only. Deliberately NOT in
+    # KEEPERS.md: it is single-event capture, not part of the agent vocabulary,
+    # and it should be reviewed for archive once the event is reconciled.
+    # aplus_booth_goal was NOT reused for this — that is photo-banner text and
+    # overloading it would corrupt the Sage Oak capture.
+    - name: aplus_booth_prize
+      label: "[Agent] Booth Prize Won"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by booth/blue-ridge/worker.js. Which prize the
+        visitor landed on at the Blue Ridge BTSC 2026 spin wheel. EVENT-TEMP:
+        single-event capture, not a keeper. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
     - name: aplus_marketing_consent
       label: "Booth Marketing Consent"
       group: events
@@ -659,7 +713,7 @@ properties:
       type: enumeration
       fieldType: booleancheckbox
     - name: school_name
-      label: "School Name"
+      label: "Teacher Scholarship Student School"   # relabeled in-portal 2026-09-02 (Roman); internal name is legacy, workflows unaffected
       group: dealinformation
       type: string
       fieldType: text

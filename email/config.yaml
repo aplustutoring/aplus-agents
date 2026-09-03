@@ -46,6 +46,8 @@ ticket_fields:
     tor_inquiry: "new_deal_po"
     school_partner: "new_deal_po"
     business_dev: "GENERAL_INQUIRY"
+    campaign_family: "GENERAL_INQUIRY"
+    campaign_school: "GENERAL_INQUIRY"
     scheduling: "GENERAL_INQUIRY"
     tutor_document: "Tutor Issue"
     recruitment: "GENERAL_INQUIRY"
@@ -155,6 +157,8 @@ routing:
   payment_dispute:     { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }
   school_partner:      { owner: sales,          sla_hours: 1.5, draft: true,  priority: high }
   business_dev:        { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
+  campaign_family:     { owner: charter_sales,  sla_hours: 1.5, draft: true,  priority: high }    # campaign replies: sign-ups/referrals (Roman 2026-08-27)
+  campaign_school:     { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # campaign replies from TORs/school staff
   tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
@@ -317,6 +321,10 @@ po_inbox:
   # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
   # original email (Roman, 2026-08-26) — nagging earlier is pure false alarm.
   pending_portal_approval_days: 14
+  # Gmail poll re-reads this many seconds BEFORE the cursor (the Lia Beck miss,
+  # 2026-08-28: a message landing behind the cursor was invisible forever).
+  # Re-listed mail is deduped by the audit log, so a wide window is free.
+  cursor_overlap_seconds: 3600
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales
@@ -445,7 +453,11 @@ escalation:
 # Pesters regardless of who owes the reply — an unanswered family is still ours.
 reasoner:
   enabled: true
-  allow_close: false          # flip on only after a dry run Roman has read
+  # Roman approved 2026-08-28 after reading the 2026-08-27 dry run (Actions run
+  # 33121995796): 158 tickets, 71 closes, and zero of the 13 hand-verified
+  # unresolved tickets touched. Closing still needs confidence >= the threshold
+  # below AND a verdict in RESOLVED / NO_ACTION / DUPLICATE.
+  allow_close: true
   close_min_confidence: 0.85  # closing needs a second system, not a hunch
   owner_after_hours: 24
   supervisor_after_hours: 48
@@ -453,11 +465,43 @@ reasoner:
   repeat_every_hours: 24      # daily drumbeat once the ladder starts
 
 aging_sweep:
-  enabled: true
+  # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
+  # hours, 59 of them from this sweep, and zero replies from her in the last 400
+  # messages. A targeted question about a $1,330 invoice scrolled out of view
+  # within a day. The reasoning sweep supersedes this — it asks whether a ticket
+  # is really open before it says anything, where this one only asks how old it
+  # is. Do not re-enable both at once.
+  enabled: false
   nag_after_days: 7          # open + untouched this long → DM the owner
   supervisor_after_days: 14  # also DM level2
   last_resort_after_days: 30 # also DM level3
   repeat_every_days: 7       # re-nag this often — the chain above pings once per level and then goes silent forever
+
+# Task-completion sweep (Roman 2026-08-28). Agents and humans create HubSpot
+# Tasks, but nothing ever read one back — an overdue task made no noise
+# anywhere. Weekday-morning digest to #agent-feedback (silent when clean),
+# owner DM only past dm_after_days, weekly on-time/late scoreboard on Mondays.
+task_sweep:
+  enabled: true
+  channel: "C0BL05MCJ4B"      # #agent-feedback (private; ID so the bot can post)
+  # seats, not names. charter_admin added 2026-08-31: she holds every
+  # PO→invoice task (the money path) and was the one seat nobody watched.
+  # Safe to watch only because autoclose_invoice_tasks (below) clears the
+  # phantoms first — ten of her open tasks were already-done invoices.
+  monitor: [visionary, sales, charter_sales, scheduler_a_l, charter_admin]
+  # An open "Convert PO to TW invoice" task whose deal already carries an
+  # Invoice # is DONE — close it instead of nagging. false = report only.
+  autoclose_invoice_tasks: true
+  invoice_task_marker: "Convert PO to TW invoice"
+  dm_after_days: 3            # overdue this long → DM the owner
+  dm_repeat_days: 3           # re-DM cadence (audit-log-held, like aging_sweep)
+  horizon_days: 30            # overdue past this = stale backlog: weekly count line
+                              # only, never itemized/DM'd. On 2026-08-28 the four
+                              # monitored owners held 717 open tasks, mostly
+                              # months-to-years old; nagging those buries the signal.
+  per_person_cap: 8           # digest lists at most this many tasks per owner
+  dm_list_cap: 10             # a DM itemizes at most this many; ONE DM per owner per run
+  weekly_stats_weekday: 0     # Monday → append last-7-days completion scoreboard
 
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]

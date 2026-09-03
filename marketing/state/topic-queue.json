@@ -15,7 +15,12 @@
       "roman_take": "The conviction cut \u2014 governance disruption is not an excuse to slow intervention; it's the reason to lock in evidence-based tutoring now, before compliance ambiguity eats the school year.",
       "danielle_take": "The implementation cut \u2014 the four operational questions a charter director should be asking her business office this week about Title I FY26-27 flow, and how to keep intervention plans on track through the transition.",
       "redundancy_max_similarity": 0.5508332820424889,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-29T11:34:09.574398-07:00",
+      "post_date": "2026-08-31",
+      "bundle_dir": "aplus-content/2026-08-31-title-i-labor-california-charters",
+      "hubspot_post_id": "220640356377"
     },
     {
       "slot": 2,
@@ -33,7 +38,12 @@
       "roman_take": "Conviction angle \u2014 the charter movement's job is not just to open more seats but to prove those seats produce readers and math thinkers; expansion is the easy part, reclassification and proficiency are the scoreboard.",
       "danielle_take": "Implementation angle \u2014 what a Year 1 charter should build into its intervention stack from Day 1 (MTSS scaffolding, NWEA baseline, Title I/II/III braid, small-group tutoring cadence) so it doesn't inherit its neighbor's proficiency gap.",
       "redundancy_max_similarity": 0.6811799764202109,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-29T11:51:46.374553-07:00",
+      "post_date": "2026-09-02",
+      "bundle_dir": "aplus-content/2026-09-02-ilead-flex-lancaster-year-one",
+      "hubspot_post_id": "220641035119"
     },
     {
       "slot": 3,
@@ -50,7 +60,12 @@
       "roman_take": "Conviction post \u2014 the tutoring industry spent five years mistaking scale for effectiveness, and the bill just came due. Districts are not anti-tutoring; they are anti-vague.",
       "danielle_take": "Implementation post \u2014 what a charter director should ask their next tutoring vendor on Monday morning (reclassification rate targets, per-student progress reporting cadence, exit criteria). Concrete replacement-vendor checklist. ---",
       "redundancy_max_similarity": 0.4280703963052539,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-08-29T12:15:20.143431-07:00",
+      "post_date": "2026-09-04",
+      "bundle_dir": "aplus-content/2026-09-04-varsity-tutors-shutdown-evidence",
+      "hubspot_post_id": "220644114799"
     }
   ],
   "slack": {

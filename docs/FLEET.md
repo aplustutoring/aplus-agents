@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**42 registered agents** — 29 active · 10 manual · 3 deprecated · across 11 engines.
+**43 registered agents** — 30 active · 10 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -38,7 +38,7 @@ outranks those two. HubSpot is where humans act.
 |---|---|---|
 | B2B blogs | 6 | 3 |
 | B2C spotlights | 5 | 2 |
-| Email / inbox ops | 9 | 9 |
+| Email / inbox ops | 10 | 10 |
 | Data sync | 3 | 3 |
 | Call agent | 1 | 1 |
 | Messenger | 2 | 1 |
@@ -54,7 +54,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (17):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
-**Reports, drafts, or waits for a human (12):** `topic-gen`, `blog-metrics`, `feedback-agent`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
+**Reports, drafts, or waits for a human (13):** `topic-gen`, `blog-metrics`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
 **Manual dispatch only (10):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
 
@@ -98,7 +98,9 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **email-sla-sweep**<br>SLA sweep | hourly | active | HubSpot:tickets | Slack, HubSpot:tickets |
 | **email-triage**<br>Inbox triage | every 15 min during business hours + hourly | active | HubSpot:conversations, HubSpot:contacts, Teachworks | HubSpot:tickets, HubSpot:conversations(comment), Slack |
 | **email-weekly-digest**<br>Weekly digest | Mon 8 AM PT | active | HubSpot:tickets, email/state/audit_log.jsonl | Slack |
+| **task-completion-sweep**<br>Task-completion sweep (team HubSpot tasks) | weekdays 8 AM PT | active | HubSpot:tasks, email/state/audit_log.jsonl | Slack, email/state/audit_log.jsonl |
 
+- **task-completion-sweep** — First agent to READ HubSpot Tasks back (two agents create them; nothing checked completion)
 - **email-po-inbox** — Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
 - **email-deal-sync** — Invoice sweep (daily 9 AM PT inside this workflow): active charter PO deals — attended TW hours >= PO hours → prompt Kath to submit to the school's ops system now, else prompt at end of PO month (lessons_fulfilled_date)
 - **email-po-daily-report** — Read-only + one DM

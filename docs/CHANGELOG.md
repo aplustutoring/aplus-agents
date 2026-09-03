@@ -8,6 +8,471 @@ Newest entries first.
 
 ---
 
+## 2026-09-02 — Campaign routing logged as #AP046
+
+**What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+
+Decision Log as **#AP046**, and marked the staging entry in
+`ops/fleet-health/audit/reports/decision-log-draft.txt` as appended so it cannot
+be posted twice.
+
+**Why:** CLAUDE.md requires a Decision Log entry when a decision is locked; the
+routing table was amended twice in three days. The number was read from the live
+document rather than guessed: the Doc was at #AP045, while the in-repo staging
+file was stale at #AP017 and code references reached #AP044.
+
+**Note for a future session:** the staging file's format (pipe-separated header,
+wrapped field bodies) does NOT match the live Doc, which uses
+`Month DD, YYYY · #APxxx` with single-line fields. Match the Doc when appending.
+Also worth revisiting: #AP044's STATUS still says NSSA badge assets and usage
+guidelines are unconfirmed. Both are now in hand as of this campaign.
+
+**Files:** `ops/fleet-health/audit/reports/decision-log-draft.txt`,
+`docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-02 — Teachworks invoice due dates sync to the deal, so "ready to submit" is a HubSpot view
+
+**What changed**
+- `scripts/tw_invoice_due_sync.py` — new. Reads Teachworks invoice due dates,
+  matches them to 26/27 charter deals on `Invoice #`, writes `invoice_due_date`.
+- `.github/workflows/tw-invoice-due-sync.yml` — new. Manual (dry-run default)
+  plus 6am PT weekdays.
+
+**Why**
+Roman locked the rule on 2026-09-02: **an invoice is ready to submit once it is
+at least one day past its due date.** Simpler than anything proposed before it —
+no Teachworks hours lookup, no service-month inference.
+
+The catch was that the due date lives on the Teachworks invoice, submission
+happens in the OPS portal (which we cannot read), and HubSpot knew neither.
+`invoice_due_date` already exists on the deal, correctly labelled, populated on
+75 of 157 26/27 deals and never written by an agent.
+
+Copying the authoritative date across turns "what should Kath submit today?"
+into a plain saved view she can keep open:
+
+    Invoice #              is known
+    Invoice Submitted Date is empty
+    Invoice Due Date       is before today
+
+No new property, no new tool for her to learn, and the date comes from the
+system that owns it. Deliberately chose `invoice_due_date` over
+`lessons_fulfilled_date` — the latter is an *expected* date the PO doc has Kath
+confirm, not the invoice's actual due date.
+
+**What the rule showed on real data**
+Applying it by hand first (joining the 2026-09-01 Teachworks xref to HubSpot):
+of 138 invoiced-but-unsubmitted 26/27 deals, **1 is genuinely past due** —
+invoice 54421, Angela Czaja / Charlotte Czaja, Heartland, due 2026-08-14, $300.
+The other 91 matched deals are simply not due yet. The $31,974 previously
+described as "delivered but not billed" was mostly not billable.
+
+46 deals had no due date on file because the xref only covered families with PO
+deals since 2026-08-07. That blind spot is exactly what this sync removes.
+
+**Files touched**
+- `scripts/tw_invoice_due_sync.py`
+- `.github/workflows/tw-invoice-due-sync.yml`
+- `docs/CHANGELOG.md`
+
+**Verification** — script and workflow parse; dry run is the default and the
+Teachworks side is read-only. Needs a dry run in Actions (tokens are Actions
+secrets) before the first `--apply`.
+
+**Decision log** — candidate: "an invoice is ready to submit once it is at least
+one day past its due date; the due date is the Teachworks invoice's, synced to
+`invoice_due_date`."
+
+---
+
+## 2026-09-02 (evening) — CORRECTION: deal `school_name` is a live Teacher Scholarship field, not dead; two test contacts deleted
+
+**What:** Reverses this morning's RETIRE call on deal property `school_name` in
+`deals-proposal.md` (KEEPER again, with the writer and readers named). Roman asked to
+archive it; the pre-archive look showed all 6 deals carrying it are in pipeline
+918901819 "Teacher Scholarship Program Tracking - Families", one created today. A scan
+of all 128 forms and 235 workflows found the writer: workflow 1861452046 "Teacher
+Scholarship – Create Student Deal per Form Submission" maps contact `student_school` →
+deal `school_name` on deal create, and WF-01 (1858089740) and WF-03 (1859135906) read
+`{{ enrolled_object.school_name }}` in their notification emails. Archiving would have
+silently blanked the school on every future Teacher Scholarship family deal and email.
+Not archived. Instead relabeled in-portal to "Teacher Scholarship Student School" (Roman, same session) so it reads as what it is; internal name `school_name` unchanged, so the three workflows are unaffected; `properties.yml` label updated to match. Also on Roman's instruction: soft-deleted two Teacher-persona test
+contacts created 2026-08-12 by the Teacher Scholarship alpha run, `daniellebrodetsky@
+gmail.com` (241417873326) and `hugh.jazz@gmail.com` (241380683818); no deals or
+associations; restorable 90 days. PR #160 merged (squash, c40c845).
+
+**Why the morning call was wrong:** the "nothing writes it" claim came from
+`grep`-ing the repo and counting charter-pipeline deals since Aug 2025. The writer is a
+HubSpot workflow, not repo code, and the deals are in a non-charter pipeline. Lesson,
+per the investigation rule: a "dead property" verdict needs a portal-wide writer scan
+(forms + workflows), not a repo grep + one pipeline. `find_school_name_writer.py`
+(session scratchpad) is the pattern; worth promoting into `ops/fleet-health/audit/`
+before the next retire pass.
+
+**Options if `school_name` should still go (Roman's call, not done):** remap workflow
+1861452046 to write `student_school`, update the two email bodies, then archive. Or
+leave it: it does a real job today.
+
+**Files:** `ops/hubspot-schema/consolidation/deals-proposal.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-02 (later) — School stamp widened to every teacher; generic inboxes flagged
+
+**What:** `scripts/teacher_school_stamp.py` v2 now resolves a teacher's school from
+three HubSpot sources in order of specificity, never guessing: (1) charter deals the
+teacher is named on, unanimous wins outright; (2) the contact intake enumeration
+`charter_school_teacher` (read as LABEL), which is filled on 1,075/1,086 teachers and
+agreed with deals 217/218 times — it now beats a SPLIT deal vote; (3) a verified email
+domain. Deal ↔ intake disagreements are reported. Network-level labels (IEM, Pacific
+Charter Institute, iLEAD) are not disagreements with their own schools. New
+`[Agent] Generic Inbox` (`generic_inbox`, boolean, `tor` group) is set to Yes from the
+email local-part (purchasing@, invoices@, studentservices@, info@, noreply@, vendors@,
+ap@ …) so teacher outreach lists can exclude shared mailboxes; they still get a school.
+Internal test contacts (@wetutorathome.com) and no-email contacts are skipped.
+`school-aliases.yml` grew to 32 canonical schools / 82 spellings / 32 domains: every
+intake label added as an alias; IEM and Pacific Charter Institute added as buckets for
+central-office staff; 9 new schools (Excel Academy Charter School, Julian Charter
+School, Springs Charter Schools, The Cottonwood School, BEST Academy, Epic California
+Academy, Brighton Hall School, + Rio Valley/Heritage Peak spellings). Run with
+`--all-tor --execute`: **922 contacts written (921 school, 30 generic flag)**, 157
+already correct from the morning run, **6 unresolved**, 2 skipped. Re-run: 0 pending.
+
+**Why:** Roman 2026-09-02: "Widen the script … you have to be smart, the excel academy
+emails are for excel academy maybe their email domain is different from web, assume
+nothing. Figure out a way to keep generic inboxes separate." The morning `--all-tor`
+dry run left 113 unresolved on domains not in the alias file. Rather than assume a
+domain = a school, each new domain was verified two ways: the contacts' own intake
+label agreed with the domain 100% (excelacademy.education = Excel 26/26, jcs-inc.org =
+Julian 15/15, springscs.org = Springs 14/14, …) and the domain's website title named
+the school (curl, `<title>`). Vendors are deliberately not schools: dennis@mrdmath.com
+stays unresolved.
+
+**Unresolved (6), left alone on purpose:** 5 personal Gmail/Yahoo addresses with the
+teacher persona and no intake label (one is Danielle's own personal Gmail, one is
+"Hugh Jazz" — persona hygiene), and the Mr. D Math vendor. **Skipped (2):** Joyce
+Showers (no email), paola+testheartlandef@ (test). **One disagreement:**
+jedge@ieminc.org — deals split iLEAD 4 / South Sutter 3, intake says IEM → IEM.
+
+**Files:** `scripts/teacher_school_stamp.py`, `ops/hubspot-schema/school-aliases.yml`,
+`ops/hubspot-schema/properties.yml` (generic_inbox declared + school_canonical
+description), `ops/fleet-health/audit/backups/2026-09-02-teacher-school-stamp/`
+(pre-write backup for the 922), `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-02 — Teachers get a canonical school; iLEAD is one bucket; `school_name` retired (#AP-pending)
+
+**What:** Teacher (TOR/EF/ES) contacts now carry `[Agent] School` (`school_canonical`,
+`tor` group, declared in `properties.yml`, created in-portal by `create_properties.py`).
+It is derived from the charter DEALS the teacher is named on
+(`teacher_of_record_email` → `student_school`), not from the Family↔TOR association,
+and normalised through a new shared lookup `ops/hubspot-schema/school-aliases.yml`
+(23 canonical schools, 46 raw spellings, 17 email-domain fallbacks). New script
+`scripts/teacher_school_stamp.py` (read-only by default, `--execute` writes with a
+pre-write backup, `--all-tor` widens from list 3110 to every TOR persona). First run
+stamped all **159** contacts on list 3110 (157 via deals, 2 via domain, 0 unresolved,
+0 unknown spellings). In `deals-proposal.md`, deal property `school_name` flips from
+KEEPER to RETIRE (6 deals all-time, 0 since Aug 2025, nothing writes it; archive
+in-portal is Roman's action).
+
+**Why:** Roman 2026-09-02, after the Pile 1 breakdown: teacher contacts had no usable
+school (`student_school` filled on 15/159, `company` 26/159), so every teacher cut was
+an email-domain guess. Deal analysis showed `student_school` is 96% filled on 2,377
+charter deals since Aug 2025 but under 50 spellings, 14 of them iLEAD (63% of deals).
+Locked decisions: **iLEAD is ONE bucket** (Exploration / Hybrid / Antelope Valley /
+Lancaster / "California Charters" all → "iLEAD"); everything else stays school-level
+with `network` recorded informationally (IEM, Pacific Charter Institute). The alias
+file, not an enum, is the fix because `po_inbox` writes `student_school` free-text from
+the PO (locked rules 11-12) and an enum would break those writes. Unknown spellings
+are reported and skipped, never guessed, so the file stays complete.
+
+**Also this session (data, not code):** all 1,085 TOR-persona contacts reassigned to
+owner Danielle (227538487) on 2026-09-01 — 795 had been owned by deactivated staff
+(Janina 621, Melanie 167, Rafa 7). Pre-change owners backed up in the session
+scratchpad (`owners_backup_TOR_2026-09-01.json`).
+
+**Open:** `--all-tor` dry run reaches 973/1,086 (222 deal, 751 domain); 113 unresolved
+on unknown domains (excelacademy.education, brightonhallschool.org, …) — not executed,
+Roman approved Pile 1 only. Two Pile 1 rows are not teachers (`poinquiries@ieminc.org`
+shared inbox) — persona hygiene. `jedge@ieminc.org` resolves to iLEAD (4 deals) over
+South Sutter (3) — most-common rule, worth a human look.
+
+**Files:** `ops/hubspot-schema/school-aliases.yml` (new), `scripts/teacher_school_stamp.py`
+(new), `ops/hubspot-schema/properties.yml`, `ops/hubspot-schema/consolidation/deals-proposal.md`,
+`docs/CHANGELOG.md`.
+## 2026-09-02 — Campaign replies need evidence, not just timing
+
+**What:** `email/rules.md` gains a shared "Campaign replies: the evidence rule"
+section gating both `campaign_family` and `campaign_school`. A reply is campaign
+traffic only with positive evidence in the email itself: quoted campaign text, the
+campaign subject line, or an explicit mention of its subject matter (the Badge,
+NSSA, Stanford, the award). Timing and list membership are explicitly declared NOT
+evidence, with the common failure named outright (short pleasant notes: "Thank you
+so much!", "You're most welcome"). With no signal, the email is classified on its
+content and the campaign is ignored. Both category blocks point at the gate,
+`campaign_school` carries a worked negative example, and the NSSA block in Active
+campaigns records the real send dates plus a retire-when-replies-stop note.
+
+**Why:** Roman 2026-09-02. Of the first four replies the agent tagged as NSSA
+campaign traffic, Danielle confirmed Erica Porter's was ordinary tutoring
+correspondence, and Jaclyn Bershadsky's arrived before the leads send even went
+out. The original rules listed the positive signals but never said timing and list
+membership were insufficient, so the classifier filled the gap itself. Misrouting a
+real request into a courtesy lane costs more than missing a congratulations note.
+
+**Verified:** the live classifier was re-run against all three real emails.
+Erica Porter and Jaclyn Bershadsky now return `unknown` (human review) instead of a
+campaign category; Alyson Cruz's genuine Badge reply stays `campaign_school` with
+confidence rising 0.82 to 0.92. Suite green (355 passed).
+
+**Files:** `email/rules.md`, `docs/CHANGELOG.md`.
+## 2026-09-02 — NSSA campaign routing staged for the Decision Log
+
+**What:** Appended a draft entry to
+`ops/fleet-health/audit/reports/decision-log-draft.txt` covering both amendments
+to the LOCKED routing table: the `campaign_family` / `campaign_school` categories
+(PR #134) and the evidence rule that gates them (PR #159), recorded as one
+decision with its correction. Number left as #AP-NEXT: the Google Doc is the
+authority on the current sequence, and the staging file is stale at #AP017 while
+in-repo references already reach #AP044.
+
+**Why:** CLAUDE.md requires a Decision Log entry when a decision is locked, and
+the routing table has now been amended twice in three days. Roman assigns the
+number and appends via the existing Zapier Google Docs pipe.
+
+**Files:** `ops/fleet-health/audit/reports/decision-log-draft.txt`,
+`docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-01 — Call agent: scheduling-vs-follow-up task routing + name-correction propagation
+
+**What changed**
+- `ops/call_agent/call_agent.py`
+  - `SUMMARY_PROMPT` step 3 gains a routing taxonomy: every action item is
+    tagged `scheduling` (trial/session logistics) or `follow_up` (sales,
+    billing, complaints, partnerships), with the tie-breaker "who physically
+    does it — if it's whoever owns the calendar, it's scheduling".
+  - New `SUMMARY_PROMPT` step 8 + `name_corrections` schema field: the model
+    records any name the call corrected and must use the corrected name
+    everywhere. `_apply_name_corrections()` sweeps summary, action items,
+    handoff note, names-mentioned and the free-text record fields afterwards.
+  - `task_subject()` prefixes scheduling items with `[Scheduling] `;
+    `_resolve_owner()` takes a route and sends them to
+    `hubspot.scheduling_task_owner` when configured (that beats the
+    Roman-answered handoff rule — the handoff rule is about follow-up).
+  - Digest header counts scheduling-routed tasks separately.
+- `ops/call_agent/config.yml` — new `hubspot.scheduling_task_owner`, empty.
+- `ops/call_agent/tests/test_action_routing.py` — 19 new tests.
+- `ops/call_agent/README.md` — routing + name-correction behavior documented.
+
+**Why**
+Paola's 2026-09-01 correction (thread `1788290216.784979`): the agent was
+proposing tasks for scheduling-team work — send a tutor profile, text a family
+to confirm a trial, call back about a dropped transfer about a booked session —
+so they sat in her follow-up queue instead of the scheduling team's. Separately,
+a child's name corrected to "Autumn" on the call still went out under the old
+name in the next-step language: the prompt never said a correction has to
+propagate, and nothing enforced it after generation.
+
+**Open item for Roman**
+`scheduling_task_owner` ships EMPTY because nobody has confirmed the scheduling
+team's HubSpot owner id (Divyesh? a shared `scheduling@` seat?). Until it is
+set, scheduling items still land on Paola — but prefixed `[Scheduling] ` and
+counted separately in the digest, so they are sortable out of her queue today.
+Setting it is a one-line config edit once Roman confirms.
+
+---
+
+## 2026-08-31 — Blue Ridge BTSC 2026 "Spin Back to School" booth (schema PR)
+
+**What changed**
+- `ops/hubspot-schema/properties.yml` — 3 enum option additions + 1 new property:
+  `aplus_event_tag` gains `blue_ridge_btsc_2026`; `aplus_event_role` gains
+  `parent` and `student`; new `aplus_booth_prize` (single-line text, EVENT-TEMP).
+- `booth/blue-ridge/worker.js` — new Worker, HubSpot upsert only.
+- `booth/blue-ridge/test-worker.mjs` — 24 tests.
+- `booth/blue-ridge/{wrangler.toml,DEPLOY.md}`.
+
+**Why**
+Lead magnet for the Blue Ridge back-to-school event, modeled on the Sage Oak
+booth (`booth/`). Spin first, capture second: the prize is gated behind the
+redeem form. v1 is HubSpot capture only — no email, MMS or print, because the
+prize is physical and handed over at the table.
+
+`aplus_booth_prize` is new because nothing existing fits. `aplus_booth_goal` was
+NOT reused: it holds photo-banner text and overloading it would corrupt the Sage
+Oak capture. Kept out of KEEPERS.md deliberately — single-event capture, not
+agent vocabulary, and a review-for-archive candidate once the event is
+reconciled.
+
+`aplus_event_role` needed parent and student because Sage Oak was school staff
+only and this event is open to families. The original three options are
+untouched; the UI's "Teacher / School Staff" maps to `teacher`.
+
+**Two Sage Oak bugs fixed here**
+
+1. *Enum labels written instead of values.* The Sage Oak build wrote labels and
+   HubSpot silently rejected them. Writes now take internal values
+   (`teacher`, `blue_ridge_btsc_2026`, `"true"`), and the test asserts that no
+   human-facing label appears in any write payload, for every role.
+2. *Event tag overwritten instead of appended (#AP032).* `aplus_event_tag` is
+   `fieldType: checkbox`, so a flat PATCH replaces the whole set. Sage Oak's
+   Worker searches with `properties: ["email"]` and writes the tag flat —
+   correct as the only event, wrong the moment a second exists. This Worker
+   reads the current value and unions, so a returning Sage Oak attendee ends up
+   carrying both tags.
+
+**Schema gate.** `create_properties.py` does NOT run until Roman merges this PR.
+The Worker is safe to deploy first regardless: an unsynced property returns
+`PROPERTY_DOESNT_EXIST`, and the Worker drops that key and retries so the lead
+is still captured.
+
+**Files touched**
+- `ops/hubspot-schema/properties.yml`
+- `booth/blue-ridge/worker.js`, `test-worker.mjs`, `wrangler.toml`, `DEPLOY.md`
+- `docs/CHANGELOG.md`
+
+**Verification** — `node booth/blue-ridge/test-worker.mjs`: 24 passed. The tests
+read `properties.yml` directly, so a manifest and Worker that disagree fail.
+
+**Decision log** — #AP032 (append-only event tag) is now enforced in code and
+covered by a test. Candidate entry: "event-temp properties are declared in
+properties.yml but deliberately excluded from KEEPERS.md."
+
+---
+
+## 2026-08-31 — Task sweep: auto-close finished invoice tasks + watch Kath
+
+**What:** `task_sweep._autoclose_done_tasks` — an open "Convert PO to TW
+invoice" task whose deal already carries an `Invoice #` is DONE; the sweep
+closes it (audited `task_autoclosed`) BEFORE bucketing, so nobody is nagged
+about finished work. `charter_admin` (Kath) joins `task_sweep.monitor`.
+**Why:** on 2026-08-31 ten of her invoice tasks sat NOT_STARTED while every
+one of their invoices — 54528 through 54537, consecutive — was already
+created. She does the work; the task list keeps the phantom. Kath was also
+the ONE seat nobody monitored, and she holds the entire PO→invoice money
+path. Adding her without the auto-close would have shipped pure noise, so
+the order matters: close the phantoms first, then watch the seat.
+**Notes:** the PO parser anchors on the subject's trailing comma — a
+digit-leading rule silently skipped Blue Ridge's `PF593736`, and a bare
+`\bPO\s+` grabbed the literal "PO to" from "Convert PO to TW invoice"
+(caught by the first test run). Lookup failures never kill the sweep;
+`autoclose_invoice_tasks: false` reverts to report-only.
+**Files:** email/src/task_sweep.py, email/config.yaml,
+email/tests/test_task_sweep.py (6 new; suite 355 green).
+
+## 2026-08-28 — Task-completion sweep + 1,025-task backlog closure (#AP-pending)
+
+**What changed**
+- New agent `task-completion-sweep` — the first agent that READS HubSpot Tasks
+  back (two agents create them; nothing ever checked completion). Weekday
+  8 AM PT: digest to #agent-feedback per owner (overdue + due today, silent
+  when clean), ONE bundled DM per owner once a task is 3+ days overdue
+  (3-day audit-held cadence, never one DM per task), Monday on-time/late
+  completion scoreboard. Monitors seats visionary/sales/charter_sales/
+  scheduler_a_l (roles, not names). Deterministic — no CARE pointer.
+- 30-day horizon: tasks overdue longer are "stale backlog" — weekly count
+  line only, never itemized or DM'd. Day-one reality check: 717 open tasks
+  for the four seats, 246 overdue inside the horizon; per-task DMs would
+  have repeated the reasoner's 102-DM mistake.
+- Backlog remediation (Roman, in-session): `close_stale_tasks.py` bulk-closed
+  all 1,025 open tasks created before 2026-08-01 (any owner, incl. ex-staff
+  and 59 unassigned). Every id is in the audit log as `task_bulk_closed`;
+  the weekly scoreboard excludes those ids so they never read as
+  "completed late". Portal open-task count: 1,745 → 712.
+- `hubspot_client.py`: `search_open_tasks()`, `search_completed_tasks()`,
+  `search_open_tasks_created_before()`, `batch_complete_tasks()`,
+  `task_url()`, shared `_search_all()`. Tasks read scope verified live (200).
+- `config.py`: `monitor` added to `_ROLE_LIST_KEYS`.
+
+**Why:** Tasks were a write-only medium — an overdue task made no noise
+anywhere, and the backlog had grown to 1,745 with 2019-era entries drowning
+any live signal.
+
+**Files:** `email/src/task_sweep.py`, `email/src/close_stale_tasks.py`,
+`email/src/hubspot_client.py`, `email/src/audit.py`, `email/src/config.py`,
+`email/config.yaml`, `email/tests/test_task_sweep.py` (16 tests; suite 331
+green), `.github/workflows/task-sweep.yml`, `registry.yml`,
+`email/state/audit_log.jsonl` (11 bulk-close records).
+## 2026-08-31 — Gmail cursor overlap window (the Lia Beck miss)
+
+**What:** the PO inbox poll now queries `cursor_overlap_seconds` (default
+3600) BEHIND its cursor (`_inbox_query`); re-listed mail is free via the
+already_processed guard. **Why:** on 8/28 two OPS emails (sisters Jil and
+Lia Beck, same parent, same TOR) landed 2 minutes apart; the poll that
+processed Jil's advanced the cursor past Lia's arrival — her email sat
+invisible to `after:` for 3 days while everyone (Kath, Roman, and Friday's
+session) hunted for it. Any message landing behind the cursor (processing
+races, Gmail search-index lag) was permanently lost; now anything within an
+hour is self-healing. **Recovery (in session):** cursor rewound on a side
+branch (lia-recover) + dispatch → Lia's 4 deals created correctly (POs
+3114181748-51, $240 = 4 sessions = 3 hrs each, Sept-Dec, Evelin Jimenez
+resolved). That run's state push died on the cursor conflict, so its audit
+records were reconstructed by hand in this commit (po_processed marker + 4
+pending_po_opened rows, sla 2026-09-14) — without them the pending-approval
+sweep would never remind about Lia's OAs. Delete branch lia-recover after
+merge. **Files:** email/src/po_inbox.py, email/config.yaml,
+email/state/audit_log.jsonl (reconstruction), email/tests/test_po_inbox.py
+(suite 334 green).
+
+## 2026-08-31 — The weekly FB/IG caption gets a per-platform link line (content-build)
+
+**What changed**
+- `marketing/scripts/b2b/deliver-to-slack.py` — "Reply 5 — Facebook + Instagram
+  post" is now two replies: Instagram (ends `Link in story.`) and Facebook (ends
+  `Link in comments.`). New `append_link_cta()` inserts that line above the
+  caption's trailing hashtags line; new `piece_body()` centralizes body assembly
+  so the dry-run preview and the real delivery cannot drift apart. Blog assets
+  renumbered to Reply 7 and the stale module docstring now matches `PIECES`.
+- `marketing/scripts/b2b/content-build.py` — the `fb-ig-post.md` caption prompt
+  is told not to write its own link-location phrasing, so the model cannot emit a
+  "link in bio" that contradicts the appended line.
+- `marketing/scripts/b2b/build-qa-checklist.py` — one checklist line for it.
+
+**Why**
+Danielle reported (Slack `1788190269.210389`, correction
+`corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md`) that the
+Instagram caption should say "link in story" and Facebook "link in comments".
+
+The reported diagnosis assumed a per-platform CTA branch had the two platforms
+swapped. There was no branch. `content-build.py` generated ONE caption and
+`deliver-to-slack.py` shipped it as a single "post the SAME caption + image to
+both" reply, so no correct phrasing was reachable for either platform: whatever
+the model happened to write was pasted verbatim into both. Splitting the reply is
+what makes Danielle's request expressible at all, and it matches how every other
+piece in the bundle already works (one reply per destination, copy-paste ready).
+
+The line is appended deterministically rather than prompted for, because a caption
+that names the wrong place to find the link is worse than one that omits it.
+## 2026-08-27 — Email agent: campaign-reply categories for the NSSA badge sends
+
+**What:** Two new classifier categories, `campaign_family` (families replying to a
+marketing/announcement email: sign-ups, added sessions, referrals — owner
+`charter_sales`, 90 min, high priority, draft on) and `campaign_school`
+(TORs/EFs/ESs/directors replying: congrats, badge questions, shareable-material
+asks — owner `sales`, 8 business hrs, draft on). Added an "Active campaigns"
+section to `rules.md` describing the three NSSA badge announcement sends
+(subjects, audiences, "just reply" CTA) so the classifier recognizes campaign
+traffic; the block is meant to be updated as campaigns launch and retire.
+Congrats-only replies get a warm thank-you draft at low risk. School replies
+that are real program/PO business still classify `school_partner`.
+
+**Why:** Roman 2026-08-27 — the NSSA badge announcement (3 segmented sends,
+~7,250 recipients, lists 3196/3197/3198) uses reply-as-CTA, and replies land in
+the agent-triaged admin inbox (info@ is an alias of admin@). Without campaign
+awareness, family sign-up replies would route to the schedulers instead of
+Paola, and teacher replies would land inconsistently. Routing-table addition
+approved by Roman in-session (routing table otherwise LOCKED June 9).
+
+**Files:** `email/rules.md`, `email/src/classifier.py`, `email/config.yaml`
+(routing + category_map). Tests: classifier/router/orchestration suites green
+(43 passed).
+
+---
+
 ## 2026-08-27 — Charter mail is routed by what it IS, not stamped new_deal_po (#AP-pending)
 
 **What changed**
