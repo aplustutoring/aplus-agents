@@ -591,10 +591,113 @@
     411092221,
     411096215,
     411096154,
-    411128932
+    411128932,
+    411408670,
+    411426062,
+    411432907
   ],
-  "last_run_utc": "2026-09-03T05:26:19.340739+00:00",
-  "pending_digest": [],
-  "pending_skipped": [],
+  "last_run_utc": "2026-09-03T18:26:17.589163+00:00",
+  "pending_digest": [
+    {
+      "call_id": 411426062,
+      "number": "19516609652",
+      "time_pt": "10:31 AM",
+      "matched": true,
+      "contact_label": "Charlotte Hu",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Charlotte and Skye (parents) to follow up on their interest in preparing their 4th-grade son for the Science Academy entrance exam, which he'd take in 5th grade. Paola explained the online-only model, recommended starting with a diagnostic followed by one hour/week given the strong lead time, and quoted $95/hr with package discounts. The parents agreed to start with the diagnostic this week and aim for a free trial session next week (Labor Day weekend is out). Paola will email pricing, the diagnostic, and the specialist booking link.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Charlotte the pricing/package information, diagnostic exam, upload link for results, and specialist booking link",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once diagnostic results are uploaded and specialist consult is done, coordinate a free trial session (targeting sometime next week, after Labor Day weekend)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Charlotte (mom) and Skye (dad) are prospective parents exploring tutoring for their 4th-grade son to prep for the Science Academy entrance exam (he'll take it in 5th grade for 6th-grade admission). Tone was warm and engaged. Paola quoted $95/hr online with better rates on larger packages, recommended starting with a diagnostic and then 1 hr/week (we have good runway), and offered a free trial. They agreed to skip this Labor Day weekend and aim to start the diagnostic this week and trial next week. Paola is emailing pricing, the diagnostic, the results upload link, and the specialist booking link right after the call. They now expect that email and then to book the trial once the diagnostic + specialist consult are done. Open with: 'Hi Charlotte, following up on your call with Paola \u2014 did the diagnostic and pricing info come through okay, and can we get your son's trial on the calendar for next week?'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family; test prep for Science Academy entrance exam requires a diagnostic before proposing a plan, and Paola is sending the diagnostic.",
+        "student_or_school_names_mentioned": [
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spoke with Charlotte and Skye (dad joined mid-call) about prepping their 4th-grade son for the Science Academy entrance exam, which he'll take in 5th grade for 6th-grade admission. They don't know the exact exam date and want guidance on what's tested and where he stands. They agreed to start with a diagnostic this week and target a free trial session next week (skipping Labor Day weekend).",
+          "what_we_can_do_to_help": "Send diagnostic, pricing/packages, results upload link, and specialist booking link. Recommended online 1 hr/week to start given the strong lead time, then adjust based on diagnostic results. Quoted $95/hr with package discounts and offered a free trial. Flexible scheduling including weekends.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "4",
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spoke with Charlotte and Skye (dad joined mid-call) about prepping their 4th-grade son for the Science Academy entrance exam, which he'll take in 5th grade for 6th-grade admission. They don't know the exact exam date and want guidance on what's tested and where he stands. They agreed to start with a diagnostic this week and target a free trial session next week (skipping Labor Day weekend)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send diagnostic, pricing/packages, results upload link, and specialist booking link. Recommended online 1 hr/week to start given the strong lead time, then adjust based on diagnostic results. Quoted $95/hr with package discounts and offered a free trial. Flexible scheduling including weekends."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Charlotte the pricing/package information, diagnostic exam, upload link for results, and specialist booking link",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once diagnostic results are uploaded and specialist consult is done, coordinate a free trial session (targeting sometime next week, after Labor Day weekend)",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
+  "pending_skipped": [
+    {
+      "number": "13237061274",
+      "time_pt": "10:50 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
