@@ -332,6 +332,13 @@ def run() -> None:
         import traceback as _tb
         print(f"⚠️  invoice_sweep error: {e}")
         _tb.print_exc()
+    try:
+        from . import sms
+        sms.run_sweep()
+    except Exception as e:  # noqa: BLE001 — SMS must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  sms sweep error: {e}")
+        _tb.print_exc()
 
 
 if __name__ == "__main__":
