@@ -28,6 +28,11 @@ admin@'s **Spam** folder. Gmail spam-filtered a bodiless PDF from noreply@
 ops-online.com on arrival; HubSpot still synced them, and triage junked that
 copy. So the mirror lists with includeSpamTrash (Trash stays skipped: that is a
 human decision) and notes "(was in Spam at admin@)" on the audit record.
+A document whose PO numbers the PO agent already handled from charter@ (Kath
+found them in the OPS portal and forwarded them) is NOT mirrored: audit
+`po_mirror_skipped`, no second copy, no DUPLICATE alert. The other order
+(mirror first, forward second) keeps the existing rule: same PO number → no new
+deal, one DUPLICATE DM to Kath.
 
 Fix, one processing surface: (1) `po_sources.is_po_shaped` is the single
 deterministic predicate (ordering-system sender domain, "Purchase Order #"/"new

@@ -71,6 +71,7 @@ def mirror_env(monkeypatch):
     monkeypatch.setattr(ps.gm, "apply_labels",
                         lambda i, names, mailbox=None: rec["labels"].append((mailbox, i, names)))
     monkeypatch.setattr(ps.audit, "append", lambda r: rec["audit"].append(r))
+    monkeypatch.setattr(ps.audit, "_iter_records", lambda: [])
     # "old" was mirrored on an earlier run
     monkeypatch.setattr(ps.audit, "processed_message_ids",
                         lambda: {"mirrored:admin@wetutorathome.com:old"})
@@ -94,6 +95,24 @@ def test_mirror_copies_only_po_shaped_mail_and_dedups(mirror_env):
     # source copy labelled in admin@, per-source cursor advanced
     assert mirror_env["labels"][0][0] == "admin@wetutorathome.com"
     assert state["sources"]["admin@wetutorathome.com"] > 0
+
+
+def test_mirror_skips_po_already_processed_from_charter(mirror_env, monkeypatch):
+    # Kath found PO 6814193240 in the OPS portal and forwarded it to charter@
+    # before the mirror ran: no second copy, no DUPLICATE alert.
+    monkeypatch.setattr(ps.audit, "_iter_records", lambda: [
+        {"source": "po_inbox", "action_taken": "po_processed", "po_number": "6814193240"}])
+    n = ps.mirror_sources({})
+    assert n == 1                                            # only the Spam one (…241) is mirrored
+    assert mirror_env["inserted"] == ["RAW-spammed"]
+    skipped = [a for a in mirror_env["audit"] if a["action_taken"] == "po_mirror_skipped"]
+    assert len(skipped) == 1 and skipped[0]["po_numbers"] == ["6814193240"]
+
+
+def test_po_numbers_from_subject_and_attachments():
+    assert ps.po_numbers("Fwd: Heartwood - Purchase Order #6814193240 - Phoenix", ["PO6814193241.pdf"]) \
+        == {"6814193240", "6814193241"}
+    assert ps.po_numbers("Heartwood Charter School - new POs - 09/03/2026", []) == set()
 
 
 def test_mirror_failure_alerts_and_does_not_raise(mirror_env, monkeypatch):

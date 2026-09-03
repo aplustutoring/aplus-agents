@@ -70,6 +70,29 @@ def is_po_shaped(sender_addrs: list[str], subject: str, attachment_names: list[s
     return ""
 
 
+_PO_NUM_RX = re.compile(r"(?:purchase\s*order\s*(?:#|no\.?|number)?\s*|\bPO\s*#?\s*)(\d{5,})", re.I)
+
+
+def po_numbers(subject: str, attachment_names: list[str]) -> set[str]:
+    """PO numbers named on the document itself (subject or PO/OA-numbered PDF)."""
+    nums = set(_PO_NUM_RX.findall(subject or ""))
+    for n in attachment_names or []:
+        m = re.match(r"^(?:PO|OA)[-_ ]?(\d{5,})", (n or "").strip(), re.I)
+        if m:
+            nums.add(m.group(1))
+    return nums
+
+
+def _processed_po_numbers() -> set[str]:
+    """Every PO number the PO agent has already handled from charter@ (a human
+    forwarding the same PO there beats the mirror: no second copy, no dupe alert)."""
+    out: set[str] = set()
+    for r in audit._iter_records():
+        if r.get("source") == "po_inbox" and r.get("po_number"):
+            out.add(str(r["po_number"]).strip())
+    return out
+
+
 def norm_subject(subject: str) -> str:
     s = re.sub(r"^\s*(?:(?:re|fwd?|fw)\s*:\s*)+", "", (subject or "").strip(), flags=re.I)
     return re.sub(r"\s+", " ", s).lower()
@@ -104,6 +127,7 @@ def mirror_sources(state: dict) -> int:
     label_src = pc.get("label_mirrored_source") or "A+ Agent/Mirrored to charter"
     cursors = state.setdefault("sources", {})
     done = audit.processed_message_ids()
+    known = _processed_po_numbers()
     now = int(datetime.now(timezone.utc).timestamp())
     mirrored = 0
     for addr in sources:
@@ -129,6 +153,17 @@ def mirror_sources(state: dict) -> int:
                     continue
                 if "SPAM" in labels:
                     why += f" (was in Spam at {addr})"
+                nums = po_numbers(m.get("subject") or "", m.get("attachment_names") or [])
+                if nums and nums <= known:
+                    audit.append({"message_id": key, "source": "po_inbox",
+                                  "action_taken": "po_mirror_skipped", "from_mailbox": addr,
+                                  "source_msg_id": s["id"], "subject": m.get("subject") or "",
+                                  "attachments": m.get("attachment_names") or [],
+                                  "po_numbers": sorted(nums),
+                                  "why": "already processed from charter@ (forwarded by hand)"})
+                    print(f"  ↩️  not mirrored, PO {', '.join(sorted(nums))} already processed: "
+                          f"{(m.get('subject') or '')[:70]}")
+                    continue
                 raw = gm.get_raw(s["id"], mailbox=addr)
                 if not raw:
                     print(f"  ⚠️  mirror: empty raw for {addr} {s['id']} — skipped")
