@@ -24,7 +24,7 @@ import traceback
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 
-from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
@@ -1990,6 +1990,18 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             slack_client.dm(ccs["slack_user_id"], f"📋 [copy → {owner['name']}] 📦 {subject}")
     _notify_gaps(subject, note_parts, record.get("ticket_id"))
 
+    # A copy of this document may have reached admin@ first (schools' ordering
+    # systems email the vendor contact on file); the triage agent then opened a
+    # handoff ticket. This is the real processing, so close those.
+    try:
+        closed = po_sources.close_handoffs(
+            m["subject"], m.get("attachment_names") or [a["filename"] for a in attachments],
+            record.get("ticket_id"), deal_bit)
+        if closed:
+            record["handoffs_closed"] = closed
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  handoff close failed (non-fatal): {e}")
+
     record["action_taken"] = "po_processed"
     audit.append(record)
     print(f"  📦 {subject} → {pc.get('owner')} (ticket {record.get('ticket_id')})")
@@ -2036,6 +2048,15 @@ def run() -> None:
             cur_path.write_text(_json.dumps({"last_epoch": since}))
         print(f"po_inbox: baseline set ({since}); new mail picked up next run")
         return
+    # PO mail that schools' ordering systems send to OTHER mailboxes (admin@)
+    # is copied into charter@ FIRST, so the poll below processes it this run.
+    try:
+        n = po_sources.mirror_sources(state)
+        if n:
+            print(f"po_inbox: mirrored {n} PO document(s) from other inboxes")
+    except Exception as e:  # noqa: BLE001 — the charter poll must still run
+        print(f"  ⚠️  PO source mirror failed (non-fatal): {e}", file=sys.stderr)
+        traceback.print_exc()
     try:
         stubs = gm.list_messages(_inbox_query(since, pc))
     except Exception as e:  # noqa: BLE001 — most likely DWD not granted yet
@@ -2076,7 +2097,9 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  draft-feedback sweep failed (non-fatal): {e}")
     if not DRY_RUN:
-        cur_path.write_text(_json.dumps({"last_epoch": newest}))
+        # Keep the per-source mirror cursors (state["sources"]) alongside the
+        # charter cursor.
+        cur_path.write_text(_json.dumps({**state, "last_epoch": newest}))
 
 
 if __name__ == "__main__":

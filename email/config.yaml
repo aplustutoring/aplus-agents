@@ -307,6 +307,25 @@ po_inbox:
   # 2026-08-28: a message landing behind the cursor was invisible forever).
   # Re-listed mail is deduped by the audit log, so a wide window is free.
   cursor_overlap_seconds: 3600
+  # ── PO mail outside charter@ (2026-09-03) ────────────────────────────────
+  # Schools' ordering systems email POs to the vendor contact on file, and
+  # Heartwood's OPS account points at admin@: 14 PO documents were junk-archived
+  # there in Aug/Sep 2026 and never reached this agent. Every run, PO-shaped mail
+  # (src/po_sources.is_po_shaped: ordering-system sender, "Purchase Order #",
+  # or a PO/OA-numbered PDF) in each `sources` mailbox is COPIED into charter@
+  # and processed by the normal poll. Same service account, same domain-wide
+  # delegation: any Workspace mailbox works. info@ forwards into admin@, so it
+  # is not listed separately.
+  sources: [admin@wetutorathome.com]
+  source_query: 'from:ops-online.com OR subject:"purchase order" OR subject:"new POs" OR filename:pdf'
+  source_sender_domains: [ops-online.com]
+  source_backfill_hours: 48      # first run of a new source reaches this far back
+  label_mirrored: "A+ Agent/Mirrored from other inbox"   # on the charter@ copy
+  label_mirrored_source: "A+ Agent/Mirrored to charter"  # on the original
+  # The triage agent opens a handoff ticket (owner: this agent's owner role) for
+  # PO-shaped mail it sees; the PO agent closes it once the copy is processed.
+  # Still open after this many business hours → the mirror is broken.
+  handoff_sla_hours: 2
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales

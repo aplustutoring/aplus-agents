@@ -1,0 +1,207 @@
+"""PO mail that lands OUTSIDE the charter inbox: detection, mirroring, handoff.
+
+Schools' ordering systems email purchase orders to the VENDOR CONTACT on file,
+and that address is not always charter@. Heartwood's OPS account is registered
+to the sales seat, so its POs (PDF attached, no body text, sent on behalf of
+noreply@ops-online.com) arrive at admin@. The PO agent only read charter@, and
+the admin-inbox triage saw a bodiless PDF from a noreply sender and applied the
+"automated notifications are junk" rule:
+
+  * 2026-08-25  10 Heartwood POs junk-archived; re-fed to charter@ by hand
+                six days later.
+  * 2026-08-26  OPS "new POs processed, log in to review" notice junked.
+  * 2026-09-02   4 more Heartwood POs (Phoenix Nourn Bernard, the Thursday
+                sessions) junked. Nobody was told; found on 2026-09-03 while
+                investigating a different school's POs.
+
+The fix keeps ONE processing surface instead of teaching two agents to read POs:
+
+  1. `is_po_shaped` is a single deterministic predicate shared by both agents
+     (never two definitions of "this is a PO" that drift apart).
+  2. The PO agent MIRRORS PO-shaped mail from `po_inbox.sources` (admin@) into
+     charter@ with Gmail messages.insert (same domain-wide delegation, same
+     gmail.modify scope), then its normal poll processes the copy: labels,
+     threads, parent-chase drafts and every sweep stay in the charter mailbox.
+  3. The triage agent never junks PO-shaped mail. It opens a HANDOFF ticket to
+     charter_admin (a human is on the hook even if the mirror is broken), and
+     the PO agent closes that ticket the moment the mirrored copy is processed.
+     If the copy was already processed when triage gets there, the thread is
+     archived as handled: no ticket, no noise.
+"""
+from __future__ import annotations
+
+import re
+import sys
+import traceback
+from datetime import datetime, timezone
+
+from . import audit, gmail_client as gm, hubspot_client as hs, slack_client
+from .config import cfg, staff
+
+_SUBJECT_RX = re.compile(
+    r"purchase\s*order\s*(?:#|no\.?|number)?\s*\d{4,}"   # "Purchase Order #6814193240"
+    r"|\bnew\s+POs?\b"                                     # OPS "School - new POs - date"
+    r"|\bPO\s*#\s*\d{4,}",                                 # "PO #2914206871"
+    re.I)
+_ATTACH_RX = re.compile(r"^(?:PO|OA)[-_ ]?\d{5,}[^/\\]*\.pdf$", re.I)   # PO6814193240.pdf, OA2914206871.pdf
+
+
+def _pc() -> dict:
+    return cfg().get("po_inbox", {}) or {}
+
+
+def _sender_domains() -> set[str]:
+    return {d.lower().lstrip("@") for d in (_pc().get("source_sender_domains") or ["ops-online.com"])}
+
+
+def is_po_shaped(sender_addrs: list[str], subject: str, attachment_names: list[str]) -> str:
+    """Why this message is a purchase-order document, or "" when it is not.
+    Deterministic on headers + attachment names only (no body, no model): the
+    whole point is that a bodiless PDF from a noreply address still matches."""
+    for a in sender_addrs or []:
+        dom = (a or "").lower().rsplit("@", 1)[-1]
+        if dom in _sender_domains():
+            return f"sent via {dom} (a school ordering system)"
+    if _SUBJECT_RX.search(subject or ""):
+        return "subject names a purchase order"
+    for n in attachment_names or []:
+        if _ATTACH_RX.match((n or "").strip()):
+            return f"attachment {n} is a PO document"
+    return ""
+
+
+def norm_subject(subject: str) -> str:
+    s = re.sub(r"^\s*(?:(?:re|fwd?|fw)\s*:\s*)+", "", (subject or "").strip(), flags=re.I)
+    return re.sub(r"\s+", " ", s).lower()
+
+
+def _same_document(rec: dict, subject: str, attachment_names: list[str]) -> bool:
+    """A mirror/handoff record and a message are about the same PO document
+    when the subjects match, or they share a PO attachment name (subjects get
+    'Fwd:' prefixes; PO PDFs keep their number-based names)."""
+    if norm_subject(rec.get("subject") or "") and norm_subject(rec.get("subject") or "") == norm_subject(subject):
+        return True
+    mine = {(n or "").strip().lower() for n in (attachment_names or []) if _ATTACH_RX.match((n or "").strip())}
+    theirs = {(n or "").strip().lower() for n in (rec.get("attachments") or [])}
+    return bool(mine & theirs)
+
+
+# ── PO agent side: mirror ────────────────────────────────────────────────────
+def mirror_sources(state: dict) -> int:
+    """Copy PO-shaped mail from every `po_inbox.sources` mailbox into charter@.
+    `state` is the po_cursor.json dict; per-source cursors live under
+    state["sources"][address]. Returns the number of messages mirrored. A
+    broken source (delegation, quota) is reported and skipped, never fatal:
+    the charter poll must still run."""
+    pc = _pc()
+    sources = [s for s in (pc.get("sources") or []) if s and s != pc.get("address")]
+    if not sources:
+        return 0
+    overlap = int(pc.get("cursor_overlap_seconds", 3600))
+    backfill = int(pc.get("source_backfill_hours", 48)) * 3600
+    query = pc.get("source_query") or 'from:ops-online.com OR subject:"purchase order" OR subject:"new POs" OR filename:pdf'
+    label_in = pc.get("label_mirrored") or "A+ Agent/Mirrored from other inbox"
+    label_src = pc.get("label_mirrored_source") or "A+ Agent/Mirrored to charter"
+    cursors = state.setdefault("sources", {})
+    done = audit.processed_message_ids()
+    now = int(datetime.now(timezone.utc).timestamp())
+    mirrored = 0
+    for addr in sources:
+        since = int(cursors.get(addr) or (now - backfill))
+        try:
+            stubs = gm.list_messages(f"after:{max(0, since - overlap)} ({query})", max_results=200,
+                                     mailbox=addr)
+            for s in stubs:
+                key = f"mirrored:{addr}:{s['id']}"
+                if key in done:
+                    continue
+                m = gm.get_message(s["id"], mailbox=addr)
+                why = is_po_shaped(m.get("sender_addrs") or [], m.get("subject") or "",
+                                   m.get("attachment_names") or [])
+                if not why:
+                    continue
+                raw = gm.get_raw(s["id"], mailbox=addr)
+                if not raw:
+                    print(f"  ⚠️  mirror: empty raw for {addr} {s['id']} — skipped")
+                    continue
+                copy = gm.insert_raw(raw, [label_in])
+                try:
+                    gm.apply_labels(s["id"], [label_src], mailbox=addr)
+                except Exception as e:  # noqa: BLE001 — cosmetic on the source side
+                    print(f"  ⚠️  mirror: source label failed (non-fatal): {e}")
+                audit.append({"message_id": key, "source": "po_inbox", "action_taken": "po_mirrored",
+                              "from_mailbox": addr, "source_msg_id": s["id"],
+                              "mirror_msg_id": copy.get("id"), "subject": m.get("subject") or "",
+                              "attachments": m.get("attachment_names") or [], "why": why,
+                              "sender": m.get("sender") or ""})
+                mirrored += 1
+                print(f"  📬 mirrored from {addr}: {(m.get('subject') or '')[:90]} ({why})")
+            cursors[addr] = now
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  PO mirror from {addr} FAILED: {e}", file=sys.stderr)
+            traceback.print_exc()
+            _alert(f"🚩 PO mirror from {addr} FAILED: {str(e)[:200]}\n"
+                   f"PO-shaped mail in that inbox is NOT reaching the PO agent until this is fixed "
+                   f"(delegation for {addr}? quota?). The triage agent still opens a handoff ticket "
+                   f"per PO document, so nothing is silently lost, but each one is manual until then.")
+    return mirrored
+
+
+def _alert(text: str) -> None:
+    for key in _pc().get("missing_info_dms", ["charter_admin", "visionary"]):
+        s = staff(key)
+        if s.get("slack_user_id"):
+            try:
+                slack_client.dm(s["slack_user_id"], text)
+            except Exception as e:  # noqa: BLE001 — alerting must not kill the run
+                print(f"  ⚠️  mirror alert DM to {key} failed (non-fatal): {e}")
+
+
+# ── Triage side: handoff bookkeeping ─────────────────────────────────────────
+def mirrored_record_for(subject: str, attachment_names: list[str]) -> dict | None:
+    """The po_mirrored audit record for this document, if the PO agent already
+    pulled it into charter@ (then triage archives the admin@ thread as handled)."""
+    latest = None
+    for r in audit._iter_records():
+        if r.get("action_taken") == "po_mirrored" and _same_document(r, subject, attachment_names):
+            latest = r
+    return latest
+
+
+def open_handoffs_for(subject: str, attachment_names: list[str]) -> list[dict]:
+    """Triage handoff tickets still open for this document."""
+    opened: dict[str, dict] = {}
+    closed: set[str] = set()
+    for r in audit._iter_records():
+        act = r.get("action_taken")
+        if act == "po_handoff_ticket" and r.get("ticket_id") and _same_document(r, subject, attachment_names):
+            opened[str(r["ticket_id"])] = r
+        elif act == "po_handoff_closed" and r.get("ticket_id"):
+            closed.add(str(r["ticket_id"]))
+    return [r for tid, r in opened.items() if tid not in closed]
+
+
+def close_handoffs(subject: str, attachment_names: list[str], po_ticket_id: str | None,
+                   outcome: str = "") -> list[str]:
+    """Called by the PO agent after it processed a message: close every triage
+    handoff ticket for the same document, pointing at the real PO ticket."""
+    closed_stage = cfg()["hubspot"]["ticket_stages"]["closed"]
+    out: list[str] = []
+    for r in open_handoffs_for(subject, attachment_names):
+        tid = str(r["ticket_id"])
+        try:
+            note = "✅ Processed by the PO agent from the charter inbox."
+            if po_ticket_id and po_ticket_id != "DRYRUN":
+                note += f" PO ticket: {hs.ticket_url(po_ticket_id)}"
+            if outcome:
+                note += f"\n{outcome}"
+            hs.add_ticket_note(tid, note)
+            hs.update_ticket_stage(tid, closed_stage)
+        except Exception as e:  # noqa: BLE001 — never let bookkeeping kill PO processing
+            print(f"  ⚠️  closing handoff ticket {tid} failed (non-fatal): {e}")
+            continue
+        audit.append({"message_id": f"po-handoff-closed:{tid}", "source": "po_inbox",
+                      "action_taken": "po_handoff_closed", "ticket_id": tid,
+                      "po_ticket_id": po_ticket_id, "subject": subject})
+        out.append(tid)
+    return out

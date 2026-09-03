@@ -8,6 +8,52 @@ Newest entries first.
 
 ---
 
+## 2026-09-03 — PO documents outside charter@ are mirrored, never junked
+
+**What:** Schools' ordering systems email POs to the VENDOR CONTACT on file, and
+Heartwood's OPS account points at admin@, not charter@. The PO agent only read
+charter@; the admin triage saw a bodiless PDF from noreply@ops-online.com and
+applied the "automated notifications are junk" rule. Found while investigating
+Roman's "Sage Oak POs not processed" report (Sage Oak's were fine; Coyote Resch
+x4 processed 9/2 21:04 PT, approved PO confirmed 9/3 15:53 PT):
+
+| When (PT) | Junk-archived at admin@ | Outcome |
+|---|---|---|
+| 08-25 12:39 | 10 Heartwood POs (Dahlia + Phoenix Nourn Bernard) | re-fed to charter@ by hand 6 days later |
+| 08-26 / 09-03 02:30 | OPS "Heartwood - new POs" notices | nobody told |
+| 09-02 12:47 | 4 Heartwood POs 6814193240-43 (Phoenix, Thursday sessions) | unprocessed until this fix ran |
+
+Fix, one processing surface: (1) `po_sources.is_po_shaped` is the single
+deterministic predicate (ordering-system sender domain, "Purchase Order #"/"new
+POs" subject, or a PO/OA-numbered PDF) shared by both agents; (2) every PO-inbox
+run first MIRRORS PO-shaped mail from `po_inbox.sources` (admin@) into charter@
+via Gmail messages.insert (same service account, same domain-wide delegation,
+gmail.modify already covers insert), then the normal poll processes the copy so
+labels/threads/chase drafts/sweeps stay in one mailbox; per-source cursors live
+in `po_cursor.json["sources"]`, 48h backfill on a new source, a failing source
+DMs charter_admin + visionary and never kills the run; (3) the triage agent
+never classifies PO-shaped mail: it opens a HIGH handoff ticket to charter_admin
+(2h SLA, thread linked, no contact created for the noreply sender) that the PO
+agent closes itself once the copy is processed; already-mirrored → archive as
+handled, no ticket. `gmail_client` is now mailbox-aware (`mailbox=` on
+get/list/labels, `get_raw`, `insert_raw`; `_parse_message` returns
+`attachment_names` + `sender_addrs`).
+
+**Why:** Investigation rule (2026-08-31): the failure class "a PO reaches an
+address the PO agent does not read" must be impossible, not forwarded around.
+Two agents with two definitions of "PO" would drift; one predicate + one
+pipeline cannot.
+
+**Still human:** ask Heartwood (and any OPS school) to set charter@ as the OPS
+vendor contact so POs stop landing at admin@ at all. The mirror covers it either
+way.
+
+**Files:** `email/src/po_sources.py` (new), `email/src/gmail_client.py`,
+`email/src/po_inbox.py`, `email/src/main.py`, `email/config.yaml`,
+`email/tests/test_po_sources.py` (15 new; suite 370 green), `docs/PO-PROCESS.md`.
+
+---
+
 ## 2026-09-02 — Campaign routing logged as #AP046
 
 **What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+
