@@ -52,12 +52,16 @@ def _post(path: str, payload: dict, mailbox: str | None = None,
     return r.json()
 
 
-def list_messages(query: str, max_results: int = 50, mailbox: str | None = None) -> list[dict]:
+def list_messages(query: str, max_results: int = 50, mailbox: str | None = None,
+                  include_spam_trash: bool = False) -> list[dict]:
     """Message stubs ({id, threadId}) matching a Gmail search query, e.g.
-    'in:inbox after:1718000000 -label:agent-processed'."""
+    'in:inbox after:1718000000 -label:agent-processed'. Gmail search silently
+    excludes Spam and Trash unless include_spam_trash is set."""
     out, token = [], None
     while True:
         params = {"q": query, "maxResults": min(max_results, 100)}
+        if include_spam_trash:
+            params["includeSpamTrash"] = "true"
         if token:
             params["pageToken"] = token
         data = _get("/messages", params, mailbox)
@@ -143,6 +147,7 @@ def _parse_message(m: dict) -> dict:
         "has_attachments": bool(names),
         "attachment_names": names,
         "sender_addrs": [a.lower() for a in re.findall(r"[\w.+-]+@[\w.-]+", addr_blob)],
+        "label_ids": list(m.get("labelIds") or []),
     }
 
 

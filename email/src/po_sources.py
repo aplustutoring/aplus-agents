@@ -36,7 +36,7 @@ import traceback
 from datetime import datetime, timezone
 
 from . import audit, gmail_client as gm, hubspot_client as hs, slack_client
-from .config import cfg, staff
+from .config import DRY_RUN, cfg, staff
 
 _SUBJECT_RX = re.compile(
     r"purchase\s*order\s*(?:#|no\.?|number)?\s*\d{4,}"   # "Purchase Order #6814193240"
@@ -109,17 +109,26 @@ def mirror_sources(state: dict) -> int:
     for addr in sources:
         since = int(cursors.get(addr) or (now - backfill))
         try:
+            # includeSpamTrash: a bodiless PDF from a school's ordering system is
+            # exactly what a spam filter flags, and Gmail search hides Spam by
+            # default. Trash is a human decision and stays skipped.
             stubs = gm.list_messages(f"after:{max(0, since - overlap)} ({query})", max_results=200,
-                                     mailbox=addr)
+                                     mailbox=addr, include_spam_trash=True)
             for s in stubs:
                 key = f"mirrored:{addr}:{s['id']}"
                 if key in done:
                     continue
                 m = gm.get_message(s["id"], mailbox=addr)
+                labels = set(m.get("label_ids") or [])
                 why = is_po_shaped(m.get("sender_addrs") or [], m.get("subject") or "",
                                    m.get("attachment_names") or [])
-                if not why:
+                if DRY_RUN:
+                    print(f"    · {addr} {s['id']} labels={sorted(labels)} "
+                          f"subj={(m.get('subject') or '')[:70]!r} → {why or 'not PO-shaped'}")
+                if not why or "TRASH" in labels:
                     continue
+                if "SPAM" in labels:
+                    why += f" (was in Spam at {addr})"
                 raw = gm.get_raw(s["id"], mailbox=addr)
                 if not raw:
                     print(f"  ⚠️  mirror: empty raw for {addr} {s['id']} — skipped")

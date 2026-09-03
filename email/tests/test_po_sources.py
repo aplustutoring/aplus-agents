@@ -52,9 +52,18 @@ def mirror_env(monkeypatch):
                "subject": "my W-9", "attachment_names": ["w9.pdf"]},
         "old": {"id": "old", "sender": "x", "sender_addrs": ["noreply@ops-online.com"],
                 "subject": "Heartwood - new POs - 08/26/2026", "attachment_names": []},
+        "trashed": {"id": "trashed", "sender": "x", "sender_addrs": ["noreply@ops-online.com"],
+                    "subject": "Heartwood - new POs - 09/01/2026", "attachment_names": [],
+                    "label_ids": ["TRASH"]},
+        "spammed": {"id": "spammed", "sender": "Heartwood <vendorinfo@heartwoodcharterschool.org>",
+                    "sender_addrs": ["vendorinfo@heartwoodcharterschool.org"],
+                    "subject": "Heartwood - Purchase Order #6814193241 - Phoenix",
+                    "attachment_names": ["PO6814193241.pdf"], "label_ids": ["SPAM"]},
     }
+    rec["queries"] = []
     monkeypatch.setattr(ps.gm, "list_messages",
-                        lambda q, max_results=50, mailbox=None: [{"id": k} for k in msgs])
+                        lambda q, max_results=50, mailbox=None, include_spam_trash=False:
+                        rec["queries"].append((q, include_spam_trash)) or [{"id": k} for k in msgs])
     monkeypatch.setattr(ps.gm, "get_message", lambda i, mailbox=None: msgs[i])
     monkeypatch.setattr(ps.gm, "get_raw", lambda i, mailbox=None: f"RAW-{i}")
     monkeypatch.setattr(ps.gm, "insert_raw",
@@ -72,20 +81,23 @@ def mirror_env(monkeypatch):
 def test_mirror_copies_only_po_shaped_mail_and_dedups(mirror_env):
     state = {"last_epoch": 1}
     n = ps.mirror_sources(state)
-    assert n == 1
-    assert mirror_env["inserted"] == ["RAW-po1"]              # not the W-9, not the already-mirrored
+    assert n == 2
+    # not the W-9, not the already-mirrored, not the trashed one; the Spam one IS mirrored
+    assert mirror_env["inserted"] == ["RAW-po1", "RAW-spammed"]
+    assert mirror_env["queries"][0][1] is True                 # listing reaches into Spam
     a = mirror_env["audit"][0]
     assert a["action_taken"] == "po_mirrored"
     assert a["message_id"] == "mirrored:admin@wetutorathome.com:po1"
     assert a["mirror_msg_id"] == "copy-RAW-po1"
     assert a["attachments"] == ["PO6814193240.pdf"]
+    assert "was in Spam" in mirror_env["audit"][1]["why"]
     # source copy labelled in admin@, per-source cursor advanced
     assert mirror_env["labels"][0][0] == "admin@wetutorathome.com"
     assert state["sources"]["admin@wetutorathome.com"] > 0
 
 
 def test_mirror_failure_alerts_and_does_not_raise(mirror_env, monkeypatch):
-    def boom(q, max_results=50, mailbox=None):
+    def boom(q, max_results=50, mailbox=None, include_spam_trash=False):
         raise RuntimeError("unauthorized_client")
     monkeypatch.setattr(ps.gm, "list_messages", boom)
     state = {}
