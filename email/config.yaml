@@ -115,8 +115,18 @@ sms:
   opt_out_property: ""              # contact property that suppresses sends, if set
   pipelines:
     "907748": { template: charter_po }   # Charter Trad — phase 1
+  # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
+  # gender), brand voice (no personal sign-off). Variant chosen by what we
+  # KNOW: schedule on file means confirm; none means ask (the old flow pasted
+  # the ask-fallback into the confirm sentence and shipped gibberish for
+  # months). A multi-kid PO day is ONE text naming every student. Pending
+  # approval OAs text normally (Roman: "for us it means approved"). NO EM
+  # DASHES ever (locked outbound rule; the scrub enforces it anyway).
   templates:
-    charter_po: "Hi {first_name}, it's A+ Tutoring. We received your Purchase Order. Wanted to confirm that this schedule still works for you: {schedule_preferences}"
+    charter_po_confirm: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. Want to confirm this schedule still works: {schedule}. Reply here to confirm or change it."
+    charter_po_ask: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. What days and times work best for their sessions? Reply here and we will get them booked."
+    charter_po_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. Want to confirm their schedules still work? Reply here and we will get everything set."
+    charter_po_multi_ask: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. What days and times work best for their sessions? Reply here and we will get them booked."
 
 # ── Staff registry ───────────────────────────────────────────────
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).

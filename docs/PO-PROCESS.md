@@ -128,11 +128,16 @@ Also attached to the deal:
    1603217415 died silently on an Aug 13 edit and no charter family was
    texted for two weeks). `email/src/sms.py` sweeps Pre-Lesson deals in the
    configured pipelines every deal-sync cycle (~15 min) and texts the family
-   via JustCall (`sms:` in config.yaml): tutored **"Yes"** → text now;
-   **"No"** → DM the deal's owner first, text on the NEXT sweep; **unset** →
-   no text, audited (the gap DM already fired). The text: *"We received your
-   Purchase Order. Wanted to confirm that this schedule still works for you:
-   {schedule_preferences}"* (blank schedule → the ask-fallback line).
+   via JustCall (`sms:` in config.yaml). Deals are GROUPED BY FAMILY — a
+   multi-kid PO day is ONE text naming every student (Roman 2026-09-01:
+   "name the kid"). The MESSAGE is chosen by what we know: schedule on file →
+   the CONFIRM variant; none → the ASK variant ("what days and times work
+   best for their sessions" — always "their", never a gendered guess; brand
+   voice, no personal sign-off). The tutored property routes STAFF only:
+   any "No" deal DMs the owner first and the family texts on the NEXT sweep;
+   **unset no longer suppresses the text** (asking for a schedule needs no
+   verification). Pending-approval OAs text normally ("if it says pending
+   approval for us it means approved"). Copy lives in `sms.templates`.
    Guardrails: one text per deal ever, **one text per family per 24h** (a
    4-PO email never sends 4 texts), quiet hours 8am-8pm PT, a hard
    `start_date` fence so pre-cutover backlogs can never be texted, em-dash
