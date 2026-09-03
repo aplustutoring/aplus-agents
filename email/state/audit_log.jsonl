@@ -24048,3 +24048,35 @@
 {"ticket_id": "48100078153", "thread_id": "11142572933", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-03T16:37:35.898052+00:00"}
 {"ticket_id": "48133212550", "thread_id": "11151935345", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-03T16:37:58.235767+00:00"}
 {"ticket_id": "48148568639", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-03T16:42:27.736562+00:00"}
+{"message_id": "task-autoclosed:116248500037", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116248500037", "po_number": "3114203887", "invoice": "54585", "subject": "Convert PO to TW invoice \u2014 Heaven Williams (iCC1 for iLEAD Hybrid Exploration, PO 3114203887, $200.0)", "timestamp": "2026-09-03T18:21:36.247293+00:00"}
+{"message_id": "task-autoclosed:116264575552", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116264575552", "po_number": "3114205602", "invoice": "54586", "subject": "Convert PO to TW invoice \u2014 Marissa Contreras (iCC1 for iLEAD Hybrid Exploration, PO 3114205602, $300)", "timestamp": "2026-09-03T18:21:36.385877+00:00"}
+{"message_id": "task-autoclosed:116271470510", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116271470510", "po_number": "3114205603", "invoice": "54587", "subject": "Convert PO to TW invoice \u2014 Marissa Contreras (iCC1 for iLEAD Hybrid Exploration, PO 3114205603, $300)", "timestamp": "2026-09-03T18:21:36.533016+00:00"}
+{"message_id": "task-autoclosed:116286578041", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116286578041", "po_number": "3114205604", "invoice": "54588", "subject": "Convert PO to TW invoice \u2014 Marissa Contreras (iCC1 for iLEAD Hybrid Exploration, PO 3114205604, $300)", "timestamp": "2026-09-03T18:21:36.811816+00:00"}
+{"message_id": "task-autoclosed:116266038352", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116266038352", "po_number": "3114205605", "invoice": "54589", "subject": "Convert PO to TW invoice \u2014 Marissa Contreras (iCC1 for iLEAD Hybrid Exploration, PO 3114205605, $300)", "timestamp": "2026-09-03T18:21:36.972627+00:00"}
+{"message_id": "task-autoclosed:116286207633", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116286207633", "po_number": "3114205606", "invoice": "54590", "subject": "Convert PO to TW invoice \u2014 Marissa Contreras (iCC1 for iLEAD Hybrid Exploration, PO 3114205606, $300)", "timestamp": "2026-09-03T18:21:37.326895+00:00"}
+{"message_id": "task-autoclosed:116280249699", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116280249699", "po_number": "2914206871", "invoice": "54591", "subject": "Convert PO to TW invoice \u2014 Coyote Resch (Sage Oak Charter Schools, PO 2914206871, $375.0)", "timestamp": "2026-09-03T18:21:37.476815+00:00"}
+{"message_id": "task-autoclosed:116280454237", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116280454237", "po_number": "2914206872", "invoice": "54592", "subject": "Convert PO to TW invoice \u2014 Coyote Resch (Sage Oak Charter Schools, PO 2914206872, $375.0)", "timestamp": "2026-09-03T18:21:37.614978+00:00"}
+{"message_id": "task-autoclosed:116289932968", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116289932968", "po_number": "2914206873", "invoice": "54593", "subject": "Convert PO to TW invoice \u2014 Coyote Resch (Sage Oak Charter Schools, PO 2914206873, $375.0)", "timestamp": "2026-09-03T18:21:37.971942+00:00"}
+{"message_id": "task-autoclosed:116280435838", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116280435838", "po_number": "2914206874", "invoice": "54594", "subject": "Convert PO to TW invoice \u2014 Coyote Resch (Sage Oak Charter Schools, PO 2914206874, $150.0)", "timestamp": "2026-09-03T18:21:38.329971+00:00"}
+{"task_id": "116032010369", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:21:45.709377+00:00"}
+{"task_id": "116136405623", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:21:45.709711+00:00"}
+{"task_id": "116134679180", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:21:45.709760+00:00"}
+{"task_id": "116112868993", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037261+00:00"}
+{"task_id": "115947076785", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037466+00:00"}
+{"task_id": "116121858689", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037519+00:00"}
+{"task_id": "116127223987", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037559+00:00"}
+{"task_id": "115993996196", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037594+00:00"}
+{"task_id": "116132185114", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037627+00:00"}
+{"task_id": "116029055272", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037661+00:00"}
+{"task_id": "116118521512", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037694+00:00"}
+{"task_id": "116023589776", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037727+00:00"}
+{"task_id": "115963395170", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037760+00:00"}
+{"task_id": "116128216875", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037793+00:00"}
+{"task_id": "116143117647", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037826+00:00"}
+{"task_id": "115828528717", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037859+00:00"}
+{"task_id": "115818457628", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037892+00:00"}
+{"task_id": "116113941790", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037925+00:00"}
+{"task_id": "115926040432", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037958+00:00"}
+{"task_id": "116133886329", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.037991+00:00"}
+{"task_id": "116126886034", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.038023+00:00"}
+{"task_id": "116136619593", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-03T18:22:16.038075+00:00"}
