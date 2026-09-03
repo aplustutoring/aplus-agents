@@ -24102,3 +24102,4 @@
 {"ticket_id": "48133212550", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-03T20:01:11.488998+00:00"}
 {"ticket_id": "48178485350", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-03T20:01:11.780623+00:00"}
 {"ticket_id": "48198595111", "category": "cancellation", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-03T20:01:12.054196+00:00"}
+{"message_id": "deal:64627634857", "source": "deal_sync", "deal_id": "64627634857", "deal_name": "Adam Feinstein - Emmett", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 1065690, "tw_action": "updated", "action_taken": "tw_synced", "timestamp": "2026-09-03T21:27:38.022633+00:00"}
