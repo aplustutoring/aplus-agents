@@ -23,6 +23,12 @@ x4 processed 9/2 21:04 PT, approved PO confirmed 9/3 15:53 PT):
 | 08-26 / 09-03 02:30 | OPS "Heartwood - new POs" notices | nobody told |
 | 09-02 12:47 | 4 Heartwood POs 6814193240-43 (Phoenix, Thursday sessions) | unprocessed until this fix ran |
 
+Second half of the chain (branch dry run, 16:17 PT): those 4 PDFs sit in
+admin@'s **Spam** folder. Gmail spam-filtered a bodiless PDF from noreply@
+ops-online.com on arrival; HubSpot still synced them, and triage junked that
+copy. So the mirror lists with includeSpamTrash (Trash stays skipped: that is a
+human decision) and notes "(was in Spam at admin@)" on the audit record.
+
 Fix, one processing surface: (1) `po_sources.is_po_shaped` is the single
 deterministic predicate (ordering-system sender domain, "Purchase Order #"/"new
 POs" subject, or a PO/OA-numbered PDF) shared by both agents; (2) every PO-inbox
