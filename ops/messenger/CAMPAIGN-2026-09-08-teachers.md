@@ -36,26 +36,45 @@ Excluded everywhere: 30 generic inboxes (`generic_inbox = Yes`), 56 opt-outs,
 33 bounces, 22 already in the Sage Oak Summit sequence, 4 with no school, 1
 no email, 1 internal. Refresh: `python3 scripts/teacher_outreach_lists.py --build-lists`.
 
-## Sequence rail (Danielle assembles in the portal, ~10 minutes each)
+## Sequence rail (BUILT 2026-09-04 in the portal via Claude in Chrome; Danielle only enrolls)
 
-Sales email templates have no API, so the two sequences are a portal step.
-Copy is in `seq1_worked_with_us.md` and `seq2_known_schools.md`.
+Sales email templates have no API, so both sequences were assembled in the
+portal under Roman's login and shared with Everyone. Verified via the
+sequences API: Danielle (userId 46811240) can see both. Copy source of truth
+stays `seq1_worked_with_us.md` and `seq2_known_schools.md`; the templates in
+the portal match it.
 
-**Sequence 1 — Teacher Outreach 26/27 - Worked With Us**
-1. Email 1 (day 0): "{{firstname}}, your A+ families from last year".
-2. Email 2 (day 5, threaded, business days): "One name is enough".
-3. Finish. Settings: business days, 9:00 to 17:00. Unenroll on reply (default).
-4. Enroll list 3210 in batches of 50 per day starting Tue 9/8, 9am.
-5. Day 10: for anyone on list 3214 still silent, Danielle sends a two-line
-   note in the same thread naming one family from
-   `python3 scripts/teacher_roster.py <email>`.
-6. "Send it" replies: run the same roster script, paste.
+| Sequence | Id | Steps | Settings |
+|---|---|---|---|
+| Teacher Outreach 26/27 - 1 Worked With Us | 310839862 | Email 1 (day 1) → 4 business days → Email 2 (day 5, threaded reply) → finish | business days only, send window 8:00 to 18:00 |
+| Teacher Outreach 26/27 - 2 Known Schools | 310844702 | Email 1 (day 1) → 3 business days → Email 2 (day 4, reply) → 4 business days → Email 3 (day 8, reply) → finish | same |
 
-**Sequence 2 — Teacher Outreach 26/27 - Known Schools**
-1. Three versions of email 1 (iLEAD / Sage Oak / Blue Ridge opening line) or one
-   template with the opening line pasted per batch; emails 2 and 3 shared.
-2. Email 2 day 4, email 3 day 10, both threaded. Business days, 9:00 to 17:00.
-3. Enroll list 3211 at 50 a day, iLEAD first (130), then Sage Oak, then Blue Ridge.
+Templates (Message templates, shared with everyone): "Teacher Outreach 26/27 -
+Worked With Us - Email 1/2", "Teacher Outreach 26/27 - Known Schools - Email
+1/2/3". Sequence 2's email 1 uses one opening line for all three schools:
+"Many of your colleagues at {{ contact.school_canonical }} already send
+students to A+ Tutoring" (true for iLEAD, Sage Oak, Blue Ridge). The per-school
+Summit / park-day lines in `seq2_known_schools.md` are optional A/B versions.
+
+**Before Danielle enrolls anyone (2 minutes):**
+1. Her HubSpot default signature (Settings → General → Email → Signature) must
+   carry the Badge line, because the templates end at "Danielle" and HubSpot
+   appends her default signature:
+   `Danielle Brodetsky / Director of School Partnerships, A+ Tutoring /
+   Tutoring Program Design Badge, National Student Support Accelerator at
+   Stanford University, 2026 to 2029`.
+2. Send a test enrollment to herself from each sequence and read it once.
+
+**Enrolling (Danielle, from her connected inbox):**
+1. Sequence 1: list 3210, batches of 50 per day starting Tue 9/8, 9am.
+   Day 10: for anyone on list 3214 still silent, a two-line note in the same
+   thread naming one family from `python3 scripts/teacher_roster.py <email>`.
+   "Send it" replies: same script, paste.
+2. Sequence 2: list 3211 at 50 a day, iLEAD first (130), then Sage Oak (47),
+   then Blue Ridge (26).
+3. Unenroll on reply is HubSpot-default. Nomination-form submission also exits:
+   both sequences should add "Teacher Scholarship Program Form submitted" as an
+   unenroll trigger under Automate (portal setting, not built).
 
 ## Campaign rail (scripted; publish + enable on send day)
 
