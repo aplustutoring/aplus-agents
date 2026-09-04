@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**44 registered agents** — 30 active · 11 manual · 3 deprecated · across 11 engines.
+**45 registered agents** — 31 active · 11 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -44,7 +44,7 @@ outranks those two. HubSpot is where humans act.
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
 | Fleet health | 6 | 5 |
-| Charter analysis | 6 | 0 |
+| Charter analysis | 7 | 1 |
 | Events | 1 | 1 |
 | Tutor issues | 1 | 1 |
 
@@ -52,7 +52,7 @@ outranks those two. HubSpot is where humans act.
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (17):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
+**Writes to live systems on its own (18):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `teacher-sequence-enroll`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
 **Reports, drafts, or waits for a human (13):** `topic-gen`, `blog-metrics`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
@@ -170,6 +170,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
+| **teacher-sequence-enroll**<br>Teacher outreach 26/27 daily sequence enroller | schedule | active | ops/messenger/teacher-sequences.yml, HubSpot:lists 3210 / 3214 / 3211, HubSpot:contacts | HubSpot:sequence enrollments — POST /automation/v4/sequences/enrollments as Danielle, ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json, Slack DM: batch summary to Danielle |
 | **charter-gap-analysis**<br>Charter gap analysis (manual report) | manual | manual | HubSpot:deals, HubSpot:contacts, Teachworks | GitHub: run artifact charter_gap_analysis.xlsx (7-day retention), HubSpot:contacts — ONLY with write_props=true: last_tutor_name + student_first_name onto list-3104 contacts, UPDATE-only import |
 | **teacher-outreach-2026-09**<br>Teacher outreach 26/27 (lists, drafts, workflows, roster) | manual<br>*local* | manual | HubSpot:contacts, HubSpot:deals | HubSpot:lists 3210-3215 — static audience lists, HubSpot:marketing emails 221134168440/845/849, HubSpot:workflows 1878517306 |
 | **tw-invoice-backfill**<br>TW invoice-submitted backfill (verified) | manual | manual | HubSpot:deals, Teachworks:invoices | HubSpot:deals — ONLY with apply=true: invoice_submitted_date + Invoice Submitted stage, on TW-verified deals |
@@ -179,6 +180,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 - **charter-gap-analysis** — Read-only by default
 - **teacher-outreach-2026-09** — Roman "Go" 2026-09-04
+- **teacher-sequence-enroll** — Built 2026-09-04 (Danielle: "I love that idea")
 - **tw-tutor-active-check** — Guards the campaign's personalization tokens — never promise a family a tutor who has left
 - **tw-invoice-xref** — Recent PO deals <-> Teachworks invoices
 - **tw-invoice-backfill** — One-off, written to clear the 2026-08-07..09 invoice-sweep backlog
