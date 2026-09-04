@@ -46,7 +46,11 @@ def _sender_flows() -> dict:
             continue
         for a in (w.get("actions") or []):
             fl = a.get("fields") or {}
-            if ("to_number" in fl and "body" in fl) or "content_id" in fl:
+            # native SMS (to_number/body), email (content_id), AND third-party
+            # app SMS (phoneNumber/messageBody — the uninstalled integration
+            # whose dead actions silently no-opped trial texts for months)
+            if ("to_number" in fl and "body" in fl) or "content_id" in fl \
+                    or ("phoneNumber" in fl and "messageBody" in fl):
                 out[str(f["id"])] = (w.get("name") or "").strip()
                 break
     return out
