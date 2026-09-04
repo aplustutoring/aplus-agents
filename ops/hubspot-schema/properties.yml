@@ -741,22 +741,22 @@ properties:
       type: string
       fieldType: text
     - name: student_first_name
-      label: "Student First Name"
+      label: "[Agent] Student First Name"
       group: dealinformation
       type: string
       fieldType: text
     - name: student_last_name_if_diff_from_parent
-      label: "Student Last Name"
+      label: "[Agent] Student Last Name"
       group: scheduling_information
       type: string
       fieldType: text
     - name: student_grade
-      label: "Student Grade"
+      label: "[Agent] Student Grade"
       group: dealinformation
       type: string
       fieldType: text
     - name: student_school
-      label: "Student School"
+      label: "[Agent] Student School"
       group: charter
       type: string
       fieldType: text

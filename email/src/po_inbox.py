@@ -50,8 +50,10 @@ PO_SYSTEM = (
     "(we convert; never guess hours from a session count). "
     "po_month = the SERVICE month the PO covers (when the tutoring happens — often the "
     "PO's service period, coverage dates, or month column; NOT the issue date), formatted "
-    "YYYY-MM (e.g. 2026-09). A PO spanning several months → the FIRST month. Empty only "
-    "when no service period is stated anywhere. "
+    "YYYY-MM (e.g. 2026-09). A PO spanning several months → the FIRST month. ALSO "
+    "return service_end_month (YYYY-MM): the LAST month of the service period — for a "
+    "single-month PO the same as po_month; for a range like 8/31/26-11/13/26 the final "
+    "month (2026-11). Empty only when no service period is stated anywhere. "
     "amount = the PO/authorization VALUE — what we invoice the school. OPS/iLEAD forms "
     "often show BOTH the PO value AND a smaller vendor payout net of the platform fee "
     "(e.g. Value 150.00 but payout 140.00): ALWAYS use the PO value / 'Total Cost' "
@@ -495,7 +497,8 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
     ic = cfg()["po_inbox"].get("invoice_task", {})
     if not ic.get("enabled") or not po.get("amount"):
         return
-    month_end = _po_month_end(po.get("po_month") or "")
+    month_end = _po_month_end(po.get("service_end_month")
+                              or po.get("po_month") or "")
     try:
         prop = (ic.get("invoice_due_property") or "").strip()
         if prop and month_end and deal_id and deal_id != "DRYRUN":
@@ -521,10 +524,16 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         pending_line = ("\n⏳ PO is PENDING school approval (order agreement) — confirm it is "
                         "approved before submitting the invoice." if po.get("pending_approval") else "")
         rate_bit = f" @ ${po.get('rate')}/hr" if po.get("rate") else ""
+        import re as _re
+        po_disp = po.get("po_number") or "n/a"
+        m = _re.match(r"^(.*?)-([A-Z][a-z]+(?:[A-Z][a-z]+)+)$", str(po_disp))
+        if m:   # per-student synthesized key (one school PO, many students)
+            po_disp = (f"{m.group(1)}  <-- the SCHOOL'S PO number for the invoice "
+                       f"(our per-student key: {po.get('po_number')})")
         body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual)."
                 f"{pending_line}\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
-                f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
+                f"PO #: {po_disp}\nAmount: ${po.get('amount')}\n"
                 f"Hours: {po.get('hours') or 'n/a'}{rate_bit}\n"
                 f"{submit_line}\n"
                 f"THEN fill on the HubSpot deal: 'Invoice #' (the TW invoice number) and "
@@ -565,7 +574,9 @@ def _split_pos(po: dict) -> list[dict]:
         for x in subs:
             sub = {**po, "pos": None, "po_number": _norm_po_number(x["po_number"]),
                    "amount": x.get("amount"), "hours": x.get("hours"),
-                   "po_month": x.get("po_month") or po.get("po_month")}
+                   "po_month": x.get("po_month") or po.get("po_month"),
+                   "service_end_month": x.get("service_end_month")
+                                        or po.get("service_end_month")}
             # multi-STUDENT certificates: per-entry student/parent fields win
             for k in ("student_first", "student_last", "grade", "parent_first",
                       "parent_last", "parent_email", "parent_phone", "rate", "rate_unit"):
@@ -1426,6 +1437,10 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         # deal to the right channel by pipeline (Roman, 2026-08-10).
         extra = {"po_number": po_num,
                  "should_this_deal_be_posted_to_a_slack_channel_": "true"}
+        # Deal Description carries the extraction summary (Roman 2026-09-04:
+        # the deal itself should say what the PO says, not just the ticket)
+        if (po.get("summary") or "").strip():
+            extra["description"] = po["summary"].strip()[:1500]
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
         # Resolve the PARENT contact FIRST — the deal name leads with the parent
@@ -1772,6 +1787,13 @@ def _handle_cancellation(po: dict, note_parts: list[str]) -> None:
                 note_parts.append(f"⚠️ CANCELLATION for PO {po_num}: could not update deal "
                                   f"'{name}' ({e}) — stop and zero it manually.")
                 continue
+            try:
+                closed_tasks = hs.complete_invoice_tasks_for_po(po_num)
+                if closed_tasks:
+                    note_parts.append(f"🗂️ Closed {closed_tasks} open convert-to-invoice "
+                                      f"task(s) for the cancelled PO.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  convert-task close failed (non-fatal): {e}")
             try:
                 hs.add_deal_note(deal_id,
                                  f"🛑 PO {po_num} CANCELLED by the school "

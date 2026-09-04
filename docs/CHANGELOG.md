@@ -8,6 +8,37 @@ Newest entries first.
 
 ---
 
+## 2026-09-04 — Correctness set: due dates, cancellations, persist alarm, twins
+
+Six fixes from the day's audits (Roman: "go"):
+1. **Date-range POs**: extractor now returns service_end_month; the invoice
+   due date uses the END of the range, not the first month (IEM/Canales POs
+   were stamping already-past due dates on day one). Both live Canales deals
+   corrected to 2026-11-30.
+2. **Cancellations close the convert-task** (hs.complete_invoice_tasks_for_po)
+   — a cancelled PO no longer leaves a task telling Kath to invoice it. The
+   stale Emma Savoie task closed in-session.
+3. **Persist-failure alarm, all 11 state-committing workflows**: the retry
+   loop's silent fall-through (which ate the Lia-recovery run's audit records
+   while reporting success) now verifies the push, posts 🧨 to
+   #agent-feedback, and FAILS the job so the retry sweeper takes over. Bonus
+   root-cause fix: the rebase now targets the RUNNING branch, not
+   hard-coded main — the very conflict that lost those records.
+4. **Deal Description** now carries the extraction summary (Roman noticed
+   deals said nothing about their PO).
+5. **[Agent] relabels** on the four deal student properties (portal +
+   properties.yml) with AGENT PROPERTY descriptions — the portal has
+   identically-labeled Pilibos twins (pilibos_student_first_name etc.) that
+   made agent-filled fields look empty in Roman's views. Labeling rule
+   compliance, 3 weeks late.
+6. **Multi-student certificate invoice tasks** show the school's BARE PO
+   number next to our per-student key (Heartland requires their number on
+   the invoice; Kath was left to strip the -StudentName suffix by hand).
+   CamelCase-suffix detection leaves real dashed numbers (105712-C029-LVC)
+   untouched.
+**Files:** email/src/{po_inbox,hubspot_client}.py, all 11 state-committing
+workflow ymls, ops/hubspot-schema/properties.yml,
+email/tests/test_po_inbox.py (6 new; suite 410 green).
 ## 2026-09-04 (later) — Teacher outreach: both sequences assembled in-portal; PR #179 merged
 
 **What:** The two sequence-rail sequences are built and shared with Everyone, so
