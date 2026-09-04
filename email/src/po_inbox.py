@@ -1527,6 +1527,22 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             contact_bit = ("NO parent contact info in the PO and no unique family match — "
                            "parent-info request drafted to the TOR/sender (see 📨); once it "
                            "lands the contact is auto-created and associated, ")
+        # The stamp writes po["parent_email"/"parent_phone"] — when the PO didn't
+        # state them but the parent WAS resolved (prior deal, family match), feed the
+        # resolved values back so the deal properties are always filled (Aug audit:
+        # 98/121 deals had the parent associated but the property blank).
+        if contact_id and not po.get("parent_email") and parent_email_res \
+                and not _internal_email(parent_email_res):
+            po["parent_email"] = parent_email_res
+        if contact_id and not po.get("parent_phone"):
+            try:
+                c = hs._get(f"/crm/v3/objects/contacts/{contact_id}",
+                            {"properties": "phone,mobilephone"})
+                cp = c.get("properties") or {}
+                if cp.get("phone") or cp.get("mobilephone"):
+                    po["parent_phone"] = cp.get("phone") or cp.get("mobilephone")
+            except Exception:  # noqa: BLE001 — phone backfill is best-effort
+                pass
         if contact_id and not parent_name and p_email:
             parent_name = p_email.split("@")[0]
         # The RESOLVED family email feeds the deal stamp too (Roman, 2026-08-26):

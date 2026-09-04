@@ -72,6 +72,51 @@ way.
 `email/tests/test_po_sources.py` (19 new; suite 374 green), `docs/PO-PROCESS.md`.
 
 ---
+---
+
+## 2026-09-03 — SMS live + zombie flow killed + welcome email agent-owned
+
+**Go-live:** agent SMS (PR #144) merged with Roman's locked copy (name the
+kid, "their", brand voice, pending=approved), fence moved to 2026-09-03, the
+JustCall probe verified live by Roman. First production sweep: clean zero.
+
+**Zombie:** at 4:28 PM, 8 min BEFORE the merge, the "dead" HubSpot flow
+1603217415 woke up and sent Marissa Escandon the old garbled template (its
+stuck enrollment recovered for the first fresh contact). Contained to one
+family (JustCall carrier receipts: 2 texts, both delivered). Response: flow
+DISABLED by state (revision 43, was only dead by luck), Escandon deal marked
+sms_sent on main so the new sweep never double-texts, Paola (who owned the
+live thread since 8/27) smooths it over. Lesson for the record: a stuck
+workflow is a landmine, not a corpse — "dead" was verified, "off" was not.
+
+**Welcome email (this commit, Roman: "option A, build that shit"):** the
+flow's one email action was NOT internal staff mail as PO-PROCESS claimed —
+it was "What to Expect (Charter)" TO THE FAMILY (58.3% opens, 10 replies,
+0 spam over 432 sends), dark since Aug 13 with the texts. Now agent-owned:
+`sms._send_welcome` sends it via RESEND alongside each family text (same
+fence/dedupe/audit). Why Resend: HubSpot's single-send probed live ->
+MISSING_SCOPES, and the portal cannot grant transactional-email at all
+("Your account doesn't have access to this scope") — no add-on. Resend
+already sends for the verified wetutorathome.com domain (booth agent), the
+key in .env is send-only. Sender = "A+ Tutoring Success Team
+<admin@wetutorathome.com>" (Roman: "can it go out from admin?") — the SAME
+address replies go to, and admin@ is the HubSpot-Conversations inbox, so
+replies land in the triage agent's queue. HubSpot BCC log address on every
+send stamps the contact timeline. Copy ported VERBATIM to
+email/templates/welcome_charter.html (one stale line fixed: "auto text from
+my direct #" now describes the agent's text); edits via PR, not HubSpot.
+Marketing-consent suppression (70 families!) is gone; a failed email never
+voids the text (audited welcome_email_error + Kath DM). Gmail-send was
+considered and deferred: it needs domain-wide gmail.send, which would let
+the service account send AS ANYONE in the domain — too big a blast radius
+for one email. Locked-rule AMENDMENT (Roman): the agent's outbound emails =
+tutor-doc receipt + this welcome send.
+**Files:** email/src/{sms,config}.py, email/config.yaml,
+email/templates/welcome_charter.html, .github/workflows/email-deal-sync.yml
+(RESEND_API_KEY env), email/tests/test_sms.py (4 new; suite 371 green),
+docs/PO-PROCESS.md.
+**Roman before merge:** add the RESEND_API_KEY GitHub secret (same key as
+.env), then the live probe in the session notes.
 
 ## 2026-09-02 — Campaign routing logged as #AP046
 
@@ -655,6 +700,33 @@ actually lives in; absent evidence is never read as absence of action."
 
 
 ---
+
+## 2026-08-28 — Transactional SMS moves from HubSpot workflows to the agent
+
+**What:** `email/src/sms.py` — a deal-driven SMS sweep run from deal_sync
+every ~15 min, sending via JustCall (line +18188691627, the one schedulers
+answer). Phase 1 covers Charter Trad (pipeline 907748). Branch semantics
+mirror the old flow in tested code: tutored Yes → text now; No → DM the
+deal's owner, text next sweep; unset → skip, audited. Guardrails: one text
+per deal (audit key), one per FAMILY per 24h (4-PO emails send 1 text),
+quiet hours 8-20 PT, `sms.start_date` hard fence (2026-08-29 — the backlog
+can never be texted), opt-out property hook, em-dash scrub, 3-strike retry
+then manual-text flag. Config under `sms:` in config.yaml.
+**Why:** the HubSpot flow chain (stamp deal → stage-copy workflow → contact
+flow → self-clearing trigger property) died silently on an Aug 13 edit — no
+charter family texted for two weeks, zero alerts. Workflows are unversioned,
+untested, and fail silent; the agent is none of those. Sweeping DEALS also
+covers manually created deals — the Free Trial pipeline was NEVER wired to
+any SMS flow (Yolanda's Perez/Motiwalla/Villarroel report).
+**Cutover:** flow 1603217415 is already dead (left disabled-in-effect); a
+pipeline's flow must be OFF before it's added to `sms.pipelines`. Phase 2/3:
+gold/in-person + trial pipelines, then retire the stage-copy workflow and
+`contact_level_deal_stage`. 54 stale enrollment flags remain to clear
+(scripts ready; classifier blocked in-session, Roman runs them).
+**Files:** email/src/{sms,config,deal_sync}.py, email/config.yaml,
+email/tests/test_sms.py (10 new; suite 342 green), docs/PO-PROCESS.md.
+**Decision to log:** transactional SMS is agent-owned; workflows are for
+nothing customer-facing that the fleet can do in code.
 
 ## 2026-08-28 — Parent resolution: never guess across families (Mateo Murray-Fiore)
 
@@ -3454,3 +3526,30 @@ in one surface weren't reliably visible in the other. The repo is now the
 shared memory; the protocol makes documentation a mandatory session exit step.
 
 **Files:** `CLAUDE.md`, `docs/CHANGELOG.md`.
+
+## 2026-09-03 — Property audit of post-8/1 deals + always-filled parent props (PR #172)
+**Why:** Roman's review of deal properties on the 266 deals created since 8/1 found
+parent_email blank on 98/121 charter PO deals (parent associated, stamp only used
+PO-stated values), 27 iLead deals missing hours (8/16-8/24 multi-PO batches), and
+B2C hygiene gaps (27/30 Gold deals with no amount; junk school values).
+**What:** po_inbox now feeds the RESOLVED parent's email/phone into the deal-property
+stamp when the PO doesn't state them; one-off backfill_deal_props workflow repaired
+August (106 parent stamps + 23 hours fixes, 4 non-$75-rate deals flagged for humans,
+0 failures — post-run: 0 charter deals since 8/1 missing parent_email); weekly digest
+gained a read-only B2C hygiene block (no amount / junk school). McGraw "duplicate"
+deals confirmed NOT a dedupe miss: iLead double-issued two PO batches (3114140191-93
++ 3114140221-23) 30s apart — needs human verification with iLead.
+**Files:** email/src/po_inbox.py, email/src/digest.py, email/src/backfill_deal_props.py,
+.github/workflows/email-backfill-deal-props.yml, email/tests/test_digest_hygiene.py.
+
+## 2026-09-04 — Gold deal amounts from the latest Teachworks invoice (PR #174)
+**Why:** Roman: Gold (and Gold-Renewal, its own pipeline) deals created without an
+amount should carry the family's most CURRENT TW invoice total; 35 of 44 post-8/1
+Gold deals had no amount.
+**What:** tw.latest_invoice + ongoing stamp in deal_sync (config
+deal_sync.gold_amount_pipelines, Free Trial excluded) + gold-amounts pass in
+backfill_deal_props. Backfilled 35 deals (0 failures; Fakheri x2 have no TW
+invoice — manual). Workflow env gained TW tokens (dry run caught 39/39 lookups
+failing without them). CAVEAT flagged to Roman: sibling deals share one family
+invoice (Khemani x2 @$3,650, Hwang x4 @$2,800, Gukasov x2 @$1,660) so summed
+pipeline revenue double-counts those families.

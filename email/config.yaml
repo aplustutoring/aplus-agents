@@ -84,7 +84,9 @@ hourly_update:
 owner_task:
   enabled: true
 
-# Tutor-document auto-receipt (the agent's ONLY outbound email). sender_actor_id is
+# Tutor-document auto-receipt. Amended 2026-09-03 (Roman, Option A): the agent's
+# outbound emails are this receipt PLUS the What-to-Expect single-send that rides
+# each new-PO family text (sms.pipelines.*.welcome_email_id). sender_actor_id is
 # "A-{hubspot userId}" of the agent it sends as (Kath). Empty = disable the receipt.
 doc_receipt:
   sender_actor_id: "A-59969437"   # Kath Hitosis
@@ -99,6 +101,44 @@ monday:
 google_sheets:
   dashboard_sheet_id: "1_eSSJ5EtlENv_idZ3LHHeK5_Pc1Jstlb-fYdx_6HfPw"
   dashboard_tab: "Email Agent"
+
+# ── Agent-owned transactional SMS (Roman 2026-08-28: replace workflow SMS) ──
+# Sweeps Pre-Lesson deals in each listed pipeline every deal-sync cycle and
+# texts the family via JustCall. Phase 1 = Charter Trad only; the dead HubSpot
+# flow (1603217415) stays OFF — turn a pipeline's flow off BEFORE listing it
+# here (that ordering is what makes double-texting impossible).
+sms:
+  enabled: true
+  justcall_number: "+18188691627"   # the line schedulers answer; replies thread there
+  start_date: "2026-09-03"          # HARD fence: deals created before this never text (go-live day, Roman)
+  send_hour_start_pt: 8             # quiet hours: no sends outside 8am-8pm PT
+  send_hour_end_pt: 20
+  fallback_alert: charter_admin     # role DM'd on 3x send failure / no owner match
+  opt_out_property: ""              # contact property that suppresses sends, if set
+  pipelines:
+    "907748": { template: charter_po, welcome: true }   # Charter Trad; text + What-to-Expect email
+  # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
+  # gender), brand voice (no personal sign-off). Variant chosen by what we
+  # KNOW: schedule on file means confirm; none means ask (the old flow pasted
+  # the ask-fallback into the confirm sentence and shipped gibberish for
+  # months). A multi-kid PO day is ONE text naming every student. Pending
+  # approval OAs text normally (Roman: "for us it means approved"). NO EM
+  # DASHES ever (locked outbound rule; the scrub enforces it anyway).
+  # The What-to-Expect onboarding email rides each family text (Roman
+  # 2026-09-03, Option A). Delivery = Resend (HubSpot portal lacks the
+  # transactional-email scope); replies -> admin@ (triage agent's inbox);
+  # HubSpot BCC log address stamps every send on the contact timeline.
+  # Copy lives in email/templates/welcome_charter.html (edit via PR).
+  welcome:
+    template: "templates/welcome_charter.html"
+    from: "A+ Tutoring Success Team <admin@wetutorathome.com>"   # same identity replies go to
+    reply_to: "admin@wetutorathome.com"
+    subject: "We received your PO! Ready to Launch: Next Steps"
+  templates:
+    charter_po_confirm: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. Want to confirm this schedule still works: {schedule}. Reply here to confirm or change it."
+    charter_po_ask: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. What days and times work best for their sessions? Reply here and we will get them booked."
+    charter_po_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. Want to confirm their schedules still work? Reply here and we will get everything set."
+    charter_po_multi_ask: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. What days and times work best for their sessions? Reply here and we will get them booked."
 
 # ── Staff registry ───────────────────────────────────────────────
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
@@ -198,6 +238,9 @@ deal_sync:
   # Package billing in Teachworks by default, listed here or not.
   charter_pipelines: ["907748", "72281989", "88841552", "5119061"]
   exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
+  # Gold deals get their amount from the family's most CURRENT Teachworks invoice
+  # when created without one (Roman 2026-09-03). Free Trial excluded ($0 by design).
+  gold_amount_pipelines: ["default", "16547180"]
   charter_student_billing: "Package"
   private_student_billing: "Service List Cost"
   # Per-pipeline Teachworks overrides — each ONLINE pipeline can need different TW
