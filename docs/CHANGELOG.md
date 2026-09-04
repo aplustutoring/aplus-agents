@@ -8,6 +8,26 @@ Newest entries first.
 
 ---
 
+## 2026-09-04 — Sibling-gap tripwire (Roman: "how do we raise a red flag?")
+
+**What:** `email/src/sibling_gaps.py`, daily from deal_sync — a family that
+renewed SOME kids but has a last-season-active sibling with no new PO gets
+flagged to the charter_sales seat, once per family+kid per season, only
+after the family's newest PO is settle_days (5) old (siblings' OAs arrive
+spread out: Fiore 16 min, Bernard 2 days — day-one flags would cry wolf).
+Whole-family non-renewals are deliberately NOT flagged (that's the renewal
+chase list, 228 families as of today, not a red flag).
+**Why:** one manual query found three live cases in the current book —
+Eliana Fiore, Zahavi Villa, Abigail Miller — every one a renewing family
+with one kid missing paperwork, the strongest school-side-miss signal there
+is. Those three are seeded into the audit log (Paola already DM'd in
+session) so the first run doesn't duplicate. Backstory: the same sweep of
+the whole cursor-race era proved Lia Beck's was the ONLY email ever lost by
+us — these gaps are school-side, which is exactly why they route to a human.
+**Files:** email/src/{sibling_gaps,deal_sync}.py, email/config.yaml
+(sibling_gap block), email/state/audit_log.jsonl (3 seeds),
+email/tests/test_sibling_gaps.py (6 new; suite 385 green), docs/PO-PROCESS.md.
+
 ## 2026-09-03 — SMS live + zombie flow killed + welcome email agent-owned
 
 **Go-live:** agent SMS (PR #144) merged with Roman's locked copy (name the

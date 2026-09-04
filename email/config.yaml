@@ -140,6 +140,20 @@ sms:
     charter_po_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. Want to confirm their schedules still work? Reply here and we will get everything set."
     charter_po_multi_ask: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. What days and times work best for their sessions? Reply here and we will get them booked."
 
+# ── Sibling-gap tripwire (Roman 2026-09-04) ─────────────────────
+# A family renews SOME kids and one is left out — the strongest miss signal
+# there is (a renewing family means to continue). Daily check; flags to the
+# charter_sales seat once per family+kid per season, only after settle_days
+# (siblings' OAs arrive spread out — Fiore 16 min apart, Bernard 2 days).
+sibling_gap:
+  enabled: true
+  hour_pt: 10
+  settle_days: 5
+  season_start: "2026-08-15"
+  prior_window_start: "2026-02-01"   # active at the END of last season
+  prior_window_end: "2026-07-15"
+  notify: charter_sales
+
 # ── Staff registry ───────────────────────────────────────────────
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
 staff:

@@ -378,6 +378,13 @@ def run() -> None:
         import traceback as _tb
         print(f"⚠️  sms sweep error: {e}")
         _tb.print_exc()
+    try:
+        from . import sibling_gaps
+        sibling_gaps.run()
+    except Exception as e:  # noqa: BLE001 — the tripwire must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  sibling_gap error: {e}")
+        _tb.print_exc()
 
 
 if __name__ == "__main__":
