@@ -605,9 +605,13 @@
     411556823,
     411566869,
     411575268,
-    411582259
+    411582259,
+    411604978,
+    411592578,
+    411606571,
+    411610001
   ],
-  "last_run_utc": "2026-09-03T23:28:09.313416+00:00",
+  "last_run_utc": "2026-09-04T01:17:04.846639+00:00",
   "pending_digest": [
     {
       "call_id": 411426062,
@@ -1377,6 +1381,166 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 411604978,
+      "number": "18182326188",
+      "time_pt": "5:23 PM",
+      "matched": true,
+      "contact_label": "Genevieve (NBCUniversal) Halili",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Genevieve Halili called to check the status of a tutoring package purchased about a year ago for her daughter Isabelle Rubio. Yolanda confirmed 5 unused hours remain on the 8.5-hour improvement package. Genevieve will send an email to admin@wetutorathome.com tonight with subject and availability to schedule new sessions for the new year. Friendly, positive call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for Genevieve's email to admin@wetutorathome.com tonight with Isabelle's subject need and availability, then schedule sessions against the remaining 5 hours.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Genevieve Halili (mom, friendly) called about her daughter Isabelle Rubio's existing package \u2014 she has 5 unused hours left of an 8.5-hour improvement package purchased ~1 year ago, all online. She's planning to resume sessions for the new year and will email admin@wetutorathome.com tonight (from her or Isabelle, cc'd) with the subject and Isabelle's availability. She expects us to reply to that email and get sessions on the calendar against the remaining 5 hours. Open with: 'Hi Genevieve \u2014 got your email, happy to get Isabelle back on the schedule; you have 5 hours left on the package. Here are some times that work\u2026' Note: record has student as 'Izzy' at Notre Dame, grade 11, prior need Honors Geometry \u2014 confirm current subject in the email thread.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active package (5 hours remaining) calling about their service \u2014 status is owned by the deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Isabelle Rubio",
+          "Izzy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Genevieve called to check her package balance and restart sessions for the new year for daughter Isabelle Rubio. Confirmed 5 unused hours remain on the 8.5-hour improvement package. She will email admin@wetutorathome.com tonight with subject need and Isabelle's availability.",
+          "what_we_can_do_to_help": "Watch for Genevieve's email tonight, confirm subject/availability, and schedule online sessions against the remaining 5 hours on her package.",
+          "student_first_name": "Isabelle",
+          "student_last_name": "Rubio",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Genevieve called to check her package balance and restart sessions for the new year for daughter Isabelle Rubio. Confirmed 5 unused hours remain on the 8.5-hour improvement package. She will email admin@wetutorathome.com tonight with subject need and Isabelle's availability."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Watch for Genevieve's email tonight, confirm subject/availability, and schedule online sessions against the remaining 5 hours on her package."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Rubio"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Izzy",
+          "Isabelle",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Watch for Genevieve's email to admin@wetutorathome.com tonight with Isabelle's subject need and availability, then schedule sessions against the remaining 5 hours.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 411592578,
+      "number": "16503050039",
+      "time_pt": "4:39 PM",
+      "matched": true,
+      "contact_label": "Aamer Khani",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Aamer Khani to follow up on his prior inquiry about ELA tutoring for his 9th grader Adil. Aamer said the family is already working with another tutoring company and is not moving forward with A+ at this time. Paola thanked him, noted the earlier email is available if they ever need us, and ended the call cordially.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Mark Aamer Khani's inquiry as lost \u2014 family chose another tutoring company; keep record warm for future re-engagement.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Aamer told us the family is already working with another tutoring company, so this lead is not moving forward with A+ at this time.",
+        "student_or_school_names_mentioned": [
+          "Adil",
+          "Pacific Charter Institute"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola reached Aamer on follow-up call. He said the family is already working with another tutoring company for Adil and is not moving forward with A+ at this time. Call ended cordially.",
+          "what_we_can_do_to_help": "No active next steps \u2014 family went with another provider. Keep the door open: our prior email stands as a reference if they ever want to revisit A+ for Adil's ELA support.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola reached Aamer on follow-up call. He said the family is already working with another tutoring company for Adil and is not moving forward with A+ at this time. Call ended cordially."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "No active next steps \u2014 family went with another provider. Keep the door open: our prior email stands as a reference if they ever want to revisit A+ for Adil's ELA support."
+        ],
+        [
+          "lead_status",
+          "QTL - NEW",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Mark Aamer Khani's inquiry as lost \u2014 family chose another tutoring company; keep record warm for future re-engagement.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1393,6 +1557,16 @@
     {
       "number": "13237061274",
       "time_pt": "3:33 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "13237061274",
+      "time_pt": "5:36 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "17072356998",
+      "time_pt": "5:50 PM",
       "reason": "hang-up"
     }
   ],
