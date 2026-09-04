@@ -675,6 +675,15 @@ def update_ticket_stage(ticket_id: str, stage_id: str) -> dict:
                   {"properties": {"hs_pipeline_stage": stage_id}})
 
 
+def stamp_campaign_reply(contact_id: str) -> dict:
+    """Set [Agent] Campaign Replied = Yes on a contact who replied to a campaign send
+    (classifier categories campaign_school / campaign_family). Sequences and
+    workflows use it as an exit criterion; reports use it to count replies that
+    landed at info@ and never touched hs_email_last_reply_date."""
+    return _write("PATCH", f"/crm/v3/objects/contacts/{contact_id}",
+                  {"properties": {"campaign_replied": "true"}})
+
+
 def thread_has_outbound_reply(thread_id: str, exclude_message_id: str | None = None,
                               after_ts: str | None = None) -> bool:
     """True if a human outbound MESSAGE exists on the thread AFTER `after_ts`

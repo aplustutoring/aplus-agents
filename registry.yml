@@ -723,6 +723,35 @@ agents:
       ops/messenger/campaign.yml. The TW key lives ONLY in Actions secrets —
       fetch results via the run artifact, never by running this locally.
 
+
+  - id: teacher-outreach-2026-09
+    runtime: local
+    engine: Charter analysis
+    name: Teacher outreach 26/27 (lists, drafts, workflows, roster)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: manual
+    entrypoint: scripts/teacher_outreach_lists.py
+    reads:
+      - HubSpot:contacts                     # a_persona = Teacher of Record/EF/ES, school_canonical, generic_inbox, opt-out, bounce, Summit-sequence enrollment
+      - HubSpot:deals                        # charter deal $ by teacher_of_record_email (top-30 ranking, rosters)
+    writes:
+      - "HubSpot:lists 3210-3215 — static audience lists (--build-lists)"
+      - "HubSpot:marketing emails 221134168440/845/849 (stranger schools) + 221134168444/853/856 (IEM) as AUTOMATED_DRAFT (teacher_outreach_drafts.py --create)"
+      - "HubSpot:workflows 1878517306 (wave 1) + 1878501648 (IEM), created OFF (teacher_outreach_workflows.py --create)"
+    depends_on:
+      - scripts/teacher_school_stamp.py       # school_canonical + generic_inbox must be stamped first
+      - scripts/teacher_outreach_drafts.py    # campaign-rail email drafts (clone of 219949380453)
+      - scripts/teacher_outreach_workflows.py # campaign-rail workflows, cloned from 1868435042's shape
+      - scripts/teacher_roster.py             # "send it" roster for Sequence 1 replies
+      - ops/messenger/templates/teacher-outreach-2026-09/   # copy, source of truth
+    notes: >
+      Roman "Go" 2026-09-04. Council record: docs/councils/2026-09-02-charter-
+      teacher-outreach.md. Handoff: ops/messenger/CAMPAIGN-2026-09-08-teachers.md.
+      Sequences 1 and 2 are assembled by Danielle in the portal (sales templates
+      have no API); the campaign rail is fully scripted. All scripts are dry-run
+      by default. Email only, no calls (Roman 2026-09-03).
   - id: tw-tutor-active-check
     runtime: github-actions
     engine: Charter analysis

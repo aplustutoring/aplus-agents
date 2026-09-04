@@ -8,6 +8,48 @@ Newest entries first.
 
 ---
 
+## 2026-09-04 — Charter teacher outreach 26/27 built (lists, drafts, workflows, reply stamp, roster)
+
+**What:** Roman "Go" on the council plan (`docs/councils/2026-09-02-charter-teacher-outreach.md`).
+Five static lists (3210 worked-with-us 159, 3211 known-schools cold 203, 3212 stranger-schools
+cold 304, 3215 wave 1 Compass+Elite 122, 3213 IEM Education Specialists 272, 3214 top-30 by
+deal $) via new `scripts/teacher_outreach_lists.py`. Campaign-rail drafts (6, AUTOMATED_DRAFT,
+Danielle from-name, info@ reply-to, cloned from the plain August email 219949380453) via
+`scripts/teacher_outreach_drafts.py`; two workflows created OFF (1878517306 wave 1,
+1878501648 IEM) via `scripts/teacher_outreach_workflows.py`, shape cloned from 1868435042 with
+four exit goals (reply date, `campaign_replied`, scholarship nomination, new 26/27 charter
+deal) and no task step. Copy for both rails in `ops/messenger/templates/teacher-outreach-2026-09/`
+(sequence 1 worked-with-us, sequence 2 known schools, campaign cold). Sequences are assembled
+by Danielle in the portal (sales templates have no API); steps in
+`ops/messenger/CAMPAIGN-2026-09-08-teachers.md`. New contact property `campaign_replied`
+("[Agent] Campaign Replied", master group), created in-portal; `email/src/main.py` stamps it
+when the info@ classifier files a reply as campaign_school / campaign_family
+(`hubspot_client.stamp_campaign_reply`). New `scripts/teacher_roster.py` backs the "send it"
+promise in sequence 1 (deal-based, merges legacy "A -" deal names). Registry entry
+`teacher-outreach-2026-09`. 404 email tests green.
+
+**Why:** teachers received exactly one email this school year (the 8/31 Badge send, 39%
+opened, zero logged replies) and the Aug 17 teacher emails never went out. The council split
+holds: worked-with-us teachers get a plain referral ask, cold teachers get the scholarship as
+the door, Stanford ordered by how well they know us. Locked along the way: email only, no
+calls (Roman 2026-09-03); every student has funds; the school issues the PO; sequence vs
+campaign = whether the teacher would recognise Danielle's name; IEM's 272 Education
+Specialists are real gatekeepers (Dec 2023 directory import, 233 have opened our email) and
+run as their own campaign wave in parallel with a central-office note; scholarship cap 40.
+
+**Not built (Roman/Danielle):** post-trial teacher email at "Trial Complete" (the step that
+turns scholarships into POs); Danielle's IEM central-office note; retiring the program's
+call-first stage-1 emails. Publish + enable happen in the portal on send day (publish scope
+unavailable to the API).
+
+**Files:** `scripts/teacher_outreach_lists.py`, `scripts/teacher_outreach_drafts.py`,
+`scripts/teacher_outreach_workflows.py`, `scripts/teacher_roster.py` (all new),
+`ops/messenger/templates/teacher-outreach-2026-09/` (3 new), `ops/messenger/CAMPAIGN-2026-09-08-teachers.md`
+(new), `ops/messenger/state/teacher-outreach-2026-09/` (id snapshots), `email/src/main.py`,
+`email/src/hubspot_client.py`, `ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-04 — Sibling-gap tripwire (Roman: "how do we raise a red flag?")
 
 **What:** `email/src/sibling_gaps.py`, daily from deal_sync — a family that
