@@ -103,6 +103,26 @@ def create_student(fields: dict, token: str) -> dict:
     return tw_write("POST", "students", fields, token)
 
 
+def latest_invoice(customer_id, token: str | None = None) -> dict | None:
+    """The family's most CURRENT invoice → {total, number, date}. Teachworks payload
+    field names vary; read liberally and skip zero/void totals."""
+    invs = tw_get("invoices", {"customer_id": customer_id}, token=token)
+    def _d(i):
+        return _safe_date(i.get("date") or i.get("invoice_date") or i.get("created_at")) or ""
+    for i in sorted(invs, key=_d, reverse=True):
+        total = (i.get("total") if i.get("total") is not None else
+                 i.get("total_amount") if i.get("total_amount") is not None else
+                 i.get("amount") if i.get("amount") is not None else i.get("grand_total"))
+        try:
+            if total is not None and float(total) > 0:
+                return {"total": float(total),
+                        "number": i.get("number") or i.get("invoice_number") or i.get("id"),
+                        "date": _d(i)}
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
 def find_student_by_email(email: str, token: str | None = None) -> dict | None:
     """Best-effort student lookup by email in one account. Tries the student record,
     then the parent/customer email. Returns the first match or None."""

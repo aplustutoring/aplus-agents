@@ -238,6 +238,9 @@ deal_sync:
   # Package billing in Teachworks by default, listed here or not.
   charter_pipelines: ["907748", "72281989", "88841552", "5119061"]
   exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
+  # Gold deals get their amount from the family's most CURRENT Teachworks invoice
+  # when created without one (Roman 2026-09-03). Free Trial excluded ($0 by design).
+  gold_amount_pipelines: ["default", "16547180"]
   charter_student_billing: "Package"
   private_student_billing: "Service List Cost"
   # Per-pipeline Teachworks overrides — each ONLINE pipeline can need different TW

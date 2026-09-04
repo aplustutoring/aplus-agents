@@ -19,7 +19,7 @@ import os
 
 import requests
 
-from . import hubspot_client as hs
+from . import hubspot_client as hs, teachworks_client as tw
 from .config import DRY_RUN, cfg
 from .deal_sync import _contact_matches_dealname
 
@@ -74,6 +74,66 @@ def _parent_contact(deal_id: str, dealname: str) -> dict | None:
     return None
 
 
+def _gold_deals() -> list[dict]:
+    gold = cfg()["deal_sync"].get("gold_amount_pipelines", ["default", "16547180"])
+    body = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "pipeline", "operator": "IN", "values": list(gold)},
+            {"propertyName": "createdate", "operator": "GTE", "value": SINCE}]}],
+        "properties": ["dealname", "amount", "pipeline"],
+        "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}], "limit": 100}
+    return _search(body).get("results", [])
+
+
+def _first_contact_email(deal_id: str) -> str:
+    try:
+        assoc = hs._get(f"/crm/v3/objects/deals/{deal_id}/associations/contacts")
+        ids = [r.get("toObjectId") or r.get("id") for r in assoc.get("results", [])]
+        if ids:
+            c = hs._get(f"/crm/v3/objects/contacts/{ids[0]}", {"properties": "email"})
+            return ((c.get("properties") or {}).get("email") or "").lower()
+    except Exception:  # noqa: BLE001
+        pass
+    return ""
+
+
+def backfill_gold_amounts() -> None:
+    """Gold + Gold-Renewal deals without an amount → the family's most CURRENT
+    Teachworks invoice total (Roman, 2026-09-03)."""
+    deals = _gold_deals()
+    filled = skipped = 0
+    print(f"gold amounts: {len(deals)} Gold/Renewal deals since {SINCE[:10]}")
+    for d in deals:
+        p = d.get("properties") or {}
+        if (p.get("amount") or "").strip() not in ("", "0", "0.0"):
+            skipped += 1
+            continue
+        email = _first_contact_email(d["id"])
+        if not email:
+            print(f"  ⚠️  no contact email: {p.get('dealname')}")
+            continue
+        inv = None
+        for acct, token in tw.accounts().items():
+            cust = tw.find_customer_by_email(email, token)
+            if cust:
+                inv = tw.latest_invoice(cust.get("id"), token)
+                if inv:
+                    break
+        if not inv:
+            print(f"  ⚠️  no TW invoice found for {email}: {p.get('dealname')}")
+            continue
+        print(f"  {'[DRY] ' if DRY_RUN else ''}{p.get('dealname', '?')[:55]} ← amount "
+              f"${inv['total']:g} (TW invoice {inv.get('number') or '?'}, {inv.get('date') or '?'})")
+        filled += 1
+        if not DRY_RUN:
+            try:
+                hs._write("PATCH", f"/crm/v3/objects/deals/{d['id']}",
+                          {"properties": {"amount": str(inv["total"])}})
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  PATCH failed for {d['id']}: {e}")
+    print(f"gold amounts done: filled {filled}, already had amount {skipped}")
+
+
 def run() -> None:
     deals = _po_deals()
     print(f"backfill: {len(deals)} charter PO deals since {SINCE[:10]} (DRY_RUN={DRY_RUN})")
@@ -118,6 +178,7 @@ def run() -> None:
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  PATCH failed for {d['id']}: {e}")
     print(f"backfill done: parent stamped {stamped}, hours fixed {hours_fixed}, untouched {skipped}")
+    backfill_gold_amounts()
 
 
 if __name__ == "__main__":
