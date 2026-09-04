@@ -72,7 +72,6 @@ way.
 `email/tests/test_po_sources.py` (19 new; suite 374 green), `docs/PO-PROCESS.md`.
 
 ---
----
 
 ## 2026-09-03 — SMS live + zombie flow killed + welcome email agent-owned
 
