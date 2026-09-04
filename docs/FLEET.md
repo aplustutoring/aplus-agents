@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**43 registered agents** — 30 active · 10 manual · 3 deprecated · across 11 engines.
+**44 registered agents** — 30 active · 11 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -44,7 +44,7 @@ outranks those two. HubSpot is where humans act.
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
 | Fleet health | 6 | 5 |
-| Charter analysis | 5 | 0 |
+| Charter analysis | 6 | 0 |
 | Events | 1 | 1 |
 | Tutor issues | 1 | 1 |
 
@@ -56,7 +56,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Reports, drafts, or waits for a human (13):** `topic-gen`, `blog-metrics`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
-**Manual dispatch only (10):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
+**Manual dispatch only (11):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
 
 Note: *writes to live systems* includes agents whose only write is a **draft** (blog drafts, draft replies) — the agent creates the object, a human still ships it. `ARCHITECTURE.md` draws that finer line.
 
@@ -171,12 +171,14 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
 | **charter-gap-analysis**<br>Charter gap analysis (manual report) | manual | manual | HubSpot:deals, HubSpot:contacts, Teachworks | GitHub: run artifact charter_gap_analysis.xlsx (7-day retention), HubSpot:contacts — ONLY with write_props=true: last_tutor_name + student_first_name onto list-3104 contacts, UPDATE-only import |
+| **teacher-outreach-2026-09**<br>Teacher outreach 26/27 (lists, drafts, workflows, roster) | manual<br>*local* | manual | HubSpot:contacts, HubSpot:deals | HubSpot:lists 3210-3215 — static audience lists, HubSpot:marketing emails 221134168440/845/849, HubSpot:workflows 1878517306 |
 | **tw-invoice-backfill**<br>TW invoice-submitted backfill (verified) | manual | manual | HubSpot:deals, Teachworks:invoices | HubSpot:deals — ONLY with apply=true: invoice_submitted_date + Invoice Submitted stage, on TW-verified deals |
 | **tw-invoice-status**<br>TW invoice status by list (read-only) | manual | manual | HubSpot:contacts, Teachworks:invoices (with payment status) | — |
 | **tw-invoice-xref**<br>TW invoice cross-reference (read-only) | manual | manual | HubSpot:deals, Teachworks:invoices | — |
 | **tw-tutor-active-check**<br>TW tutor active check (charter gap) | manual | manual | HubSpot:contacts — [Agent] Last Tutor Name on the gap contacts, Teachworks:employees | HubSpot:contacts — ONLY with write_props=true: [Agent] Last Tutor Active |
 
 - **charter-gap-analysis** — Read-only by default
+- **teacher-outreach-2026-09** — Roman "Go" 2026-09-04
 - **tw-tutor-active-check** — Guards the campaign's personalization tokens — never promise a family a tutor who has left
 - **tw-invoice-xref** — Recent PO deals <-> Teachworks invoices
 - **tw-invoice-backfill** — One-off, written to clear the 2026-08-07..09 invoice-sweep backlog
