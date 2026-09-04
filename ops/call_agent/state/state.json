@@ -615,9 +615,14 @@
     411882442,
     411886157,
     411890023,
-    411894516
+    411894516,
+    411970478,
+    411970171,
+    411924094,
+    411930097,
+    411978142
   ],
-  "last_run_utc": "2026-09-04T18:13:24.212295+00:00",
+  "last_run_utc": "2026-09-04T20:49:49.558291+00:00",
   "pending_digest": [
     {
       "call_id": 411882442,
@@ -885,6 +890,169 @@
       "tasks_created": [
         [
           "Attempt to reach Sophie Crespel again about tutoring for her son if no callback is received",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411924094,
+      "number": "13237061274",
+      "time_pt": "11:36 AM",
+      "matched": true,
+      "contact_label": "Cassandra Contreras",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Janelle (A+) to Cassandra Contreras regarding the purchase order received for her daughter Marissa. Cassandra confirmed the subject need for this year is Chemistry (not pre-algebra) and updated her scheduling preference to Mondays between 12-2pm (no Thursdays). Janelle committed to finding a best-match chemistry tutor for that time slot. Call ended positively.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Match Marissa Contreras with a chemistry tutor available Mondays between 12pm-2pm",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Update Marissa's file to reflect subject change from pre-algebra to Chemistry and schedule preference to Mondays 12-2pm",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Cassandra Contreras (parent, warm/friendly returning charter customer) confirmed her daughter Marissa (11th grade, iLead) needs Chemistry tutoring this year \u2014 NOT pre-algebra as the record said. She wants Mondays anytime between 12pm and 2pm; Thursdays no longer work. Janelle promised to find a best-match chemistry tutor for that window. Cassandra is now expecting us to reach out with a matched tutor and a proposed Monday start time. Open with: 'Hi Cassandra, Janelle passed along that Marissa needs chemistry support on Mondays between 12 and 2 \u2014 I've got a tutor in mind and wanted to get her started.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal / active PO \u2014 status owned by the deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Marissa Contreras",
+          "iLead"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up on Marissa's PO. Cassandra confirmed the subject for this year is Chemistry (not pre-algebra) and updated availability to Mondays 12-2pm; Thursdays no longer work.",
+          "what_we_can_do_to_help": "Match Marissa with a chemistry tutor available Mondays between 12pm and 2pm and get sessions started.",
+          "student_first_name": "Marissa",
+          "student_last_name": "Contreras",
+          "grade_level": "11",
+          "student_school": "iLead",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up on Marissa's PO. Cassandra confirmed the subject for this year is Chemistry (not pre-algebra) and updated availability to Mondays 12-2pm; Thursdays no longer work."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Marissa with a chemistry tutor available Mondays between 12pm and 2pm and get sessions started."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Match Marissa Contreras with a chemistry tutor available Mondays between 12pm-2pm",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Update Marissa's file to reflect subject change from pre-algebra to Chemistry and schedule preference to Mondays 12-2pm",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411930097,
+      "number": "13102706840",
+      "time_pt": "11:47 AM",
+      "matched": true,
+      "contact_label": "Shay David",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Shay David about tutoring for her son Sam. Shay confirmed she's still interested but couldn't open the previous email with rates on her phone or computer. Paola offered to resend the in-person rates and tutor availability info via both email and text, and Shay agreed to reply to the text if she wants to move forward. No trial or session was booked on this call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Resend in-person tutoring rates and tutor availability info to Shay via both email and text message",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Watch for Shay's text reply to move forward and set up the in-person tutoring match for Sam",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola called Shay David to follow up on in-person tutoring for her son Sam (3rd grade, ELA/writing focus, ZIP 91403 area). Shay is warm and still interested but couldn't open the previous rates email on either her phone or computer. Paola promised to resend the in-person rates and tutor availability via BOTH email AND text so it's easy to access, and Shay agreed to reply to the text if she wants to move forward. Shay expects that text/email today. If she doesn't respond in a few days, open with: 'Hi Shay, Paola here \u2014 just wanted to make sure the rates and tutor info came through this time and see if you have any questions about getting Sam started.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family, spoke with parent, not charter-funded and no diagnostic needed \u2014 writing support match. Keeping as We Connected.",
+        "student_or_school_names_mentioned": [
+          "Sam",
+          "Shay David"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call: Shay confirmed she's still interested in in-person tutoring for Sam but was unable to open the rates email Paola previously sent (tried on both phone and computer). Still wants to move forward with in-person tutoring.",
+          "what_we_can_do_to_help": "Paola to resend the in-person rates and tutor availability info to Shay via BOTH email and text message so it's easy to access. Shay will reply to the text if she wants to move forward, at which point we can set up the match for Sam.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call: Shay confirmed she's still interested in in-person tutoring for Sam but was unable to open the rates email Paola previously sent (tried on both phone and computer). Still wants to move forward with in-person tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to resend the in-person rates and tutor availability info to Shay via BOTH email and text message so it's easy to access. Shay will reply to the text if she wants to move forward, at which point we can set up the match for Sam."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Resend in-person tutoring rates and tutor availability info to Shay via both email and text message",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Watch for Shay's text reply to move forward and set up the in-person tutoring match for Sam",
           81494333,
           "follow_up"
         ]

@@ -293,3 +293,5 @@
 {"call_id": 411886157, "date_pt": "2026-09-04", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.5, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 1}}
 {"call_id": 411890023, "date_pt": "2026-09-04", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
 {"call_id": 411894516, "date_pt": "2026-09-04", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 411924094, "date_pt": "2026-09-04", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 3, "U5": 3, "V2": 4}}
+{"call_id": 411930097, "date_pt": "2026-09-04", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.4, "scores": {"U1": 2, "U2": 4, "U3": 3, "U4": 3, "U5": 3, "S1": 2, "S2": 1, "S3": 2, "S4": 2}}
