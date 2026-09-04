@@ -27,5 +27,8 @@ jobs:
       - name: Run backfill
         env:
           HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          # gold-amounts pass reads Teachworks invoices
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: python -m src.backfill_deal_props
