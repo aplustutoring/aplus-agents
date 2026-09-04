@@ -1,0 +1,31 @@
+name: Email — backfill deal props (one-off, dispatch only)
+
+# 2026-09-03 property audit: stamp parent_email/phone from associated contacts +
+# compute missing iLead hours on August charter PO deals. See src/backfill_deal_props.py.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (print intended PATCHes, write nothing)"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run backfill
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.backfill_deal_props
