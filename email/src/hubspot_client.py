@@ -765,6 +765,27 @@ def search_open_tasks_created_before(cutoff_ms: int) -> list[dict]:
     ], _TASK_PROPS)
 
 
+def complete_invoice_tasks_for_po(po_number: str) -> int:
+    """Close any OPEN convert-to-invoice task naming this PO — a cancelled PO
+    must not leave a task telling Kath to invoice it (the Emma Savoie stale
+    task, 2026-08-31). Returns how many were closed."""
+    if not po_number:
+        return 0
+    body = {"filterGroups": [{"filters": [
+        {"propertyName": "hs_task_status", "operator": "NOT_IN",
+         "values": ["COMPLETED", "DEFERRED"]},
+        {"propertyName": "hs_task_subject", "operator": "CONTAINS_TOKEN",
+         "value": po_number}]}],
+        "properties": ["hs_task_subject"], "limit": 20}
+    res = _write("POST", "/crm/v3/objects/tasks/search", body)
+    hits = [t for t in (res.get("results", []) if isinstance(res, dict) else [])
+            if "convert po to tw invoice" in
+               ((t.get("properties") or {}).get("hs_task_subject") or "").lower()]
+    if hits:
+        batch_complete_tasks([str(t["id"]) for t in hits])
+    return len(hits)
+
+
 def batch_complete_tasks(task_ids: list[str]) -> None:
     """Mark tasks COMPLETED, 100 per batch call (DRY_RUN-aware via _write)."""
     for i in range(0, len(task_ids), 100):
