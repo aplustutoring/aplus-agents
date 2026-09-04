@@ -61,6 +61,8 @@ jobs:
           TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
           DRY_RUN: ${{ inputs.dry_run }}
           FORCE_DEAL_ID: ${{ inputs.deal_id }}
           FORCE_CONTACT_EMAIL: ${{ inputs.contact_email }}
