@@ -620,9 +620,16 @@
     411970171,
     411924094,
     411930097,
-    411978142
+    411978142,
+    412014832,
+    412018579,
+    412016480,
+    412016989,
+    412017244,
+    412018154,
+    412019361
   ],
-  "last_run_utc": "2026-09-04T20:49:49.558291+00:00",
+  "last_run_utc": "2026-09-04T22:55:35.111054+00:00",
   "pending_digest": [
     {
       "call_id": 411882442,
@@ -1060,8 +1067,253 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 412017244,
+      "number": "17602203808",
+      "time_pt": "3:28 PM",
+      "matched": true,
+      "contact_label": "Rachelle Spurlock",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Rachelle Spurlock, a past customer, checking in to see if her son Hayden would like to resume tutoring. Call went to voicemail; Paola left a message asking Rachelle to call back with a good time to connect. No response yet.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Rachelle regarding resuming tutoring for Hayden; follow up again if no response in a week",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Rachelle Spurlock (past customer, son Hayden, 11th grade at iLead, math support) inviting her to resume tutoring with A+. No response yet \u2014 Rachelle now expects a callback opportunity on her schedule. If she calls back, open warmly: 'Hi Rachelle, thanks for calling back \u2014 we wanted to check in on Hayden and see how math is going this year and whether we can help him get back on track.' Confirm current grade/subject needs and modality preference (online vs in-person), then route to scheduling for a session or assessment.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Rachelle is a past customer; her status is owned by the deal pipeline and should not be demoted from an outbound re-engagement voicemail.",
+        "student_or_school_names_mentioned": [
+          "Hayden",
+          "iLead"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound re-engagement call from Paola \u2014 left voicemail for Rachelle checking whether Hayden would like to resume tutoring this school year. Awaiting callback.",
+          "what_we_can_do_to_help": "Reconnect with the family and, if interested, restart math tutoring support for Hayden.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound re-engagement call from Paola \u2014 left voicemail for Rachelle checking whether Hayden would like to resume tutoring this school year. Awaiting callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reconnect with the family and, if interested, restart math tutoring support for Hayden."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Rachelle regarding resuming tutoring for Hayden; follow up again if no response in a week",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 412018154,
+      "number": "18183009602",
+      "time_pt": "3:33 PM",
+      "matched": true,
+      "contact_label": "Jessica Alegria",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Jessica Alegria about resuming tutoring for her sons Amir and David for the new school year. Call went to voicemail; Paola left a message asking Jessica to call back when it's a good time to connect.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Jessica's callback; if no response in about a week, follow up again about resuming tutoring for Amir and David",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Jessica Alegria following up on whether she wants to resume tutoring for her sons Amir and David this school year. No response yet \u2014 Jessica was previously waiting on testing results before deciding whether to use school funds for tutoring. She now expects a callback opportunity on her own time. If she calls back, open with: 'Hi Jessica, thanks for getting back to us \u2014 Paola wanted to check in on whether you'd like to get Amir and/or David started with tutoring for the new school year.' Be ready to move quickly on scheduling if she says yes.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer family (returning customer per record); voicemail only, no new information to change status.",
+        "student_or_school_names_mentioned": [
+          "Amir",
+          "David"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola left a voicemail for Jessica following up on resuming tutoring for Amir and David this new school year. No answer; awaiting callback.",
+          "what_we_can_do_to_help": "If Jessica doesn't return the call within about a week, try her again to see if she wants to restart tutoring for Amir and/or David; be ready to schedule quickly once she confirms.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola left a voicemail for Jessica following up on resuming tutoring for Amir and David this new school year. No answer; awaiting callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "If Jessica doesn't return the call within about a week, try her again to see if she wants to restart tutoring for Amir and/or David; be ready to schedule quickly once she confirms."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Jessica's callback; if no response in about a week, follow up again about resuming tutoring for Amir and David",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 412019361,
+      "number": "13105625949",
+      "time_pt": "3:37 PM",
+      "matched": true,
+      "contact_label": "Anya Taheri",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola (A+) called Anya Taheri to follow up after her meeting with Roman; Anya confirmed she's ready to book ongoing sessions for Milana. They agreed on a recurring schedule of Wednesdays at 5 PM and Sunday mornings at 9 or 9:30 AM. Paola explained the 24-hour cancellation policy and told Anya the scheduling team will reach out to confirm times, start tutor matching, and share the tutor profile. Call ended positively.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out to Anya to confirm recurring sessions on Wednesdays at 5 PM and Sundays at 9/9:30 AM for Milana",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Start tutor matching for Milana (Science Academy/middle school entrance prep, English/reading comprehension) and send tutor profile to Anya for approval before booking",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Share scheduling team contact number with Anya so she can reschedule/cancel directly",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Anya Taheri (mom of Milana, 5th grade, Roscomare Road) just confirmed with Paola she's ready to book sessions after her meeting with Roman. Agreed schedule: Wednesdays at 5 PM and Sunday mornings at 9 or 9:30 AM (she's flexible on the Sunday time). Focus is Science Academy middle school entrance test prep \u2014 English/reading comprehension. Paola told her scheduling would reach out to lock times, begin tutor matching, and send the tutor profile for her approval before the first session; also explained the 24-hour cancellation policy. Anya is warm and ready to move. Open with: \"Hi Anya, this is [name] from the A+ scheduling team following up on your call with Paola \u2014 I'd like to confirm Wednesdays at 5 and Sundays at 9 for Milana and walk you through the tutor we're matching her with.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is an active open deal moving into booking; status is owned by the deal pipeline, so no demotion.",
+        "student_or_school_names_mentioned": [
+          "Milana",
+          "Roscomare Road",
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Follow-up call after Anya's meeting with Roman \u2014 she confirmed she's ready to book ongoing sessions for Milana. Preferred recurring schedule agreed: Wednesdays at 5 PM and Sunday mornings at 9 or 9:30 AM (flexible). Focus remains Science Academy middle school entrance prep, emphasis on English/reading comprehension.",
+          "what_we_can_do_to_help": "Scheduling team to call Anya to confirm Wed 5 PM and Sun 9/9:30 AM recurring sessions, begin tutor matching (Science Academy/entrance test prep experience), and share tutor profile for approval before the first session. Provide scheduling team contact info; 24-hour cancellation policy communicated.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Follow-up call after Anya's meeting with Roman \u2014 she confirmed she's ready to book ongoing sessions for Milana. Preferred recurring schedule agreed: Wednesdays at 5 PM and Sunday mornings at 9 or 9:30 AM (flexible). Focus remains Science Academy middle school entrance prep, emphasis on English/reading comprehension."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling team to call Anya to confirm Wed 5 PM and Sun 9/9:30 AM recurring sessions, begin tutor matching (Science Academy/entrance test prep experience), and share tutor profile for approval before the first session. Provide scheduling team contact info; 24-hour cancellation policy communicated."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out to Anya to confirm recurring sessions on Wednesdays at 5 PM and Sundays at 9/9:30 AM for Milana",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Start tutor matching for Milana (Science Academy/middle school entrance prep, English/reading comprehension) and send tutor profile to Anya for approval before booking",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Share scheduling team contact number with Anya so she can reschedule/cancel directly",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
-  "pending_failures": []
+  "pending_skipped": [
+    {
+      "number": "12533897290",
+      "time_pt": "3:17 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "16614000643",
+      "time_pt": "3:25 PM",
+      "reason": "hang-up"
+    }
+  ],
+  "pending_failures": [
+    {
+      "call_id": 412018579,
+      "number": "13105625949",
+      "error": "JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 5718 (char 5717)"
+    }
+  ]
 }
