@@ -25,6 +25,16 @@ on:
         required: false
         type: string
         default: ""
+      diag_query:
+        description: "DIAGNOSTIC: Gmail search to list (Spam/Trash included), then exit. Nothing is processed."
+        required: false
+        type: string
+        default: ""
+      diag_mailbox:
+        description: "DIAGNOSTIC: mailbox for diag_query (default: the charter PO inbox)"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -58,6 +68,8 @@ jobs:
           TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
           DRY_RUN: ${{ inputs.dry_run }}
           PO_REPLAY_MSG_IDS: ${{ inputs.replay_msg_ids }}
+          PO_DIAG_QUERY: ${{ inputs.diag_query }}
+          PO_DIAG_MAILBOX: ${{ inputs.diag_mailbox }}
         run: python -m src.po_inbox
       - name: Commit state changes
         if: ${{ inputs.dry_run != true }}

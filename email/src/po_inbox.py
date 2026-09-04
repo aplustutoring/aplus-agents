@@ -2039,6 +2039,21 @@ def run() -> None:
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  replay error on {rid}: {e}", file=sys.stderr)
             traceback.print_exc()
+    # Diagnostic: PO_DIAG_QUERY="<gmail query>" [PO_DIAG_MAILBOX=addr] lists what a
+    # mailbox actually holds (Spam/Trash included) and exits. Investigation rule
+    # 2026-08-31: verify the QUERY before declaring "never arrived".
+    dq = (os.environ.get("PO_DIAG_QUERY") or "").strip()
+    if dq:
+        mb = (os.environ.get("PO_DIAG_MAILBOX") or "").strip() or None
+        stubs = gm.list_messages(dq, max_results=100, mailbox=mb, include_spam_trash=True)
+        print(f"po_inbox DIAG {mb or pc['address']}: {len(stubs)} match(es) for {dq!r}")
+        for s in stubs:
+            m = gm.get_message(s["id"], mailbox=mb)
+            when = datetime.fromtimestamp((m.get("date_ms") or 0) / 1000, tz=timezone.utc)
+            print(f"  · {s['id']} {when:%Y-%m-%d %H:%MZ} labels={sorted(m.get('label_ids') or [])} "
+                  f"from={m.get('sender', '')[:50]!r} subj={(m.get('subject') or '')[:80]!r} "
+                  f"att={m.get('attachment_names') or []}")
+        return
     cur_path = Path(__file__).resolve().parent.parent / "state" / "po_cursor.json"
     state = _json.loads(cur_path.read_text()) if cur_path.exists() else {}
     since = state.get("last_epoch")
