@@ -34,6 +34,13 @@ found them in the OPS portal and forwarded them) is NOT mirrored: audit
 (mirror first, forward second) keeps the existing rule: same PO number → no new
 deal, one DUPLICATE DM to Kath.
 
+Verified with the new `diag_query` workflow input (lists what a mailbox holds,
+Spam/Trash included, then exits): charter@ has Kath's hand-forwards of the ten
+08-25 POs (processed 08-31/09-01) and NO copy of 6814193240-43 anywhere. Those
+four exist only in admin@ Spam. The same spam signature applies to charter@
+itself, so each run also RESCUES PO-shaped mail from charter@'s own Spam folder
+(moved to inbox, processed the same run even when its date is behind the cursor).
+
 Fix, one processing surface: (1) `po_sources.is_po_shaped` is the single
 deterministic predicate (ordering-system sender domain, "Purchase Order #"/"new
 POs" subject, or a PO/OA-numbered PDF) shared by both agents; (2) every PO-inbox
@@ -61,7 +68,8 @@ way.
 
 **Files:** `email/src/po_sources.py` (new), `email/src/gmail_client.py`,
 `email/src/po_inbox.py`, `email/src/main.py`, `email/config.yaml`,
-`email/tests/test_po_sources.py` (15 new; suite 370 green), `docs/PO-PROCESS.md`.
+`.github/workflows/email-po-inbox.yml` (diag_query / diag_mailbox inputs),
+`email/tests/test_po_sources.py` (19 new; suite 374 green), `docs/PO-PROCESS.md`.
 
 ---
 

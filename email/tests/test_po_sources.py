@@ -27,6 +27,10 @@ def test_ops_new_pos_notice_is_po_shaped():
 def test_po_pdf_attachment_is_po_shaped():
     assert "PO6814193243.pdf" in ps.is_po_shaped(["someone@school.org"], "Fwd:", ["PO6814193243.pdf"])
     assert ps.is_po_shaped([], "form", ["OA2914206871.pdf"])   # OPS order agreements too
+    # Kath re-sending a PO from the OPS portal: subject is the student, file is the bare number
+    assert ps.is_po_shaped(["kath@wetutorathome.com"], "Phoenix Nourn Bernard", ["6814150575.pdf"])
+    assert ps.po_numbers("Phoenix Nourn Bernard", ["6814150575.pdf"]) == {"6814150575"}
+    assert ps.is_po_shaped([], "Invoice", ["54521 - Nikki Keesee.pdf"]) == ""   # our invoices are not
 
 
 @pytest.mark.parametrize("addrs,subj,names", [

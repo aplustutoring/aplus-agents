@@ -43,7 +43,7 @@ _SUBJECT_RX = re.compile(
     r"|\bnew\s+POs?\b"                                     # OPS "School - new POs - date"
     r"|\bPO\s*#\s*\d{4,}",                                 # "PO #2914206871"
     re.I)
-_ATTACH_RX = re.compile(r"^(?:PO|OA)[-_ ]?\d{5,}[^/\\]*\.pdf$", re.I)   # PO6814193240.pdf, OA2914206871.pdf
+_ATTACH_RX = re.compile(r"^(?:(?:PO|OA)[-_ ]?\d{5,}[^/\\]*|\d{8,})\.pdf$", re.I)   # PO6814193240.pdf, OA2914206871.pdf, 6814150575.pdf (a human re-sending from the portal)
 
 
 def _pc() -> dict:
@@ -77,7 +77,7 @@ def po_numbers(subject: str, attachment_names: list[str]) -> set[str]:
     """PO numbers named on the document itself (subject or PO/OA-numbered PDF)."""
     nums = set(_PO_NUM_RX.findall(subject or ""))
     for n in attachment_names or []:
-        m = re.match(r"^(?:PO|OA)[-_ ]?(\d{5,})", (n or "").strip(), re.I)
+        m = re.match(r"^(?:(?:PO|OA)[-_ ]?)?(\d{5,})[^/\\]*\.pdf$", (n or "").strip(), re.I)
         if m:
             nums.add(m.group(1))
     return nums
