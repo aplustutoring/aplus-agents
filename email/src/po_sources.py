@@ -170,7 +170,14 @@ def mirror_sources(state: dict) -> int:
                     continue
                 copy = gm.insert_raw(raw, [label_in])
                 try:
-                    gm.apply_labels(s["id"], [label_src], mailbox=addr)
+                    # The original stays visible to the humans who work that
+                    # inbox: a spam-foldered PO is pulled back into the Inbox
+                    # (the "never send to Spam" filter, done in code because a
+                    # Gmail filter needs a settings scope the agent is not granted).
+                    if "SPAM" in labels:
+                        gm.move_to_inbox(s["id"], [label_src], mailbox=addr)
+                    else:
+                        gm.apply_labels(s["id"], [label_src], mailbox=addr)
                 except Exception as e:  # noqa: BLE001 — cosmetic on the source side
                     print(f"  ⚠️  mirror: source label failed (non-fatal): {e}")
                 audit.append({"message_id": key, "source": "po_inbox", "action_taken": "po_mirrored",
