@@ -39,6 +39,38 @@ Six fixes from the day's audits (Roman: "go"):
 **Files:** email/src/{po_inbox,hubspot_client}.py, all 11 state-committing
 workflow ymls, ops/hubspot-schema/properties.yml,
 email/tests/test_po_inbox.py (6 new; suite 410 green).
+## 2026-09-04 (later) — Teacher outreach: both sequences assembled in-portal; PR #179 merged
+
+**What:** The two sequence-rail sequences are built and shared with Everyone, so
+Danielle only enrolls. Assembled through Claude in Chrome under Roman's HubSpot login
+(sales templates and sequence steps have no write API):
+- Teacher Outreach 26/27 - 1 Worked With Us (sequence 310839862): Email 1 → 4 business
+  days → Email 2 (threaded reply) → finish. Business days, 8:00 to 18:00.
+- Teacher Outreach 26/27 - 2 Known Schools (sequence 310844702): Email 1 → 3 business
+  days → Email 2 (reply) → 4 business days → Email 3 (reply) → finish. Same settings.
+- Templates "Teacher Outreach 26/27 - Worked With Us - Email 1/2" and "… Known Schools -
+  Email 1/2/3", shared with everyone, copy identical to
+  `ops/messenger/templates/teacher-outreach-2026-09/`. Sequence 2's opener uses one line
+  for all three schools ("Many of your colleagues at {{ contact.school_canonical }}
+  already send students to A+"), so it is one sequence, not three.
+Verified via `GET /automation/v4/sequences/{id}?userId=<Danielle>`: both visible, step
+delays and threading as above. Handoff doc updated with ids, the pre-enroll checklist
+(her default signature must carry the Badge line; templates end at "Danielle"), and the
+enrollment cadence. PR #179 merged (squash) after resolving a CHANGELOG conflict with the
+sibling-gap entry.
+
+**Why:** Roman 2026-09-04: "Can we assemble sequences for Danielle with Claude cowork?"
+Yes: the portal UI is drivable from the connected Chrome. Two UI quirks worth knowing
+for next time: the stacked side panels (Choose email type → template picker) overflow
+a 1505px screen so "Create new" and "Next" sit off-screen; `scroll_to` the ref before
+clicking, or create the template on the Templates page first and pick it from the list.
+The picker's "Create new" needs two clicks the first time. The sequences page also shows
+prior teacher sequence reply rates worth remembering: Holiday Emails to Teachers 15.8%,
+iLead Version A 8.9%, Charter Back to School 24-25 4.3%, Charter Teachers A/B 3.2%.
+
+**Files:** `ops/messenger/CAMPAIGN-2026-09-08-teachers.md`, `docs/CHANGELOG.md`.
+
+---
 
 ## 2026-09-04 — Charter teacher outreach 26/27 built (lists, drafts, workflows, reply stamp, roster)
 
