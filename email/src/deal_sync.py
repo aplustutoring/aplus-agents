@@ -232,6 +232,21 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
             made.append(sf)
         if made:
             record["tw_student_created"] = ", ".join(made)
+    # Gold deals arrive without an amount — the family's most CURRENT Teachworks
+    # invoice is the price of record (Roman, 2026-09-03). Free Trial stays $0.
+    amt_raw = (deal["properties"].get("amount") or "").strip()
+    if (pid in set(ds.get("gold_amount_pipelines", [])) and amt_raw in ("", "0", "0.0")
+            and record.get("tw_customer_id") not in (None, "DRYRUN")):
+        try:
+            inv = tw.latest_invoice(record["tw_customer_id"], token)
+            if inv:
+                hs._write("PATCH", f"/crm/v3/objects/deals/{deal['id']}",
+                          {"properties": {"amount": str(inv["total"])}})
+                record["amount_from_invoice"] = inv["total"]
+                print(f"  💵 {record['deal_name']}: amount ${inv['total']:g} from TW invoice "
+                      f"{inv.get('number') or '?'} ({inv.get('date') or '?'})")
+        except Exception as e:  # noqa: BLE001 — amount stamp is best-effort
+            print(f"  ⚠️  invoice-amount stamp failed (non-fatal): {e}")
     record["action_taken"] = "tw_synced"
     audit.append(record)
     print(f"  🔄 {record['deal_name']} → TW[{acct}] {record['tw_action']}"
@@ -248,7 +263,7 @@ def run() -> None:
     if force_id:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
-                    {"properties": "dealname,pipeline,dealstage,createdate,po_number"})
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount"})
         # Optional trace-by-contact-email: fetch the contact, fix the missing
         # association on the HubSpot deal, and sync with that contact.
         contact = None
@@ -283,7 +298,7 @@ def run() -> None:
         "filterGroups": [{"filters": [
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
-        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number"],
+        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount"],
         "limit": 50}
     deals: list = []
     while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
