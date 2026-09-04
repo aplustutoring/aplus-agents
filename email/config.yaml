@@ -123,13 +123,13 @@ sms:
     # assignment (archived Rafa, 911789198) is dropped (Q3), 372 orphaned
     # contacts reassigned to Paola (Q4). Old flows 1608212624 + 325263375 go
     # OFF at cutover, before these lines take effect.
-    "default":  { template: charter_po, welcome: true,
+    "default":  { template: gold, welcome: true,
                   welcome_template: "templates/welcome_gold_inperson.html",
                   welcome_subject: "Ready to Launch: Next Steps" }          # Gold Tutoring
-    "3067397":  { template: charter_po, welcome: true,
+    "3067397":  { template: gold, welcome: true,
                   welcome_template: "templates/welcome_gold_inperson.html",
                   welcome_subject: "Ready to Launch: Next Steps" }          # In-Person
-    "19120821": { template: charter_po, welcome: true,
+    "19120821": { template: trial, welcome: true,
                   welcome_template: "templates/welcome_trial.html",
                   welcome_subject: "Ready to Launch: Free Trial Session: Next Steps" }  # Free Trial
   # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
@@ -154,6 +154,17 @@ sms:
     charter_po_ask: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. What days and times work best for their sessions? Reply here and we will get them booked."
     charter_po_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. Want to confirm their schedules still work? Reply here and we will get everything set."
     charter_po_multi_ask: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. What days and times work best for their sessions? Reply here and we will get them booked."
+    # Gold/In-person and Trial have NO Purchase Orders (Roman 2026-09-04:
+    # "gold and free trial do not have purchase order genius") — same shape,
+    # pipeline-true language.
+    gold_confirm: "Hi {first_name}, it's A+ Tutoring! We are getting {student} set up. Want to confirm this schedule still works: {schedule}. Reply here to confirm or change it."
+    gold_ask: "Hi {first_name}, it's A+ Tutoring! We are getting {student} set up. What days and times work best for their sessions? Reply here and we will get them booked."
+    gold_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We are getting {students} set up. Want to confirm their schedules still work? Reply here and we will get everything set."
+    gold_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are getting {students} set up. What days and times work best for their sessions? Reply here and we will get them booked."
+    trial_confirm: "Hi {first_name}, it's A+ Tutoring! {student}'s free trial session is coming up. Want to confirm this schedule works: {schedule}. Reply here to confirm or change it."
+    trial_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for {student}'s free trial session. What days and times work best? Reply here and we will get it booked."
+    trial_multi_confirm: "Hi {first_name}, it's A+ Tutoring! Free trial sessions for {students} are coming up. Want to confirm their schedules work? Reply here to confirm or change them."
+    trial_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for free trial sessions with {students}. What days and times work best? Reply here and we will get them booked."
 
 # ── Sibling-gap tripwire (Roman 2026-09-04) ─────────────────────
 # A family renews SOME kids and one is left out — the strongest miss signal
