@@ -271,11 +271,13 @@ def run_sweep() -> None:
             names = _fmt_students(sorted({_student_first(p) for p in props} - {""}))
             if target.get("slack_user_id"):
                 try:
+                    parent = (props[0].get('dealname') or '').split(' - ')[0]
                     slack_client.dm(target["slack_user_id"],
-                                    f"📅 New PO(s), month not booked — {names} "
-                                    f"({(props[0].get('dealname') or '').split(' - ')[0]}). "
-                                    f"The family gets their schedule text on the next sweep "
-                                    f"(~15 min); get ahead of it if you want to call first.")
+                                    f"📅 New PO for {names} (parent: {parent}). No lessons "
+                                    f"are on the calendar for them yet. In about 15 minutes "
+                                    f"the family will automatically get a text asking what "
+                                    f"days and times work. If you'd rather call them first, "
+                                    f"now is your window.")
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  sms staff alert failed (non-fatal): {e}")
             for d in unalerted:
