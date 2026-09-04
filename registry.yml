@@ -752,6 +752,36 @@ agents:
       Sequences 1 and 2 are assembled by Danielle in the portal (sales templates
       have no API); the campaign rail is fully scripted. All scripts are dry-run
       by default. Email only, no calls (Roman 2026-09-03).
+
+  - id: teacher-sequence-enroll
+    runtime: github-actions
+    engine: Charter analysis
+    name: Teacher outreach 26/27 daily sequence enroller
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: schedule
+      cron: "5 16 * * 1-5"                 # 09:05 PDT Mon-Fri; gated by armed/start_date/weekday in the script
+      events: [schedule, workflow_dispatch]
+      workflow: .github/workflows/teacher-sequence-enroll.yml
+    entrypoint: scripts/teacher_sequence_enroll.py
+    reads:
+      - ops/messenger/teacher-sequences.yml   # armed, start_date, cap, sequences, sender, notify
+      - HubSpot:lists 3210 / 3214 / 3211      # audience + top-30 priority
+      - HubSpot:contacts                      # eligibility props at enroll time
+    writes:
+      - "HubSpot:sequence enrollments — POST /automation/v4/sequences/enrollments as Danielle (userId 46811240, senderEmail danielle@wetutorathome.com), 50 per sequence per weekday"
+      - ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json   # who/when/sender, committed back
+      - "Slack DM: batch summary to Danielle (U05NMABF3B2) + ROMAN_SLACK_USER_ID"
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, SLACK_BOT_TOKEN, ROMAN_SLACK_USER_ID"
+      - "HubSpot sequences 310839862 (Worked With Us) and 310844702 (Known Schools), shared with Everyone"
+    notes: >
+      Built 2026-09-04 (Danielle: "I love that idea"). The script only enrolls;
+      sends, threading, business-day window and unenroll-on-reply are HubSpot's.
+      Dry-run by default; the schedule passes --confirm ENROLL. Disarm with a
+      one-line PR (armed: false). Failed state persist fails the job so a rerun
+      cannot double-enroll. Sender inbox validated on contact 246529425986.
   - id: tw-tutor-active-check
     runtime: github-actions
     engine: Charter analysis

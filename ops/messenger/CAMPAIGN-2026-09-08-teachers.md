@@ -65,16 +65,29 @@ Summit / park-day lines in `seq2_known_schools.md` are optional A/B versions.
    Stanford University, 2026 to 2029`.
 2. Send a test enrollment to herself from each sequence and read it once.
 
-**Enrolling (Danielle, from her connected inbox):**
-1. Sequence 1: list 3210, batches of 50 per day starting Tue 9/8, 9am.
-   Day 10: for anyone on list 3214 still silent, a two-line note in the same
-   thread naming one family from `python3 scripts/teacher_roster.py <email>`.
-   "Send it" replies: same script, paste.
-2. Sequence 2: list 3211 at 50 a day, iLEAD first (130), then Sage Oak (47),
-   then Blue Ridge (26).
-3. Unenroll on reply is HubSpot-default. Nomination-form submission also exits:
-   both sequences should add "Teacher Scholarship Program Form submitted" as an
-   unenroll trigger under Automate (portal setting, not built).
+**Enrolling: AUTOMATED (built 2026-09-04, Danielle: "I love that idea").**
+`.github/workflows/teacher-sequence-enroll.yml` runs `scripts/teacher_sequence_enroll.py`
+every weekday at 9:05am PT from Tue 9/8 (config `ops/messenger/teacher-sequences.yml`,
+gated by armed / start_date / weekday). Each run enrolls the next 50 eligible contacts
+per sequence, sending from Danielle's connected inbox (`danielle@wetutorathome.com`,
+validated on test contact 246529425986) exactly as a manual enrollment would:
+1. Sequence 1: list 3210, top-30 list 3214 first. About 3 weekdays to finish.
+2. Sequence 2: list 3211, iLEAD (130) → Sage Oak (47) → Blue Ridge (26). About 4 weekdays.
+3. Eligibility re-checked each morning; skips (opt-out, bounce, generic inbox,
+   already replied, already in a sequence) are counted in the run log and the
+   Slack summary DM'd to Danielle and Roman after each run.
+4. Override: Actions → "Teacher outreach (daily sequence enrollments)" →
+   Run workflow (confirm ENROLL, force, cap). Pause: set `armed: false` in the
+   config via PR. State: `ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json`.
+
+**Still Danielle's, by hand:**
+- Day 10: for anyone on list 3214 still silent, a two-line note in the same
+  thread naming one family from `python3 scripts/teacher_roster.py <email>`
+  (ping Roman for the roster).
+- "Send it" replies: same script, paste.
+- Unenroll on reply is HubSpot-default. Nomination-form submission also exits:
+  both sequences should add "Teacher Scholarship Program Form submitted" as an
+  unenroll trigger under Automate (portal setting, not built).
 
 ## Campaign rail (scripted; publish + enable on send day)
 
