@@ -279,5 +279,21 @@ def run() -> None:
     print(f"=== DMed {dmed} owner(s) about overdue tasks ===")
 
 
-if __name__ == "__main__":
+
+
+
+def run_with_liveness() -> None:
+    """task-sweep entrypoint: the daily sweep, plus the Monday sender-workflow
+    liveness digest (see sender_liveness.py — no sender flow dies silently)."""
     run()
+    from .business_hours import now_la as _now
+    if _now().weekday() == 0:
+        try:
+            from . import sender_liveness
+            sender_liveness.run()
+        except Exception as e:  # noqa: BLE001 — the digest must never fail the sweep
+            print(f"sender_liveness error (non-fatal): {e}")
+
+
+if __name__ == "__main__":
+    run_with_liveness()

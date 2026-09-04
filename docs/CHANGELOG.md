@@ -8,6 +8,33 @@ Newest entries first.
 
 ---
 
+## 2026-09-04 — SMS/email phase 2: gold, in-person, and trial go agentic
+
+**Decisions (Roman):** gold/in-person reuse the charter text copy; trial
+families NOW get the ask text (they never had one); the old flows' ghost
+owner assignment is dropped — both flows had been assigning every new
+contact to Rafa Ponce Hardy, ARCHIVED May 2025 (372 orphaned contacts
+reassigned to Paola in-session, Q4).
+**What:** pipelines default (Gold), 3067397 (In-Person), 19120821 (Free
+Trial) join sms.pipelines with charter templates; per-pipeline welcome
+overrides (welcome_template/welcome_subject) carry the ported emails —
+"What to Expect" (gold/in-person, 49.9% opens) and "What to Expect Free
+Trial" (60.4%, the portal's best) into email/templates/, stale
+"my direct #" lines fixed, em dashes scrubbed. Live check showed both old
+flows LIMPING (4 contacts stuck flagged today; Aug 28 trial families took
+days) — the charter failure signature.
+**Sender-liveness monitor:** email/src/sender_liveness.py, Mondays from
+task_sweep — scans all enabled workflows for send actions (46 today), diffs
+each one's cumulative enrollment counter against last week's snapshot
+(state/sender_snapshot.json), digests the zero-enrollment list to
+#agent-feedback. The 44 not-yet-migrated sender workflows can no longer die
+silently.
+**Cutover (post-merge):** disable flows 1608212624 + 325263375 FIRST, then
+the config takes effect — the ordering that makes double-sends impossible.
+**Files:** email/src/{sms,task_sweep,sender_liveness}.py, email/config.yaml,
+email/templates/welcome_{gold_inperson,trial}.html,
+email/tests/test_sms.py (3 new; suite 413 green).
+
 ## 2026-09-04 — Correctness set: due dates, cancellations, persist alarm, twins
 
 Six fixes from the day's audits (Roman: "go"):
