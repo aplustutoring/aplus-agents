@@ -34,6 +34,43 @@ the config takes effect — the ordering that makes double-sends impossible.
 **Files:** email/src/{sms,task_sweep,sender_liveness}.py, email/config.yaml,
 email/templates/welcome_{gold_inperson,trial}.html,
 email/tests/test_sms.py (3 new; suite 413 green).
+## 2026-09-04 (evening) — Daily sequence enroller for the teacher outreach (Danielle: "I love that idea")
+
+**What:** `scripts/teacher_sequence_enroll.py` + `.github/workflows/teacher-sequence-enroll.yml`
++ `ops/messenger/teacher-sequences.yml`. Every weekday at 9:05am PT from Tue 2026-09-08
+(gated: armed AND today >= start_date AND weekday), the job enrolls the next 50 eligible
+contacts from list 3210 into sequence 310839862 (top-30 list 3214 first) and the next 50
+from list 3211 into sequence 310844702 (iLEAD → Sage Oak → Blue Ridge), via
+`POST /automation/v4/sequences/enrollments?userId=<Danielle>` with `senderEmail`, so the
+emails come from Danielle's connected inbox exactly as a manual "Enroll in sequence"
+would. Eligibility re-checked at enroll time (email, opt-out, bounce, generic inbox,
+`campaign_replied`, not already in any sequence, not already enrolled by the script);
+every skip is counted in the run output. State (who, when, which sender inbox) is
+committed back to `ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json`;
+a failed persist fails the job so tomorrow cannot double-enroll. Each run DMs Danielle and
+Roman the batch summary. Sender inbox validated live on a fresh test contact
+(danielle+003@wetutorathome.com, contact 246529425986, enrollment 3811966304):
+`danielle@wetutorathome.com` accepted on the first try and is stored in state.
+Forced dry run of Tue's batches: seq 1 → 50 (36 iLEAD, top-30 first; 3 skipped, already in
+a sequence), 106 left; seq 2 → 50 iLEAD, 152 left. Registry entry `teacher-sequence-enroll`.
+
+**Why:** Danielle confirmed items 4-8 of the handoff are manual and asked to be sure no
+automation piece was missing; the one worth automating is the daily 50-a-day enrollment
+(about 10 minutes a day for two weeks, and easy to forget on a busy morning). The emails,
+threading, business-day window, and unenroll-on-reply are HubSpot's own; the script only
+does the enrolling. Manual override stays: workflow_dispatch with confirm/force/cap, and
+disarming is a one-line PR.
+
+**Still manual (on purpose):** flipping the campaign workflows ON (Wave 1 Tuesday morning;
+IEM after Wave 1's day-10 numbers and the 40-student cap), the day-10 hand-written note to
+silent top-30 teachers, and "send it" roster replies.
+
+**Files:** `scripts/teacher_sequence_enroll.py` (new), `.github/workflows/teacher-sequence-enroll.yml`
+(new), `ops/messenger/teacher-sequences.yml` (new), `ops/messenger/state/teacher-outreach-2026-09/
+sequence_enroll_state.json` (new), `ops/messenger/CAMPAIGN-2026-09-08-teachers.md`, `registry.yml`,
+`docs/CHANGELOG.md`.
+
+---
 
 ## 2026-09-04 — Correctness set: due dates, cancellations, persist alarm, twins
 
