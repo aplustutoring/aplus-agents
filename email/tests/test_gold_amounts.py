@@ -59,3 +59,21 @@ def test_gold_deal_with_amount_untouched(monkeypatch):
                                               "dealname": "Lara Perkins - Nomi",
                                               "amount": "500"}})
     assert not [c for c in calls if c[0] == "PATCH"]
+
+
+def test_shared_invoice_split_across_sibling_deals(monkeypatch):
+    calls = []
+    _wire_gold(monkeypatch, calls)
+    monkeypatch.setattr(dsy, "_deal_contact", lambda d, n="": {"id": "C1", "properties": {
+        "email": "mom@x.com", "firstname": "Lara", "lastname": "Perkins"}})
+    def fake_get(path, params=None):
+        if path.endswith("/associations/deals"):
+            return {"results": [{"toObjectId": "D9"}, {"toObjectId": "D10"}]}
+        return {"properties": {"pipeline": "default", "dealstage": "x"}}
+    monkeypatch.setattr(dsy.hs, "_get", fake_get)
+    rec = dsy.sync_deal({"id": "D9", "properties": {"pipeline": "default",
+                                                    "dealname": "Lara Perkins - Nomi",
+                                                    "amount": ""}})
+    patches = [c for c in calls if c[0] == "PATCH" and c[1].endswith("/deals/D9")]
+    assert patches and patches[0][2]["properties"]["amount"] == "320.0"   # 640 / 2 siblings
+    assert rec["amount_from_invoice"] == 320.0

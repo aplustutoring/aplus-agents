@@ -98,40 +98,61 @@ def _first_contact_email(deal_id: str) -> str:
 
 
 def backfill_gold_amounts() -> None:
-    """Gold + Gold-Renewal deals without an amount → the family's most CURRENT
-    Teachworks invoice total (Roman, 2026-09-03)."""
+    """Gold + Gold-Renewal deals → the family's most CURRENT Teachworks invoice
+    total, SPLIT EVENLY when several sibling deals share the same invoice
+    (Roman, 2026-09-04: 'split shared totals'). Idempotent: recomputes stamped
+    deals whose share drifted (e.g. a full total stamped before the split rule)."""
     deals = _gold_deals()
-    filled = skipped = 0
     print(f"gold amounts: {len(deals)} Gold/Renewal deals since {SINCE[:10]}")
+    inv_cache: dict = {}
+    groups: dict = {}   # (email, invoice number) → [(deal, invoice)]
     for d in deals:
-        p = d.get("properties") or {}
-        if (p.get("amount") or "").strip() not in ("", "0", "0.0"):
-            skipped += 1
-            continue
         email = _first_contact_email(d["id"])
         if not email:
-            print(f"  ⚠️  no contact email: {p.get('dealname')}")
+            if ((d.get("properties") or {}).get("amount") or "").strip() in ("", "0", "0.0"):
+                print(f"  ⚠️  no contact email: {(d.get('properties') or {}).get('dealname')}")
             continue
-        inv = None
-        for acct, token in tw.accounts().items():
-            cust = tw.find_customer_by_email(email, token)
-            if cust:
-                inv = tw.latest_invoice(cust.get("id"), token)
-                if inv:
-                    break
+        if email not in inv_cache:
+            inv = None
+            for acct, token in tw.accounts().items():
+                cust = tw.find_customer_by_email(email, token)
+                if cust:
+                    inv = tw.latest_invoice(cust.get("id"), token)
+                    if inv:
+                        break
+            inv_cache[email] = inv
+        inv = inv_cache[email]
         if not inv:
-            print(f"  ⚠️  no TW invoice found for {email}: {p.get('dealname')}")
+            if ((d.get("properties") or {}).get("amount") or "").strip() in ("", "0", "0.0"):
+                print(f"  ⚠️  no TW invoice found for {email}: {(d.get('properties') or {}).get('dealname')}")
             continue
-        print(f"  {'[DRY] ' if DRY_RUN else ''}{p.get('dealname', '?')[:55]} ← amount "
-              f"${inv['total']:g} (TW invoice {inv.get('number') or '?'}, {inv.get('date') or '?'})")
-        filled += 1
-        if not DRY_RUN:
-            try:
-                hs._write("PATCH", f"/crm/v3/objects/deals/{d['id']}",
-                          {"properties": {"amount": str(inv["total"])}})
-            except Exception as e:  # noqa: BLE001
-                print(f"  ⚠️  PATCH failed for {d['id']}: {e}")
-    print(f"gold amounts done: filled {filled}, already had amount {skipped}")
+        groups.setdefault((email, str(inv.get("number"))), []).append((d, inv))
+    filled = skipped = 0
+    for (email, number), members in groups.items():
+        inv = members[0][1]
+        share = round(inv["total"] / len(members), 2)
+        for d, _ in members:
+            p = d.get("properties") or {}
+            cur = (p.get("amount") or "").strip()
+            blankish = cur in ("", "0", "0.0")
+            # untouched unless blank, or holding the UNSPLIT full total of a shared invoice
+            needs = blankish or (len(members) > 1 and cur in (str(inv["total"]),
+                                                              f"{inv['total']:g}",
+                                                              f"{inv['total']:.1f}"))
+            if not needs:
+                skipped += 1
+                continue
+            split_bit = f" (1/{len(members)} of ${inv['total']:g})" if len(members) > 1 else ""
+            print(f"  {'[DRY] ' if DRY_RUN else ''}{p.get('dealname', '?')[:55]} ← amount "
+                  f"${share:g}{split_bit} (TW invoice {number}, {inv.get('date') or '?'})")
+            filled += 1
+            if not DRY_RUN:
+                try:
+                    hs._write("PATCH", f"/crm/v3/objects/deals/{d['id']}",
+                              {"properties": {"amount": str(share)}})
+                except Exception as e:  # noqa: BLE001
+                    print(f"  ⚠️  PATCH failed for {d['id']}: {e}")
+    print(f"gold amounts done: stamped {filled}, untouched {skipped}")
 
 
 def run() -> None:
