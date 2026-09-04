@@ -322,6 +322,10 @@ po_inbox:
   source_backfill_hours: 48      # first run of a new source reaches this far back
   label_mirrored: "A+ Agent/Mirrored from other inbox"   # on the charter@ copy
   label_mirrored_source: "A+ Agent/Mirrored to charter"  # on the original
+  # PO-shaped mail Gmail spam-filters at charter@ ITSELF is moved to the inbox
+  # and processed the same run (Kath emailing a PO from the OPS portal has the
+  # exact signature the filter dislikes: bodiless PDF, noreply sender).
+  label_rescued: "A+ Agent/Rescued from Spam"
   # The triage agent opens a handoff ticket (owner: this agent's owner role) for
   # PO-shaped mail it sees; the PO agent closes it once the copy is processed.
   # Still open after this many business hours → the mirror is broken.

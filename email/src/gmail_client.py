@@ -240,6 +240,13 @@ def apply_labels(msg_id: str, names: list[str], mailbox: str | None = None) -> N
         _post(f"/messages/{msg_id}/modify", {"addLabelIds": ids}, mailbox)
 
 
+def move_to_inbox(msg_id: str, label_names: list[str] | None = None,
+                  mailbox: str | None = None) -> None:
+    """Pull a message out of Spam into the Inbox (unread), optionally tagging it."""
+    add = ["INBOX", "UNREAD"] + [ensure_label(n, mailbox) for n in (label_names or []) if n]
+    _post(f"/messages/{msg_id}/modify", {"addLabelIds": add, "removeLabelIds": ["SPAM"]}, mailbox)
+
+
 def _scrub_outbound(text: str) -> str:
     """NEVER an em dash or double hyphen in customer-facing copy (Roman
     2026-08-24, LOCKED). The extractor prompt already says so, but prompts

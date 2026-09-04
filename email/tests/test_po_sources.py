@@ -125,9 +125,51 @@ def test_mirror_failure_alerts_and_does_not_raise(mirror_env, monkeypatch):
     assert "sources" in state and not state["sources"]       # cursor NOT advanced on failure
 
 
+def test_rescue_moves_po_shaped_spam_to_inbox(monkeypatch):
+    rec = {"moved": [], "audit": []}
+    msgs = {
+        "k1": {"id": "k1", "sender": "OPS <noreply@ops-online.com>", "sender_addrs": ["noreply@ops-online.com"],
+               "subject": "Heartwood - Purchase Order #6814193240 - Phoenix Nourn Bernard",
+               "attachment_names": ["PO6814193240.pdf"]},
+        "seo": {"id": "seo", "sender": "x@spam.io", "sender_addrs": ["x@spam.io"],
+                "subject": "rank #1 on Google", "attachment_names": ["deck.pdf"]},
+    }
+    monkeypatch.setattr(ps.gm, "list_messages",
+                        lambda q, max_results=50, mailbox=None, include_spam_trash=False:
+                        [{"id": k} for k in msgs])
+    monkeypatch.setattr(ps.gm, "get_message", lambda i, mailbox=None: msgs[i])
+    monkeypatch.setattr(ps.gm, "move_to_inbox", lambda i, labels=None, mailbox=None: rec["moved"].append(i))
+    monkeypatch.setattr(ps.audit, "append", lambda r: rec["audit"].append(r))
+    monkeypatch.setattr(ps.audit, "processed_message_ids", lambda: set())
+    state = {}
+    assert ps.rescue_spam(state) == ["k1"]
+    assert rec["moved"] == ["k1"]
+    assert rec["audit"][0]["action_taken"] == "po_spam_rescued"
+    assert state["spam_cursor"] > 0
+
+
+def test_run_processes_rescued_ids_even_when_behind_cursor(monkeypatch, tmp_path):
+    processed = []
+    monkeypatch.setattr(po.po_sources, "mirror_sources", lambda st: 0)
+    monkeypatch.setattr(po.po_sources, "rescue_spam", lambda st: ["old-spam-id"])
+    monkeypatch.setattr(po.gm, "list_messages", lambda q, **k: [{"id": "fresh"}])
+    monkeypatch.setattr(po, "process_po_message", lambda i, force=False: processed.append(i) or {"ok": 1})
+    for name in ("_sweep_parent_chases", "_sweep_pending_pos", "_sweep_chase_drafts",
+                 "_sweep_chase_self_resolve"):
+        monkeypatch.setattr(po, name, lambda: None)
+    monkeypatch.setattr(po.draft_feedback, "sweep", lambda: None)
+    monkeypatch.setattr(po, "__file__", str(tmp_path / "src" / "po_inbox.py"))
+    (tmp_path / "src").mkdir()
+    (tmp_path / "state").mkdir()
+    (tmp_path / "state" / "po_cursor.json").write_text('{"last_epoch": 1700000000}')
+    po.run()
+    assert processed == ["old-spam-id", "fresh"]
+
+
 def test_run_mirrors_before_polling_charter(monkeypatch, tmp_path):
     order = []
     monkeypatch.setattr(po.po_sources, "mirror_sources", lambda st: order.append("mirror") or 0)
+    monkeypatch.setattr(po.po_sources, "rescue_spam", lambda st: order.append("rescue") or [])
     monkeypatch.setattr(po.gm, "list_messages", lambda q, **k: order.append("poll") or [])
     for name in ("_sweep_parent_chases", "_sweep_pending_pos", "_sweep_chase_drafts",
                  "_sweep_chase_self_resolve"):
@@ -140,7 +182,7 @@ def test_run_mirrors_before_polling_charter(monkeypatch, tmp_path):
     (tmp_path / "state").mkdir()
     (tmp_path / "state" / "po_cursor.json").write_text(cur.read_text())
     po.run()
-    assert order == ["mirror", "poll"]
+    assert order == ["mirror", "rescue", "poll"]
 
 
 # ── triage handoff ───────────────────────────────────────────────────────────

@@ -191,6 +191,52 @@ def mirror_sources(state: dict) -> int:
     return mirrored
 
 
+def rescue_spam(state: dict) -> list[str]:
+    """PO-shaped mail in charter@'s OWN Spam folder is moved to the Inbox and
+    returned (message ids) for immediate processing. The same signature that
+    spam-filtered Heartwood's POs at admin@ (bodiless PDF, noreply@ops-online.com)
+    applies when a human emails a PO from the OPS portal straight to charter@,
+    and the poll only reads `in:inbox`. Cursor: state["spam_cursor"]."""
+    pc = _pc()
+    overlap = int(pc.get("cursor_overlap_seconds", 3600))
+    backfill = int(pc.get("source_backfill_hours", 48)) * 3600
+    query = pc.get("source_query") or 'from:ops-online.com OR subject:"purchase order" OR subject:"new POs" OR filename:pdf'
+    label = pc.get("label_rescued") or "A+ Agent/Rescued from Spam"
+    now = int(datetime.now(timezone.utc).timestamp())
+    since = int(state.get("spam_cursor") or (now - backfill))
+    done = audit.processed_message_ids()
+    rescued: list[str] = []
+    try:
+        stubs = gm.list_messages(f"in:spam after:{max(0, since - overlap)} ({query})",
+                                 max_results=200, include_spam_trash=True)
+        for s in stubs:
+            key = f"spam-rescued:{s['id']}"
+            if key in done:
+                continue
+            m = gm.get_message(s["id"])
+            why = is_po_shaped(m.get("sender_addrs") or [], m.get("subject") or "",
+                               m.get("attachment_names") or [])
+            if DRY_RUN:
+                print(f"    · charter spam {s['id']} subj={(m.get('subject') or '')[:70]!r} "
+                      f"→ {why or 'not PO-shaped'}")
+            if not why:
+                continue
+            gm.move_to_inbox(s["id"], [label])
+            audit.append({"message_id": key, "source": "po_inbox", "action_taken": "po_spam_rescued",
+                          "source_msg_id": s["id"], "subject": m.get("subject") or "",
+                          "attachments": m.get("attachment_names") or [], "why": why,
+                          "sender": m.get("sender") or ""})
+            rescued.append(s["id"])
+            print(f"  🛟 rescued from charter@ Spam: {(m.get('subject') or '')[:90]} ({why})")
+        state["spam_cursor"] = now
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  charter@ Spam rescue FAILED: {e}", file=sys.stderr)
+        traceback.print_exc()
+        _alert(f"🚩 charter@ Spam rescue FAILED: {str(e)[:200]}. PO-shaped mail that Gmail "
+               f"spam-filters at charter@ is invisible to the PO agent until this is fixed.")
+    return rescued
+
+
 def _alert(text: str) -> None:
     for key in _pc().get("missing_info_dms", ["charter_admin", "visionary"]):
         s = staff(key)

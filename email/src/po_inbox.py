@@ -2057,6 +2057,13 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001 — the charter poll must still run
         print(f"  ⚠️  PO source mirror failed (non-fatal): {e}", file=sys.stderr)
         traceback.print_exc()
+    # PO-shaped mail Gmail spam-filtered at charter@ itself: moved to the inbox
+    # and processed NOW (its arrival date may already be behind the cursor).
+    rescued: list[str] = []
+    try:
+        rescued = po_sources.rescue_spam(state)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  Spam rescue failed (non-fatal): {e}", file=sys.stderr)
     try:
         stubs = gm.list_messages(_inbox_query(since, pc))
     except Exception as e:  # noqa: BLE001 — most likely DWD not granted yet
@@ -2064,6 +2071,8 @@ def run() -> None:
             print("po_inbox: Gmail delegation not granted yet (SETUP §7a) — skipping cleanly")
             return
         raise
+    listed = {s["id"] for s in stubs}
+    stubs = [{"id": i} for i in rescued if i not in listed] + stubs
     print(f"po_inbox: {len(stubs)} new message(s)")
     newest = since
     for s in stubs:
