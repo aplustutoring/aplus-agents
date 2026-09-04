@@ -611,10 +611,289 @@
     411606571,
     411610001,
     411618799,
-    411621774
+    411621774,
+    411882442,
+    411886157,
+    411890023,
+    411894516
   ],
-  "last_run_utc": "2026-09-04T05:25:02.871831+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-04T18:13:24.212295+00:00",
+  "pending_digest": [
+    {
+      "call_id": 411882442,
+      "number": "15136232289",
+      "time_pt": "10:22 AM",
+      "matched": true,
+      "contact_label": "Tina Votel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola placed an outbound follow-up call to Tina Bartel (Bartel) regarding tutoring for her daughter Katelyn. The call went to voicemail; Paola left a message asking Tina to call back to continue the conversation about tutoring services. No new information was gathered. The voicemail greeting revealed Tina's last name may be Bartel, not Votel.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Tina again in a couple of days if no callback, or send a follow-up text/email referencing the package info Paola sent",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Tina Votel",
+            "correct": "Tina Bartel"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound follow-up to Tina Bartel (record has 'Votel' \u2014 her voicemail greeting says 'Tina Bartel with Hathaway Hill', so update the name) about online tutoring for her 11th-grade daughter Katelyn at Bishop Fenwick. Paola left a voicemail; Tina has not yet responded. Prior call: quoted $95/hr with package discounts, Paola already sent package info, waiting for Tina and her husband to confirm so we can match a tutor within 1-2 days. Katelyn has travel coming up (2 days this week, ~2 weeks in September, weeks in winter) so timing matters. When she calls back, open with: 'Hi Tina, it's [name] from A+ Tutoring following up on Paola's voicemail \u2014 wanted to see if you and your husband had a chance to look over the package info for Katelyn and answer any questions so we can get a tutor lined up before her September travel.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation, so keep the existing 'We Connected' status from the prior call.",
+        "student_or_school_names_mentioned": [
+          "Katelyn",
+          "Bishop Fenwick",
+          "Hathaway Hill"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola called Tina to follow up on tutoring for Katelyn; reached voicemail and left a message asking Tina to call back. Voicemail greeting identifies her as 'Tina Bartel with Hathaway Hill' \u2014 likely correction to last name on file (currently Votel).",
+          "what_we_can_do_to_help": "[outbound call] Await callback; if no response in a couple of days, try again and/or send a follow-up email/text referencing the package info already sent so we can confirm and match a tutor before Katelyn's September travel.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola called Tina to follow up on tutoring for Katelyn; reached voicemail and left a message asking Tina to call back. Voicemail greeting identifies her as 'Tina Bartel with Hathaway Hill' \u2014 likely correction to last name on file (currently Votel)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Await callback; if no response in a couple of days, try again and/or send a follow-up email/text referencing the package info already sent so we can confirm and match a tutor before Katelyn's September travel."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Tina again in a couple of days if no callback, or send a follow-up text/email referencing the package info Paola sent",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411886157,
+      "number": "12132357422",
+      "time_pt": "10:28 AM",
+      "matched": true,
+      "contact_label": "Sumaya Hossian",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Sumaya Hossian regarding tutoring for her 5th grader Arianna. Call went to voicemail; Paola left a message asking Sumaya to call back when convenient. No new information gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Sumaya's callback; if no response in a few days, attempt another follow-up (call/text/email) about tutoring for Arianna.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Sumaya Hossian following up on her earlier inquiry about online tutoring for her 5th grader Arianna (Compass Charter, EF/TOR Christina Campalas). Sumaya had received pricing on 8/17 and said she'd review and call back but hasn't. No new info from this call \u2014 it was a VM only. If she calls back, open with: 'Hi Sumaya, this is [name] from A+ Tutoring returning Paola's call \u2014 we wanted to check in on tutoring for Arianna and answer any questions on the pricing we sent.' Be ready to discuss the 2-3x/week online plan alternating math and ELA and offer to book the free trial.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only on an outbound follow-up; no new contact made and existing lead status remains appropriate until we actually reach her.",
+        "student_or_school_names_mentioned": [
+          "Arianna Hossain",
+          "Compass Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound VM] Paola left a voicemail following up on Sumaya's interest in tutoring for Arianna; awaiting callback.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound VM] Paola left a voicemail following up on Sumaya's interest in tutoring for Arianna; awaiting callback."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Sumaya's callback; if no response in a few days, attempt another follow-up (call/text/email) about tutoring for Arianna.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411890023,
+      "number": "18314615305",
+      "time_pt": "10:35 AM",
+      "matched": true,
+      "contact_label": "Michelle Dandridge",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Michelle Dandridge regarding tutoring interest for her son Hunter. The call went to voicemail; Paola left a message asking Michelle to call back to connect and wished her a nice weekend. No contact was made and no next step is scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up call/text to Michelle Dandridge next business day to connect about tutoring for Hunter",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Michelle Dandridge (parent of Hunter, 6th grade, Ocean Grove ES, needs a patient Math tutor) following up on the family's tutoring inquiry. Current lead status shows 'Using Someone Else' but we're re-engaging. Michelle has not yet responded; she now expects a callback opportunity. When she calls back or on the next outbound attempt, open with: 'Hi Michelle, this is [name] from A+ Tutoring following up on my colleague Paola's message about Hunter \u2014 we'd love to help find him a patient Math tutor who can work at his pace. Is now a good time to chat about what he needs?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound voicemail only \u2014 no live conversation occurred, so we cannot re-qualify the contact from their current status.",
+        "student_or_school_names_mentioned": [
+          "Hunter",
+          "Ocean Grove ES"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola placed an outbound follow-up call to Michelle re: tutoring for Hunter and reached voicemail. Left a message asking Michelle to call back at a convenient time.",
+          "what_we_can_do_to_help": "Continue outreach attempts to reconnect with Michelle and move forward on matching Hunter with a patient Math tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed an outbound follow-up call to Michelle re: tutoring for Hunter and reached voicemail. Left a message asking Michelle to call back at a convenient time."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue outreach attempts to reconnect with Michelle and move forward on matching Hunter with a patient Math tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up call/text to Michelle Dandridge next business day to connect about tutoring for Hunter",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 411894516,
+      "number": "18189391570",
+      "time_pt": "10:43 AM",
+      "matched": true,
+      "contact_label": "Sophie Crespel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Sophie Crespel regarding her prior interest in tutoring for her son. The call was screened by a call-screening service and Sophie was not available. Paola left a voicemail asking Sophie to call back at a good time and wished her a nice weekend.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt to reach Sophie Crespel again about tutoring for her son if no callback is received",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola placed an outbound follow-up call to Sophie Crespel about her interest in tutoring for her son. The call was intercepted by a screening service and Sophie was unavailable, so Paola left a friendly voicemail asking Sophie to share a good time to connect. Sophie now expects a callback opportunity \u2014 she may call back, but if we don't hear from her in a couple of days, try again. We do not yet have the son's name, grade, school, subject need, or modality. Open with: 'Hi Sophie, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 we'd love to learn a bit more about your son and how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left a voicemail only; did not actually connect with Sophie, so keep her at Attempted To Contact.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up attempt to Sophie about tutoring for her son. Screened by a call-screening service; left a voicemail asking for a good time to connect. No new details gathered yet.",
+          "what_we_can_do_to_help": "Try Sophie again in a couple of days if she doesn't call back, and gather son's grade, school, and subject needs so we can recommend a plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up attempt to Sophie about tutoring for her son. Screened by a call-screening service; left a voicemail asking for a good time to connect. No new details gathered yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Try Sophie again in a couple of days if she doesn't call back, and gather son's grade, school, and subject needs so we can recommend a plan."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt to reach Sophie Crespel again about tutoring for her son if no callback is received",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
