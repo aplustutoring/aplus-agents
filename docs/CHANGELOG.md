@@ -3416,3 +3416,18 @@ in one surface weren't reliably visible in the other. The repo is now the
 shared memory; the protocol makes documentation a mandatory session exit step.
 
 **Files:** `CLAUDE.md`, `docs/CHANGELOG.md`.
+
+## 2026-09-03 — Property audit of post-8/1 deals + always-filled parent props (PR #172)
+**Why:** Roman's review of deal properties on the 266 deals created since 8/1 found
+parent_email blank on 98/121 charter PO deals (parent associated, stamp only used
+PO-stated values), 27 iLead deals missing hours (8/16-8/24 multi-PO batches), and
+B2C hygiene gaps (27/30 Gold deals with no amount; junk school values).
+**What:** po_inbox now feeds the RESOLVED parent's email/phone into the deal-property
+stamp when the PO doesn't state them; one-off backfill_deal_props workflow repaired
+August (106 parent stamps + 23 hours fixes, 4 non-$75-rate deals flagged for humans,
+0 failures — post-run: 0 charter deals since 8/1 missing parent_email); weekly digest
+gained a read-only B2C hygiene block (no amount / junk school). McGraw "duplicate"
+deals confirmed NOT a dedupe miss: iLead double-issued two PO batches (3114140191-93
++ 3114140221-23) 30s apart — needs human verification with iLead.
+**Files:** email/src/po_inbox.py, email/src/digest.py, email/src/backfill_deal_props.py,
+.github/workflows/email-backfill-deal-props.yml, email/tests/test_digest_hygiene.py.
