@@ -16,7 +16,7 @@ import traceback
 from datetime import date, datetime, time, timedelta, timezone
 from types import SimpleNamespace
 
-from . import audit, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
 from .config import DRY_RUN, ROOT, cfg, require, staff
@@ -330,6 +330,75 @@ def _handle_followup(thread_id: str, message: dict, prior: dict, result: dict,
     return record
 
 
+def _sender_addrs(message: dict) -> list[str]:
+    """Every address on the message's senders (FROM, ORIGINAL_FROM, REPLY_TO):
+    OPS mail is FROM the school with the platform as original sender."""
+    out: list[str] = []
+    for s in message.get("senders") or []:
+        dv = s.get("deliveryIdentifier")
+        if isinstance(dv, dict) and "@" in str(dv.get("value", "")):
+            out.append(str(dv["value"]).lower())
+    return out
+
+
+def _po_handoff(thread_id: str, message: dict, reason: str) -> dict:
+    """A PO document reached a triaged inbox. The PO agent mirrors PO-shaped mail
+    into charter@ every run (po_sources); this side only makes sure a human is
+    on the hook: a handoff ticket to charter_admin that the PO agent closes once
+    the copy is processed. Already mirrored → archive as handled, no ticket."""
+    subj = message.get("subject") or "(no subject)"
+    names = [a.get("name") or "" for a in (message.get("attachments") or [])]
+    record = {"message_id": message.get("id"), "thread_id": thread_id, "contact_id": None,
+              "new_contact": False, "category": "po_handoff", "risk": "low", "confidence": 1.0,
+              "owner": None, "reason": reason, "cancellation_reason": "",
+              "subject": subj, "attachments": names}
+    mirrored = po_sources.mirrored_record_for(subj, names)
+    if mirrored:
+        hs.archive_thread(thread_id)
+        record.update(action_taken="po_handoff_archived", mirror_msg_id=mirrored.get("mirror_msg_id"))
+        audit.append(record)
+        print(f"  📦 PO document already mirrored to charter@ → archived thread {thread_id}")
+        return record
+
+    pc = cfg().get("po_inbox", {}) or {}
+    role = pc.get("owner", "charter_admin")
+    owner = staff(role) or {}
+    hs_cfg = cfg()["hubspot"]
+    tf = cfg().get("ticket_fields", {})
+    sla_due = add_business_hours(now_la(), float(pc.get("handoff_sla_hours", 2)))
+    sources = ", ".join(pc.get("sources") or []) or "the configured inboxes"
+    desc = (
+        "Auto-triaged by aplus_email_agent.\n"
+        f"Category: po_handoff | reason: {reason}\n"
+        "This purchase-order document arrived OUTSIDE the charter inbox. The PO agent "
+        f"copies PO-shaped mail from {sources} into charter@ every run and closes this "
+        "ticket itself once the copy is processed (deal + PO ticket).\n"
+        "If this ticket is still open after the SLA, the mirror failed: forward the email "
+        "to charter@ and tell the visionary role.\n"
+        f"SLA due: {sla_due.isoformat()}")
+    ticket = hs.create_ticket(f"PO document outside charter inbox: {subj[:100]}",
+                              owner.get("hubspot_owner_id"),
+                              hs_cfg["ticket_stages"]["needs_approval"], desc, None,
+                              priority=tf.get("priority_map", {}).get("high", "HIGH"),
+                              category=tf.get("category_map", {}).get("new_po", tf.get("category_default")),
+                              source=tf.get("source"))
+    tid = ticket.get("id")
+    record.update(ticket_id=tid, owner=role, sla_due=sla_due.isoformat(),
+                  action_taken="po_handoff_ticket")
+    if tid and tid != "DRYRUN":
+        try:
+            hs.link_thread_to_ticket(thread_id, tid)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  thread link failed (non-fatal): {e}")
+    _notify_owner(SimpleNamespace(owner=owner, owner_key=role),
+                  f"📦 PO document landed outside the charter inbox: {subj[:90]}. The PO agent "
+                  f"is importing it; this ticket closes itself once processed. "
+                  f"{hs.ticket_url(tid) if tid else ''}")
+    audit.append(record)
+    print(f"  📦 PO handoff → {role} (ticket {tid}): {subj[:80]}")
+    return record
+
+
 def process_message(thread_id: str, message: dict) -> dict | None:
     """Handle one inbound message end to end. Returns the audit record."""
     message_id = message.get("id")
@@ -338,6 +407,16 @@ def process_message(thread_id: str, message: dict) -> dict | None:
 
     email = hs.sender_email(message) or ""
     body = message.get("text") or message.get("richText") or ""
+
+    # ── PO documents are NEVER junk, whatever the classifier would say. Schools'
+    #    ordering systems email POs to the vendor contact on file (Heartwood's OPS
+    #    account → admin@): a bodiless PDF from a noreply address, which the junk
+    #    rule swallowed 14 times in Aug/Sep 2026. Hand off to the PO agent. ──
+    po_reason = po_sources.is_po_shaped(
+        _sender_addrs(message), message.get("subject") or "",
+        [a.get("name") or "" for a in (message.get("attachments") or [])])
+    if po_reason:
+        return _po_handoff(thread_id, message, po_reason)
 
     # ── Identify contact ──
     contact = hs.find_contact_by_email(email) if email else None

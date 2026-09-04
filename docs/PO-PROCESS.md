@@ -9,6 +9,16 @@ this file in the same PR. (Last verified: 2026-08-11, suite 202.)
 
 - Schools email **charter@wetutorathome.com**. The agent polls every 15 minutes
   on weekday business hours (GitHub Actions, `email-po-inbox.yml`).
+- **POs that land elsewhere** (2026-09-03): schools' ordering systems email the
+  vendor contact on file, and Heartwood's OPS account points at admin@. Each
+  run first copies PO-shaped mail (`src/po_sources.is_po_shaped`: ordering-system
+  sender, "Purchase Order #" / "new POs" subject, or a PO/OA-numbered PDF) from
+  every `po_inbox.sources` mailbox into charter@ (Gmail insert, label
+  `A+ Agent/Mirrored from other inbox`), then processes the copy like any other
+  arrival. The admin triage never junks such mail: it opens a HIGH handoff
+  ticket to charter_admin that this agent closes once the copy is processed. A
+  handoff ticket still open after 2 business hours means the mirror is broken
+  (charter_admin + visionary are DM'd when a source fails).
 - Already-processed messages are skipped (audit log). A thread that already
   produced a real PO is closed — **unless** it has an open parent chase, in
   which case replies still get read (the TOR's parent info must get through).
