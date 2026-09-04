@@ -21,41 +21,50 @@ GMAIL = "https://gmail.googleapis.com/gmail/v1/users/me"
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 
-@lru_cache(maxsize=1)
-def _session():
+@lru_cache(maxsize=8)
+def _session(address: str | None = None):
+    """An authorized session acting AS `address` (default: the charter PO
+    mailbox). Domain-wide delegation lets the same service account act as any
+    mailbox in the Workspace; po_sources uses that to read admin@ for PO mail
+    that schools' ordering systems send to the vendor contact on file."""
     from google.auth.transport.requests import AuthorizedSession
     from google.oauth2.service_account import Credentials
 
-    address = cfg()["po_inbox"]["address"]
+    address = address or cfg()["po_inbox"]["address"]
     info = google_creds_dict()
     creds = Credentials.from_service_account_info(info, scopes=SCOPES).with_subject(address)
     return AuthorizedSession(creds)
 
 
-def _get(path: str, params: dict | None = None) -> dict:
-    r = _session().get(f"{GMAIL}{path}", params=params or {}, timeout=30)
+def _get(path: str, params: dict | None = None, mailbox: str | None = None) -> dict:
+    r = _session(mailbox).get(f"{GMAIL}{path}", params=params or {}, timeout=30)
     r.raise_for_status()
     return r.json()
 
 
-def _post(path: str, payload: dict) -> dict:
+def _post(path: str, payload: dict, mailbox: str | None = None,
+          params: dict | None = None) -> dict:
     if DRY_RUN:
         print(f"[DRY_RUN] gmail POST {path}")
         return {"id": "DRYRUN", "dry_run": True}
-    r = _session().post(f"{GMAIL}{path}", json=payload, timeout=30)
+    r = _session(mailbox).post(f"{GMAIL}{path}", params=params or {}, json=payload, timeout=30)
     r.raise_for_status()
     return r.json()
 
 
-def list_messages(query: str, max_results: int = 50) -> list[dict]:
+def list_messages(query: str, max_results: int = 50, mailbox: str | None = None,
+                  include_spam_trash: bool = False) -> list[dict]:
     """Message stubs ({id, threadId}) matching a Gmail search query, e.g.
-    'in:inbox after:1718000000 -label:agent-processed'."""
+    'in:inbox after:1718000000 -label:agent-processed'. Gmail search silently
+    excludes Spam and Trash unless include_spam_trash is set."""
     out, token = [], None
     while True:
         params = {"q": query, "maxResults": min(max_results, 100)}
+        if include_spam_trash:
+            params["includeSpamTrash"] = "true"
         if token:
             params["pageToken"] = token
-        data = _get("/messages", params)
+        data = _get("/messages", params, mailbox)
         out.extend(data.get("messages", []))
         token = data.get("nextPageToken")
         if not token or len(out) >= max_results:
@@ -113,6 +122,20 @@ def _parse_message(m: dict) -> dict:
     body = _text(m.get("payload", {}))
     if not body and m.get("snippet"):
         body = m["snippet"]
+
+    names: list[str] = []
+
+    def _names(part):
+        if part.get("filename"):
+            names.append(part["filename"])
+        for p in part.get("parts", []) or []:
+            _names(p)
+
+    _names(m.get("payload", {}))
+    # Every address that vouches for the message: ordering systems (OPS) send
+    # on behalf of a school, so From is the school and Sender/Reply-To is the
+    # platform. po_sources.is_po_shaped needs to see both.
+    addr_blob = " ".join(headers.get(h, "") for h in ("from", "sender", "reply-to", "return-path"))
     return {
         "id": m["id"],
         "threadId": m.get("threadId"),
@@ -121,15 +144,32 @@ def _parse_message(m: dict) -> dict:
         "message_id_header": headers.get("message-id", ""),
         "date_ms": int(m.get("internalDate", 0)),
         "body": body,
-        "has_attachments": any(
-            p.get("filename") for p in (m.get("payload", {}).get("parts") or [])
-        ),
+        "has_attachments": bool(names),
+        "attachment_names": names,
+        "sender_addrs": [a.lower() for a in re.findall(r"[\w.+-]+@[\w.-]+", addr_blob)],
+        "label_ids": list(m.get("labelIds") or []),
     }
 
 
-def get_message(msg_id: str) -> dict:
-    """Full message → {id, threadId, sender, subject, date_ms, body}."""
-    return _parse_message(_get(f"/messages/{msg_id}", {"format": "full"}))
+def get_message(msg_id: str, mailbox: str | None = None) -> dict:
+    """Full message → {id, threadId, sender, subject, date_ms, body, ...}."""
+    return _parse_message(_get(f"/messages/{msg_id}", {"format": "full"}, mailbox))
+
+
+def get_raw(msg_id: str, mailbox: str | None = None) -> str:
+    """The RFC 2822 message, urlsafe-base64: the shape messages.insert takes."""
+    return _get(f"/messages/{msg_id}", {"format": "raw"}, mailbox).get("raw") or ""
+
+
+def insert_raw(raw: str, label_names: list[str] | None = None) -> dict:
+    """Copy a raw message into the charter PO mailbox as NEW inbox mail:
+    internalDate = now (so the poll's `after:` window sees it), INBOX + UNREAD
+    (so it reads as just arrived). Original headers are preserved, so the PO
+    extractor still sees the school as the sender. gmail.modify already covers
+    messages.insert; no new delegation scope is needed."""
+    ids = ["INBOX", "UNREAD"] + [ensure_label(n) for n in (label_names or []) if n]
+    return _post("/messages", {"raw": raw, "labelIds": ids},
+                 params={"internalDateSource": "receivedTime"})
 
 
 # Attachment types the PO extractor can read (Claude reads PDFs + images natively).
@@ -177,27 +217,34 @@ def get_attachments(msg_id: str) -> list[dict]:
     return found[:_MAX_ATTACHMENTS]
 
 
-@lru_cache(maxsize=1)
-def _labels() -> dict:
-    return {l["name"]: l["id"] for l in _get("/labels").get("labels", [])}
+@lru_cache(maxsize=8)
+def _labels(mailbox: str | None = None) -> dict:
+    return {l["name"]: l["id"] for l in _get("/labels", None, mailbox).get("labels", [])}
 
 
-def ensure_label(name: str) -> str:
+def ensure_label(name: str, mailbox: str | None = None) -> str:
     """Label id for `name`, creating it if needed (supports 'Parent/Child' nesting)."""
-    if name in _labels():
-        return _labels()[name]
+    if name in _labels(mailbox):
+        return _labels(mailbox)[name]
     if DRY_RUN:
         return "DRYRUN_LABEL"
     res = _post("/labels", {"name": name, "labelListVisibility": "labelShow",
-                            "messageListVisibility": "show"})
+                            "messageListVisibility": "show"}, mailbox)
     _labels.cache_clear()
     return res["id"]
 
 
-def apply_labels(msg_id: str, names: list[str]) -> None:
-    ids = [ensure_label(n) for n in names if n]
+def apply_labels(msg_id: str, names: list[str], mailbox: str | None = None) -> None:
+    ids = [ensure_label(n, mailbox) for n in names if n]
     if ids:
-        _post(f"/messages/{msg_id}/modify", {"addLabelIds": ids})
+        _post(f"/messages/{msg_id}/modify", {"addLabelIds": ids}, mailbox)
+
+
+def move_to_inbox(msg_id: str, label_names: list[str] | None = None,
+                  mailbox: str | None = None) -> None:
+    """Pull a message out of Spam into the Inbox (unread), optionally tagging it."""
+    add = ["INBOX", "UNREAD"] + [ensure_label(n, mailbox) for n in (label_names or []) if n]
+    _post(f"/messages/{msg_id}/modify", {"addLabelIds": add, "removeLabelIds": ["SPAM"]}, mailbox)
 
 
 def _scrub_outbound(text: str) -> str:

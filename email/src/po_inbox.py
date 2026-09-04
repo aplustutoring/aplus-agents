@@ -24,7 +24,7 @@ import traceback
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 
-from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
@@ -2006,6 +2006,18 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             slack_client.dm(ccs["slack_user_id"], f"📋 [copy → {owner['name']}] 📦 {subject}")
     _notify_gaps(subject, note_parts, record.get("ticket_id"))
 
+    # A copy of this document may have reached admin@ first (schools' ordering
+    # systems email the vendor contact on file); the triage agent then opened a
+    # handoff ticket. This is the real processing, so close those.
+    try:
+        closed = po_sources.close_handoffs(
+            m["subject"], m.get("attachment_names") or [a["filename"] for a in attachments],
+            record.get("ticket_id"), deal_bit)
+        if closed:
+            record["handoffs_closed"] = closed
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  handoff close failed (non-fatal): {e}")
+
     record["action_taken"] = "po_processed"
     audit.append(record)
     print(f"  📦 {subject} → {pc.get('owner')} (ticket {record.get('ticket_id')})")
@@ -2043,6 +2055,21 @@ def run() -> None:
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  replay error on {rid}: {e}", file=sys.stderr)
             traceback.print_exc()
+    # Diagnostic: PO_DIAG_QUERY="<gmail query>" [PO_DIAG_MAILBOX=addr] lists what a
+    # mailbox actually holds (Spam/Trash included) and exits. Investigation rule
+    # 2026-08-31: verify the QUERY before declaring "never arrived".
+    dq = (os.environ.get("PO_DIAG_QUERY") or "").strip()
+    if dq:
+        mb = (os.environ.get("PO_DIAG_MAILBOX") or "").strip() or None
+        stubs = gm.list_messages(dq, max_results=100, mailbox=mb, include_spam_trash=True)
+        print(f"po_inbox DIAG {mb or pc['address']}: {len(stubs)} match(es) for {dq!r}")
+        for s in stubs:
+            m = gm.get_message(s["id"], mailbox=mb)
+            when = datetime.fromtimestamp((m.get("date_ms") or 0) / 1000, tz=timezone.utc)
+            print(f"  · {s['id']} {when:%Y-%m-%d %H:%MZ} labels={sorted(m.get('label_ids') or [])} "
+                  f"from={m.get('sender', '')[:50]!r} subj={(m.get('subject') or '')[:80]!r} "
+                  f"att={m.get('attachment_names') or []}")
+        return
     cur_path = Path(__file__).resolve().parent.parent / "state" / "po_cursor.json"
     state = _json.loads(cur_path.read_text()) if cur_path.exists() else {}
     since = state.get("last_epoch")
@@ -2052,6 +2079,22 @@ def run() -> None:
             cur_path.write_text(_json.dumps({"last_epoch": since}))
         print(f"po_inbox: baseline set ({since}); new mail picked up next run")
         return
+    # PO mail that schools' ordering systems send to OTHER mailboxes (admin@)
+    # is copied into charter@ FIRST, so the poll below processes it this run.
+    try:
+        n = po_sources.mirror_sources(state)
+        if n:
+            print(f"po_inbox: mirrored {n} PO document(s) from other inboxes")
+    except Exception as e:  # noqa: BLE001 — the charter poll must still run
+        print(f"  ⚠️  PO source mirror failed (non-fatal): {e}", file=sys.stderr)
+        traceback.print_exc()
+    # PO-shaped mail Gmail spam-filtered at charter@ itself: moved to the inbox
+    # and processed NOW (its arrival date may already be behind the cursor).
+    rescued: list[str] = []
+    try:
+        rescued = po_sources.rescue_spam(state)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  Spam rescue failed (non-fatal): {e}", file=sys.stderr)
     try:
         stubs = gm.list_messages(_inbox_query(since, pc))
     except Exception as e:  # noqa: BLE001 — most likely DWD not granted yet
@@ -2059,6 +2102,8 @@ def run() -> None:
             print("po_inbox: Gmail delegation not granted yet (SETUP §7a) — skipping cleanly")
             return
         raise
+    listed = {s["id"] for s in stubs}
+    stubs = [{"id": i} for i in rescued if i not in listed] + stubs
     print(f"po_inbox: {len(stubs)} new message(s)")
     newest = since
     for s in stubs:
@@ -2092,7 +2137,9 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  draft-feedback sweep failed (non-fatal): {e}")
     if not DRY_RUN:
-        cur_path.write_text(_json.dumps({"last_epoch": newest}))
+        # Keep the per-source mirror cursors (state["sources"]) alongside the
+        # charter cursor.
+        cur_path.write_text(_json.dumps({**state, "last_epoch": newest}))
 
 
 if __name__ == "__main__":
