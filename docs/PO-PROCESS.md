@@ -165,6 +165,12 @@ Also attached to the deal:
    in `sms.pipelines` (that ordering is what makes double-texting
    impossible). Sweep watches DEALS, so manually created deals text too.
 
+5. **Sibling-gap tripwire** (daily): a family that renewed SOME kids but
+   has a last-season-active sibling with no new PO → 🚩 DM to the
+   charter_sales seat after a 5-day settle window, once per family+kid per
+   season. Whole-family non-renewals are the chase list, never a flag.
+   (Roman 2026-09-04, after Eliana Fiore / Zahavi Villa / Abigail Miller.)
+
 ## Stage 5 — Kath: convert the PO to a Teachworks invoice (same day)
 
 Her HubSpot task (HIGH, due 8 business hours) says exactly:
