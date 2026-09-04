@@ -74,6 +74,9 @@ def mirror_env(monkeypatch):
                         lambda raw, labels=None: rec["inserted"].append(raw) or {"id": f"copy-{raw}"})
     monkeypatch.setattr(ps.gm, "apply_labels",
                         lambda i, names, mailbox=None: rec["labels"].append((mailbox, i, names)))
+    rec["unspammed"] = []
+    monkeypatch.setattr(ps.gm, "move_to_inbox",
+                        lambda i, names=None, mailbox=None: rec["unspammed"].append((mailbox, i)))
     monkeypatch.setattr(ps.audit, "append", lambda r: rec["audit"].append(r))
     monkeypatch.setattr(ps.audit, "_iter_records", lambda: [])
     # "old" was mirrored on an earlier run
@@ -97,7 +100,9 @@ def test_mirror_copies_only_po_shaped_mail_and_dedups(mirror_env):
     assert a["attachments"] == ["PO6814193240.pdf"]
     assert "was in Spam" in mirror_env["audit"][1]["why"]
     # source copy labelled in admin@, per-source cursor advanced
-    assert mirror_env["labels"][0][0] == "admin@wetutorathome.com"
+    assert mirror_env["labels"] == [("admin@wetutorathome.com", "po1", ["A+ Agent/Mirrored to charter"])]
+    # the spam-foldered original is pulled back into admin@'s Inbox so humans see it
+    assert mirror_env["unspammed"] == [("admin@wetutorathome.com", "spammed")]
     assert state["sources"]["admin@wetutorathome.com"] > 0
 
 
