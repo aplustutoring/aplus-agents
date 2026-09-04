@@ -8,6 +8,36 @@ Newest entries first.
 
 ---
 
+## 2026-09-03 — SMS live + zombie flow killed + welcome email agent-owned
+
+**Go-live:** agent SMS (PR #144) merged with Roman's locked copy (name the
+kid, "their", brand voice, pending=approved), fence moved to 2026-09-03, the
+JustCall probe verified live by Roman. First production sweep: clean zero.
+
+**Zombie:** at 4:28 PM, 8 min BEFORE the merge, the "dead" HubSpot flow
+1603217415 woke up and sent Marissa Escandon the old garbled template (its
+stuck enrollment recovered for the first fresh contact). Contained to one
+family (JustCall carrier receipts: 2 texts, both delivered). Response: flow
+DISABLED by state (revision 43, was only dead by luck), Escandon deal marked
+sms_sent on main so the new sweep never double-texts, Paola (who owned the
+live thread since 8/27) smooths it over. Lesson for the record: a stuck
+workflow is a landmine, not a corpse — "dead" was verified, "off" was not.
+
+**Welcome email (this commit, Roman: "option A, build that shit"):** the
+flow's one email action was NOT internal staff mail as PO-PROCESS claimed —
+it was "What to Expect (Charter)" TO THE FAMILY (58.3% opens, 10 replies,
+0 spam over 432 sends), dark since Aug 13 with the texts. Now agent-owned:
+`sms._send_welcome` fires HubSpot's transactional single-send alongside each
+family text (same fence/dedupe/audit); marketing-consent suppression (70
+families!) no longer applies; a failed email never voids the text (audited,
+welcome_email_error + Kath DM). Locked-rule AMENDMENT (Roman): the agent's
+outbound emails = tutor-doc receipt + this single-send.
+**Files:** email/src/sms.py, email/config.yaml, email/tests/test_sms.py
+(3 new; suite 370 green), docs/PO-PROCESS.md.
+**Verify before relying on it:** the single-send endpoint needs HubSpot's
+transactional add-on — probe command in the session notes; failure mode is
+loud (DM to Kath) either way.
+
 ## 2026-09-02 — Campaign routing logged as #AP046
 
 **What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+

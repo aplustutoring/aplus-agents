@@ -60,6 +60,18 @@ def _jc_send(to_number: str, body: str) -> dict:
     return r.json()
 
 
+def _send_welcome(email_id, to_email: str) -> None:
+    """The "What to Expect (Charter)" onboarding email, sent through HubSpot's
+    single-send API the moment the family texts (Roman 2026-09-03, Option A —
+    amending the only-outbound-email rule: tutor-doc receipt PLUS this).
+    Lifetime stats earned it: 58% opens, replies, zero spam reports — and the
+    workflow that used to send it died silently on Aug 13 with the texts.
+    Sent as transactional, so the ~1-in-4 families the old flow suppressed for
+    missing marketing consent finally get their next-steps email too."""
+    hs._write("POST", "/marketing/v3/transactional/single-email/send",
+              {"emailId": int(email_id), "message": {"to": to_email}})
+
+
 def _in_send_window(now=None) -> bool:
     sc = cfg().get("sms", {})
     local = (now or now_la())
@@ -203,7 +215,7 @@ def run_sweep() -> None:
         props = [d.get("properties") or {} for d in deals]
         try:
             full = hs._get(f"/crm/v3/objects/contacts/{cid}",
-                           {"properties": "firstname,phone,mobilephone,"
+                           {"properties": "firstname,email,phone,mobilephone,"
                                           + (sc.get("opt_out_property") or "phone")})
         except Exception:  # noqa: BLE001
             full = {}
@@ -280,10 +292,38 @@ def run_sweep() -> None:
                                     f"⚠️ SMS failed 3x for {_fmt_students(students)} "
                                     f"({phone}) — text the family manually.")
             continue
+        # the welcome email rides the SAME event: one family, one text, one
+        # "What to Expect" email. A failed email never voids the text (audited
+        # + flagged instead), and the family markers below dedupe both.
+        email_id = (sc.get("pipelines") or {}).get(
+            deals[0]["properties"].get("pipeline") or "", {}).get("welcome_email_id") \
+            if isinstance((sc.get("pipelines") or {}).get(
+                deals[0]["properties"].get("pipeline") or ""), dict) else None
+        to_email = ((full.get("properties") or {}).get("email") or "").strip()
+        welcome = ""
+        if email_id and to_email:
+            try:
+                _send_welcome(email_id, to_email)
+                welcome = to_email
+            except Exception as e:  # noqa: BLE001 — email must never void the text
+                audit.append({"message_id": f"welcome-error:{dids[0]}", "source": "sms",
+                              "action_taken": "welcome_email_error", "deal_id": dids[0],
+                              "contact_id": cid, "error": str(e)[:200]})
+                st = staff(sc.get("fallback_alert", "charter_admin"))
+                if st.get("slack_user_id"):
+                    try:
+                        slack_client.dm(st["slack_user_id"],
+                                        f"⚠️ What-to-Expect email failed for "
+                                        f"{_fmt_students(students)} ({to_email}) — the "
+                                        f"schedule text DID send; forward the welcome "
+                                        f"email manually. Error: {str(e)[:120]}")
+                    except Exception:  # noqa: BLE001
+                        pass
         for did in dids:
             audit.append({"message_id": f"sms-sent:{did}", "source": "sms",
                           "action_taken": "sms_sent", "deal_id": did, "contact_id": cid,
-                          "to": phone, "body": body[:300], "timestamp": now_iso})
+                          "to": phone, "body": body[:300],
+                          "welcome_email_to": welcome, "timestamp": now_iso})
         state["contact_sent"][cid] = now_iso
         sent += 1
     print(f"sms: sweep done, {sent} text(s) sent")

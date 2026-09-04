@@ -168,3 +168,54 @@ def test_em_dash_scrubbed_from_body(wired, monkeypatch):
     wired["deals"].append(_deal("D15"))
     sms.run_sweep()
     assert "—" not in wired["sent"][0][1]
+
+
+# ── What-to-Expect welcome email rides the text (Roman 2026-09-03, Option A) ──
+
+def _welcome_cfg():
+    cfg = {**BASE_CFG, "sms": {**BASE_CFG["sms"],
+           "pipelines": {"907748": {"template": "charter_po",
+                                    "welcome_email_id": "182052295857"}}}}
+    return cfg
+
+
+def test_welcome_email_sent_with_the_text(wired, monkeypatch):
+    monkeypatch.setattr(sms, "cfg", lambda: _welcome_cfg())
+    monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
+        "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
+                                   "email": "maria@x.com"}})
+    emails = []
+    monkeypatch.setattr(sms, "_send_welcome",
+                        lambda eid, to: emails.append((eid, to)))
+    wired["deals"].append(_deal("D20"))
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1
+    assert emails == [("182052295857", "maria@x.com")]
+    assert any(r.get("welcome_email_to") == "maria@x.com" for r in wired["recorded"])
+
+
+def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
+    monkeypatch.setattr(sms, "cfg", lambda: _welcome_cfg())
+    monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
+        "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
+                                   "email": "maria@x.com"}})
+    def boom(eid, to):
+        raise RuntimeError("no transactional add-on")
+    monkeypatch.setattr(sms, "_send_welcome", boom)
+    wired["deals"].append(_deal("D21"))
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1                     # text still delivered + audited
+    assert any(r["action_taken"] == "sms_sent" for r in wired["recorded"])
+    assert any(r["action_taken"] == "welcome_email_error" for r in wired["recorded"])
+    assert any("forward the welcome" in t for _, t in wired["dms"])
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1                     # and never re-texts over it
+
+
+def test_no_welcome_id_means_text_only(wired, monkeypatch):
+    emails = []
+    monkeypatch.setattr(sms, "_send_welcome",
+                        lambda eid, to: emails.append((eid, to)))
+    wired["deals"].append(_deal("D22"))
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1 and emails == []

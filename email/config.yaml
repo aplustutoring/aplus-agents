@@ -84,7 +84,9 @@ hourly_update:
 owner_task:
   enabled: true
 
-# Tutor-document auto-receipt (the agent's ONLY outbound email). sender_actor_id is
+# Tutor-document auto-receipt. Amended 2026-09-03 (Roman, Option A): the agent's
+# outbound emails are this receipt PLUS the What-to-Expect single-send that rides
+# each new-PO family text (sms.pipelines.*.welcome_email_id). sender_actor_id is
 # "A-{hubspot userId}" of the agent it sends as (Kath). Empty = disable the receipt.
 doc_receipt:
   sender_actor_id: "A-59969437"   # Kath Hitosis
@@ -114,7 +116,7 @@ sms:
   fallback_alert: charter_admin     # role DM'd on 3x send failure / no owner match
   opt_out_property: ""              # contact property that suppresses sends, if set
   pipelines:
-    "907748": { template: charter_po }   # Charter Trad — phase 1
+    "907748": { template: charter_po, welcome_email_id: "182052295857" }   # Charter Trad; welcome = "What to Expect (Charter)" (58% opens; Roman 2026-09-03 Option A)
   # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
   # gender), brand voice (no personal sign-off). Variant chosen by what we
   # KNOW: schedule on file means confirm; none means ask (the old flow pasted
