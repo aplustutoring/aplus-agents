@@ -50,7 +50,6 @@ unavailable to the API).
 
 ---
 
-<<<<<<< HEAD
 ## 2026-09-04 — Sibling-gap tripwire (Roman: "how do we raise a red flag?")
 
 **What:** `email/src/sibling_gaps.py`, daily from deal_sync — a family that
@@ -70,7 +69,9 @@ us — these gaps are school-side, which is exactly why they route to a human.
 **Files:** email/src/{sibling_gaps,deal_sync}.py, email/config.yaml
 (sibling_gap block), email/state/audit_log.jsonl (3 seeds),
 email/tests/test_sibling_gaps.py (6 new; suite 385 green), docs/PO-PROCESS.md.
-=======
+
+---
+
 ## 2026-09-03 — PO documents outside charter@ are mirrored, never junked
 
 **What:** Schools' ordering systems email POs to the VENDOR CONTACT on file, and
@@ -91,6 +92,10 @@ admin@'s **Spam** folder. Gmail spam-filtered a bodiless PDF from noreply@
 ops-online.com on arrival; HubSpot still synced them, and triage junked that
 copy. So the mirror lists with includeSpamTrash (Trash stays skipped: that is a
 human decision) and notes "(was in Spam at admin@)" on the audit record.
+2026-09-04 follow-up (#178): the spam-foldered ORIGINAL is pulled back into
+the source Inbox too, so the humans who work admin@ see it. This is the
+"never send to Spam" filter done in code: a Gmail filter needs the
+gmail.settings scope, which the service account is not granted.
 A document whose PO numbers the PO agent already handled from charter@ (Kath
 found them in the OPS portal and forwarded them) is NOT mirrored: audit
 `po_mirror_skipped`, no second copy, no DUPLICATE alert. The other order
@@ -135,7 +140,6 @@ way.
 `email/tests/test_po_sources.py` (19 new; suite 374 green), `docs/PO-PROCESS.md`.
 
 ---
->>>>>>> origin/main
 
 ## 2026-09-03 — SMS live + zombie flow killed + welcome email agent-owned
 
