@@ -117,6 +117,21 @@ sms:
   opt_out_property: ""              # contact property that suppresses sends, if set
   pipelines:
     "907748": { template: charter_po, welcome: true }   # Charter Trad; text + What-to-Expect email
+    # Phase 2 (Roman 2026-09-04): gold/in-person/trial reuse the charter text
+    # copy (Q1: "yes reuse charter"); trial families NOW get the ask text too
+    # (Q2: "yes for trial" — they never had one); the old flows' ghost owner
+    # assignment (archived Rafa, 911789198) is dropped (Q3), 372 orphaned
+    # contacts reassigned to Paola (Q4). Old flows 1608212624 + 325263375 go
+    # OFF at cutover, before these lines take effect.
+    "default":  { template: charter_po, welcome: true,
+                  welcome_template: "templates/welcome_gold_inperson.html",
+                  welcome_subject: "Ready to Launch: Next Steps" }          # Gold Tutoring
+    "3067397":  { template: charter_po, welcome: true,
+                  welcome_template: "templates/welcome_gold_inperson.html",
+                  welcome_subject: "Ready to Launch: Next Steps" }          # In-Person
+    "19120821": { template: charter_po, welcome: true,
+                  welcome_template: "templates/welcome_trial.html",
+                  welcome_subject: "Ready to Launch: Free Trial Session: Next Steps" }  # Free Trial
   # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
   # gender), brand voice (no personal sign-off). Variant chosen by what we
   # KNOW: schedule on file means confirm; none means ask (the old flow pasted
@@ -271,7 +286,9 @@ deal_sync:
     "88841552": {}   # Charter Amy
     "5119061": {}    # IEM Inc
     "21277473": {}   # Subscription
-    # Gold Tutoring (pipeline "default") + Free Trial ("19120821"): add entries if needed
+    # Roman 2026-09-04: Gold stays service-level (the non-charter default,
+    # Service List Cost — no entry needed); Free Trial bills as PACKAGE.
+    "19120821": { student_billing: "Package" }   # Free Trial
   # Smart invoice prompt: daily (hour_pt, PT) check of every ACTIVE charter PO deal —
   # student's attended TW hours >= PO hours → DM Kath to submit the invoice NOW;
   # otherwise DM once the invoice due date passes (deal due property, else the

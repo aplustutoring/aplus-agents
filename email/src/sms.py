@@ -61,7 +61,8 @@ def _jc_send(to_number: str, body: str) -> dict:
     return r.json()
 
 
-def _send_welcome(to_email: str, first_name: str) -> None:
+def _send_welcome(to_email: str, first_name: str,
+                  pconf: dict | None = None) -> None:
     """The "What to Expect (Charter)" onboarding email, sent via RESEND the
     moment the family texts (Roman 2026-09-03, Option A — amending the
     only-outbound-email rule: tutor-doc receipt PLUS this). Lifetime stats
@@ -76,13 +77,18 @@ def _send_welcome(to_email: str, first_name: str) -> None:
     transactional and now always sends."""
     sc = cfg().get("sms", {})
     wc = sc.get("welcome") or {}
-    tpl_path = ROOT / (wc.get("template") or "templates/welcome_charter.html")
+    pconf = pconf or {}
+    # per-pipeline template/subject (phase 2: gold/in-person and trial carry
+    # their own "What to Expect" variants); sms.welcome holds the defaults
+    tpl_path = ROOT / (pconf.get("welcome_template") or wc.get("template")
+                       or "templates/welcome_charter.html")
     html = tpl_path.read_text().replace("__FIRST_NAME__", first_name or "Parent")
     payload = {"from": wc.get("from", "A+ Tutoring Success Team <admin@wetutorathome.com>"),
                "to": [to_email],
                "reply_to": wc.get("reply_to", "admin@wetutorathome.com"),
-               "subject": wc.get("subject",
-                                 "We received your PO! Ready to Launch: Next Steps"),
+               "subject": pconf.get("welcome_subject")
+                          or wc.get("subject",
+                                    "We received your PO! Ready to Launch: Next Steps"),
                "html": html}
     bcc = (cfg().get("hubspot") or {}).get("bcc_log_address")
     if bcc:
@@ -328,7 +334,8 @@ def run_sweep() -> None:
         welcome = ""
         if wants_welcome and to_email:
             try:
-                _send_welcome(to_email, first)
+                _send_welcome(to_email, first,
+                              pconf2 if isinstance(pconf2, dict) else None)
                 welcome = to_email
             except Exception as e:  # noqa: BLE001 — email must never void the text
                 audit.append({"message_id": f"welcome-error:{dids[0]}", "source": "sms",

@@ -186,11 +186,11 @@ def test_welcome_email_sent_with_the_text(wired, monkeypatch):
                                    "email": "maria@x.com"}})
     emails = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda to, first: emails.append((to, first)))
+                        lambda to, first, pconf=None: emails.append((to, first, pconf)))
     wired["deals"].append(_deal("D20"))
     sms.run_sweep()
     assert len(wired["sent"]) == 1
-    assert emails == [("maria@x.com", "Maria")]
+    assert emails and emails[0][:2] == ("maria@x.com", "Maria")
     assert any(r.get("welcome_email_to") == "maria@x.com" for r in wired["recorded"])
 
 
@@ -199,7 +199,7 @@ def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
     monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
         "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
                                    "email": "maria@x.com"}})
-    def boom(to, first):
+    def boom(to, first, pconf=None):
         raise RuntimeError("resend down")
     monkeypatch.setattr(sms, "_send_welcome", boom)
     wired["deals"].append(_deal("D21"))
@@ -215,10 +215,39 @@ def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
 def test_no_welcome_id_means_text_only(wired, monkeypatch):
     emails = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda to, first: emails.append((to, first)))
+                        lambda to, first, pconf=None: emails.append((to, first, pconf)))
     wired["deals"].append(_deal("D22"))
     sms.run_sweep()
     assert len(wired["sent"]) == 1 and emails == []
+
+
+def test_pipeline_welcome_override_reaches_send(wired, monkeypatch):
+    # gold/trial carry their own template+subject; the pipeline conf must
+    # arrive at _send_welcome intact
+    cfgv = {**BASE_CFG, "sms": {**BASE_CFG["sms"],
+            "pipelines": {"907748": {"template": "charter_po", "welcome": True,
+                                     "welcome_template": "templates/welcome_trial.html",
+                                     "welcome_subject": "Trial subject"}},
+            "welcome": {"template": "templates/welcome_charter.html"}}}
+    monkeypatch.setattr(sms, "cfg", lambda: cfgv)
+    monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
+        "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
+                                   "email": "maria@x.com"}})
+    got = []
+    monkeypatch.setattr(sms, "_send_welcome",
+                        lambda to, first, pconf=None: got.append(pconf))
+    wired["deals"].append(_deal("D23"))
+    sms.run_sweep()
+    assert got and got[0]["welcome_template"] == "templates/welcome_trial.html"
+
+
+def test_gold_trial_templates_render_clean():
+    from src.config import ROOT
+    for name in ("welcome_gold_inperson.html", "welcome_trial.html"):
+        tpl = (ROOT / "templates" / name).read_text()
+        assert tpl.count("__FIRST_NAME__") == 1, name
+        assert "—" not in tpl, name
+        assert "my direct #" not in tpl, name
 
 
 def test_welcome_template_renders_clean():
@@ -229,3 +258,22 @@ def test_welcome_template_renders_clean():
     assert "—" not in tpl                       # locked outbound rule
     assert "my direct #" not in tpl             # the old flow's stale timing line
     sms._send_welcome("test@x.com", "Ana")      # DRY_RUN: exercises load + render
+
+
+def test_sender_liveness_digest_flags_quiet_flows(monkeypatch, tmp_path):
+    from src import sender_liveness as sl
+    monkeypatch.setattr(sl, "SNAP", tmp_path / "snap.json")
+    monkeypatch.setattr(sl, "cfg", lambda: {"sender_liveness": {"channel": "CCH"}})
+    monkeypatch.setattr(sl, "_sender_flows",
+                        lambda: {"1": "Flow A", "2": "Flow B"})
+    counts = {"Flow A": 10, "Flow B": 5}
+    monkeypatch.setattr(sl, "_enrollment_totals", lambda: dict(counts))
+    posts = []
+    monkeypatch.setattr(sl.slack_client, "post_message",
+                        lambda ch, t: posts.append((ch, t)))
+    sl.run()                       # first run: snapshot only, no digest
+    assert posts == []
+    counts["Flow A"] = 14          # A moved, B stayed flat
+    sl.run()
+    assert len(posts) == 1
+    assert "Flow B" in posts[0][1] and "Flow A" not in posts[0][1].split("ZERO")[1]
