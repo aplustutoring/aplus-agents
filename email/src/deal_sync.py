@@ -108,6 +108,25 @@ def _contact_matches_dealname(props: dict, dealname: str) -> bool:
     return bool(first and last and first in dn and last in dn)
 
 
+def _sibling_gold_deals(contact: dict | None, deal_id, gold_pipelines: set) -> int:
+    """How many gold-pipeline deals the family has (incl. this one) — the divisor
+    for a shared family invoice. Falls back to 1 on any doubt."""
+    cid = (contact or {}).get("id")
+    if not cid:
+        return 1
+    try:
+        assoc = hs._get(f"/crm/v3/objects/contacts/{cid}/associations/deals")
+        ids = [str(r.get("toObjectId") or r.get("id")) for r in assoc.get("results", [])]
+        n = 0
+        for did in ids[:20]:
+            d = hs._get(f"/crm/v3/objects/deals/{did}", {"properties": "pipeline,dealstage"})
+            if (d.get("properties") or {}).get("pipeline") in gold_pipelines:
+                n += 1
+        return n or 1
+    except Exception:  # noqa: BLE001
+        return 1
+
+
 def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = None,
               students_override: list[str] | None = None) -> dict | None:
     """`force=True` (FORCE_DEAL_ID runs) does the REAL write for one deal even in
@@ -240,11 +259,16 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
         try:
             inv = tw.latest_invoice(record["tw_customer_id"], token)
             if inv:
+                # One family invoice often covers siblings with a deal each — split
+                # the total across the contact's gold deals (Roman, 2026-09-04).
+                n = max(1, _sibling_gold_deals(contact, deal["id"], set(ds.get("gold_amount_pipelines", []))))
+                share = round(inv["total"] / n, 2)
                 hs._write("PATCH", f"/crm/v3/objects/deals/{deal['id']}",
-                          {"properties": {"amount": str(inv["total"])}})
-                record["amount_from_invoice"] = inv["total"]
-                print(f"  💵 {record['deal_name']}: amount ${inv['total']:g} from TW invoice "
-                      f"{inv.get('number') or '?'} ({inv.get('date') or '?'})")
+                          {"properties": {"amount": str(share)}})
+                record["amount_from_invoice"] = share
+                print(f"  💵 {record['deal_name']}: amount ${share:g}"
+                      + (f" (1/{n} of ${inv['total']:g})" if n > 1 else "")
+                      + f" from TW invoice {inv.get('number') or '?'} ({inv.get('date') or '?'})")
         except Exception as e:  # noqa: BLE001 — amount stamp is best-effort
             print(f"  ⚠️  invoice-amount stamp failed (non-fatal): {e}")
     record["action_taken"] = "tw_synced"
