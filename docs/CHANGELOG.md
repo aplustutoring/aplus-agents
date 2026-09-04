@@ -8,6 +8,50 @@ Newest entries first.
 
 ---
 
+## 2026-09-03 — SMS live + zombie flow killed + welcome email agent-owned
+
+**Go-live:** agent SMS (PR #144) merged with Roman's locked copy (name the
+kid, "their", brand voice, pending=approved), fence moved to 2026-09-03, the
+JustCall probe verified live by Roman. First production sweep: clean zero.
+
+**Zombie:** at 4:28 PM, 8 min BEFORE the merge, the "dead" HubSpot flow
+1603217415 woke up and sent Marissa Escandon the old garbled template (its
+stuck enrollment recovered for the first fresh contact). Contained to one
+family (JustCall carrier receipts: 2 texts, both delivered). Response: flow
+DISABLED by state (revision 43, was only dead by luck), Escandon deal marked
+sms_sent on main so the new sweep never double-texts, Paola (who owned the
+live thread since 8/27) smooths it over. Lesson for the record: a stuck
+workflow is a landmine, not a corpse — "dead" was verified, "off" was not.
+
+**Welcome email (this commit, Roman: "option A, build that shit"):** the
+flow's one email action was NOT internal staff mail as PO-PROCESS claimed —
+it was "What to Expect (Charter)" TO THE FAMILY (58.3% opens, 10 replies,
+0 spam over 432 sends), dark since Aug 13 with the texts. Now agent-owned:
+`sms._send_welcome` sends it via RESEND alongside each family text (same
+fence/dedupe/audit). Why Resend: HubSpot's single-send probed live ->
+MISSING_SCOPES, and the portal cannot grant transactional-email at all
+("Your account doesn't have access to this scope") — no add-on. Resend
+already sends for the verified wetutorathome.com domain (booth agent), the
+key in .env is send-only. Sender = "A+ Tutoring Success Team
+<admin@wetutorathome.com>" (Roman: "can it go out from admin?") — the SAME
+address replies go to, and admin@ is the HubSpot-Conversations inbox, so
+replies land in the triage agent's queue. HubSpot BCC log address on every
+send stamps the contact timeline. Copy ported VERBATIM to
+email/templates/welcome_charter.html (one stale line fixed: "auto text from
+my direct #" now describes the agent's text); edits via PR, not HubSpot.
+Marketing-consent suppression (70 families!) is gone; a failed email never
+voids the text (audited welcome_email_error + Kath DM). Gmail-send was
+considered and deferred: it needs domain-wide gmail.send, which would let
+the service account send AS ANYONE in the domain — too big a blast radius
+for one email. Locked-rule AMENDMENT (Roman): the agent's outbound emails =
+tutor-doc receipt + this welcome send.
+**Files:** email/src/{sms,config}.py, email/config.yaml,
+email/templates/welcome_charter.html, .github/workflows/email-deal-sync.yml
+(RESEND_API_KEY env), email/tests/test_sms.py (4 new; suite 371 green),
+docs/PO-PROCESS.md.
+**Roman before merge:** add the RESEND_API_KEY GitHub secret (same key as
+.env), then the live probe in the session notes.
+
 ## 2026-09-02 — Campaign routing logged as #AP046
 
 **What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+

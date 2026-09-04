@@ -37,7 +37,8 @@ import requests
 
 from . import audit, hubspot_client as hs, slack_client
 from .business_hours import now_la
-from .config import DRY_RUN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET, cfg, staff
+from .config import (DRY_RUN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET,
+                     RESEND_API_KEY, ROOT, cfg, staff)
 from .gmail_client import _scrub_outbound
 
 JC_BASE = "https://api.justcall.io"
@@ -58,6 +59,41 @@ def _jc_send(to_number: str, body: str) -> dict:
                       json=payload, timeout=30)
     r.raise_for_status()
     return r.json()
+
+
+def _send_welcome(to_email: str, first_name: str) -> None:
+    """The "What to Expect (Charter)" onboarding email, sent via RESEND the
+    moment the family texts (Roman 2026-09-03, Option A — amending the
+    only-outbound-email rule: tutor-doc receipt PLUS this). Lifetime stats
+    earned the rebuild: 58% opens, real replies, zero spam over 432 sends;
+    it went dark with the flow on Aug 13. Why Resend and not HubSpot's
+    single-send: the portal lacks the transactional-email scope (probed live,
+    MISSING_SCOPES), and Resend already sends for this verified domain (the
+    booth agent). Replies go to admin@ — the triage agent's own inbox — and
+    the HubSpot BCC log address puts every send on the contact's timeline.
+    Consent suppression is gone too: the old flow silently withheld this from
+    ~70 families for missing MARKETING consent; a received-your-PO email is
+    transactional and now always sends."""
+    sc = cfg().get("sms", {})
+    wc = sc.get("welcome") or {}
+    tpl_path = ROOT / (wc.get("template") or "templates/welcome_charter.html")
+    html = tpl_path.read_text().replace("__FIRST_NAME__", first_name or "Parent")
+    payload = {"from": wc.get("from", "A+ Tutoring Success Team <admin@wetutorathome.com>"),
+               "to": [to_email],
+               "reply_to": wc.get("reply_to", "admin@wetutorathome.com"),
+               "subject": wc.get("subject",
+                                 "We received your PO! Ready to Launch: Next Steps"),
+               "html": html}
+    bcc = (cfg().get("hubspot") or {}).get("bcc_log_address")
+    if bcc:
+        payload["bcc"] = [bcc]
+    if DRY_RUN:
+        print(f"[DRY_RUN] resend welcome -> {to_email}")
+        return
+    r = requests.post("https://api.resend.com/emails",
+                      headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                      json=payload, timeout=30)
+    r.raise_for_status()
 
 
 def _in_send_window(now=None) -> bool:
@@ -203,7 +239,7 @@ def run_sweep() -> None:
         props = [d.get("properties") or {} for d in deals]
         try:
             full = hs._get(f"/crm/v3/objects/contacts/{cid}",
-                           {"properties": "firstname,phone,mobilephone,"
+                           {"properties": "firstname,email,phone,mobilephone,"
                                           + (sc.get("opt_out_property") or "phone")})
         except Exception:  # noqa: BLE001
             full = {}
@@ -280,10 +316,37 @@ def run_sweep() -> None:
                                     f"⚠️ SMS failed 3x for {_fmt_students(students)} "
                                     f"({phone}) — text the family manually.")
             continue
+        # the welcome email rides the SAME event: one family, one text, one
+        # "What to Expect" email. A failed email never voids the text (audited
+        # + flagged instead), and the family markers below dedupe both.
+        pconf2 = (sc.get("pipelines") or {}).get(
+            deals[0]["properties"].get("pipeline") or "")
+        wants_welcome = isinstance(pconf2, dict) and pconf2.get("welcome")
+        to_email = ((full.get("properties") or {}).get("email") or "").strip()
+        welcome = ""
+        if wants_welcome and to_email:
+            try:
+                _send_welcome(to_email, first)
+                welcome = to_email
+            except Exception as e:  # noqa: BLE001 — email must never void the text
+                audit.append({"message_id": f"welcome-error:{dids[0]}", "source": "sms",
+                              "action_taken": "welcome_email_error", "deal_id": dids[0],
+                              "contact_id": cid, "error": str(e)[:200]})
+                st = staff(sc.get("fallback_alert", "charter_admin"))
+                if st.get("slack_user_id"):
+                    try:
+                        slack_client.dm(st["slack_user_id"],
+                                        f"⚠️ What-to-Expect email failed for "
+                                        f"{_fmt_students(students)} ({to_email}) — the "
+                                        f"schedule text DID send; forward the welcome "
+                                        f"email manually. Error: {str(e)[:120]}")
+                    except Exception:  # noqa: BLE001
+                        pass
         for did in dids:
             audit.append({"message_id": f"sms-sent:{did}", "source": "sms",
                           "action_taken": "sms_sent", "deal_id": did, "contact_id": cid,
-                          "to": phone, "body": body[:300], "timestamp": now_iso})
+                          "to": phone, "body": body[:300],
+                          "welcome_email_to": welcome, "timestamp": now_iso})
         state["contact_sent"][cid] = now_iso
         sent += 1
     print(f"sms: sweep done, {sent} text(s) sent")

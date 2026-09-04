@@ -168,3 +168,64 @@ def test_em_dash_scrubbed_from_body(wired, monkeypatch):
     wired["deals"].append(_deal("D15"))
     sms.run_sweep()
     assert "—" not in wired["sent"][0][1]
+
+
+# ── What-to-Expect welcome email rides the text (Roman 2026-09-03, Option A) ──
+
+def _welcome_cfg():
+    cfg = {**BASE_CFG, "sms": {**BASE_CFG["sms"],
+           "pipelines": {"907748": {"template": "charter_po", "welcome": True}},
+           "welcome": {"template": "templates/welcome_charter.html"}}}
+    return cfg
+
+
+def test_welcome_email_sent_with_the_text(wired, monkeypatch):
+    monkeypatch.setattr(sms, "cfg", lambda: _welcome_cfg())
+    monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
+        "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
+                                   "email": "maria@x.com"}})
+    emails = []
+    monkeypatch.setattr(sms, "_send_welcome",
+                        lambda to, first: emails.append((to, first)))
+    wired["deals"].append(_deal("D20"))
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1
+    assert emails == [("maria@x.com", "Maria")]
+    assert any(r.get("welcome_email_to") == "maria@x.com" for r in wired["recorded"])
+
+
+def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
+    monkeypatch.setattr(sms, "cfg", lambda: _welcome_cfg())
+    monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
+        "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
+                                   "email": "maria@x.com"}})
+    def boom(to, first):
+        raise RuntimeError("resend down")
+    monkeypatch.setattr(sms, "_send_welcome", boom)
+    wired["deals"].append(_deal("D21"))
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1                     # text still delivered + audited
+    assert any(r["action_taken"] == "sms_sent" for r in wired["recorded"])
+    assert any(r["action_taken"] == "welcome_email_error" for r in wired["recorded"])
+    assert any("forward the welcome" in t for _, t in wired["dms"])
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1                     # and never re-texts over it
+
+
+def test_no_welcome_id_means_text_only(wired, monkeypatch):
+    emails = []
+    monkeypatch.setattr(sms, "_send_welcome",
+                        lambda to, first: emails.append((to, first)))
+    wired["deals"].append(_deal("D22"))
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1 and emails == []
+
+
+def test_welcome_template_renders_clean():
+    # the real template: loads via ROOT, placeholder swaps, no em dashes
+    from src.config import ROOT
+    tpl = (ROOT / "templates/welcome_charter.html").read_text()
+    assert tpl.count("__FIRST_NAME__") == 1
+    assert "—" not in tpl                       # locked outbound rule
+    assert "my direct #" not in tpl             # the old flow's stale timing line
+    sms._send_welcome("test@x.com", "Ana")      # DRY_RUN: exercises load + render
