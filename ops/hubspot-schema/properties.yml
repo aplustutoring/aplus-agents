@@ -314,6 +314,24 @@ properties:
           label: "Yes"
         - value: "false"
           label: "No"
+    - name: campaign_replied
+      label: "[Agent] Campaign Replied"
+      group: master
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (stamp_campaign_reply)
+        when the info@ classifier files a reply as campaign_school or
+        campaign_family. Yes means this contact replied to a campaign send by
+        email, even when the reply landed at info@ and never touched
+        hs_email_last_reply_date. Sequences and workflows exit on it; reports
+        count it. Persona-agnostic (teachers and families), hence master group.
+        Roman 2026-09-04, teacher outreach 26/27.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family

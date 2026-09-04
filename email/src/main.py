@@ -551,6 +551,15 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     record["ticket_id"] = ticket_id
     record["sla_due"] = sla_due.isoformat() if sla_due else None
 
+    # A reply to a campaign send is stamped on the contact so the send can be measured
+    # and the sequence/workflow exits (Roman 2026-09-04: teacher outreach 26/27).
+    if decision.category in ("campaign_school", "campaign_family") and contact_id:
+        try:
+            hs.stamp_campaign_reply(contact_id)
+            record["campaign_replied"] = True
+        except Exception as e:  # never let a stamp failure block the ticket
+            print(f"  ⚠️  campaign_replied stamp failed for {contact_id} (non-fatal): {e}")
+
     # Attach the email two ways: (1) associate the conversation thread, and (2) post the
     # email body as a NOTE — the note reliably renders on the ticket in the UI even when
     # HubSpot's unlabeled conversation association doesn't surface the email.
