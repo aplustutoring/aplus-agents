@@ -25,7 +25,9 @@ HUBSPOT_PRIVATE_APP_TOKEN = os.getenv("HUBSPOT_PRIVATE_APP_TOKEN", "")
 TEACHWORKS_TOKEN = os.getenv("TEACHWORKS_TOKEN", "") or os.getenv("TEACHWORKS_TOKEN_ONLINE", "")
 TEACHWORKS_TOKEN_INPERSON = os.getenv("TEACHWORKS_TOKEN_INPERSON", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-# Agent-owned SMS sends through JustCall (the line schedulers answer).
+# Agent-owned SMS sends through JustCall (the line schedulers answer);
+# the What-to-Expect welcome email sends through Resend (verified domain).
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 JUSTCALL_API_KEY = os.getenv("JUSTCALL_API_KEY", "")
 JUSTCALL_API_SECRET = os.getenv("JUSTCALL_API_SECRET", "")
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN", "")

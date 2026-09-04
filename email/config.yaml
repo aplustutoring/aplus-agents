@@ -116,7 +116,7 @@ sms:
   fallback_alert: charter_admin     # role DM'd on 3x send failure / no owner match
   opt_out_property: ""              # contact property that suppresses sends, if set
   pipelines:
-    "907748": { template: charter_po, welcome_email_id: "182052295857" }   # Charter Trad; welcome = "What to Expect (Charter)" (58% opens; Roman 2026-09-03 Option A)
+    "907748": { template: charter_po, welcome: true }   # Charter Trad; text + What-to-Expect email
   # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
   # gender), brand voice (no personal sign-off). Variant chosen by what we
   # KNOW: schedule on file means confirm; none means ask (the old flow pasted
@@ -124,6 +124,16 @@ sms:
   # months). A multi-kid PO day is ONE text naming every student. Pending
   # approval OAs text normally (Roman: "for us it means approved"). NO EM
   # DASHES ever (locked outbound rule; the scrub enforces it anyway).
+  # The What-to-Expect onboarding email rides each family text (Roman
+  # 2026-09-03, Option A). Delivery = Resend (HubSpot portal lacks the
+  # transactional-email scope); replies -> admin@ (triage agent's inbox);
+  # HubSpot BCC log address stamps every send on the contact timeline.
+  # Copy lives in email/templates/welcome_charter.html (edit via PR).
+  welcome:
+    template: "templates/welcome_charter.html"
+    from: "A+ Tutoring Success Team <admin@wetutorathome.com>"   # same identity replies go to
+    reply_to: "admin@wetutorathome.com"
+    subject: "We received your PO! Ready to Launch: Next Steps"
   templates:
     charter_po_confirm: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. Want to confirm this schedule still works: {schedule}. Reply here to confirm or change it."
     charter_po_ask: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. What days and times work best for their sessions? Reply here and we will get them booked."

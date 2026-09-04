@@ -27,16 +27,30 @@ workflow is a landmine, not a corpse — "dead" was verified, "off" was not.
 flow's one email action was NOT internal staff mail as PO-PROCESS claimed —
 it was "What to Expect (Charter)" TO THE FAMILY (58.3% opens, 10 replies,
 0 spam over 432 sends), dark since Aug 13 with the texts. Now agent-owned:
-`sms._send_welcome` fires HubSpot's transactional single-send alongside each
-family text (same fence/dedupe/audit); marketing-consent suppression (70
-families!) no longer applies; a failed email never voids the text (audited,
-welcome_email_error + Kath DM). Locked-rule AMENDMENT (Roman): the agent's
-outbound emails = tutor-doc receipt + this single-send.
-**Files:** email/src/sms.py, email/config.yaml, email/tests/test_sms.py
-(3 new; suite 370 green), docs/PO-PROCESS.md.
-**Verify before relying on it:** the single-send endpoint needs HubSpot's
-transactional add-on — probe command in the session notes; failure mode is
-loud (DM to Kath) either way.
+`sms._send_welcome` sends it via RESEND alongside each family text (same
+fence/dedupe/audit). Why Resend: HubSpot's single-send probed live ->
+MISSING_SCOPES, and the portal cannot grant transactional-email at all
+("Your account doesn't have access to this scope") — no add-on. Resend
+already sends for the verified wetutorathome.com domain (booth agent), the
+key in .env is send-only. Sender = "A+ Tutoring Success Team
+<admin@wetutorathome.com>" (Roman: "can it go out from admin?") — the SAME
+address replies go to, and admin@ is the HubSpot-Conversations inbox, so
+replies land in the triage agent's queue. HubSpot BCC log address on every
+send stamps the contact timeline. Copy ported VERBATIM to
+email/templates/welcome_charter.html (one stale line fixed: "auto text from
+my direct #" now describes the agent's text); edits via PR, not HubSpot.
+Marketing-consent suppression (70 families!) is gone; a failed email never
+voids the text (audited welcome_email_error + Kath DM). Gmail-send was
+considered and deferred: it needs domain-wide gmail.send, which would let
+the service account send AS ANYONE in the domain — too big a blast radius
+for one email. Locked-rule AMENDMENT (Roman): the agent's outbound emails =
+tutor-doc receipt + this welcome send.
+**Files:** email/src/{sms,config}.py, email/config.yaml,
+email/templates/welcome_charter.html, .github/workflows/email-deal-sync.yml
+(RESEND_API_KEY env), email/tests/test_sms.py (4 new; suite 371 green),
+docs/PO-PROCESS.md.
+**Roman before merge:** add the RESEND_API_KEY GitHub secret (same key as
+.env), then the live probe in the session notes.
 
 ## 2026-09-02 — Campaign routing logged as #AP046
 

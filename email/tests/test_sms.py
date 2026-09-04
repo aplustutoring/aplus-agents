@@ -174,8 +174,8 @@ def test_em_dash_scrubbed_from_body(wired, monkeypatch):
 
 def _welcome_cfg():
     cfg = {**BASE_CFG, "sms": {**BASE_CFG["sms"],
-           "pipelines": {"907748": {"template": "charter_po",
-                                    "welcome_email_id": "182052295857"}}}}
+           "pipelines": {"907748": {"template": "charter_po", "welcome": True}},
+           "welcome": {"template": "templates/welcome_charter.html"}}}
     return cfg
 
 
@@ -186,11 +186,11 @@ def test_welcome_email_sent_with_the_text(wired, monkeypatch):
                                    "email": "maria@x.com"}})
     emails = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda eid, to: emails.append((eid, to)))
+                        lambda to, first: emails.append((to, first)))
     wired["deals"].append(_deal("D20"))
     sms.run_sweep()
     assert len(wired["sent"]) == 1
-    assert emails == [("182052295857", "maria@x.com")]
+    assert emails == [("maria@x.com", "Maria")]
     assert any(r.get("welcome_email_to") == "maria@x.com" for r in wired["recorded"])
 
 
@@ -199,8 +199,8 @@ def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
     monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
         "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
                                    "email": "maria@x.com"}})
-    def boom(eid, to):
-        raise RuntimeError("no transactional add-on")
+    def boom(to, first):
+        raise RuntimeError("resend down")
     monkeypatch.setattr(sms, "_send_welcome", boom)
     wired["deals"].append(_deal("D21"))
     sms.run_sweep()
@@ -215,7 +215,17 @@ def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
 def test_no_welcome_id_means_text_only(wired, monkeypatch):
     emails = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda eid, to: emails.append((eid, to)))
+                        lambda to, first: emails.append((to, first)))
     wired["deals"].append(_deal("D22"))
     sms.run_sweep()
     assert len(wired["sent"]) == 1 and emails == []
+
+
+def test_welcome_template_renders_clean():
+    # the real template: loads via ROOT, placeholder swaps, no em dashes
+    from src.config import ROOT
+    tpl = (ROOT / "templates/welcome_charter.html").read_text()
+    assert tpl.count("__FIRST_NAME__") == 1
+    assert "—" not in tpl                       # locked outbound rule
+    assert "my direct #" not in tpl             # the old flow's stale timing line
+    sms._send_welcome("test@x.com", "Ana")      # DRY_RUN: exercises load + render

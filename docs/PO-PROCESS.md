@@ -140,10 +140,13 @@ Also attached to the deal:
    approval for us it means approved"). Copy lives in `sms.templates`.
    The **"What to Expect (Charter)" email** (58% lifetime opens, real replies)
    rides the same event: one family, one text, one onboarding email, sent
-   through HubSpot's single-send API as transactional — so the ~1-in-4
-   families the old flow suppressed for missing marketing consent get it too
-   (Roman 2026-09-03, Option A; `welcome_email_id` per pipeline). A failed
-   email never voids the text: audited + Kath flagged to forward manually.
+   via RESEND from "A+ Tutoring Success Team <admin@wetutorathome.com>" (the
+   same address replies go to — HubSpot's Conversations inbox, so the triage
+   agent reads responses; HubSpot BCC stamps the contact timeline). Copy
+   lives in email/templates/welcome_charter.html. The ~1-in-4 families the
+   old flow suppressed for missing marketing consent get it too (Roman
+   2026-09-03, Option A; `welcome: true` per pipeline). A failed email never
+   voids the text: audited + Kath flagged to forward manually.
    Guardrails: one text per deal ever, **one text per family per 24h** (a
    4-PO email never sends 4 texts), quiet hours 8am-8pm PT, a hard
    `start_date` fence so pre-cutover backlogs can never be texted, em-dash
