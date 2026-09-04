@@ -3475,3 +3475,15 @@ deals confirmed NOT a dedupe miss: iLead double-issued two PO batches (311414019
 + 3114140221-23) 30s apart — needs human verification with iLead.
 **Files:** email/src/po_inbox.py, email/src/digest.py, email/src/backfill_deal_props.py,
 .github/workflows/email-backfill-deal-props.yml, email/tests/test_digest_hygiene.py.
+
+## 2026-09-04 — Gold deal amounts from the latest Teachworks invoice (PR #174)
+**Why:** Roman: Gold (and Gold-Renewal, its own pipeline) deals created without an
+amount should carry the family's most CURRENT TW invoice total; 35 of 44 post-8/1
+Gold deals had no amount.
+**What:** tw.latest_invoice + ongoing stamp in deal_sync (config
+deal_sync.gold_amount_pipelines, Free Trial excluded) + gold-amounts pass in
+backfill_deal_props. Backfilled 35 deals (0 failures; Fakheri x2 have no TW
+invoice — manual). Workflow env gained TW tokens (dry run caught 39/39 lookups
+failing without them). CAVEAT flagged to Roman: sibling deals share one family
+invoice (Khemani x2 @$3,650, Hwang x4 @$2,800, Gukasov x2 @$1,660) so summed
+pipeline revenue double-counts those families.
