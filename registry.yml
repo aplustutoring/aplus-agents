@@ -334,12 +334,19 @@ agents:
   - id: call-agent
     runtime: github-actions
     engine: Call agent
-    name: Call agent — daily digest (~5:30 PM PT)
+    name: Call agent — webhook-triggered polls + daily digest (~5:30 PM PT)
     owner: roman@wetutorathome.com
     status: active
     trigger:
-      type: cron
-      schedule: ["30 0 * * * (17:30 PDT / 16:30 PST daily)"]
+      type: event + cron
+      events: [workflow_dispatch]
+      source: >
+        JustCall call-completed/missed-call webhooks -> call-agent-webhook-relay
+        (Cloudflare Worker, ops/call_agent/webhook-relay) -> workflow_dispatch
+        with no_digest=true, ~6 min after each call. Replaced the every-15-min
+        poll crons 2026-08-28: GitHub honored only ~4 of ~50 daily fires.
+      schedule: ["30 0 * * * (17:30 PDT / 16:30 PST daily — digest flush + backstop sweep)",
+                 "0 16 * * 1 (Mon 9 AM PDT — weekly scorecard)"]
       workflow: .github/workflows/call-agent.yml
     entrypoint: ops/call_agent/call_agent.py
     reads:
@@ -371,6 +378,34 @@ agents:
       smoke mode + --dry-run. Unmatched callers go to digest triage (never
       auto-created). monitored_numbers is a list for future lines — confirm
       recording disclosure before adding any.
+
+  - id: call-agent-webhook-relay
+    runtime: cloudflare-worker
+    engine: Call agent
+    name: Call agent webhook relay
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        JustCall webhooks (call completed; missed call with delay=1) -> POST
+        /call-completed. Also POST /redispatch from the call-agent workflow
+        when transcripts are still inside the grace window. Always-on HTTP.
+    source: ops/call_agent/webhook-relay/worker.js
+    entrypoint: ops/call_agent/webhook-relay/worker.js
+    reads: []
+    writes:
+      - "GitHub Actions API: workflow_dispatch on call-agent.yml (dry_run=false, no_digest=true)"
+    depends_on:
+      - "Worker secrets: GITHUB_TOKEN (fine-grained PAT, Actions RW on this repo only), WEBHOOK_TOKEN"
+      - "repo secrets CALL_RELAY_URL / CALL_RELAY_TOKEN (transcript-retry step)"
+    notes: >
+      Deterministic dispatch relay — no call content is read (the webhook body
+      is not even parsed) and no reasoning happens here, so no CARE pointer.
+      Delays each dispatch ~6 min for JustCall's AI-transcript lag; coalesces
+      bursts through a single Durable Object alarm. Daily digest cron is the
+      backstop if the relay drops anything.
 
   # ───────────────────────── Feedback agent (ops/feedback-agent) ───────
   # V1 "the doorbell for demotions": #agent-feedback Slack channel -> Events
