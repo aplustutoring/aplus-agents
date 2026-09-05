@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**45 registered agents** — 31 active · 11 manual · 3 deprecated · across 11 engines.
+**46 registered agents** — 32 active · 11 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -40,7 +40,7 @@ outranks those two. HubSpot is where humans act.
 | B2C spotlights | 5 | 2 |
 | Email / inbox ops | 10 | 10 |
 | Data sync | 3 | 3 |
-| Call agent | 1 | 1 |
+| Call agent | 2 | 2 |
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
 | Fleet health | 6 | 5 |
@@ -54,7 +54,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (18):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `teacher-sequence-enroll`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
-**Reports, drafts, or waits for a human (13):** `topic-gen`, `blog-metrics`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
+**Reports, drafts, or waits for a human (14):** `topic-gen`, `blog-metrics`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
 **Manual dispatch only (11):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
 
@@ -122,9 +122,11 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
-| **call-agent**<br>Call agent — daily digest (~5:30 PM PT) | 17:30 PDT / 16:30 PST daily | active | JustCall, HubSpot:contacts, ops/call_agent/state/state.json | HubSpot:calls, HubSpot:contacts, HubSpot:tasks, HubSpot:notes, HubSpot:tickets, Slack, ops/call_agent/state/state.json |
+| **call-agent**<br>Call agent — webhook-triggered polls + daily digest (~5:30 PM PT) | 17:30 PDT / 16:30 PST daily — digest flush + backstop sweep | active | JustCall, HubSpot:contacts, ops/call_agent/state/state.json | HubSpot:calls, HubSpot:contacts, HubSpot:tasks, HubSpot:notes, HubSpot:tickets, Slack, ops/call_agent/state/state.json |
+| **call-agent-webhook-relay**<br>Call agent webhook relay | event<br>*cloudflare-worker* | active | — | GitHub Actions API: workflow_dispatch on call-agent.yml (dry_run=false, no_digest=true) |
 
 - **call-agent** — Claude summarization + record-update proposal (claude-opus-4-7, structured outputs)
+- **call-agent-webhook-relay** — Deterministic dispatch relay — no call content is read (the webhook body is not even parsed) and no reasoning happens here, so no CARE pointer
 
 ### Messenger
 
