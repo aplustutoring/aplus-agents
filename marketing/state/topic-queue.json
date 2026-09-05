@@ -16,7 +16,12 @@
       "roman_take": "Flat federal EL funding into a growing EL population is a math problem the field keeps pretending is a policy problem. If your Title III dollars are supplemental by law, the question isn't \"should we tutor\" \u2014 it's \"why aren't we already.\"",
       "danielle_take": "Walk through the actual RFA line items and what a defensible Title III-funded intervention plan looks like \u2014 sessions per week, tutor qualifications, evidence tier documentation \u2014 so a special programs coordinator can build their application against a real spec instead of a template. ---",
       "redundancy_max_similarity": 0.6041336223669578,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-05T10:35:26.813906-07:00",
+      "post_date": "2026-09-07",
+      "bundle_dir": "aplus-content/2026-09-07-title-iii-2026-rfa-allowable",
+      "hubspot_post_id": "221199409001"
     },
     {
       "slot": 2,
@@ -33,7 +38,12 @@
       "roman_take": "Conviction angle \u2014 the aligned release exposes a truth the sector has avoided: schools have been managing two narratives (assessment vs. accountability) and now have to tell one. Only schools with real intervention data can.",
       "danielle_take": "Implementation angle \u2014 a 6-week checklist for special programs coordinators: pull last year's CAASPP by subgroup, cross-reference with intervention hours logged, identify the 3 subgroups where you need talking points ready by Oct 16.",
       "redundancy_max_similarity": 0.44473659884305067,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-05T11:01:08.235939-07:00",
+      "post_date": "2026-09-09",
+      "bundle_dir": "aplus-content/2026-09-09-october-15-dashboard-caaspp-release",
+      "hubspot_post_id": "221200515131"
     },
     {
       "slot": 3,
@@ -51,7 +61,12 @@
       "roman_take": "The conviction angle \u2014 Cohn estimated that Nerdy's revenue for this year would drop by $12 million to $15 million because of the shutdown of its district work is what happens when you treat schools as a growth channel instead of a partnership. A+ never optimized for scale over trust and this is the payoff.",
       "danielle_take": "The implementation angle \u2014 with a $1.5M Antelope Valley contract disappearing mid-year, dozens of school leaders in Southern California are staring at a Q4 hole. What she'd tell a director who just lost their tutoring vendor 4 weeks into the school year (pull from the iEM playbook). ---",
       "redundancy_max_similarity": 0.7194221002270341,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-05T11:15:19.750476-07:00",
+      "post_date": "2026-09-11",
+      "bundle_dir": "aplus-content/2026-09-11-varsity-tutors-schools-shutdown",
+      "hubspot_post_id": "221200515332"
     }
   ],
   "slack": {

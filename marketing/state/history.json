@@ -1471,6 +1471,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1788493200.132019"
+    },
+    {
+      "ts": "2026-09-05T10:35:26.815126-07:00",
+      "kind": "content_build",
+      "week": "2026-09-03",
+      "slot": 1,
+      "post_date": "2026-09-07",
+      "headline": "Title III FY 2026-27 RFAs are live \u2014 the window to shape allowable use starts now",
+      "bundle_dir": "aplus-content/2026-09-07-title-iii-2026-rfa-allowable",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "221199409001",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-09-05T11:01:08.237067-07:00",
+      "kind": "content_build",
+      "week": "2026-09-03",
+      "slot": 2,
+      "post_date": "2026-09-09",
+      "headline": "The Oct 15 double-release \u2014 Dashboard + CAASPP land on the same day for the first time",
+      "bundle_dir": "aplus-content/2026-09-09-october-15-dashboard-caaspp-release",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "221200515131",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-09-05T11:15:19.751768-07:00",
+      "kind": "content_build",
+      "week": "2026-09-03",
+      "slot": 3,
+      "post_date": "2026-09-11",
+      "headline": "Varsity Tutors for Schools shut down \u2014 and cited a lack of evidence",
+      "bundle_dir": "aplus-content/2026-09-11-varsity-tutors-schools-shutdown",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "221200515332",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
