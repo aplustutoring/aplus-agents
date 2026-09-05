@@ -58,13 +58,27 @@
     "Ev0BTMESBFS8",
     "Ev0BTHQU9THQ",
     "Ev0BTMGC7U2G",
-    "Ev0BTHT5KX8S"
+    "Ev0BTHT5KX8S",
+    "Ev0BTQASAS83",
+    "Ev0BTGDM0Z0F",
+    "Ev0BTXR5ECAW",
+    "Ev0BV33RJ68Y",
+    "Ev0BTTCENURM",
+    "Ev0BUCK81RL4",
+    "Ev0BUATMA0BT",
+    "Ev0BUKU5CFAM",
+    "Ev0BUNQG6ZT6"
   ],
   "awaiting": {
     "1785537854.599709": {
       "user": "U05NA7UMSSV",
       "text": "status *Sent using* <@U0AKFN28V1U>",
       "asked_utc": "2026-07-31T22:44:47.124156+00:00"
+    },
+    "1788378135.610939": {
+      "user": "U05NA7UMSSV",
+      "text": "Approve",
+      "asked_utc": "2026-09-02T19:42:53.590484+00:00"
     }
   },
   "reports": [
@@ -427,10 +441,55 @@
       "ticket": null,
       "status": "open",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787956680113379"
+    },
+    {
+      "date": "2026-08-31",
+      "ts": "1788190269.210389",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/147",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788190269210389"
+    },
+    {
+      "date": "2026-09-01",
+      "ts": "1788290216.784979",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "call-agent",
+      "type": "WRONG",
+      "severity": "normal",
+      "correction_path": "corrections/call-agent/2026-09-01-scheduling-items-misrouted-to-digest.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/156",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788290216784979"
+    },
+    {
+      "date": "2026-09-02",
+      "ts": "1788370176.851429",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-09-02-content-build-publish-error.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/158",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788370176851429"
     }
   ],
   "graduation": {
-    "clean_merges": 14
+    "clean_merges": 15
   },
   "pending_proposals": {
     "1786554388.265099": {
@@ -538,6 +597,24 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-08-28T22:38:50.520132+00:00",
       "reporter": "Kath"
+    },
+    "1788370176.851429": {
+      "agent": "content-build",
+      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
+      "correction_path": "corrections/content-build/2026-09-02-content-build-publish-error.md",
+      "branch": "fix/content-build-2026-09-02-851429",
+      "diagnosis": "Danielle got an error trying to push the approved blog to HubSpot, which points to a failure in the publish step of content-build \u2014 most likely in publish-to-hubspot.py (auth token, blog_author_id, or a HubSpot API payload field) called from blog_publish.py. Without the actual error text we can't pinpoint whether it's auth, schema, or a specific field validation.",
+      "fix_plan": [
+        "Ask Danielle for the exact error message and/or screenshot, plus the blog title/slug so we can find it in HubSpot and in the last content-build run logs",
+        "Pull the most recent content-build.yml GitHub Actions run log and grep for the HubSpot API response (status code + body) around the publish step",
+        "Inspect marketing/scripts/shared/publish-to-hubspot.py and marketing/scripts/b2b/blog_publish.py for the failing call \u2014 most common causes: expired HUBSPOT_ACCESS_TOKEN, stale blog_author_id, or a required field (content_group_id, slug collision) rejected by HubSpot",
+        "If auth: rotate the token in repo secrets. If schema: patch the payload in publish-to-hubspot.py. Then re-run content-build manually for this one post so Danielle can review it as a HubSpot draft.",
+        "Confirm with Danielle the draft is live in HubSpot before closing"
+      ],
+      "risk": "medium",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-09-02T17:30:29.319813+00:00",
+      "reporter": "Danielle"
     }
   }
 }

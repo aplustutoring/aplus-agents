@@ -42,3 +42,40 @@ WHY: First full census in 8 years; kill list + absorption backlog are now
 OWNER: Roman
 STATUS: DRAFT — pending approval (fill/adjust after Roman's checkbox pass)
 TAG: fleet / audit / hubspot
+
+======
+2026-09-02 | #AP046  [APPENDED to the Decision Log 2026-09-02 — do not re-append]
+DECISION: Marketing-campaign replies are a first-class routing category, and the
+  LOCKED routing table is amended to carry them. Two categories: campaign_family
+  (a family replying to an announcement or marketing send — sign-ups, added
+  sessions, referrals) owned by charter_sales at a 90-minute SLA, and
+  campaign_school (a TOR/EF/ES, coordinator or school leader replying) owned by
+  sales at 8 business hours. Both draft a reply. school_partner outranks
+  campaign_school whenever the email is really program, contract or PO business.
+  Classification requires POSITIVE EVIDENCE in the email itself — quoted campaign
+  text, the campaign subject line, or an explicit mention of its subject matter.
+  Timing and list membership are explicitly NOT evidence. With no signal present
+  the campaign is ignored and the email is classified on its content.
+  rules.md carries an "Active campaigns" block, maintained per campaign and
+  retired when replies stop.
+WHY: The NSSA Badge announcement (3 segmented sends, 7,268 recipients,
+  2026-08-31 and 09-01) used reply-as-CTA, so every response landed in the
+  agent-triaged admin inbox with no category that fit. Without the categories,
+  family sign-ups would have routed to the schedulers instead of charter_sales.
+  The evidence rule is the correction: on day one the agent tagged four replies
+  as campaign traffic and two were false positives (Danielle confirmed Erica
+  Porter's was ordinary tutoring correspondence; Jaclyn Bershadsky's predated the
+  leads send). The first version listed the positive signals but never said
+  timing plus list membership was insufficient, so the classifier filled the gap
+  itself. Misrouting a real request into a courtesy lane costs more than missing
+  a congratulations note.
+  Verified against the live classifier, not asserted: both false positives now
+  return unknown for human review, while the one genuine Badge reply stays
+  campaign_school with confidence rising 0.82 to 0.92.
+EVIDENCE: PR #134 (categories, merged 2026-08-31), PR #159 (evidence rule).
+  Campaign result: 40.0% open on the school list, 14.3% on active families,
+  unsubscribes 1.6%, spam effectively zero, one same-day family referral.
+OWNER: Roman (decision); Paola (campaign_family queue); Danielle (campaign_school queue)
+STATUS: Locked and live in the email agent. Appended to the Google Doc as #AP046
+  on 2026-09-02, verified present (single occurrence).
+TAG: email-agent / routing / campaigns

@@ -108,6 +108,25 @@ def _contact_matches_dealname(props: dict, dealname: str) -> bool:
     return bool(first and last and first in dn and last in dn)
 
 
+def _sibling_gold_deals(contact: dict | None, deal_id, gold_pipelines: set) -> int:
+    """How many gold-pipeline deals the family has (incl. this one) — the divisor
+    for a shared family invoice. Falls back to 1 on any doubt."""
+    cid = (contact or {}).get("id")
+    if not cid:
+        return 1
+    try:
+        assoc = hs._get(f"/crm/v3/objects/contacts/{cid}/associations/deals")
+        ids = [str(r.get("toObjectId") or r.get("id")) for r in assoc.get("results", [])]
+        n = 0
+        for did in ids[:20]:
+            d = hs._get(f"/crm/v3/objects/deals/{did}", {"properties": "pipeline,dealstage"})
+            if (d.get("properties") or {}).get("pipeline") in gold_pipelines:
+                n += 1
+        return n or 1
+    except Exception:  # noqa: BLE001
+        return 1
+
+
 def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = None,
               students_override: list[str] | None = None) -> dict | None:
     """`force=True` (FORCE_DEAL_ID runs) does the REAL write for one deal even in
@@ -232,6 +251,26 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
             made.append(sf)
         if made:
             record["tw_student_created"] = ", ".join(made)
+    # Gold deals arrive without an amount — the family's most CURRENT Teachworks
+    # invoice is the price of record (Roman, 2026-09-03). Free Trial stays $0.
+    amt_raw = (deal["properties"].get("amount") or "").strip()
+    if (pid in set(ds.get("gold_amount_pipelines", [])) and amt_raw in ("", "0", "0.0")
+            and record.get("tw_customer_id") not in (None, "DRYRUN")):
+        try:
+            inv = tw.latest_invoice(record["tw_customer_id"], token)
+            if inv:
+                # One family invoice often covers siblings with a deal each — split
+                # the total across the contact's gold deals (Roman, 2026-09-04).
+                n = max(1, _sibling_gold_deals(contact, deal["id"], set(ds.get("gold_amount_pipelines", []))))
+                share = round(inv["total"] / n, 2)
+                hs._write("PATCH", f"/crm/v3/objects/deals/{deal['id']}",
+                          {"properties": {"amount": str(share)}})
+                record["amount_from_invoice"] = share
+                print(f"  💵 {record['deal_name']}: amount ${share:g}"
+                      + (f" (1/{n} of ${inv['total']:g})" if n > 1 else "")
+                      + f" from TW invoice {inv.get('number') or '?'} ({inv.get('date') or '?'})")
+        except Exception as e:  # noqa: BLE001 — amount stamp is best-effort
+            print(f"  ⚠️  invoice-amount stamp failed (non-fatal): {e}")
     record["action_taken"] = "tw_synced"
     audit.append(record)
     print(f"  🔄 {record['deal_name']} → TW[{acct}] {record['tw_action']}"
@@ -248,7 +287,7 @@ def run() -> None:
     if force_id:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
-                    {"properties": "dealname,pipeline,dealstage,createdate,po_number"})
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount"})
         # Optional trace-by-contact-email: fetch the contact, fix the missing
         # association on the HubSpot deal, and sync with that contact.
         contact = None
@@ -283,7 +322,7 @@ def run() -> None:
         "filterGroups": [{"filters": [
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
-        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number"],
+        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount"],
         "limit": 50}
     deals: list = []
     while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
@@ -331,6 +370,20 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001 — the sweep must never fail the sync
         import traceback as _tb
         print(f"⚠️  invoice_sweep error: {e}")
+        _tb.print_exc()
+    try:
+        from . import sms
+        sms.run_sweep()
+    except Exception as e:  # noqa: BLE001 — SMS must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  sms sweep error: {e}")
+        _tb.print_exc()
+    try:
+        from . import sibling_gaps
+        sibling_gaps.run()
+    except Exception as e:  # noqa: BLE001 — the tripwire must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  sibling_gap error: {e}")
         _tb.print_exc()
 
 

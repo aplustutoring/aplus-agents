@@ -46,6 +46,8 @@ ticket_fields:
     tor_inquiry: "new_deal_po"
     school_partner: "new_deal_po"
     business_dev: "GENERAL_INQUIRY"
+    campaign_family: "GENERAL_INQUIRY"
+    campaign_school: "GENERAL_INQUIRY"
     scheduling: "GENERAL_INQUIRY"
     tutor_document: "Tutor Issue"
     recruitment: "GENERAL_INQUIRY"
@@ -82,7 +84,9 @@ hourly_update:
 owner_task:
   enabled: true
 
-# Tutor-document auto-receipt (the agent's ONLY outbound email). sender_actor_id is
+# Tutor-document auto-receipt. Amended 2026-09-03 (Roman, Option A): the agent's
+# outbound emails are this receipt PLUS the What-to-Expect single-send that rides
+# each new-PO family text (sms.pipelines.*.welcome_email_id). sender_actor_id is
 # "A-{hubspot userId}" of the agent it sends as (Kath). Empty = disable the receipt.
 doc_receipt:
   sender_actor_id: "A-59969437"   # Kath Hitosis
@@ -97,6 +101,84 @@ monday:
 google_sheets:
   dashboard_sheet_id: "1_eSSJ5EtlENv_idZ3LHHeK5_Pc1Jstlb-fYdx_6HfPw"
   dashboard_tab: "Email Agent"
+
+# ── Agent-owned transactional SMS (Roman 2026-08-28: replace workflow SMS) ──
+# Sweeps Pre-Lesson deals in each listed pipeline every deal-sync cycle and
+# texts the family via JustCall. Phase 1 = Charter Trad only; the dead HubSpot
+# flow (1603217415) stays OFF — turn a pipeline's flow off BEFORE listing it
+# here (that ordering is what makes double-texting impossible).
+sms:
+  enabled: true
+  justcall_number: "+18188691627"   # the line schedulers answer; replies thread there
+  start_date: "2026-09-03"          # HARD fence: deals created before this never text (go-live day, Roman)
+  send_hour_start_pt: 8             # quiet hours: no sends outside 8am-8pm PT
+  send_hour_end_pt: 20
+  fallback_alert: charter_admin     # role DM'd on 3x send failure / no owner match
+  opt_out_property: ""              # contact property that suppresses sends, if set
+  pipelines:
+    "907748": { template: charter_po, welcome: true }   # Charter Trad; text + What-to-Expect email
+    # Phase 2 (Roman 2026-09-04): gold/in-person/trial reuse the charter text
+    # copy (Q1: "yes reuse charter"); trial families NOW get the ask text too
+    # (Q2: "yes for trial" — they never had one); the old flows' ghost owner
+    # assignment (archived Rafa, 911789198) is dropped (Q3), 372 orphaned
+    # contacts reassigned to Paola (Q4). Old flows 1608212624 + 325263375 go
+    # OFF at cutover, before these lines take effect.
+    "default":  { template: gold, welcome: true,
+                  welcome_template: "templates/welcome_gold_inperson.html",
+                  welcome_subject: "Ready to Launch: Next Steps" }          # Gold Tutoring
+    "3067397":  { template: gold, welcome: true,
+                  welcome_template: "templates/welcome_gold_inperson.html",
+                  welcome_subject: "Ready to Launch: Next Steps" }          # In-Person
+    "19120821": { template: trial, welcome: true,
+                  welcome_template: "templates/welcome_trial.html",
+                  welcome_subject: "Ready to Launch: Free Trial Session: Next Steps" }  # Free Trial
+  # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
+  # gender), brand voice (no personal sign-off). Variant chosen by what we
+  # KNOW: schedule on file means confirm; none means ask (the old flow pasted
+  # the ask-fallback into the confirm sentence and shipped gibberish for
+  # months). A multi-kid PO day is ONE text naming every student. Pending
+  # approval OAs text normally (Roman: "for us it means approved"). NO EM
+  # DASHES ever (locked outbound rule; the scrub enforces it anyway).
+  # The What-to-Expect onboarding email rides each family text (Roman
+  # 2026-09-03, Option A). Delivery = Resend (HubSpot portal lacks the
+  # transactional-email scope); replies -> admin@ (triage agent's inbox);
+  # HubSpot BCC log address stamps every send on the contact timeline.
+  # Copy lives in email/templates/welcome_charter.html (edit via PR).
+  welcome:
+    template: "templates/welcome_charter.html"
+    from: "A+ Tutoring Success Team <admin@wetutorathome.com>"   # same identity replies go to
+    reply_to: "admin@wetutorathome.com"
+    subject: "We received your PO! Ready to Launch: Next Steps"
+  templates:
+    charter_po_confirm: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. Want to confirm this schedule still works: {schedule}. Reply here to confirm or change it."
+    charter_po_ask: "Hi {first_name}, it's A+ Tutoring! We received {student}'s Purchase Order. What days and times work best for their sessions? Reply here and we will get them booked."
+    charter_po_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. Want to confirm their schedules still work? Reply here and we will get everything set."
+    charter_po_multi_ask: "Hi {first_name}, it's A+ Tutoring! We received Purchase Orders for {students}. What days and times work best for their sessions? Reply here and we will get them booked."
+    # Gold/In-person and Trial have NO Purchase Orders (Roman 2026-09-04:
+    # "gold and free trial do not have purchase order genius") — same shape,
+    # pipeline-true language.
+    gold_confirm: "Hi {first_name}, it's A+ Tutoring! We are getting {student} set up. Want to confirm this schedule still works: {schedule}. Reply here to confirm or change it."
+    gold_ask: "Hi {first_name}, it's A+ Tutoring! We are getting {student} set up. What days and times work best for their sessions? Reply here and we will get them booked."
+    gold_multi_confirm: "Hi {first_name}, it's A+ Tutoring! We are getting {students} set up. Want to confirm their schedules still work? Reply here and we will get everything set."
+    gold_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are getting {students} set up. What days and times work best for their sessions? Reply here and we will get them booked."
+    trial_confirm: "Hi {first_name}, it's A+ Tutoring! {student}'s free trial session is coming up. Want to confirm this schedule works: {schedule}. Reply here to confirm or change it."
+    trial_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for {student}'s free trial session. What days and times work best? Reply here and we will get it booked."
+    trial_multi_confirm: "Hi {first_name}, it's A+ Tutoring! Free trial sessions for {students} are coming up. Want to confirm their schedules work? Reply here to confirm or change them."
+    trial_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for free trial sessions with {students}. What days and times work best? Reply here and we will get them booked."
+
+# ── Sibling-gap tripwire (Roman 2026-09-04) ─────────────────────
+# A family renews SOME kids and one is left out — the strongest miss signal
+# there is (a renewing family means to continue). Daily check; flags to the
+# charter_sales seat once per family+kid per season, only after settle_days
+# (siblings' OAs arrive spread out — Fiore 16 min apart, Bernard 2 days).
+sibling_gap:
+  enabled: true
+  hour_pt: 10
+  settle_days: 5
+  season_start: "2026-08-15"
+  prior_window_start: "2026-02-01"   # active at the END of last season
+  prior_window_end: "2026-07-15"
+  notify: charter_sales
 
 # ── Staff registry ───────────────────────────────────────────────
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
@@ -137,6 +219,8 @@ routing:
   payment_dispute:     { owner: scheduling_lead,             sla_hours: 1.5, draft: false, priority: high }
   school_partner:      { owner: sales,          sla_hours: 1.5, draft: true,  priority: high }
   business_dev:        { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # partnerships/collabs/pitches worth a look
+  campaign_family:     { owner: charter_sales,  sla_hours: 1.5, draft: true,  priority: high }    # campaign replies: sign-ups/referrals (Roman 2026-08-27)
+  campaign_school:     { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # campaign replies from TORs/school staff
   tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
@@ -194,6 +278,9 @@ deal_sync:
   # Package billing in Teachworks by default, listed here or not.
   charter_pipelines: ["907748", "72281989", "88841552", "5119061"]
   exclude_pipelines: ["971802", "145539386", "16195908"]  # New Tutor, School Partnership, Upsells
+  # Gold deals get their amount from the family's most CURRENT Teachworks invoice
+  # when created without one (Roman 2026-09-03). Free Trial excluded ($0 by design).
+  gold_amount_pipelines: ["default", "16547180"]
   charter_student_billing: "Package"
   private_student_billing: "Service List Cost"
   # Per-pipeline Teachworks overrides — each ONLINE pipeline can need different TW
@@ -210,7 +297,9 @@ deal_sync:
     "88841552": {}   # Charter Amy
     "5119061": {}    # IEM Inc
     "21277473": {}   # Subscription
-    # Gold Tutoring (pipeline "default") + Free Trial ("19120821"): add entries if needed
+    # Roman 2026-09-04: Gold stays service-level (the non-charter default,
+    # Service List Cost — no entry needed); Free Trial bills as PACKAGE.
+    "19120821": { student_billing: "Package" }   # Free Trial
   # Smart invoice prompt: daily (hour_pt, PT) check of every ACTIVE charter PO deal —
   # student's attended TW hours >= PO hours → DM Kath to submit the invoice NOW;
   # otherwise DM once the invoice due date passes (deal due property, else the
@@ -299,6 +388,33 @@ po_inbox:
   # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
   # original email (Roman, 2026-08-26) — nagging earlier is pure false alarm.
   pending_portal_approval_days: 14
+  # Gmail poll re-reads this many seconds BEFORE the cursor (the Lia Beck miss,
+  # 2026-08-28: a message landing behind the cursor was invisible forever).
+  # Re-listed mail is deduped by the audit log, so a wide window is free.
+  cursor_overlap_seconds: 3600
+  # ── PO mail outside charter@ (2026-09-03) ────────────────────────────────
+  # Schools' ordering systems email POs to the vendor contact on file, and
+  # Heartwood's OPS account points at admin@: 14 PO documents were junk-archived
+  # there in Aug/Sep 2026 and never reached this agent. Every run, PO-shaped mail
+  # (src/po_sources.is_po_shaped: ordering-system sender, "Purchase Order #",
+  # or a PO/OA-numbered PDF) in each `sources` mailbox is COPIED into charter@
+  # and processed by the normal poll. Same service account, same domain-wide
+  # delegation: any Workspace mailbox works. info@ forwards into admin@, so it
+  # is not listed separately.
+  sources: [admin@wetutorathome.com]
+  source_query: 'from:ops-online.com OR subject:"purchase order" OR subject:"new POs" OR filename:pdf'
+  source_sender_domains: [ops-online.com]
+  source_backfill_hours: 48      # first run of a new source reaches this far back
+  label_mirrored: "A+ Agent/Mirrored from other inbox"   # on the charter@ copy
+  label_mirrored_source: "A+ Agent/Mirrored to charter"  # on the original
+  # PO-shaped mail Gmail spam-filters at charter@ ITSELF is moved to the inbox
+  # and processed the same run (Kath emailing a PO from the OPS portal has the
+  # exact signature the filter dislikes: bodiless PDF, noreply sender).
+  label_rescued: "A+ Agent/Rescued from Spam"
+  # The triage agent opens a handoff ticket (owner: this agent's owner role) for
+  # PO-shaped mail it sees; the PO agent closes it once the copy is processed.
+  # Still open after this many business hours → the mirror is broken.
+  handoff_sla_hours: 2
   # Non-PO dispositions (Roman 2026-08-26): vendor/compliance items (unsigned
   # agreements, invoicing-rule changes) block POs — HIGH ticket to this ROLE.
   compliance_owner: sales
@@ -439,11 +555,43 @@ reasoner:
   repeat_every_hours: 24      # daily drumbeat once the ladder starts
 
 aging_sweep:
-  enabled: true
+  # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
+  # hours, 59 of them from this sweep, and zero replies from her in the last 400
+  # messages. A targeted question about a $1,330 invoice scrolled out of view
+  # within a day. The reasoning sweep supersedes this — it asks whether a ticket
+  # is really open before it says anything, where this one only asks how old it
+  # is. Do not re-enable both at once.
+  enabled: false
   nag_after_days: 7          # open + untouched this long → DM the owner
   supervisor_after_days: 14  # also DM level2
   last_resort_after_days: 30 # also DM level3
   repeat_every_days: 7       # re-nag this often — the chain above pings once per level and then goes silent forever
+
+# Task-completion sweep (Roman 2026-08-28). Agents and humans create HubSpot
+# Tasks, but nothing ever read one back — an overdue task made no noise
+# anywhere. Weekday-morning digest to #agent-feedback (silent when clean),
+# owner DM only past dm_after_days, weekly on-time/late scoreboard on Mondays.
+task_sweep:
+  enabled: true
+  channel: "C0BL05MCJ4B"      # #agent-feedback (private; ID so the bot can post)
+  # seats, not names. charter_admin added 2026-08-31: she holds every
+  # PO→invoice task (the money path) and was the one seat nobody watched.
+  # Safe to watch only because autoclose_invoice_tasks (below) clears the
+  # phantoms first — ten of her open tasks were already-done invoices.
+  monitor: [visionary, sales, charter_sales, scheduler_a_l, charter_admin]
+  # An open "Convert PO to TW invoice" task whose deal already carries an
+  # Invoice # is DONE — close it instead of nagging. false = report only.
+  autoclose_invoice_tasks: true
+  invoice_task_marker: "Convert PO to TW invoice"
+  dm_after_days: 3            # overdue this long → DM the owner
+  dm_repeat_days: 3           # re-DM cadence (audit-log-held, like aging_sweep)
+  horizon_days: 30            # overdue past this = stale backlog: weekly count line
+                              # only, never itemized/DM'd. On 2026-08-28 the four
+                              # monitored owners held 717 open tasks, mostly
+                              # months-to-years old; nagging those buries the signal.
+  per_person_cap: 8           # digest lists at most this many tasks per owner
+  dm_list_cap: 10             # a DM itemizes at most this many; ONE DM per owner per run
+  weekly_stats_weekday: 0     # Monday → append last-7-days completion scoreboard
 
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]

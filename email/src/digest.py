@@ -105,6 +105,40 @@ def _format_slack(m: dict) -> str:
     )
 
 
+_B2C_PIPELINES = ["default", "16547180", "19120821", "3067397", "16858643"]
+_JUNK_SCHOOL = {".", "na", "n/a", "-", "online", ""}
+
+
+def _deal_hygiene_block(start: date, end: date) -> str:
+    """B2C deals created this week with no amount or junk school — a self-correct
+    nudge for the team (read-only; the agent never edits human deals)."""
+    try:
+        res = hs._write("POST", "/crm/v3/objects/deals/search", {
+            "filterGroups": [{"filters": [
+                {"propertyName": "pipeline", "operator": "IN", "values": _B2C_PIPELINES},
+                {"propertyName": "createdate", "operator": "GTE",
+                 "value": f"{start.isoformat()}T00:00:00Z"}]}],
+            "properties": ["dealname", "amount", "student_school"], "limit": 100})
+        rows = res.get("results", []) if isinstance(res, dict) else []
+    except Exception:  # noqa: BLE001 — hygiene is a bonus, never break the digest
+        return ""
+    flagged = []
+    for d in rows:
+        pr = d.get("properties") or {}
+        probs = []
+        if not (pr.get("amount") or "").strip() or pr.get("amount") == "0":
+            probs.append("no amount")
+        if (pr.get("student_school") or "").strip().lower() in _JUNK_SCHOOL:
+            probs.append("school blank/junk")
+        if probs:
+            flagged.append(f"  • {pr.get('dealname', '?')[:55]} — {', '.join(probs)}")
+    if not flagged:
+        return ""
+    return ("\n*🧹 Deal hygiene (B2C, this week):* fill these in HubSpot\n"
+            + "\n".join(flagged[:12])
+            + (f"\n  …and {len(flagged) - 12} more" if len(flagged) > 12 else ""))
+
+
 def _write_sheet(m: dict) -> None:
     creds = google_creds_dict()
     sheet_id = cfg()["google_sheets"]["dashboard_sheet_id"]
@@ -140,8 +174,9 @@ def _write_monday(m: dict, start: date, end: date) -> None:
 def run() -> None:
     start, end = mon.get_last_week_range()
     m = gather_metrics(start, end)
-    print(_format_slack(m))
-    slack_client.post_message(cfg()["slack"]["digest_channel"], _format_slack(m))
+    text = _format_slack(m) + _deal_hygiene_block(start, end)
+    print(text)
+    slack_client.post_message(cfg()["slack"]["digest_channel"], text)
     _write_sheet(m)
     _write_monday(m, start, end)
     print("=== digest complete ===")

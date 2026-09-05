@@ -1,0 +1,74 @@
+name: Teacher outreach (daily sequence enrollments)
+
+# Enrolls the next batch of teachers into Danielle's two outreach sequences
+# every weekday morning (ops/messenger/teacher-sequences.yml). The script is
+# gated: armed AND today >= start_date AND weekday. The cron runs daily and the
+# script exits on weekends and before the start date. Manual dispatch for a
+# supervised run, a dry run, or the one-time sender-inbox validation.
+on:
+  schedule:
+    - cron: "5 16 * * 1-5"   # 09:05 PDT / 08:05 PST, Mon-Fri; gated in the script
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type ENROLL to enroll for real (blank = dry run)'
+        default: ""
+      force:
+        description: "Skip armed/start-date/weekday gates (supervised run)"
+        type: boolean
+        default: false
+      cap:
+        description: "Override daily cap (blank = config)"
+        default: ""
+      test_contact:
+        description: "Enroll ONLY this contact email into sequence 1 (sender validation)"
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: teacher-sequence-enroll
+  cancel-in-progress: false
+
+jobs:
+  enroll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv PyYAML
+      - name: Enroll today's batch
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          ROMAN_SLACK_USER_ID: ${{ secrets.ROMAN_SLACK_USER_ID }}
+          TZ: America/Los_Angeles
+        run: >
+          python scripts/teacher_sequence_enroll.py
+          --confirm "${{ github.event_name == 'schedule' && 'ENROLL' || inputs.confirm }}"
+          ${{ github.event_name == 'workflow_dispatch' && inputs.force && '--force' || '' }}
+          ${{ github.event_name == 'workflow_dispatch' && inputs.cap != '' && format('--cap {0}', inputs.cap) || '' }}
+          ${{ github.event_name == 'workflow_dispatch' && inputs.test_contact != '' && format('--test-contact {0}', inputs.test_contact) || '' }}
+      - name: Persist state
+        run: |
+          git config user.name "aplus-agents bot"
+          git config user.email "agents@wetutorathome.com"
+          git add ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "teacher-sequence-enroll: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}" && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+            if ! git push origin HEAD 2>/dev/null; then
+              echo "::error::state persist FAILED after 3 attempts — tomorrow's run would re-enroll today's batch"
+              exit 1
+            fi
+          fi

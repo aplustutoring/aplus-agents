@@ -1,0 +1,5 @@
+# Serve the booth at the site root. Cloudflare Pages has no index.html here
+# (the deliverable keeps its own filename), so "/" 404s without this. A booth
+# tablet should open a clean URL, not a long path someone has to retype.
+# 200 = rewrite, not a redirect: the address bar stays on "/".
+/    /spin-back-to-school    200

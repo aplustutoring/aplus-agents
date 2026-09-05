@@ -1,0 +1,8 @@
+# Keep source out of the public Pages site. The first deploy served worker.js
+# and DEPLOY.md at 200 — no credentials in either (the HubSpot token is a
+# Cloudflare secret), but there is no reason to publish the Worker's logic,
+# the HubSpot property names, or the deploy notes.
+worker.js
+test-worker.mjs
+wrangler.toml
+DEPLOY.md

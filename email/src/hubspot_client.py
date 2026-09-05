@@ -56,6 +56,11 @@ def contact_url(contact_id: str) -> str:
     return f"https://app.hubspot.com/contacts/{portal}/record/0-1/{contact_id}"
 
 
+def task_url(task_id: str) -> str:
+    portal = cfg()["hubspot"]["portal_id"]
+    return f"https://app.hubspot.com/contacts/{portal}/record/0-27/{task_id}"
+
+
 # ── Scope probe (used by smoke test) ─────────────────────────────
 def check_scopes() -> dict:
     """Verify the token can reach Conversations + Tickets + Contacts. Read-only."""
@@ -670,6 +675,15 @@ def update_ticket_stage(ticket_id: str, stage_id: str) -> dict:
                   {"properties": {"hs_pipeline_stage": stage_id}})
 
 
+def stamp_campaign_reply(contact_id: str) -> dict:
+    """Set [Agent] Campaign Replied = Yes on a contact who replied to a campaign send
+    (classifier categories campaign_school / campaign_family). Sequences and
+    workflows use it as an exit criterion; reports use it to count replies that
+    landed at info@ and never touched hs_email_last_reply_date."""
+    return _write("PATCH", f"/crm/v3/objects/contacts/{contact_id}",
+                  {"properties": {"campaign_replied": "true"}})
+
+
 def thread_has_outbound_reply(thread_id: str, exclude_message_id: str | None = None,
                               after_ts: str | None = None) -> bool:
     """True if a human outbound MESSAGE exists on the thread AFTER `after_ts`
@@ -709,6 +723,86 @@ def search_open_tickets() -> list[dict]:
         after = (res.get("paging") or {}).get("next", {}).get("after")
         if not after:
             return out
+
+
+_TASK_PROPS = ["hs_task_subject", "hs_task_status", "hs_task_priority",
+               "hs_timestamp", "hs_createdate", "hs_task_completion_date",
+               "hubspot_owner_id"]
+
+
+def _search_all(path: str, filters: list[dict], props: list[str]) -> list[dict]:
+    """Paginated CRM search with one filter group."""
+    out, after = [], None
+    while True:
+        body = {"filterGroups": [{"filters": filters}], "properties": props, "limit": 100}
+        if after:
+            body["after"] = after
+        res = _get_search(path, body)
+        out += res.get("results", [])
+        after = (res.get("paging") or {}).get("next", {}).get("after")
+        if not after:
+            return out
+
+
+def search_open_tasks(owner_ids: list[str]) -> list[dict]:
+    """Every not-yet-completed Task owned by the given owners, whoever created it
+    (an agent, a workflow, or a human in the CRM UI). Needs the tasks read scope
+    on the private app — create_task above only exercises write."""
+    return _search_all("/crm/v3/objects/tasks/search", [
+        {"propertyName": "hs_task_status", "operator": "NOT_IN",
+         "values": ["COMPLETED", "DEFERRED"]},
+        {"propertyName": "hubspot_owner_id", "operator": "IN", "values": owner_ids},
+    ], _TASK_PROPS)
+
+
+def search_open_tasks_created_before(cutoff_ms: int) -> list[dict]:
+    """Every not-yet-completed Task in the portal created before the cutoff
+    (epoch ms), any owner or none — the backlog bulk-closer reads these."""
+    return _search_all("/crm/v3/objects/tasks/search", [
+        {"propertyName": "hs_task_status", "operator": "NOT_IN",
+         "values": ["COMPLETED", "DEFERRED"]},
+        {"propertyName": "hs_createdate", "operator": "LT", "value": str(cutoff_ms)},
+    ], _TASK_PROPS)
+
+
+def complete_invoice_tasks_for_po(po_number: str) -> int:
+    """Close any OPEN convert-to-invoice task naming this PO — a cancelled PO
+    must not leave a task telling Kath to invoice it (the Emma Savoie stale
+    task, 2026-08-31). Returns how many were closed."""
+    if not po_number:
+        return 0
+    body = {"filterGroups": [{"filters": [
+        {"propertyName": "hs_task_status", "operator": "NOT_IN",
+         "values": ["COMPLETED", "DEFERRED"]},
+        {"propertyName": "hs_task_subject", "operator": "CONTAINS_TOKEN",
+         "value": po_number}]}],
+        "properties": ["hs_task_subject"], "limit": 20}
+    res = _write("POST", "/crm/v3/objects/tasks/search", body)
+    hits = [t for t in (res.get("results", []) if isinstance(res, dict) else [])
+            if "convert po to tw invoice" in
+               ((t.get("properties") or {}).get("hs_task_subject") or "").lower()]
+    if hits:
+        batch_complete_tasks([str(t["id"]) for t in hits])
+    return len(hits)
+
+
+def batch_complete_tasks(task_ids: list[str]) -> None:
+    """Mark tasks COMPLETED, 100 per batch call (DRY_RUN-aware via _write)."""
+    for i in range(0, len(task_ids), 100):
+        chunk = task_ids[i:i + 100]
+        _write("POST", "/crm/v3/objects/tasks/batch/update", {
+            "inputs": [{"id": tid, "properties": {"hs_task_status": "COMPLETED"}}
+                       for tid in chunk]})
+
+
+def search_completed_tasks(owner_ids: list[str], since_ms: int) -> list[dict]:
+    """Tasks the given owners completed since the timestamp (epoch ms) — the
+    weekly on-time/late scoreboard reads these."""
+    return _search_all("/crm/v3/objects/tasks/search", [
+        {"propertyName": "hs_task_status", "operator": "EQ", "value": "COMPLETED"},
+        {"propertyName": "hs_task_completion_date", "operator": "GTE", "value": str(since_ms)},
+        {"propertyName": "hubspot_owner_id", "operator": "IN", "values": owner_ids},
+    ], _TASK_PROPS)
 
 
 def _ticket_engagements(ticket_id: str, obj: str, props: list[str],

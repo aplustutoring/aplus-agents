@@ -1,0 +1,125 @@
+# Charter teacher outreach 26/27 — handoff (built 2026-09-04, launch Tue 2026-09-08)
+
+Roman "Go" 2026-09-04. Council record: `docs/councils/2026-09-02-charter-teacher-outreach.md`.
+Copy (source of truth): `ops/messenger/templates/teacher-outreach-2026-09/`.
+Goal: teachers send students. Every teacher gets both messages (Stanford Badge,
+Teacher Scholarship); the list decides the order and the rail.
+
+## Rules that apply to everything
+
+- Email only. No call tasks, no meeting links (Roman 2026-09-03).
+- From Danielle Brodetsky. Campaign reply-to info@ so the classifier routes
+  replies to the sales seat and stamps `[Agent] Campaign Replied`.
+- Every student has funds; never "students with funds." The school issues the
+  PO; never "we handle the PO." No em dashes. Under 120 words.
+- Weekday sends, 9am to 5pm PT. Exit on reply, on `campaign_replied = Yes`, on
+  a Teacher Scholarship nomination, on a new 26/27 charter deal naming the teacher.
+- Scholarship cap this round: 40 students. First 40 nominations from teachers
+  who have never sent us a student, one per teacher until 40, then seconds.
+  Past the cap → "Does Not Qualify" stage, with a note.
+- Teachers from this outreach who nominate enter the Teacher Scholarship
+  teacher pipeline at "Opted Out of Call OR Met at Event – Sent Flyer", never
+  at stage 1 (that stage fires the "book a call" emails).
+
+## The audience (HubSpot static lists, built 2026-09-04)
+
+| List | Name | Count | Rail |
+|---|---|---|---|
+| 3210 | 1 Worked With Us (sequence) | 159 | Sequence 1, Danielle's inbox |
+| 3211 | 2 Known Schools Cold (sequence): iLEAD 130, Sage Oak 47, Blue Ridge 26 | 203 | Sequence 2, Danielle's inbox, 50/day |
+| 3212 | 3 Stranger Schools Cold (campaign), 23 schools | 304 | Marketing workflow, one wave per school group |
+| 3215 | 3a Wave 1 = Compass 96 + Elite 26 | 122 | Workflow 1878517306 |
+| 3213 | 4 IEM Education Specialists (campaign) | 272 | Workflow 1878501648, own wave |
+| 3214 | Top 30 of list 1 by charter deal $ | 30 | Hand-written day-10 note |
+
+Excluded everywhere: 30 generic inboxes (`generic_inbox = Yes`), 56 opt-outs,
+33 bounces, 22 already in the Sage Oak Summit sequence, 4 with no school, 1
+no email, 1 internal. Refresh: `python3 scripts/teacher_outreach_lists.py --build-lists`.
+
+## Sequence rail (BUILT 2026-09-04 in the portal via Claude in Chrome; Danielle only enrolls)
+
+Sales email templates have no API, so both sequences were assembled in the
+portal under Roman's login and shared with Everyone. Verified via the
+sequences API: Danielle (userId 46811240) can see both. Copy source of truth
+stays `seq1_worked_with_us.md` and `seq2_known_schools.md`; the templates in
+the portal match it.
+
+| Sequence | Id | Steps | Settings |
+|---|---|---|---|
+| Teacher Outreach 26/27 - 1 Worked With Us | 310839862 | Email 1 (day 1) → 4 business days → Email 2 (day 5, threaded reply) → finish | business days only, send window 8:00 to 18:00 |
+| Teacher Outreach 26/27 - 2 Known Schools | 310844702 | Email 1 (day 1) → 3 business days → Email 2 (day 4, reply) → 4 business days → Email 3 (day 8, reply) → finish | same |
+
+Templates (Message templates, shared with everyone): "Teacher Outreach 26/27 -
+Worked With Us - Email 1/2", "Teacher Outreach 26/27 - Known Schools - Email
+1/2/3". Sequence 2's email 1 uses one opening line for all three schools:
+"Many of your colleagues at {{ contact.school_canonical }} already send
+students to A+ Tutoring" (true for iLEAD, Sage Oak, Blue Ridge). The per-school
+Summit / park-day lines in `seq2_known_schools.md` are optional A/B versions.
+
+**Before Danielle enrolls anyone (2 minutes):**
+1. Her HubSpot default signature (Settings → General → Email → Signature) must
+   carry the Badge line, because the templates end at "Danielle" and HubSpot
+   appends her default signature:
+   `Danielle Brodetsky / Director of School Partnerships, A+ Tutoring /
+   Tutoring Program Design Badge, National Student Support Accelerator at
+   Stanford University, 2026 to 2029`.
+2. Send a test enrollment to herself from each sequence and read it once.
+
+**Enrolling: AUTOMATED (built 2026-09-04, Danielle: "I love that idea").**
+`.github/workflows/teacher-sequence-enroll.yml` runs `scripts/teacher_sequence_enroll.py`
+every weekday at 9:05am PT from Tue 9/8 (config `ops/messenger/teacher-sequences.yml`,
+gated by armed / start_date / weekday). Each run enrolls the next 50 eligible contacts
+per sequence, sending from Danielle's connected inbox (`danielle@wetutorathome.com`,
+validated on test contact 246529425986) exactly as a manual enrollment would:
+1. Sequence 1: list 3210, top-30 list 3214 first. About 3 weekdays to finish.
+2. Sequence 2: list 3211, iLEAD (130) → Sage Oak (47) → Blue Ridge (26). About 4 weekdays.
+3. Eligibility re-checked each morning; skips (opt-out, bounce, generic inbox,
+   already replied, already in a sequence) are counted in the run log and the
+   Slack summary DM'd to Danielle and Roman after each run.
+4. Override: Actions → "Teacher outreach (daily sequence enrollments)" →
+   Run workflow (confirm ENROLL, force, cap). Pause: set `armed: false` in the
+   config via PR. State: `ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json`.
+
+**Still Danielle's, by hand:**
+- Day 10: for anyone on list 3214 still silent, a two-line note in the same
+  thread naming one family from `python3 scripts/teacher_roster.py <email>`
+  (ping Roman for the roster).
+- "Send it" replies: same script, paste.
+- Unenroll on reply is HubSpot-default. Nomination-form submission also exits:
+  both sequences should add "Teacher Scholarship Program Form submitted" as an
+  unenroll trigger under Automate (portal setting, not built).
+
+## Campaign rail (scripted; publish + enable on send day)
+
+| Wave | List | Workflow | Emails (AUTOMATED_DRAFT) |
+|---|---|---|---|
+| 1 Compass + Elite | 3215 | 1878517306 (OFF) | 221134168440 → +4d → 221140381845 → +6d → 221140381849 |
+| IEM | 3213 | 1878501648 (OFF) | 221134168444 → +4d → 221140381853 → +6d → 221140381856 |
+| 2+ (remaining stranger schools) | new sub-list per group | clone of 1878517306 | same three emails, retargeted |
+
+Send-day checklist (Roman, portal):
+1. Open each draft, read once, click Publish (marketing-email publish scope is
+   not available to the API at this account tier).
+2. Open the workflow, confirm enrollment list and the 4 exit goals, turn ON.
+   Existing list members enroll immediately; sends respect the 9 to 5 window.
+3. Wave 2 opens only after wave 1's day-10 numbers, and only if the 40-student
+   cap has room.
+
+## Measurement
+
+- Replies per list: `campaign_replied = Yes` (stamped by the info@ classifier,
+  PR pending merge) plus `hs_email_last_reply_date` for inbox replies.
+- Nominations per list: Teacher Scholarship family deals created, joined to the
+  nominating teacher.
+- Charter deals created naming a list-1 teacher within 30 days
+  (`scripts/campaign_revenue_report.py` pattern).
+- Opens are noise.
+
+## Not built (needs Roman or Danielle)
+
+- Post-trial teacher email: a workflow step at "Trial Complete" that tells the
+  nominating teacher what the tutor saw and what to put on the PO. Today WF-03
+  only emails Paola. This is the step that turns the scholarship into POs.
+- Danielle's note to IEM central office (parallel to the IEM wave).
+- The Teacher Scholarship program's own stage-1 "book a call" emails should
+  become the exception, not the front door (email-only rule). Danielle's call.

@@ -424,6 +424,17 @@ CALLER_TYPES = ["parent", "school/charter contact", "tutor applicant", "vendor",
 INTENTS = ["new inquiry", "scheduling", "billing", "complaint", "school partnership", "other"]
 SENTIMENTS = ["positive", "neutral", "negative"]
 
+# Which team owns an action item (Paola 2026-09-01). Trial/session logistics
+# belong to the scheduling team, not to this agent's follow-up queue — the
+# taxonomy Claude applies is in SUMMARY_PROMPT step 3. "follow_up" is the
+# fallback for anything unrouted: a sales follow-up landing on Paola is the
+# behaviour that has always been correct.
+ACTION_ROUTES = ["scheduling", "follow_up"]
+# Prefix on the HubSpot task subject so a scheduling item is identifiable in
+# the queue even when no scheduling owner is configured yet (see
+# hubspot.scheduling_task_owner in config.yml).
+SCHEDULING_TASK_PREFIX = "[Scheduling] "
+
 # Lead-status assignment (hs_lead_status). These are the portal's internal
 # option VALUES, not labels (verified live 2026-07-20 — e.g. value
 # 'We Connected' is labeled 'QTL - NEW' in the UI). Claude picks one per call
@@ -534,6 +545,20 @@ record, creates follow-up tasks, and feeds a daily ops digest.
 3. List action items — things A+ STAFF must do after this call (not things the
    family will do). Include an owner_hint only when a specific A+ person was
    named as responsible. Set follow_up_needed accordingly.
+   Route every action item with `route` — which team actually does the work:
+   - "scheduling": session/trial logistics the scheduling team owns. Booking,
+     moving or confirming a trial or session; texting or calling a family to
+     confirm a trial day/time; sending a tutor's profile or bio to a family;
+     calling back about an already-scheduled trial or session (including a
+     dropped or transferred call about one); matching or swapping a tutor;
+     calendar and availability coordination.
+   - "follow_up": the sales / relationship follow-up this agent's own tasks
+     exist for. Calling a prospective family back about pricing, program fit
+     or their decision; sending pricing, an agreement or an assessment link;
+     billing and account questions; anything arising from a complaint;
+     school / charter partnership follow-up; correcting the family's record.
+   When an item could be read either way, ask who physically does it: if the
+   answer is "whoever owns the calendar", it is "scheduling".
 4. Propose family-record updates in record_updates, comparing the call against
    the CURRENT RECORD below (all-null record = caller not in CRM; leave
    record_updates fields null in that case):
@@ -590,6 +615,15 @@ record, creates follow-up tasks, and feeds a daily ops digest.
    expects to happen, and a suggested opener for the follow-up contact.
    Write it as instructions to the teammate ("Karen expects...", "open
    with..."). Null when follow_up_needed is false.
+8. Record every NAME CORRECTION the call established in name_corrections —
+   the caller telling us we have a student's or parent's name wrong ("it's
+   Autumn, not Autumn-Rose", "she goes by Katie"), including a name we read
+   back incorrectly. Each entry is {{"wrong": <the name we had/used>,
+   "correct": <what the caller said it is>}}. Empty array when no name was
+   corrected. Once a name is corrected, use the CORRECTED name everywhere in
+   this output — the summary, every action item, the handoff note and the
+   record log entries. Never carry the old name into anything a teammate will
+   read or say to the family.
 
 CURRENT RECORD (HubSpot contact):
 {record_json}
@@ -621,8 +655,21 @@ SUMMARY_SCHEMA = {
                 "properties": {
                     "item": {"type": "string"},
                     "owner_hint": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+                    "route": {"type": "string", "enum": ACTION_ROUTES},
                 },
-                "required": ["item", "owner_hint"],
+                "required": ["item", "owner_hint", "route"],
+                "additionalProperties": False,
+            },
+        },
+        "name_corrections": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "wrong": {"type": "string"},
+                    "correct": {"type": "string"},
+                },
+                "required": ["wrong", "correct"],
                 "additionalProperties": False,
             },
         },
@@ -656,6 +703,7 @@ SUMMARY_SCHEMA = {
         },
     },
     "required": ["summary", "caller_type", "intent", "sentiment", "action_items",
+                 "name_corrections",
                  "follow_up_needed", "next_step_scheduled", "handoff_note",
                  "lead_status", "lead_status_reason",
                  "student_or_school_names_mentioned", "record_updates"],
@@ -733,9 +781,12 @@ def _validate_summary(d):
     items = []
     for it in d["action_items"]:
         if isinstance(it, str):
-            items.append({"item": it, "owner_hint": None})
+            items.append({"item": it, "owner_hint": None, "route": "follow_up"})
         elif isinstance(it, dict) and it.get("item"):
-            items.append({"item": str(it["item"]), "owner_hint": it.get("owner_hint") or None})
+            route = it.get("route")
+            items.append({"item": str(it["item"]),
+                          "owner_hint": it.get("owner_hint") or None,
+                          "route": route if route in ACTION_ROUTES else "follow_up"})
     d["action_items"] = items
     d["follow_up_needed"] = bool(d["follow_up_needed"])
     d["next_step_scheduled"] = bool(d.get("next_step_scheduled", True))
@@ -744,6 +795,7 @@ def _validate_summary(d):
     if not isinstance(d["student_or_school_names_mentioned"], list):
         d["student_or_school_names_mentioned"] = []
     d["student_or_school_names_mentioned"] = [str(x) for x in d["student_or_school_names_mentioned"]]
+    d["name_corrections"] = _clean_name_corrections(d.get("name_corrections"))
 
     ru = d.get("record_updates") or {}
     clean = {}
@@ -760,6 +812,69 @@ def _validate_summary(d):
             val = None
         clean[field] = val
     d["record_updates"] = clean
+    _apply_name_corrections(d)
+    return d
+
+
+# Free-text record_updates fields a corrected name can appear in. The enum
+# fields (grade, subject, modality, attribution) never contain a name.
+_NAME_BEARING_RECORD_FIELDS = ("whats_going_on", "what_we_can_do_to_help",
+                               "student_first_name", "student_last_name",
+                               "referral_name")
+
+
+def _clean_name_corrections(raw):
+    """Normalize name_corrections to [{'wrong','correct'}] with both non-empty
+    and actually different. Anything malformed is dropped, not raised on — a
+    bad correction entry must never cost us the whole call."""
+    out = []
+    for c in raw if isinstance(raw, list) else []:
+        if not isinstance(c, dict):
+            continue
+        wrong = str(c.get("wrong") or "").strip()
+        correct = str(c.get("correct") or "").strip()
+        if not wrong or not correct or wrong.lower() == correct.lower():
+            continue
+        out.append({"wrong": wrong, "correct": correct})
+    return out
+
+
+def _swap_name(text, wrong, correct):
+    """Whole-word, case-insensitive replacement of one name in one string."""
+    if not text:
+        return text
+    return re.sub(rf"\b{re.escape(wrong)}\b", correct, text, flags=re.IGNORECASE)
+
+
+def _apply_name_corrections(d):
+    """
+    Belt-and-braces enforcement of prompt step 8: when the call corrected a
+    name, no stale name survives into anything a teammate reads or says to the
+    family (Paola 2026-09-01 — the child's name was corrected to 'Autumn' on
+    the call and the old name still went out in the next-step language).
+    The prompt already asks for this; this pass catches the misses.
+    """
+    corrections = d.get("name_corrections") or []
+    if not corrections:
+        return d
+    for c in corrections:
+        wrong, correct = c["wrong"], c["correct"]
+        # "Autumn" -> "Autumn Rose" would re-match its own output and stack up
+        # ("Autumn Rose Rose"). The prompt still carries the corrected name;
+        # only the mechanical sweep steps aside.
+        if re.search(rf"\b{re.escape(wrong)}\b", correct, flags=re.IGNORECASE):
+            log.warning(f"  name correction '{wrong}' -> '{correct}': corrected name "
+                        f"contains the old one — swap skipped (model output kept)")
+            continue
+        d["summary"] = _swap_name(d["summary"], wrong, correct)
+        d["handoff_note"] = _swap_name(d.get("handoff_note"), wrong, correct)
+        for it in d["action_items"]:
+            it["item"] = _swap_name(it["item"], wrong, correct)
+        d["student_or_school_names_mentioned"] = [
+            _swap_name(n, wrong, correct) for n in d["student_or_school_names_mentioned"]]
+        for field in _NAME_BEARING_RECORD_FIELDS:
+            d["record_updates"][field] = _swap_name(
+                d["record_updates"].get(field), wrong, correct)
     return d
 
 
@@ -1299,14 +1414,23 @@ def apply_record_updates(contact, updates, call_date_pt):
     return applied, skipped
 
 
-def _resolve_owner(owner_hint, cfg, answered_by=None):
+def _resolve_owner(owner_hint, cfg, answered_by=None, route="follow_up"):
     """Task owner for a follow-up.
+    Scheduling-routed items (trial/session logistics — see ACTION_ROUTES) go to
+    scheduling_task_owner when one is configured; that beats the Roman handoff
+    rule below, because the handoff rule is about who does FOLLOW-UP, and this
+    work is not follow-up. With no scheduling owner configured the item still
+    lands on the default owner, carrying SCHEDULING_TASK_PREFIX in its subject.
     Calls ROMAN answered hand off to default_task_owner (Paola) no matter who
     the call named — sales calls ring Roman first, but Paola does 100% of
     follow-up (Roman 2026-08-13); the task body carries a handoff block.
     Other answerers: owner_hint ('have Janelle call...') -> owner id,
     else default_task_owner."""
     owners = cfg["hubspot"]["owners"]
+    if route == "scheduling":
+        sched = cfg["hubspot"].get("scheduling_task_owner")
+        if sched and sched in owners:
+            return owners[sched]
     if (answered_by or "").strip().lower().startswith("roman"):
         return owners[cfg["hubspot"]["default_task_owner"]]
     hint = (owner_hint or "").lower()
@@ -1314,6 +1438,14 @@ def _resolve_owner(owner_hint, cfg, answered_by=None):
         if name in hint:
             return oid
     return owners[cfg["hubspot"]["default_task_owner"]]
+
+
+def task_subject(action_item):
+    """HubSpot task subject for an action item, capped at HubSpot's 250 chars.
+    Scheduling-routed items carry SCHEDULING_TASK_PREFIX so they read as the
+    scheduling team's work at a glance in whichever queue they land in."""
+    prefix = SCHEDULING_TASK_PREFIX if action_item["route"] == "scheduling" else ""
+    return f"{prefix}{action_item['item']}"[:250]
 
 
 def create_task(contact_id, subject, body, owner_id, due_utc, priority="MEDIUM"):
@@ -1412,6 +1544,10 @@ def build_digest(entries, skipped, failures, run_date_pt):
     n_no_tr = sum(1 for s in skipped if s["reason"] == "no transcript")
     n_hangup = sum(1 for s in skipped if s["reason"] == "hang-up")
     n_tasks = sum(len(e.get("tasks_created", [])) for e in entries)
+    # Entries carried over from a --no-digest run predate the route element;
+    # a missing route just means "not scheduling".
+    n_sched = sum(1 for e in entries for t in e.get("tasks_created", [])
+                  if len(t) > 2 and t[2] == "scheduling")
     n_updates = sum(len(e.get("record_applied", [])) for e in entries)
 
     lines = [
@@ -1419,7 +1555,9 @@ def build_digest(entries, skipped, failures, run_date_pt):
         f"Processed *{len(entries)}* call{'s' if len(entries) != 1 else ''} "
         f"(matched {len(matched)}, unmatched {len(unmatched)}) · "
         f"Hang-ups: {n_hangup} · Skipped: {n_no_rec} no recording, {n_no_tr} no transcript · "
-        f"Tasks created: {n_tasks} · Record updates: {n_updates} · "
+        f"Tasks created: {n_tasks}"
+        + (f" ({n_sched} to scheduling)" if n_sched else "")
+        + f" · Record updates: {n_updates} · "
         f"Failures: {len(failures)}",
     ]
 
@@ -1588,8 +1726,9 @@ def process_call(call, cfg, dry_run, now_utc):
                          f"'{status_label(summary['lead_status'])}' "
                          f"({summary['lead_status_reason']})")
         for it in summary["action_items"]:
-            oid = _resolve_owner(it["owner_hint"], cfg, answered_by)
-            log.info(f"  call {cid}: DRY RUN — would create Task '{it['item']}' (owner {oid}"
+            oid = _resolve_owner(it["owner_hint"], cfg, answered_by, it["route"])
+            log.info(f"  call {cid}: DRY RUN — would create Task "
+                     f"'{task_subject(it)}' (owner {oid}"
                      f"{', Roman-answered handoff' if roman_answered else ''})")
         if is_negative:
             log.info(f"  call {cid}: DRY RUN — would create HIGH ticket + check-in task "
@@ -1621,19 +1760,22 @@ def process_call(call, cfg, dry_run, now_utc):
 
         # Action items -> HubSpot Tasks (Roman-answered calls hand off to
         # Paola with a handoff block; otherwise owner from hint, default Paola).
+        # Scheduling-routed items are subject-prefixed and, once
+        # scheduling_task_owner is set, land on the scheduling queue instead.
         due = next_business_day(now_utc, cfg["hubspot"]["task_due_business_days"])
         for it in summary["action_items"]:
-            oid = _resolve_owner(it["owner_hint"], cfg, answered_by)
+            oid = _resolve_owner(it["owner_hint"], cfg, answered_by, it["route"])
             task_id = create_task(
                 contact["id"] if contact else None,
-                it["item"][:250],
+                task_subject(it),
                 f"[Call Agent] From inbound call {call_date_pt} ({contact_label or fmt_phone(number)} · {fmt_phone(number)}).\n\n"
                 f"{handoff_block}{summary['summary']}",
                 oid, due,
                 priority="HIGH" if is_negative else "MEDIUM",
             )
-            tasks_created.append((it["item"], oid, task_id))
-            log.info(f"  call {cid}: Task {task_id} created (owner {oid})")
+            tasks_created.append((it["item"], oid, it["route"], task_id))
+            log.info(f"  call {cid}: Task {task_id} created (owner {oid}, "
+                     f"route {it['route']})")
 
         if is_negative:
             ticket_id = create_checkin_ticket(
@@ -1723,7 +1865,7 @@ def process_call(call, cfg, dry_run, now_utc):
         "summary": summary,
         "record_applied": [(f, o, n) for f, o, n in applied],
         "record_skipped": [(f, c, p, r) for f, c, p, r in skipped_updates],
-        "tasks_created": [(item, oid) for item, oid, _ in tasks_created],
+        "tasks_created": [(item, oid, route) for item, oid, route, _ in tasks_created],
         "ticket_id": ticket_id,
         "coached": coached,
         "direction": call_direction(call),

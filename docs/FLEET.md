@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**43 registered agents** — 30 active · 10 manual · 3 deprecated · across 11 engines.
+**45 registered agents** — 31 active · 11 manual · 3 deprecated · across 11 engines.
 
 ## What this is
 
@@ -38,13 +38,13 @@ outranks those two. HubSpot is where humans act.
 |---|---|---|
 | B2B blogs | 6 | 3 |
 | B2C spotlights | 5 | 2 |
-| Email / inbox ops | 9 | 9 |
+| Email / inbox ops | 10 | 10 |
 | Data sync | 3 | 3 |
-| Call agent | 2 | 2 |
+| Call agent | 1 | 1 |
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
 | Fleet health | 6 | 5 |
-| Charter analysis | 5 | 0 |
+| Charter analysis | 7 | 1 |
 | Events | 1 | 1 |
 | Tutor issues | 1 | 1 |
 
@@ -52,11 +52,11 @@ outranks those two. HubSpot is where humans act.
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (17):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
+**Writes to live systems on its own (18):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `teacher-sequence-enroll`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
-**Reports, drafts, or waits for a human (13):** `topic-gen`, `blog-metrics`, `call-agent-webhook-relay`, `feedback-agent`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
+**Reports, drafts, or waits for a human (13):** `topic-gen`, `blog-metrics`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
-**Manual dispatch only (10):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
+**Manual dispatch only (11):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `bulk-messenger`.
 
 Note: *writes to live systems* includes agents whose only write is a **draft** (blog drafts, draft replies) — the agent creates the object, a human still ships it. `ARCHITECTURE.md` draws that finer line.
 
@@ -98,7 +98,9 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **email-sla-sweep**<br>SLA sweep | hourly | active | HubSpot:tickets | Slack, HubSpot:tickets |
 | **email-triage**<br>Inbox triage | every 15 min during business hours + hourly | active | HubSpot:conversations, HubSpot:contacts, Teachworks | HubSpot:tickets, HubSpot:conversations(comment), Slack |
 | **email-weekly-digest**<br>Weekly digest | Mon 8 AM PT | active | HubSpot:tickets, email/state/audit_log.jsonl | Slack |
+| **task-completion-sweep**<br>Task-completion sweep (team HubSpot tasks) | weekdays 8 AM PT | active | HubSpot:tasks, email/state/audit_log.jsonl | Slack, email/state/audit_log.jsonl |
 
+- **task-completion-sweep** — First agent to READ HubSpot Tasks back (two agents create them; nothing checked completion)
 - **email-po-inbox** — Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
 - **email-deal-sync** — Invoice sweep (daily 9 AM PT inside this workflow): active charter PO deals — attended TW hours >= PO hours → prompt Kath to submit to the school's ops system now, else prompt at end of PO month (lessons_fulfilled_date)
 - **email-po-daily-report** — Read-only + one DM
@@ -120,11 +122,9 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
-| **call-agent**<br>Call agent — webhook-triggered polls + daily digest (~5:30 PM PT) | 17:30 PDT / 16:30 PST daily — digest flush + backstop sweep | active | JustCall, HubSpot:contacts, ops/call_agent/state/state.json | HubSpot:calls, HubSpot:contacts, HubSpot:tasks, HubSpot:notes, HubSpot:tickets, Slack, ops/call_agent/state/state.json |
-| **call-agent-webhook-relay**<br>Call agent webhook relay | event<br>*cloudflare-worker* | active | — | GitHub Actions API: workflow_dispatch on call-agent.yml (dry_run=false, no_digest=true) |
+| **call-agent**<br>Call agent — daily digest (~5:30 PM PT) | 17:30 PDT / 16:30 PST daily | active | JustCall, HubSpot:contacts, ops/call_agent/state/state.json | HubSpot:calls, HubSpot:contacts, HubSpot:tasks, HubSpot:notes, HubSpot:tickets, Slack, ops/call_agent/state/state.json |
 
 - **call-agent** — Claude summarization + record-update proposal (claude-opus-4-7, structured outputs)
-- **call-agent-webhook-relay** — Deterministic dispatch relay — no call content is read (the webhook body is not even parsed) and no reasoning happens here, so no CARE pointer
 
 ### Messenger
 
@@ -170,13 +170,17 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
+| **teacher-sequence-enroll**<br>Teacher outreach 26/27 daily sequence enroller | schedule | active | ops/messenger/teacher-sequences.yml, HubSpot:lists 3210 / 3214 / 3211, HubSpot:contacts | HubSpot:sequence enrollments — POST /automation/v4/sequences/enrollments as Danielle, ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json, Slack DM: batch summary to Danielle |
 | **charter-gap-analysis**<br>Charter gap analysis (manual report) | manual | manual | HubSpot:deals, HubSpot:contacts, Teachworks | GitHub: run artifact charter_gap_analysis.xlsx (7-day retention), HubSpot:contacts — ONLY with write_props=true: last_tutor_name + student_first_name onto list-3104 contacts, UPDATE-only import |
+| **teacher-outreach-2026-09**<br>Teacher outreach 26/27 (lists, drafts, workflows, roster) | manual<br>*local* | manual | HubSpot:contacts, HubSpot:deals | HubSpot:lists 3210-3215 — static audience lists, HubSpot:marketing emails 221134168440/845/849, HubSpot:workflows 1878517306 |
 | **tw-invoice-backfill**<br>TW invoice-submitted backfill (verified) | manual | manual | HubSpot:deals, Teachworks:invoices | HubSpot:deals — ONLY with apply=true: invoice_submitted_date + Invoice Submitted stage, on TW-verified deals |
 | **tw-invoice-status**<br>TW invoice status by list (read-only) | manual | manual | HubSpot:contacts, Teachworks:invoices (with payment status) | — |
 | **tw-invoice-xref**<br>TW invoice cross-reference (read-only) | manual | manual | HubSpot:deals, Teachworks:invoices | — |
 | **tw-tutor-active-check**<br>TW tutor active check (charter gap) | manual | manual | HubSpot:contacts — [Agent] Last Tutor Name on the gap contacts, Teachworks:employees | HubSpot:contacts — ONLY with write_props=true: [Agent] Last Tutor Active |
 
 - **charter-gap-analysis** — Read-only by default
+- **teacher-outreach-2026-09** — Roman "Go" 2026-09-04
+- **teacher-sequence-enroll** — Built 2026-09-04 (Danielle: "I love that idea")
 - **tw-tutor-active-check** — Guards the campaign's personalization tokens — never promise a family a tutor who has left
 - **tw-invoice-xref** — Recent PO deals <-> Teachworks invoices
 - **tw-invoice-backfill** — One-off, written to clear the 2026-08-07..09 invoice-sweep backlog

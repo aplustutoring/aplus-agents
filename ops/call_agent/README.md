@@ -21,6 +21,15 @@ call's native AI transcript, and turns each call into CRM actions:
   spoke with this caller" + a Claude-written handoff brief: what was
   promised, pricing quoted, names, timing, suggested opener). Other
   answerers: `owner_hint` routes, default Paola.
+- **Scheduling vs. follow-up routing** (Paola 2026-09-01) — Claude tags every
+  action item `scheduling` or `follow_up`. Trial/session logistics (confirm a
+  trial, text a family about day/time, send a tutor profile, call back about a
+  booked session) are the scheduling team's work: those tasks get a
+  `[Scheduling] ` subject prefix and, once `hubspot.scheduling_task_owner` is
+  set, are assigned to that queue instead of to Paola.
+- **Name corrections propagate** — when a call corrects a student's or
+  parent's name, the corrected name is used in every task, note and handoff
+  brief; a post-generation sweep swaps any the model missed.
 - **Missed-call alerts (conversion guard)** — inbound missed/abandoned/
   voicemail calls on ANY account line fire an immediate Slack alert + a
   same-day HIGH call-back task on the next poll. Metadata only (caller,
@@ -240,7 +249,11 @@ webhook-relay runs use this; the next digest-posting run flushes them).
    block — "Roman spoke with this caller" plus the summary's `handoff_note`
    (promises made, pricing quoted, names, timing, suggested opener). Calls
    answered by others: owner from `owner_hint` via `config.yml →
-   hubspot.owners`, default Paola. Negative
+   hubspot.owners`, default Paola. Items Claude routed to `scheduling` are
+   subject-prefixed `[Scheduling] ` and go to `hubspot.scheduling_task_owner`
+   when it names an owner (that beats the Roman handoff rule — scheduling work
+   is not follow-up); with it empty they still land on Paola, prefixed, and
+   the digest header counts them. Negative
    sentiment or complaint intent → HIGH ticket (Support Pipeline → "Working
    on it", source PHONE, owner Roman) + companion check-in task due in 2
    business days + immediate alert to `slack.alert_channel`.

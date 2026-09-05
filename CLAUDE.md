@@ -40,6 +40,20 @@ The skills in `marketing/skills/` are the reasoning layer for the content
 engines (they are loaded by `SkillsRunner`, not by the .py entrypoints), so they
 carry the pointer too.
 
+## Investigation rule (mandatory — locked by Roman 2026-08-31)
+Never close an investigation by moving on. Every incident ends with one of:
+(a) a system change (code/config/process/doc) that makes the failure class
+impossible, or (b) an explicit written line: "no system fix exists because X."
+A plausible story + a human workaround ("forward it to us", "check the portal",
+"do it manually") is NOT a resolution — first exhaust "what would the agent
+need so no human ever does this again?" When evidence conflicts with your
+story (a teammate says the email arrived; the log says it didn't), the story
+is wrong somewhere — keep pulling until the contradiction resolves.
+(Why: on 2026-08-28 Lia Beck's PO fell behind the Gmail cursor; the
+investigation verified everything EXCEPT the query, declared "never arrived,"
+handed Kath homework, and the email sat unread 3 more days. Roman: "never
+push to move on, always ask, can this make us better.")
+
 ## Key context for any session
 - HubSpot property registry: `ops/hubspot-schema/properties.yml` is the source of truth,
   synced to portal 6312752 by `create_properties.py` (additive only). Declare new

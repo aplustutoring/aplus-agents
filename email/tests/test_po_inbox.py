@@ -2246,3 +2246,96 @@ def test_prior_deal_lookup_requires_last_name(monkeypatch):
                         lambda f, l=None: [_deal("D1", "Luis Ramirez - Mateo")])
     assert po._find_parent_via_deals({"student_first": "Mateo",
                                       "student_last": ""}) is None
+
+
+def test_gmail_query_overlaps_behind_cursor():
+    # the Lia Beck miss (2026-08-28): a message landing behind the cursor was
+    # invisible to `after:` forever — the poll must query an overlap window
+    # before the cursor; already-processed dedupe absorbs the re-listed mail
+    assert po._inbox_query(1787953324, {"cursor_overlap_seconds": 3600}) \
+        == "in:inbox after:1787949724"
+    assert po._inbox_query(1787953324, {}) == "in:inbox after:1787949724"  # default 3600
+    assert po._inbox_query(100, {}) == "in:inbox after:0"                  # floor at 0
+
+
+# ── 2026-09-04 correctness set ──
+
+def test_date_range_po_due_date_uses_final_month(monkeypatch):
+    # IEM POs span months (Canales: 8/31-11/13); the invoice is due at the END
+    # of the range, not the first month (which stamped already-past due dates)
+    stamped = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D30"})
+    def patch_capture(m, path, body=None):
+        if m == "PATCH" and "/deals/D30" in path:
+            stamped.append(body["properties"])
+        return {"id": "X"}
+    monkeypatch.setattr(po.hs, "_write", patch_capture)
+    notes = []
+    po._invoice_task("D30", _po(po_month="2026-08", service_end_month="2026-11",
+                                amount="720"), notes)
+    assert any(p.get("lessons_fulfilled_date") == "2026-11-30" for p in stamped)
+
+
+def test_single_month_po_due_date_unchanged(monkeypatch):
+    stamped = []
+    def patch_capture(m, path, body=None):
+        if m == "PATCH" and "/deals/D31" in path:
+            stamped.append(body["properties"])
+        return {"id": "X"}
+    monkeypatch.setattr(po.hs, "_write", patch_capture)
+    po._invoice_task("D31", _po(po_month="2026-09", amount="300"), [])
+    assert any(p.get("lessons_fulfilled_date") == "2026-09-30" for p in stamped)
+
+
+def test_deal_description_carries_the_summary(monkeypatch):
+    captured = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, extra_props=None, **k:
+                        captured.append(extra_props) or {"id": "D1"})
+    po._handle_deal(_po(summary="Three POs for Kid, Sept-Nov, $60/session."), [])
+    assert captured[0]["description"].startswith("Three POs for Kid")
+
+
+def test_cancellation_closes_the_convert_task(monkeypatch):
+    closed = []
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [
+        {"id": "D9", "properties": {"dealname": "P - S - OG 1", "pipeline": "907748",
+                                    "dealstage": "907749", "amount": "90",
+                                    "hubspot_owner_id": ""}}])
+    monkeypatch.setattr(po.hs, "find_stop_stage", lambda pl, pats: ("13267787", "Stopped"))
+    monkeypatch.setattr(po.hs, "_write", lambda m, p, b=None: {"id": "X"})
+    monkeypatch.setattr(po.hs, "add_deal_note", lambda d, b, **k: {})
+    monkeypatch.setattr(po.hs, "create_task", lambda *a, **k: {})
+    monkeypatch.setattr(po.hs, "complete_invoice_tasks_for_po",
+                        lambda n: closed.append(n) or 1, raising=False)
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: {"ok": True})
+    notes = []
+    po._handle_cancellation({"is_cancellation": True, "po_number": "77", "summary": "s",
+                             "billable_stated": "0"}, notes)
+    assert closed == ["77"]
+    assert any("convert-to-invoice task" in n for n in notes)
+
+
+def test_synthesized_po_shows_school_number_in_invoice_task(monkeypatch):
+    tasks = []
+    monkeypatch.setattr(po.hs, "_write", lambda m, p, b=None: {"id": "X"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda s, b, o, due, priority=None: tasks.append(b) or {})
+    po._invoice_task("D40", _po(po_number="PF242530-LondynBrixey",
+                                po_month="2026-09", amount="300"), [])
+    assert tasks and "PF242530  <-- the SCHOOL'S PO number" in tasks[0]
+    assert "PF242530-LondynBrixey" in tasks[0]
+
+
+def test_normal_po_numbers_display_unchanged(monkeypatch):
+    tasks = []
+    monkeypatch.setattr(po.hs, "_write", lambda m, p, b=None: {"id": "X"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda s, b, o, due, priority=None: tasks.append(b) or {})
+    # Lake View's dashed-but-real number must NOT be split
+    po._invoice_task("D41", _po(po_number="105712-C029-LVC",
+                                po_month="2026-09", amount="60"), [])
+    assert "SCHOOL'S PO number" not in tasks[0]
+    assert "105712-C029-LVC" in tasks[0]

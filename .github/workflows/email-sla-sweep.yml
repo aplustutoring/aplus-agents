@@ -58,8 +58,19 @@ jobs:
           else
             git commit -m "email-sla-sweep: record escalations for $(date -u +%Y-%m-%dT%H:%M)"
             for attempt in 1 2 3; do
-              git pull --rebase --autostash origin main && git push && break
+              git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}" && git push && break
               echo "state push attempt $attempt rejected; retrying..."
               sleep $((attempt * 3))
             done
+            # Silent fall-through here LOST a run's audit records on 2026-08-31
+            # (the Lia Beck recovery) and the run still reported success.
+            # Now: verify, scream, and fail the job so the retry sweeper takes over.
+            if ! git push origin HEAD 2>/dev/null; then
+              echo "::error::state persist FAILED after 3 attempts — this run's audit records are being lost"
+              curl -s -X POST https://slack.com/api/chat.postMessage \
+                -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+                -H 'Content-type: application/json' \
+                -d "{\"channel\":\"C0BL05MCJ4B\",\"text\":\"🧨 ${GITHUB_WORKFLOW}: state persist FAILED after 3 attempts. This run's audit records are lost unless it reruns. ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" >/dev/null
+              exit 1
+            fi
           fi

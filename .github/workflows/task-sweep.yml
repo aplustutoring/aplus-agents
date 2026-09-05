@@ -1,0 +1,75 @@
+name: Fleet — task-completion sweep
+
+# Fleet convention: agents think in Pacific Time. Naive datetime.now()/
+# date.today() in the scripts resolve to PT, keeping human-facing labels and
+# date-window logic in sync. Crons remain UTC (see schedule comments).
+env:
+  TZ: America/Los_Angeles
+
+on:
+  schedule:
+    - cron: "0 15 * * 1-5"   # 8:00 AM PDT / 7:00 AM PST, Mon-Fri
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (log intended digest/DMs, write nothing)"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-email-state
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run task sweep
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python -m src.task_sweep
+
+      - name: Commit state changes
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/audit_log.jsonl
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "task-sweep: record task nags for $(date -u +%Y-%m-%dT%H:%M)"
+            for attempt in 1 2 3; do
+              git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}" && git push && break
+              echo "state push attempt $attempt rejected; retrying..."
+              sleep $((attempt * 3))
+            done
+            # Silent fall-through here LOST a run's audit records on 2026-08-31
+            # (the Lia Beck recovery) and the run still reported success.
+            # Now: verify, scream, and fail the job so the retry sweeper takes over.
+            if ! git push origin HEAD 2>/dev/null; then
+              echo "::error::state persist FAILED after 3 attempts — this run's audit records are being lost"
+              curl -s -X POST https://slack.com/api/chat.postMessage \
+                -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+                -H 'Content-type: application/json' \
+                -d "{\"channel\":\"C0BL05MCJ4B\",\"text\":\"🧨 ${GITHUB_WORKFLOW}: state persist FAILED after 3 attempts. This run's audit records are lost unless it reruns. ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" >/dev/null
+              exit 1
+            fi
+          fi
