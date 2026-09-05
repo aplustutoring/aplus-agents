@@ -379,6 +379,30 @@ agents:
       auto-created). monitored_numbers is a list for future lines — confirm
       recording disclosure before adding any.
 
+  - id: deal-sync-relay
+    runtime: cloudflare-worker
+    engine: Email ops
+    name: Deal-sync webhook relay
+    owner: roman@wetutorathome.com
+    status: pending-deploy   # active after Roman's one-time setup (ops/deal-relay/README.md)
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        HubSpot private-app webhooks (deal.creation; deal.propertyChange on
+        dealstage) -> POST /call-completed?delay=1. Coalesces bursts (a 4-PO
+        email = 4 deals seconds apart -> one run). Always-on HTTP. Replaces
+        cron as the PRIMARY deal-sync trigger (Roman 2026-09-04: no cron
+        unless necessary); the 15-min cron demotes to hourly backstop once a
+        real deal round-trips.
+    source: ops/deal-relay/worker.js
+    entrypoint: ops/deal-relay/worker.js
+    reads: []
+    writes:
+      - "GitHub Actions API: workflow_dispatch on email-deal-sync.yml (defaults)"
+    depends_on:
+      - email-deal-sync workflow
+
   - id: call-agent-webhook-relay
     runtime: cloudflare-worker
     engine: Call agent

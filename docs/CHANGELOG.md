@@ -8,6 +8,29 @@ Newest entries first.
 
 ---
 
+## 2026-09-04 — Event-driven jump: no cron unless necessary (Roman)
+
+**Principle (Decision Log pending):** agents don't poll on cron unless the
+work is inherently scheduled (digests, sweeps, reports). Events fire when the
+thing happens; cron demotes to backstop. Why: the week was one long cron tax
+(8.5-hr starvation 8/27; watchdog + heartbeat built to compensate; on SMS
+go-live day TWO families' texts sat hours behind a dead cron until manually
+dispatched).
+**Step 1:** PR #146 (call agent JustCall webhook relay) reviewed — bounded
+redispatch loop verified, dedupe-safe — rebased across 282 commits (kept
+both its cron removal AND the persist-failure alarm in call-agent.yml) and
+MERGED. Awaiting Roman's one-time deploy (its README).
+**Step 2 (this PR):** ops/deal-relay/ — the SAME reviewed worker, deployed
+as a second instance: HubSpot private-app webhook (deal.creation +
+dealstage change) -> coalesced workflow_dispatch on email-deal-sync.yml
+~1 min later. Family texts/emails go out minutes after the deal exists.
+Worker generalized: dispatch inputs now come from the DISPATCH_INPUTS var
+instead of call-agent literals. Registry entry status pending-deploy;
+Roman's setup in ops/deal-relay/README.md. The 15-min cron demotes to
+hourly ONLY after a real deal round-trips the relay.
+**Next:** Gmail push -> PO inbox (retires the launchd heartbeat properly).
+**Files:** ops/deal-relay/{worker.js,wrangler.toml,README.md}, registry.yml.
+
 ## 2026-08-28 — Call agent goes event-driven: JustCall webhook replaces the 15-min poll crons (#AP-pending)
 
 **What changed**
