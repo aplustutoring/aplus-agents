@@ -1,0 +1,24 @@
+name = "deal-sync-relay"
+main = "worker.js"
+compatibility_date = "2026-08-28"
+
+[vars]
+GITHUB_REPO = "aplustutoring/aplus-agents"
+WORKFLOW_FILE = "email-deal-sync.yml"
+# HubSpot fires the webhook the moment the deal exists — 1 minute is only to
+# coalesce bursts (a 4-PO email creates 4 deals seconds apart -> one run).
+DEFAULT_DELAY_MINUTES = "1"
+# email-deal-sync.yml's dispatch defaults are the live path — no inputs needed.
+DISPATCH_INPUTS = "{}"
+
+[[durable_objects.bindings]]
+name = "DISPATCHER"
+class_name = "Dispatcher"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Dispatcher"]
+
+# Secrets (set via CLI, never here):
+#   wrangler secret put GITHUB_TOKEN    # SAME fine-grained PAT as the call relay (Actions RW, this repo only)
+#   wrangler secret put WEBHOOK_TOKEN   # random string, appended to the HubSpot webhook target URL
