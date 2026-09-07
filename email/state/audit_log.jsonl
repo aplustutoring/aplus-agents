@@ -25379,3 +25379,10 @@
 {"ticket_id": "48259801405", "category": "recruitment", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-07T20:47:26.220699+00:00"}
 {"ticket_id": "48259801405", "category": "recruitment", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-07T20:47:26.810565+00:00"}
 {"ticket_id": "48256705953", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-07T20:47:27.379030+00:00"}
+{"ticket_id": "47979683222", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-07T23:40:34.974831+00:00"}
+{"ticket_id": "47979683222", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-07T23:40:35.192106+00:00"}
+{"ticket_id": "48218372743", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-07T23:41:09.012602+00:00"}
+{"ticket_id": "48297549942", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-07T23:41:13.050044+00:00"}
+{"ticket_id": "48299337902", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-07T23:41:13.453756+00:00"}
+{"ticket_id": "48348162586", "category": "cancellation", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-07T23:41:13.936672+00:00"}
+{"ticket_id": "48348162586", "category": "cancellation", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-07T23:41:14.119191+00:00"}
