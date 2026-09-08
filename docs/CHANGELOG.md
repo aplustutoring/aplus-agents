@@ -39,7 +39,22 @@ stamps, 0 opted out, 0 bad phones.
 filter must also scan conversation threads — done here with a thread scan
 (`associatedContactId` → INCOMING messages since 8/18) before the send; the
 same gap is why `campaign_replied` is unset on all 17 August repliers.
-**Not done / needs Roman:** the live send (`confirm=SEND`) — approval-first;
+**SENT 2026-09-08 ~1:40 PM PT (Roman: "instantly message those 13 people,
+lowest hanging fruit"):** 12 personal PO-push texts from Paola's line
+(818-573-6644) to the August yes-repliers who still had no 26/27 charter
+deal at send time (rechecked live): Elias, Solis, Simmons, Barber, Aguila,
+Carrillo, Moore, Villacin, Lizcano, Ballesteros, Richardson, Hurtado De La
+Cruz. Copy: "Glad {student} wants to keep going with {tutor}. We have not
+seen the PO from your school yet. Want me to send your teacher the hours so
+they can issue it? Reply YES and I will get it moving." (multi-kid variant:
+"{students} want to keep going with their tutors"; no STOP line, per Roman:
+a reply inside a live conversation about a service they asked for).
+Sporykhina held out (replied 9/2: no funds this semester). 12/12 accepted by
+JustCall; an [Agent] note with the exact text is on each contact. Sent via a
+session script calling the messenger's `jc_send_sms` because the bulk rail
+refuses <25 recipients by design; this is the shape the reply-chase agent
+will automate. Replies land on Paola's line.
+**Not done / needs Roman:** the 95-text win-back send (`confirm=SEND`) — approval-first;
 STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
 JustCall's native STOP handling until then.
 **Files:** ops/messenger/messenger.py, ops/messenger/config.yml,
