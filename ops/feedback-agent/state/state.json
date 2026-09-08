@@ -409,7 +409,7 @@
       "correction_path": "corrections/email-po-inbox/2026-08-28-po-received-no-hubspot-deal.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/140",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787954945643559"
     },
     {
@@ -489,7 +489,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 16
+    "clean_merges": 17
   },
   "pending_proposals": {
     "1786554388.265099": {
