@@ -7,6 +7,58 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
+
+**Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and
+asked what was causing them. One namespace, `PHOTOS`, was 100% of the account's
+KV usage; the other three were at exact zero. The cause was `eo-booth`, whose
+every-minute cron had been firing since the 2026-08-20 event: ~1,440 Worker
+invocations and ~2,750 KV list operations a day against a 1,000/day cap, on a
+queue that was empty the whole time (zero KV writes over the period). The
+Worker was also still `MODE = "send"`, so the four evening crons re-entered the
+send paths nightly; only the `eo_payload*_sent` stamps kept real texts and
+emails from going out again.
+
+**The part worth remembering:** this was not an unknown failure. `booth/eo`
+shipped with a post-event checklist naming this exact step, in bold, saying
+"Cloudflare crons have no date component... This is load-bearing, not hygiene."
+`wrangler.toml` line 6 declared a 2026-08-22 sunset. Both were correct and both
+were ignored for 19 days. Per the investigation rule, a better checklist is
+therefore not a fix — the sunset had to move somewhere the Worker reads.
+
+**Changed:**
+- `booth/eo/wrangler.toml` — `crons = []` (empty list, not a deleted block: an
+  empty list is what overwrites live triggers on deploy). Added `SUNSET` var.
+- `booth/eo/worker.js` — new `pastSunset(env)`; `scheduled()` returns
+  immediately past `SUNSET`. `fetch()` deliberately unguarded so `/photo/<key>`
+  keeps resolving for the links written onto HubSpot timelines. Fails **open**
+  on an unparseable date (a dead booth mid-event costs more than a late cron).
+  7/7 scenario tests pass.
+- `booth/README.md` — SUNSET is now mandatory for any booth Worker with crons.
+- Committed 19 days of event-night work that was never checked in (THANKS_TEXT
+  gated on demo consent, GRADUATE_PROMPT, the operational scripts). Gitignored
+  `.unbuilt-sent`, a runtime ledger of attendee emails.
+
+**Two blind spots this exposed, both worth carrying forward:**
+1. `grep -r` from the repo root silently does not descend into
+   `.claude/worktrees/`. Given the mandatory worktree rule, live production
+   code lives exactly where repo-wide searches do not reach. I twice reported
+   "no `.list()` calls anywhere" on that basis, and was twice wrong. Pass
+   explicit paths.
+2. `eo-booth` is a live production Worker whose source exists only on an
+   unmerged branch. Nothing on `main` knew it existed, so nothing on `main`
+   could report that it was still running and still billing.
+
+**Still open:** the deployed Worker's triggers are unchanged — both
+`wrangler triggers deploy` and the Cloudflare dashboard were blocked by the
+sandbox in this session, so Roman has to run the deploy. Until then the crons
+are still live. Budget alert on KV also still to be armed.
+
+**Files:** `booth/eo/wrangler.toml`, `booth/eo/worker.js`, `booth/eo/.gitignore`,
+`booth/README.md`, `docs/CHANGELOG.md`, plus the recovered `booth/eo/*.py`
+event scripts.
+
+---
 
 ## 2026-09-08 — Overdue invoice submissions nag daily and escalate
 
@@ -2223,6 +2275,78 @@ scripts are also still missing from the registry's `depends_on` for
 **Files:** `marketing/scripts/b2c/spotlight_orchestrator.py`,
 `marketing/scripts/b2c/reel/make_stills.py`,
 `marketing/scripts/b2c/reel/make_clips.py`.
+## 2026-08-20 — EO LA Valley booth agent ("Minion #23"), event-temp
+
+**Why:** Roman is running the "Build Your First AI Agent" workshop for EO LA
+Valley tonight (6:15–8:15 PM PT) and wanted the demo to be the demo: attendees
+take a photo at a booth, and twenty minutes later — mid-workshop — their phone
+buzzes with research on their own company, written by an agent nobody told them
+about. Everything attendee-facing signs as "Minion #23 🤖" and carries no A+
+branding, because the mystery is the point.
+
+**Built:** `booth/eo/` — a clone-and-extend of the Sage Oak booth stack
+(`booth/`) sharing its CSS, KV namespace, and Selphy/Resend/JustCall plumbing.
+New: a 4-field form (name, email, phone, company) plus a demo-consent checkbox;
+a `/capture` pipeline whose instant beat (print, email, photo MMS) is never
+blocked by the async beat (Claude company research with web search, Gemini hero
+image, Drive archive, clock check); two cron payloads at 6:17 PM and 8:00 PM PT;
+and an inbound-SMS webhook scoped to the booth line that logs Think-Big ideas to
+a Zapier→Sheets hook and handles STOP.
+
+**Three deliberate deviations from the build brief**, each of which would have
+failed silently at showtime:
+
+1. **Hero images use Gemini, not Higgsfield.** The brief asserted the
+   Higgsfield key "already exists in this stack — the case-study video agent
+   uses it." It does not, and the assertion is inverted: both places Higgsfield
+   appears in this repo name it as something the code deliberately avoids
+   (`build-case-study-comic.py:18`, `aplus-spotlight-reel/SKILL.md:12`) because
+   it is a connected app that will not run headless. Gemini is the proven image
+   path here, and the reference-image face-lock technique the comic engine uses
+   for character consistency transfers directly to preserving an attendee's face.
+2. **No printing at the booth at all.** The brief placed a "Selphy AirPrint job"
+   inside the Worker pipeline, which a cloud Worker cannot do — no LAN access.
+   The first cut moved it client-side to the iPad; Roman's call was to drop
+   booth printing entirely. It is a photo booth: the photo is delivered by
+   email and MMS with an EO frame, and prints come off the shared Drive folder
+   afterwards. This removes the only physical dependency in the whole build —
+   the one thing that could jam, run out of paper, or drop off the network with
+   a room watching. The card is still rendered at the Selphy-correct 2:3
+   1200x1800, so it stays print-ready. Because Drive is now the print source
+   rather than a nice-to-have archive, both image URLs are also written to the
+   contact's timeline and the images sit in KV with no TTL, so a failed Drive
+   hook is re-runnable rather than lost.
+3. **A demo-consent checkbox gates the SMS payloads.** Added at Roman's
+   direction after a compliance flag: a triple text to someone who handed over a
+   phone number at a photo booth, with one opt-out line among four messages, is
+   a bad look in a room of business owners regardless of intent. `eo_demo_consent`
+   now gates the Payload #1 triple text and the Payload #2 MMS; photos and all
+   email still go to everyone, so declining costs the attendee nothing.
+
+**Cron math (the brief asked for it to be verified):** PT is UTC-7 in August, so
+6:17 PM PT Aug 20 = 01:17 UTC Aug 21 (`17 1 * * *`) and 8:00 PM PT = 03:00 UTC
+Aug 21 (`0 3 * * *`). Both strings in the brief were already correct. The real
+hazard is that Cloudflare crons carry no date component — these re-fire every
+day until deleted, which makes the post-event cleanup load-bearing rather than
+hygiene.
+
+**Schema:** six event-temp `eo_*` contact properties in the `events` group
+(`eo_company_name`, `eo_research_brief`, `eo_hero_image_url`, `eo_payload1_sent`,
+`eo_payload2_sent`, `eo_demo_consent`) plus an `eo_lav_agents_2026` option on
+`aplus_event_tag`. All carry the `[Agent] ` label prefix and the
+"AGENT PROPERTY — written by ..." description per the 2026-08-14 labeling rule,
+and all are marked for archival on 2026-08-22. Deliberately NOT in `KEEPERS.md`.
+
+**Still open at time of writing:** the two Claude system prompts are drafts —
+Deliverable ③ was referenced by the brief but never supplied, and those two
+pieces of copy are what make the reveal land. The booth number (818) 573-6258
+also needs confirming as MMS-verified in JustCall; it is not the main A+ line.
+
+**Files:** `booth/eo/{index.html,worker.js,wrangler.toml,README.md}`,
+`ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/FLEET.md`
+(regenerated), `docs/CHANGELOG.md`.
+
+**Sunset 2026-08-22** — post-event checklist lives in `booth/eo/README.md`.
 
 ---
 ## 2026-08-20 — Spotlight Orchestrator: a missing reel is no longer a silent miss

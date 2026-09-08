@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**47 registered agents** — 32 active · 11 manual · 3 deprecated · across 12 engines.
+**48 registered agents** — 33 active · 11 manual · 3 deprecated · across 12 engines.
 
 ## What this is
 
@@ -45,7 +45,7 @@ outranks those two. HubSpot is where humans act.
 | Feedback agent | 3 | 3 |
 | Fleet health | 6 | 5 |
 | Charter analysis | 7 | 1 |
-| Events | 1 | 1 |
+| Events | 2 | 2 |
 | Email ops | 1 | 0 |
 | Tutor issues | 1 | 1 |
 
@@ -53,7 +53,7 @@ outranks those two. HubSpot is where humans act.
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (18):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `teacher-sequence-enroll`, `sage-oak-booth`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
+**Writes to live systems on its own (19):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
 **Reports, drafts, or waits for a human (15):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
@@ -192,9 +192,11 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
+| **eo-booth-agent**<br>EO LA Valley "Minion | event<br>*cloudflare-worker* | active | HubSpot:contacts, Cloudflare KV, Anthropic API, Google Gemini API | HubSpot:contacts, Resend, JustCall, Cloudflare KV, Zapier catch-hook -> Google Sheet "EO Agent Ideas — Aug 20", Google Drive, HubSpot:notes |
 | **sage-oak-booth**<br>Sage Oak BTSC 2026 photo booth | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create), Cloudflare KV (PHOTOS binding — serves GET /photo/<key>) | HubSpot:contacts, HubSpot:contacts persona stamp, CREATE-ONLY, HubSpot:emails, HubSpot:notes, Resend, JustCall, Cloudflare KV |
 
 - **sage-oak-booth** — HAND-DEPLOYED, two pieces: `npx wrangler deploy` for the Worker and `npx wrangler pages deploy` for the front-end
+- **eo-booth-agent** — EVENT-TEMP, one night only: EO LA Valley "Build Your First AI Agent", 2026-08-20
 
 ### Email ops
 
