@@ -484,12 +484,12 @@
       "correction_path": "corrections/content-build/2026-09-02-content-build-publish-error.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/158",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788370176851429"
     }
   ],
   "graduation": {
-    "clean_merges": 18
+    "clean_merges": 19
   },
   "pending_proposals": {
     "1786554388.265099": {
