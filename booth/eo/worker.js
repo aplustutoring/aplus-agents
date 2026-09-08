@@ -284,6 +284,25 @@ const cors = (env) => ({
   "Access-Control-Allow-Headers": "Content-Type",
 });
 
+// True once the declared sunset has passed. A date-only "YYYY-MM-DD" means
+// the end of that day UTC, so SUNSET is the last day the Worker acts.
+//
+// Fails OPEN on purpose. An unparseable SUNSET keeps the Worker running and
+// shouts in the log, because the expensive mistake here is not a cron that
+// overstays by a day — it is a booth that silently does nothing while the
+// room is full because someone typo'd a date. Unset SUNSET = never expires,
+// so a permanent Worker can copy this pattern unchanged.
+function pastSunset(env) {
+  const raw = (env.SUNSET || "").trim();
+  if (!raw) return false;
+  const t = Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(raw) ? `${raw}T23:59:59Z` : raw);
+  if (!Number.isFinite(t)) {
+    log(env, { at: "pastSunset", warn: "SUNSET is set but unparseable, ignoring it", raw });
+    return false;
+  }
+  return Date.now() > t;
+}
+
 export default {
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
@@ -501,6 +520,24 @@ export default {
 
   // Cron A and cron B share this handler; event.cron says which fired.
   async scheduled(event, env, ctx) {
+    // EVENT-TEMP sunset, enforced here rather than by remembering to delete
+    // the triggers. Cloudflare crons carry no date, so a booth Worker fires
+    // forever until a human removes them. The post-event checklist for this
+    // very Worker already said to delete them and already said it was
+    // "load-bearing, not hygiene" — and they still ran for 19 days after the
+    // event, ~1,440 invocations and ~2,750 KV list operations a day against a
+    // 1,000/day cap, on a queue that was empty, until Cloudflare's limit
+    // emails surfaced it. A checklist that was already correct did not work,
+    // so correctness cannot depend on anyone reading it.
+    //
+    // Past SUNSET this handler does nothing, whatever triggers remain
+    // attached. `fetch` is deliberately NOT guarded: /photo/<key> has to keep
+    // serving or every photo link on a HubSpot timeline breaks.
+    if (pastSunset(env)) {
+      log(env, { at: "scheduled", skipped: "past SUNSET",
+                 sunset: env.SUNSET, cron: event.cron });
+      return;
+    }
     if (event.cron === "* * * * *") {
       ctx.waitUntil(runQueue(env, WORKER_ORIGIN));
     } else if (event.cron === "17 1 * * *") {

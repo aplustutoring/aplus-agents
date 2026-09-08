@@ -7,6 +7,58 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
+
+**Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and
+asked what was causing them. One namespace, `PHOTOS`, was 100% of the account's
+KV usage; the other three were at exact zero. The cause was `eo-booth`, whose
+every-minute cron had been firing since the 2026-08-20 event: ~1,440 Worker
+invocations and ~2,750 KV list operations a day against a 1,000/day cap, on a
+queue that was empty the whole time (zero KV writes over the period). The
+Worker was also still `MODE = "send"`, so the four evening crons re-entered the
+send paths nightly; only the `eo_payload*_sent` stamps kept real texts and
+emails from going out again.
+
+**The part worth remembering:** this was not an unknown failure. `booth/eo`
+shipped with a post-event checklist naming this exact step, in bold, saying
+"Cloudflare crons have no date component... This is load-bearing, not hygiene."
+`wrangler.toml` line 6 declared a 2026-08-22 sunset. Both were correct and both
+were ignored for 19 days. Per the investigation rule, a better checklist is
+therefore not a fix — the sunset had to move somewhere the Worker reads.
+
+**Changed:**
+- `booth/eo/wrangler.toml` — `crons = []` (empty list, not a deleted block: an
+  empty list is what overwrites live triggers on deploy). Added `SUNSET` var.
+- `booth/eo/worker.js` — new `pastSunset(env)`; `scheduled()` returns
+  immediately past `SUNSET`. `fetch()` deliberately unguarded so `/photo/<key>`
+  keeps resolving for the links written onto HubSpot timelines. Fails **open**
+  on an unparseable date (a dead booth mid-event costs more than a late cron).
+  7/7 scenario tests pass.
+- `booth/README.md` — SUNSET is now mandatory for any booth Worker with crons.
+- Committed 19 days of event-night work that was never checked in (THANKS_TEXT
+  gated on demo consent, GRADUATE_PROMPT, the operational scripts). Gitignored
+  `.unbuilt-sent`, a runtime ledger of attendee emails.
+
+**Two blind spots this exposed, both worth carrying forward:**
+1. `grep -r` from the repo root silently does not descend into
+   `.claude/worktrees/`. Given the mandatory worktree rule, live production
+   code lives exactly where repo-wide searches do not reach. I twice reported
+   "no `.list()` calls anywhere" on that basis, and was twice wrong. Pass
+   explicit paths.
+2. `eo-booth` is a live production Worker whose source exists only on an
+   unmerged branch. Nothing on `main` knew it existed, so nothing on `main`
+   could report that it was still running and still billing.
+
+**Still open:** the deployed Worker's triggers are unchanged — both
+`wrangler triggers deploy` and the Cloudflare dashboard were blocked by the
+sandbox in this session, so Roman has to run the deploy. Until then the crons
+are still live. Budget alert on KV also still to be armed.
+
+**Files:** `booth/eo/wrangler.toml`, `booth/eo/worker.js`, `booth/eo/.gitignore`,
+`booth/README.md`, `docs/CHANGELOG.md`, plus the recovered `booth/eo/*.py`
+event scripts.
+
+---
 ## 2026-08-20 — EO LA Valley booth agent ("Minion #23"), event-temp
 
 **Why:** Roman is running the "Build Your First AI Agent" workshop for EO LA

@@ -9,6 +9,13 @@ compatibility_date = "2026-08-20"
 # 2026-08-20 15:30 PT — real texts and emails go out from here.
 MODE = "send"
 
+# Hard stop for the scheduled handler, enforced in code (see pastSunset in
+# worker.js). Line 6 above declared this same date as a comment on 2026-08-20
+# and the crons still ran until 2026-09-08, so the date now lives somewhere
+# the Worker actually reads. Past this day every cron tick is a no-op; the
+# public /photo/<key> route keeps serving so timeline links survive.
+SUNSET = "2026-08-22"
+
 # Sender domain must be verified in Resend. wetutorathome.com is verified,
 # but the display name must NOT read as A+ — the mystery is the demo.
 RESEND_FROM = "Minion #23 <minion23@wetutorathome.com>"
