@@ -19,10 +19,13 @@ on:
       sms_template:
         description: "Template path under ops/messenger/ (sms channel)"
         default: "templates/charter_win_back.txt"
+      sms_template_multi:
+        description: "Optional template for multi-student families (student_count > 1)"
+        default: ""
       sms_from:
-        description: "From number"
+        description: "From number (support = the line schedulers answer; use for family rounds)"
         type: choice
-        options: [sales, conference]
+        options: [sales, conference, support]
         default: sales
       email_template_id:
         description: "HubSpot marketing email id to clone (email channel)"
@@ -58,6 +61,7 @@ jobs:
           --list-id "${{ inputs.list_id }}"
           --channel "${{ inputs.channel }}"
           --sms-template "${{ inputs.sms_template }}"
+          --sms-template-multi "${{ inputs.sms_template_multi }}"
           --sms-from "${{ inputs.sms_from }}"
           --email-template-id "${{ inputs.email_template_id }}"
           ${{ !inputs.dry_run && '--live' || '' }}

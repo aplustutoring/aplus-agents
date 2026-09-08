@@ -7,6 +7,42 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-08 — Charter SMS round 2: opened-but-silent families (Roman: "try the Charter SMS first")
+
+**What:** First live use of the bulk messenger's SMS rail. Audience = charter
+gap families (list 3104) with NO 26/27 charter deal who OPENED a win-back email
+(per-recipient HubSpot email events, bot opens excluded) and never replied:
+117 → static list 3237 "Charter 26/27 SMS Round 2 - Opened, no reply (Sep
+2026)". Buckets of the 402 unconverted: opened-silent 117, delivered-never-
+opened 198, never-sent 57, unsubscribed 12, replied 16, bounced 2 (audience
+CSV in the session scratchpad; the never-sent 57 and never-opened 198 are the
+next rounds, not this one). Engine changes: (1) `MERGE_PROPS` now carries
+`student_names` + `student_count`; (2) new `--sms-template-multi` (workflow
+input `sms_template_multi`) renders multi-student families from a second
+template, since the single-student tutor token undersold 81/389 families in
+August; (3) new from-number `support` = 818-869-1627 (the line schedulers
+answer and new-PO family texts already come from) so a "YES" reply lands with
+a human — the `sales` line is outbound-to-leads. Templates:
+`templates/charter_r2_opened_single.txt` (tutor + student named) and
+`templates/charter_r2_opened_multi.txt` ({{student_names}} + "their tutors"),
+signed Paola (charter_sales seat = families), no em dashes, PO language per
+the 2026-09-02 rule (school issues the PO; we send the teacher the hours),
+STOP line, 2 GSM segments. Dry run (read-only replica of the engine's skip
+logic): 108 sendable (84 single, 24 multi), 9 skipped for missing tutor/student
+stamps, 0 opted out, 0 bad phones.
+**Found on the way:** inbox replies do NOT stamp `hs_email_last_reply_date`
+(Sporykhin replied 8/31 via the inbox, property still empty), so any "replied"
+filter must also scan conversation threads — done here with a thread scan
+(`associatedContactId` → INCOMING messages since 8/18) before the send; the
+same gap is why `campaign_replied` is unset on all 17 August repliers.
+**Not done / needs Roman:** the live send (`confirm=SEND`) — approval-first;
+STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
+JustCall's native STOP handling until then.
+**Files:** ops/messenger/messenger.py, ops/messenger/config.yml,
+.github/workflows/messenger.yml, ops/messenger/README.md,
+ops/messenger/templates/charter_r2_opened_{single,multi}.txt.
+
+---
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
 
 **Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and

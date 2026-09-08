@@ -9,6 +9,11 @@ sms:
   numbers:
     sales: "+18185736644"
     conference: "+18188506284"
+    # Support line: the number schedulers answer and the new-PO family texts
+    # already come from (email/config.yaml sms.justcall_number). Family
+    # win-back replies ("YES") need a human on the other end, so family
+    # rounds go from here (charter SMS round 2, 2026-09).
+    support: "+18188691627"
   timezone: America/Los_Angeles
   # Live SMS only between these hours (24h, PT) — TCPA-safe window.
   send_window_start: 9
