@@ -7,6 +7,42 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-08 (evening) — Enroller: a failure count is not a record
+
+**Why:** Day one of the teacher outreach enroller. Wave 1 enrolled 50/50, Wave 2
+enrolled 46/50. The log for the four failures read `FAILED 4:` and then named
+three of them. `scripts/teacher_sequence_enroll.py` printed `fail[:3]`, so the
+fourth teacher existed only as a number, in both the run log and the Slack
+digest. Nobody could act on a person they cannot name.
+
+**Also:** the sender fallback `success@wetutorathome.com` could never work.
+HubSpot rejected it on every single attempt with "User 46811240 for Portal
+6312752 has no connected inboxes for specified user email" — it is not a
+connected inbox of Danielle's user, which is what the sequences API requires.
+It cost two API calls per failing contact, and it replaced the real HubSpot
+error with the generic "no sender candidate accepted". That is precisely why
+day one's dead recipient addresses were first read as a sender fault.
+
+**Changed:**
+- `scripts/teacher_sequence_enroll.py` — print every failure with its address
+  and reason, never a truncated list; carry the last real HubSpot error into
+  the returned detail instead of discarding it.
+- `ops/messenger/teacher-sequences.yml` — removed the `success@` candidate,
+  with the reason recorded inline. A danielle@ failure should now be loud
+  rather than masked by a second attempt that cannot succeed. If a real
+  fallback is wanted, connect that inbox to Danielle's HubSpot user first.
+
+**A correction on the same investigation:** I first reported that the enroller
+was mishandling bounced recipients as sender faults and needed fixing. It does
+not. That handling landed in #187 at 10:42 PT; the run I read was 10:38 PT, four
+minutes earlier. I read a stale log and did not check the timestamp against the
+merge. The same failure shape as the rest of the day: the evidence was fine, my
+reading of when it was taken was not.
+
+**Files:** `scripts/teacher_sequence_enroll.py`,
+`ops/messenger/teacher-sequences.yml`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
 
 **Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and

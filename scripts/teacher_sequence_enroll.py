@@ -190,8 +190,10 @@ def main():
         """Try the confirmed sender first, then the other candidates.
         Returns (ok, sender, detail). Contact-level rejections come back as
         ok=False with detail starting 'contact:' and are recorded permanently."""
+        last_error = "none attempted"
         for sender in candidates:
             code, body = enroll(seq_id, cid, sender, user_id)
+            last_error = f"{sender} -> {code} {body[:160]}"
             if code in (200, 201):
                 if state.get("sender_email_confirmed") != sender:
                     state["sender_email_confirmed"] = sender
@@ -205,7 +207,10 @@ def main():
                 print(f"  sender {sender} rejected ({code}): {body[:140]}")
                 continue
             return False, sender, f"{code} {body}"
-        return False, None, "no sender candidate accepted"
+        # Carry the last real HubSpot error out. "no sender candidate accepted"
+        # on its own throws away the only thing that says WHY, which is how a
+        # dead-recipient problem got read as a sender problem on day one.
+        return False, None, f"no sender candidate accepted; last error: {last_error}"
 
     # ── sender validation mode ──
     if args.test_contact:
@@ -279,7 +284,12 @@ def main():
                 fail.append((p.get("email"), detail))
             time.sleep(0.4)
         if live:
-            print(f"  enrolled {ok_n}/{len(batch)}" + (f"; FAILED {len(fail)}: {fail[:3]}" if fail else ""))
+            # Every failure, not fail[:3]. On 2026-09-08 the log read "FAILED 4"
+            # and named three; the fourth teacher existed only as a number, in
+            # both the run log and the Slack digest. A count is not a record.
+            print(f"  enrolled {ok_n}/{len(batch)}" + (f"; FAILED {len(fail)}" if fail else ""))
+            for email, detail in fail:
+                print(f"    FAILED {email}: {detail}")
         summary.append((seq["name"], len(batch), ok_n, len(fail), remaining, by_school))
 
     if not live:
