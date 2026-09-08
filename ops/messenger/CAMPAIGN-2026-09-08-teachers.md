@@ -95,7 +95,7 @@ validated on test contact 246529425986) exactly as a manual enrollment would:
 |---|---|---|---|
 | 1 Compass + Elite | 3215 | 1878517306 (OFF) | 221134168440 → +4d → 221140381845 → +6d → 221140381849 |
 | IEM | 3213 | 1878501648 (OFF) | 221134168444 → +4d → 221140381853 → +6d → 221140381856 |
-| 2+ (remaining stranger schools) | new sub-list per group | clone of 1878517306 | same three emails, retargeted |
+| 2 (remaining stranger schools, 21 schools, 182 teachers; built 9/8 by `scripts/teacher_outreach_wave2.py`) | 3230 | 1880717164 (OFF) | same three stranger-school emails |
 
 Send-day checklist (Roman, portal):
 1. Open each draft, read once, click Publish (marketing-email publish scope is
