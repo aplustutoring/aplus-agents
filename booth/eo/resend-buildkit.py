@@ -20,6 +20,9 @@ WORKER = "https://eo-booth.nameless-mountain-bafa.workers.dev"
 KEY = "m23diag"
 H = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"}
 
+# Which email to (re)send: buildkit | graduate | photo
+WHICH = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--which=")), "buildkit")
+
 
 def attendees():
     body = {
@@ -51,7 +54,7 @@ if "--go" not in sys.argv:
 
 ok = fail = 0
 for n, e in people:
-    q = urllib.parse.urlencode({"key": KEY, "which": "buildkit", "to": e})
+    q = urllib.parse.urlencode({"key": KEY, "which": WHICH, "to": e})
     try:
         # Browser UA: Cloudflare bot-filters urllib's default user-agent and
         # returns a bare 403 that looks exactly like a failed auth check.

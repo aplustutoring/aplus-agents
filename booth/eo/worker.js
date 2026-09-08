@@ -89,6 +89,13 @@ const PAYLOAD2_TEXT_NO_HERO =
 
 const IDEA_AUTOREPLY = "Logged. Roman sees everything. Build it well tonight. — M23";
 
+// Closing thank-you. Goes ONLY to attendees who ticked demo consent — the
+// seven who declined agreed to nothing beyond their own photo, and an
+// after-party text is outside what they said yes to. STOP still wins.
+const THANKS_TEXT =
+  "Thanks for coming tonight. You walked in with a phone and left having " +
+  "hired something. That's a good evening's work. — Minion #23 🤖";
+
 // The booth line, written out for attendee-facing copy. Roman moved the
 // booth to 6293; the original brief said 6258. One constant so the number
 // can never drift between the SMS sender and the text of an email.
@@ -158,6 +165,65 @@ pushing to the original repo instead of your fork — check
 'git remote -v', and push to the remote pointing at YOUR
 username. Do not modify any other file. Report the PR link
 when done.`;
+
+// Paste-into-Claude-Code prompt that takes an attendee's fork and makes it
+// independent: their keys, their schedule, their sender, no dependency on
+// aplustutoring/eo-cohort-agents.
+//
+// Step 2 is the one that actually matters. runner/run_agents.py loops over
+// EVERY file in agents/ and emails each owner, so a fork left as-is emails
+// the entire cohort every morning. That has to happen before anything is
+// scheduled.
+//
+// Written as instructions to an agent, not to a person: it says what to do,
+// what to ask for, and what not to do with the secrets.
+const GRADUATE_PROMPT = `I was at the EO LA Valley "Build Your First AI Agent"
+workshop tonight. I have a fork of aplustutoring/eo-cohort-agents with my own
+agent in it. Make it fully mine, so it runs on my own account with no
+dependency on the original repo.
+
+Work through these in order. Stop and ask me whenever you need a value from
+me, and explain anything that fails in plain English rather than pasting raw
+errors at me.
+
+1. Find my fork. Run: gh repo list --fork
+   Confirm with me which one it is, clone it if it is not already local,
+   and cd into it.
+
+2. List every file in agents/. Ask me which one is mine, then DELETE ALL
+   THE OTHERS and commit that.
+   This step is not optional: the runner emails the owner of every agent
+   file it finds, so if I leave the others in, I will email the entire
+   workshop every single morning.
+
+3. Enable GitHub Actions on my fork. Forks ship with Actions disabled, so
+   nothing will run until this is done.
+
+4. Ask me for my Anthropic API key and my Resend API key, then set them as
+   repository secrets named exactly ANTHROPIC_API_KEY and RESEND_API_KEY.
+   Do not echo the values back to me, and do not write them into any file
+   in the repo.
+
+5. Open .github/workflows/first-shift.yml. The RESEND_FROM value is
+   currently an address on somebody else's domain, which will not work with
+   my key. Ask me which I want:
+     - onboarding@resend.dev  (works immediately with no setup, but can
+       only send to the address my Resend account is registered to)
+     - an address on a domain I have verified in Resend
+   Then set it.
+
+6. In the same file, replace the one-off schedule with a daily one. Ask me
+   what time I want it in my own timezone, convert that to UTC yourself,
+   and tell me the cron line you used. Remind me that cron does not follow
+   daylight saving, so the local time shifts by an hour twice a year.
+
+7. Commit and push to main on my fork.
+
+8. Trigger the workflow manually and watch the run. Tell me whether the
+   email actually sent. If it did not, read the run log and tell me the
+   real reason.
+
+When it works, tell me in two sentences how I change what my agent does.`;
 
 // ── Deliverable ③ was not supplied. These two system prompts are DRAFTS
 // written to match the Minion #23 voice; Roman approves or replaces them
@@ -278,6 +344,17 @@ export default {
           return json({ ok: false, error: String(e) }, 200, env);
         }
       }
+      if (which === "graduate") {
+        html = graduateHtml();
+        try {
+          await sendEmail(env, {
+            to, subject: "Make your agent yours — one more paste", html,
+          });
+          return json({ ok: true, which, to, bytes: html.length }, 200, env);
+        } catch (e) {
+          return json({ ok: false, error: String(e) }, 200, env);
+        }
+      }
       if (which === "buildkit") {
         const found = await searchByEmail(env, to).catch(() => null);
         let ctx = null;
@@ -318,6 +395,67 @@ export default {
     // resend just the research email — no texts. They have already had the
     // pestering trio; sending it again would be noise, and the email is the
     // part that was wrong. DELETE with the other /debug routes before sunset.
+    // One-off closing text to consenting attendees. Reuses sendSms, so the
+    // demo-consent gate and the STOP list apply exactly as everywhere else.
+    // DELETE with the other /debug routes before sunset.
+    // One-off text to a single attendee, by email address. Goes through
+    // sendSms so demo consent and the STOP list are enforced exactly as they
+    // are for every scheduled send — a manual nudge is not a reason to skip
+    // someone's opt-out. DELETE with the other /debug routes before sunset.
+    if (request.method === "GET" && url.pathname === "/debug/text") {
+      if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
+      const email = url.searchParams.get("email");
+      const msg = url.searchParams.get("msg");
+      if (!email || !msg) return json({ error: "?email= and ?msg= required" }, 400, env);
+      const found = await searchByEmail(env, email);
+      if (!found) return json({ error: `no contact for ${email}` }, 404, env);
+      const full = await getContact(env, found.id, ["phone", "firstname", "eo_demo_consent"]);
+      const np = full.properties;
+      const booth = np.eo_demo_consent === "true";
+
+      // force=1 covers attendees who consented to Roman directly by texting
+      // him after the event — the booth checkbox was scoped to "tonight's
+      // live demo" and cannot capture a conversation that happened later.
+      // It bypasses that checkbox ONLY. A STOP reply is checked first inside
+      // sendSms and is never overridden: someone telling the system to stop
+      // outranks anyone's recollection of a verbal yes.
+      const force = url.searchParams.get("force") === "1";
+      const r = await sendSms(env, {
+        to: normalizePhone(np.phone),
+        body: msg,
+        contactId: found.id,
+        payload: "nudge",
+        requireConsent: !booth,
+        ignoreConsent: force,
+      }).catch((e) => ({ error: String(e) }));
+      return json({
+        ok: !!r?.sent, to: np.firstname,
+        basis: booth ? "booth checkbox" : (force ? "verbal to Roman" : "no consent"),
+        result: r,
+      }, 200, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/debug/thanks") {
+      if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
+      const contacts = await listTagged(env, ["firstname", "phone", "eo_demo_consent"]);
+      const out = { sent: [], skipped: [] };
+      for (const c of contacts) {
+        const p = c.properties;
+        const consented = p.eo_demo_consent === "true";
+        if (!consented) { out.skipped.push({ name: p.firstname, why: "no demo consent" }); continue; }
+        const flag = `sent:thanks:${c.id}`;
+        if (await env.PHOTOS.get(flag)) { out.skipped.push({ name: p.firstname, why: "already sent" }); continue; }
+        await env.PHOTOS.put(flag, new Date().toISOString());
+        const r = await sendSms(env, {
+          to: normalizePhone(p.phone), body: THANKS_TEXT,
+          contactId: c.id, payload: "thanks",
+        }).catch((e) => ({ error: String(e) }));
+        if (r?.sent) out.sent.push(p.firstname);
+        else out.skipped.push({ name: p.firstname, why: r?.skipped || r?.error || "unknown" });
+      }
+      return json({ ok: true, total: contacts.length, sentCount: out.sent.length, ...out }, 200, env);
+    }
+
     if (request.method === "GET" && url.pathname === "/debug/rebrief") {
       if (url.searchParams.get("key") !== "m23diag") return json({ error: "nope" }, 403, env);
       const email = url.searchParams.get("email");
@@ -1737,6 +1875,22 @@ function photoEmailHtml(firstName) {
   ${h1(`Thanks for coming tonight, ${escapeHtml(firstName || "friend")}.`)}
   <p ${pStyle}>Your photo from the EO LA Valley learning event is attached.</p>
   <p ${pStyle}>That's the easy part. I'm working on something else for you — give me a few minutes.</p>
+  ${sig()}`);
+}
+
+function graduateHtml() {
+  return shell(`
+  ${h1("Make it yours.")}
+  <p ${pStyle}>Your agent currently lives on the workshop's repo and runs on our keys. This moves it onto your own account — your API key, your schedule, your sender — so it keeps working after tonight whatever we do.</p>
+
+  ${eyebrow("Paste this into Claude Code")}
+  <pre style="background:${MAIL.codeBg};border:1px solid ${MAIL.rule};border-radius:8px;padding:16px;margin:0 0 22px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;color:${MAIL.codeText};-webkit-user-select:all;user-select:all;">${escapeHtml(GRADUATE_PROMPT)}</pre>
+
+  <p ${pStyle}>It will ask you for two API keys — one from <strong style="color:${MAIL.head};">console.anthropic.com</strong> and one from <strong style="color:${MAIL.head};">resend.com</strong>. Both have free tiers, and a daily run costs pennies.</p>
+
+  <p ${pStyle}>One thing worth knowing: the runner emails the owner of <em>every</em> agent file in the folder. Your fork still has everyone else's. Step 2 deletes them — do not skip it, or you will email the whole room every morning.</p>
+
+  <p ${pStyle}>Until you retire the original, your agent runs in both places, so you may get two emails for a while. Keep the one from your own repo.</p>
   ${sig()}`);
 }
 
