@@ -3843,3 +3843,13 @@ invoice — manual). Workflow env gained TW tokens (dry run caught 39/39 lookups
 failing without them). CAVEAT flagged to Roman: sibling deals share one family
 invoice (Khemani x2 @$3,650, Hwang x4 @$2,800, Gukasov x2 @$1,660) so summed
 pipeline revenue double-counts those families.
+
+## 2026-09-04 — Shared-invoice split + Fakheri (PR #176)
+**Why:** Roman: split shared totals — one family/agency invoice covering several
+students was landing at full value on each deal.
+**What:** backfill regroups gold deals by (contact, latest invoice) and stamps
+total/N (11 restamped: Hwang x5 @$560 — agency invoice, Khemani x2 @$1,825,
+Gukasov x2 @$830, Feinstein x2 @$352); deal_sync ongoing divides by the contact's
+gold-deal count. Fakheri siblings stamped $3,300 each from their $6,600 invoice
+(per Roman). Remaining manual: Inna Garcia - Maximilian + Jenifer Peters (no TW
+invoice exists).
