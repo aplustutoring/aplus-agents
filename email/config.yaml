@@ -43,6 +43,7 @@ ticket_fields:
     complaint: "complaint"
     payment_dispute: "billing_refund"
     new_po: "new_deal_po"
+    low_balance: "new_deal_po"      # a renewal PO is what the case needs
     tor_inquiry: "new_deal_po"
     school_partner: "new_deal_po"
     business_dev: "GENERAL_INQUIRY"
@@ -166,6 +167,60 @@ sms:
     trial_multi_confirm: "Hi {first_name}, it's A+ Tutoring! Free trial sessions for {students} are coming up. Want to confirm their schedules work? Reply here to confirm or change them."
     trial_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for free trial sessions with {students}. What days and times work best? Reply here and we will get them booked."
 
+# ── Low-balance renewal agent (Roman 2026-09-08) ─────────────────
+# A Teachworks "package balance ... has reached the level of N hours" email
+# (the Package Balance Alerts add-on, arriving at admin@ via info@) opens ONE
+# renewal case per student + package per school year: a ticket owned by the
+# charter_sales seat, a text + email to the family and an email DRAFT to the
+# teacher of record from that seat, a follow-up task, and one DM to the seat.
+# The case closes itself when po_inbox creates the student's next PO deal.
+# Replaces the Monday board "A+ Charter Low Balance Alerts" (8802830977) and
+# the retired HubSpot flow "Low Balance Alerts - Charter" (552811839).
+# Sender identity = the seat: from-name, reply-to, sign-off, task owner
+# (Roman 2026-08-25). Alerts go to that seat ONLY (Danielle 2026-08-12).
+low_balance:
+  enabled: true
+  # armed: false = the agent files the ticket, writes the exact copy it WOULD
+  # send into the ticket note, DMs the seat, and touches no family or teacher.
+  # Flip in a PR once Roman approves the copy below.
+  armed: false
+  owner: charter_sales
+  notify: [charter_sales]
+  escalate_to: visionary
+  escalate_days: 10               # no new PO deal after this → one DM to seat + escalate_to
+  follow_up_business_days: 3      # HubSpot task for the seat
+  draft_unsent_nag_hours: 24      # teacher draft still in Drafts → one nag
+  sla_hours: 8
+  priority: normal
+  # Level Up Terri (Charter Terri pipeline) teachers cannot issue additional
+  # POs (Roman 2025-10-29): family only, never the teacher.
+  no_teacher_email_pipelines: ["72281989"]
+  # Copy. Tokens: {first_name} {student} {student_full} {hours} {tor_name}
+  # {tor_first} {tor_or_ef} {school} {po_number} {sender_first} {sender_name}
+  # {sender_email}. The PO is issued by the SCHOOL: we ask the family to
+  # request it and offer vendor details; never "we handle the PO". Every
+  # charter student has funds; the hours are simply running low. NO EM DASHES.
+  sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. When you have a moment, please ask {tor_name} at {school} to issue a new PO so sessions continue without a gap. Reply here with any questions."
+  family_email:
+    mode: send                    # send (Resend, same rail as the What-to-Expect email) | off
+    template: "templates/low_balance_charter.html"
+    from: "{sender_name}, A+ Tutoring <admin@wetutorathome.com>"   # verified sending address; the NAME is the seat's
+    reply_to: "{sender_email}"    # replies reach the seat directly
+    subject: "{student}'s tutoring hours are running low"
+  tor_email:
+    mode: draft                   # draft = a real Gmail draft the seat sends in one click (email-only rule, Roman 2026-09-03)
+    mailbox: seat                 # the seat's own Gmail (staff.<seat>.email); a literal address also works
+    subject: "New PO for {student_full} (A+ Tutoring)"
+    body: |
+      Hi {tor_first},
+
+      A quick heads up that {student_full} has {hours} left on the current A+ Tutoring purchase order ({po_number}). To keep sessions going without a gap, could you issue a new PO when you have a chance? The vendor details and rate are the same as the current one, and I am happy to send anything you need for it.
+
+      Thank you for everything you do for {student}.
+
+      {sender_name}
+      A+ Tutoring
+
 # ── Sibling-gap tripwire (Roman 2026-09-04) ─────────────────────
 # A family renews SOME kids and one is left out — the strongest miss signal
 # there is (a renewing family means to continue). Daily check; flags to the
@@ -185,7 +240,8 @@ sibling_gap:
 staff:
   danielle: { name: "Danielle", hubspot_owner_id: "227538487", slack_user_id: "U05NMABF3B2" }  # Sales
   mandy:    { name: "Mandy",    hubspot_owner_id: "80047201",  slack_user_id: "U08S3CHE93N" }  # Scheduling Lead
-  paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR" }  # Sales Support
+  paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR",
+              email: "paola@wetutorathome.com" }  # Sales Support (email = the seat's Gmail; low_balance teacher drafts land there)
   janelle:  { name: "Janelle",  hubspot_owner_id: "80047202",  slack_user_id: "U08S3CG8XNY" }  # Scheduler 1 (A-L)
   yolanda:  { name: "Yolanda",  hubspot_owner_id: "86868539",  slack_user_id: "U0A6XGBU7QT" }  # Scheduler 2 (M-Z)
   kath:     { name: "Kath",     hubspot_owner_id: "513215050", slack_user_id: "U05NW5H3SLC" }  # Admin
@@ -223,6 +279,7 @@ routing:
   campaign_school:     { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # campaign replies from TORs/school staff
   tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
+  low_balance:         { owner: charter_sales,  sla_hours: 8,   draft: false, priority: normal }  # Teachworks package-balance alert → renewal case (low_balance.py)
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
   recruitment:         { owner: scheduling_lead,             sla_hours: 1.5, draft: true,  priority: low }
   charter_newsletter:  { owner: sales,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply

@@ -385,6 +385,13 @@ def run() -> None:
         import traceback as _tb
         print(f"⚠️  sibling_gap error: {e}")
         _tb.print_exc()
+    try:
+        from . import low_balance
+        low_balance.run_sweep()
+    except Exception as e:  # noqa: BLE001 — renewal cases must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  low_balance sweep error: {e}")
+        _tb.print_exc()
 
 
 if __name__ == "__main__":

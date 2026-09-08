@@ -1,0 +1,22 @@
+<!-- Low-balance renewal email to a CHARTER family (email/src/low_balance.py).
+     Descends from the retired HubSpot email "Your Tutoring Package - Charter"
+     (118221215301, subject "Action Needed: Your tutoring package is running
+     low") that the Monday-board flow sent until 2025-10-01, rewritten for the
+     locked rules: the PO is issued by the SCHOOL (we ask, we never "handle"
+     it); every charter student has funds, the hours are simply running low;
+     sender identity is the charter_sales seat; NO EM DASHES. Tokens are
+     replaced at send time: {first_name} {student} {student_full} {hours}
+     {tor_or_ef} {tor_name} {school} {po_number} {sender_first} {sender_name}.
+     Copy changes = edit this file in a PR. -->
+<p style="text-align: left;">Hi {first_name},</p>
+<p>&nbsp;</p>
+<p>It's {sender_first} with A+ Tutoring. A quick heads up: {student} has <strong>{hours}</strong> left on the current purchase order from {school}.</p>
+<p>&nbsp;</p>
+<p>Charter schools issue the purchase orders, so the next step is a short note to {tor_or_ef} asking for a new PO for A+ Tutoring hours. If it helps, we are happy to send the vendor details and the hour count straight to them. Just reply to this email and tell us who to send it to.</p>
+<p>&nbsp;</p>
+<p>Once the school issues the new PO, we take it from there and {student}'s sessions continue without a gap.</p>
+<p>&nbsp;</p>
+<p>Warm regards,</p>
+<p>{sender_name}<br>A+ Tutoring<br><a href="tel:+18188691627" rel="noopener">(818) 869-1627</a> (call or text)</p>
+<hr style="border:none;border-top:1px solid #ddd;margin:24px 0">
+<p><span style="color: #ef5829;"><a href="https://meetings.wetutorathome.com/referral-program-free-half-hour-thank-you" style="color: #ef5829;" rel="noopener">Did you know about our referral program? Recommend us to a friend, both you and the friend get a free half hour!</a></span></p>

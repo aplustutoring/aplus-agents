@@ -16,7 +16,8 @@ import traceback
 from datetime import date, datetime, time, timedelta, timezone
 from types import SimpleNamespace
 
-from . import audit, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
+from . import (audit, hubspot_client as hs, low_balance, po_sources, slack_client,
+               teachworks_client as tw)
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
 from .config import DRY_RUN, ROOT, cfg, require, staff
@@ -417,6 +418,15 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         [a.get("name") or "" for a in (message.get("attachments") or [])])
     if po_reason:
         return _po_handoff(thread_id, message, po_reason)
+
+    # ── Teachworks package-balance alerts are a renewal trigger, not a support
+    #    email. Recognised deterministically (sender + the alert's fixed wording)
+    #    so the classifier never files them as unknown/scheduling again (55 of
+    #    81 alerts since June went to the Stuck queue). ──
+    if low_balance.is_teachworks_sender(_sender_addrs(message)):
+        lb_alert = low_balance.parse_alert(body)
+        if lb_alert:
+            return low_balance.handle_alert(thread_id, message, lb_alert)
 
     # ── Identify contact ──
     contact = hs.find_contact_by_email(email) if email else None

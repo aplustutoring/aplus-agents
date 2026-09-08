@@ -29,7 +29,7 @@ VALID_CATEGORIES = {
     "school_partner", "business_dev", "complaint", "payment_dispute",
     "tor_inquiry", "new_po", "tutor_document", "recruitment",
     "charter_newsletter", "campaign_family", "campaign_school",
-    "junk", "unknown",
+    "low_balance", "junk", "unknown",
 }
 
 

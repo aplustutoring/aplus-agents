@@ -189,6 +189,27 @@ service month ends: submit the TW invoice to the school's ops system, then
 **stamp `invoice_submitted_date` and move the deal to Invoice Submitted**.
 Deals missing that stamp are what the sweep counts as unbilled.
 
+## Stage 6b — Hours run low: the renewal chase (`email/src/low_balance.py`)
+
+Teachworks' Package Balance Alerts add-on emails admin@ (via info@) when a
+student's unused package hours reach the alert level ("...package balance for
+Taylor Rodriguez has reached the level of 4 hours and is currently at 4.0
+unused hours" + parent name/email/phone). The triage pass recognises that
+wording **before the classifier** and opens one renewal case per student +
+package per school year:
+
+| What | Rule |
+|---|---|
+| Ticket | `Low balance: <student> (<school>), N hours left`, owner **charter_sales**, linked to the family contact and the alert thread, category new_deal_po. Repeated alerts (Teachworks re-fires on every balance change) add a note, never a second text. |
+| Family text (armed) | JustCall, from the seat's first name, asks the family to request a new PO from their TOR. Quiet hours 8am–8pm PT defer it to the hourly sweep. |
+| Family email (armed) | Resend, from "<seat name>, A+ Tutoring", reply-to the seat, copy in `email/templates/low_balance_charter.html`. The PO is issued by the **school**; we ask and offer vendor details, never "we handle the PO". |
+| Teacher of record (armed) | A real Gmail **draft** in the seat's own mailbox, email only (no calls, no meeting links). **Never** for Level Up Terri (pipeline 72281989): those teachers cannot issue additional POs. |
+| Task | Follow-up to the seat, due +3 business days. |
+| DM | One, to charter_sales only. |
+| Closes itself | A new PO deal for the student (Stage 3) closes the ticket with the PO number; a deal moved to Stopped closes it as not continuing. No PO after 10 days → one escalation DM (seat + visionary). |
+| Not charter | Gold / private-pay packages get the ticket only (phase 2). |
+| `armed: false` | The default until Roman approves the copy: ticket + note showing exactly what would be sent + DM; nothing reaches a family or teacher. |
+
 ## Stage 7 — Payment
 
 School pays → deal moves to closed/won manually. (No agent watches this stage
@@ -201,4 +222,5 @@ yet — open roadmap item.)
 | **Agent** | Everything in Stages 0–4; all property stamping above except the two Kath fields. |
 | **Kath** | Convert PO → TW invoice; fill `Invoice #`; confirm the due date; submit at month end + stamp `invoice_submitted_date`; confirm pending OAs in school portals; send parent-chase drafts from Gmail Drafts. |
 | **Schedulers (Janelle / Yolanda)** | Get lessons booked within the 72-hr Post-Lesson window; deals arrive in their queue + DM. |
+| **Paola (charter_sales)** | Owns every low-balance renewal case (Stage 6b): sends the teacher draft from Gmail Drafts, works the follow-up task, handles anything the case flags. |
 | **Roman** | Gets every 🚩 missing-info DM and the CC of Kath's pings; owns rule changes (this doc + Decision Log). |

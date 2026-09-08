@@ -85,12 +85,13 @@ def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "")).strip().lower()
 
 
-def _sent_on_thread(thread_id: str, since_iso: str) -> dict | None:
-    """The most recent SENT message on the thread after the draft was created."""
+def _sent_on_thread(thread_id: str, since_iso: str, mailbox: str | None = None) -> dict | None:
+    """The most recent SENT message on the thread after the draft was created.
+    mailbox: the Gmail account the draft lives in (None = charter@)."""
     if not thread_id:
         return None
     try:
-        th = gm._get(f"/threads/{thread_id}", {"format": "full"})
+        th = gm._get(f"/threads/{thread_id}", {"format": "full"}, mailbox=mailbox)
     except Exception:  # noqa: BLE001
         return None
     best = None
@@ -132,9 +133,15 @@ def sweep() -> None:
     """Every 15-min run: settle any agent draft that has left Gmail Drafts."""
     settled = 0
     for r in _open_drafts():
-        if gm.get_draft(r["draft_id"]) is not None:
+        # drafts live in charter@ unless the agent that wrote them said
+        # otherwise (low_balance drafts sit in the charter_sales seat's mailbox)
+        mailbox = r.get("mailbox") or None
+        still = (gm.get_draft(r["draft_id"], mailbox=mailbox) if mailbox
+                 else gm.get_draft(r["draft_id"]))
+        if still is not None:
             continue                                   # still pending
-        sent = _sent_on_thread(r.get("thread_id"), r.get("timestamp") or "")
+        sent = (_sent_on_thread(r.get("thread_id"), r.get("timestamp") or "", mailbox=mailbox)
+                if mailbox else _sent_on_thread(r.get("thread_id"), r.get("timestamp") or ""))
         if sent:
             verdict, ratio, diff = _classify(r.get("body") or "", sent["body"])
         else:
@@ -145,7 +152,9 @@ def sweep() -> None:
                  "sent_message_id": (sent or {}).get("id")})
         # Gmail label flip on the sent message
         try:
-            if sent and sent.get("id"):
+            if sent and sent.get("id") and mailbox:
+                gm.apply_labels(sent["id"], ["A+ Agent/Sent"], mailbox=mailbox)
+            elif sent and sent.get("id"):
                 gm.apply_labels(sent["id"], ["A+ Agent/Sent"])
         except Exception:  # noqa: BLE001
             pass
