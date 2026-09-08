@@ -1,4 +1,5 @@
-.claude/
+.claude/*
+!.claude/commands/
 .DS_Store
 
 # Environment variables - never commit secrets
