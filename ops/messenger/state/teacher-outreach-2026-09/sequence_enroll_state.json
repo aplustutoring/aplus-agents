@@ -1,5 +1,507 @@
 {
- "enrolled": {},
- "runs": [],
+ "enrolled": {
+  "106703349009": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "aditi.arora@ileadexploration.org"
+  },
+  "3974901": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "christie.beadle@ileadexploration.org"
+  },
+  "181792125813": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "jennifer.bolling@ileadexploration.org"
+  },
+  "1618951": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "tbroussard@compasscharters.org"
+  },
+  "3609251": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "mina.chang@ileadexploration.org"
+  },
+  "66680229431": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "sclaar@eliteacademic.com"
+  },
+  "2304951": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "angela@heartwoodcharterschool.org"
+  },
+  "3835301": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "jami.delgado@ileadav.org"
+  },
+  "56789368388": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "desiree.doyle@ileadav.org"
+  },
+  "118787229822": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "erin.emsley@ileadexploration.org"
+  },
+  "171921706650": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "celine.gaeta@ileadexploration.org"
+  },
+  "3652802": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "amri.gallardo@ileadexploration.org"
+  },
+  "93740692024": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "lauren.greiving@ileadexploration.org"
+  },
+  "7075425654": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "christine.gurney@ileadexploration.org"
+  },
+  "62158080641": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "rhernandez@eliteacademic.com"
+  },
+  "3652501": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "rebecca.hu@ileadexploration.org"
+  },
+  "3655452": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "andrea.huntsman@ileadexploration.org"
+  },
+  "3653051": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "coral.huynh@ileadexploration.org"
+  },
+  "3654551": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "maya.lee@ileadexploration.org"
+  },
+  "3652952": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "ana.lucero@ileadexploration.org"
+  },
+  "205699248034": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "emma.luckey@ileadexploration.org"
+  },
+  "3918901": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "christina.mondolo@ileadexploration.org"
+  },
+  "3653055": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "mary.nieves@ileadexploration.org"
+  },
+  "3654501": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "yolonda.nunley@ileadexploration.org"
+  },
+  "3652954": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "kaylee.osegueda@ileadexploration.org"
+  },
+  "3652456": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "sara.ramirez@ileadexploration.org"
+  },
+  "3301151": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "suzanne.roberts@ileadexploration.org"
+  },
+  "3655051": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "heather.pfeifer@ileadexploration.org"
+  },
+  "3653301": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "kristi.williamson@ileadexploration.org"
+  },
+  "162385704288": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "theresa.yumbar@ileadexploration.org"
+  },
+  "3655752": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "kimberlee.archibald@ileadexploration.org"
+  },
+  "3652702": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "kristin.atwood@ileadexploration.org"
+  },
+  "3777104": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "aayala@ieminc.org"
+  },
+  "3653901": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "felicite.badillo@ileadexploration.org"
+  },
+  "212058254963": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "annie.bahadarian@theblueridgeacademy.com"
+  },
+  "3777107": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "mbaker@ieminc.org"
+  },
+  "201865603096": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "sbarkan@eliteacademic.com"
+  },
+  "3654105": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "carlee.kajsabarnes@ileadexploration.org"
+  },
+  "201060430624": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "mckenna.barr@ileadexploration.org"
+  },
+  "3655301": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "jen.billig@ileadexploration.org"
+  },
+  "108829987491": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "jblake@viedu.org"
+  },
+  "3655103": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "emma.burgis@ileadexploration.org"
+  },
+  "3788506": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "kburns@ieminc.org"
+  },
+  "76170711180": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "melissa.calderon@ileadexploration.org"
+  },
+  "1253701": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "scanepa@ieminc.org"
+  },
+  "3787302": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "ncatiller@ieminc.org"
+  },
+  "3841051": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "mchantri@hcs.k12.ca.us"
+  },
+  "195320040298": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "meredith.chen@ileadexploration.org"
+  },
+  "3654401": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "peace.chen@ileadexploration.org"
+  },
+  "170754212667": {
+   "seq": "310839862",
+   "date": "2026-09-08",
+   "email": "peggy.clelland@gormanlc.org"
+  },
+  "177094780164": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "mmanu@ileadexploration.org"
+  },
+  "195571489591": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "zvill@ileadexploration.org"
+  },
+  "5591143544": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "sferg@ileadexploration.org"
+  },
+  "13049953649": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "iskim@ileadexploration.org"
+  },
+  "3919151": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "spolo@ileadexploration.org"
+  },
+  "2948851": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "materialvendors@ileadexploration.org"
+  },
+  "3654354": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "dominique.arrigo@ileadexploration.org"
+  },
+  "3635251": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "daisy.ashenfelter@ileadexploration.org"
+  },
+  "3652555": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "karen.askenaze@ileadexploration.org"
+  },
+  "3653053": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "glynis.badgett@ileadexploration.org"
+  },
+  "3654555": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "kendra.bailey@ileadexploration.org"
+  },
+  "3652353": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "nicole.baird@ileadexploration.org"
+  },
+  "3652452": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "gillian.bayer@ileadexploration.org"
+  },
+  "120510775609": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "sbecke@ileadexploration.org"
+  },
+  "3898251": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "sarah.benning@ileadexploration.org"
+  },
+  "3654605": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "stephanie.binckes@ileadexploration.org"
+  },
+  "3652601": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "jennie.bletscher@ileadexploration.org"
+  },
+  "108828045409": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "francesca.bolivar@ileadlancaster.org"
+  },
+  "161725276843": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "talena.booker@ileadav.org"
+  },
+  "218285355870": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "madison.brittingham@ileadexploration.org"
+  },
+  "3654151": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "rebecca.brower@ileadexploration.org"
+  },
+  "3652953": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "stephanie.casolara@ileadexploration.org"
+  },
+  "3652901": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "karen.chae@ileadexploration.org"
+  },
+  "195319672330": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "evcott@ileadexploration.org"
+  },
+  "3652251": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "kelly.clark@ileadexploration.org"
+  },
+  "91625692944": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "mcontr@ileadexploration.org"
+  },
+  "3652551": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "stefanie.coomes@ileadexploration.org"
+  },
+  "3655551": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "dominique.coumparoules@ileadexploration.org"
+  },
+  "3654352": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "linda.cugno@ileadexploration.org"
+  },
+  "3649451": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "aimee.curtis@ileadexploration.org"
+  },
+  "3655152": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "meredith.curtis@ileadexploration.org"
+  },
+  "3654952": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "denise.dare@ileadexploration.org"
+  },
+  "3654752": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "heidi.dasilva@ileadexploration.org"
+  },
+  "3652751": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "breana.delgado@ileadexploration.org"
+  },
+  "155839565722": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "director@ileadexploration.org"
+  },
+  "172417898559": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "sandra.doh@ileadexploration.org"
+  },
+  "3652851": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "meagan.donaghy@ileadexploration.org"
+  },
+  "3652401": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "nicole.dutter@ileadexploration.org"
+  },
+  "3655151": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "tracy.edmunds@ileadexploration.org"
+  },
+  "242056143201": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "alesha.escobar@ileadexploration.org"
+  },
+  "3652301": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "veronique.gaeta@ileadexploration.org"
+  },
+  "3654251": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "heather.fecarotta@ileadexploration.org"
+  },
+  "193179526695": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "bfisc@ileadexploration.org"
+  },
+  "3655351": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "haley.fite@ileadexploration.org"
+  },
+  "3652355": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "cindy.freeman@ileadexploration.org"
+  },
+  "3654101": {
+   "seq": "310844702",
+   "date": "2026-09-08",
+   "email": "courtney.gannon@ileadexploration.org"
+  }
+ },
+ "runs": [
+  {
+   "date": "2026-09-08",
+   "at": "2026-09-08T10:38:11.671200-07:00",
+   "summary": [
+    {
+     "sequence": "Teacher Outreach 26/27 - 1 Worked With Us",
+     "batch": 50,
+     "enrolled": 50,
+     "failed": 0,
+     "remaining": 106
+    },
+    {
+     "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
+     "batch": 50,
+     "enrolled": 46,
+     "failed": 4,
+     "remaining": 150
+    }
+   ]
+  }
+ ],
  "sender_email_confirmed": "danielle@wetutorathome.com"
 }
