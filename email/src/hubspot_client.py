@@ -594,8 +594,6 @@ def create_ticket(subject: str, owner_id: str | None, stage_id: str,
         "hs_pipeline_stage": stage_id,
         "content": description,
     }
-    if extra_props:
-        props.update(extra_props)
     if owner_id and owner_id != "REPLACE":
         props["hubspot_owner_id"] = owner_id
     if priority:
