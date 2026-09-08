@@ -334,7 +334,7 @@
       "correction_path": "corrections/content-build/2026-08-24-content-build-post-fails-error.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/109",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787594850024069"
     },
     {
@@ -489,7 +489,7 @@
     }
   ],
   "graduation": {
-    "clean_merges": 15
+    "clean_merges": 16
   },
   "pending_proposals": {
     "1786554388.265099": {
