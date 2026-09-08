@@ -453,6 +453,23 @@ def contact_deal_names(contact_id: str) -> list[str]:
     return names
 
 
+def find_contact_by_name(firstname: str, lastname: str) -> list[dict]:
+    """Exact first+last contact search (review reviewer → family). Case-exact
+    per HubSpot EQ semantics; the caller associates only on a UNIQUE result."""
+    if not (firstname and lastname):
+        return []
+    body = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "firstname", "operator": "EQ", "value": firstname},
+            {"propertyName": "lastname", "operator": "EQ", "value": lastname},
+        ]}],
+        "properties": ["email", "firstname", "lastname", "a_persona"],
+        "limit": 5,
+    }
+    res = _write("POST", "/crm/v3/objects/contacts/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
+
+
 def find_family_contact(student_first: str, lastname: str) -> list[dict]:
     """Find the PARENT family contact to link a Teachworks-notice ticket to.
 
