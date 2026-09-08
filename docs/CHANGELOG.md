@@ -8,6 +8,45 @@ Newest entries first.
 
 ---
 
+## 2026-09-08 — Teacher outreach day 1: batch sent by hand, three fixes merged (#187)
+
+**What happened:** GitHub's 16:05 UTC cron for `teacher-sequence-enroll.yml` did not fire
+(schedules are best-effort). Dispatched by hand at 10:38 PT: Sequence 1 (Worked With Us)
+50 of 50 enrolled, top-30 list first; Sequence 2 (Known Schools) 46 of 50, all iLEAD.
+State persisted (99cffea5). Danielle reported the campaign workflows showed "Changes
+needed" on the delay actions.
+
+**Three fixes, PR #187 (merged):**
+1. **Delay shape.** `teacher_outreach_workflows.py` had built each delay with a day count
+   *and* a 9:00 AM `time_of_day` in one action. The API accepted it; the editor reads it as
+   "until a specific time" with no duration. Both live workflows (1878517306, 1878501648)
+   were patched via `PUT /automation/v4/flows/{id}` to plain 4-day / 6-day delays and
+   verified; the weekday 9-17 time windows set the send time. Rule: a HubSpot delay action
+   is *either* `delta`+`time_unit` *or* `time_of_day`, never both.
+2. **Bounced recipients.** The 4 failures were `RECIPIENT_PREVIOUSLY_BOUNCED` (HubSpot
+   refuses sequence sends to addresses it has seen bounce; `hs_email_bounce` does not carry
+   that signal). The script had mislabeled them as sender-inbox rejections and retried with
+   the second inbox. Contact-level rejections are now recorded in state as
+   `skipped_permanent` and never retried. Also: no-first-name contacts are skipped (15 names
+   on list 3211 were recovered from first.last@ addresses first; 4 remain), and
+   `school_only` / `school_exclude` per sequence exist for routing one school to its own
+   sequence.
+3. **Retry cron + same-day guard.** Second cron at 16:35 UTC; the script exits if a batch
+   already ran today unless `--force`, so a retry can never add a second 50. HubSpot's own
+   `hs_sequences_is_enrolled` is a second wall against double-enrollment if state were lost.
+
+**Also today:** Danielle's Blue Ridge park-day PARENT sequence (310726055, 23 parents,
+enrolled 9/2, emails day 1/6/11) was read out of the portal at Roman's request. Left as is
+(people mid-sequence). The critique, banked for the next event sequence: every touch after
+the first carries one fact the parent didn't know (their allocation covers it) and one
+ten-second ask (reply with name, grade, subject). A Blue Ridge TEACHER variant with a
+park-day opener was drafted but not built.
+
+**Files:** `scripts/teacher_sequence_enroll.py`, `scripts/teacher_outreach_workflows.py`,
+`.github/workflows/teacher-sequence-enroll.yml`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-04 — Event-driven jump: no cron unless necessary (Roman)
 
 **Principle (Decision Log pending):** agents don't poll on cron unless the
