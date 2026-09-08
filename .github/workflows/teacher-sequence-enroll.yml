@@ -8,6 +8,8 @@ name: Teacher outreach (daily sequence enrollments)
 on:
   schedule:
     - cron: "5 16 * * 1-5"   # 09:05 PDT / 08:05 PST, Mon-Fri; gated in the script
+    - cron: "35 16 * * 1-5"  # retry 30 min later: GitHub cron is best-effort (the 09:05 run did not fire 2026-09-08).
+                             # The script's same-day guard makes the second trigger a no-op once a batch has run.
   workflow_dispatch:
     inputs:
       confirm:

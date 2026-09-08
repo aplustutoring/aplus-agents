@@ -86,8 +86,12 @@ def send(aid, content_id, nxt):
 
 
 def delay_days(aid, days, nxt):
+    # Plain "delay for N days". Do NOT add time_of_day here: a day count plus a
+    # time_of_day is read by the editor as "until a specific time" with no
+    # duration ("Choose a time delay greater than 0 minutes", Danielle 2026-09-08).
+    # The weekday 9-17 timeWindows already decide the send time.
     return {"actionId": str(aid), "actionTypeId": "0-1", "actionTypeVersion": 0, "type": "SINGLE_CONNECTION",
-            "fields": {"delta": str(days), "time_unit": "DAYS", "time_of_day": {"hour": 9, "minute": 0}},
+            "fields": {"delta": str(days), "time_unit": "DAYS"},
             "connection": {"edgeType": "STANDARD", "nextActionId": str(nxt)}}
 
 

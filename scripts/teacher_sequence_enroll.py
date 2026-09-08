@@ -100,6 +100,8 @@ def ineligible(p, done):
         return "already replied"
     if (p.get("hs_sequences_is_enrolled") or "") == "true":
         return "already in a sequence"
+    if not (p.get("firstname") or "").strip():
+        return "no first name"       # the templates open "Hi {{ contact.firstname }}," — never send "Hi ,"
     return None
 
 
@@ -146,9 +148,20 @@ def main():
             print(f"today {today} < start_date {cfg['start_date']} — exiting"); return
         if now.weekday() >= 5:
             print(f"{today} is a weekend — exiting"); return
+        # One batch per day. The workflow has a retry cron (GitHub schedules are
+        # best-effort: the 9:05 run did not fire on 2026-09-08), so a second
+        # trigger on the same day must be a no-op, never a second 50.
+        if any(r.get("date") == today for r in state.get("runs", [])):
+            print(f"a batch already ran today ({today}) — exiting (use --force to add another)"); return
+
+    # HubSpot error types that are about the CONTACT, not the sender inbox. Retrying
+    # them with another sender is pointless; record them so they are never retried.
+    CONTACT_ERRORS = ("RECIPIENT_PREVIOUSLY_BOUNCED", "RECIPIENT_UNSUBSCRIBED", "RECIPIENT_", "CONTACT_")
 
     def do_enroll(seq_id, cid, label):
-        """Try the confirmed sender first, then the other candidates. Returns (ok, sender, detail)."""
+        """Try the confirmed sender first, then the other candidates.
+        Returns (ok, sender, detail). Contact-level rejections come back as
+        ok=False with detail starting 'contact:' and are recorded permanently."""
         for sender in candidates:
             code, body = enroll(seq_id, cid, sender, user_id)
             if code in (200, 201):
@@ -156,7 +169,11 @@ def main():
                     state["sender_email_confirmed"] = sender
                     print(f"  ✔ sender inbox confirmed: {sender}")
                 return True, sender, body
-            if "sender" in body.lower() or "inbox" in body.lower() or code in (400, 403):
+            if any(k in body for k in CONTACT_ERRORS):
+                reason = next((k for k in ("RECIPIENT_PREVIOUSLY_BOUNCED", "RECIPIENT_UNSUBSCRIBED") if k in body), "contact rejected")
+                state.setdefault("skipped_permanent", {})[str(cid)] = {"seq": str(seq_id), "date": today, "email": label, "why": reason}
+                return False, sender, f"contact: {reason}"
+            if "connected inbox" in body.lower() or "sender" in body.lower() or code in (400, 403):
                 print(f"  sender {sender} rejected ({code}): {body[:140]}")
                 continue
             return False, sender, f"{code} {body}"
@@ -187,11 +204,22 @@ def main():
         props = batch_read(ids)
         pri = set(list_members(seq["priority_list_id"])) if seq.get("priority_list_id") else set()
         order = {s: i for i, s in enumerate(seq.get("school_order", []))}
+        only = set(seq.get("school_only") or [])       # optional: route one school to its own sequence
+        exclude = set(seq.get("school_exclude") or [])  # optional: keep that school out of the shared one
         skips, pool = {}, []
         for cid in ids:
             p = props.get(cid, {})
+            school = (p.get("school_canonical") or "").strip()
+            if only and school not in only:
+                continue                                 # not this sequence's audience; not a skip
+            if school in exclude:
+                continue
             if cid in done:
                 skips["already enrolled by script"] = skips.get("already enrolled by script", 0) + 1
+                continue
+            if cid in state.get("skipped_permanent", {}):
+                why = state["skipped_permanent"][cid].get("why", "contact rejected")
+                skips[f"HubSpot: {why}"] = skips.get(f"HubSpot: {why}", 0) + 1
                 continue
             why = ineligible(p, done)
             if why:
