@@ -49,10 +49,23 @@ therefore not a fix — the sunset had to move somewhere the Worker reads.
    unmerged branch. Nothing on `main` knew it existed, so nothing on `main`
    could report that it was still running and still billing.
 
-**Still open:** the deployed Worker's triggers are unchanged — both
-`wrangler triggers deploy` and the Cloudflare dashboard were blocked by the
-sandbox in this session, so Roman has to run the deploy. Until then the crons
-are still live. Budget alert on KV also still to be armed.
+**Closed out the same day** (this paragraph previously said the deploy was
+still pending; it is not). Roman re-authorised the Cloudflare session and all
+five cron triggers were deleted in the dashboard and verified gone on a fresh
+page load: "No cron triggers configured." Between 2026-09-05 and 2026-09-08 the
+namespace had gone 28.13k -> 36.84k list operations, ~2,900/day, which is what
+stopped. A KV budget alert ("KV / Workers spend tripwire", $1, to
+info@wetutorathome.com) is armed. PR #98 merged, so `eo-booth` finally has a
+home on `main`.
+
+One honest limit on that budget alert: this account is on the free tier, where
+exceeding a limit blocks rather than bills, so a $1 billing threshold will not
+catch a repeat of exactly this failure. It catches the first dollar of real
+spend. The thing that actually prevents the repeat is the `SUNSET` guard.
+
+**Still open:** log the #AP decision numbers; `booth/blue-ridge/wrangler.toml`
+is flagged by `registry_check.py` as a Worker no registry entry mentions, which
+is the same invisibility class that hid `eo-booth`.
 
 **Files:** `booth/eo/wrangler.toml`, `booth/eo/worker.js`, `booth/eo/.gitignore`,
 `booth/README.md`, `docs/CHANGELOG.md`, plus the recovered `booth/eo/*.py`
