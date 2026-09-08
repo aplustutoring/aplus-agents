@@ -23,9 +23,9 @@ on:
         description: "Optional template for multi-student families (student_count > 1)"
         default: ""
       sms_from:
-        description: "From number (support = the line schedulers answer; use for family rounds)"
+        description: "From number (charter_sales = Paola's line, for families with no deal yet; support = scheduling, families with a deal)"
         type: choice
-        options: [sales, conference, support]
+        options: [sales, conference, charter_sales, support]
         default: sales
       email_template_id:
         description: "HubSpot marketing email id to clone (email channel)"

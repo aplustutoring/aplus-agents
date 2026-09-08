@@ -20,9 +20,13 @@ next rounds, not this one). Engine changes: (1) `MERGE_PROPS` now carries
 `student_names` + `student_count`; (2) new `--sms-template-multi` (workflow
 input `sms_template_multi`) renders multi-student families from a second
 template, since the single-student tutor token undersold 81/389 families in
-August; (3) new from-number `support` = 818-869-1627 (the line schedulers
-answer and new-PO family texts already come from) so a "YES" reply lands with
-a human — the `sales` line is outbound-to-leads. Templates:
+August; (3) from-number routing LOCKED by Roman the same afternoon: "scheduling
+stays with scheduling, those that are not deals yet are leads... they need
+to go from Paola's number" → new role key `charter_sales` = 818-573-6644
+(Paola's line, verified from JustCall outbound history) for every family
+with no deal yet, and `support` = 818-869-1627 reserved for scheduling texts
+to families that already have a PO/deal. Both batches (the 95 win-back texts
+and the follow-up push to yes-repliers without a PO) go from charter_sales. Templates:
 `templates/charter_r2_opened_single.txt` (tutor + student named) and
 `templates/charter_r2_opened_multi.txt` ({{student_names}} + "their tutors"),
 signed Paola (charter_sales seat = families), no em dashes, PO language per

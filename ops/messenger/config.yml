@@ -9,11 +9,13 @@ sms:
   numbers:
     sales: "+18185736644"
     conference: "+18188506284"
-    # Support line: the number schedulers answer and the new-PO family texts
-    # already come from (email/config.yaml sms.justcall_number). Family
-    # win-back replies ("YES") need a human on the other end, so family
-    # rounds go from here (charter SMS round 2, 2026-09).
-    support: "+18188691627"
+    # Roman 2026-09-08 (LOCKED): a family with no deal yet is a LEAD, and lead
+    # texts go from the charter_sales seat's line (Paola texts from the sales
+    # line; role key per the roles-not-names rule). Once a PO/deal exists the
+    # family belongs to scheduling, and scheduling texts come from the support
+    # line (email/config.yaml sms.justcall_number). Never the other way round.
+    charter_sales: "+18185736644"
+    support: "+18188691627"   # scheduling only (families WITH a deal)
   timezone: America/Los_Angeles
   # Live SMS only between these hours (24h, PT) — TCPA-safe window.
   send_window_start: 9
