@@ -8,6 +8,30 @@ Newest entries first.
 
 ---
 
+## 2026-09-08 — Overdue invoice submissions nag daily and escalate
+
+**What:** `invoice_sweep` gains a daily overdue-submission digest: every
+business day at 9am PT, one DM to charter_admin listing every charter deal
+whose Teachworks invoice is past due (`lessons_fulfilled_date`, synced nightly
+from the TW invoice by tw-invoice-due-sync) and still has no Invoice Submitted
+Date, with days late and $; anything 3+ days late also DMs the visionary role.
+Repeats until the list is empty (audit `submission_nag`, one per day). Two
+latent bugs fixed on the way: `_find_po_deals` read ONE page of the newest 100
+deals (5,201 charter PO deals exist, so by 09-01 every August deal was off the
+page and the "smart prompt" had not fired since 08-08), now paged, unsubmitted
+only, since 2026-07-01; and `invoice_due_property` was unset, so new-style deal
+names (no month tag) had no due date at all. Now `lessons_fulfilled_date`.
+
+**Why:** Charlotte Czaja (Heartland, PO PF236244, inv 54421, $300) sat 25 days
+past due with nobody told; found during Roman's 09-08 billing review. Roman:
+"make it so if this is ever caught again she gets messages. We are not falling
+behind on submissions this year."
+
+**Files:** `email/src/invoice_sweep.py`, `email/config.yaml`,
+`email/tests/test_invoice_sweep.py` (4 new; suite green).
+
+---
+
 ## 2026-09-08 — Teacher outreach day 1: batch sent by hand, three fixes merged (#187)
 
 **What happened:** GitHub's 16:05 UTC cron for `teacher-sequence-enroll.yml` did not fire
