@@ -1,0 +1,35 @@
+name: Tutor roster check (TW ground truth)
+
+# Stamps [Agent] Tutor Roster Status on Tutors-persona contacts from the
+# Teachworks employee roster (both accounts). Read-only against Teachworks;
+# the only HubSpot write is the UPDATE-only import when write_props is set.
+# See scripts/tutor_roster_check.py.
+on:
+  workflow_dispatch:
+    inputs:
+      write_props:
+        description: "Stamp tutor_roster_status via import (else read-only report)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  roster:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests python-dotenv
+      - name: Roster check
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+        run: >
+          python scripts/tutor_roster_check.py
+          ${{ inputs.write_props && '--write-props' || '' }}

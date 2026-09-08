@@ -8,7 +8,8 @@ adds captions dynamically and animates the art, so no baked text).
 
 Resumable: existing stills are reused. Output: {bundle}/reel/stills/<key>.png
 
-Usage:  python3 scripts/b2c/reel/make_stills.py --bundle aplus-content/{bundle}/ [--force]
+Usage:  python3 scripts/b2c/reel/make_stills.py --bundle aplus-content/{bundle}/
+                 [--only key ...] [--force]
 """
 import argparse
 import base64
@@ -55,6 +56,7 @@ def gemini(prompt, out_path, ref=None, aspect="9:16"):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bundle", required=True)
+    ap.add_argument("--only", nargs="*", help="subset of beat keys (mirrors make_clips.py)")
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
     if not rc.GEMINI_KEY:
@@ -63,10 +65,18 @@ def main():
     script = rc.load_script(args.bundle)
     sdir = rc.stills_dir(args.bundle)
     sdir.mkdir(parents=True, exist_ok=True)
+    if args.only:
+        keys = {b["key"] for b in script["beats"]}
+        unknown = [k for k in args.only if k not in keys]
+        if unknown:
+            sys.exit(f"--only: no such beat(s) {unknown} (have {sorted(keys)})")
 
-    # anchor (no banner, clean establishing portrait) — reference for all beats
+    # anchor (no banner, clean establishing portrait) — reference for all beats.
+    # --only re-renders specific beats, so it KEEPS the existing anchor even
+    # under --force: a fresh anchor would relock the hero to a different face
+    # and the regenerated beat would no longer match the ones already rendered.
     anchor = sdir / "anchor.png"
-    if anchor.exists() and not args.force:
+    if anchor.exists() and not (args.force and not args.only):
         print(f"  anchor: reuse {anchor.name}")
     else:
         prompt = (f"{STYLE} {script['hero']} Standing in a confident heroic "
@@ -79,6 +89,8 @@ def main():
 
     for beat in script["beats"]:
         key = beat["key"]
+        if args.only and key not in args.only:
+            continue
         out = sdir / f"{key}.png"
         if out.exists() and not args.force:
             print(f"  {key}: reuse {out.name}")

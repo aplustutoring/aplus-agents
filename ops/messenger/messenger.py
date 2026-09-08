@@ -65,6 +65,16 @@ MERGE_PROPS = ["firstname", "lastname", "email", "phone",
 SMS_OPT_OUT_PROP = "sms_opt_out"
 TOKEN_RE = re.compile(r"\{\{\s*([a-z0-9_]+)\s*\}\}")
 
+# Credential claims (#AP044) resolve through scripts/credentials.py so no claim
+# string is ever a literal in a template. Optional import: the messenger must
+# still run if the module is absent, and a template using a credential token
+# will then fail loudly on the missing substitution rather than send a stub.
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "scripts"))
+    import credentials as _credentials
+except ImportError:  # pragma: no cover
+    _credentials = None
+
 
 # ─── HubSpot ─────────────────────────────────────────────────────────────────
 
@@ -130,9 +140,20 @@ def prepare_email_draft(template_email_id, list_id, run_label):
 # ─── sms channel: render + JustCall ──────────────────────────────────────────
 
 def render(template, contact):
+    """Contact tokens first, then credential tokens (#AP044).
+
+    Credentials are an AVAILABLE merge field, never auto-inserted: a template
+    only gets a claim if its author wrote {{credentials.<id>.<field>}}. The
+    gate is strict here — if the credential is not public_ready, or SMS is a
+    prohibited surface for it, render RAISES rather than silently dropping the
+    claim, because a half-rendered credential in bulk outbound is worse than a
+    refused send."""
     def sub(m):
         return contact.get(m.group(1), "")
-    return TOKEN_RE.sub(sub, template)
+    out = TOKEN_RE.sub(sub, template)
+    if _credentials is not None and _credentials.has_credential_token(out):
+        out = _credentials.resolve(out, surface="sms")
+    return out
 
 
 def normalize_phone(raw):

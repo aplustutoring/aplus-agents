@@ -5,10 +5,16 @@ make_clips.py — animate the reel's stills into clips via the DIRECT Gemini API
 Veo returns ~8s clips; the assembler trims each to its narration length and
 strips audio. Output -> {bundle}/reel/work/<key>.veo.mp4
 
+Also writes the beat keys this pass could NOT render to
+{bundle}/reel/work/clip_failures.json, so a caller can act on the specific
+beats Veo refused instead of parsing stdout (the orchestrator's reel stage
+regenerates their stills before retrying).
+
 Usage:  python3 scripts/b2c/reel/make_clips.py --bundle aplus-content/{bundle}/
                  [--only key ...] [--force] [--model veo-3.1-fast-generate-preview]
 """
 import argparse
+import json
 import sys
 import time
 from pathlib import Path
@@ -25,6 +31,15 @@ ASPECT, RESOLUTION, PERSON = "9:16", "720p", "allow_adult"
 NEGATIVE = ("caption box, speech bubble, empty white banner, text, words, "
             "watermark, logo, letterbox, black bars, borders, style drift, "
             "morphing face, photorealistic, extra limbs")
+
+# Beat keys this pass could not render. Rewritten on EVERY pass (empty list
+# included) so a stale file from an earlier attempt can never be mistaken for
+# the current state.
+FAILURES_NAME = "clip_failures.json"
+
+
+def record_failures(work, fails):
+    work.joinpath(FAILURES_NAME).write_text(json.dumps(fails))
 
 
 def main():
@@ -49,6 +64,7 @@ def main():
              if (not args.only or b["key"] in args.only)
              and (args.force or not (work / f"{b['key']}.veo.mp4").exists())]
     if not beats:
+        record_failures(work, [])
         print("nothing to generate (all clips present)")
         return 0
 
@@ -100,6 +116,7 @@ def main():
             print(f"{key}: saved {out.name} ({out.stat().st_size} bytes)", flush=True)
         if pending:
             print(f"  ...waiting on {sorted(pending)}", flush=True)
+    record_failures(work, fails)
     print("clips done" + (f" WITH FAILURES {fails}" if fails else ""))
     return 1 if fails else 0
 

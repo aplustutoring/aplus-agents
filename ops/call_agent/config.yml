@@ -102,6 +102,15 @@ hubspot:
   # + the model's handoff brief). Calls answered by anyone else: owner_hint
   # routes ("have Janelle call..."), else default_task_owner.
   default_task_owner: paola
+  # Scheduling routing (Paola 2026-09-01): trial/session logistics (confirming
+  # a trial, texting a family about day/time, sending a tutor profile, calling
+  # back about a booked session) are the scheduling team's work, not follow-up.
+  # Claude routes each action item (ACTION_ROUTES / SUMMARY_PROMPT step 3);
+  # scheduling items always get a "[Scheduling] " subject prefix, and when this
+  # names a key from owners: above they are ASSIGNED there instead of to
+  # default_task_owner. Empty until Roman confirms the scheduling team's
+  # HubSpot owner id — until then the prefix alone marks them.
+  scheduling_task_owner: ""
   # Follow-up tasks are due this many business days after the call.
   task_due_business_days: 1
 
@@ -110,7 +119,9 @@ hubspot:
     pipeline: "0"                 # Support Pipeline
     stage: "131537027"            # "Working on it"
     priority: "HIGH"
-    owner: roman
+    # Follow-up owner, matching default_task_owner above: the task and the
+    # ticket for the same call must land on one person (Roman 2026-08-26).
+    owner: paola
     check_in_business_days: 2     # companion check-in task due date
 
 slack:

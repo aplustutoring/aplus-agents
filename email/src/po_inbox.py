@@ -21,27 +21,39 @@ import json
 import re
 import sys
 import traceback
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 
-from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 
 PO_SYSTEM = (
+    "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
     "include PDF/image attachments (the actual PO document) — read them; PO details "
     "usually live there, not in the body. "
     "Respond with a SINGLE JSON object, no prose: {is_po (bool), pending_approval (bool), "
     "school, student_first, "
-    "student_last, grade, po_number, amount, rate, hours, parent_first, parent_last, "
-    "parent_email, "
+    "student_last, grade, po_number, amount, rate, rate_unit, hours, parent_first, "
+    "parent_last, parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, level_up (bool), "
     "summary, draft_reply, confidence (0-1)}. "
     "tutor_name = the A+ tutor named on the PO/order agreement, if any (e.g. 'Jacquelyn Lemerond'). "
-    "rate = the HOURLY RATE stated in the PO (number only, e.g. 75). hours = the hours "
+    "rate = the unit price stated in the PO (number only, e.g. 75). rate_unit = what that "
+    "price buys: 'hour' when the PO prices per hour, 'session' when it prices per session/"
+    "lesson/class (A+ sells both $75/hour and $60 per 45-minute session — read the PO's "
+    "own wording); empty when no rate is stated. hours = the hours "
     "stated in the PO; if the PO states only an amount and a rate, leave hours empty — "
-    "we compute it. "
+    "we compute it. If the PO counts SESSIONS rather than hours, leave hours empty too "
+    "(we convert; never guess hours from a session count). "
+    "po_month = the SERVICE month the PO covers (when the tutoring happens — often the "
+    "PO's service period, coverage dates, or month column; NOT the issue date), formatted "
+    "YYYY-MM (e.g. 2026-09). A PO spanning several months → the FIRST month. ALSO "
+    "return service_end_month (YYYY-MM): the LAST month of the service period — for a "
+    "single-month PO the same as po_month; for a range like 8/31/26-11/13/26 the final "
+    "month (2026-11). Empty only when no service period is stated anywhere. "
     "amount = the PO/authorization VALUE — what we invoice the school. OPS/iLEAD forms "
     "often show BOTH the PO value AND a smaller vendor payout net of the platform fee "
     "(e.g. Value 150.00 but payout 140.00): ALWAYS use the PO value / 'Total Cost' "
@@ -54,6 +66,30 @@ PO_SYSTEM = (
     "Invoice requests, invoicing follow-ups, payment reminders, statements, or "
     "questions about EXISTING service are NOT new POs → is_po=false (still extract "
     "school/student/po_number/amount and summarize; these get a review ticket, no deal). "
+    "ALSO return is_cancellation (bool): true when the email/attachment is a PO or "
+    "service CANCELLATION notice from a school (e.g. 'Service PO Cancellation') — set "
+    "is_po=false, put the CANCELLED PO number in po_number, and set billable_stated = "
+    "the number of sessions/hours the notice says REMAIN BILLABLE (0 when it says none; "
+    "empty string when not stated). "
+    "For every non-PO also return category_hint, exactly one of: 'vendor_compliance' "
+    "(agreements, contracts, or signature requests A+ must complete to keep or start "
+    "selling to a school — DocuSign/Adobe Sign vendor agreements, W-9 requests, policy "
+    "acknowledgments — or a school/agency changing invoicing or compliance REQUIREMENTS "
+    "we must follow), 'scam' (advance-fee or overpayment patterns: generic 'Hello "
+    "Coach'-style prose, prepaid bulk-session requests from free-mail addresses, sender "
+    "name not matching the address), 'marketing_junk' (unsolicited ads, directory "
+    "listings, vendor-spotlight or newsletter broadcasts with no action required), "
+    "'ar_followup' (a school or its AP department chasing, disputing or confirming "
+    "payment on invoices we already sent — 'outstanding invoices', 'paid via ACH on', "
+    "check numbers, remittance advice, or a year-end reconciliation statement request), "
+    "'invoice_correction' (they will pay but need the invoice CHANGED first — a new "
+    "legal name, billing address, PO number or line-item fix, then resubmitted), "
+    "'vendor_onboarding' (we have been approved or renewed as a vendor and there is "
+    "setup to do — portal logins or credentials, welcome packets, account activation, "
+    "renewal paperwork that is NOT a signature request), "
+    "'family_inquiry' (a real family asking about service), or 'other'. "
+    "ar_followup and invoice_correction are about money we are OWED; use "
+    "vendor_compliance only for documents we must SIGN or PROVIDE to keep selling. "
     "parent_* = the PARENT/GUARDIAN's contact info from the email or PO document — never "
     "the school staff, TOR, or education specialist; empty string for anything not stated. "
     "If the email is a REPLY providing a family's contact details (we ask TORs for parent "
@@ -154,7 +190,8 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
     if not props or not deal_id or deal_id == "DRYRUN":
         missing = [k for k, v in values.items() if not v]
         if missing:
-            note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
+            note_parts.append(f"⚠️ Missing — not in the PO and not resolvable from "
+                          f"records: {', '.join(missing)} — fill on the deal manually.")
         return
     try:
         hs._write("PATCH", f"/crm/v3/objects/deals/{deal_id}", {"properties": props})
@@ -162,7 +199,8 @@ def _stamp_deal_properties(deal_id, po: dict, note_parts: list[str]) -> None:
         print(f"  ⚠️  deal property stamp failed (non-fatal): {e}")
     missing = [k for k, v in values.items() if not v]
     if missing:
-        note_parts.append(f"⚠️ Not in the PO: {', '.join(missing)} — fill on the deal manually.")
+        note_parts.append(f"⚠️ Missing — not in the PO and not resolvable from "
+                          f"records: {', '.join(missing)} — fill on the deal manually.")
 
 
 def _fmt_time(hhmm: str) -> str:
@@ -459,7 +497,8 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
     ic = cfg()["po_inbox"].get("invoice_task", {})
     if not ic.get("enabled") or not po.get("amount"):
         return
-    month_end = _po_month_end(po.get("po_month") or "")
+    month_end = _po_month_end(po.get("service_end_month")
+                              or po.get("po_month") or "")
     try:
         prop = (ic.get("invoice_due_property") or "").strip()
         if prop and month_end and deal_id and deal_id != "DRYRUN":
@@ -474,14 +513,27 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
                        f"{month_end.strftime('%b %-d, %Y')} (end of PO month "
                        f"{po.get('po_month')}) — you'll be prompted when it's time." if month_end
                        else "Submission due date: PO month not stated — confirm the service month.")
+        if not month_end:
+            # No parseable service month = no invoice due date on the deal.
+            # That's a REAL gap (13 of 15 deals, 2026-08-26) — ⚠️ so it reaches
+            # the missing-info DM instead of hiding inside the task body.
+            note_parts.append("⚠️ Service month not stated/parseable — Expected Lessons "
+                              "Fulfilled Date (the invoice due date) left blank; confirm "
+                              "the month and set it on the deal manually.")
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
         pending_line = ("\n⏳ PO is PENDING school approval (order agreement) — confirm it is "
                         "approved before submitting the invoice." if po.get("pending_approval") else "")
         rate_bit = f" @ ${po.get('rate')}/hr" if po.get("rate") else ""
+        import re as _re
+        po_disp = po.get("po_number") or "n/a"
+        m = _re.match(r"^(.*?)-([A-Z][a-z]+(?:[A-Z][a-z]+)+)$", str(po_disp))
+        if m:   # per-student synthesized key (one school PO, many students)
+            po_disp = (f"{m.group(1)}  <-- the SCHOOL'S PO number for the invoice "
+                       f"(our per-student key: {po.get('po_number')})")
         body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual)."
                 f"{pending_line}\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
-                f"PO #: {po.get('po_number') or 'n/a'}\nAmount: ${po.get('amount')}\n"
+                f"PO #: {po_disp}\nAmount: ${po.get('amount')}\n"
                 f"Hours: {po.get('hours') or 'n/a'}{rate_bit}\n"
                 f"{submit_line}\n"
                 f"THEN fill on the HubSpot deal: 'Invoice #' (the TW invoice number) and "
@@ -522,10 +574,12 @@ def _split_pos(po: dict) -> list[dict]:
         for x in subs:
             sub = {**po, "pos": None, "po_number": _norm_po_number(x["po_number"]),
                    "amount": x.get("amount"), "hours": x.get("hours"),
-                   "po_month": x.get("po_month") or po.get("po_month")}
+                   "po_month": x.get("po_month") or po.get("po_month"),
+                   "service_end_month": x.get("service_end_month")
+                                        or po.get("service_end_month")}
             # multi-STUDENT certificates: per-entry student/parent fields win
             for k in ("student_first", "student_last", "grade", "parent_first",
-                      "parent_last", "parent_email", "parent_phone", "rate"):
+                      "parent_last", "parent_email", "parent_phone", "rate", "rate_unit"):
                 if str(x.get(k) or "").strip():
                     sub[k] = x[k]
             out.append(sub)
@@ -536,6 +590,66 @@ def _split_pos(po: dict) -> list[dict]:
         return [{**po, "pos": None, "po_number": n, "amount": None, "hours": None,
                  "_split_amount_unknown": True} for n in nums]
     return [po]
+
+
+def _compute_hours(po: dict, note_parts: list[str]) -> None:
+    """Fill po['hours'] from amount + rate, honoring BOTH charter offerings
+    (Roman, 2026-08-26): $75/hour (the 99% case) and $60 per 45-minute session
+    (the push). hours is ALWAYS stored as hours — a 4-session PO stamps 3.
+    A stated rate wins; rate_unit says what it buys. No rate stated → try the
+    standard offerings and fill ONLY when exactly one divides the amount
+    cleanly — $300 fits both (4 hrs OR 5 sessions = 3.75 hrs), so it stays
+    blank and flags Kath instead of guessing (9 live deals hit this)."""
+    try:
+        amt = float(str(po.get("amount") or "").replace(",", "") or 0)
+        rate = float(str(po.get("rate") or "").replace(",", "") or 0)
+    except (TypeError, ValueError):
+        return
+    if amt <= 0:
+        return
+    offerings = cfg()["po_inbox"].get("service_offerings") or [
+        {"rate": 75, "unit": "hour"},
+        {"rate": 60, "unit": "session", "session_hours": 0.75}]
+    session_hours = next((float(o.get("session_hours") or 0.75) for o in offerings
+                          if str(o.get("unit", "")).startswith("session")), 0.75)
+    unit = (po.get("rate_unit") or "").strip().lower()
+    if rate > 0:
+        if unit.startswith("session"):
+            sessions = amt / rate
+            po["hours"] = f"{sessions * session_hours:g}"
+            note_parts.append(
+                f"🧮 Hours computed from the PO: ${amt:g} ÷ ${rate:g}/session = "
+                f"{sessions:g} sessions × {session_hours:g} hr = {po['hours']} hrs.")
+        else:  # 'hour', or unit missing — per-hour is the legacy default
+            po["hours"] = f"{amt / rate:g}"
+            note_parts.append(f"🧮 Hours computed from the PO: ${amt:g} ÷ "
+                              f"${rate:g}/hr = {po['hours']} hrs.")
+        return
+    fits = []   # (label, hours) per standard offering that divides cleanly
+    for o in offerings:
+        r = float(o.get("rate") or 0)
+        if r <= 0:
+            continue
+        qty = amt / r
+        if str(o.get("unit", "")).startswith("session"):
+            if abs(qty - round(qty)) < 1e-6:   # whole sessions only
+                fits.append((f"${r:g}/session ({round(qty)} sessions)",
+                             round(qty) * float(o.get("session_hours") or 0.75)))
+        elif abs(qty * 4 - round(qty * 4)) < 1e-6:   # quarter-hour granularity
+            fits.append((f"${r:g}/hr", qty))
+    if len(fits) == 1:
+        label, h = fits[0]
+        po["hours"] = f"{h:g}"
+        note_parts.append(f"🧮 No rate stated — hours computed at the standard {label} "
+                          f"offering: ${amt:g} → {po['hours']} hrs (verify on the invoice).")
+    elif fits:
+        cands = "; ".join(f"{lbl} → {h:g} hrs" for lbl, h in fits)
+        note_parts.append(f"⚠️ Hours not stated and ${amt:g} fits more than one offering "
+                          f"({cands}) — confirm which the school bought and fill hours "
+                          f"on the deal manually.")
+    else:
+        note_parts.append(f"⚠️ Hours not stated and ${amt:g} matches no standard offering "
+                          f"— fill hours on the deal manually.")
 
 
 def _dm_scheduler(po: dict, created: list[dict], note_parts: list[str]) -> None:
@@ -576,9 +690,8 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                           "approved in the school's ordering portal before service starts.")
     created: list[dict] = []
     tw_cache: dict = {}   # one Teachworks calendar lookup per family per email
-    seq_cache: dict = {}  # 'School N' base counted ONCE per email (no double-count)
     chase_queue: list = []  # (deal_id, deal_name, pipeline_id, po) needing a parent
-    stu_seen: dict = {}   # multi-STUDENT certificates: offsets count per student
+    stu_seen: dict = {}   # multi-STUDENT certificates: one scheduling alert per student
     for sub in subs:
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
@@ -587,11 +700,10 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
                 (sub.get("student_last") or "").strip().lower())
         off = stu_seen.get(skey, 0)
         stu_seen[skey] = off + 1
-        # scheduling alert once per STUDENT, not once per PO month; seq_offset
-        # staggers 'School N' across the same student's deals in this email
+        # scheduling alert once per STUDENT, not once per PO month; 'School N'
+        # numbering is handled by the run-scoped _RUN_SEQ counter in _deal_name
         rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(off == 0),
-                             msg=msg, seq_offset=off, tw_cache=tw_cache,
-                             seq_cache=seq_cache, chase_queue=chase_queue)
+                             msg=msg, tw_cache=tw_cache, chase_queue=chase_queue)
         if rec:
             created.append(rec)
     _open_parent_chases(chase_queue, msg, note_parts)
@@ -620,13 +732,21 @@ def _school_year_tag(po: dict) -> str:
 
 def _next_school_seq(po: dict, short: str, year_tag: str) -> int:
     """N in 'School N': this student's existing deal count at this school this
-    school year + 1. Counted from deal names (search by student first name,
-    filter by school + year tag) — best-effort, defaults to 1."""
+    school year + 1. Counted from the student NAME PROPERTIES (exact match on
+    student_first_name + last, falling back to first-only for older deals that
+    never got the last-name stamp), then filtered by school + year tag in the
+    deal name — best-effort, defaults to 1. (Roman, 2026-08-26: the old
+    name-token search was capped at 10 unsorted rows, so any student with 10+
+    historical deals ALWAYS restarted at N=1 — Violet McGraw got iLead 1,2,3
+    twice; each Saenz kid got 1,2,3,4 twice.)"""
     sf = (po.get("student_first") or "").strip()
+    sl = (po.get("student_last") or "").strip()
     if not sf or not short:
         return 1
     try:
-        cands = hs.search_deals_by_name(sf)
+        cands = hs.search_deals_by_student(sf, sl or None)
+        if not cands and sl:
+            cands = hs.search_deals_by_student(sf)
     except Exception:  # noqa: BLE001 — naming must never block the deal
         return 1
     n = 0
@@ -637,26 +757,31 @@ def _next_school_seq(po: dict, short: str, year_tag: str) -> int:
     return n + 1
 
 
-def _deal_name(po: dict, parent_name: str, note_parts: list[str],
-               seq_offset: int = 0, seq_cache: dict | None = None) -> str:
+# (school, year, student) → the NEXT N to issue. RUN-scoped, seeded from the
+# HubSpot search on first touch, then incremented per name issued — so the
+# second email of the same run continues 4, 5, 6 even though HubSpot's search
+# index hasn't caught up with the deals created seconds earlier (the McGraw
+# double-1,2,3 bug: two messages 30s apart, each re-searched and got base=1).
+_RUN_SEQ: dict = {}
+
+
+def _deal_name(po: dict, parent_name: str, note_parts: list[str]) -> str:
     """Roman's convention (2026-08-10): 'Parent - Student - School N - YY/YY'.
     Parent unresolved → 'NEEDS PARENT - ...' until the chase flow fills it in.
-    seq_offset staggers N across the deals of one multi-PO email; the BASE
-    count is searched ONCE per email (seq_cache) — re-searching per sibling
-    double-counts as the index catches up (the Zackarias 1,2,4,7,9 bug)."""
+    N comes from _RUN_SEQ (above): searched once per student+school+year per
+    run, incremented per name issued — re-searching per sibling double-counts
+    as the index catches up (the Zackarias 1,2,4,7,9 bug)."""
     short, mapped = _school_short(po.get("school") or "")
     year = _school_year_tag(po)
     student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip()
     # keyed per STUDENT too — a multi-student certificate numbers each kid's
     # deals from their own count, not a shared one
-    key = (short.lower(), year, (po.get("student_first") or "").strip().lower())
-    if seq_cache is not None and key in seq_cache:
-        base = seq_cache[key]
-    else:
-        base = _next_school_seq(po, short, year)
-        if seq_cache is not None:
-            seq_cache[key] = base
-    seq = base + seq_offset
+    key = (short.lower(), year, (po.get("student_first") or "").strip().lower(),
+           (po.get("student_last") or "").strip().lower())
+    if key not in _RUN_SEQ:
+        _RUN_SEQ[key] = _next_school_seq(po, short, year)
+    seq = _RUN_SEQ[key]
+    _RUN_SEQ[key] += 1
     if short and not mapped:
         note_parts.append(f"🏫 School '{short}' has no shorthand — add it to "
                           f"po_inbox.school_short_names in config.yaml.")
@@ -1143,34 +1268,91 @@ def _sweep_pending_pos() -> None:
                       "po_number": (r.get("po_number") or "").strip()})
 
 
-def _find_parent_via_deals(po: dict):
-    """POs typically DON'T include parent info — Kath's manual fix was to
-    look the student up in HubSpot and read the parent off their prior deal
-    (deals are named 'Parent - Student - School (Month)' and carry the family
-    contact). Mechanized: search deals by the student's first name, narrow to
-    names also containing the student's last name when possible, collect the
-    deals' non-TOR contacts — a UNIQUE parent across matches resolves it;
-    anything ambiguous falls through to the last-name search, then manual.
-    Returns (contact, deal_name) or None."""
+def _parent_from_student_deals(po: dict):
+    """Resolve the parent from the DEAL student-name PROPERTIES (Roman 2026-08-26).
+
+    Tried before the deal-NAME search below because it is the only lookup that
+    survives the two things that actually break parent resolution:
+
+      • the family surname differing from the student's — searching contacts by
+        `lastname` returns nothing for Giada Di Nardo (parent Leeanne Gonzales)
+        and returns the WRONG person for Matthew Rose, where it once matched a
+        2022 contact named Dina Rose and named five deals after her;
+      • typos in the deal name — four consecutive Doyal deals read "Copper"
+        while `student_first_name` still reads "Cooper".
+
+    Measured over the 19 deals flagged NEEDS PARENT since 2026-08-01: 18 resolve
+    to the correct parent, 1 (Rayven Holloway) ties and is deliberately left for
+    a human. Returns (contact, deal_name) or None.
+    """
     sf = (po.get("student_first") or "").strip()
-    sl = (po.get("student_last") or "").strip().lower()
+    sl = (po.get("student_last") or "").strip()
     t_email = (po.get("tor_email") or "").strip().lower()
-    if not sf:
+    if not sf or not sl:
         return None
     try:
-        cands = hs.search_deals_by_name(sf)
+        deals = hs.search_deals_by_student(sf, sl)
+    except Exception as e:  # noqa: BLE001 — parent resolution is best-effort
+        print(f"  ⚠️  student-property parent lookup failed (non-fatal): {e}")
+        return None
+    tally, seen = Counter(), {}
+    for d in deals[:8]:
+        for c in hs.get_deal_contacts(d["id"]):
+            if not hs.is_family_contact(c.get("properties") or {}, t_email):
+                continue
+            cid = str(c.get("id"))
+            tally[cid] += 1
+            seen[cid] = (c, (d.get("properties") or {}).get("dealname", "?"))
+    if not tally:
+        return None
+    ranked = tally.most_common()
+    # A STRICT winner only. A tie means either two families share the student
+    # name or a deal is mis-stamped (deal 57397570424 is Payton Curtis's but
+    # carries student_last_name "Doyal"), and guessing would name the deal —
+    # and address the family's SMS — after the wrong parent.
+    if len(ranked) > 1 and ranked[0][1] == ranked[1][1]:
+        return None
+    return seen[ranked[0][0]]
+
+
+def _find_parent_via_deals(po: dict):
+    """POs typically DON'T include parent info — Kath's manual fix was to
+    look the student up in HubSpot and read the parent off their prior deal.
+    Mechanized: EXACT search on the student name properties (first + last;
+    compound surnames retry each part), collect the deals' non-TOR contacts —
+    a UNIQUE parent across matches resolves it; anything ambiguous or
+    last-name-less falls through to the next step, then the parent chase.
+    Returns (contact, deal_name) or None."""
+    # Structured student-name properties first; the deal-NAME search below is
+    # the fallback for deals that predate those properties being filled.
+    via_props = _parent_from_student_deals(po)
+    if via_props:
+        return via_props
+    sf = (po.get("student_first") or "").strip()
+    sl = (po.get("student_last") or "").strip()
+    t_email = (po.get("tor_email") or "").strip().lower()
+    # LAST NAME REQUIRED (2026-08-28, the Mateo Murray-Fiore incident): a
+    # first-name-only match across deal names resolved the WRONG Mateo (Luis
+    # Ramirez's private-pay son) and the deal, TW family, and SMS all keyed on
+    # the wrong parent. No last-name agreement → no guess → parent chase.
+    if not sf or not sl:
+        return None
+    try:
+        import re as _re
+        cands = hs.search_deals_by_student(sf, sl)
+        # compound surname: the PO's 'Murray-Fiore' vs our stamped 'Fiore' —
+        # retry each part, still an EXACT property match, never first-name-only
+        for part in _re.split(r"[-\s]+", sl):
+            if cands or not part or part.lower() == sl.lower():
+                continue
+            cands = hs.search_deals_by_student(sf, part)
         if not cands:
             return None
-        narrowed = [d for d in cands
-                    if sl and sl in ((d.get("properties") or {}).get("dealname") or "").lower()] or cands
         parents = {}
-        for d in narrowed[:6]:
+        for d in cands[:6]:
             for c in hs.get_deal_contacts(d["id"]):
                 props = c.get("properties") or {}
-                em = (props.get("email") or "").lower()
-                if t_email and em == t_email:
-                    continue                      # the TOR is on deals too — never the parent
-                if "Teacher of Record" in (props.get("a_persona") or ""):
+                if not hs.is_family_contact(props, t_email):
                     continue
                 parents[str(c.get("id"))] = (c, (d.get("properties") or {}).get("dealname", "?"))
         if len(parents) == 1:
@@ -1182,8 +1364,7 @@ def _find_parent_via_deals(po: dict):
 
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True, msg: dict | None = None,
-                   seq_offset: int = 0, tw_cache: dict | None = None,
-                   seq_cache: dict | None = None,
+                   tw_cache: dict | None = None,
                    chase_queue: list | None = None) -> dict | None:
     """Advance the matching Waiting-for-PO deal, or create one. Returns
     {name, pending} for a CREATED deal (drives the scheduler DM), else None."""
@@ -1194,30 +1375,35 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
     if not token:
         note_parts.append("💼 No student/school extracted — no deal action; review manually.")
         return
-    # PO hours: schools often state only amount + hourly rate — compute them
+    # PO hours: schools often state only amount + a rate — compute them
     # (Roman, 2026-08-11: "you might have to calculate; our rate will be in the PO").
     if not po.get("hours"):
-        try:
-            amt = float(str(po.get("amount") or "").replace(",", "") or 0)
-            rate = float(str(po.get("rate") or "").replace(",", "") or 0)
-            if amt > 0 and rate > 0:
-                po["hours"] = f"{amt / rate:g}"
-                note_parts.append(f"🧮 Hours computed from the PO: ${amt:g} ÷ "
-                                  f"${rate:g}/hr = {po['hours']} hrs.")
-        except (TypeError, ValueError):
-            pass
+        _compute_hours(po, note_parts)
     # PO-number dedupe via the canonical po_number PROPERTY (then name as backstop).
     po_num = _norm_po_number(po.get("po_number"))
     if po_num:
         dup = hs.find_deals_by_po_number(po_num) or hs.search_deals_by_name(po_num)
         if dup:
-            dn = (dup[0].get("properties") or {}).get("dealname", "?")
-            note_parts.append(f"💼 DUPLICATE PO {po_num} ('{dn}') — no new deal; Kath alerted.")
+            dp = dup[0].get("properties") or {}
+            dn = dp.get("dealname", "?")
+            # A match on a STOPPED deal is not a duplicate — it's the school
+            # RE-ISSUING a number we saw cancelled. Say so, don't cry dupe.
+            stage = hs.stage_label(dp.get("pipeline"), dp.get("dealstage")).lower()
+            reissued = "stopped" in stage or "closed lost" in stage
+            note_parts.append(
+                f"💼 PO {po_num} previously CANCELLED ('{dn}', {stage}) and now re-issued "
+                f"— review whether to revive that deal or create fresh; Kath alerted."
+                if reissued else
+                f"💼 DUPLICATE PO {po_num} ('{dn}') — no new deal; Kath alerted.")
             owner = staff(pc.get("owner", "kath"))
             slack_client.dm(owner.get("slack_user_id"),
-                            f"🚨 URGENT — duplicate PO received: PO {po_num} already has deal "
-                            f"'{dn}'. Check whether the school re-sent it or this is a second "
-                            f"authorization before doing anything.")
+                            (f"🚨 PO {po_num} re-issued: its deal '{dn}' was cancelled/"
+                             f"stopped. Decide whether to revive it (restore amount/hours) "
+                             f"or create a fresh deal before anything else."
+                             if reissued else
+                             f"🚨 URGENT — duplicate PO received: PO {po_num} already has "
+                             f"deal '{dn}'. Check whether the school re-sent it or this is "
+                             f"a second authorization before doing anything."))
             # the approved PO re-arriving IS the approval signal — close the
             # pending-approval sweep for this PO number
             audit.append({"message_id": f"pending-po-confirmed:{po_num}",
@@ -1251,6 +1437,10 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         # deal to the right channel by pipeline (Roman, 2026-08-10).
         extra = {"po_number": po_num,
                  "should_this_deal_be_posted_to_a_slack_channel_": "true"}
+        # Deal Description carries the extraction summary (Roman 2026-09-04:
+        # the deal itself should say what the PO says, not just the ticket)
+        if (po.get("summary") or "").strip():
+            extra["description"] = po["summary"].strip()[:1500]
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
         # Resolve the PARENT contact FIRST — the deal name leads with the parent
@@ -1352,8 +1542,33 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             contact_bit = ("NO parent contact info in the PO and no unique family match — "
                            "parent-info request drafted to the TOR/sender (see 📨); once it "
                            "lands the contact is auto-created and associated, ")
+        # The stamp writes po["parent_email"/"parent_phone"] — when the PO didn't
+        # state them but the parent WAS resolved (prior deal, family match), feed the
+        # resolved values back so the deal properties are always filled (Aug audit:
+        # 98/121 deals had the parent associated but the property blank).
+        if contact_id and not po.get("parent_email") and parent_email_res \
+                and not _internal_email(parent_email_res):
+            po["parent_email"] = parent_email_res
+        if contact_id and not po.get("parent_phone"):
+            try:
+                c = hs._get(f"/crm/v3/objects/contacts/{contact_id}",
+                            {"properties": "phone,mobilephone"})
+                cp = c.get("properties") or {}
+                if cp.get("phone") or cp.get("mobilephone"):
+                    po["parent_phone"] = cp.get("phone") or cp.get("mobilephone")
+            except Exception:  # noqa: BLE001 — phone backfill is best-effort
+                pass
         if contact_id and not parent_name and p_email:
             parent_name = p_email.split("@")[0]
+        # The RESOLVED family email feeds the deal stamp too (Roman, 2026-08-26):
+        # iLEAD order agreements state a parent phone but no email, so the raw
+        # PO field is empty even though Teachworks / a prior deal just resolved
+        # the family. Stamping only the raw field left parent_email blank on
+        # 14 of 15 deals and fired 'missing info' DMs about data we had.
+        if parent_email_res and not (po.get("parent_email") or "").strip():
+            po["parent_email"] = parent_email_res
+            note_parts.append(f"📇 Parent email <{parent_email_res}> resolved from "
+                              f"records (not stated in the PO) — stamped on the deal.")
         # "Is the family currently being tutored by us?" ROUTES the SMS workflow
         # (verified against flow 1603217415, 2026-08-11): BOTH values text the
         # family a schedule-confirmation; "No" additionally alerts staff by
@@ -1390,11 +1605,21 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             if sched_pref:
                 extra["schedule_preferences"] = sched_pref
             else:
-                tw_note = ("⚠️ No TW schedule to put in the SMS "
-                           "(schedule_preferences blank) — the confirmation text "
-                           "will be incomplete; set the schedule manually.")
+                # No schedule in the PO or Teachworks → the SMS asks the family
+                # for one instead of trailing off blank (Roman 2026-08-22:
+                # "include just a general phrase of please provide us your
+                # schedule, and that will get auto texted"). ℹ️ (not ⚠️) so the
+                # ticket records it without tripping the 🚩 gap DM — nothing
+                # manual is left to do.
+                extra["schedule_preferences"] = pc.get(
+                    "schedule_ask_fallback",
+                    "we don't have your schedule on file yet! Please reply "
+                    "with the days and times that work best for your student")
+                tw_note = ("ℹ️ No schedule in the PO or Teachworks — the "
+                           "confirmation text asks the family for their "
+                           "schedule instead.")
         upcoming = act.get("upcoming") if act else None
-        name = _deal_name(po, parent_name, note_parts, seq_offset, seq_cache)
+        name = _deal_name(po, parent_name, note_parts)
         pipeline_id, stage_id = pc["deal_pipeline_id"], pc["advance_to_stage"]
         if po.get("level_up"):
             if pc.get("levelup_pipeline_id"):
@@ -1428,13 +1653,17 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         if po.get("pending_approval") and d.get("id") and d.get("id") != "DRYRUN":
             # pending-approval follow-up sweep: track the open pending PO; the
             # duplicate alert (approved PO re-arriving) confirms it, the sweep
-            # nags after the window (Roman batch, 2026-08-14)
+            # nags after the window. Roman, 2026-08-26: portal approval takes
+            # AT LEAST 14 days from the original email — the old 16-business-hour
+            # window nagged Kath about approvals that could not exist yet
+            # (24 false reminders, Aug 21-25) and trains her to ignore the one
+            # that genuinely stalls.
             audit.append({"message_id": f"pending-po:{d.get('id')}", "source": "po_inbox",
                           "action_taken": "pending_po_opened", "deal_id": d.get("id"),
                           "deal_name": name, "po_number": po_num,
-                          "sla_due": add_business_hours(
-                              now_la(), int(pc.get("pending_sweep_business_hours", 16))
-                          ).isoformat()})
+                          "sla_due": (now_la() + timedelta(
+                              days=int(pc.get("pending_portal_approval_days", 14))
+                          )).isoformat()})
         if no_lessons_check:
             _no_lessons_alert(po, name, note_parts, upcoming)
         # No waiting on the next cron: run the Teachworks sync for THIS deal now.
@@ -1498,6 +1727,124 @@ def _closed_thread(thread_id: str) -> bool:
     return _thread_already_handled(thread_id) and thread_id not in _open_chases()
 
 
+def _staff_by_owner_id(owner_id: str) -> dict:
+    """The staff record whose hubspot_owner_id matches, else {}."""
+    for rec in (cfg().get("staff") or {}).values():
+        if str(rec.get("hubspot_owner_id") or "") == str(owner_id or ""):
+            return rec
+    return {}
+
+
+def _handle_cancellation(po: dict, note_parts: list[str]) -> None:
+    """A school cancelled a PO (Roman, 2026-08-26, after IEM cancelled PO
+    1433577 two hours after the deal was created and the agent just drafted a
+    polite acknowledgment): zero the deal (amount AND hours), move it to the
+    pipeline's Stopped stage, and alert Kath (void the TW invoice — the TW API
+    can't), the deal's owner (don't schedule against it), and Roman.
+    A PARTIAL cancellation (billable count > 0 stated) mutates NOTHING —
+    delivered sessions are still invoiced; Kath adjusts by hand off the alert."""
+    pc = cfg()["po_inbox"]
+    po_num = _norm_po_number(po.get("po_number"))
+    if not po_num:
+        note_parts.append("⚠️ CANCELLATION notice without a readable PO number — find "
+                          "and stop the deal manually.")
+        return
+    try:
+        deals = hs.find_deals_by_po_number(po_num)
+    except Exception as e:  # noqa: BLE001
+        note_parts.append(f"⚠️ CANCELLATION for PO {po_num}: deal lookup failed ({e}) — "
+                          f"stop the deal manually.")
+        return
+    if not deals:
+        note_parts.append(f"⚠️ CANCELLATION for PO {po_num} but NO deal carries that "
+                          f"po_number — verify nothing was missed, then archive.")
+        return
+    try:
+        billable = float(str(po.get("billable_stated") or "").strip() or 0)
+    except (TypeError, ValueError):
+        billable = 0.0
+    partial = billable > 0
+    for d in deals:
+        p = d.get("properties") or {}
+        name, deal_id = p.get("dealname", "?"), d.get("id")
+        url = f"https://app.hubspot.com/contacts/{cfg()['hubspot']['portal_id']}/record/0-3/{deal_id}"
+        if partial:
+            note_parts.append(f"🛑 PARTIAL cancellation of PO {po_num} ('{name}'): "
+                              f"{billable:g} billable per the school — deal left UNTOUCHED; "
+                              f"adjust amount/hours and the TW invoice manually.")
+        else:
+            stop_stage, stop_label = hs.find_stop_stage(
+                p.get("pipeline") or "", ["stopped", "closed lost"])
+            props = {"amount": "0", "number_of_hours_in_this_po": "0"}
+            if stop_stage:
+                props["dealstage"] = stop_stage
+            try:
+                hs._write("PATCH", f"/crm/v3/objects/deals/{deal_id}", {"properties": props})
+                note_parts.append(f"🛑 PO {po_num} CANCELLED by the school — deal '{name}' "
+                                  f"moved to {stop_label or 'its stop stage'}, amount and "
+                                  f"hours zeroed.")
+            except Exception as e:  # noqa: BLE001
+                note_parts.append(f"⚠️ CANCELLATION for PO {po_num}: could not update deal "
+                                  f"'{name}' ({e}) — stop and zero it manually.")
+                continue
+            try:
+                closed_tasks = hs.complete_invoice_tasks_for_po(po_num)
+                if closed_tasks:
+                    note_parts.append(f"🗂️ Closed {closed_tasks} open convert-to-invoice "
+                                      f"task(s) for the cancelled PO.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  convert-task close failed (non-fatal): {e}")
+            try:
+                hs.add_deal_note(deal_id,
+                                 f"🛑 PO {po_num} CANCELLED by the school "
+                                 f"({(po.get('summary') or '')[:300]}). Deal stopped, amount "
+                                 f"and hours zeroed by the PO agent. Do NOT schedule lessons "
+                                 f"against this PO. Any Teachworks invoice for it must be "
+                                 f"voided.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  cancellation deal note failed (non-fatal): {e}")
+        # Alerts: Kath owns the invoice void; the deal owner must not schedule;
+        # Roman is CC'd via missing_info_dms. One DM each per cancelled PO.
+        inv = (p.get("invoice__") or "").strip()
+        inv_bit = f" TW invoice {inv} must be voided." if inv else \
+                  " If a TW invoice was created for it, void it."
+        base = (f"🛑 PO CANCELLED by the school — {name} (PO {po_num}, "
+                f"was ${p.get('amount') or '?'}).")
+        action = (f" Deal left untouched pending manual adjustment "
+                  f"({billable:g} billable stated)." if partial
+                  else " Deal stopped, amount and hours zeroed.")
+        recipients = {}
+        for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
+            s = staff(key)
+            if s.get("slack_user_id"):
+                recipients[s["slack_user_id"]] = s
+        owner_rec = _staff_by_owner_id(p.get("hubspot_owner_id"))
+        if owner_rec.get("slack_user_id"):
+            recipients[owner_rec["slack_user_id"]] = owner_rec
+        for uid in recipients:
+            try:
+                slack_client.dm(uid, base + action + inv_bit +
+                                f" Do not schedule lessons against this PO.\n{url}")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  cancellation DM failed (non-fatal): {e}")
+        if not partial and deal_id and deal_id != "DRYRUN":
+            try:
+                owner = staff(pc.get("owner", "kath"))
+                due = add_business_hours(now_la(), 8)
+                hs.create_task(f"Void TW invoice — PO {po_num} cancelled ({name})",
+                               f"The school cancelled PO {po_num} (0 billable). "
+                               f"{'Void TW invoice ' + inv + '.' if inv else 'Check whether a TW invoice was created for it and void it.'}"
+                               f" Deal (stopped, zeroed): {url}",
+                               owner.get("hubspot_owner_id"),
+                               int(due.timestamp() * 1000), priority="HIGH")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  void-invoice task failed (non-fatal): {e}")
+        audit.append({"message_id": f"po-cancelled:{po_num}:{deal_id}",
+                      "source": "po_inbox", "action_taken": "po_cancelled",
+                      "deal_id": deal_id, "po_number": po_num,
+                      "partial": partial, "deal_name": name})
+
+
 def process_po_message(stub_id: str, force: bool = False) -> dict | None:
     """force=True (replay) bypasses the processed guard — used to re-run a
     message under new rules (e.g. order agreements now counting as POs)."""
@@ -1528,8 +1875,13 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
     note_parts: list[str] = []
     sla_due = add_business_hours(now_la(), 8)
 
+    hint = "" if po.get("is_po") else (po.get("category_hint") or "").strip().lower()
     if po.get("is_po"):
         _handle_deal(po, note_parts, attachments, msg=m)
+        labels = [pc["label_processed"]] + ([f"School/{po['school'][:40]}"] if po.get("school") else [])
+    elif po.get("is_cancellation"):
+        record["category"] = "po_cancellation"
+        _handle_cancellation(po, note_parts)
         labels = [pc["label_processed"]] + ([f"School/{po['school'][:40]}"] if po.get("school") else [])
     else:
         labels = [pc["label_review"]]
@@ -1539,13 +1891,69 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         if chases and (po.get("parent_email") or "").strip():
             _resolve_parent_chases(chases, po, note_parts)
             record["category"] = "parent_info_reply"
+        if hint:
+            record["category_hint"] = hint
         note_parts.append(f"Not a PO: {po.get('summary','')[:200]}")
 
-    # Ticket (same spine as admin inbox)
+    # Ticket (same spine as admin inbox). Non-PO mail is NOT one bucket
+    # (Roman, 2026-08-26 — the Epic California C&CP signature request sat as a
+    # generic MEDIUM ticket while it blocked every PO from that school):
+    # vendor_compliance → HIGH, owned by the compliance seat (sales);
+    # scam / marketing_junk → LOW (human eyes, no urgency); the rest → MEDIUM.
     subject = (f"new_po — {po.get('school') or m['sender'][:40]}"
                + (f" (PO {po['po_number']})" if po.get("po_number") else "")) if po.get("is_po") \
               else f"po_inbox review — {m['subject'][:50]}"
-    if closed_thread and not po.get("is_po"):
+    # The work type drives owner, priority and category from config (Roman
+    # 2026-08-27). Before this, EVERY charter@ ticket was stamped new_deal_po —
+    # including the 42 of 93 open ones whose own description read "Not a PO:" —
+    # so no routing rule matched and the ticket fell to the inbox owner with no
+    # SLA and no done-state.
+    work_type = ("purchase_order" if po.get("is_po") else
+                 "po_cancellation" if record["category"] == "po_cancellation" else
+                 record.get("category") if record.get("category") == "parent_info_reply" else
+                 hint or "other")
+    wt_cfg = (pc.get("work_types") or {}).get(work_type, {})
+    priority = wt_cfg.get("priority", "MEDIUM")
+    ticket_owner = staff(wt_cfg["owner"]) if wt_cfg.get("owner") else owner
+    ticket_owner = ticket_owner or owner
+    category = wt_cfg.get("category", "new_deal_po")
+    record["po_work_type"] = work_type
+
+    # Subject prefix + the note that tells the owner what they are looking at.
+    # Owner/priority/category come from work_types above, not from here.
+    if work_type == "po_cancellation":
+        subject = (f"PO CANCELLED — {po.get('school') or m['sender'][:40]}"
+                   + (f" (PO {po['po_number']})" if po.get("po_number") else ""))
+    elif work_type == "vendor_compliance":
+        subject = f"COMPLIANCE — {m['subject'][:50]}"
+        note_parts.append(f"📋 Vendor/compliance item — routed to "
+                          f"{ticket_owner.get('name', 'the compliance seat')}: unsigned "
+                          f"agreements and rule changes block or reshape POs.")
+    elif work_type == "ar_followup":
+        subject = f"AR — {m['subject'][:50]}"
+        note_parts.append("💵 Money we are OWED: a school or its AP department is "
+                          "chasing, disputing or confirming payment. Reconcile against "
+                          "the Teachworks invoice before replying — several of these "
+                          "turned out to be paid on their side and unrecorded on ours.")
+    elif work_type == "invoice_correction":
+        subject = f"INVOICE FIX — {m['subject'][:50]}"
+        note_parts.append("🧾 They will pay once the invoice is corrected and resent. "
+                          "Fix it in Teachworks, resubmit, then stamp Invoice # on the "
+                          "deal. Suncoast held $1,330 for 10 days over a Bill To name.")
+    elif work_type == "vendor_onboarding":
+        subject = f"VENDOR SETUP — {m['subject'][:50]}"
+        note_parts.append("🏫 We are approved or renewed and there is setup to finish "
+                          "(portal login, welcome packet, account activation). Unfinished "
+                          "onboarding blocks the school's POs from reaching us.")
+    elif work_type == "scam":
+        subject = f"SUSPECTED SCAM — {m['subject'][:50]}"
+        note_parts.append("🎣 Scam pattern (advance-fee / bulk-prepay shape) — do not "
+                          "reply with location or banking details; archive after a glance. "
+                          "Sender address deliberately NOT captured as a parent contact.")
+        record["parent_email"] = ""
+    elif work_type == "marketing_junk":
+        subject = f"marketing/junk — {m['subject'][:50]}"
+    if closed_thread and not po.get("is_po") and record["category"] != "po_cancellation":
         subject = f"PO-thread reply — {m['subject'][:50]}"
         note_parts.insert(0, "↩️ Reply on an ALREADY-PROCESSED PO thread — check it for "
                              "corrections or updates to the existing deal(s).")
@@ -1557,9 +1965,16 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             f"Attachments read: {', '.join(a['filename'] for a in attachments) or 'none'}\n"
             f"Summary: {po.get('summary')}\n" + "\n".join(note_parts)
             + f"\nSLA due: {sla_due.isoformat()}")
-    ticket = hs.create_ticket(subject, owner["hubspot_owner_id"],
+    ticket = hs.create_ticket(subject, ticket_owner["hubspot_owner_id"],
                               cfg()["hubspot"]["ticket_stages"]["needs_approval"], desc, None,
-                              priority="MEDIUM", category="new_deal_po", source="EMAIL")
+                              priority=priority, category=category, source="EMAIL",
+                              # #AP007 — declared in properties.yml since the Feedback
+                              # Agent and never written by this engine until now, which
+                              # is why every dedup and origin report had to guess from
+                              # the subject line.
+                              extra_props={"po_work_type": work_type,
+                                           "ticket_source": "email_engine",
+                                           "source_thread_id": m.get("threadId", "")})
     record["ticket_id"] = ticket.get("id")
     record["sla_due"] = sla_due.isoformat()
 
@@ -1613,10 +2028,34 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             slack_client.dm(ccs["slack_user_id"], f"📋 [copy → {owner['name']}] 📦 {subject}")
     _notify_gaps(subject, note_parts, record.get("ticket_id"))
 
+    # A copy of this document may have reached admin@ first (schools' ordering
+    # systems email the vendor contact on file); the triage agent then opened a
+    # handoff ticket. This is the real processing, so close those.
+    try:
+        closed = po_sources.close_handoffs(
+            m["subject"], m.get("attachment_names") or [a["filename"] for a in attachments],
+            record.get("ticket_id"), deal_bit)
+        if closed:
+            record["handoffs_closed"] = closed
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  handoff close failed (non-fatal): {e}")
+
     record["action_taken"] = "po_processed"
     audit.append(record)
     print(f"  📦 {subject} → {pc.get('owner')} (ticket {record.get('ticket_id')})")
     return record
+
+
+def _inbox_query(since: int, pc: dict) -> str:
+    """The Gmail poll query — always reaches an OVERLAP window BEHIND the
+    cursor (the Lia Beck miss, 2026-08-28: two OPS emails landed 2 minutes
+    apart; the poll that processed the first advanced the cursor past the
+    second's arrival, and Gmail's search index can also lag fresh mail —
+    either way a message can land behind the cursor and become permanently
+    invisible to `after:`). Re-listed mail is free: the already_processed
+    guard skips it before any work happens."""
+    overlap = int(pc.get("cursor_overlap_seconds", 3600))
+    return f"in:inbox after:{max(0, since - overlap)}"
 
 
 def run() -> None:
@@ -1638,6 +2077,21 @@ def run() -> None:
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  replay error on {rid}: {e}", file=sys.stderr)
             traceback.print_exc()
+    # Diagnostic: PO_DIAG_QUERY="<gmail query>" [PO_DIAG_MAILBOX=addr] lists what a
+    # mailbox actually holds (Spam/Trash included) and exits. Investigation rule
+    # 2026-08-31: verify the QUERY before declaring "never arrived".
+    dq = (os.environ.get("PO_DIAG_QUERY") or "").strip()
+    if dq:
+        mb = (os.environ.get("PO_DIAG_MAILBOX") or "").strip() or None
+        stubs = gm.list_messages(dq, max_results=100, mailbox=mb, include_spam_trash=True)
+        print(f"po_inbox DIAG {mb or pc['address']}: {len(stubs)} match(es) for {dq!r}")
+        for s in stubs:
+            m = gm.get_message(s["id"], mailbox=mb)
+            when = datetime.fromtimestamp((m.get("date_ms") or 0) / 1000, tz=timezone.utc)
+            print(f"  · {s['id']} {when:%Y-%m-%d %H:%MZ} labels={sorted(m.get('label_ids') or [])} "
+                  f"from={m.get('sender', '')[:50]!r} subj={(m.get('subject') or '')[:80]!r} "
+                  f"att={m.get('attachment_names') or []}")
+        return
     cur_path = Path(__file__).resolve().parent.parent / "state" / "po_cursor.json"
     state = _json.loads(cur_path.read_text()) if cur_path.exists() else {}
     since = state.get("last_epoch")
@@ -1647,13 +2101,31 @@ def run() -> None:
             cur_path.write_text(_json.dumps({"last_epoch": since}))
         print(f"po_inbox: baseline set ({since}); new mail picked up next run")
         return
+    # PO mail that schools' ordering systems send to OTHER mailboxes (admin@)
+    # is copied into charter@ FIRST, so the poll below processes it this run.
     try:
-        stubs = gm.list_messages(f"in:inbox after:{since}")
+        n = po_sources.mirror_sources(state)
+        if n:
+            print(f"po_inbox: mirrored {n} PO document(s) from other inboxes")
+    except Exception as e:  # noqa: BLE001 — the charter poll must still run
+        print(f"  ⚠️  PO source mirror failed (non-fatal): {e}", file=sys.stderr)
+        traceback.print_exc()
+    # PO-shaped mail Gmail spam-filtered at charter@ itself: moved to the inbox
+    # and processed NOW (its arrival date may already be behind the cursor).
+    rescued: list[str] = []
+    try:
+        rescued = po_sources.rescue_spam(state)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  Spam rescue failed (non-fatal): {e}", file=sys.stderr)
+    try:
+        stubs = gm.list_messages(_inbox_query(since, pc))
     except Exception as e:  # noqa: BLE001 — most likely DWD not granted yet
         if "unauthorized_client" in str(e):
             print("po_inbox: Gmail delegation not granted yet (SETUP §7a) — skipping cleanly")
             return
         raise
+    listed = {s["id"] for s in stubs}
+    stubs = [{"id": i} for i in rescued if i not in listed] + stubs
     print(f"po_inbox: {len(stubs)} new message(s)")
     newest = since
     for s in stubs:
@@ -1687,7 +2159,9 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  draft-feedback sweep failed (non-fatal): {e}")
     if not DRY_RUN:
-        cur_path.write_text(_json.dumps({"last_epoch": newest}))
+        # Keep the per-source mirror cursors (state["sources"]) alongside the
+        # charter cursor.
+        cur_path.write_text(_json.dumps({**state, "last_epoch": newest}))
 
 
 if __name__ == "__main__":

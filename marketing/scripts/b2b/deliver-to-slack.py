@@ -2,17 +2,16 @@
 """
 A+ Tutoring weekly bundle Slack delivery (v2 — 14-graphic edition).
 
-Posts a header message to a Slack channel, then 8 threaded reply messages
-covering every asset in the bundle:
+Posts a header message to a Slack channel, then one threaded reply per
+deliverable in the bundle:
 
-  1. Blog assets gallery   (hero, social-card, creative-graphic, 3 pull-quotes)
-  2. LinkedIn company post (text + carousel slide 1)
-  3. LinkedIn carousel     (all 5 carousel slides as a gallery)
-  4. Roman op-ed           (text + pull-quote s2 standalone)
-  5. Danielle op-ed        (text + pull-quote s3 standalone)
-  6. Instagram post        (text from instagram-post.md + image)
-  7. Instagram story       (image only, no caption)
-  8. Facebook post         (text + image)
+  1. LinkedIn company post (text + social card)
+  2. Roman op-ed           (text + pull-quote s1)
+  3. Danielle op-ed        (text + pull-quote s2)
+  4. LinkedIn carousel     (PDF + all 5 slides as a gallery)
+  5. Instagram post        (shared FB/IG caption + card, "Link in story.")
+  6. Facebook post         (shared FB/IG caption + card, "Link in comments.")
+  7. Blog assets gallery   (hero, social card, 2 pull-quotes — reference only)
 
 Delivery only. The bot never publishes to LinkedIn, Facebook, or Instagram —
 Danielle / Roman copy-paste each block from Slack into the destination
@@ -52,6 +51,14 @@ def dated_filename(local_path, bundle_path):
 
 
 # ---------- Delivery structure ----------
+
+# Danielle 2026-08-31: the blog link lives in a different place on each platform,
+# so the shared FB/IG caption cannot end with one shared pointer. Instagram carries
+# it on the story link sticker; Facebook carries it in the first comment. The
+# caption is generated once and link-agnostic (see content-build.py), and the
+# pointer line below is appended per platform at delivery.
+INSTAGRAM_LINK_CTA = "Link in story."
+FACEBOOK_LINK_CTA = "Link in comments."
 
 # Each piece is one thread reply. The first body line is the title; the
 # rest is the body content. "image_files" are paths relative to the bundle.
@@ -105,15 +112,26 @@ PIECES = [
             "graphics/linkedin-carousel-slide-5-with-logo.png",
         ],
     },
+    # Same caption and same card on both platforms, but each gets its own reply so
+    # the block you copy already carries that platform's link line.
     {
-        "name": "Reply 5 — Facebook + Instagram post",
-        "publish_window": "post the SAME caption + image to both",
-        "destination": "Facebook page + Instagram",
+        "name": "Reply 5 — Instagram post",
+        "publish_window": "same caption as Facebook, different link line",
+        "destination": "Instagram",
         "body_file": "fb-ig-post.md",
+        "link_cta": INSTAGRAM_LINK_CTA,
         "image_files": ["graphics/fb-ig-card-with-logo.png"],
     },
     {
-        "name": "Reply 6 — Blog assets (reference)",
+        "name": "Reply 6 — Facebook post",
+        "publish_window": "same caption as Instagram, different link line",
+        "destination": "Facebook page",
+        "body_file": "fb-ig-post.md",
+        "link_cta": FACEBOOK_LINK_CTA,
+        "image_files": ["graphics/fb-ig-card-with-logo.png"],
+    },
+    {
+        "name": "Reply 7 — Blog assets (reference)",
         "publish_window": "reference — already embedded in the HubSpot draft",
         "destination": "the HubSpot blog draft (link above)",
         "body_text": (
@@ -159,6 +177,38 @@ def md_to_slack_mrkdwn(md):
     text = re.sub(r"\*\*([^*]+)\*\*", r"*\1*", md)
     text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"<\2|\1>", text)
     return text
+
+
+def is_hashtag_line(line):
+    """True for the caption's trailing hashtags line (`#a #b #c`), false for a
+    markdown heading (`# Heading`) or ordinary copy."""
+    tokens = line.split()
+    return bool(tokens) and all(t.startswith("#") and len(t) > 1 for t in tokens)
+
+
+def append_link_cta(body, cta):
+    """Add the platform's link pointer as its own line. It goes ABOVE a trailing
+    hashtags line, because hashtags read last in a caption."""
+    lines = body.rstrip().split("\n")
+    hashtags = []
+    if lines and is_hashtag_line(lines[-1]):
+        hashtags = [lines.pop()]
+        while lines and not lines[-1].strip():
+            lines.pop()
+    parts = (lines + [""] if lines else []) + [cta] + (["", *hashtags] if hashtags else [])
+    return "\n".join(parts)
+
+
+def piece_body(bundle, piece):
+    """The exact copy for this piece's Slack block, ready to paste into the
+    destination platform."""
+    if "body_file" in piece:
+        body = md_to_slack_mrkdwn(extract_body(bundle / piece["body_file"]))
+    else:
+        body = piece["body_text"]
+    if piece.get("link_cta"):
+        body = append_link_cta(body, piece["link_cta"])
+    return body
 
 
 def ensure_under_size(image_path, max_bytes=MAX_IMAGE_BYTES):
@@ -397,11 +447,7 @@ def main():
     # Dry-run preview
     print("\n=== Pieces ===")
     for p in effective_pieces:
-        body_preview = ""
-        if "body_file" in p:
-            body_preview = md_to_slack_mrkdwn(extract_body(bundle / p["body_file"]))
-        else:
-            body_preview = p["body_text"]
+        body_preview = piece_body(bundle, p)
         n_images = len(p["_present_images"])
         print(f"  - {p['name']}  ({n_images} images, {len(body_preview)} chars, -> {p['destination']})")
 
@@ -434,10 +480,7 @@ def main():
         print(f"\nDelivering: {p['name']}")
         tt = None if p.get("in_channel") else header_ts
         # Build initial_comment
-        if "body_file" in p:
-            body = md_to_slack_mrkdwn(extract_body(bundle / p["body_file"]))
-        else:
-            body = p["body_text"]
+        body = piece_body(bundle, p)
 
         intro_lines = [
             f":clipboard: *{p['name']}*  _({p['publish_window']})_",

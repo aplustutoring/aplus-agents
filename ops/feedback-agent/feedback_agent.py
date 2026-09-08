@@ -544,6 +544,8 @@ def create_ticket(payload):
 # execution still ends at a human merge. Anything else stays filed only.
 
 ANALYZE_PROMPT = """\
+Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+
 You are the fix-planning stage of the A+ Tutoring fleet's feedback loop. A \
 report was just classified and filed as a correction. Analyze it and propose \
 a concrete fix for the human owner (Roman) to approve or decline.

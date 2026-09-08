@@ -1,0 +1,49 @@
+# Daily sequence enroller for the teacher outreach 26/27 (Roman + Danielle
+# 2026-09-04: "I love that idea"). Runs weekday mornings via
+# .github/workflows/teacher-sequence-enroll.yml; scripts/teacher_sequence_enroll.py
+# enrolls the next `daily_cap` eligible contacts from each list into its
+# sequence, sending from Danielle's connected inbox exactly as a manual
+# enrollment would. Dry-run unless the workflow passes --confirm ENROLL.
+#
+# Gates: armed AND today (PT) >= start_date AND a weekday, unless --force.
+# Arming is a deliberate config change in a PR, same as campaign.yml.
+
+armed: true
+start_date: "2026-09-08"
+timezone: America/Los_Angeles
+daily_cap: 50                     # per sequence per run
+
+sender:
+  user_id: "46811240"             # Danielle's HubSpot user id (sequences are per-user)
+  # The API must name a CONNECTED inbox of that user. Candidates are tried in
+  # order on the first live enrollment; the one that works is remembered in
+  # state (sender_email_confirmed) and used from then on.
+  email_candidates:
+    - danielle@wetutorathome.com
+    - success@wetutorathome.com
+
+notify:
+  slack_user_ids:
+    - U05NMABF3B2                 # Danielle
+  # Roman is added from the ROMAN_SLACK_USER_ID secret at runtime.
+
+# Eligibility, checked at enroll time (lists were built 2026-09-04 and can drift):
+#   has email; not opted out; not hard-bounced; generic_inbox != Yes;
+#   campaign_replied != Yes; not currently enrolled in ANY sequence;
+#   not already enrolled by this script (state).
+sequences:
+  - key: worked_with_us
+    name: "Teacher Outreach 26/27 - 1 Worked With Us"
+    sequence_id: "310839862"
+    list_id: 3210
+    priority_list_id: 3214        # top 30 by deal $ go in the first batch
+  - key: known_schools
+    name: "Teacher Outreach 26/27 - 2 Known Schools"
+    sequence_id: "310844702"
+    list_id: 3211
+    school_order:                 # Danielle: iLEAD first, then Sage Oak, then Blue Ridge
+      - iLEAD
+      - Sage Oak Charter Schools
+      - Blue Ridge Academy
+
+state_file: ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json

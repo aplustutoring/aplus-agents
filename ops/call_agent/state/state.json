@@ -364,361 +364,289 @@
     406527005,
     406561555,
     406604186,
-    406609891
+    406609891,
+    406635381,
+    406645342,
+    406646411,
+    406647961,
+    406652458,
+    406658058,
+    406660050,
+    406666997,
+    406926934,
+    406932408,
+    406924050,
+    406924357,
+    406924800,
+    406931082,
+    406999332,
+    407027228,
+    407026970,
+    407035273,
+    407057870,
+    407057997,
+    407057760,
+    407058173,
+    407072760,
+    407085608,
+    407089051,
+    407094931,
+    407102085,
+    407145826,
+    407181028,
+    407181054,
+    407181245,
+    407212696,
+    407524266,
+    407525996,
+    407540089,
+    407597051,
+    407625399,
+    407646542,
+    407651626,
+    407656315,
+    407679187,
+    407679732,
+    407686632,
+    407687006,
+    407695515,
+    407696262,
+    407700702,
+    407711833,
+    407718307,
+    407719208,
+    407720179,
+    407721970,
+    407895353,
+    407898798,
+    407976769,
+    407970807,
+    407989547,
+    408016508,
+    408006989,
+    408016286,
+    408018696,
+    408069398,
+    408072190,
+    408115255,
+    408131290,
+    408143575,
+    408168031,
+    408169121,
+    408173592,
+    408178271,
+    408189862,
+    408195544,
+    408437038,
+    408465845,
+    408481118,
+    408495298,
+    408509548,
+    408462336,
+    408561359,
+    408574061,
+    408580809,
+    408589394,
+    408650743,
+    408657719,
+    408609444,
+    408625471,
+    408632710,
+    408642684,
+    408655426,
+    408712645,
+    408715904,
+    408672188,
+    408950282,
+    408988929,
+    408990471,
+    408991207,
+    408995325,
+    409025273,
+    409051206,
+    409057344,
+    409122829,
+    408944243,
+    408947275,
+    408953421,
+    408953706,
+    408978207,
+    408994917,
+    408995162,
+    409006621,
+    409019938,
+    409091735,
+    409092903,
+    409096720,
+    409100059,
+    409102304,
+    409121799,
+    409125252,
+    409125921,
+    409126342,
+    409128909,
+    409149522,
+    409148974,
+    409303295,
+    409307228,
+    409377790,
+    409406362,
+    409431377,
+    409431054,
+    409454046,
+    409502284,
+    409519306,
+    409518366,
+    409518818,
+    409408591,
+    409410759,
+    409420667,
+    409422802,
+    409425445,
+    409433978,
+    409438406,
+    409464911,
+    409466116,
+    409523616,
+    409545929,
+    409548893,
+    409550747,
+    409552053,
+    409561776,
+    409550496,
+    409554695,
+    409634441,
+    409685297,
+    409711345,
+    409704266,
+    409709712,
+    409938106,
+    409954200,
+    409966558,
+    410006928,
+    410010876,
+    409924332,
+    409929101,
+    409957448,
+    409972903,
+    409985942,
+    409986424,
+    409988888,
+    410008105,
+    410097422,
+    410098845,
+    410099726,
+    410112961,
+    410099091,
+    410100140,
+    410100243,
+    410376813,
+    410409885,
+    410423496,
+    410427241,
+    410458522,
+    410462597,
+    410517343,
+    410538374,
+    410555487,
+    410555279,
+    410557115,
+    410562393,
+    410489528,
+    410511946,
+    410524356,
+    410541330,
+    410575225,
+    410581872,
+    410597365,
+    410601242,
+    410603410,
+    410575787,
+    410591818,
+    410613558,
+    410635136,
+    410623856,
+    410626002,
+    410627220,
+    410630803,
+    410645447,
+    410646802,
+    410857405,
+    410918360,
+    410924795,
+    410927109,
+    411060683,
+    411014079,
+    411017215,
+    411020027,
+    411024133,
+    411026139,
+    411038155,
+    411069877,
+    411074524,
+    411078045,
+    411080651,
+    411096937,
+    411091478,
+    411092221,
+    411096215,
+    411096154,
+    411128932,
+    411408670,
+    411426062,
+    411432907,
+    411468107,
+    411476646,
+    411497174,
+    411514497,
+    411518737,
+    411524673,
+    411553444,
+    411556823,
+    411566869,
+    411575268,
+    411582259,
+    411604978,
+    411592578,
+    411606571,
+    411610001,
+    411618799,
+    411621774,
+    411882442,
+    411886157,
+    411890023,
+    411894516,
+    411970478,
+    411970171,
+    411924094,
+    411930097,
+    411978142,
+    412014832,
+    412018579,
+    412016480,
+    412016989,
+    412017244,
+    412018154,
+    412019361,
+    412024452,
+    412028339,
+    412029772,
+    412026801,
+    412088510,
+    412091091,
+    412414982,
+    412368061,
+    412377075,
+    412377972,
+    412390076,
+    412398855,
+    412400247,
+    412401644,
+    412413904,
+    412417393
   ],
-  "last_run_utc": "2026-08-20T21:44:56.874331+00:00",
-  "pending_digest": [
-    {
-      "call_id": 406455910,
-      "number": "13104028006",
-      "time_pt": "9:22 AM",
-      "matched": true,
-      "contact_label": "Pete Flores",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Pete Flores called back after his prior failed in-person visit to the Studio City office. He clarified he is a partner with Parenthood Partners & Family Services (PPFS), a vendor under the regional centers, calling on behalf of participant Demelco (Domenico), who needs in-person chemistry tutoring (Chem 001B / Intro to Chem at Pasadena City College). His supervisor Josh joined via three-way. Paola quoted $130/hr in-person and $95/hr online, took his ZIP (91601) and email (peterf@ppfsla.org), and will send rates by email while Pete confirms funding limits with the agency.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Email Peter at peterf@ppfsla.org with in-person ($130/hr) and online ($95/hr) rates and a note about the free online trial session",
-            "owner_hint": "Paola"
-          },
-          {
-            "item": "Check tutor availability for chemistry (PCC Chem 001B) in ZIP 91601 for in-person sessions",
-            "owner_hint": null
-          },
-          {
-            "item": "Confirm Studio City Suite 207 office hours/staffing and communicate to Peter if he wants to revisit in person",
-            "owner_hint": null
-          },
-          {
-            "item": "Await Peter's callback after he confirms hourly-rate cap with PPFS/regional center funder",
-            "owner_hint": null
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Peter Flores (310-402-8006, peterf@ppfsla.org) called back \u2014 cordial and engaged this time, no longer disengaged as prior notes suggested. He is a 'partner' at Parenthood Partners & Family Services (PPFS), a vendor under the CA regional centers; his supervisor Josh was on a three-way. Tutoring is for their participant Demelco/Domenico (adult regional-center client), who is starting Intro to Chemistry / Chem 001B at Pasadena City College and wants IN-PERSON chemistry tutoring. ZIP 91601 (North Hollywood). Paola quoted $130/hr in-person and $95/hr online and mentioned a free online trial. Peter needs to verify the agency's hourly-rate cap before proceeding and will call back. He now expects a rates email from Paola. Open with: 'Hi Peter, this is ___ following up on your call with Paola \u2014 sending over the rates for Demelco's chemistry tutoring and happy to line up an in-person chemistry tutor in 91601 as soon as PPFS confirms the rate works.' Note: this is agency/regional-center funded, not a K-12 charter EF case.",
-        "lead_status": "We Connected",
-        "lead_status_reason": "Full intake completed on a prospective in-person tutoring engagement; rates quoted and email captured. Funding is via regional center agency (not a charter EF), and no diagnostic is needed for a college chemistry tutor, so 'We Connected' fits.",
-        "student_or_school_names_mentioned": [
-          "Demelco / Domenico",
-          "Pasadena City College",
-          "Parenthood Partners & Family Services (PPFS)"
-        ],
-        "record_updates": {
-          "whats_going_on": "Pete called back, cordial this time. He clarified he is a 'partner' with Parenthood Partners & Family Services (PPFS), a vendor under the CA regional centers, calling on behalf of participant Demelco/Domenico who needs in-person chemistry tutoring for Pasadena City College Chem 001B (Intro to Chemistry) starting this semester. ZIP 91601 (North Hollywood). Agency (via regional center) will fund the tutoring pending confirmation of an allowable hourly rate.",
-          "what_we_can_do_to_help": "Paola emailed rates to peterf@ppfsla.org: $130/hr in-person and $95/hr online, plus free online trial. Next: check tutor availability in 91601 for PCC Chem 001B, and stand by for Peter's callback after PPFS confirms the rate cap. Treat billing as agency/regional-center invoicing, not a K-12 charter EF.",
-          "student_first_name": "Demelco",
-          "student_last_name": null,
-          "grade_level": "Graduated/College",
-          "student_school": "Pasadena City College",
-          "subject_need": "Other",
-          "online_or_in_person": "In-Person Tutoring",
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Pete called back, cordial this time. He clarified he is a 'partner' with Parenthood Partners & Family Services (PPFS), a vendor under the CA regional centers, calling on behalf of participant Demelco/Domenico who needs in-person chemistry tutoring for Pasadena City College Chem 001B (Intro to Chemistry) starting this semester. ZIP 91601 (North Hollywood). Agency (via regional center) will fund the tutoring pending confirmation of an allowable hourly rate."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Paola emailed rates to peterf@ppfsla.org: $130/hr in-person and $95/hr online, plus free online trial. Next: check tutor availability in 91601 for PCC Chem 001B, and stand by for Peter's callback after PPFS confirms the rate cap. Treat billing as agency/regional-center invoicing, not a K-12 charter EF."
-        ],
-        [
-          "student_first_name",
-          "(blank)",
-          "Demelco"
-        ],
-        [
-          "grade_level",
-          "(blank)",
-          "Graduated/College"
-        ],
-        [
-          "student_school",
-          "(blank)",
-          "Pasadena City College"
-        ],
-        [
-          "lead_status",
-          "Dead Opportunity/Unqualified",
-          "QTL - NEW"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Email Peter at peterf@ppfsla.org with in-person ($130/hr) and online ($95/hr) rates and a note about the free online trial session",
-          81494333
-        ],
-        [
-          "Check tutor availability for chemistry (PCC Chem 001B) in ZIP 91601 for in-person sessions",
-          81494333
-        ],
-        [
-          "Confirm Studio City Suite 207 office hours/staffing and communicate to Peter if he wants to revisit in person",
-          81494333
-        ],
-        [
-          "Await Peter's callback after he confirms hourly-rate cap with PPFS/regional center funder",
-          81494333
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 406489223,
-      "number": "12623912051",
-      "time_pt": "10:24 AM",
-      "matched": true,
-      "contact_label": "Jacquelyn Lemerond",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda from A+ Tutoring called active tutor Jacquelyn (Jackie) Lemerond to inform her of a new student assignment. The call went to voicemail. Yolanda left a message asking Jackie to check her Slack messages for details.",
-        "caller_type": "tutor applicant",
-        "intent": "other",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Confirm Jackie received Slack message about new student assignment",
-            "owner_hint": "Yolanda"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": null,
-        "lead_status": "no_change",
-        "lead_status_reason": "Jackie is an active tutor (Tutor-Active); outbound call to assign a new student does not change her status.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": null,
-          "what_we_can_do_to_help": null,
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Confirm Jackie received Slack message about new student assignment",
-          86868539
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 406495809,
-      "number": "12139255266",
-      "time_pt": "10:30 AM",
-      "matched": true,
-      "contact_label": "Lilian Gong",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Lilian Gong, who confirmed she is a Blue Ridge charter family living in Sherman Oaks. Lilian is interested in SAT prep for her high school junior (Kelly Caruso) and in-person reading/writing tutoring for two younger children \u2014 Lucas (6th grade) and Marcus (8th grade). Paola quoted charter rates ($75/hr online, $130/hr in person), noted that SAT prep is online only, and booked a free trial SAT session for Friday morning, August 28. Paola will email the rate sheet and the scheduling team will follow up to confirm the trial session.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Email Lilian the current online and in-person charter rate sheet ($75/hr online, $130/hr in-person)",
-            "owner_hint": "Paola"
-          },
-          {
-            "item": "Have scheduling team confirm free trial SAT prep session for Kelly on Friday morning, August 28",
-            "owner_hint": "Scheduling team"
-          },
-          {
-            "item": "Identify an online SAT prep tutor for Kelly (high school junior) for the trial",
-            "owner_hint": null
-          },
-          {
-            "item": "Identify in-person reading/writing tutors in the Sherman Oaks area for Lucas (6th) and Marcus (8th)",
-            "owner_hint": null
-          },
-          {
-            "item": "Verify Blue Ridge charter funding eligibility and paperwork for all three students",
-            "owner_hint": null
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "Lilian Gong (Blue Ridge charter family, Sherman Oaks) was warm and engaged on Paola's outbound call. She has 3 students needing tutoring: Kelly Caruso (HS junior, SAT prep \u2014 online only, free trial booked Friday morning 8/28), Lucas (6th grade, reading/writing, in-person), and Marcus (8th grade, reading/writing, in-person). Paola quoted charter rates: $75/hr online, $130/hr in-person, and mentioned a same-tutor/same-time group discount but no discount for separate 1:1 in-person sessions. Lilian expects (1) an email with the rate sheet and (2) scheduling to confirm the Friday 8/28 AM SAT trial. Open with: 'Hi Lilian, following up on your call with Paola \u2014 I'd like to lock in a time Friday morning 8/28 for Kelly's free SAT trial and walk through next steps for Lucas and Marcus's in-person reading/writing tutoring.' Also confirm Blue Ridge funding is set up for all three kids.",
-        "lead_status": "QTL - Charter",
-        "lead_status_reason": "Actually, correcting: family is a Blue Ridge charter (instructional funds) family, so QTL - Charter applies.",
-        "student_or_school_names_mentioned": [
-          "Kelly Caruso",
-          "Lucas",
-          "Marcus",
-          "Ebony",
-          "Blue Ridge"
-        ],
-        "record_updates": {
-          "whats_going_on": "Connected with Lilian on outbound follow-up. She is a Blue Ridge charter family in Sherman Oaks with three students needing tutoring: Kelly Caruso (HS junior) for SAT prep, and Lucas (6th) and Marcus (8th) for reading/writing. She wants SAT prep online but in-person for the younger two. A free SAT trial session was booked for Friday morning, 8/28.",
-          "what_we_can_do_to_help": "Send Lilian the charter rate sheet ($75/hr online, $130/hr in-person), confirm the 8/28 AM SAT trial for Kelly via scheduling, and line up an online SAT tutor plus in-person reading/writing tutors in the Sherman Oaks area for Lucas and Marcus. Verify Blue Ridge funding is in place for all three students.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Connected with Lilian on outbound follow-up. She is a Blue Ridge charter family in Sherman Oaks with three students needing tutoring: Kelly Caruso (HS junior) for SAT prep, and Lucas (6th) and Marcus (8th) for reading/writing. She wants SAT prep online but in-person for the younger two. A free SAT trial session was booked for Friday morning, 8/28."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Send Lilian the charter rate sheet ($75/hr online, $130/hr in-person), confirm the 8/28 AM SAT trial for Kelly via scheduling, and line up an online SAT tutor plus in-person reading/writing tutors in the Sherman Oaks area for Lucas and Marcus. Verify Blue Ridge funding is in place for all three students."
-        ],
-        [
-          "lead_status",
-          "Meeting Booked",
-          "QTL - Charter"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Email Lilian the current online and in-person charter rate sheet ($75/hr online, $130/hr in-person)",
-          81494333
-        ],
-        [
-          "Have scheduling team confirm free trial SAT prep session for Kelly on Friday morning, August 28",
-          81494333
-        ],
-        [
-          "Identify an online SAT prep tutor for Kelly (high school junior) for the trial",
-          81494333
-        ],
-        [
-          "Identify in-person reading/writing tutors in the Sherman Oaks area for Lucas (6th) and Marcus (8th)",
-          81494333
-        ],
-        [
-          "Verify Blue Ridge charter funding eligibility and paperwork for all three students",
-          81494333
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 406521106,
-      "number": "19163895980",
-      "time_pt": "11:16 AM",
-      "matched": true,
-      "contact_label": "Baspari Azizi",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring called Baspari Azizi to follow up about tutoring for her daughters Aisha and Zora for the current school year. Baspari was out and said she'd talk to her daughters and call back. Paola offered to send a follow-up email; Baspari agreed to reach back out after speaking with her kids.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Send follow-up email to Baspari about tutoring options for Aisha and Zora this school year",
-            "owner_hint": "Paola"
-          },
-          {
-            "item": "Await parent callback after she consults with her daughters",
-            "owner_hint": null
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Baspari Azizi (returning customer, existing open deal) was called by Paola to check in about tutoring for her daughters Aisha and Zora this school year. Baspari was out and busy but polite/receptive; she said she'll talk to the girls and call us back. Paola promised to send a follow-up email she can reply to. No pricing or scheduling discussed. Next step: send that email covering tutoring options for both students. If she hasn't responded in ~a week, follow up \u2014 open with something like: 'Hi Baspari, just checking in after Paola's call \u2014 have you had a chance to talk with Aisha and Zora about tutoring this year?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing customer with an OPEN_DEAL in the pipeline; deal pipeline owns the status.",
-        "student_or_school_names_mentioned": [
-          "Aisha",
-          "Zora",
-          "Visions In Education"
-        ],
-        "record_updates": {
-          "whats_going_on": "Follow-up outreach call re: tutoring for Aisha and Zora this school year. Mom was out and will speak with the girls before deciding; she'll call back.",
-          "what_we_can_do_to_help": "Send Baspari a follow-up email outlining tutoring options for Aisha and Zora so she can reply once she's spoken with them.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Follow-up outreach call re: tutoring for Aisha and Zora this school year. Mom was out and will speak with the girls before deciding; she'll call back."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Send Baspari a follow-up email outlining tutoring options for Aisha and Zora so she can reply once she's spoken with them."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Send follow-up email to Baspari about tutoring options for Aisha and Zora this school year",
-          81494333
-        ],
-        [
-          "Await parent callback after she consults with her daughters",
-          81494333
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    }
-  ],
-  "pending_skipped": [
-    {
-      "number": "18185781727",
-      "time_pt": "11:27 AM",
-      "reason": "hang-up"
-    }
-  ],
+  "last_run_utc": "2026-09-08T04:57:40.802757+00:00",
+  "pending_digest": [],
+  "pending_skipped": [],
   "pending_failures": []
 }

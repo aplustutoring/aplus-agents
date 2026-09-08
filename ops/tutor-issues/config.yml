@@ -1,0 +1,151 @@
+# ops/tutor-issues — Tutor-issue ticketing configuration
+# Secrets live in env vars (repo secrets on Actions) — never here.
+#
+# Policy (Roman, approved 2026-08-26): issues we notice get logged as HubSpot
+# tickets on the tutor's contact record. Silent internal log in v1 — the
+# tutor is NEVER notified. Owner is the Operations role on every ticket.
+# Detection is automated ONLY where system data proves it (Teachworks);
+# everything else enters through structured intake or reasoned inbound
+# reports, and an unresolvable tutor means NO ticket (refusal is a signal,
+# a guess is a landmine).
+
+registry_id: tutor-issues
+
+hubspot:
+  ticket:
+    pipeline: "0"            # Support Pipeline (the only ticket pipeline)
+    stage: "131537027"       # "Working on it" — opening stage for every tutor-issue ticket
+    closed_stage: "4"        # "Done" — a ticket in this stage no longer absorbs recurrence
+                             # (NOTE: "Stopped" has an isClosed gap Roman is fixing in-portal;
+                             #  until then only Done counts as closed here)
+    # hs_ticket_category is matched BY LABEL at runtime (enumeration rule:
+    # agents read labels, never trust internal values).
+    category_label: "Tutor Issue"
+  # ROLES, not names (Roman 2026-08-14). role -> staff key; staff block is
+  # the only home for people.
+  roles:
+    operations: mandy        # ticket owner on EVERY tutor-issue ticket (Aug 26 decision: escalations land on Operations)
+    fallback_scheduler: mandy  # scheduler pings when the student (and so the A-L/M-Z split) is unknown
+
+staff:
+  # hubspot_owner_id verified against /crm/v3/owners 2026-08-26.
+  # slack_id verified against the workspace 2026-08-26.
+  mandy:
+    hubspot_owner_id: "80047201"
+    slack_id: "U08S3CHE93N"
+  janelle:
+    hubspot_owner_id: "80047202"
+    slack_id: "U08S3CG8XNY"
+  yolanda:
+    hubspot_owner_id: "86868539"
+    slack_id: "U0A6XGBU7QT"
+  roman:
+    hubspot_owner_id: "38681249"
+    slack_id: "U05NA7UMSSV"
+
+# Scheduler split by STUDENT last-name initial — same rule as
+# ops/scorecard/aplus_missed_lessons_sync.py (A-L Janelle, M-Z Yolanda).
+schedulers:
+  a_to_l: janelle
+  m_to_z: yolanda
+
+slack:
+  # #tutor-issues (created 2026-08-26, PRIVATE, aplus bot invited — verified
+  # via users.conversations). Channel ID, not name: private channels don't
+  # resolve by name for bot posts. The engine refuses to send while empty.
+  channel: "C0BSU4KGA0K"
+  # Everything the engine says in Slack lands in this one channel:
+  #  - the per-run ops digest (ONE message per run, never per-item DMs)
+  #  - event-driven scheduler notifications for inbound family reports
+  #    ("ticket created" / "couldn't auto-file, handle manually")
+  #  - loud cap-exceeded / baseline notices
+  mention_ops: true          # @-mention the operations role on the digest
+
+detectors:
+  # Week window is the last COMPLETE Sun-Sat week, evaluated after the
+  # Sunday cutoff (the sweep runs Mondays).
+  missed_lesson_or_late:
+    # Statuses that prove a missed lesson, same set as
+    # ops/scorecard/aplus_missed_lessons_sync.py NO_SHOW_STATUSES.
+    # In Teachworks these are TUTOR-attributable only when the per-student
+    # status says so; the sweep counts per-tutor events.
+    no_show_statuses: ["no_show", "missed", "no show"]
+    # Events per tutor per week required to open a ticket. 1 = every missed
+    # lesson is ticket-worthy (recurrence in the same week updates the one
+    # ticket rather than spawning more).
+    min_events_per_week: 1
+    # Lateness leg — OFF until the live-data probe proves Teachworks records
+    # an actual start distinct from the scheduled start, and Roman approves
+    # a threshold from the observed distribution (PR: do not pick silently).
+    lateness:
+      enabled: false
+      threshold_minutes: null
+  notes_not_completed:
+    # "Unmarked" is the complement of the marked statuses — same rule as
+    # ops/scorecard/aplus_weekly_sync.py is_unmarked() (the <3% scorecard
+    # metric source). Do not build a second definition.
+    marked_statuses: ["attended", "completed", "cancelled", "canceled",
+                      "no_show", "missed", "no show"]
+    min_events_per_week: 1
+
+inbound:
+  # Email leg: consumes email/state/audit_log.jsonl (the LIVE triage agent's
+  # committed audit trail) — this engine never touches the triage code or
+  # its inbox. Bodies come from the HubSpot Conversations thread.
+  email:
+    audit_log: "email/state/audit_log.jsonl"
+    # Categories worth a reasoning pass. tutor_issue is the direct hit;
+    # scheduling/complaint catch "tutor didn't show" reports that triage
+    # filed under the family-facing category.
+    scan_categories: ["tutor_issue", "scheduling", "complaint"]
+  # SMS leg: inbound texts on the monitored JustCall lines (same account
+  # the call agent polls).
+  sms:
+    enabled: true
+    lookback_minutes: 180    # overlap window; idempotency comes from state, not the window
+  # Reasoning gate: below this confidence the engine does NOT create a
+  # ticket — it flags the report to the scheduler to file manually
+  # ("otherwise they do it on their own").
+  min_confidence: 0.75
+  max_scan_per_run: 30       # cost/blast ceiling on LLM extraction calls
+
+intake:
+  # Structured manual intake for types 2/4/5 in #tutor-issues:
+  #   tutor-issue <type> | <tutor email or tw:<acct>:<employee_id> or "First Last"> | <one-line evidence>
+  # Free text that cannot resolve to exactly one tutor contact is rejected
+  # with a threaded reply saying why. Allowed types here are the three
+  # manual ones — 1 and 3 are auto-detected and refused at intake to keep
+  # one source of truth per type.
+  allowed_types: ["tutor_change_requested", "scheduling_flip_flop", "tech_issue_unreported"]
+
+# Priority defaulted by type (stated in the PR; hs_ticket_priority values).
+priority_by_type:
+  missed_lesson_or_late: HIGH        # family was stood up — retention risk now
+  tutor_change_requested: HIGH       # a fast switch saves the account
+  tech_issue_unreported: MEDIUM      # process breach, not yet a family-facing failure
+  scheduling_flip_flop: MEDIUM       # churn pattern — needs a conversation, not a fire drill
+  notes_not_completed: LOW           # compliance lag; the scorecard already tracks the aggregate
+
+# Dedupe periods — ONE open ticket per tutor per issue type per period;
+# recurrence updates the existing ticket. Weekly for the Teachworks
+# detectors (matches the data cadence), rolling 30 days for report-driven
+# types. Roman 2026-08-26: undecided — tune here, flagged in the PR.
+dedupe_period:
+  missed_lesson_or_late: weekly
+  notes_not_completed: weekly
+  tutor_change_requested: rolling_30d
+  scheduling_flip_flop: rolling_30d
+  tech_issue_unreported: rolling_30d
+
+# NOTIFICATION GUARDS (non-negotiable — the aging-sweep near-miss of
+# 2026-08-25 fired 80 DMs in a dry run; this engine must refuse to act
+# rather than flood).
+guards:
+  max_tickets_per_run: 10
+  max_notifications_per_run: 10
+  # First run with no state/baseline.json stamps everything already
+  # qualifying and creates/sends NOTHING. Not configurable off.
+
+claude:
+  model: "claude-opus-4-7"   # repo-standard (matches ops/call_agent, ops/feedback-agent)
+  max_tokens: 1200

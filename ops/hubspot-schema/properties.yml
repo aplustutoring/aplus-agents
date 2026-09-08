@@ -17,6 +17,8 @@ groups:
   tickets:
     - name: fleet_automation
       label: Fleet automation
+    - name: tutor
+      label: Tutor
   contacts:
     - name: master
       label: Master
@@ -54,6 +56,8 @@ properties:
           label: "Call agent"
         - value: email_engine
           label: "Email engine"
+        - value: tutor_issues
+          label: "Tutor issues (ops/tutor-issues)"
 
     - name: source_agent
       label: Source agent
@@ -68,6 +72,125 @@ properties:
       options:
         - value: UNKNOWN
           label: "Unregistered automation"
+
+    # ── PO-inbox work type (Roman approved 2026-08-27).
+    # Every ticket the PO inbox filed was stamped hs_ticket_category=new_deal_po,
+    # including the 42 of 93 whose own description read "Not a PO:". Measured over
+    # 845 tickets since 2026-06-01, a ticket carrying a real category closed in a
+    # median of 0.25 days at a 92% rate; one in the catch-all took 2.15 days at
+    # 80%. The extractor already works the type out and writes it in prose — this
+    # is where it goes so routing, SLA and a done-state can key off it.
+    - name: po_work_type
+      label: "[Agent] PO inbox work type"
+      group: fleet_automation
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/po_inbox.py. What a charter@ inbox
+        ticket actually is, as opposed to hs_ticket_category which only has a
+        coarse New Deal / PO option. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: purchase_order
+          label: "Purchase order"
+        - value: po_cancellation
+          label: "PO cancellation"
+        - value: ar_followup
+          label: "AR follow-up / reconciliation"
+        - value: invoice_correction
+          label: "Invoice correction / reissue"
+        - value: vendor_compliance
+          label: "Vendor compliance (agreement, COI, W-9)"
+        - value: vendor_onboarding
+          label: "Vendor onboarding / renewal"
+        - value: parent_info_reply
+          label: "Parent info reply"
+        - value: family_inquiry
+          label: "Family inquiry"
+        - value: marketing_junk
+          label: "Marketing / junk"
+        - value: scam
+          label: "Suspected scam"
+        - value: other
+          label: "Other non-PO"
+
+    # ── Tutor-issue ticketing (ops/tutor-issues, Roman approved 2026-08-26).
+    # Tickets logged on the TUTOR's contact record when we notice an issue.
+    # Silent internal log in v1 — nothing tutor-facing reads these.
+    - name: tutor_issue_type
+      label: "[Agent] Tutor issue type"
+      group: tutor
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. Which
+        of the five tutor-issue types this ticket logs. Types 1/3 are
+        auto-detected from Teachworks; 2/4/5 come from structured intake or
+        inbound family reports. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: missed_lesson_or_late
+          label: "Missed lesson / late"
+        - value: tutor_change_requested
+          label: "Tutor change requested"
+        - value: notes_not_completed
+          label: "Lesson notes not completed"
+        - value: scheduling_flip_flop
+          label: "Scheduling flip-flop"
+        - value: tech_issue_unreported
+          label: "Tech issue not reported"
+
+    - name: tutor_issue_source_ids
+      label: "[Agent] Tutor issue source records"
+      group: tutor
+      type: string
+      fieldType: textarea
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. Audit
+        trail: the system records that prove the issue — Teachworks lesson
+        ids (tw:<acct>:<lesson_id>), HubSpot conversation/ticket ids
+        (hsconv:<thread_id>, hsticket:<id>), JustCall SMS ids (jcsms:<id>),
+        or Slack intake permalinks. One per line; recurrence appends.
+
+    - name: tutor_issue_detected_at
+      label: "[Agent] Tutor issue detected at"
+      group: tutor
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. When
+        the FIRST qualifying event behind this ticket was detected (UTC).
+
+    - name: tutor_issue_last_event_at
+      label: "[Agent] Tutor issue last event at"
+      group: tutor
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. When
+        the most recent qualifying event was detected (UTC). Recurrence
+        updates this instead of opening a second ticket.
+
+    - name: tutor_issue_occurrences
+      label: "[Agent] Tutor issue occurrences"
+      group: tutor
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. How
+        many qualifying events this ticket has absorbed (dedupe rule: one
+        open ticket per tutor per issue type per period).
+
+    - name: tutor_issue_period
+      label: "[Agent] Tutor issue period"
+      group: tutor
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by ops/tutor-issues/tutor_issues.py. The
+        dedupe period key this ticket covers — ISO week (e.g. 2026-W35) for
+        the weekly Teachworks detectors, rolling-30d anchor date for the
+        report-driven types.
 
   contacts:
     # ── LABEL CONVENTION (Roman 2026-08-14): every property an AGENT writes
@@ -191,6 +314,24 @@ properties:
           label: "Yes"
         - value: "false"
           label: "No"
+    - name: campaign_replied
+      label: "[Agent] Campaign Replied"
+      group: master
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (stamp_campaign_reply)
+        when the info@ classifier files a reply as campaign_school or
+        campaign_family. Yes means this contact replied to a campaign send by
+        email, even when the reply landed at info@ and never touched
+        hs_email_last_reply_date. Sequences and workflows exit on it; reports
+        count it. Persona-agnostic (teachers and families), hence master group.
+        Roman 2026-09-04, teacher outreach 26/27.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
@@ -292,7 +433,59 @@ properties:
       group: tor
       type: date
       fieldType: date
+    - name: school_canonical
+      label: "[Agent] School"
+      group: tor
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by scripts/teacher_school_stamp.py, do not
+        edit by hand. Canonical charter school for a TEACHER contact, derived
+        from the charter deals the teacher is named on (teacher_of_record_email
+        → student_school) and normalised through
+        ops/hubspot-schema/school-aliases.yml. iLEAD is ONE bucket (Roman
+        2026-09-02). Falls back to the intake enumeration charter_school_teacher (LABEL), then a verified email domain; disagreements are reported.
+        Distinct from the family intake field student_school.
+    - name: generic_inbox
+      label: "[Agent] Generic Inbox"
+      group: tor
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by scripts/teacher_school_stamp.py, do not
+        edit by hand. Yes when the contact is a shared/role mailbox at a
+        school (purchasing@, invoices@, studentservices@, info@, noreply@ …)
+        rather than a person. Set from the email local-part. Teacher outreach
+        lists must EXCLUDE these (Roman 2026-09-02: "keep generic inboxes
+        separate"); PO/invoice routing may still want them.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
     # — tutor —
+    - name: tutor_roster_status
+      label: "[Agent] Tutor Roster Status"
+      group: tutor
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by scripts/tutor_roster_check.py, do not edit
+        by hand. Ground truth for tutor liveness (Roman 2026-08-25): matched
+        by email against the Teachworks EMPLOYEE roster in BOTH accounts.
+        Active in either account = Active. HubSpot lead status
+        "Tutor-Active" is a hint only; this field wins.
+      options:
+        - value: "Active (online)"
+          label: "Active (online)"
+        - value: "Active (in person)"
+          label: "Active (in person)"
+        - value: "Active (both)"
+          label: "Active (both)"
+        - value: "Inactive (both)"
+          label: "Inactive (both)"
+        - value: "Not found"
+          label: "Not found"
     - name: a__pay_per_hour
       label: "A+ Pay Per Hour"
       group: tutor
@@ -389,6 +582,8 @@ properties:
           label: "Sage Oak BTSC 2026"
         - value: eo_lav_agents_2026
           label: "EO LA Valley AI Agents 2026"
+        - value: blue_ridge_btsc_2026
+          label: "Blue Ridge BTSC 2026"
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events
@@ -432,6 +627,38 @@ properties:
           label: "Teacher"
         - value: support_staff
           label: "Support Staff"
+        # Blue Ridge BTSC 2026 opened the booth to families, not just school
+        # staff (Sage Oak was teachers only). Appended, never renamed — the
+        # three above stay exactly as they are.
+        - value: parent
+          label: "Parent"
+        - value: student
+          label: "Student"
+    - name: aplus_booth_photo_url
+      label: "[Agent] Booth Photo URL"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by the booth Worker (booth/worker.js photo
+        archive) and the event-photo backfill, do not edit by hand. Public URL
+        of the contact's framed booth photo, used as the personalization token
+        in event follow-up emails.
+    # EVENT-TEMP — Blue Ridge BTSC 2026 prize wheel only. Deliberately NOT in
+    # KEEPERS.md: it is single-event capture, not part of the agent vocabulary,
+    # and it should be reviewed for archive once the event is reconciled.
+    # aplus_booth_goal was NOT reused for this — that is photo-banner text and
+    # overloading it would corrupt the Sage Oak capture.
+    - name: aplus_booth_prize
+      label: "[Agent] Booth Prize Won"
+      group: events
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by booth/blue-ridge/worker.js. Which prize the
+        visitor landed on at the Blue Ridge BTSC 2026 spin wheel. EVENT-TEMP:
+        single-event capture, not a keeper. Declared in
+        aplus-agents/ops/hubspot-schema/properties.yml.
     - name: aplus_marketing_consent
       label: "Booth Marketing Consent"
       group: events
@@ -584,7 +811,7 @@ properties:
       type: enumeration
       fieldType: booleancheckbox
     - name: school_name
-      label: "School Name"
+      label: "Teacher Scholarship Student School"   # relabeled in-portal 2026-09-02 (Roman); internal name is legacy, workflows unaffected
       group: dealinformation
       type: string
       fieldType: text
@@ -594,22 +821,22 @@ properties:
       type: string
       fieldType: text
     - name: student_first_name
-      label: "Student First Name"
+      label: "[Agent] Student First Name"
       group: dealinformation
       type: string
       fieldType: text
     - name: student_last_name_if_diff_from_parent
-      label: "Student Last Name"
+      label: "[Agent] Student Last Name"
       group: scheduling_information
       type: string
       fieldType: text
     - name: student_grade
-      label: "Student Grade"
+      label: "[Agent] Student Grade"
       group: dealinformation
       type: string
       fieldType: text
     - name: student_school
-      label: "Student School"
+      label: "[Agent] Student School"
       group: charter
       type: string
       fieldType: text
