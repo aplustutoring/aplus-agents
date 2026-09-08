@@ -54,7 +54,16 @@ JustCall; an [Agent] note with the exact text is on each contact. Sent via a
 session script calling the messenger's `jc_send_sms` because the bulk rail
 refuses <25 recipients by design; this is the shape the reply-chase agent
 will automate. Replies land on Paola's line.
-**Not done / needs Roman:** the 95-text win-back send (`confirm=SEND`) — approval-first;
+**WIN-BACK BATCH SENT 2026-09-08 4:50 PM PT (Roman: "send now, it's
+4:49 pm"):** 95/95 texts from Paola's line (charter_sales) to list 3237,
+75 single-student + 20 multi-student, 9 skipped for missing tutor/student
+stamps. Send-time checks: inbox re-scan (0 new repliers since 1 PM), no
+26/27 charter deal on any recipient, opt-out/phone guards. Ran via a session
+script importing the worktree messenger (same code as this PR) because
+Actions needs the templates on main; [Agent] note with the exact text on
+each contact; send log in the session scratchpad. Paola was DM'd on Slack
+about both batches. Replies land on Paola's line.
+**Not done / needs Roman:**
 STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
 JustCall's native STOP handling until then.
 **Files:** ops/messenger/messenger.py, ops/messenger/config.yml,
