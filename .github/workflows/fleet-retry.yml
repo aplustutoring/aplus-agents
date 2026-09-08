@@ -43,3 +43,19 @@ jobs:
             ARGS="--dry-run"
           fi
           python3 ops/fleet-health/retry/sweep.py $ARGS
+      # Failed runs get retried above; runs that NEVER STARTED are invisible to
+      # that sweep. GitHub cron starves some days (2026-08-27: no PO-inbox run
+      # for 8.5 business hours, a PO sat unread) — this step detects scheduled
+      # workflows gone silent during PT business hours, dispatches a catch-up
+      # run, and alerts once per episode.
+      - name: Cron-starvation watchdog
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="--dry-run"
+          fi
+          python3 ops/fleet-health/watchdog/cron_watchdog.py $ARGS

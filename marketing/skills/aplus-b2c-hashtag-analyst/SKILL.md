@@ -279,3 +279,11 @@ Next step: Slack delivery picks these up automatically.
 ## Version
 
 v1.0 (2026-05-27). Initial draft. Modeled on charlie947/niche-research + charlie947/hook-generator patterns. Adapts the "research fresh per piece" architecture for A+ Tutoring B2C case studies. Researches hashtags per-case rather than relying on a static library. Output structure: 5 hashtags (3 trending + 1 brand voice + 1 Roman voice) + IG caption + IG Story captions + FB caption, all written to metadata.md for downstream Slack delivery to pick up.
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

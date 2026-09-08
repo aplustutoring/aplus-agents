@@ -323,3 +323,11 @@ Expanded AI fingerprint detection. Added 13 new banned words to the AI-detection
 
 v1.0. Created May 8, 2026
 Foundation: Banned words list, AI fingerprint patterns, and voice rules from roman-voice v1.1 and danielle-voice v1.1
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

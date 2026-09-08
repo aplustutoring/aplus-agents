@@ -244,3 +244,11 @@ maintained, and this Badge expires.
   of NSSA; "Stanford University's National Student Support Accelerator" does
   more work than "NSSA".
 - **It is evidence, not a personality.** One clean mention beats three.
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

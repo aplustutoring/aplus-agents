@@ -338,3 +338,11 @@ v1.2 . Updated May 13, 2026 . Corrected iLEAD AV figure from 81%/21 students (in
 v1.1 . Updated May 11, 2026 (added correct attribution table for iLEAD AV data after first real run flagged 81% misattribution against published case study URL)
 v1.0 . Created May 11, 2026
 Foundation: SB 414 incident on May 11, 2026 surfaced the factual accuracy gap that brand-check cannot catch. Built specifically to prevent shipping content with wrong bill statuses, fabricated statistics, or invented A+ outcome data. iLEAD AV data correction added same day after first real run validated the skill.
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

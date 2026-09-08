@@ -437,3 +437,11 @@ background, and no compositing it into a generated image. Place the supplied
 
 Also: the Badge speaks to **program design**, not results. Do not lay it over a
 results slide or a stat card . see the rule in `aplus-fact-check`.
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

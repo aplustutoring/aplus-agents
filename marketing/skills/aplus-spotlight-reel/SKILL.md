@@ -133,3 +133,11 @@ Like all B2C content, the finished reel goes to Paola for review before publishi
 - `aplus-b2c-brand-kit` — voice/colors applied in Phase 1
 - `aplus-brand-check`, `aplus-fact-check` — Phase 2 gates
 - `build-case-study-comic.py` — the independent static comic renderer (parallel sibling)
+
+## Core values
+
+Ground all reasoning and output in A+ CARE core values: `ops/values/care-values.md`.
+
+Read that file, do not restate it here. Its "How this applies to agent output"
+section is the operational part: strengths before gaps, never a metric without
+its source, say what was NOT done, differentiate the output to the reader.

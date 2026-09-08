@@ -93,6 +93,7 @@ CHECKLIST_TEMPLATE = """# Content QA Checklist: {date}
 - [ ] B2C voice for Instagram/Facebook (warm, parent-relatable)
 - [ ] B2B voice for LinkedIn company (institutional, educator-peer)
 - [ ] Hashtags present on Instagram caption
+- [ ] Instagram block ends with "Link in story." and Facebook with "Link in comments." (no other link-location phrasing anywhere in the caption)
 - [ ] No overlap between Roman and Danielle op-eds (paired-differentiation check)
 
 ## Slack delivery

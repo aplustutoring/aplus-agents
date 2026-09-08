@@ -334,12 +334,19 @@ agents:
   - id: call-agent
     runtime: github-actions
     engine: Call agent
-    name: Call agent — daily digest (~5:30 PM PT)
+    name: Call agent — webhook-triggered polls + daily digest (~5:30 PM PT)
     owner: roman@wetutorathome.com
     status: active
     trigger:
-      type: cron
-      schedule: ["30 0 * * * (17:30 PDT / 16:30 PST daily)"]
+      type: event + cron
+      events: [workflow_dispatch]
+      source: >
+        JustCall call-completed/missed-call webhooks -> call-agent-webhook-relay
+        (Cloudflare Worker, ops/call_agent/webhook-relay) -> workflow_dispatch
+        with no_digest=true, ~6 min after each call. Replaced the every-15-min
+        poll crons 2026-08-28: GitHub honored only ~4 of ~50 daily fires.
+      schedule: ["30 0 * * * (17:30 PDT / 16:30 PST daily — digest flush + backstop sweep)",
+                 "0 16 * * 1 (Mon 9 AM PDT — weekly scorecard)"]
       workflow: .github/workflows/call-agent.yml
     entrypoint: ops/call_agent/call_agent.py
     reads:
@@ -371,6 +378,58 @@ agents:
       smoke mode + --dry-run. Unmatched callers go to digest triage (never
       auto-created). monitored_numbers is a list for future lines — confirm
       recording disclosure before adding any.
+
+  - id: deal-sync-relay
+    runtime: cloudflare-worker
+    engine: Email ops
+    name: Deal-sync webhook relay
+    owner: roman@wetutorathome.com
+    status: pending-deploy   # active after Roman's one-time setup (ops/deal-relay/README.md)
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        HubSpot private-app webhooks (deal.creation; deal.propertyChange on
+        dealstage) -> POST /call-completed?delay=1. Coalesces bursts (a 4-PO
+        email = 4 deals seconds apart -> one run). Always-on HTTP. Replaces
+        cron as the PRIMARY deal-sync trigger (Roman 2026-09-04: no cron
+        unless necessary); the 15-min cron demotes to hourly backstop once a
+        real deal round-trips.
+    source: ops/deal-relay/worker.js
+    entrypoint: ops/deal-relay/worker.js
+    reads: []
+    writes:
+      - "GitHub Actions API: workflow_dispatch on email-deal-sync.yml (defaults)"
+    depends_on:
+      - email-deal-sync workflow
+
+  - id: call-agent-webhook-relay
+    runtime: cloudflare-worker
+    engine: Call agent
+    name: Call agent webhook relay
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        JustCall webhooks (call completed; missed call with delay=1) -> POST
+        /call-completed. Also POST /redispatch from the call-agent workflow
+        when transcripts are still inside the grace window. Always-on HTTP.
+    source: ops/call_agent/webhook-relay/worker.js
+    entrypoint: ops/call_agent/webhook-relay/worker.js
+    reads: []
+    writes:
+      - "GitHub Actions API: workflow_dispatch on call-agent.yml (dry_run=false, no_digest=true)"
+    depends_on:
+      - "Worker secrets: GITHUB_TOKEN (fine-grained PAT, Actions RW on this repo only), WEBHOOK_TOKEN"
+      - "repo secrets CALL_RELAY_URL / CALL_RELAY_TOKEN (transcript-retry step)"
+    notes: >
+      Deterministic dispatch relay — no call content is read (the webhook body
+      is not even parsed) and no reasoning happens here, so no CARE pointer.
+      Delays each dispatch ~6 min for JustCall's AI-transcript lag; coalesces
+      bursts through a single Durable Object alarm. Daily digest cron is the
+      backstop if the relay drops anything.
 
   # ───────────────────────── Feedback agent (ops/feedback-agent) ───────
   # V1 "the doorbell for demotions": #agent-feedback Slack channel -> Events
@@ -514,6 +573,22 @@ agents:
     entrypoint: email/src/sla_sweep.py
     reads: [HubSpot:tickets]
     writes: [Slack, HubSpot:tickets]
+  - id: task-completion-sweep
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Task-completion sweep (team HubSpot tasks)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger: {type: cron, schedule: ["weekdays 8 AM PT"], repo: aplustutoring/aplus-agents, workflow: .github/workflows/task-sweep.yml}
+    entrypoint: email/src/task_sweep.py
+    reads: [HubSpot:tasks, email/state/audit_log.jsonl]
+    writes: [Slack, email/state/audit_log.jsonl]
+    notes: >
+      First agent to READ HubSpot Tasks back (two agents create them; nothing
+      checked completion). Digest to #agent-feedback (silent when clean), ONE
+      bundled DM per owner past 3d overdue on a 3d cadence, Monday on-time/late
+      scoreboard. 30-day horizon: the 717-task historical backlog is counted
+      weekly, never itemized or DM'd. Never writes to HubSpot.
   - id: email-weekly-digest
     runtime: github-actions
     engine: Email / inbox ops
@@ -707,6 +782,65 @@ agents:
       ops/messenger/campaign.yml. The TW key lives ONLY in Actions secrets —
       fetch results via the run artifact, never by running this locally.
 
+
+  - id: teacher-outreach-2026-09
+    runtime: local
+    engine: Charter analysis
+    name: Teacher outreach 26/27 (lists, drafts, workflows, roster)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: manual
+    entrypoint: scripts/teacher_outreach_lists.py
+    reads:
+      - HubSpot:contacts                     # a_persona = Teacher of Record/EF/ES, school_canonical, generic_inbox, opt-out, bounce, Summit-sequence enrollment
+      - HubSpot:deals                        # charter deal $ by teacher_of_record_email (top-30 ranking, rosters)
+    writes:
+      - "HubSpot:lists 3210-3215 — static audience lists (--build-lists)"
+      - "HubSpot:marketing emails 221134168440/845/849 (stranger schools) + 221134168444/853/856 (IEM) as AUTOMATED_DRAFT (teacher_outreach_drafts.py --create)"
+      - "HubSpot:workflows 1878517306 (wave 1) + 1878501648 (IEM), created OFF (teacher_outreach_workflows.py --create)"
+    depends_on:
+      - scripts/teacher_school_stamp.py       # school_canonical + generic_inbox must be stamped first
+      - scripts/teacher_outreach_drafts.py    # campaign-rail email drafts (clone of 219949380453)
+      - scripts/teacher_outreach_workflows.py # campaign-rail workflows, cloned from 1868435042's shape
+      - scripts/teacher_roster.py             # "send it" roster for Sequence 1 replies
+      - ops/messenger/templates/teacher-outreach-2026-09/   # copy, source of truth
+    notes: >
+      Roman "Go" 2026-09-04. Council record: docs/councils/2026-09-02-charter-
+      teacher-outreach.md. Handoff: ops/messenger/CAMPAIGN-2026-09-08-teachers.md.
+      Sequences 1 and 2 are assembled by Danielle in the portal (sales templates
+      have no API); the campaign rail is fully scripted. All scripts are dry-run
+      by default. Email only, no calls (Roman 2026-09-03).
+
+  - id: teacher-sequence-enroll
+    runtime: github-actions
+    engine: Charter analysis
+    name: Teacher outreach 26/27 daily sequence enroller
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: schedule
+      cron: "5 16 * * 1-5"                 # 09:05 PDT Mon-Fri; gated by armed/start_date/weekday in the script
+      events: [schedule, workflow_dispatch]
+      workflow: .github/workflows/teacher-sequence-enroll.yml
+    entrypoint: scripts/teacher_sequence_enroll.py
+    reads:
+      - ops/messenger/teacher-sequences.yml   # armed, start_date, cap, sequences, sender, notify
+      - HubSpot:lists 3210 / 3214 / 3211      # audience + top-30 priority
+      - HubSpot:contacts                      # eligibility props at enroll time
+    writes:
+      - "HubSpot:sequence enrollments — POST /automation/v4/sequences/enrollments as Danielle (userId 46811240, senderEmail danielle@wetutorathome.com), 50 per sequence per weekday"
+      - ops/messenger/state/teacher-outreach-2026-09/sequence_enroll_state.json   # who/when/sender, committed back
+      - "Slack DM: batch summary to Danielle (U05NMABF3B2) + ROMAN_SLACK_USER_ID"
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, SLACK_BOT_TOKEN, ROMAN_SLACK_USER_ID"
+      - "HubSpot sequences 310839862 (Worked With Us) and 310844702 (Known Schools), shared with Everyone"
+    notes: >
+      Built 2026-09-04 (Danielle: "I love that idea"). The script only enrolls;
+      sends, threading, business-day window and unenroll-on-reply are HubSpot's.
+      Dry-run by default; the schedule passes --confirm ENROLL. Disarm with a
+      one-line PR (armed: false). Failed state persist fails the job so a rerun
+      cannot double-enroll. Sender inbox validated on contact 246529425986.
   - id: tw-tutor-active-check
     runtime: github-actions
     engine: Charter analysis
@@ -862,6 +996,71 @@ agents:
       TTL, so attendee photos stay publicly retrievable indefinitely. Fine for
       MMS delivery, worth a deliberate decision for a school event.
 
+  # EVENT-TEMP — delete this entry on sunset (2026-08-22), do not leave it
+  # sitting `active`. See the post-event checklist in booth/eo/README.md.
+  - id: eo-booth-agent
+    engine: Events
+    runtime: cloudflare-worker
+    name: EO LA Valley "Minion #23" booth agent
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [http_post, cron]
+      source: >
+        POST /capture from the booth front-end (booth/eo/index.html) whenever
+        an attendee uses the booth; POST /sms from the JustCall inbound
+        webhook on the booth line; plus two one-night crons — "17 1 * * *"
+        UTC = 6:17 PM PT (Payload #1) and "0 3 * * *" UTC = 8:00 PM PT
+        (Payload #2). Cloudflare crons carry NO date, so both re-fire daily
+        until deleted.
+    source: booth/eo/worker.js
+    entrypoint: booth/eo/worker.js
+    reads:
+      - "HubSpot:contacts (search by email and by phone; CONTAINS_TOKEN on aplus_event_tag=eo_lav_agents_2026)"
+      - "Cloudflare KV (PHOTOS binding — booth photos, hero images, STOP opt-out flags)"
+      - "Anthropic API (claude-sonnet-4-6 + web_search_20260209) — company research"
+      - "Google Gemini API (gemini-3-pro-image) — superhero hero image from the selfie"
+    writes:
+      - "HubSpot:contacts (upsert by email; aplus_event_tag=eo_lav_agents_2026, eo_company_name, eo_demo_consent, eo_research_brief, eo_hero_image_url, eo_payload1_sent, eo_payload2_sent)"
+      - "Resend (photo email, Payload #1 brief email, Payload #2 closing email — all signed Minion #23, no A+ branding)"
+      - "JustCall (photo MMS, Payload #1 triple text, Payload #2 hero MMS, idea-capture auto-reply) from the booth line +18185736258"
+      - "Cloudflare KV (photos + hero images under eo/, opt-outs under optout:)"
+      - "Zapier catch-hook -> Google Sheet \"EO Agent Ideas — Aug 20\""
+      - "Google Drive (Crystal's shared folder — booth photo + hero image, via optional hook; this is the print source now that the booth does not print)"
+      - "HubSpot:notes (photo + hero URLs on the contact timeline — recovery path if the Drive hook fails)"
+    depends_on:
+      - "secrets: HUBSPOT_TOKEN, RESEND_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET, ANTHROPIC_API_KEY, GEMINI_API_KEY, ZAPIER_IDEAS_HOOK"
+      - "vars: MODE (dry_run|send), RESEND_FROM, ALLOWED_ORIGIN, JUSTCALL_FROM"
+      - booth/eo/index.html
+      - "ops/hubspot-schema/properties.yml (the six event-temp eo_* properties)"
+    notes: >
+      EVENT-TEMP, one night only: EO LA Valley "Build Your First AI Agent",
+      2026-08-20. SUNSET 2026-08-22 — delete both crons, disable the inbound
+      webhook, export any contacts worth keeping, delete the
+      eo_lav_agents_2026 contacts, archive the six eo_* properties, and
+      remove this entry. MODE defaults to dry_run and must be flipped to
+      send after the test plan passes.
+      Attendee-facing copy signs as "Minion #23" and carries NO A+ branding
+      anywhere — the mystery is the demo. Consent: a booth checkbox writes
+      eo_demo_consent, and only "true" contacts receive the Payload #1 triple
+      text and the Payload #2 MMS; the photo MMS (the one message carrying
+      the opt-out line) and all email go to everyone. STOP excludes a number
+      from every later SMS/MMS.
+      DEVIATIONS FROM THE BRIEF, all deliberate: (1) hero images use Gemini,
+      not Higgsfield — Higgsfield has no API key in this stack and is a
+      connected app that cannot be called from a Worker; (2) NO printing at
+      the booth at all — the brief put a Selphy AirPrint job in the Worker,
+      which cannot work (no LAN access from a Worker), and Roman's call was to
+      drop booth printing entirely rather than move it to the iPad: photos are
+      delivered by email and MMS and printed later from the shared Drive
+      folder, which removes the one physical dependency that could fail
+      mid-event; (3) the two Claude system prompts are drafts pending Roman's
+      Deliverable 3.
+      Carries the same privacy shape as sage-oak-booth: GET /photo/<key> is
+      public and unauthenticated (unguessable-key privacy only), and hero
+      images are written with no TTL.
+
   # ───────────────────────── Non-Actions runtimes ──────────────────────
   # Agents that do NOT run on GitHub Actions. Registered 2026-08-20 after the
   # Sage Oak photo booth (a Cloudflare Worker writing to production HubSpot)
@@ -952,6 +1151,32 @@ agents:
       couple of weeks and it starts blocking. Checks: workflows <-> registry
       both directions, required fields (incl. engine), unique ids, entrypoints
       exist, FLEET.md current. The main-branch commit carries [skip ci].
+
+  - id: pr-merge-nudge
+    runtime: github-actions
+    engine: Fleet health
+    name: PR merge nudge (green fixes)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: cron
+      cron: "5 16 * * 1,3,5"       # Mon/Wed/Fri 9:05 AM PT
+      events: [workflow_dispatch]
+      workflow: .github/workflows/pr-merge-nudge.yml
+    entrypoint: ops/fleet-health/pr_merge_nudge.py
+    reads:
+      - "GitHub: open PRs + check-run state"
+      - ops/feedback-agent/config.yml        # approver roster (roles, not names)
+    writes:
+      - "Slack: one digest to #agent-feedback when green [fix]/[correction] PRs sit past 3 days; silent when clean"
+    depends_on:
+      - "secrets: SLACK_BOT_TOKEN (GITHUB_TOKEN is ambient)"
+    notes: >
+      NEVER MERGES. The 2026-08-20 grant lets Danielle/Paola/Emily approve and
+      merge fix PRs, but nobody was prompted, so fixes rotted (six days on
+      2026-08-26 while their bugs kept firing). This prompts; the click stays
+      human. Non-fix PRs are branch-hygiene's beat and are excluded to keep the
+      ping meaningful.
 
   - id: branch-hygiene
     runtime: github-actions

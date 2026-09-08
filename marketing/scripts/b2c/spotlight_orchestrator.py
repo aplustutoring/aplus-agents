@@ -1832,6 +1832,7 @@ def _build_draft_system_prompt() -> str:
     skill = load_skill("aplus-spotlight-case-study")
     inclusive = load_skill("aplus-inclusive-language")
     return (
+        "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
         "You are the A+ Tutoring spotlight case-study drafting agent. "
         "Follow the SKILL spec below verbatim — the 8-section Hero's Journey "
         "structure, the 1,200-1,500 word count, the pull-quote grammar gate, "

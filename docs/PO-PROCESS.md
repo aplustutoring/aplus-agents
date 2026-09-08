@@ -9,6 +9,16 @@ this file in the same PR. (Last verified: 2026-08-11, suite 202.)
 
 - Schools email **charter@wetutorathome.com**. The agent polls every 15 minutes
   on weekday business hours (GitHub Actions, `email-po-inbox.yml`).
+- **POs that land elsewhere** (2026-09-03): schools' ordering systems email the
+  vendor contact on file, and Heartwood's OPS account points at admin@. Each
+  run first copies PO-shaped mail (`src/po_sources.is_po_shaped`: ordering-system
+  sender, "Purchase Order #" / "new POs" subject, or a PO/OA-numbered PDF) from
+  every `po_inbox.sources` mailbox into charter@ (Gmail insert, label
+  `A+ Agent/Mirrored from other inbox`), then processes the copy like any other
+  arrival. The admin triage never junks such mail: it opens a HIGH handoff
+  ticket to charter_admin that this agent closes once the copy is processed. A
+  handoff ticket still open after 2 business hours means the mirror is broken
+  (charter_admin + visionary are DM'd when a source fails).
 - Already-processed messages are skipped (audit log). A thread that already
   produced a real PO is closed — **unless** it has an open parent chase, in
   which case replies still get read (the TOR's parent info must get through).
@@ -42,12 +52,19 @@ Tried in order; the first hit wins:
 1. **Parent email in the PO** → find the contact, or create it
    (`a_persona=Family`, phone included).
 2. **The student in Teachworks** → search both TW accounts by the student's
-   exact name; a student with real lesson history gives us their family
-   (parent name/email/phone) directly — and if the PO's tutor is that
-   student's last tutor, it's decisive. 0-lesson shell records never count;
-   a tutor mismatch is flagged for verification. (Matthew Rose, 2026-08-18:
-   104 lessons with Jacquelyn Lemerond → Megan Miller, no chase needed.)
-3. **The student's prior deal** → its non-TOR contact, if unique.
+   exact name, then — schools and TW disagree on compound surnames — by each
+   part of a hyphenated/spaced last name ('Murray-Fiore' also tries 'Murray'
+   and 'Fiore'; first name stays exact). A student with real lesson history
+   gives us their family (parent name/email/phone) directly — and if the PO's
+   tutor is that student's last tutor, it's decisive. 0-lesson shell records
+   never count; a tutor mismatch is flagged for verification. (Matthew Rose,
+   2026-08-18: 104 lessons with Jacquelyn Lemerond → Megan Miller, no chase.)
+3. **The student's prior deal** → its non-TOR contact, if unique. Matched by
+   EXACT student-name properties (first + last, compound-surname parts
+   retried) — **never by first name alone**: a first-name deal-name search
+   resolved the wrong Mateo's parent on 2026-08-28 (Luis Ramirez instead of
+   Sarah Fiore), mis-keying the deal, TW family, and SMS. No last-name
+   agreement → this step returns nothing and the chase runs instead.
 4. **Family-contact match** by student name — a lone surname hit only counts
    when that contact's student fields or deal names carry the student's first
    name (the "Dina Rose" collision).
@@ -117,13 +134,42 @@ Also attached to the deal:
    is empty · **🚩 missing-info DM to Kath AND Roman** listing every gap
    (missing fields, unmatched TOR/parent, NEEDS PARENT, blank schedule, failed
    uploads).
-4. **SMS** (HubSpot flow 1603217415, contact-based): the parent enrolls,
-   branches on the tutored property — "Yes" texts right away; "No" emails staff
-   internally, waits, then texts. The text: *"We received your Purchase Order.
-   Wanted to confirm that this schedule still works for you:
-   {{schedule_preference}}"*. The flow clears its trigger at the end, so the
-   next PO re-arms it — **one text per kid per PO event, structurally never
-   daily.**
+4. **SMS** — AGENT-OWNED as of 2026-08-29 (Roman, after HubSpot flow
+   1603217415 died silently on an Aug 13 edit and no charter family was
+   texted for two weeks). `email/src/sms.py` sweeps Pre-Lesson deals in the
+   configured pipelines every deal-sync cycle (~15 min) and texts the family
+   via JustCall (`sms:` in config.yaml). Deals are GROUPED BY FAMILY — a
+   multi-kid PO day is ONE text naming every student (Roman 2026-09-01:
+   "name the kid"). The MESSAGE is chosen by what we know: schedule on file →
+   the CONFIRM variant; none → the ASK variant ("what days and times work
+   best for their sessions" — always "their", never a gendered guess; brand
+   voice, no personal sign-off). The tutored property routes STAFF only:
+   any "No" deal DMs the owner first and the family texts on the NEXT sweep;
+   **unset no longer suppresses the text** (asking for a schedule needs no
+   verification). Pending-approval OAs text normally ("if it says pending
+   approval for us it means approved"). Copy lives in `sms.templates`.
+   The **"What to Expect (Charter)" email** (58% lifetime opens, real replies)
+   rides the same event: one family, one text, one onboarding email, sent
+   via RESEND from "A+ Tutoring Success Team <admin@wetutorathome.com>" (the
+   same address replies go to — HubSpot's Conversations inbox, so the triage
+   agent reads responses; HubSpot BCC stamps the contact timeline). Copy
+   lives in email/templates/welcome_charter.html. The ~1-in-4 families the
+   old flow suppressed for missing marketing consent get it too (Roman
+   2026-09-03, Option A; `welcome: true` per pipeline). A failed email never
+   voids the text: audited + Kath flagged to forward manually.
+   Guardrails: one text per deal ever, **one text per family per 24h** (a
+   4-PO email never sends 4 texts), quiet hours 8am-8pm PT, a hard
+   `start_date` fence so pre-cutover backlogs can never be texted, em-dash
+   scrub, 3-strike send retry then a manual-text flag to Kath. The old
+   HubSpot flow stays OFF; a pipeline's flow must be off BEFORE it is listed
+   in `sms.pipelines` (that ordering is what makes double-texting
+   impossible). Sweep watches DEALS, so manually created deals text too.
+
+5. **Sibling-gap tripwire** (daily): a family that renewed SOME kids but
+   has a last-season-active sibling with no new PO → 🚩 DM to the
+   charter_sales seat after a 5-day settle window, once per family+kid per
+   season. Whole-family non-renewals are the chase list, never a flag.
+   (Roman 2026-09-04, after Eliana Fiore / Zahavi Villa / Abigail Miller.)
 
 ## Stage 5 — Kath: convert the PO to a Teachworks invoice (same day)
 

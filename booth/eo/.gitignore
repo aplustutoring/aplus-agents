@@ -1,0 +1,3 @@
+# Runtime send-ledger: attendee email addresses, written at event time.
+# State, not source, and it is personal data. HubSpot is the record.
+.unbuilt-sent
