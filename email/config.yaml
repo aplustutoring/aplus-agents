@@ -308,6 +308,18 @@ deal_sync:
     enabled: true
     hour_pt: 9
     owner: charter_admin
+    # Due date = the Teachworks invoice due date, synced nightly onto the deal
+    # by tw-invoice-due-sync (6am PT). Was unset, so new-style deal names (no
+    # month tag) had NO due date and never prompted.
+    invoice_due_property: lessons_fulfilled_date
+    since: "2026-07-01"         # 26/27 era; the sweep pages through everything after this
+    # ── Overdue-submission nag (Roman 2026-09-08) ──────────────────────────
+    # Every business day: one digest to `owner` listing every invoice past due
+    # and not submitted (days late, $). Anything `escalate_after_days` late
+    # also goes to `escalate_to`. Repeats until the list is empty.
+    overdue_grace_days: 1       # "at least one day past the invoice due date" (Roman 2026-09-02)
+    escalate_after_days: 3
+    escalate_to: visionary
 
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
