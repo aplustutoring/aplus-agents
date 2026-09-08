@@ -111,6 +111,34 @@ def enroll(seq_id, contact_id, sender_email, user_id):
     return r.status_code, (r.text or "")[:300]
 
 
+def search_count(object_type, filters):
+    r = hs("POST", f"/crm/v3/objects/{object_type}/search",
+           json={"filterGroups": [{"filters": filters}], "properties": ["hs_object_id"], "limit": 1})
+    r.raise_for_status()
+    return r.json().get("total", 0)
+
+
+def signals(cfg):
+    """The numbers that say whether the outreach is working, since start_date:
+    replies (HubSpot reply date or the info@ classifier's campaign_replied stamp)
+    from teachers enrolled in either sequence, Teacher Scholarship nominations
+    (family deals in pipeline 918901819), and new 26/27 charter deals."""
+    since = cfg["start_date"]
+    since_ms = str(int(time.mktime(time.strptime(since, "%Y-%m-%d")) * 1000))
+    seq_ids = [s["sequence_id"] for s in cfg["sequences"]]
+    in_seq = {"propertyName": "hs_latest_sequence_enrolled", "operator": "IN", "values": seq_ids}
+    replied = search_count("contacts", [in_seq, {"propertyName": "hs_sales_email_last_replied", "operator": "GTE", "value": since_ms}])
+    stamped = search_count("contacts", [in_seq, {"propertyName": "campaign_replied", "operator": "EQ", "value": "true"}])
+    campaign_replied = search_count("contacts", [{"propertyName": "campaign_replied", "operator": "EQ", "value": "true"}])
+    nominations = search_count("deals", [{"propertyName": "pipeline", "operator": "EQ", "value": "918901819"},
+                                          {"propertyName": "createdate", "operator": "GTE", "value": since_ms}])
+    charter_deals = search_count("deals", [{"propertyName": "pipeline", "operator": "IN", "values": ["907748", "72281989", "88841552", "5119061", "1066195"]},
+                                            {"propertyName": "createdate", "operator": "GTE", "value": since_ms}])
+    return (f"Signals since {since}: sequence replies {max(replied, stamped)} (some are auto-replies), "
+            f"campaign replies stamped {campaign_replied}, scholarship nominations {nominations}, "
+            f"new charter deals {charter_deals}.")
+
+
 def slack_dm(user_id, text):
     if not SLACK_TOKEN or not user_id:
         return
@@ -266,6 +294,10 @@ def main():
         lines.append(f"• {n}: enrolled {o} of {b}" + (f", {f} failed" if f else "") + f", {r} still to go. " +
                      ", ".join(f"{k} {v}" for k, v in bs.items()))
     lines.append("Replies exit the sequence on their own. \"Send it\" replies: ping Roman for the roster.")
+    try:
+        lines.append(signals(cfg))
+    except Exception as e:  # the summary must never fail because a count did
+        lines.append(f"(signals unavailable this run: {str(e)[:80]})")
     text = "\n".join(lines)
     print("\n" + text)
     for uid in (cfg.get("notify", {}).get("slack_user_ids") or []) + ([os.getenv("ROMAN_SLACK_USER_ID")] if os.getenv("ROMAN_SLACK_USER_ID") else []):
