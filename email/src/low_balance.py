@@ -219,6 +219,38 @@ def _family_contact(alert: dict) -> dict | None:
     return None
 
 
+def _tor_email_fallback(dp: dict, contact: dict | None) -> str:
+    """The teacher's email when the deal names the TOR but carries no address
+    (Taylor Rodriguez, 2026-09-09 replay: 'Kylee Cooper-Robles', no email).
+    1) the PO agent's own name match among TOR-flagged contacts (unique hit
+    only); 2) the family contact's 'Teacher of Record' association (#AP031,
+    typeId 15), unique hit only. Never a guess."""
+    name = (dp.get("teacher_of_record_name") or "").strip()
+    if name:
+        parts = name.split()
+        first, last = (parts[0], " ".join(parts[1:])) if len(parts) > 1 else ("", parts[0])
+        try:
+            from .po_inbox import _tor_by_name
+            hits = [c for c in _tor_by_name(first, last)
+                    if ((c.get("properties") or {}).get("email") or "").strip()]
+            if len(hits) == 1:
+                return hits[0]["properties"]["email"].strip().lower()
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  TOR name match failed (non-fatal): {e}")
+    cid = (contact or {}).get("id")
+    if cid and cid != "DRYRUN":
+        try:
+            assoc = hs._get(f"/crm/v4/objects/contacts/{cid}/associations/contacts")
+            tor_ids = [str(r.get("toObjectId")) for r in assoc.get("results", [])
+                       if any(t.get("typeId") == 15 for t in r.get("associationTypes", []))]
+            if len(tor_ids) == 1:
+                c = hs._get(f"/crm/v3/objects/contacts/{tor_ids[0]}", {"properties": "email"})
+                return ((c.get("properties") or {}).get("email") or "").strip().lower()
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  TOR association lookup failed (non-fatal): {e}")
+    return ""
+
+
 def _school_short(dealname: str, school: str) -> str:
     parts = [p.strip() for p in (dealname or "").split(" - ")]
     if len(parts) >= 3 and parts[2]:
@@ -567,6 +599,8 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     pipeline = str(dp.get("pipeline") or "")
     charter = is_charter_package(alert["package"], pipeline)
     tor_email = (dp.get("teacher_of_record_email") or "").strip().lower()
+    if not tor_email and charter and deal:
+        tor_email = _tor_email_fallback(dp, contact)
     no_tor = [str(x) for x in lb.get("no_teacher_email_pipelines", [])]
     tor_blocked = pipeline in no_tor
     # LOW_BALANCE_FORCE_ARMED=1 lets a DRY_RUN replay walk every outreach

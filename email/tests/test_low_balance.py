@@ -385,6 +385,23 @@ def test_first_name_handles_teachworks_last_first():
     assert lb._first_name("") == ""
 
 
+def test_tor_email_resolved_from_name_when_deal_has_none(monkeypatch):
+    from src import po_inbox
+    no_email = {"id": "9", "properties": {**DEAL["properties"], "teacher_of_record_email": ""}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[no_email], recent=RECENT)
+    monkeypatch.setattr(po_inbox, "_tor_by_name",
+                        lambda f, l: [{"id": "77", "properties": {"email": "kylee@ileadexploration.org"}}]
+                        if (f, l) == ("Kylee", "Cooper-Robles") else [])
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["tor_email"] == "kylee@ileadexploration.org" and h.drafts[0][0] == "kylee@ileadexploration.org"
+    # ambiguous name match → no guess, flagged
+    monkeypatch.setattr(po_inbox, "_tor_by_name", lambda f, l: [{"properties": {"email": "a@x"}}, {"properties": {"email": "b@x"}}])
+    monkeypatch.setattr(lb.hs, "_get", lambda p, q=None: {"results": []})
+    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[no_email], recent=RECENT)
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["tor_email"] == "" and not h2.drafts and any("no teacher-of-record email" in f for f in rec["flags"])
+
+
 def test_missing_deal_leaves_no_po_ref_or_school_in_copy(monkeypatch):
     h = Harness(monkeypatch, _cfg(armed=True), deals=[], recent=RECENT)
     lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
