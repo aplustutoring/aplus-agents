@@ -42,6 +42,49 @@ reading of when it was taken was not.
 **Files:** `scripts/teacher_sequence_enroll.py`,
 `ops/messenger/teacher-sequences.yml`, `docs/CHANGELOG.md`.
 
+**Follow-up the same evening: there is no second inbox to have, and that is the
+finding.** Roman proposed `admin@`, then established that `success@` is an ALIAS
+on Danielle's Gmail account rather than a separate mailbox. That settles it:
+even if HubSpot had accepted `success@`, it is the same physical account, so it
+fails at the same moment `danielle@` does. Zero redundancy by construction.
+`admin@` is a community inbox, which is the wrong sender identity for outreach
+that is supposed to read as a hand-written email from the sales seat, and it is
+the mailbox that already swallowed the Heartwood PO behind a spam filter. Any
+inbox that WOULD provide real redundancy belongs to a different person, which
+changes who the teacher thinks emailed them.
+
+Real redundancy and correct sender identity are mutually exclusive here. Per the
+investigation rule this is the explicit "no system fix exists, because X" case:
+no fallback sender is possible, so the fix is to make the single sender's
+failure impossible to miss.
+
+- `scripts/teacher_sequence_enroll.py` — `SENDER_FAIL_ABORT = 3`. Three
+  CONSECUTIVE sender-level rejections (`do_enroll` returning `sender=None`,
+  meaning no candidate inbox was accepted) abort the batch, skip the remaining
+  sequences, and lead the Slack DM with a red alert naming the last real
+  HubSpot error. Three rather than one because `CONTACT_ERRORS` is a prefix
+  heuristic: an unusual contact-specific errorType it fails to match would
+  otherwise masquerade as a dead inbox.
+
+  Before this, a disconnected inbox spent 50 API calls proving it and marked 50
+  teachers "failed" for a problem that was not theirs, inside a digest that read
+  like an ordinary day.
+
+  7 scenario tests: a dead inbox stops after 3 calls instead of 50; 50 bounced
+  recipients never abort; the real 2026-09-08 shape (46 enrolled, 4 bounced)
+  does not abort; the counter resets on a success or a contact error so only a
+  true run of 3 trips it; transient 500s do not abort; a clean day is untouched.
+
+**Also sent and then retracted a Slack DM to Danielle** asking her to connect
+`success@`, before Roman pointed out the alias. Retraction sent within the hour.
+Worth recording: I asked her to CHECK whether it could be added alongside rather
+than to just do it, and explicitly told her not to disconnect `danielle@`,
+because HubSpot may only allow one connected personal inbox per user and a swap
+would have changed the sender for the 206 teachers still to be enrolled. That
+caution was the only reason the wrong request could not have broken the live
+campaign.
+
+
 ---
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
 

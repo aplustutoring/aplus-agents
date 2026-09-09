@@ -186,6 +186,15 @@ def main():
     # them with another sender is pointless; record them so they are never retried.
     CONTACT_ERRORS = ("RECIPIENT_PREVIOUSLY_BOUNCED", "RECIPIENT_UNSUBSCRIBED", "RECIPIENT_", "CONTACT_")
 
+    # Consecutive sender-level rejections that mean the inbox itself is gone
+    # rather than the contacts being bad. do_enroll returns sender=None only
+    # when every candidate was refused for a sender reason, so this is already
+    # a narrow signal. Three in a row rather than one, because CONTACT_ERRORS
+    # is a prefix heuristic: an unusual contact-specific errorType it does not
+    # match would masquerade as a sender fault, and three of those in a row is
+    # far less likely than a genuinely dead inbox.
+    SENDER_FAIL_ABORT = 3
+
     def do_enroll(seq_id, cid, label):
         """Try the confirmed sender first, then the other candidates.
         Returns (ok, sender, detail). Contact-level rejections come back as
@@ -232,7 +241,11 @@ def main():
 
     cap = args.cap or cfg["daily_cap"]
     summary = []
+    sender_down = None      # set to the last real error once the inbox looks dead
     for seq in cfg["sequences"]:
+        if sender_down:
+            print(f"\n{seq['name']}: SKIPPED, sender inbox is down")
+            continue
         ids = list_members(seq["list_id"])
         props = batch_read(ids)
         pri = set(list_members(seq["priority_list_id"])) if seq.get("priority_list_id") else set()
@@ -271,7 +284,7 @@ def main():
         for c in batch:
             by_school[props[c].get("school_canonical")] = by_school.get(props[c].get("school_canonical"), 0) + 1
         print("  batch by school:", by_school)
-        ok_n, fail = 0, []
+        ok_n, fail, consec_sender_fail = 0, [], 0
         for c in batch:
             p = props[c]
             if not live:
@@ -279,9 +292,23 @@ def main():
             ok, sender, detail = do_enroll(seq["sequence_id"], c, p.get("email"))
             if ok:
                 ok_n += 1
+                consec_sender_fail = 0
                 done[c] = {"seq": seq["sequence_id"], "date": today, "email": p.get("email")}
             else:
                 fail.append((p.get("email"), detail))
+                # sender=None means no candidate inbox was accepted. That is the
+                # inbox, not this teacher, so every remaining contact will fail
+                # identically. Stop rather than spend 50 calls proving it and
+                # marking 50 teachers failed for someone else's problem.
+                if sender is None:
+                    consec_sender_fail += 1
+                    if consec_sender_fail >= SENDER_FAIL_ABORT:
+                        sender_down = detail
+                        print(f"  ABORTING: {consec_sender_fail} consecutive sender-level "
+                              f"rejections. The sending inbox looks down, not the contacts.")
+                        break
+                else:
+                    consec_sender_fail = 0
             time.sleep(0.4)
         if live:
             # Every failure, not fail[:3]. On 2026-09-08 the log read "FAILED 4"
@@ -299,7 +326,20 @@ def main():
         {"sequence": n, "batch": b, "enrolled": o, "failed": f, "remaining": r} for n, b, o, f, r, _ in summary]})
     state_path.parent.mkdir(parents=True, exist_ok=True)
     state_path.write_text(json.dumps(state, indent=1))
-    lines = [f"Teacher outreach enrollments for {today} (from {state.get('sender_email_confirmed')}):"]
+    lines = []
+    if sender_down:
+        # Lead with this. A dead sender stops the whole campaign, and the run
+        # otherwise reads like an ordinary day with a lot of failures.
+        lines += [
+            f":rotating_light: TEACHER OUTREACH STOPPED for {today}: the sending inbox was refused.",
+            f"HubSpot would not send as {state.get('sender_email_confirmed') or 'the configured sender'}.",
+            f"Last error: {sender_down[:300]}",
+            "Nobody after that point was enrolled, and no teacher was contacted twice.",
+            "Check that the inbox is still connected in HubSpot (Settings, General, Email).",
+            "Tomorrow's run will pick up where this stopped once it is fixed.",
+            "",
+        ]
+    lines.append(f"Teacher outreach enrollments for {today} (from {state.get('sender_email_confirmed')}):")
     for n, b, o, f, r, bs in summary:
         lines.append(f"• {n}: enrolled {o} of {b}" + (f", {f} failed" if f else "") + f", {r} still to go. " +
                      ", ".join(f"{k} {v}" for k, v in bs.items()))
