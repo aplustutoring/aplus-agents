@@ -90,12 +90,23 @@ linked typeId 15 ADD-only, notes both sides. Molina asked for Aceto's email
 Toolie Younger. 5th STOP (Patterson) stamped. Faulk and Barber are being
 worked by Paola directly on the line (Faulk sending criteria to paola@;
 Barber asked cost + discount for 4 kids, needs the "school pays" answer).
-**Roman's next asks (not built, Slack scope needed):** (a) new-teacher
-intake automation = ask email → create TOR → link, as done by hand above;
-(b) per-tutor group DM (tutor + Paola/Yolanda/Janelle) asking "can you take
-{student}?" — tutors ARE Slack users (all 9 named today resolved), no
-per-tutor channels exist, but the aplus bot lacks `mpim:write`/`mpim:read`
-so it cannot open group DMs until Roman adds the scopes and reinstalls.
+**TUTOR ASKS POSTED 6:56 PM PT (Roman: "check if those teachers have their
+own Slack channels, if so post the requests there now"):** per-tutor PRIVATE
+channels DO exist, named first-last (created by Danielle 2023-24, Kath
+2025-26). Posted one "can you take {student}, {days/times}?" request in
+each, tagging Paola: #cathy-westcot (Sariyah Simmons), #tarisa-r (Willow
+Crane), #stephanie-torres (Daryl Phillips + Ellie Barron),
+#lisarose-blanchette (Matteo Molina), #christina-daniels (Franny Solis),
+#jonathan-szatkowski (Phillip Salcedo), #aesha-siddiqui (Gia Faulk).
+Wrong-channel guard before posting: each first name → exactly ONE tutor
+with an active roster status in HubSpot AND one Slack user, matching the
+channel. NO channel for Christa (Elias, Gonzalez), Frederick (Sagua),
+Angela Salyer (Richardson): those three asks are still open.
+**Roman's next asks (not built):** (a) new-teacher intake automation =
+ask email → create TOR → link, as done by hand above; (b) tutor ask
+automation: post in the tutor's own channel when one exists, else a group
+DM with Paola/Yolanda/Janelle (bot needs `mpim:write`/`mpim:read` for
+that; Roman to add and reinstall).
 **Not done / needs Roman:**
 STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
 JustCall's native STOP handling until then.
