@@ -31,6 +31,8 @@ from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 
 PO_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
+    "Before contacting a family, teacher, or tutor, read knowledge/journey/README.md "
+    "and pass knowledge/journey/00-pre-send-checklist.md. Act only on stages marked REVIEWED. "
     "You process A+ Tutoring's charter-school PURCHASE ORDER inbox. The email may "
     "include PDF/image attachments (the actual PO document) — read them; PO details "
     "usually live there, not in the body. "

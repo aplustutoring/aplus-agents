@@ -1,1 +1,1 @@
-Hi {{firstname}}, it's A+ Tutoring! {{student_first_name}}'s tutor {{last_tutor_name}} would love to work together again this school year. Your charter funds can cover tutoring — want us to set it up? Reply YES and we'll take care of the rest. Reply STOP to opt out.
+Hi {{firstname}}, it's A+ Tutoring! {{student_first_name}}'s tutor {{last_tutor_name}} would love to work together again this school year. Your charter funds can cover tutoring. Want us to set it up? Reply YES and we will send your teacher the hours for the PO. Reply STOP to opt out.

@@ -605,6 +605,16 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         except Exception as e:  # never let a stamp failure block the ticket
             print(f"  ⚠️  campaign_replied stamp failed for {contact_id} (non-fatal): {e}")
 
+    # Every inbound email stamps [Agent] Last Inbound At, because
+    # hs_email_last_reply_date never moves for inbox replies and the pre-send
+    # gate needs "has this contact written to us?" to be answerable.
+    if contact_id:
+        try:
+            from . import presend
+            presend.stamp_last_inbound(contact_id, datetime.now(timezone.utc).isoformat())
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  last-inbound stamp failed for {contact_id} (non-fatal): {e}")
+
     # Attach the email two ways: (1) associate the conversation thread, and (2) post the
     # email body as a NOTE — the note reliably renders on the ticket in the UI even when
     # HubSpot's unlabeled conversation association doesn't surface the email.

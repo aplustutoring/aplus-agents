@@ -53,6 +53,11 @@ def wired(monkeypatch):
     monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
         "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567"}})
     monkeypatch.setattr(dsy, "_deal_contact", lambda did, name="": {"id": "C1"})
+    # the pre-send gate has its own tests (test_presend.py); here it allows
+    from src.presend import Decision
+    monkeypatch.setattr(sms.presend, "check", lambda *a, **k: Decision("allow"))
+    monkeypatch.setattr(sms.presend, "record_send", lambda *a, **k: None)
+    monkeypatch.setattr(sms.presend, "enabled", lambda: False)
     return {"recorded": recorded, "sent": sent, "dms": dms, "deals": deals}
 
 
@@ -277,3 +282,41 @@ def test_sender_liveness_digest_flags_quiet_flows(monkeypatch, tmp_path):
     sl.run()
     assert len(posts) == 1
     assert "Flow B" in posts[0][1] and "Flow A" not in posts[0][1].split("ZERO")[1]
+
+
+# ── pre-send gate hook (2026-09-09, the Gonzalez double-thread) ──────
+def test_gate_hold_records_sms_held_dms_owner_and_retries_next_sweep(wired, monkeypatch):
+    from src.presend import Decision
+    wired["deals"].append(_deal("D1"))
+    verdicts = iter([Decision("hold", ["active thread on the support line"],
+                              owner={"name": "Yolanda", "slack_user_id": "UYO"}),
+                     Decision("allow")])
+    monkeypatch.setattr(sms.presend, "check", lambda *a, **k: next(verdicts))
+    monkeypatch.setattr(sms.presend, "enabled", lambda: True)
+    sms.run_sweep()
+    assert wired["sent"] == []
+    assert any(r["action_taken"] == "sms_held" for r in wired["recorded"])
+    assert wired["dms"] and "Held the PO welcome text" in wired["dms"][0][1]
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1
+
+
+def test_gate_shadow_logs_and_still_sends(wired, monkeypatch):
+    from src.presend import Decision
+    wired["deals"].append(_deal("D1"))
+    monkeypatch.setattr(sms.presend, "check", lambda *a, **k: Decision("hold", ["x"]))
+    monkeypatch.setattr(sms.presend, "enabled", lambda: False)
+    sms.run_sweep()
+    assert len(wired["sent"]) == 1
+    assert any(r["action_taken"] == "presend_shadow" for r in wired["recorded"])
+
+
+def test_gate_block_skips_for_good(wired, monkeypatch):
+    from src.presend import Decision
+    wired["deals"].append(_deal("D1"))
+    monkeypatch.setattr(sms.presend, "check", lambda *a, **k: Decision("block", ["opted out"]))
+    monkeypatch.setattr(sms.presend, "enabled", lambda: True)
+    sms.run_sweep()
+    sms.run_sweep()
+    assert wired["sent"] == []
+    assert sum(1 for r in wired["recorded"] if r["action_taken"] == "sms_skipped_unverified") >= 1

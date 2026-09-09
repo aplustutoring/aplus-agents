@@ -7,6 +7,236 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 — Pre-send gate + one_to_few rail (the code behind the journey checklist)
+
+**Why:** 2026-09-09, an agent told to "watch for responses" texted the
+Gonzalez family three times from Paola's lead line while scheduling had them
+booked on the support line. Nothing in either SMS engine looked at the other
+line, the inbox, or open tickets before sending; "has this family replied?"
+had no helper (inbox replies never stamp `hs_email_last_reply_date`); and
+every send under 25 recipients ran from a session script with none of the
+bulk engine's checks. Roman: "we have to learn more and ask questions."
+The playbook (PR #198) writes the questions down; this PR makes an agent
+unable to skip them.
+
+**What:**
+- `email/src/presend.py`: `check(contact_id, channel, from_line, purpose,
+  ...)` → allow / hold / block with reasons and the owning seat. Checks, in
+  order: opt-out; quiet hours (shared `sms._in_send_window`); stage-to-line
+  (persona + deals since `presend.season_start`: tutor and scheduling → support
+  line, lead and TOR → charter_sales line; the LOCKED 2026-09-08 rule);
+  active thread on another company line inside `thread_window_days` (JustCall
+  index, now carrying `line` and `agent` per text) → HOLD naming the owner
+  (support line resolves by student last name through `scheduler_split`);
+  unanswered reply on any line or in the inbox → HOLD; open ticket owned by
+  scheduling while texting from another line → HOLD; frequency (JustCall
+  outbound today across all lines, and the new `agent_last_outbound_at`
+  inside `min_gap_hours`, both waived when the contact wrote first);
+  standing go (`presend.standing_go`) else `--confirm SEND`; STOP line
+  required on a cold SMS, not on a reply in-thread. Any unreadable source is a
+  HOLD "could not verify", never a silent allow. `record_send` is the send log
+  of record: HubSpot note on the contact with a machine-parseable first line,
+  the two `[Agent]` properties, one audit line. `has_replied_since` replaces
+  the session thread-scan scripts.
+- `email/src/hubspot_client.py`: `contact_inbound_since` (threads by
+  contact, INCOMING with answered flag), `open_tickets_for_contact`,
+  `add_contact_note`, `patch_contact_props`; `get_contact_deals` now returns
+  `createdate`.
+- `email/src/sms.py`: gate before `_jc_send`, `record_send` after. SHADOW
+  while `presend.enabled` is false (audit `presend_shadow`, behaviour
+  unchanged); enforcing: block → `sms_skipped_unverified`, hold → `sms_held`
+  (retried next sweep) + one DM to the owning seat. `po_welcome` is standing.
+- `email/src/main.py`: every processed inbound email stamps
+  `agent_last_inbound_at`.
+- `ops/hubspot-schema/properties.yml`: `agent_last_outbound_at`,
+  `agent_last_outbound_seat`, `agent_last_inbound_at` ([Agent], master group).
+  NOT yet synced to the portal; run `create_properties.py --dry-run` then live.
+- `email/config.yaml` `presend:` block: lines (parity-tested against
+  `ops/messenger/config.yml` numbers), line owners, purposes, `standing_go`
+  (po_welcome, low_balance_family; tor_confirm / tor_email_ask / tutor_ask
+  join when their journey stages are REVIEWED), `stop_line_exempt`, approvers.
+- `ops/messenger/one_to_few.py`: the small-send rail, 1 to `max_few` (25 =
+  `min_bulk`, so the two rails tile). `--contacts` or `--list-id`,
+  `--purpose` and `--from` required with no defaults, `--template` or
+  `--bodies`, dry-run default printing ALLOW/HOLD/BLOCK per contact with the
+  owner for holds, `--live --confirm SEND` sends ALLOW rows only, em-dash scrub
+  on every body, `state/sends/<date>-<purpose>.jsonl`.
+- Tests: `email/tests/test_presend.py` (the Gonzalez case holds and names the scheduler by last-name split),
+  `ops/messenger/tests/test_one_to_few.py`.
+
+**Rollout:** shadow for a week; the regression check before flipping
+`presend.enabled` is a dry run of the next yes-replier follow-up showing
+Gonzalez as HOLD with the scheduler named. PR C (the `#agent-sends`
+doorbell, reply `go <id>`) follows.
+**Decision log for Roman:** "one gate for every outbound"; standing-go list.
+**Files:** email/src/presend.py (new), email/src/hubspot_client.py,
+email/src/justcall_client.py, email/src/sms.py, email/src/main.py,
+email/config.yaml, ops/hubspot-schema/properties.yml,
+ops/messenger/one_to_few.py (new), ops/messenger/tests/ (new),
+ops/messenger/README.md, email/tests/test_presend.py (new).
+
+---
+## 2026-09-09 — Customer journey communication playbook + pre-send checklist (Roman: "we have to learn more and ask questions")
+
+**Why:** on 2026-09-09, during the charter SMS win-back round (PR #195), an
+agent told to "watch for responses" relayed tutor availability to families and
+posted tutor asks on its own. The Gonzalez family was texted three times from
+Paola's lead line while scheduling had already booked them on the support
+line. Mom: "I don't know how many people I'm talking to at A+." Roman: "I love
+the initiative, this is the future, but we have to learn more and ask
+questions... what questions to ask, and tie everything together." Three
+repo explorations then showed the journey was encoded in a dozen places with
+no single map: the back half of the lead funnel is stamped by nobody, four
+post-yes steps (teacher hours request, tutor pick, lesson booking, payment)
+have no code and no documented owner, eight live templates still said "we
+handle the PO" against the 2026-09-02 rule, and small (<25) sends have no
+rail.
+
+**What:** `knowledge/journey/`, one file per stage from first touch to
+renewal for charter and private pay, plus two parallel tracks (teacher of
+record, tutor) and a six-item pre-send checklist
+(`00-pre-send-checklist.md`) that every agent and human passes before any
+outbound to a family, teacher, or tutor. Every stage has the same headings
+(entry and exit marker, owner seat, channel and identity, may do alone /
+must draft / must ask, questions we ask them, questions the agent asks
+itself, charter vs private pay, handoff out, known gaps) and frontmatter
+(`status`, `owner_seat`, `reviewers`, `agent_readable`). All stages are
+DRAFT. Rule: an agent reads a stage only when Roman has flipped it to
+REVIEWED and agent_readable after collecting the seat's sign-off; an
+unreviewed stage means "ask the owner seat"; "watch" means read and report.
+Pointer line added under the CARE line in `CLAUDE.md`, `email/src/classifier.py`,
+`email/src/po_inbox.py`, `ops/call_agent/call_agent.py` (both prompts),
+`ops/feedback-agent/feedback_agent.py`, and the messenger README guardrails.
+Cross-links in `email/TEAM_PLAYBOOK.md` (stage 07), `docs/PO-PROCESS.md`
+Stage 3 (the line hand-over point), `ops/call_agent/rubric.md` S1 (stage 03).
+`knowledge/README.md` now indexes credentials, eos, and journey instead of
+saying "empty".
+**Same-PR copy fixes:** the eight `campaign-2026-08-17` templates and
+`charter_win_back.txt` rewritten to "we send your teacher the hours for the
+purchase order, and once the school issues it we take everything from
+there"; every em dash removed; the TOR outreach template's "grab 10 minutes"
+call offer removed (teachers are email only). Sent copies in HubSpot are
+untouched; these are the source drafts for future rounds.
+**Not done (plan approved 2026-09-09, next PRs):** PR B, the code guards:
+`email/src/presend.py` (opt-out, quiet hours, stage-to-line block, cross-line
+active-thread hold naming the owner, frequency cap, standing-go check, STOP
+rule), `ops/messenger/one_to_few.py` (the small-send rail, dry-run default),
+the `sms.py` shadow hook, three `[Agent]` properties, tests. PR C, the
+approval doorbell (`#agent-sends`, reply `go <id>`). Open items are listed in
+`knowledge/journey/README.md` (the `operations` role collision, SLA
+disagreement, private-pay markers, renewal-ask identity, and more).
+**Decision log for Roman:** "watch = read and report; relaying, posting,
+texting each need a go"; "one pre-send checklist for every outbound";
+"stages readable by agents only when REVIEWED"; standing go after review for
+the TOR confirmation text, the new-teacher email ask + create + link, and the
+tutor ask in the tutor's own channel.
+**Files:** knowledge/journey/ (13 files), knowledge/README.md, CLAUDE.md,
+email/src/classifier.py, email/src/po_inbox.py, ops/call_agent/call_agent.py,
+ops/feedback-agent/feedback_agent.py, ops/messenger/README.md,
+ops/messenger/templates/charter_win_back.txt,
+ops/messenger/templates/campaign-2026-08-17/*.md, email/TEAM_PLAYBOOK.md,
+docs/PO-PROCESS.md, ops/call_agent/rubric.md.
+
+---
+## 2026-09-09 — New-deal scheduler ownership moves from Zapier into deal_sync
+
+**Roman:** "when danielle creates a free trial lesson from scholarship program
+they dont get assigned to the schedulers, they get assigned to the person
+creating it" → "build and then turn off the zap, right?"
+
+**What was actually broken:** not Danielle, not the scholarship. HubSpot gives
+a hand-created deal to its creator; a Zapier zap (HubSpot app 25200) then
+re-owned it to a scheduler by the family contact's last name (A-L Janelle,
+M-Z Yolanda) 1-2 minutes later. It did that on every Paola/Roman-created
+Free Trial, Gold and In-Person deal from June through 2026-09-04 23:45 UTC,
+then went silent. No alert. Six deals since 9/8 (Danielle's three Elenes
+trials, Paola's Albee Li and Matiukhina x2, Mandy's Howell) sat with their
+creator for 2 min to 17 h until a scheduler noticed and took them by hand.
+Zapier has no zap-listing API, so the cause on their side is unknown.
+
+**Second finding, worse:** on charter PO deals the zap was FIGHTING po_inbox.
+po_inbox sets the owner deliberately (student-last-name split); the zap
+rewrote 55 of the last 100 Charter Trad deals to the other scheduler within
+a minute, and Yolanda/Janelle hand-reverted ~35 of them (Villa, Siddique,
+Miramontes, Munoz, Beck, Smith ...). Two owners of one rule, one of them
+invisible.
+
+**Fix:** `email/src/owner_assign.py`, run from `deal_sync` for every NEW deal
+(the deal-relay webhook lands it ~1 min after creation, same latency as the
+zap). Config `owner_assign:` — pipelines Free Trial, Gold, Gold Renewal,
+In-Person, In-Person Renewal (charter pipelines deliberately excluded:
+po_inbox owns those). Owner = `scheduler_split` by the Family contact's last
+name, deal-name parent as fallback, A-L default + "needs review" note when
+neither exists. Already the right scheduler → `owner_kept`, no write. One
+decision per deal (audit `owner:{id}`); a failed PATCH holds the cursor and
+retries. FORCE_DEAL_ID runs the pass too. 8 new tests, suite 434 green.
+Dry-run against the live Elenes and Matiukhina deals resolved the right
+scheduler from the contact.
+
+**Still human:** Roman turns the zap OFF in Zapier after the first real deal
+round-trips (both write the same value, so overlap is harmless; the reason to
+kill it is the charter fight and the silent-death class). Candidate zap: the
+one with a "New Deal" HubSpot trigger and an "Update Deal → owner" action;
+check its history for why it stopped on 9/4, and whether other zaps on the
+same HubSpot connection died with it.
+
+**Verified live (same day, Roman: "you can create a test deal too"):** PR #197
+merged (fce0c5d5). Test deal "Test Mavis - Ownerpass Student" created in Free
+Trial owned by Danielle at 20:47:24 UTC; deal_sync run 34403172659 (manual
+dispatch) re-owned it to Yolanda at 20:48:12 UTC, log line `👤 deal 64884786248
+→ Yolanda [dealname:Mavis]`. Test deal deleted (HTTP 204, restorable 90 days).
+
+**The zap, identified (Roman: "you can turn the zap off too"):** it is
+"PRE LESSON --> MONDAY", Zapier zap 347673126
+(https://zapier.com/editor/347673126), fed by HubSpot workflow 1764489615
+"Pre-Lesson -> Monday" (webhook). Step 9 is HubSpot "Update Deal". It is
+ALREADY OFF: every run since 2026-09-04 09:37 PT errored at the monday.com
+"Create Item" step with `(RecordInvalidException) Board has reached its max
+size` (board 18397928615, the Pre-Lesson board), the last run was 09-07
+12:16 PT, and the zap shows Off / last modified 09-07. The 09-04 04:44:59 PT
+errored run is the one whose step 9 made the portal's last zap owner write
+(23:45:12 UTC). No manual switch-off needed; it must NOT be turned back on
+with step 9 in it.
+
+**New open item (Roman):** that zap did more than owners. Since 09-04 no
+Pre-Lesson deal has reached the Monday Pre-Lesson board (board full) and no
+scheduler Slack DM (step 14) has gone out. Either archive/clear board
+18397928615 and republish the zap WITHOUT step 9, or let the fleet own the
+Pre-Lesson notification too (deal_sync already DMs; the board is the
+question). "PRE LESSON --> Teachworks" (zap, still On, ran today) is the
+other survivor of that webhook pair; deal_sync's TW upsert already covers it.
+
+**Also observed:** email-deal-sync had no webhook-dispatched run between
+09-08 21:47 and 09-09 16:32 UTC although 4 B2C deals were created 09-08
+21:55 and 09-09 17:55; the relay may not be receiving every deal.creation.
+The cron backstop caught them. Worth a look before the cron is demoted.
+
+**Danielle's live test (same evening):** deal 64877481221 "Narayana Gramegna -
+Keyana" (Free Trial, created 20:58 UTC) sat with Danielle 17 min; a manual
+deal_sync dispatch re-owned it to Janelle at 21:16 (`[contact:Gramegna]`). The
+17 minutes are the relay, not the pass: `wrangler tail` on deal-sync-relay
+showed ZERO requests in the 75 s after a test deal was created (twice), and
+no email-deal-sync dispatch has ever come from the relay's PAT (every
+github-actions[bot] dispatch is paired to the second with a call-agent
+dispatch, i.e. some other trigger; the rest are manual). The worker itself
+answers (403 on /call-completed without token). So HubSpot is not sending
+deal.creation to it: README step 4 (private app → Webhooks → target URL
+`https://deal-sync-relay.nameless-mountain-bafa.workers.dev/call-completed?token=<WEBHOOK_TOKEN>&delay=1`,
+subscriptions deal.creation + deal.propertyChange:dealstage) was never done.
+Until it is, new deals wait for the cron (throttled to ~hourly by GitHub
+today). Human step, Roman: the token is a wrangler secret only he holds.
+Three throwaway test deals created and deleted during this check.
+
+**Decision to log:** deal ownership is agent-owned (deal_sync); no Zapier or
+workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
+"transactional SMS is agent-owned" precedent.
+
+**Files:** `email/src/owner_assign.py` (new), `email/src/deal_sync.py`,
+`email/config.yaml`, `email/tests/test_owner_assign.py` (new), `docs/CHANGELOG.md`.
+
+---
+
+---
 ## 2026-09-08 — Charter SMS round 2: opened-but-silent families (Roman: "try the Charter SMS first")
 
 **What:** First live use of the bulk messenger's SMS rail. Audience = charter

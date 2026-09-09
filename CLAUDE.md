@@ -31,6 +31,26 @@ That applies to new agents by default. Placement follows each agent's existing
 prompt convention (top of the system string, or the first line of a prompt
 block).
 
+## Customer journey playbook (mandatory before any outbound contact)
+
+`knowledge/journey/` is the customer journey, first touch to renewal, with the
+pre-send checklist every agent and human passes before contacting a family, a
+teacher of record, or a tutor. Every agent that can produce a family-, teacher-,
+or tutor-facing message carries this line in its prompt, right under the CARE
+line:
+
+> Before contacting a family, teacher, or tutor, read knowledge/journey/README.md
+> and pass knowledge/journey/00-pre-send-checklist.md. Act only on stages marked
+> REVIEWED.
+
+Stages are readable by agents only when their frontmatter says
+`status: REVIEWED` and `agent_readable: true` (Roman flips both after collecting
+each seat's sign-off). An unreviewed stage means "ask the owner seat". "Watch"
+means read and report; relaying, posting, and texting each need a go.
+(Why: on 2026-09-09 an agent told to watch replies texted a family from the
+lead line while scheduling had them on the support line. Mom: "I don't know how
+many people I'm talking to at A+.")
+
 **Deterministic agents do NOT get the pointer.** Syncs, sweeps, metrics, relays
 and list builders produce no language for values to shape, and a pointer inside
 them is dead text that a later reader mistakes for something load-bearing. As of

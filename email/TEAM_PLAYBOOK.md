@@ -2,6 +2,10 @@
 
 How the inbox assistant works, and **what each person does** when something lands.
 
+> Journey stage: this guide is stage 07, active service, of
+> `knowledge/journey/README.md`. Before any outbound to a family, teacher, or
+> tutor, pass `knowledge/journey/00-pre-send-checklist.md`.
+
 ## The flow (every email)
 A new email to admin@wetutorathome.com → the agent reads it → figures out what it is →
 makes a **HubSpot ticket**, assigns the right person, writes a **draft reply** (when
