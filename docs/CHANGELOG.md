@@ -64,6 +64,214 @@ retries, it will wedge the same way. Port the stale-alarm fix there next.
 
 ---
 
+## 2026-09-08 (evening) — Enroller: a failure count is not a record
+
+**Why:** Day one of the teacher outreach enroller. Wave 1 enrolled 50/50, Wave 2
+enrolled 46/50. The log for the four failures read `FAILED 4:` and then named
+three of them. `scripts/teacher_sequence_enroll.py` printed `fail[:3]`, so the
+fourth teacher existed only as a number, in both the run log and the Slack
+digest. Nobody could act on a person they cannot name.
+
+**Also:** the sender fallback `success@wetutorathome.com` could never work.
+HubSpot rejected it on every single attempt with "User 46811240 for Portal
+6312752 has no connected inboxes for specified user email" — it is not a
+connected inbox of Danielle's user, which is what the sequences API requires.
+It cost two API calls per failing contact, and it replaced the real HubSpot
+error with the generic "no sender candidate accepted". That is precisely why
+day one's dead recipient addresses were first read as a sender fault.
+
+**Changed:**
+- `scripts/teacher_sequence_enroll.py` — print every failure with its address
+  and reason, never a truncated list; carry the last real HubSpot error into
+  the returned detail instead of discarding it.
+- `ops/messenger/teacher-sequences.yml` — removed the `success@` candidate,
+  with the reason recorded inline. A danielle@ failure should now be loud
+  rather than masked by a second attempt that cannot succeed. If a real
+  fallback is wanted, connect that inbox to Danielle's HubSpot user first.
+
+**A correction on the same investigation:** I first reported that the enroller
+was mishandling bounced recipients as sender faults and needed fixing. It does
+not. That handling landed in #187 at 10:42 PT; the run I read was 10:38 PT, four
+minutes earlier. I read a stale log and did not check the timestamp against the
+merge. The same failure shape as the rest of the day: the evidence was fine, my
+reading of when it was taken was not.
+
+**Files:** `scripts/teacher_sequence_enroll.py`,
+`ops/messenger/teacher-sequences.yml`, `docs/CHANGELOG.md`.
+
+**Follow-up the same evening: there is no second inbox to have, and that is the
+finding.** Roman proposed `admin@`, then established that `success@` is an ALIAS
+on Danielle's Gmail account rather than a separate mailbox. That settles it:
+even if HubSpot had accepted `success@`, it is the same physical account, so it
+fails at the same moment `danielle@` does. Zero redundancy by construction.
+`admin@` is a community inbox, which is the wrong sender identity for outreach
+that is supposed to read as a hand-written email from the sales seat, and it is
+the mailbox that already swallowed the Heartwood PO behind a spam filter. Any
+inbox that WOULD provide real redundancy belongs to a different person, which
+changes who the teacher thinks emailed them.
+
+Real redundancy and correct sender identity are mutually exclusive here. Per the
+investigation rule this is the explicit "no system fix exists, because X" case:
+no fallback sender is possible, so the fix is to make the single sender's
+failure impossible to miss.
+
+- `scripts/teacher_sequence_enroll.py` — `SENDER_FAIL_ABORT = 3`. Three
+  CONSECUTIVE sender-level rejections (`do_enroll` returning `sender=None`,
+  meaning no candidate inbox was accepted) abort the batch, skip the remaining
+  sequences, and lead the Slack DM with a red alert naming the last real
+  HubSpot error. Three rather than one because `CONTACT_ERRORS` is a prefix
+  heuristic: an unusual contact-specific errorType it fails to match would
+  otherwise masquerade as a dead inbox.
+
+  Before this, a disconnected inbox spent 50 API calls proving it and marked 50
+  teachers "failed" for a problem that was not theirs, inside a digest that read
+  like an ordinary day.
+
+  7 scenario tests: a dead inbox stops after 3 calls instead of 50; 50 bounced
+  recipients never abort; the real 2026-09-08 shape (46 enrolled, 4 bounced)
+  does not abort; the counter resets on a success or a contact error so only a
+  true run of 3 trips it; transient 500s do not abort; a clean day is untouched.
+
+**Also sent and then retracted a Slack DM to Danielle** asking her to connect
+`success@`, before Roman pointed out the alias. Retraction sent within the hour.
+Worth recording: I asked her to CHECK whether it could be added alongside rather
+than to just do it, and explicitly told her not to disconnect `danielle@`,
+because HubSpot may only allow one connected personal inbox per user and a swap
+would have changed the sender for the 206 teachers still to be enrolled. That
+caution was the only reason the wrong request could not have broken the live
+campaign.
+
+## 2026-09-09 — Pre-send gate + one_to_few rail (the code behind the journey checklist)
+
+**Why:** 2026-09-09, an agent told to "watch for responses" texted the
+Gonzalez family three times from Paola's lead line while scheduling had them
+booked on the support line. Nothing in either SMS engine looked at the other
+line, the inbox, or open tickets before sending; "has this family replied?"
+had no helper (inbox replies never stamp `hs_email_last_reply_date`); and
+every send under 25 recipients ran from a session script with none of the
+bulk engine's checks. Roman: "we have to learn more and ask questions."
+The playbook (PR #198) writes the questions down; this PR makes an agent
+unable to skip them.
+
+**What:**
+- `email/src/presend.py`: `check(contact_id, channel, from_line, purpose,
+  ...)` → allow / hold / block with reasons and the owning seat. Checks, in
+  order: opt-out; quiet hours (shared `sms._in_send_window`); stage-to-line
+  (persona + deals since `presend.season_start`: tutor and scheduling → support
+  line, lead and TOR → charter_sales line; the LOCKED 2026-09-08 rule);
+  active thread on another company line inside `thread_window_days` (JustCall
+  index, now carrying `line` and `agent` per text) → HOLD naming the owner
+  (support line resolves by student last name through `scheduler_split`);
+  unanswered reply on any line or in the inbox → HOLD; open ticket owned by
+  scheduling while texting from another line → HOLD; frequency (JustCall
+  outbound today across all lines, and the new `agent_last_outbound_at`
+  inside `min_gap_hours`, both waived when the contact wrote first);
+  standing go (`presend.standing_go`) else `--confirm SEND`; STOP line
+  required on a cold SMS, not on a reply in-thread. Any unreadable source is a
+  HOLD "could not verify", never a silent allow. `record_send` is the send log
+  of record: HubSpot note on the contact with a machine-parseable first line,
+  the two `[Agent]` properties, one audit line. `has_replied_since` replaces
+  the session thread-scan scripts.
+- `email/src/hubspot_client.py`: `contact_inbound_since` (threads by
+  contact, INCOMING with answered flag), `open_tickets_for_contact`,
+  `add_contact_note`, `patch_contact_props`; `get_contact_deals` now returns
+  `createdate`.
+- `email/src/sms.py`: gate before `_jc_send`, `record_send` after. SHADOW
+  while `presend.enabled` is false (audit `presend_shadow`, behaviour
+  unchanged); enforcing: block → `sms_skipped_unverified`, hold → `sms_held`
+  (retried next sweep) + one DM to the owning seat. `po_welcome` is standing.
+- `email/src/main.py`: every processed inbound email stamps
+  `agent_last_inbound_at`.
+- `ops/hubspot-schema/properties.yml`: `agent_last_outbound_at`,
+  `agent_last_outbound_seat`, `agent_last_inbound_at` ([Agent], master group).
+  NOT yet synced to the portal; run `create_properties.py --dry-run` then live.
+- `email/config.yaml` `presend:` block: lines (parity-tested against
+  `ops/messenger/config.yml` numbers), line owners, purposes, `standing_go`
+  (po_welcome, low_balance_family; tor_confirm / tor_email_ask / tutor_ask
+  join when their journey stages are REVIEWED), `stop_line_exempt`, approvers.
+- `ops/messenger/one_to_few.py`: the small-send rail, 1 to `max_few` (25 =
+  `min_bulk`, so the two rails tile). `--contacts` or `--list-id`,
+  `--purpose` and `--from` required with no defaults, `--template` or
+  `--bodies`, dry-run default printing ALLOW/HOLD/BLOCK per contact with the
+  owner for holds, `--live --confirm SEND` sends ALLOW rows only, em-dash scrub
+  on every body, `state/sends/<date>-<purpose>.jsonl`.
+- Tests: `email/tests/test_presend.py` (the Gonzalez case holds and names the scheduler by last-name split),
+  `ops/messenger/tests/test_one_to_few.py`.
+
+**Rollout:** shadow for a week; the regression check before flipping
+`presend.enabled` is a dry run of the next yes-replier follow-up showing
+Gonzalez as HOLD with the scheduler named. PR C (the `#agent-sends`
+doorbell, reply `go <id>`) follows.
+**Decision log for Roman:** "one gate for every outbound"; standing-go list.
+**Files:** email/src/presend.py (new), email/src/hubspot_client.py,
+email/src/justcall_client.py, email/src/sms.py, email/src/main.py,
+email/config.yaml, ops/hubspot-schema/properties.yml,
+ops/messenger/one_to_few.py (new), ops/messenger/tests/ (new),
+ops/messenger/README.md, email/tests/test_presend.py (new).
+
+---
+## 2026-09-09 — Customer journey communication playbook + pre-send checklist (Roman: "we have to learn more and ask questions")
+
+**Why:** on 2026-09-09, during the charter SMS win-back round (PR #195), an
+agent told to "watch for responses" relayed tutor availability to families and
+posted tutor asks on its own. The Gonzalez family was texted three times from
+Paola's lead line while scheduling had already booked them on the support
+line. Mom: "I don't know how many people I'm talking to at A+." Roman: "I love
+the initiative, this is the future, but we have to learn more and ask
+questions... what questions to ask, and tie everything together." Three
+repo explorations then showed the journey was encoded in a dozen places with
+no single map: the back half of the lead funnel is stamped by nobody, four
+post-yes steps (teacher hours request, tutor pick, lesson booking, payment)
+have no code and no documented owner, eight live templates still said "we
+handle the PO" against the 2026-09-02 rule, and small (<25) sends have no
+rail.
+
+**What:** `knowledge/journey/`, one file per stage from first touch to
+renewal for charter and private pay, plus two parallel tracks (teacher of
+record, tutor) and a six-item pre-send checklist
+(`00-pre-send-checklist.md`) that every agent and human passes before any
+outbound to a family, teacher, or tutor. Every stage has the same headings
+(entry and exit marker, owner seat, channel and identity, may do alone /
+must draft / must ask, questions we ask them, questions the agent asks
+itself, charter vs private pay, handoff out, known gaps) and frontmatter
+(`status`, `owner_seat`, `reviewers`, `agent_readable`). All stages are
+DRAFT. Rule: an agent reads a stage only when Roman has flipped it to
+REVIEWED and agent_readable after collecting the seat's sign-off; an
+unreviewed stage means "ask the owner seat"; "watch" means read and report.
+Pointer line added under the CARE line in `CLAUDE.md`, `email/src/classifier.py`,
+`email/src/po_inbox.py`, `ops/call_agent/call_agent.py` (both prompts),
+`ops/feedback-agent/feedback_agent.py`, and the messenger README guardrails.
+Cross-links in `email/TEAM_PLAYBOOK.md` (stage 07), `docs/PO-PROCESS.md`
+Stage 3 (the line hand-over point), `ops/call_agent/rubric.md` S1 (stage 03).
+`knowledge/README.md` now indexes credentials, eos, and journey instead of
+saying "empty".
+**Same-PR copy fixes:** the eight `campaign-2026-08-17` templates and
+`charter_win_back.txt` rewritten to "we send your teacher the hours for the
+purchase order, and once the school issues it we take everything from
+there"; every em dash removed; the TOR outreach template's "grab 10 minutes"
+call offer removed (teachers are email only). Sent copies in HubSpot are
+untouched; these are the source drafts for future rounds.
+**Not done (plan approved 2026-09-09, next PRs):** PR B, the code guards:
+`email/src/presend.py` (opt-out, quiet hours, stage-to-line block, cross-line
+active-thread hold naming the owner, frequency cap, standing-go check, STOP
+rule), `ops/messenger/one_to_few.py` (the small-send rail, dry-run default),
+the `sms.py` shadow hook, three `[Agent]` properties, tests. PR C, the
+approval doorbell (`#agent-sends`, reply `go <id>`). Open items are listed in
+`knowledge/journey/README.md` (the `operations` role collision, SLA
+disagreement, private-pay markers, renewal-ask identity, and more).
+**Decision log for Roman:** "watch = read and report; relaying, posting,
+texting each need a go"; "one pre-send checklist for every outbound";
+"stages readable by agents only when REVIEWED"; standing go after review for
+the TOR confirmation text, the new-teacher email ask + create + link, and the
+tutor ask in the tutor's own channel.
+**Files:** knowledge/journey/ (13 files), knowledge/README.md, CLAUDE.md,
+email/src/classifier.py, email/src/po_inbox.py, ops/call_agent/call_agent.py,
+ops/feedback-agent/feedback_agent.py, ops/messenger/README.md,
+ops/messenger/templates/charter_win_back.txt,
+ops/messenger/templates/campaign-2026-08-17/*.md, email/TEAM_PLAYBOOK.md,
+docs/PO-PROCESS.md, ops/call_agent/rubric.md.
+
+---
 ## 2026-09-09 — New-deal scheduler ownership moves from Zapier into deal_sync
 
 **Roman:** "when danielle creates a free trial lesson from scholarship program
@@ -162,6 +370,128 @@ workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
 
 ---
 
+---
+## 2026-09-08 — Charter SMS round 2: opened-but-silent families (Roman: "try the Charter SMS first")
+
+**What:** First live use of the bulk messenger's SMS rail. Audience = charter
+gap families (list 3104) with NO 26/27 charter deal who OPENED a win-back email
+(per-recipient HubSpot email events, bot opens excluded) and never replied:
+117 → static list 3237 "Charter 26/27 SMS Round 2 - Opened, no reply (Sep
+2026)". Buckets of the 402 unconverted: opened-silent 117, delivered-never-
+opened 198, never-sent 57, unsubscribed 12, replied 16, bounced 2 (audience
+CSV in the session scratchpad; the never-sent 57 and never-opened 198 are the
+next rounds, not this one). Engine changes: (1) `MERGE_PROPS` now carries
+`student_names` + `student_count`; (2) new `--sms-template-multi` (workflow
+input `sms_template_multi`) renders multi-student families from a second
+template, since the single-student tutor token undersold 81/389 families in
+August; (3) from-number routing LOCKED by Roman the same afternoon: "scheduling
+stays with scheduling, those that are not deals yet are leads... they need
+to go from Paola's number" → new role key `charter_sales` = 818-573-6644
+(Paola's line, verified from JustCall outbound history) for every family
+with no deal yet, and `support` = 818-869-1627 reserved for scheduling texts
+to families that already have a PO/deal. Both batches (the 95 win-back texts
+and the follow-up push to yes-repliers without a PO) go from charter_sales. Templates:
+`templates/charter_r2_opened_single.txt` (tutor + student named) and
+`templates/charter_r2_opened_multi.txt` ({{student_names}} + "their tutors"),
+signed Paola (charter_sales seat = families), no em dashes, PO language per
+the 2026-09-02 rule (school issues the PO; we send the teacher the hours),
+STOP line, 2 GSM segments. Dry run (read-only replica of the engine's skip
+logic): 108 sendable (84 single, 24 multi), 9 skipped for missing tutor/student
+stamps, 0 opted out, 0 bad phones.
+**Found on the way:** inbox replies do NOT stamp `hs_email_last_reply_date`
+(Sporykhin replied 8/31 via the inbox, property still empty), so any "replied"
+filter must also scan conversation threads — done here with a thread scan
+(`associatedContactId` → INCOMING messages since 8/18) before the send; the
+same gap is why `campaign_replied` is unset on all 17 August repliers.
+**SENT 2026-09-08 ~1:40 PM PT (Roman: "instantly message those 13 people,
+lowest hanging fruit"):** 12 personal PO-push texts from Paola's line
+(818-573-6644) to the August yes-repliers who still had no 26/27 charter
+deal at send time (rechecked live): Elias, Solis, Simmons, Barber, Aguila,
+Carrillo, Moore, Villacin, Lizcano, Ballesteros, Richardson, Hurtado De La
+Cruz. Copy: "Glad {student} wants to keep going with {tutor}. We have not
+seen the PO from your school yet. Want me to send your teacher the hours so
+they can issue it? Reply YES and I will get it moving." (multi-kid variant:
+"{students} want to keep going with their tutors"; no STOP line, per Roman:
+a reply inside a live conversation about a service they asked for).
+Sporykhina held out (replied 9/2: no funds this semester). 12/12 accepted by
+JustCall; an [Agent] note with the exact text is on each contact. Sent via a
+session script calling the messenger's `jc_send_sms` because the bulk rail
+refuses <25 recipients by design; this is the shape the reply-chase agent
+will automate. Replies land on Paola's line.
+**WIN-BACK BATCH SENT 2026-09-08 4:50 PM PT (Roman: "send now, it's
+4:49 pm"):** 95/95 texts from Paola's line (charter_sales) to list 3237,
+75 single-student + 20 multi-student, 9 skipped for missing tutor/student
+stamps. Send-time checks: inbox re-scan (0 new repliers since 1 PM), no
+26/27 charter deal on any recipient, opt-out/phone guards. Ran via a session
+script importing the worktree messenger (same code as this PR) because
+Actions needs the templates on main; [Agent] note with the exact text on
+each contact; send log in the session scratchpad. Paola was DM'd on Slack
+about both batches. Replies land on Paola's line.
+**FIRST 20 MINUTES (5:10 PM PT):** 20 replies from 107 recipients. Yes /
+send-teacher-hours: Simmons, Elias, Gonzalez, Molina (Selene), Crane,
+Richardson (Pamela), Phillips, Solis, Salcedo. Holding: Carrillo (school
+schedule first), Sagua (open thread, confused, needs Paola personally),
+Acevedo (asked "does the school pay?"). Lost: Butcher (Firefly), Potts (not
+now). STOP x4 (Earley, Benitez, M. Molina, Karpekin) → `sms_opt_out=true`
+stamped by hand-run script each time, since no ingester exists.
+**TOR CONFIRMATION SENT 5:12 PM PT (Roman: "ask everyone that said yes to
+confirm their teacher of record / facilitator, same as last year"):** 9
+texts from Paola's line naming the TOR on file (Family→TOR association
+typeId 15, legacy field fallback; all 9 had one): "is {student}'s teacher of
+record or facilitator still {TOR}, same as last year? Reply YES if so, or
+reply with the new name if it changed." 9/9 accepted; notes on contacts;
+log in scratchpad. Elias's "Mrs. Hernandez" matched Ruth Hernandez on file.
+**BY 6:25 PM PT:** 52 replies from 107. TOR confirmed by text: Elias (Ruth
+Hernandez), Phillips (Kristi Williamson), Simmons (Whitney VonMoos), Crane
+(Dana Eiremo), Sagua (Karla Diaz Salazar). TOR CHANGED: Salcedo → "Sean
+Alves"; Molina (Selene) → "Amy Aceto". Roman's rule, applied live: ask the
+family for the new teacher's email, then create the teacher the way
+po_inbox does. Salcedo replied salves@viedu.org → contact 247274215530
+created (persona TOR, lead status TOR, owner sales seat/Danielle,
+school_canonical "Visions In Education" from the viedu.org alias), family
+linked typeId 15 ADD-only, notes both sides. Molina asked for Aceto's email
+(pending). New yes: Barron (Ellie, Stephanie) → TOR check sent naming
+Toolie Younger. 5th STOP (Patterson) stamped. Faulk and Barber are being
+worked by Paola directly on the line (Faulk sending criteria to paola@;
+Barber asked cost + discount for 4 kids, needs the "school pays" answer).
+**TUTOR ASKS POSTED 6:56 PM PT (Roman: "check if those teachers have their
+own Slack channels, if so post the requests there now"):** per-tutor PRIVATE
+channels DO exist, named first-last (created by Danielle 2023-24, Kath
+2025-26). Posted one "can you take {student}, {days/times}?" request in
+each, tagging Paola: #cathy-westcot (Sariyah Simmons), #tarisa-r (Willow
+Crane), #stephanie-torres (Daryl Phillips + Ellie Barron),
+#lisarose-blanchette (Matteo Molina), #christina-daniels (Franny Solis),
+#jonathan-szatkowski (Phillip Salcedo), #aesha-siddiqui (Gia Faulk).
+Wrong-channel guard before posting: each first name → exactly ONE tutor
+with an active roster status in HubSpot AND one Slack user, matching the
+channel. NO channel for Christa (Elias, Gonzalez), Frederick (Sagua),
+Angela Salyer (Richardson): those three asks are still open.
+**CHRISTA BY SMS 7:15 PM PT (Roman: "Christa only uses SMS; for Christa and
+these situations use the 869 number and text her"):** tutors who are
+SMS-only or have no Slack channel get the ask by text from the SUPPORT line
+818-869-1627. Sent Christa (818-339-5667, confirmed via her Slack profile;
+HubSpot holds two Christa records, 160787711301 with the phone and
+201052445204 Bretz with the email, left unmerged) the ask for Joseph Elias
+and Alexzander & Andrew Gonzalez; note on the tutor contact. Frederick and
+Angela Salyer: posted 9:25 PM PT in their existing team GROUP DMs
+(C09TVHNMTQT, C0AF2U503AQ; every tutor has one with the whole team, found
+via Slack search `from:<@tutor>` in mpim). Frederick had already agreed on
+Aug 21 to resume Christian Sagua (Tue/Thu after 9), so his post is a
+re-confirm; the real blocker there is the TOR/PO, not the tutor. Angela
+asked for Eli Richardson.
+**Roman's next asks (not built):** (a) new-teacher intake automation =
+ask email → create TOR → link, as done by hand above; (b) tutor ask
+automation: post in the tutor's own channel when one exists, else a group
+DM with Paola/Yolanda/Janelle (bot needs `mpim:write`/`mpim:read` for
+that; Roman to add and reinstall).
+**Not done / needs Roman:**
+STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
+JustCall's native STOP handling until then.
+**Files:** ops/messenger/messenger.py, ops/messenger/config.yml,
+.github/workflows/messenger.yml, ops/messenger/README.md,
+ops/messenger/templates/charter_r2_opened_{single,multi}.txt.
+
+---
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
 
 **Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and

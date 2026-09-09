@@ -1,0 +1,1 @@
+Hi {{firstname}}, this is Paola with A+ Tutoring. {{student_names}}'s A+ tutors have fall openings and would love to pick back up where they left off. Want us to get the schedule started? Reply YES and I will send your teacher the hours for the PO. Reply STOP to opt out.
