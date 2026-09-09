@@ -41,7 +41,8 @@ def _cfg(armed=False, **over):
             "escalate_to": "visionary", "escalate_days": 10, "follow_up_business_days": 3,
             "draft_unsent_nag_hours": 24, "sla_hours": 8, "priority": "normal",
             "no_teacher_email_pipelines": ["72281989"],
-            "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring.{personal_sms} {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
+            "sms_template_with_tutor": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
+            "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
             "positivity": {"enabled": False, "model": "m", "max_tokens": 120},
             "family_email": {"mode": "send", "template": "templates/low_balance_charter.html",
                              "from": "{sender_name}, A+ Tutoring <admin@wetutorathome.com>",
@@ -49,7 +50,7 @@ def _cfg(armed=False, **over):
                              "subject": "{student}'s tutoring hours are running low"},
             "tor_email": {"mode": "draft", "mailbox": "seat",
                           "subject": "New PO for {student_full} (A+ Tutoring)",
-                          "body": "Hi {tor_first},\n\n{student_full} has {hours} left on PO {po_number}.\n\n{sender_name}"},
+                          "body": "Hi {tor_first},\n\n{student_full} has {hours} left on the current PO{po_ref}.\n\n{sender_name}"},
         },
     }
     c["low_balance"].update(over)
@@ -195,7 +196,7 @@ def test_armed_case_texts_emails_and_drafts_from_the_seat(monkeypatch):
     to, subj, body, seat = h.drafts[0]
     assert to == "kylee@ileadexploration.org"
     assert subj == "New PO for Taylor Rodriguez (A+ Tutoring)"
-    assert body.startswith("Hi Kylee,") and "PO 3114143406" in body and body.endswith("Paola")
+    assert body.startswith("Hi Kylee,") and "the current PO (PO 3114143406)." in body and body.endswith("Paola")
     assert "4 hours or less" in body and "4 hours left" not in body
     assert rec["tor_mailbox"] == "paola@wetutorathome.com" and rec["tor_draft_id"] == "d1"
     assert rec["sms_sent"] and rec["email_sent"] == "jessicalujanbd@gmail.com"
@@ -351,7 +352,8 @@ def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)     # no Teachworks data
     out = lb._render(tpl.read_text(), ctx)
     assert "{" not in out.replace("{{", "") and "—" not in out
-    assert "It's Paola with A+ Tutoring. A quick heads up: Taylor has <strong>4 hours or less</strong>" in out
+    assert ("It's Paola with A+ Tutoring. A quick heads up: Taylor's current purchase order has "
+            "<strong>4 hours or less</strong> left.") in out
     assert "iLead" not in out and "iLEAD" not in out and "Kylee" not in out   # no school, no teacher
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT, RECENT,
                       "Lately Taylor has been building confidence with fractions.")
@@ -369,11 +371,26 @@ def test_text_carries_the_tutor_first_name_only(monkeypatch):
                 positivity="Lately Taylor has been mastering fractions.")
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
     assert h.sms[0][1].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
-                                  "with Sarah. Taylor has 4 hours or less left")
+                                  "with Sarah and has 4 hours or less left")
     assert "session" not in h.sms[0][1] and "fractions" not in h.sms[0][1]   # positivity is email-only
     assert h.emails[0][1]["personal_line"] == (" Taylor has been working with Sarah. "
                                                "Lately Taylor has been mastering fractions.")
     assert rec["tutor_first"] == "Sarah" and rec["positivity"].startswith("Lately")
+
+
+def test_first_name_handles_teachworks_last_first():
+    assert lb._first_name("Torres, Maria") == "Maria"          # the replay's "Torres," bug
+    assert lb._first_name("Sarah Lee") == "Sarah"
+    assert lb._first_name("Torres,") == "Torres"
+    assert lb._first_name("") == ""
+
+
+def test_missing_deal_leaves_no_po_ref_or_school_in_copy(monkeypatch):
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], recent=RECENT)
+    lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert h.tickets[0][0][0].startswith("Low balance: Taylor Rodriguez (school unknown)")
+    assert "the current PO" not in h.sms[0][1] or "(the current PO)" not in h.sms[0][1]
+    assert "your charter school" not in h.dms[0][1]
 
 
 def test_personal_line_variants():

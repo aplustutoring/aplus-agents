@@ -183,7 +183,7 @@ def _student_deals(first: str, last: str, created_after_ms: int | None = None) -
     body = {"filterGroups": [{"filters": filters}], "properties": _DEAL_PROPS,
             "sorts": [{"propertyName": "createdate", "direction": "DESCENDING"}],
             "limit": 100}
-    res = hs._write("POST", "/crm/v3/objects/deals/search", body)
+    res = hs._write("POST", "/crm/v3/objects/deals/search", body)   # searches pass through DRY_RUN
     deals = res.get("results", []) if isinstance(res, dict) else []
     ln = (last or "").strip().lower()
     if not ln:
@@ -230,6 +230,19 @@ def _school_short(dealname: str, school: str) -> str:
 
 _NOTE_FIELDS = ("notes", "lesson_notes", "shared_notes", "public_notes", "note", "description")
 _ATTENDED = ("attend", "complete")
+
+
+def _first_name(full: str) -> str:
+    """Teachworks names people 'Last, First' (employee_name, student_name);
+    the 2026-09-09 replay texted a family about 'Torres,'. A comma means
+    last-first; otherwise the first token."""
+    full = (full or "").strip()
+    if not full:
+        return ""
+    if "," in full:
+        after = full.split(",", 1)[1].strip()
+        return after.split()[0].strip() if after else full.split(",")[0].strip()
+    return full.split()[0].strip(" ,")
 
 
 def _tw_recent(alert: dict, deal: dict | None) -> dict:
@@ -281,8 +294,7 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
     lessons.sort(key=lambda l: str(l.get("from_date") or ""), reverse=True)
     out["sessions"] = len(lessons)
     if lessons:
-        tutor = (lessons[0].get("employee_name") or "").strip()
-        out["tutor_first"] = tutor.split()[0] if tutor else ""
+        out["tutor_first"] = _first_name(lessons[0].get("employee_name") or "")
     seen: set = set()
     for l in lessons[:4]:
         nm = (l.get("name") or l.get("service_name") or "").strip()
@@ -304,8 +316,9 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
 _POSITIVITY_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "You write ONE warm, specific sentence for a parent about what their child has been "
-    "working on in recent tutoring sessions, from the tutor's lesson notes. Rules: at most "
-    "25 words; name the subject or skill, not scores or grades; no problems, struggles, "
+    "working on in recent tutoring sessions, from the tutor's lesson notes. Rules: begin "
+    "with 'Lately' and use the child's first name once; at most 25 words; name the subject "
+    "or skill, not scores or grades; do not name the tutor; no problems, struggles, "
     "behaviour, or absences; no exclamation marks; no em dashes; plain, human, true to the "
     "notes. If the notes hold nothing positive and concrete, output exactly: NONE."
 )
@@ -396,9 +409,11 @@ def _context(alert: dict, deal: dict | None, contact: dict | None, sender: dict,
         "tor_name": tor_name or "your teacher of record",
         "tor_first": tor_first or "there",
         "tor_or_ef": tor_name or "your teacher of record or educational facilitator",
-        "school": _school_short(p.get("dealname") or "", p.get("student_school") or "")
-                  or "your charter school",
-        "po_number": (p.get("po_number") or "").strip() or "the current PO",
+        # school / PO number are STAFF context now (never in family copy);
+        # blank when unknown so the teacher draft's "(PO 123)" simply vanishes
+        "school": _school_short(p.get("dealname") or "", p.get("student_school") or ""),
+        "po_number": (p.get("po_number") or "").strip(),
+        "po_ref": (f" (PO {(p.get('po_number') or '').strip()})" if (p.get("po_number") or "").strip() else ""),
         "sender_first": sender.get("name", "A+ Tutoring").split()[0],
         "sender_name": sender.get("name", "A+ Tutoring"),
         "sender_email": sender.get("email", "admin@wetutorathome.com"),
@@ -572,7 +587,8 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     hs_cfg = cfg()["hubspot"]
     tf = cfg().get("ticket_fields", {}) or {}
     sla_due = add_business_hours(now_la(), float(lb.get("sla_hours", 8)))
-    subject = f"Low balance: {alert['student']} ({ctx['school']}), {hrs} left"
+    school_tag = ctx["school"] or "school unknown"
+    subject = f"Low balance: {alert['student']} ({school_tag}), {hrs} left"
     flags = []
     if not contact:
         flags.append("family contact NOT found in HubSpot (matched by alert email / student + surname)")
@@ -617,7 +633,8 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
             print(f"  ⚠️  thread→ticket link failed (non-fatal): {e}")
 
     # ── the copy (rendered once; sent, drafted, or merely shown) ──
-    sms_body = _render(lb.get("sms_template", ""), ctx) if lb.get("sms_template") else ""
+    sms_tpl = (lb.get("sms_template_with_tutor") if ctx["tutor_first"] else "") or lb.get("sms_template", "")
+    sms_body = _render(sms_tpl, ctx) if sms_tpl else ""
     te = lb.get("tor_email") or {}
     tor_subject = _render(te.get("subject", "New PO needed for {student_full}"), ctx)
     tor_body = _render(te.get("body", ""), ctx) if te.get("body") else ""
@@ -705,13 +722,13 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     fu_days = float(lb.get("follow_up_business_days", 3))
     if seat.get("hubspot_owner_id"):
         due = add_business_hours(now_la(), fu_days * 8)
-        tbody = (f"{alert['student']} ({ctx['school']}) has {hrs} left on {alert['package']}.\n"
+        tbody = (f"{alert['student']} ({school_tag}) has {hrs} left on {alert['package']}.\n"
                  + "\n".join(lines) + "\n\n"
                  f"Next: confirm the school is issuing a new PO (ask {ctx['tor_name']} if the "
                  f"family has not). The case closes itself when the PO lands.\n"
                  f"Ticket: {hs.ticket_url(tid) if tid else ''}")
         try:
-            t = hs.create_task(f"Low balance follow-up: {alert['student']} ({ctx['school']})", tbody,
+            t = hs.create_task(f"Low balance follow-up: {alert['student']} ({school_tag})", tbody,
                                seat["hubspot_owner_id"], int(due.timestamp() * 1000),
                                priority="MEDIUM", contact_id=contact_id)
             record["task_id"] = t.get("id")
@@ -726,7 +743,7 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
             print(f"  ⚠️  ticket note failed (non-fatal): {e}")
 
     # one DM, to the seat only (Danielle 2026-08-12: Paola, nobody else)
-    dm = (f"📉 LOW BALANCE: *{alert['student']}* ({ctx['school']}) has {hrs} left on "
+    dm = (f"📉 LOW BALANCE: *{alert['student']}* ({school_tag}) has {hrs} left on "
           f"{alert['package']}. Parent {alert.get('parent_name') or '?'} "
           f"{alert.get('parent_email') or ''} {phone}\n" + "\n".join(lines) + task_line
           + (f"\n🚩 {'; '.join(flags)}" if flags else "")
@@ -877,6 +894,7 @@ def replay_thread(thread_id: str) -> dict | None:
     made and the rendered SMS / email / teacher draft are shown in full;
     with LOW_BALANCE_FORCE_ARMED=1 the outreach paths run too (all dry-run
     guarded). Used for the 2026-09-09 Taylor Rodriguez test case."""
+    hs.SEARCH_PASSTHROUGH = True          # reads must work or the replay proves nothing
     msgs = [m for m in hs.get_messages(thread_id)
             if m.get("type") == "MESSAGE" and is_teachworks_sender(_addrs(m))]
     if not msgs:
