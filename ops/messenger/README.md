@@ -19,6 +19,14 @@ messaging to customers whenever called upon. only for bulk options").
   live sends only 9:00–20:00 PT; phones normalized to E.164, unusable skipped.
 - **Tutor names**: templates use `last_tutor_name` which holds FIRST names
   only (customer-facing rule, Roman 2026-08-14).
+- **Journey playbook**: before contacting a family, teacher, or tutor, read
+  `knowledge/journey/README.md` and pass
+  `knowledge/journey/00-pre-send-checklist.md`. Act only on stages marked
+  REVIEWED. Win-back rounds are stage 09.
+- **Under 25 recipients there is no rail yet.** The 2026-09-08 follow-ups ran
+  from session scripts. Until the small-send rail lands, every send under
+  `min_bulk` follows the checklist by hand and gets an `[Agent]` note on the
+  contact.
 
 ## Calling it
 

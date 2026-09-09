@@ -41,6 +41,10 @@ dimension doesn't apply to the call. Overall = average of scored dimensions.
 ## New-inquiry dimensions (intent = new inquiry / school partnership)
 
 ### S1. Discovery depth
+
+> Journey stage 03, discovery: `knowledge/journey/03-discovery.md` lists what
+> we ask here and what the agent asks itself before drafting anything after
+> the call.
 - **5** — Surfaces grade, school, subjects AND the underlying "why now" (confidence, grades slipping, test coming), prior tutoring history, and what success looks like to the parent
 - **3** — Gets the surface facts (grade/subject) but not the underlying driver
 - **1** — Pitches before understanding the student

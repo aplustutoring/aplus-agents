@@ -87,6 +87,11 @@ invoice hour-tracking.
 
 ## Stage 3 — The deal and every property on it
 
+> Journey hand-over point: once this deal exists the family belongs to
+> scheduling and is texted from the support line, never the lead line. See
+> `knowledge/journey/05-deal-open-pre-lesson.md` and the pre-send checklist
+> `knowledge/journey/00-pre-send-checklist.md`.
+
 | Property | Example / value | How it's decided |
 |---|---|---|
 | `dealname` | Jessica Jaramillo - Isaac Jaramillo - iLead 1 - 26/27 | `Parent - Student - School N - YY/YY`. Shorthand from `po_inbox.school_short_names` (unmapped → extracted name + ticket flag). N = the student's deal count at that school this school year + 1, counted from an **exact search on the student name properties** (never name tokens — a limit-10 unsorted token search made every 10+-deal student restart at N=1: the McGraw/Saenz duplicate names, fixed 2026-08-26) and kept contiguous across all emails of a run by a run-scoped counter (the search index lags same-run creations). School year from the PO's service month (Aug–Dec = first year). Parent unresolved → `NEEDS PARENT - …`. |
