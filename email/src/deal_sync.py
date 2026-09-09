@@ -24,7 +24,7 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import audit, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, hubspot_client as hs, owner_assign, slack_client, teachworks_client as tw
 from .config import DRY_RUN, cfg
 
 CUR_PATH = Path(__file__).resolve().parent.parent / "state" / "sync_cursor.json"
@@ -287,7 +287,7 @@ def run() -> None:
     if force_id:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
-                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount"})
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount,hubspot_owner_id"})
         # Optional trace-by-contact-email: fetch the contact, fix the missing
         # association on the HubSpot deal, and sync with that contact.
         contact = None
@@ -309,6 +309,10 @@ def run() -> None:
               + (f" — {rec['reason']}" if rec.get("reason") else ""))
         if rec.get("action_taken") == "sync_skipped" and "no contact email" in (rec.get("reason") or ""):
             print("  ↳ associate the parent/family contact on the deal in HubSpot, then re-run.")
+        oa = owner_assign.maybe_assign(
+            d, contact or _deal_contact(force_id, d["properties"].get("dealname", ""))) or {}
+        if oa:
+            print(f"deal_sync FORCE {force_id}: {oa.get('action_taken')} → {oa.get('owner')}")
         return
     state = json.loads(CUR_PATH.read_text()) if CUR_PATH.exists() else {}
     since_ms = state.get("last_createdate_ms")
@@ -322,7 +326,8 @@ def run() -> None:
         "filterGroups": [{"filters": [
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
-        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount"],
+        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount",
+                       "hubspot_owner_id"],
         "limit": 50}
     deals: list = []
     while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
@@ -342,6 +347,9 @@ def run() -> None:
         try:
             if sync_deal(d):
                 synced += 1
+            # Scheduler ownership (replaces the dead Zapier zap). Inside the same
+            # try: a failed PATCH holds the cursor and the deal retries next run.
+            owner_assign.maybe_assign(d, _deal_contact(d["id"], d["properties"].get("dealname", "")))
             cd = d["properties"].get("createdate")
             if cd:
                 ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)

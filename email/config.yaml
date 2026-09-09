@@ -324,6 +324,24 @@ deal_sync:
     escalate_after_days: 3
     escalate_to: visionary
 
+# ── New-deal owner assignment (Roman 2026-09-09) ────────────────
+# Replaces the Zapier zap (HubSpot app 25200) that re-owned every new deal to
+# a scheduler by family last name and died silently 2026-09-04 23:45 UTC.
+# Every new deal in these pipelines → owner = scheduler_split by the Family
+# contact's last name (deal-name parent as fallback). Runs from deal_sync, so
+# the deal-relay webhook lands it ~1 min after creation. Already the right
+# scheduler → no write. One decision per deal (audit owner:{id}).
+# Turn the zap OFF once this has re-owned a real deal (double-writes are the
+# same value, but two owners of one rule is how the last one died unnoticed).
+owner_assign:
+  enabled: true
+  pipelines:
+    - "19120821"   # Free Trial
+    - "default"    # Gold Tutoring
+    - "16547180"   # Gold Tutoring - Renewal
+    - "3067397"    # In-Person
+    - "16858643"   # In-Person - Renewal
+
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
 # marked dealtype=existingbusiness (per the deal model: resumed families get a NEW deal,
