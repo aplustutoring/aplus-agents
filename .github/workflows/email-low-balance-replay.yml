@@ -1,0 +1,52 @@
+name: Email — low-balance replay (one alert, dry run)
+
+# Re-run ONE Teachworks package-balance alert through the low-balance agent
+# and print exactly what it would do: the rendered text, family email and
+# teacher draft, with the real Teachworks lookup (tutor, lesson notes) and
+# the real positivity sentence. DRY_RUN is forced on: nothing is written to
+# HubSpot, Slack, JustCall, Resend or Gmail. Built for Roman's 2026-09-09
+# test case (Taylor Rodriguez, thread 11165170281). Manual only.
+
+env:
+  TZ: America/Los_Angeles
+
+on:
+  workflow_dispatch:
+    inputs:
+      thread_id:
+        description: "HubSpot conversation thread id carrying the Teachworks alert"
+        required: true
+        default: "11165170281"
+      force_armed:
+        description: "Walk the outreach paths too (still dry run)"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: email
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Replay the alert (dry run)
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          TEACHWORKS_TOKEN: ${{ secrets.TEACHWORKS_TOKEN }}
+          TEACHWORKS_TOKEN_INPERSON: ${{ secrets.TEACHWORKS_TOKEN_INPERSON }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
+          DRY_RUN: "true"
+          LOW_BALANCE_FORCE_ARMED: ${{ inputs.force_armed && '1' || '0' }}
+        run: python -m src.low_balance --thread "${{ inputs.thread_id }}"

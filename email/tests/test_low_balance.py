@@ -356,31 +356,34 @@ def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT, RECENT,
                       "Lately Taylor has been building confidence with fractions.")
     out = lb._render(tpl.read_text(), ctx)
-    assert ("It's Paola with A+ Tutoring. Taylor has had 6 sessions with Sarah since this PO "
-            "started on August 22. Lately Taylor has been building confidence with fractions. "
+    assert ("It's Paola with A+ Tutoring. Taylor has been working with Sarah. "
+            "Lately Taylor has been building confidence with fractions. "
             "A quick heads up:") in out
+    assert "has had" not in out and "August" not in out          # no duration, ever
 
 
 # ── personalisation ──────────────────────────────────────────────────────
 
-def test_text_carries_tutor_and_sessions_when_teachworks_has_them(monkeypatch):
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=RECENT)
+def test_text_carries_the_tutor_first_name_only(monkeypatch):
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=RECENT,
+                positivity="Lately Taylor has been mastering fractions.")
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.sms[0][1].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has had 6 sessions "
-                                  "with Sarah on this PO. Taylor has 4 hours or less left")
-    assert rec["tutor_first"] == "Sarah" and rec["sessions_on_po"] == 6
+    assert h.sms[0][1].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
+                                  "with Sarah. Taylor has 4 hours or less left")
+    assert "session" not in h.sms[0][1] and "fractions" not in h.sms[0][1]   # positivity is email-only
+    assert h.emails[0][1]["personal_line"] == (" Taylor has been working with Sarah. "
+                                               "Lately Taylor has been mastering fractions.")
+    assert rec["tutor_first"] == "Sarah" and rec["positivity"].startswith("Lately")
 
 
 def test_personal_line_variants():
     a = lb.parse_alert(ALERT)
     assert lb._personal(a, NO_RECENT, "") == ("", "")
-    sms, line = lb._personal(a, {**RECENT, "sessions": 1}, "")
-    assert sms == " Taylor has had 1 session with Sarah on this PO."
-    assert line == " Taylor has had 1 session with Sarah since this PO started on August 22."
-    sms, line = lb._personal(a, {**RECENT, "sessions": 0}, "")
-    assert sms == line == " Taylor has been working with Sarah."
-    _sms, line = lb._personal(a, RECENT, "Lately Taylor loves fractions.")
-    assert line.endswith("August 22. Lately Taylor loves fractions.")
+    assert lb._personal(a, RECENT, "") == (" Taylor has been working with Sarah.",) * 2
+    sms, line = lb._personal(a, RECENT, "Lately Taylor loves fractions.")
+    assert sms == " Taylor has been working with Sarah."
+    assert line == " Taylor has been working with Sarah. Lately Taylor loves fractions."
+    assert lb._personal(a, NO_RECENT, "Lately Taylor loves fractions.") == ("", " Lately Taylor loves fractions.")
 
 
 class _FakeClaude:

@@ -44,6 +44,7 @@ whose PO arrived, and escalate the ones that stalled.
 """
 from __future__ import annotations
 
+import os
 import re
 from datetime import date, datetime, timedelta, timezone
 
@@ -342,24 +343,15 @@ def _positivity(student_first: str, tutor_first: str, notes: list[str], client=N
 
 def _personal(alert: dict, recent: dict, positivity: str) -> tuple[str, str]:
     """(personal_sms, personal_line): the sentence that makes the note ours.
-    Each starts with a space so an empty value leaves the template clean."""
+    Tutor FIRST name only, no session counts, no dates (Roman 2026-09-09:
+    "lets just use tutors name, first name. no duration"). The positivity
+    sentence rides the email only. Each starts with a space so an empty
+    value leaves the template clean."""
     student = alert.get("student_first") or "your student"
-    tutor, n, since = recent.get("tutor_first"), int(recent.get("sessions") or 0), recent.get("since")
-    when = ""
-    if since:
-        try:
-            when = datetime.fromisoformat(since).strftime("%B %-d")
-        except ValueError:
-            when = ""
-    sms = line = ""
-    if tutor and n:
-        sms = f" {student} has had {n} session{'s' if n != 1 else ''} with {tutor} on this PO."
-        line = (f" {student} has had {n} session{'s' if n != 1 else ''} with {tutor}"
-                + (f" since this PO started on {when}." if when else " on this PO."))
-    elif tutor:
-        sms = line = f" {student} has been working with {tutor}."
+    tutor = recent.get("tutor_first") or ""
+    sms = line = f" {student} has been working with {tutor}." if tutor else ""
     if positivity:
-        line += " " + positivity
+        line = (line + " " + positivity) if line else " " + positivity
     return sms, line
 
 
@@ -562,7 +554,9 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     tor_email = (dp.get("teacher_of_record_email") or "").strip().lower()
     no_tor = [str(x) for x in lb.get("no_teacher_email_pipelines", [])]
     tor_blocked = pipeline in no_tor
-    armed = bool(lb.get("armed")) and charter
+    # LOW_BALANCE_FORCE_ARMED=1 lets a DRY_RUN replay walk every outreach
+    # path (each rail is dry-run guarded) without touching config.
+    armed = (bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1") and charter
     # what makes the note ours: the tutor, the sessions on this PO, and (when
     # enabled) one true sentence from the last few lesson notes
     recent = _tw_recent(alert, deal) if charter else {}
@@ -631,6 +625,24 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     to_email = (alert.get("parent_email") or ((contact or {}).get("properties") or {}).get("email") or "").strip()
     note_parts = [f"📧 Original alert\n{(message.get('text') or '')[:1500]}"]
     lines = []
+    if DRY_RUN:
+        # a replay's whole point is to read the copy as the family would
+        fe = lb.get("family_email") or {}
+        try:
+            html = _render((ROOT / (fe.get("template") or "templates/low_balance_charter.html")).read_text(), ctx)
+            email_text = re.sub(r"\n{3,}", "\n\n", re.sub(r"<[^>]+>", "", html.replace("</p>", "\n")
+                                                          .replace("<br>", "\n")).replace("&nbsp;", " ")).strip()
+        except Exception as e:  # noqa: BLE001
+            email_text = f"(template render failed: {e})"
+        print("\n══════ LOW BALANCE PREVIEW ══════"
+              f"\nStudent: {alert['student']} | tutor: {ctx['tutor_first'] or '(none found)'} | "
+              f"sessions on PO: {ctx['sessions_on_po']} | notes fields seen: {recent.get('notes_fields_seen')}"
+              f"\nPositivity: {positivity or '(none)'}"
+              f"\n\n--- SMS to {phone or '(no phone)'} ---\n{sms_body}"
+              f"\n\n--- EMAIL to {to_email or '(no email)'} | subject: {_render(fe.get('subject', ''), ctx)} ---\n{email_text}"
+              f"\n\n--- TEACHER DRAFT to {tor_email or '(no TOR email)'}"
+              f"{' (BLOCKED: no-teacher-email pipeline)' if tor_blocked else ''} | subject: {tor_subject} ---\n{tor_body}"
+              "\n══════════════════════════════════\n")
 
     if armed:
         # family SMS: quiet hours defer it to the hourly sweep (never dropped)
@@ -855,3 +867,50 @@ def run_sweep(force: bool = False) -> None:
             audit.append({"message_id": f"{key}:escalated", "source": "low_balance",
                           "action_taken": "low_balance_escalated", "age_days": a,
                           "ticket_id": c.get("ticket_id")})
+
+
+# ── replay: run one real alert through the agent (DRY_RUN for a preview) ───
+
+def replay_thread(thread_id: str) -> dict | None:
+    """Re-run the Teachworks alert on a HubSpot conversation thread as if it
+    had just arrived. With DRY_RUN=true every write is printed instead of
+    made and the rendered SMS / email / teacher draft are shown in full;
+    with LOW_BALANCE_FORCE_ARMED=1 the outreach paths run too (all dry-run
+    guarded). Used for the 2026-09-09 Taylor Rodriguez test case."""
+    msgs = [m for m in hs.get_messages(thread_id)
+            if m.get("type") == "MESSAGE" and is_teachworks_sender(_addrs(m))]
+    if not msgs:
+        print(f"replay: no Teachworks message on thread {thread_id}")
+        return None
+    m = msgs[-1]
+    body = m.get("text") or m.get("richText") or ""
+    alert = parse_alert(body)
+    if not alert:
+        print(f"replay: message {m.get('id')} is not a package-balance alert:\n{body[:400]}")
+        return None
+    print(f"replay: thread {thread_id} message {m.get('id')} → {alert['student']} "
+          f"{_fmt_hours(alert['hours'], alert['unit'])} on {alert['package']}")
+    return handle_alert(thread_id, m, alert)
+
+
+def _addrs(message: dict) -> list[str]:
+    out = []
+    for s in message.get("senders") or []:
+        dv = s.get("deliveryIdentifier")
+        if isinstance(dv, dict) and "@" in str(dv.get("value", "")):
+            out.append(str(dv["value"]).lower())
+    return out
+
+
+if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser(description="Low-balance agent: replay or sweep")
+    ap.add_argument("--thread", help="HubSpot conversation thread id carrying a Teachworks alert")
+    ap.add_argument("--sweep", action="store_true", help="run the resolver sweep now (ignores the hourly gate)")
+    args = ap.parse_args()
+    if args.thread:
+        replay_thread(args.thread)
+    elif args.sweep:
+        run_sweep(force=True)
+    else:
+        ap.print_help()

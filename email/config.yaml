@@ -209,20 +209,22 @@ low_balance:
   # Family copy names NO school and NO teacher (Roman 2026-09-09: "does not
   # build credibility, we know this"). Parents can submit the PO themselves
   # and we prefer that; the teacher of record is the unnamed fallback.
-  # {personal_sms} / {personal_line} = " Taylor has had 6 sessions with Sarah
-  # on this PO." from Teachworks (tutor FIRST name, attended lessons since the
-  # PO deal was created); empty when Teachworks has nothing, and the sentence
-  # simply disappears. Roman 2026-09-09: "find the tutors name in teachworks
-  # and include it ... or some bit of positivity ... or duration of this po."
+  # {personal_sms} / {personal_line} = " Taylor has been working with Sarah."
+  # from Teachworks (the tutor's FIRST name on the most recent attended
+  # lesson; no session counts, no dates: Roman 2026-09-09 "lets just use
+  # tutors name, first name. no duration"). Empty when Teachworks has nothing,
+  # and the sentence simply disappears. The email version also carries the
+  # positivity sentence below.
   sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring.{personal_sms} {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to, so sessions continue without a gap. Reply here with any questions."
   # One warm sentence from the last 4 lesson notes ("Lately Taylor has been
   # building confidence with fractions and word problems."), written by Claude
   # from the tutor's notes and validated before use (no numbers, no
-  # exclamation, no em dash, 30 words max, else dropped). OFF until the first
-  # live alert shows which Teachworks note field comes through the API
-  # (audit record `notes_fields_seen`); flip in a PR.
+  # exclamation, no em dash, 30 words max, else dropped). ON (Roman
+  # 2026-09-09: "yes to positivity"); which Teachworks note field comes
+  # through the API is recorded on every case (`notes_fields_seen`), and a
+  # case with no notes simply has no sentence.
   positivity:
-    enabled: false
+    enabled: true
     model: "claude-sonnet-4-6"
     max_tokens: 120
   lookback_days: 60                # Teachworks window when the student has no PO deal to date from
