@@ -7,6 +7,75 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 — Pre-send gate + one_to_few rail (the code behind the journey checklist)
+
+**Why:** 2026-09-09, an agent told to "watch for responses" texted the
+Gonzalez family three times from Paola's lead line while scheduling had them
+booked on the support line. Nothing in either SMS engine looked at the other
+line, the inbox, or open tickets before sending; "has this family replied?"
+had no helper (inbox replies never stamp `hs_email_last_reply_date`); and
+every send under 25 recipients ran from a session script with none of the
+bulk engine's checks. Roman: "we have to learn more and ask questions."
+The playbook (PR #198) writes the questions down; this PR makes an agent
+unable to skip them.
+
+**What:**
+- `email/src/presend.py`: `check(contact_id, channel, from_line, purpose,
+  ...)` → allow / hold / block with reasons and the owning seat. Checks, in
+  order: opt-out; quiet hours (shared `sms._in_send_window`); stage-to-line
+  (persona + deals since `presend.season_start`: tutor and scheduling → support
+  line, lead and TOR → charter_sales line; the LOCKED 2026-09-08 rule);
+  active thread on another company line inside `thread_window_days` (JustCall
+  index, now carrying `line` and `agent` per text) → HOLD naming the owner
+  (support line resolves by student last name through `scheduler_split`);
+  unanswered reply on any line or in the inbox → HOLD; open ticket owned by
+  scheduling while texting from another line → HOLD; frequency (JustCall
+  outbound today across all lines, and the new `agent_last_outbound_at`
+  inside `min_gap_hours`, both waived when the contact wrote first);
+  standing go (`presend.standing_go`) else `--confirm SEND`; STOP line
+  required on a cold SMS, not on a reply in-thread. Any unreadable source is a
+  HOLD "could not verify", never a silent allow. `record_send` is the send log
+  of record: HubSpot note on the contact with a machine-parseable first line,
+  the two `[Agent]` properties, one audit line. `has_replied_since` replaces
+  the session thread-scan scripts.
+- `email/src/hubspot_client.py`: `contact_inbound_since` (threads by
+  contact, INCOMING with answered flag), `open_tickets_for_contact`,
+  `add_contact_note`, `patch_contact_props`; `get_contact_deals` now returns
+  `createdate`.
+- `email/src/sms.py`: gate before `_jc_send`, `record_send` after. SHADOW
+  while `presend.enabled` is false (audit `presend_shadow`, behaviour
+  unchanged); enforcing: block → `sms_skipped_unverified`, hold → `sms_held`
+  (retried next sweep) + one DM to the owning seat. `po_welcome` is standing.
+- `email/src/main.py`: every processed inbound email stamps
+  `agent_last_inbound_at`.
+- `ops/hubspot-schema/properties.yml`: `agent_last_outbound_at`,
+  `agent_last_outbound_seat`, `agent_last_inbound_at` ([Agent], master group).
+  NOT yet synced to the portal; run `create_properties.py --dry-run` then live.
+- `email/config.yaml` `presend:` block: lines (parity-tested against
+  `ops/messenger/config.yml` numbers), line owners, purposes, `standing_go`
+  (po_welcome, low_balance_family; tor_confirm / tor_email_ask / tutor_ask
+  join when their journey stages are REVIEWED), `stop_line_exempt`, approvers.
+- `ops/messenger/one_to_few.py`: the small-send rail, 1 to `max_few` (25 =
+  `min_bulk`, so the two rails tile). `--contacts` or `--list-id`,
+  `--purpose` and `--from` required with no defaults, `--template` or
+  `--bodies`, dry-run default printing ALLOW/HOLD/BLOCK per contact with the
+  owner for holds, `--live --confirm SEND` sends ALLOW rows only, em-dash scrub
+  on every body, `state/sends/<date>-<purpose>.jsonl`.
+- Tests: `email/tests/test_presend.py` (the Gonzalez case holds and names the scheduler by last-name split),
+  `ops/messenger/tests/test_one_to_few.py`.
+
+**Rollout:** shadow for a week; the regression check before flipping
+`presend.enabled` is a dry run of the next yes-replier follow-up showing
+Gonzalez as HOLD with the scheduler named. PR C (the `#agent-sends`
+doorbell, reply `go <id>`) follows.
+**Decision log for Roman:** "one gate for every outbound"; standing-go list.
+**Files:** email/src/presend.py (new), email/src/hubspot_client.py,
+email/src/justcall_client.py, email/src/sms.py, email/src/main.py,
+email/config.yaml, ops/hubspot-schema/properties.yml,
+ops/messenger/one_to_few.py (new), ops/messenger/tests/ (new),
+ops/messenger/README.md, email/tests/test_presend.py (new).
+
+---
 ## 2026-09-09 — Customer journey communication playbook + pre-send checklist (Roman: "we have to learn more and ask questions")
 
 **Why:** on 2026-09-09, during the charter SMS win-back round (PR #195), an

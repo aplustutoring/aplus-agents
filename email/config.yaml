@@ -196,6 +196,42 @@ staff:
 # ── Accountability chart (EOS seats) ─────────────────────────────
 # Functional config references ROLES; this block maps seat → person.
 # Team change = edit here, nothing else. (Roman, 2026-08-14)
+# ── Pre-send gate (knowledge/journey/00-pre-send-checklist.md in code) ──
+# One gate for every outbound to a family, teacher, or tutor (Roman
+# 2026-09-09, after the Gonzalez double-thread). email/src/presend.py.
+# enabled false = SHADOW: engines log the decision as presend_shadow and keep
+# their old behaviour. Flip after a week of clean audit.
+presend:
+  enabled: false
+  season_start: "2026-08-15"        # a deal created on/after this = scheduling owns the family
+  thread_window_days: 14            # "active thread" lookback on JustCall + inbox
+  min_gap_hours: 20                 # agent_last_outbound_at inside this = hold (unless in-thread)
+  max_sms_per_day: 2                # JustCall outbound count across ALL lines
+  max_few: 25                       # one_to_few refuses above this; == ops/messenger min_bulk
+  lines:                            # must match ops/messenger/config.yml sms.numbers
+    charter_sales: "+18185736644"   # Paola's line: families with NO deal (leads), teacher about one student
+    sales: "+18185736644"
+    support: "+18188691627"         # schedulers' line: families WITH a deal, SMS-only tutors
+    conference: "+18188506284"
+  line_owner:                       # who owns an active thread on that line
+    charter_sales: charter_sales
+    sales: sales
+    support: scheduler_split        # by student last name (scheduler_split below)
+    conference: sales
+  standing_go: [po_welcome, low_balance_family]   # tor_confirm, tor_email_ask, tutor_ask join
+                                                  # only when their journey stage is REVIEWED
+  stop_line_exempt: [po_welcome, po_push, tor_confirm, tor_email_ask, tutor_ask]  # in-conversation
+  purposes:
+    po_welcome:    { audience: scheduling, line: support }
+    low_balance_family: { audience: scheduling, line: support }
+    po_push:       { audience: lead,       line: charter_sales }
+    tor_confirm:   { audience: lead,       line: charter_sales }
+    tor_email_ask: { audience: lead,       line: charter_sales }
+    lead_relay:    { audience: lead,       line: charter_sales }   # per-go, always
+    tutor_ask:     { audience: tutor,      line: support }
+  approvers: [visionary, scheduling_lead]
+  proposal_ttl_hours: 24
+
 roles:
   visionary: roman          # Director / owner
   operations: emily         # ops; last-resort escalation

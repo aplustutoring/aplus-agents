@@ -23,10 +23,34 @@ messaging to customers whenever called upon. only for bulk options").
   `knowledge/journey/README.md` and pass
   `knowledge/journey/00-pre-send-checklist.md`. Act only on stages marked
   REVIEWED. Win-back rounds are stage 09.
-- **Under 25 recipients there is no rail yet.** The 2026-09-08 follow-ups ran
-  from session scripts. Until the small-send rail lands, every send under
-  `min_bulk` follows the checklist by hand and gets an `[Agent]` note on the
-  contact.
+- **Under 25 recipients, use `one_to_few.py`** (next section). It runs the
+  pre-send gate per contact. The 2026-09-08 follow-ups ran from session
+  scripts with none of these checks; that path is closed.
+
+## Small sends: the one_to_few rail (1 to 24 recipients)
+
+`one_to_few.py` is the rail for follow-ups, relays, and confirmations to a
+handful of families or tutors. It does not lower `min_bulk`; it sits beside
+the bulk engine and runs every recipient through the pre-send gate
+(`email/src/presend.py`, the code form of
+`knowledge/journey/00-pre-send-checklist.md`): opt-out, quiet hours, stage
+to line, active thread on another line, unanswered reply, open scheduling
+ticket, frequency, standing go, STOP line. Dry run is the default and prints
+ALLOW / HOLD / BLOCK per contact with the reason and, for a hold, the seat
+that owns the thread.
+
+```
+python3 ops/messenger/one_to_few.py --contacts 123,456 --purpose po_push \
+  --from charter_sales --template templates/charter_r2_opened_single.txt
+python3 ops/messenger/one_to_few.py --list-id 3237 --purpose tor_confirm \
+  --from charter_sales --bodies bodies.json --live --confirm SEND --approved-by U05NA7UMSSV
+```
+
+`--from` and `--purpose` have no defaults (the 2026-09-09 incident was a
+default). Purposes and lines are declared in `email/config.yaml`
+(`presend:`); a purpose in `standing_go` sends without `--confirm`, anything
+else needs it. Every send writes a HubSpot note, the two `[Agent] Last
+Outbound` properties, an audit line, and `state/sends/<date>-<purpose>.jsonl`.
 
 ## Calling it
 
