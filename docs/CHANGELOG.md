@@ -77,6 +77,26 @@ no exclamation, no em dash, 30 words max, else dropped). Positivity is OFF:
 which Teachworks note field comes through the API is unverified, and the
 first live alert reports it (`notes_fields_seen` on the audit record).
 
+**Later the same day (Roman):** "lets just use tutors name, first name. no
+duration. yes to positivity. lets do a test case." Duration dropped; the
+text uses `sms_template_with_tutor` when Teachworks names a tutor;
+positivity ON. **Test case = Taylor Rodriguez's real 2026-09-07 alert**,
+replayed three times through GitHub Actions in DRY_RUN with the live
+Teachworks and Claude keys (workflow input `replay_thread` on email-triage;
+also `.github/workflows/email-low-balance-replay.yml` for after merge).
+Run 1 caught three real defects before any family saw them: the tutor
+rendered as "Torres," (Teachworks names are 'Last, First'; `_first_name`
+now handles both), every HubSpot lookup came back empty (DRY_RUN blanked
+the /search POSTs; `hs.SEARCH_PASSTHROUGH` now lets reads through during a
+replay only), and the teacher draft read "(the current PO)" with no PO on
+file (`{po_ref}` token, empty when unknown). Run 2 was clean except the
+deal named the TOR without an email; run 3 resolved it through the PO
+agent's TOR name match (`_tor_email_fallback`, unique hit only, else the
+family→TOR association) and produced the full set: text with "working with
+Stephanie", email with a Claude sentence from the `public_notes` lesson
+field (confirmed live: that is where Teachworks notes come through), and
+the teacher draft to kylee.robles@ileadexploration.org in Paola's mailbox.
+
 **Still human (until armed):** everything the ticket note says the agent
 would have sent. **After arming:** sending the teacher draft from Gmail
 Drafts; anything the 🚩 flags name (family not found, no deal, no TOR email).
