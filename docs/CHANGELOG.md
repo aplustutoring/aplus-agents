@@ -49,6 +49,37 @@ one with a "New Deal" HubSpot trigger and an "Update Deal → owner" action;
 check its history for why it stopped on 9/4, and whether other zaps on the
 same HubSpot connection died with it.
 
+**Verified live (same day, Roman: "you can create a test deal too"):** PR #197
+merged (fce0c5d5). Test deal "Test Mavis - Ownerpass Student" created in Free
+Trial owned by Danielle at 20:47:24 UTC; deal_sync run 34403172659 (manual
+dispatch) re-owned it to Yolanda at 20:48:12 UTC, log line `👤 deal 64884786248
+→ Yolanda [dealname:Mavis]`. Test deal deleted (HTTP 204, restorable 90 days).
+
+**The zap, identified (Roman: "you can turn the zap off too"):** it is
+"PRE LESSON --> MONDAY", Zapier zap 347673126
+(https://zapier.com/editor/347673126), fed by HubSpot workflow 1764489615
+"Pre-Lesson -> Monday" (webhook). Step 9 is HubSpot "Update Deal". It is
+ALREADY OFF: every run since 2026-09-04 09:37 PT errored at the monday.com
+"Create Item" step with `(RecordInvalidException) Board has reached its max
+size` (board 18397928615, the Pre-Lesson board), the last run was 09-07
+12:16 PT, and the zap shows Off / last modified 09-07. The 09-04 04:44:59 PT
+errored run is the one whose step 9 made the portal's last zap owner write
+(23:45:12 UTC). No manual switch-off needed; it must NOT be turned back on
+with step 9 in it.
+
+**New open item (Roman):** that zap did more than owners. Since 09-04 no
+Pre-Lesson deal has reached the Monday Pre-Lesson board (board full) and no
+scheduler Slack DM (step 14) has gone out. Either archive/clear board
+18397928615 and republish the zap WITHOUT step 9, or let the fleet own the
+Pre-Lesson notification too (deal_sync already DMs; the board is the
+question). "PRE LESSON --> Teachworks" (zap, still On, ran today) is the
+other survivor of that webhook pair; deal_sync's TW upsert already covers it.
+
+**Also observed:** email-deal-sync had no webhook-dispatched run between
+09-08 21:47 and 09-09 16:32 UTC although 4 B2C deals were created 09-08
+21:55 and 09-09 17:55; the relay may not be receiving every deal.creation.
+The cron backstop caught them. Worth a look before the cron is demoted.
+
 **Decision to log:** deal ownership is agent-owned (deal_sync); no Zapier or
 workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
 "transactional SMS is agent-owned" precedent.
