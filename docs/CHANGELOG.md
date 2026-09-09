@@ -37,8 +37,25 @@ pass: on a `schedule` (cron) run, any new deal older than
 one DM to the visionary seat naming the deals, once per deal (audit
 `relay-miss:{id}`). Dispatch and local runs never fire it. 4 tests.
 
-**Cron stays** at the 15-min backstop until the first real deal round-trips
-through the doorbell; demote to hourly then (README "After it's verified live").
+**Then the relay itself was stuck.** With `GITHUB_TOKEN` set (Roman, 23:2x UTC)
+a test deal still produced no dispatch. New `/status` endpoint on the worker
+showed why: the Durable Object alarm was pinned at 22:16:07, 85 minutes in
+the past, never firing (its retries had been exhausted while the token was
+missing), and `Dispatcher.fetch` only re-arms when the existing alarm is
+null or LATER than the wanted time, so every new hook since had been
+silently absorbed. Fix deployed (worker.js): a past alarm older than 2 min is
+replaced; `/status` (token-gated) exposes alarm / lastDispatchAt /
+lastDispatchError; alarm logs success and failure so `wrangler tail` shows
+them. **Verified end to end:** test deal 23:42:17 UTC → hook 23:42:19 →
+alarm 23:43:19 → workflow_dispatch 23:43:21 → re-owned Janelle 23:43:47.
+**96 seconds from creation to scheduler.** Test deal deleted.
+
+**Cron demoted** to the hourly backstop (`45 * * * *`), per README "After it's
+verified live"; relay_watchdog DMs if the backstop ever catches a deal.
+
+**Same latent bug in the call relay** (`ops/call_agent/webhook-relay/worker.js`
+is the same Dispatcher): if its GitHub dispatch ever fails through all
+retries, it will wedge the same way. Port the stale-alarm fix there next.
 
 **Files:** `ops/deal-relay/doorbell/{workflow.json,apply_doorbell.py}` (new),
 `ops/deal-relay/README.md`, `email/src/relay_watchdog.py` (new),
