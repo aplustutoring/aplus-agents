@@ -102,6 +102,14 @@ Wrong-channel guard before posting: each first name → exactly ONE tutor
 with an active roster status in HubSpot AND one Slack user, matching the
 channel. NO channel for Christa (Elias, Gonzalez), Frederick (Sagua),
 Angela Salyer (Richardson): those three asks are still open.
+**CHRISTA BY SMS 7:15 PM PT (Roman: "Christa only uses SMS; for Christa and
+these situations use the 869 number and text her"):** tutors who are
+SMS-only or have no Slack channel get the ask by text from the SUPPORT line
+818-869-1627. Sent Christa (818-339-5667, confirmed via her Slack profile;
+HubSpot holds two Christa records, 160787711301 with the phone and
+201052445204 Bretz with the email, left unmerged) the ask for Joseph Elias
+and Alexzander & Andrew Gonzalez; note on the tutor contact. Frederick and
+Angela Salyer still open.
 **Roman's next asks (not built):** (a) new-teacher intake automation =
 ask email → create TOR → link, as done by hand above; (b) tutor ask
 automation: post in the tutor's own channel when one exists, else a group
