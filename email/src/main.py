@@ -11,6 +11,7 @@ FERPA: only the email body + the structured enrichment summary go to Claude.
 """
 from __future__ import annotations
 
+import os
 import sys
 import traceback
 from datetime import date, datetime, time, timedelta, timezone
@@ -815,4 +816,11 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    # A single Teachworks low-balance alert can be replayed through the agent
+    # instead of a poll (workflow input replay_thread; DRY_RUN prints the
+    # rendered text / email / teacher draft). Nothing else runs in that mode.
+    _replay = (os.environ.get("LOW_BALANCE_REPLAY_THREAD") or "").strip()
+    if _replay:
+        low_balance.replay_thread(_replay)
+    else:
+        run()
