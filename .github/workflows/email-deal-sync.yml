@@ -9,8 +9,9 @@ env:
 # LIVE since the 2026-07-22 cutover (this monorepo is the production email agent).
 on:
   schedule:
-    - cron: "*/15 16-23 * * 1-5"
-    - cron: "*/15 0-2 * * 1-5"
+    # Demoted 2026-09-09: the doorbell workflow → deal-sync-relay dispatches this
+    # ~1 min after any deal is created or changes stage (verified 96 s end to end).
+    # Hourly is the backstop only; relay_watchdog DMs if it ever catches a deal.
     - cron: "45 * * * *"
   workflow_dispatch:
     inputs:

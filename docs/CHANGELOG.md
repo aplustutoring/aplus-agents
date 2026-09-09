@@ -7,6 +7,63 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 (night) — Doorbell workflow rings deal-sync-relay; relay watchdog
+
+**Roman:** "is that really the best fix with all the tools at our disposal?" → go.
+
+**What:** the relay's HubSpot side is now an agent-managed workflow instead of a
+human-configured private-app webhook. `ops/deal-relay/doorbell/workflow.json`
++ `apply_doorbell.py` (idempotent by name, token never printed) created
+`[Agent] Doorbell - deal created or stage changed -> deal-sync relay`
+(1881460299): enrollment = createdate after 2026-09-09, re-enroll on any
+dealstage change, one WEBHOOK action → the worker. Deterministic, no CARE
+pointer. The private-app Webhooks API is not open to private-app tokens
+(403 "scope not available for public use"), so the workflow is the only path
+the fleet can own end to end; the `automation` scope we already hold covers
+it. deal-sync-relay `WEBHOOK_TOKEN` rotated (old value unknown to the
+session, nothing subscribed to it). Roman ran the apply (the auto-mode
+classifier blocked the session from creating the workflow itself).
+
+**Verified:** test deal created 22:15:00 UTC → worker logged the POST at
+22:15:07 and scheduled the dispatch. **Not yet verified:** the dispatch
+itself — the worker has no `GITHUB_TOKEN` secret (README step 2 was also
+never done), so the alarm throws and retries. Roman sets it:
+`cd ops/deal-relay && npx wrangler secret put GITHUB_TOKEN` (the call-relay
+PAT). Then one more test deal proves the whole path.
+
+**Watchdog:** `email/src/relay_watchdog.py`, run at the top of every deal_sync
+pass: on a `schedule` (cron) run, any new deal older than
+`relay_watchdog.max_lag_minutes` (10) means no event-driven run handled it →
+one DM to the visionary seat naming the deals, once per deal (audit
+`relay-miss:{id}`). Dispatch and local runs never fire it. 4 tests.
+
+**Then the relay itself was stuck.** With `GITHUB_TOKEN` set (Roman, 23:2x UTC)
+a test deal still produced no dispatch. New `/status` endpoint on the worker
+showed why: the Durable Object alarm was pinned at 22:16:07, 85 minutes in
+the past, never firing (its retries had been exhausted while the token was
+missing), and `Dispatcher.fetch` only re-arms when the existing alarm is
+null or LATER than the wanted time, so every new hook since had been
+silently absorbed. Fix deployed (worker.js): a past alarm older than 2 min is
+replaced; `/status` (token-gated) exposes alarm / lastDispatchAt /
+lastDispatchError; alarm logs success and failure so `wrangler tail` shows
+them. **Verified end to end:** test deal 23:42:17 UTC → hook 23:42:19 →
+alarm 23:43:19 → workflow_dispatch 23:43:21 → re-owned Janelle 23:43:47.
+**96 seconds from creation to scheduler.** Test deal deleted.
+
+**Cron demoted** to the hourly backstop (`45 * * * *`), per README "After it's
+verified live"; relay_watchdog DMs if the backstop ever catches a deal.
+
+**Same latent bug in the call relay** (`ops/call_agent/webhook-relay/worker.js`
+is the same Dispatcher): if its GitHub dispatch ever fails through all
+retries, it will wedge the same way. Port the stale-alarm fix there next.
+
+**Files:** `ops/deal-relay/doorbell/{workflow.json,apply_doorbell.py}` (new),
+`ops/deal-relay/README.md`, `email/src/relay_watchdog.py` (new),
+`email/src/deal_sync.py`, `email/config.yaml`,
+`email/tests/test_relay_watchdog.py` (new), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-08 (evening) — Enroller: a failure count is not a record
 
 **Why:** Day one of the teacher outreach enroller. Wave 1 enrolled 50/50, Wave 2

@@ -378,6 +378,17 @@ owner_assign:
     - "3067397"    # In-Person
     - "16858643"   # In-Person - Renewal
 
+# ── Relay watchdog (Roman 2026-09-09: "is that really the best fix?") ──
+# deal created / stage changed → "[Agent] Doorbell" workflow (1881460299,
+# ops/deal-relay/doorbell/) → deal-sync-relay → workflow_dispatch → deal_sync
+# ~1 min later. If a CRON run ever finds a new deal older than max_lag_minutes,
+# no event-driven run handled it → one DM to `notify`, once per deal
+# (audit relay-miss:{id}). The zap died silently for 5 days; this cannot.
+relay_watchdog:
+  enabled: true
+  max_lag_minutes: 10
+  notify: visionary
+
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
 # marked dealtype=existingbusiness (per the deal model: resumed families get a NEW deal,
