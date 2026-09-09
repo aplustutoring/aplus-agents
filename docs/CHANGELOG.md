@@ -109,7 +109,12 @@ SMS-only or have no Slack channel get the ask by text from the SUPPORT line
 HubSpot holds two Christa records, 160787711301 with the phone and
 201052445204 Bretz with the email, left unmerged) the ask for Joseph Elias
 and Alexzander & Andrew Gonzalez; note on the tutor contact. Frederick and
-Angela Salyer still open.
+Angela Salyer: posted 9:25 PM PT in their existing team GROUP DMs
+(C09TVHNMTQT, C0AF2U503AQ; every tutor has one with the whole team, found
+via Slack search `from:<@tutor>` in mpim). Frederick had already agreed on
+Aug 21 to resume Christian Sagua (Tue/Thu after 9), so his post is a
+re-confirm; the real blocker there is the TOR/PO, not the tutor. Angela
+asked for Eli Richardson.
 **Roman's next asks (not built):** (a) new-teacher intake automation =
 ask email → create TOR → link, as done by hand above; (b) tutor ask
 automation: post in the tutor's own channel when one exists, else a group
