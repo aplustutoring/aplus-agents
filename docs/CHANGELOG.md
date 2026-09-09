@@ -7,6 +7,57 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 — New-deal scheduler ownership moves from Zapier into deal_sync
+
+**Roman:** "when danielle creates a free trial lesson from scholarship program
+they dont get assigned to the schedulers, they get assigned to the person
+creating it" → "build and then turn off the zap, right?"
+
+**What was actually broken:** not Danielle, not the scholarship. HubSpot gives
+a hand-created deal to its creator; a Zapier zap (HubSpot app 25200) then
+re-owned it to a scheduler by the family contact's last name (A-L Janelle,
+M-Z Yolanda) 1-2 minutes later. It did that on every Paola/Roman-created
+Free Trial, Gold and In-Person deal from June through 2026-09-04 23:45 UTC,
+then went silent. No alert. Six deals since 9/8 (Danielle's three Elenes
+trials, Paola's Albee Li and Matiukhina x2, Mandy's Howell) sat with their
+creator for 2 min to 17 h until a scheduler noticed and took them by hand.
+Zapier has no zap-listing API, so the cause on their side is unknown.
+
+**Second finding, worse:** on charter PO deals the zap was FIGHTING po_inbox.
+po_inbox sets the owner deliberately (student-last-name split); the zap
+rewrote 55 of the last 100 Charter Trad deals to the other scheduler within
+a minute, and Yolanda/Janelle hand-reverted ~35 of them (Villa, Siddique,
+Miramontes, Munoz, Beck, Smith ...). Two owners of one rule, one of them
+invisible.
+
+**Fix:** `email/src/owner_assign.py`, run from `deal_sync` for every NEW deal
+(the deal-relay webhook lands it ~1 min after creation, same latency as the
+zap). Config `owner_assign:` — pipelines Free Trial, Gold, Gold Renewal,
+In-Person, In-Person Renewal (charter pipelines deliberately excluded:
+po_inbox owns those). Owner = `scheduler_split` by the Family contact's last
+name, deal-name parent as fallback, A-L default + "needs review" note when
+neither exists. Already the right scheduler → `owner_kept`, no write. One
+decision per deal (audit `owner:{id}`); a failed PATCH holds the cursor and
+retries. FORCE_DEAL_ID runs the pass too. 8 new tests, suite 434 green.
+Dry-run against the live Elenes and Matiukhina deals resolved the right
+scheduler from the contact.
+
+**Still human:** Roman turns the zap OFF in Zapier after the first real deal
+round-trips (both write the same value, so overlap is harmless; the reason to
+kill it is the charter fight and the silent-death class). Candidate zap: the
+one with a "New Deal" HubSpot trigger and an "Update Deal → owner" action;
+check its history for why it stopped on 9/4, and whether other zaps on the
+same HubSpot connection died with it.
+
+**Decision to log:** deal ownership is agent-owned (deal_sync); no Zapier or
+workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
+"transactional SMS is agent-owned" precedent.
+
+**Files:** `email/src/owner_assign.py` (new), `email/src/deal_sync.py`,
+`email/config.yaml`, `email/tests/test_owner_assign.py` (new), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
 
 **Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and
