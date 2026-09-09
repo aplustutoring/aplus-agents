@@ -362,6 +362,17 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
         record["action_taken"] = "low_balance_disabled"
         audit.append(record)
         return record
+    # Roman 2026-09-09: "4 hours or less". Teachworks' alert level is set per
+    # package in Teachworks; this is OUR gate, so a package alerting at 6 or
+    # 8 hours never opens a case until the balance actually reaches the line.
+    max_hours = lb.get("max_hours")
+    if max_hours is not None and float(alert.get("hours", 0)) > float(max_hours):
+        record["action_taken"] = "low_balance_above_threshold"
+        record["max_hours"] = float(max_hours)
+        audit.append(record)
+        print(f"  ⏭ low balance alert for {alert['student']} at {_fmt_hours(alert['hours'], alert['unit'])} "
+              f"is above the {max_hours}-hour line; no case")
+        return record
 
     # Teachworks re-fires on every balance change: the open case gets a note,
     # never a second text (Paola's 2026-01-29 report: one family texted 3x).

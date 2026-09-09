@@ -184,6 +184,10 @@ low_balance:
   # send into the ticket note, DMs the seat, and touches no family or teacher.
   # Flip in a PR once Roman approves the copy below.
   armed: false
+  # A case opens only at this many unused hours or fewer (Roman 2026-09-09:
+  # "4 hours or less"). Teachworks' own alert level is per package; alerts
+  # that fire above this line are audited and skipped.
+  max_hours: 4
   owner: charter_sales
   notify: [charter_sales]
   escalate_to: visionary

@@ -244,6 +244,18 @@ def test_missing_family_and_deal_are_flagged_not_fatal(monkeypatch):
     assert "🚩" in h.dms[0][1]
 
 
+def test_four_hours_or_less_is_the_line(monkeypatch):
+    # Roman 2026-09-09: "4 hours or less". 4.0 opens a case; 4.5 and 6 do not.
+    h = Harness(monkeypatch, _cfg(armed=True, max_hours=4), deals=[DEAL])
+    for hours in ("6.0", "4.5"):
+        body = ALERT.replace("4.0 unused hours", f"{hours} unused hours")
+        rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
+        assert rec["action_taken"] == "low_balance_above_threshold"
+    assert not h.tickets and not h.sms and not h.dms
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_opened" and h.tickets
+
+
 def test_disabled_agent_only_audits(monkeypatch):
     h = Harness(monkeypatch, _cfg(armed=True, enabled=False), deals=[DEAL])
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
