@@ -45,7 +45,7 @@ whose PO arrived, and escalate the ones that stalled.
 from __future__ import annotations
 
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client
 from .business_hours import add_business_hours, now_la
@@ -225,6 +225,144 @@ def _school_short(dealname: str, school: str) -> str:
     return (school or "").strip()
 
 
+# ── Teachworks: who they work with, how it is going ─────────────────────────
+
+_NOTE_FIELDS = ("notes", "lesson_notes", "shared_notes", "public_notes", "note", "description")
+_ATTENDED = ("attend", "complete")
+
+
+def _tw_recent(alert: dict, deal: dict | None) -> dict:
+    """The student's recent attended lessons, both Teachworks accounts:
+    {tutor_first, sessions, since, subjects, notes, notes_fields_seen}.
+    Window = since the current PO deal was created (else lookback_days).
+    Tutor = the most recent attended lesson's tutor, FIRST name only
+    (customer-facing rule, Roman 2026-08-14). Lesson notes are read
+    liberally from whatever field Teachworks exposes (unverified as of
+    2026-09-09; `notes_fields_seen` in the audit record tells us which, if
+    any, came through on the first live alert). Never raises."""
+    from . import teachworks_client as tw
+    lb = cfg().get("low_balance", {}) or {}
+    out = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
+           "notes_fields_seen": []}
+    email = (alert.get("parent_email") or "").strip().lower()
+    sf = (alert.get("student_first") or "").strip().lower()
+    if not email or not sf:
+        return out
+    dp = (deal or {}).get("properties") or {}
+    since = (dp.get("createdate") or "")[:10]
+    if not since:
+        since = (date.today() - timedelta(days=int(lb.get("lookback_days", 60)))).isoformat()
+    out["since"] = since
+    today = date.today().isoformat()
+    lessons: list[dict] = []
+    try:
+        for _acct, token in tw.accounts().items():
+            for cust in tw.customers_for_family(email, alert.get("parent_last", ""),
+                                                alert.get("parent_first", ""), token=token):
+                for s in tw.tw_get("students", {"customer_id": cust.get("id")}, token=token):
+                    if (s.get("first_name") or "").strip().lower() != sf:
+                        continue
+                    for l in tw.tw_get("lessons", {"student_id": s["id"], "from_date[gte]": since},
+                                       token=token):
+                        d = str(l.get("from_date") or "")[:10]
+                        if not d or d > today:
+                            continue
+                        st = str(l.get("status") or "").lower()
+                        parts = l.get("participants") or []
+                        pst = [str(p.get("status") or "").lower() for p in parts
+                               if sf in str(p.get("student_name") or "").lower()] or [st]
+                        if not any(any(a in x for a in _ATTENDED) for x in pst + [st]):
+                            continue
+                        lessons.append(l)
+    except Exception as e:  # noqa: BLE001 — enrichment must never block the case
+        print(f"  ⚠️  low-balance Teachworks lookup failed (non-fatal): {e}")
+        return out
+    lessons.sort(key=lambda l: str(l.get("from_date") or ""), reverse=True)
+    out["sessions"] = len(lessons)
+    if lessons:
+        tutor = (lessons[0].get("employee_name") or "").strip()
+        out["tutor_first"] = tutor.split()[0] if tutor else ""
+    seen: set = set()
+    for l in lessons[:4]:
+        nm = (l.get("name") or l.get("service_name") or "").strip()
+        if nm and nm.lower() not in seen and sf not in nm.lower():
+            seen.add(nm.lower())
+            out["subjects"].append(nm)
+        sources = [l] + [p for p in (l.get("participants") or [])
+                         if sf in str(p.get("student_name") or "").lower()]
+        for src in sources:
+            for f in _NOTE_FIELDS:
+                v = src.get(f)
+                if isinstance(v, str) and len(v.strip()) > 15:
+                    out["notes"].append(re.sub(r"<[^>]+>", " ", v).strip()[:800])
+                    if f not in out["notes_fields_seen"]:
+                        out["notes_fields_seen"].append(f)
+    return out
+
+
+_POSITIVITY_SYSTEM = (
+    "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
+    "You write ONE warm, specific sentence for a parent about what their child has been "
+    "working on in recent tutoring sessions, from the tutor's lesson notes. Rules: at most "
+    "25 words; name the subject or skill, not scores or grades; no problems, struggles, "
+    "behaviour, or absences; no exclamation marks; no em dashes; plain, human, true to the "
+    "notes. If the notes hold nothing positive and concrete, output exactly: NONE."
+)
+
+
+def _positivity(student_first: str, tutor_first: str, notes: list[str], client=None) -> str:
+    """One sentence of genuine progress from the last few lesson notes, or ''.
+    Behind low_balance.positivity.enabled; the output is validated (length,
+    no digits, no em dash) so a bad generation is dropped, never sent."""
+    lb = cfg().get("low_balance", {}) or {}
+    pc = lb.get("positivity") or {}
+    if not pc.get("enabled") or not notes:
+        return ""
+    try:
+        if client is None:
+            from anthropic import Anthropic  # lazy: tests need no SDK
+            from .config import ANTHROPIC_API_KEY
+            client = Anthropic(api_key=ANTHROPIC_API_KEY)
+        user = (f"Student first name: {student_first}\nTutor first name: {tutor_first or 'the tutor'}\n"
+                f"Lesson notes, newest first:\n" + "\n---\n".join(notes[:4]))
+        msg = client.messages.create(model=pc.get("model", "claude-sonnet-4-6"),
+                                     max_tokens=int(pc.get("max_tokens", 120)),
+                                     system=_POSITIVITY_SYSTEM,
+                                     messages=[{"role": "user", "content": user}])
+        text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text").strip()
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  positivity generation failed (non-fatal): {e}")
+        return ""
+    text = text.strip().strip('"')
+    if (not text or text.upper().startswith("NONE") or len(text.split()) > 30
+            or re.search(r"\d", text) or "—" in text or "!" in text or "\n" in text):
+        return ""
+    return _scrub_outbound(text if text.endswith(".") else text + ".")
+
+
+def _personal(alert: dict, recent: dict, positivity: str) -> tuple[str, str]:
+    """(personal_sms, personal_line): the sentence that makes the note ours.
+    Each starts with a space so an empty value leaves the template clean."""
+    student = alert.get("student_first") or "your student"
+    tutor, n, since = recent.get("tutor_first"), int(recent.get("sessions") or 0), recent.get("since")
+    when = ""
+    if since:
+        try:
+            when = datetime.fromisoformat(since).strftime("%B %-d")
+        except ValueError:
+            when = ""
+    sms = line = ""
+    if tutor and n:
+        sms = f" {student} has had {n} session{'s' if n != 1 else ''} with {tutor} on this PO."
+        line = (f" {student} has had {n} session{'s' if n != 1 else ''} with {tutor}"
+                + (f" since this PO started on {when}." if when else " on this PO."))
+    elif tutor:
+        sms = line = f" {student} has been working with {tutor}."
+    if positivity:
+        line += " " + positivity
+    return sms, line
+
+
 # ── copy ────────────────────────────────────────────────────────────────────
 
 def _fmt_hours(h: float, unit: str = "hours") -> str:
@@ -241,9 +379,12 @@ def _render(template: str, ctx: dict) -> str:
     return _scrub_outbound(out)
 
 
-def _context(alert: dict, deal: dict | None, contact: dict | None, sender: dict) -> dict:
+def _context(alert: dict, deal: dict | None, contact: dict | None, sender: dict,
+             recent: dict | None = None, positivity: str = "") -> dict:
     p = (deal or {}).get("properties") or {}
     cp = (contact or {}).get("properties") or {}
+    recent = recent or {}
+    personal_sms, personal_line = _personal(alert, recent, positivity)
     tor_name = (p.get("teacher_of_record_name") or "").strip()
     tor_first = tor_name.split()[0] if tor_name else ""
     first = (cp.get("firstname") or alert.get("parent_first") or "there").strip()
@@ -270,6 +411,12 @@ def _context(alert: dict, deal: dict | None, contact: dict | None, sender: dict)
         "sender_name": sender.get("name", "A+ Tutoring"),
         "sender_email": sender.get("email", "admin@wetutorathome.com"),
         "phone_line": cfg().get("sms", {}).get("justcall_number", ""),
+        "tutor_first": recent.get("tutor_first") or "",
+        "sessions_on_po": str(recent.get("sessions") or 0),
+        "po_since": recent.get("since") or "",
+        "personal_sms": personal_sms,
+        "personal_line": personal_line,
+        "positivity": positivity,
     }
 
 
@@ -416,8 +563,16 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     no_tor = [str(x) for x in lb.get("no_teacher_email_pipelines", [])]
     tor_blocked = pipeline in no_tor
     armed = bool(lb.get("armed")) and charter
-    ctx = _context(alert, deal, contact, seat)
+    # what makes the note ours: the tutor, the sessions on this PO, and (when
+    # enabled) one true sentence from the last few lesson notes
+    recent = _tw_recent(alert, deal) if charter else {}
+    positivity = _positivity(alert.get("student_first", ""), recent.get("tutor_first", ""),
+                             recent.get("notes") or []) if charter else ""
+    ctx = _context(alert, deal, contact, seat, recent, positivity)
     hrs = ctx["hours_exact"]               # staff-facing: ticket, task, DM
+    record.update(tutor_first=recent.get("tutor_first") or "", sessions_on_po=recent.get("sessions") or 0,
+                  notes_fields_seen=recent.get("notes_fields_seen") or [],
+                  positivity=positivity)
 
     # ── ticket first (everything else hangs off it) ──
     hs_cfg = cfg()["hubspot"]

@@ -62,6 +62,21 @@ deal-sync cycle.
   honoured; no copy to sales). Non-charter packages (Gold / private pay,
   the second Monday board) get a ticket only, flagged "phase 2".
 
+**Copy rulings, 2026-09-09 (Roman, reviewing the drafts):** a case opens only
+at **4 unused hours or fewer** (`max_hours`, matches Teachworks' own alert
+level); customer copy says **"4 hours or less"**, never the exact balance
+(staff notes keep the number); **parents submit the PO themselves** and we
+prefer that, the teacher of record is the unnamed backup; **no school name
+and no teacher name** anywhere in family text or email ("does not build
+credibility, we know this"). Personalisation from Teachworks: the family
+text and email carry the **tutor's first name and the number of sessions on
+this PO** (attended lessons since the PO deal was created; nothing found →
+the sentence disappears), and an optional **one-sentence positivity from
+the last four lesson notes** written by Claude and validated (no numbers,
+no exclamation, no em dash, 30 words max, else dropped). Positivity is OFF:
+which Teachworks note field comes through the API is unverified, and the
+first live alert reports it (`notes_fields_seen` on the audit record).
+
 **Still human (until armed):** everything the ticket note says the agent
 would have sent. **After arming:** sending the teacher draft from Gmail
 Drafts; anything the 🚩 flags name (family not found, no deal, no TOR email).

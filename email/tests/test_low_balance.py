@@ -41,7 +41,8 @@ def _cfg(armed=False, **over):
             "escalate_to": "visionary", "escalate_days": 10, "follow_up_business_days": 3,
             "draft_unsent_nag_hours": 24, "sla_hours": 8, "priority": "normal",
             "no_teacher_email_pipelines": ["72281989"],
-            "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
+            "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring.{personal_sms} {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
+            "positivity": {"enabled": False, "model": "m", "max_tokens": 120},
             "family_email": {"mode": "send", "template": "templates/low_balance_charter.html",
                              "from": "{sender_name}, A+ Tutoring <admin@wetutorathome.com>",
                              "reply_to": "{sender_email}",
@@ -113,13 +114,21 @@ def test_charter_detection(monkeypatch):
 
 # ── the case ─────────────────────────────────────────────────────────────
 
+RECENT = {"tutor_first": "Sarah", "sessions": 6, "since": "2026-08-22", "subjects": ["Math"],
+          "notes": [], "notes_fields_seen": []}
+NO_RECENT = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
+             "notes_fields_seen": []}
+
+
 class Harness:
     def __init__(self, monkeypatch, cfgv, deals=None, contact=CONTACT, open_cases=None,
-                 in_window=True):
+                 in_window=True, recent=None, positivity=""):
         self.tickets, self.notes, self.tasks, self.dms = [], [], [], []
         self.sms, self.emails, self.drafts, self.recs = [], [], [], []
         self.stage_updates = []
         monkeypatch.setattr(lb, "cfg", lambda: cfgv)
+        monkeypatch.setattr(lb, "_tw_recent", lambda a, d: dict(recent if recent is not None else NO_RECENT))
+        monkeypatch.setattr(lb, "_positivity", lambda s, t, n, client=None: positivity)
         monkeypatch.setattr(lb, "staff", lambda k: cfgv["staff"].get(cfgv["roles"].get(k, k), {}))
         monkeypatch.setattr(lb, "_student_deals", lambda f, l, after=None: list(deals or []))
         monkeypatch.setattr(lb, "_family_contact", lambda a: contact)
@@ -339,8 +348,88 @@ def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     from pathlib import Path
     tpl = Path(__file__).resolve().parents[1] / "templates" / "low_balance_charter.html"
     monkeypatch.setattr(lb, "cfg", lambda: _cfg())
-    ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)
+    ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)     # no Teachworks data
     out = lb._render(tpl.read_text(), ctx)
     assert "{" not in out.replace("{{", "") and "—" not in out
-    assert "Taylor has <strong>4 hours or less</strong>" in out and "Paola" in out
+    assert "It's Paola with A+ Tutoring. A quick heads up: Taylor has <strong>4 hours or less</strong>" in out
     assert "iLead" not in out and "iLEAD" not in out and "Kylee" not in out   # no school, no teacher
+    ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT, RECENT,
+                      "Lately Taylor has been building confidence with fractions.")
+    out = lb._render(tpl.read_text(), ctx)
+    assert ("It's Paola with A+ Tutoring. Taylor has had 6 sessions with Sarah since this PO "
+            "started on August 22. Lately Taylor has been building confidence with fractions. "
+            "A quick heads up:") in out
+
+
+# ── personalisation ──────────────────────────────────────────────────────
+
+def test_text_carries_tutor_and_sessions_when_teachworks_has_them(monkeypatch):
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=RECENT)
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert h.sms[0][1].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has had 6 sessions "
+                                  "with Sarah on this PO. Taylor has 4 hours or less left")
+    assert rec["tutor_first"] == "Sarah" and rec["sessions_on_po"] == 6
+
+
+def test_personal_line_variants():
+    a = lb.parse_alert(ALERT)
+    assert lb._personal(a, NO_RECENT, "") == ("", "")
+    sms, line = lb._personal(a, {**RECENT, "sessions": 1}, "")
+    assert sms == " Taylor has had 1 session with Sarah on this PO."
+    assert line == " Taylor has had 1 session with Sarah since this PO started on August 22."
+    sms, line = lb._personal(a, {**RECENT, "sessions": 0}, "")
+    assert sms == line == " Taylor has been working with Sarah."
+    _sms, line = lb._personal(a, RECENT, "Lately Taylor loves fractions.")
+    assert line.endswith("August 22. Lately Taylor loves fractions.")
+
+
+class _FakeClaude:
+    def __init__(self, text):
+        self.text = text
+        self.messages = self
+    def create(self, **kw):
+        import types
+        return types.SimpleNamespace(content=[types.SimpleNamespace(type="text", text=self.text)])
+
+
+def test_positivity_is_off_by_default_and_validated(monkeypatch):
+    notes = ["Worked on fractions and word problems, Taylor is getting faster and more confident."]
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())                    # enabled: False
+    assert lb._positivity("Taylor", "Sarah", notes, client=_FakeClaude("Lately Taylor has been mastering fractions.")) == ""
+    on = _cfg(positivity={"enabled": True, "model": "m", "max_tokens": 120})
+    monkeypatch.setattr(lb, "cfg", lambda: on)
+    assert lb._positivity("Taylor", "Sarah", [], client=_FakeClaude("x")) == ""          # no notes, no call
+    assert lb._positivity("Taylor", "Sarah", notes, client=_FakeClaude(
+        "Lately Taylor has been mastering fractions with Sarah")) == "Lately Taylor has been mastering fractions with Sarah."
+    for bad in ("NONE", "Taylor scored 92 on the quiz.", "Great job Taylor!",
+                "Taylor — a star.", " ".join(["word"] * 31)):
+        assert lb._positivity("Taylor", "Sarah", notes, client=_FakeClaude(bad)) == ""
+
+
+def test_tw_recent_reads_tutor_sessions_and_note_fields(monkeypatch):
+    from src import teachworks_client as tw
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())
+    monkeypatch.setattr(tw, "accounts", lambda: {"online": "tok"})
+    monkeypatch.setattr(tw, "customers_for_family", lambda e, l, f, token=None: [{"id": 7}])
+    def fake_get(endpoint, params=None, token=None):
+        if endpoint == "students":
+            return [{"id": 1, "first_name": "Taylor"}, {"id": 2, "first_name": "Sibling"}]
+        assert params["student_id"] == 1 and params["from_date[gte]"] == "2026-08-22"
+        return [
+            {"from_date": "2026-09-01", "status": "Attended", "employee_name": "Sarah Lee",
+             "name": "Math Tutoring", "participants": [
+                 {"student_name": "Taylor Rodriguez", "status": "Attended",
+                  "notes": "Worked on fractions and word problems; Taylor is getting more confident."}]},
+            {"from_date": "2026-08-25", "status": "Attended", "employee_name": "Sarah Lee",
+             "name": "Math Tutoring", "participants": [{"student_name": "Taylor Rodriguez", "status": "Attended"}]},
+            {"from_date": "2026-08-28", "status": "Cancelled", "employee_name": "Sarah Lee"},
+            {"from_date": "2099-01-01", "status": "Scheduled", "employee_name": "Sarah Lee"},
+        ]
+    monkeypatch.setattr(tw, "tw_get", fake_get)
+    r = lb._tw_recent(lb.parse_alert(ALERT), DEAL)
+    assert r["tutor_first"] == "Sarah" and r["sessions"] == 2 and r["since"] == "2026-08-22"
+    assert r["subjects"] == ["Math Tutoring"] and r["notes_fields_seen"] == ["notes"]
+    assert r["notes"][0].startswith("Worked on fractions")
+    # a Teachworks hiccup never blocks the case
+    monkeypatch.setattr(tw, "tw_get", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("503")))
+    assert lb._tw_recent(lb.parse_alert(ALERT), DEAL)["sessions"] == 0

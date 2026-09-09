@@ -7,11 +7,13 @@
      sender identity is the charter_sales seat; NO EM DASHES; no school name
      and no teacher name anywhere in family copy (Roman 2026-09-09: it does
      not build credibility). Tokens replaced at send time: {first_name}
-     {student} {hours} {sender_first} {sender_name}.
+     {student} {hours} {personal_line} {sender_first} {sender_name}.
+     {personal_line} = tutor first name + sessions on this PO (+ one
+     positivity sentence from lesson notes when enabled), or nothing.
      Copy changes = edit this file in a PR. -->
 <p style="text-align: left;">Hi {first_name},</p>
 <p>&nbsp;</p>
-<p>It's {sender_first} with A+ Tutoring. A quick heads up: {student} has <strong>{hours}</strong> left on the current purchase order.</p>
+<p>It's {sender_first} with A+ Tutoring.{personal_line} A quick heads up: {student} has <strong>{hours}</strong> left on the current purchase order.</p>
 <p>&nbsp;</p>
 <p>The next step is a new purchase order for A+ Tutoring hours. The quickest way is to submit it yourself. Your teacher of record can also submit it for you. If it helps, we are happy to send the vendor details and the hour count. Just reply to this email and tell us who to send it to.</p>
 <p>&nbsp;</p>
