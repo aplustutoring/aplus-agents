@@ -7,6 +7,68 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 — Customer journey communication playbook + pre-send checklist (Roman: "we have to learn more and ask questions")
+
+**Why:** on 2026-09-09, during the charter SMS win-back round (PR #195), an
+agent told to "watch for responses" relayed tutor availability to families and
+posted tutor asks on its own. The Gonzalez family was texted three times from
+Paola's lead line while scheduling had already booked them on the support
+line. Mom: "I don't know how many people I'm talking to at A+." Roman: "I love
+the initiative, this is the future, but we have to learn more and ask
+questions... what questions to ask, and tie everything together." Three
+repo explorations then showed the journey was encoded in a dozen places with
+no single map: the back half of the lead funnel is stamped by nobody, four
+post-yes steps (teacher hours request, tutor pick, lesson booking, payment)
+have no code and no documented owner, eight live templates still said "we
+handle the PO" against the 2026-09-02 rule, and small (<25) sends have no
+rail.
+
+**What:** `knowledge/journey/`, one file per stage from first touch to
+renewal for charter and private pay, plus two parallel tracks (teacher of
+record, tutor) and a six-item pre-send checklist
+(`00-pre-send-checklist.md`) that every agent and human passes before any
+outbound to a family, teacher, or tutor. Every stage has the same headings
+(entry and exit marker, owner seat, channel and identity, may do alone /
+must draft / must ask, questions we ask them, questions the agent asks
+itself, charter vs private pay, handoff out, known gaps) and frontmatter
+(`status`, `owner_seat`, `reviewers`, `agent_readable`). All stages are
+DRAFT. Rule: an agent reads a stage only when Roman has flipped it to
+REVIEWED and agent_readable after collecting the seat's sign-off; an
+unreviewed stage means "ask the owner seat"; "watch" means read and report.
+Pointer line added under the CARE line in `CLAUDE.md`, `email/src/classifier.py`,
+`email/src/po_inbox.py`, `ops/call_agent/call_agent.py` (both prompts),
+`ops/feedback-agent/feedback_agent.py`, and the messenger README guardrails.
+Cross-links in `email/TEAM_PLAYBOOK.md` (stage 07), `docs/PO-PROCESS.md`
+Stage 3 (the line hand-over point), `ops/call_agent/rubric.md` S1 (stage 03).
+`knowledge/README.md` now indexes credentials, eos, and journey instead of
+saying "empty".
+**Same-PR copy fixes:** the eight `campaign-2026-08-17` templates and
+`charter_win_back.txt` rewritten to "we send your teacher the hours for the
+purchase order, and once the school issues it we take everything from
+there"; every em dash removed; the TOR outreach template's "grab 10 minutes"
+call offer removed (teachers are email only). Sent copies in HubSpot are
+untouched; these are the source drafts for future rounds.
+**Not done (plan approved 2026-09-09, next PRs):** PR B, the code guards:
+`email/src/presend.py` (opt-out, quiet hours, stage-to-line block, cross-line
+active-thread hold naming the owner, frequency cap, standing-go check, STOP
+rule), `ops/messenger/one_to_few.py` (the small-send rail, dry-run default),
+the `sms.py` shadow hook, three `[Agent]` properties, tests. PR C, the
+approval doorbell (`#agent-sends`, reply `go <id>`). Open items are listed in
+`knowledge/journey/README.md` (the `operations` role collision, SLA
+disagreement, private-pay markers, renewal-ask identity, and more).
+**Decision log for Roman:** "watch = read and report; relaying, posting,
+texting each need a go"; "one pre-send checklist for every outbound";
+"stages readable by agents only when REVIEWED"; standing go after review for
+the TOR confirmation text, the new-teacher email ask + create + link, and the
+tutor ask in the tutor's own channel.
+**Files:** knowledge/journey/ (13 files), knowledge/README.md, CLAUDE.md,
+email/src/classifier.py, email/src/po_inbox.py, ops/call_agent/call_agent.py,
+ops/feedback-agent/feedback_agent.py, ops/messenger/README.md,
+ops/messenger/templates/charter_win_back.txt,
+ops/messenger/templates/campaign-2026-08-17/*.md, email/TEAM_PLAYBOOK.md,
+docs/PO-PROCESS.md, ops/call_agent/rubric.md.
+
+---
 ## 2026-09-09 — New-deal scheduler ownership moves from Zapier into deal_sync
 
 **Roman:** "when danielle creates a free trial lesson from scholarship program

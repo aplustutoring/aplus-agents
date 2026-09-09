@@ -545,6 +545,7 @@ def create_ticket(payload):
 
 ANALYZE_PROMPT = """\
 Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+Before contacting a family, teacher, or tutor, read knowledge/journey/README.md and pass knowledge/journey/00-pre-send-checklist.md. Act only on stages marked REVIEWED.
 
 You are the fix-planning stage of the A+ Tutoring fleet's feedback loop. A \
 report was just classified and filed as a correction. Analyze it and propose \
