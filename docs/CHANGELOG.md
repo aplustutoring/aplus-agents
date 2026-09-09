@@ -77,6 +77,25 @@ typeId 15, legacy field fallback; all 9 had one): "is {student}'s teacher of
 record or facilitator still {TOR}, same as last year? Reply YES if so, or
 reply with the new name if it changed." 9/9 accepted; notes on contacts;
 log in scratchpad. Elias's "Mrs. Hernandez" matched Ruth Hernandez on file.
+**BY 6:25 PM PT:** 52 replies from 107. TOR confirmed by text: Elias (Ruth
+Hernandez), Phillips (Kristi Williamson), Simmons (Whitney VonMoos), Crane
+(Dana Eiremo), Sagua (Karla Diaz Salazar). TOR CHANGED: Salcedo → "Sean
+Alves"; Molina (Selene) → "Amy Aceto". Roman's rule, applied live: ask the
+family for the new teacher's email, then create the teacher the way
+po_inbox does. Salcedo replied salves@viedu.org → contact 247274215530
+created (persona TOR, lead status TOR, owner sales seat/Danielle,
+school_canonical "Visions In Education" from the viedu.org alias), family
+linked typeId 15 ADD-only, notes both sides. Molina asked for Aceto's email
+(pending). New yes: Barron (Ellie, Stephanie) → TOR check sent naming
+Toolie Younger. 5th STOP (Patterson) stamped. Faulk and Barber are being
+worked by Paola directly on the line (Faulk sending criteria to paola@;
+Barber asked cost + discount for 4 kids, needs the "school pays" answer).
+**Roman's next asks (not built, Slack scope needed):** (a) new-teacher
+intake automation = ask email → create TOR → link, as done by hand above;
+(b) per-tutor group DM (tutor + Paola/Yolanda/Janelle) asking "can you take
+{student}?" — tutors ARE Slack users (all 9 named today resolved), no
+per-tutor channels exist, but the aplus bot lacks `mpim:write`/`mpim:read`
+so it cannot open group DMs until Roman adds the scopes and reinstalls.
 **Not done / needs Roman:**
 STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
 JustCall's native STOP handling until then.
