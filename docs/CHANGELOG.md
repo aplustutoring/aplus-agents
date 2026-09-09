@@ -7,6 +7,33 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 — Program model + rate card written down; teacher hours-request drafts (dry run)
+
+**Why:** Roman asked for one reasoned email per confirmed family to their
+teacher of record, with the schedule, our pricing, and the recommended
+cadence (three 45-minute sessions a week). The recommendation and the rate
+card existed nowhere in the repo, so a draft had nothing to cite. Declared
+once, read everywhere, same doctrine as `knowledge/credentials.yml`.
+
+**What:** `knowledge/program-model.md` (the cadence, what it rests on, how to
+offer it beside what the family asked for, common cadences priced, the rule
+that keeps the NSSA Badge out of any results claim) and
+`knowledge/rate-card.yml` (charter online $75/hour and $60 per 45-minute
+session from `email/config.yaml service_offerings`; in-person and private-pay
+rates null with TODOs; Lake View $80 marked observed, not confirmed;
+recommended cadence math). `knowledge/README.md` indexes both; journey stages
+04 and 08 now point at them instead of listing the gap. Ten teacher
+hours-request drafts for the families whose teacher of record is confirmed
+were written as a review document for Roman and Paola (session scratchpad,
+not committed: family PII). Not sent; no Gmail draft exists; Paola sends by
+hand after review.
+**Not done:** in-person and private-pay rates (Roman), a vendor-details
+artifact, a teacher-email template in the email engine.
+**Files:** knowledge/program-model.md (new), knowledge/rate-card.yml (new),
+knowledge/README.md, knowledge/journey/04-qualified-to-deal.md,
+knowledge/journey/08-renewal.md.
+
+---
 ## 2026-09-09 — Pre-send gate + one_to_few rail (the code behind the journey checklist)
 
 **Why:** 2026-09-09, an agent told to "watch for responses" texted the

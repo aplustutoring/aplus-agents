@@ -1,0 +1,44 @@
+# knowledge/rate-card.yml — what A+ charges, declared once, read everywhere.
+#
+# WHY: on 2026-09-09 the rate existed only in email/config.yaml (as the PO
+# agent's hours-from-amount math) and in people's heads; a teacher email that
+# quotes a price had nothing to cite. Same doctrine as credentials.yml:
+# agents READ this file, never inline a number of their own. A null means
+# "not confirmed"; the seat quotes by hand and no agent copy carries a number.
+#
+# Sources are named per line. Roman is the rate authority.
+
+as_of: "2026-09-09"
+rate_authority: visionary        # roles-not-names; see email/config.yaml roles:
+
+charter:
+  online:
+    per_hour: 75                 # email/config.yaml po_inbox.service_offerings (Roman 2026-08-26);
+                                 # matches 190+ POs created since 2026-08-01
+    per_45_min_session: 60       # same source, "the push"
+    session_hours: 0.75
+  in_person:
+    per_hour: null               # TODO(visionary): not in the repo; schedulers send a rates PDF by hand
+  school_exceptions:
+    # observed on 26/27 POs, NOT confirmed by Roman; do not quote until confirmed
+    "Lake View Charter School": { per_hour: 80, status: observed, source: "PO deals 2026-08-21/27" }
+
+private_pay:
+  gold_online:
+    per_hour: null               # TODO(visionary): package pricing lives with the seats
+    packages: []                 # e.g. {sessions: 12, amount: 550} once confirmed
+  in_person:
+    per_hour: null
+  free_trial:
+    first_session: 0             # email/templates/welcome_trial.html: card on file to confirm
+
+recommended_cadence:             # knowledge/program-model.md
+  sessions_per_week: 3
+  minutes_per_session: 45
+  hours_per_po_month: 9
+  charter_online_monthly: 675    # 9 x 75
+
+usage_rules:
+  - "Quote the per-hour rate for charter; never a monthly figure without the hours behind it."
+  - "A null rate is never guessed; say the seat will send the rate sheet."
+  - "Never imply the NSSA Badge sets or endorses a price."

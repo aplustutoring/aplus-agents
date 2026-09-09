@@ -65,9 +65,9 @@ cannot issue additional POs.
   take it to the teacher themselves (Gonzalez did); that is a yes.
 - Private pay: package size for the next block, and whether the schedule
   changes.
-- Recommended cadence (Roman, 2026-09-09, not yet written anywhere in the
-  repo): three sessions a week, 45 minutes each, offered alongside whatever
-  the family chose, never instead of it.
+- Recommended cadence, `knowledge/program-model.md`: three sessions a week,
+  45 minutes each, offered alongside whatever the family chose, never instead
+  of it.
 
 ## Questions we ask the teacher here
 
@@ -112,7 +112,6 @@ explicitly phase two, handled by hand, no owner named.
 - Charter renewal is not a live scorecard measurable; the gap script is a
   manual one-shot with the season hardcoded.
 - The renewal-ask identity is undecided.
-- The high-dosage recommendation is not in the repo.
 
 ## Related
 

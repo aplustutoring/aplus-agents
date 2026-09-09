@@ -113,10 +113,11 @@ verified in the repo (open item).
   teacher. The teacher outreach sequence promises it
   (`ops/messenger/templates/teacher-outreach-2026-09/seq1_worked_with_us.md`),
   and Danielle writes it by hand.
-- No vendor-details artifact (rates, hours, how to issue the PO) in the repo.
-- The high-dosage recommendation (Roman: three sessions a week, 45 minutes) is
-  not written anywhere in the repo.
-- Private-pay pricing lives only with the seats.
+- No vendor-details artifact (how to issue the PO, vendor number) in the
+  repo. Rates are now in `knowledge/rate-card.yml` and the recommended cadence
+  in `knowledge/program-model.md` (2026-09-09).
+- Private-pay pricing is still null in the rate card; the seat quotes by
+  hand.
 - Portal approval of a pending PO can take 14 or more days; the PO agent nags
   after `pending_portal_approval_days`.
 
