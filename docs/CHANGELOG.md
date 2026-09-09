@@ -80,6 +80,22 @@ other survivor of that webhook pair; deal_sync's TW upsert already covers it.
 21:55 and 09-09 17:55; the relay may not be receiving every deal.creation.
 The cron backstop caught them. Worth a look before the cron is demoted.
 
+**Danielle's live test (same evening):** deal 64877481221 "Narayana Gramegna -
+Keyana" (Free Trial, created 20:58 UTC) sat with Danielle 17 min; a manual
+deal_sync dispatch re-owned it to Janelle at 21:16 (`[contact:Gramegna]`). The
+17 minutes are the relay, not the pass: `wrangler tail` on deal-sync-relay
+showed ZERO requests in the 75 s after a test deal was created (twice), and
+no email-deal-sync dispatch has ever come from the relay's PAT (every
+github-actions[bot] dispatch is paired to the second with a call-agent
+dispatch, i.e. some other trigger; the rest are manual). The worker itself
+answers (403 on /call-completed without token). So HubSpot is not sending
+deal.creation to it: README step 4 (private app → Webhooks → target URL
+`https://deal-sync-relay.nameless-mountain-bafa.workers.dev/call-completed?token=<WEBHOOK_TOKEN>&delay=1`,
+subscriptions deal.creation + deal.propertyChange:dealstage) was never done.
+Until it is, new deals wait for the cron (throttled to ~hourly by GitHub
+today). Human step, Roman: the token is a wrangler secret only he holds.
+Three throwaway test deals created and deleted during this check.
+
 **Decision to log:** deal ownership is agent-owned (deal_sync); no Zapier or
 workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
 "transactional SMS is agent-owned" precedent.
