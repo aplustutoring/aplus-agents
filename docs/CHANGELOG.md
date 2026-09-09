@@ -236,6 +236,128 @@ workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
 
 ---
 
+---
+## 2026-09-08 — Charter SMS round 2: opened-but-silent families (Roman: "try the Charter SMS first")
+
+**What:** First live use of the bulk messenger's SMS rail. Audience = charter
+gap families (list 3104) with NO 26/27 charter deal who OPENED a win-back email
+(per-recipient HubSpot email events, bot opens excluded) and never replied:
+117 → static list 3237 "Charter 26/27 SMS Round 2 - Opened, no reply (Sep
+2026)". Buckets of the 402 unconverted: opened-silent 117, delivered-never-
+opened 198, never-sent 57, unsubscribed 12, replied 16, bounced 2 (audience
+CSV in the session scratchpad; the never-sent 57 and never-opened 198 are the
+next rounds, not this one). Engine changes: (1) `MERGE_PROPS` now carries
+`student_names` + `student_count`; (2) new `--sms-template-multi` (workflow
+input `sms_template_multi`) renders multi-student families from a second
+template, since the single-student tutor token undersold 81/389 families in
+August; (3) from-number routing LOCKED by Roman the same afternoon: "scheduling
+stays with scheduling, those that are not deals yet are leads... they need
+to go from Paola's number" → new role key `charter_sales` = 818-573-6644
+(Paola's line, verified from JustCall outbound history) for every family
+with no deal yet, and `support` = 818-869-1627 reserved for scheduling texts
+to families that already have a PO/deal. Both batches (the 95 win-back texts
+and the follow-up push to yes-repliers without a PO) go from charter_sales. Templates:
+`templates/charter_r2_opened_single.txt` (tutor + student named) and
+`templates/charter_r2_opened_multi.txt` ({{student_names}} + "their tutors"),
+signed Paola (charter_sales seat = families), no em dashes, PO language per
+the 2026-09-02 rule (school issues the PO; we send the teacher the hours),
+STOP line, 2 GSM segments. Dry run (read-only replica of the engine's skip
+logic): 108 sendable (84 single, 24 multi), 9 skipped for missing tutor/student
+stamps, 0 opted out, 0 bad phones.
+**Found on the way:** inbox replies do NOT stamp `hs_email_last_reply_date`
+(Sporykhin replied 8/31 via the inbox, property still empty), so any "replied"
+filter must also scan conversation threads — done here with a thread scan
+(`associatedContactId` → INCOMING messages since 8/18) before the send; the
+same gap is why `campaign_replied` is unset on all 17 August repliers.
+**SENT 2026-09-08 ~1:40 PM PT (Roman: "instantly message those 13 people,
+lowest hanging fruit"):** 12 personal PO-push texts from Paola's line
+(818-573-6644) to the August yes-repliers who still had no 26/27 charter
+deal at send time (rechecked live): Elias, Solis, Simmons, Barber, Aguila,
+Carrillo, Moore, Villacin, Lizcano, Ballesteros, Richardson, Hurtado De La
+Cruz. Copy: "Glad {student} wants to keep going with {tutor}. We have not
+seen the PO from your school yet. Want me to send your teacher the hours so
+they can issue it? Reply YES and I will get it moving." (multi-kid variant:
+"{students} want to keep going with their tutors"; no STOP line, per Roman:
+a reply inside a live conversation about a service they asked for).
+Sporykhina held out (replied 9/2: no funds this semester). 12/12 accepted by
+JustCall; an [Agent] note with the exact text is on each contact. Sent via a
+session script calling the messenger's `jc_send_sms` because the bulk rail
+refuses <25 recipients by design; this is the shape the reply-chase agent
+will automate. Replies land on Paola's line.
+**WIN-BACK BATCH SENT 2026-09-08 4:50 PM PT (Roman: "send now, it's
+4:49 pm"):** 95/95 texts from Paola's line (charter_sales) to list 3237,
+75 single-student + 20 multi-student, 9 skipped for missing tutor/student
+stamps. Send-time checks: inbox re-scan (0 new repliers since 1 PM), no
+26/27 charter deal on any recipient, opt-out/phone guards. Ran via a session
+script importing the worktree messenger (same code as this PR) because
+Actions needs the templates on main; [Agent] note with the exact text on
+each contact; send log in the session scratchpad. Paola was DM'd on Slack
+about both batches. Replies land on Paola's line.
+**FIRST 20 MINUTES (5:10 PM PT):** 20 replies from 107 recipients. Yes /
+send-teacher-hours: Simmons, Elias, Gonzalez, Molina (Selene), Crane,
+Richardson (Pamela), Phillips, Solis, Salcedo. Holding: Carrillo (school
+schedule first), Sagua (open thread, confused, needs Paola personally),
+Acevedo (asked "does the school pay?"). Lost: Butcher (Firefly), Potts (not
+now). STOP x4 (Earley, Benitez, M. Molina, Karpekin) → `sms_opt_out=true`
+stamped by hand-run script each time, since no ingester exists.
+**TOR CONFIRMATION SENT 5:12 PM PT (Roman: "ask everyone that said yes to
+confirm their teacher of record / facilitator, same as last year"):** 9
+texts from Paola's line naming the TOR on file (Family→TOR association
+typeId 15, legacy field fallback; all 9 had one): "is {student}'s teacher of
+record or facilitator still {TOR}, same as last year? Reply YES if so, or
+reply with the new name if it changed." 9/9 accepted; notes on contacts;
+log in scratchpad. Elias's "Mrs. Hernandez" matched Ruth Hernandez on file.
+**BY 6:25 PM PT:** 52 replies from 107. TOR confirmed by text: Elias (Ruth
+Hernandez), Phillips (Kristi Williamson), Simmons (Whitney VonMoos), Crane
+(Dana Eiremo), Sagua (Karla Diaz Salazar). TOR CHANGED: Salcedo → "Sean
+Alves"; Molina (Selene) → "Amy Aceto". Roman's rule, applied live: ask the
+family for the new teacher's email, then create the teacher the way
+po_inbox does. Salcedo replied salves@viedu.org → contact 247274215530
+created (persona TOR, lead status TOR, owner sales seat/Danielle,
+school_canonical "Visions In Education" from the viedu.org alias), family
+linked typeId 15 ADD-only, notes both sides. Molina asked for Aceto's email
+(pending). New yes: Barron (Ellie, Stephanie) → TOR check sent naming
+Toolie Younger. 5th STOP (Patterson) stamped. Faulk and Barber are being
+worked by Paola directly on the line (Faulk sending criteria to paola@;
+Barber asked cost + discount for 4 kids, needs the "school pays" answer).
+**TUTOR ASKS POSTED 6:56 PM PT (Roman: "check if those teachers have their
+own Slack channels, if so post the requests there now"):** per-tutor PRIVATE
+channels DO exist, named first-last (created by Danielle 2023-24, Kath
+2025-26). Posted one "can you take {student}, {days/times}?" request in
+each, tagging Paola: #cathy-westcot (Sariyah Simmons), #tarisa-r (Willow
+Crane), #stephanie-torres (Daryl Phillips + Ellie Barron),
+#lisarose-blanchette (Matteo Molina), #christina-daniels (Franny Solis),
+#jonathan-szatkowski (Phillip Salcedo), #aesha-siddiqui (Gia Faulk).
+Wrong-channel guard before posting: each first name → exactly ONE tutor
+with an active roster status in HubSpot AND one Slack user, matching the
+channel. NO channel for Christa (Elias, Gonzalez), Frederick (Sagua),
+Angela Salyer (Richardson): those three asks are still open.
+**CHRISTA BY SMS 7:15 PM PT (Roman: "Christa only uses SMS; for Christa and
+these situations use the 869 number and text her"):** tutors who are
+SMS-only or have no Slack channel get the ask by text from the SUPPORT line
+818-869-1627. Sent Christa (818-339-5667, confirmed via her Slack profile;
+HubSpot holds two Christa records, 160787711301 with the phone and
+201052445204 Bretz with the email, left unmerged) the ask for Joseph Elias
+and Alexzander & Andrew Gonzalez; note on the tutor contact. Frederick and
+Angela Salyer: posted 9:25 PM PT in their existing team GROUP DMs
+(C09TVHNMTQT, C0AF2U503AQ; every tutor has one with the whole team, found
+via Slack search `from:<@tutor>` in mpim). Frederick had already agreed on
+Aug 21 to resume Christian Sagua (Tue/Thu after 9), so his post is a
+re-confirm; the real blocker there is the TOR/PO, not the tutor. Angela
+asked for Eli Richardson.
+**Roman's next asks (not built):** (a) new-teacher intake automation =
+ask email → create TOR → link, as done by hand above; (b) tutor ask
+automation: post in the tutor's own channel when one exists, else a group
+DM with Paola/Yolanda/Janelle (bot needs `mpim:write`/`mpim:read` for
+that; Roman to add and reinstall).
+**Not done / needs Roman:**
+STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
+JustCall's native STOP handling until then.
+**Files:** ops/messenger/messenger.py, ops/messenger/config.yml,
+.github/workflows/messenger.yml, ops/messenger/README.md,
+ops/messenger/templates/charter_r2_opened_{single,multi}.txt.
+
+---
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
 
 **Why:** Roman was getting Cloudflare "KV free-tier limit reached" emails and

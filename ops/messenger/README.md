@@ -9,7 +9,7 @@ messaging to customers whenever called upon. only for bulk options").
 | Channel | Rail | How |
 |---|---|---|
 | Email | HubSpot marketing email | Clone an in-portal template email, retarget the clone at the list, leave as **DRAFT** with a review link. Roman clicks Send in HubSpot — suppression (opt-outs, bounces, non-marketing contacts) is HubSpot-native. Personalization via native tokens (`{{contact.student_first_name}}`, `{{contact.last_tutor_name}}`). |
-| SMS | JustCall | Rendered per-contact from a repo template. From-number routing: `sales` = 818-573-6644, `conference` = 818-850-6284. |
+| SMS | JustCall | Rendered per-contact from a repo template. From-number routing: `sales` = 818-573-6644, `conference` = 818-850-6284, `charter_sales` = 818-573-6644 (Paola's line: every family with NO deal yet is a lead and is texted from here, Roman 2026-09-08), `support` = 818-869-1627 (scheduling only: families that already have a PO/deal; the line schedulers answer). Scheduling stays with scheduling; leads stay with the charter_sales seat. Optional `--sms-template-multi` renders contacts with `student_count` > 1 from a second template (`{{student_names}}`, "their tutors"), because siblings often had different tutors. |
 
 ## Guardrails
 

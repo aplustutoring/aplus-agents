@@ -61,7 +61,8 @@ JC_BASE = "https://api.justcall.io"
 PORTAL = CFG["portal_id"]
 
 MERGE_PROPS = ["firstname", "lastname", "email", "phone",
-               "student_first_name", "last_tutor_name"]
+               "student_first_name", "last_tutor_name",
+               "student_names", "student_count"]
 SMS_OPT_OUT_PROP = "sms_opt_out"
 TOKEN_RE = re.compile(r"\{\{\s*([a-z0-9_]+)\s*\}\}")
 
@@ -214,6 +215,10 @@ def main():
     ap.add_argument("--list-id", required=True)
     ap.add_argument("--channel", required=True, choices=["email", "sms", "both"])
     ap.add_argument("--sms-template", default="")
+    ap.add_argument("--sms-template-multi", default="",
+                    help="optional template for contacts with student_count > 1 "
+                         "(siblings often had different tutors, so the single-"
+                         "student tutor token undersells them)")
     ap.add_argument("--sms-from", default="sales",
                     choices=list(CFG["sms"]["numbers"]))
     ap.add_argument("--email-template-id", default="",
@@ -260,11 +265,17 @@ def main():
             if not os.path.isabs(args.sms_template) else open(args.sms_template).read().strip()
         if "stop" not in template.lower():
             sys.exit('SMS template must contain an opt-out line (e.g. "Reply STOP to opt out").')
+        template_multi = ""
+        if args.sms_template_multi:
+            template_multi = open(HERE / args.sms_template_multi).read().strip() \
+                if not os.path.isabs(args.sms_template_multi) else open(args.sms_template_multi).read().strip()
+            if "stop" not in template_multi.lower():
+                sys.exit('Multi-student SMS template must contain an opt-out line too.')
         from_number = CFG["sms"]["numbers"][args.sms_from]
 
-        needed_tokens = set(TOKEN_RE.findall(template))
         sendable, skipped = [], {"opted_out": 0, "no_phone": 0, "bad_phone": 0,
                                  "missing_merge_field": 0}
+        used = {"single": 0, "multi": 0}
         for c in contacts:
             if c.get(SMS_OPT_OUT_PROP) == "true":
                 skipped["opted_out"] += 1
@@ -276,15 +287,18 @@ def main():
             if not e164:
                 skipped["bad_phone"] += 1
                 continue
+            is_multi = bool(template_multi) and (c.get("student_count") or "1") not in ("", "0", "1")
+            tpl = template_multi if is_multi else template
             # never send broken copy: every token the template uses must have
             # a value on the contact (e.g. the gap families with no tutor)
-            if any(not c.get(t) for t in needed_tokens):
+            if any(not c.get(t) for t in set(TOKEN_RE.findall(tpl))):
                 skipped["missing_merge_field"] += 1
                 continue
-            sendable.append((c, e164, render(template, c)))
+            used["multi" if is_multi else "single"] += 1
+            sendable.append((c, e164, render(tpl, c)))
 
-        print(f"📱 SMS from {args.sms_from} ({from_number}): {len(sendable)} sendable, "
-              f"skipped {skipped}")
+        print(f"📱 SMS from {args.sms_from} ({from_number}): {len(sendable)} sendable "
+              f"(single {used['single']}, multi {used['multi']}), skipped {skipped}")
         for c, e164, body in sendable[:5]:
             print(f"  sample -> {e164}: {body[:160]}")
 
