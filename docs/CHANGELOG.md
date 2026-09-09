@@ -63,6 +63,20 @@ script importing the worktree messenger (same code as this PR) because
 Actions needs the templates on main; [Agent] note with the exact text on
 each contact; send log in the session scratchpad. Paola was DM'd on Slack
 about both batches. Replies land on Paola's line.
+**FIRST 20 MINUTES (5:10 PM PT):** 20 replies from 107 recipients. Yes /
+send-teacher-hours: Simmons, Elias, Gonzalez, Molina (Selene), Crane,
+Richardson (Pamela), Phillips, Solis, Salcedo. Holding: Carrillo (school
+schedule first), Sagua (open thread, confused, needs Paola personally),
+Acevedo (asked "does the school pay?"). Lost: Butcher (Firefly), Potts (not
+now). STOP x4 (Earley, Benitez, M. Molina, Karpekin) → `sms_opt_out=true`
+stamped by hand-run script each time, since no ingester exists.
+**TOR CONFIRMATION SENT 5:12 PM PT (Roman: "ask everyone that said yes to
+confirm their teacher of record / facilitator, same as last year"):** 9
+texts from Paola's line naming the TOR on file (Family→TOR association
+typeId 15, legacy field fallback; all 9 had one): "is {student}'s teacher of
+record or facilitator still {TOR}, same as last year? Reply YES if so, or
+reply with the new name if it changed." 9/9 accepted; notes on contacts;
+log in scratchpad. Elias's "Mrs. Hernandez" matched Ruth Hernandez on file.
 **Not done / needs Roman:**
 STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
 JustCall's native STOP handling until then.
