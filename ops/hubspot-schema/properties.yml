@@ -376,6 +376,48 @@ properties:
           label: "Yes"
         - value: "false"
           label: "No"
+    - name: agent_last_outbound_at
+      label: "[Agent] Last Outbound At"
+      group: master
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/presend.py (record_send) after
+        every agent-sent text or email to this contact, on any line. The
+        pre-send gate reads it to hold a second touch inside min_gap_hours
+        unless the contact wrote first. Persona-agnostic, hence master.
+        Roman 2026-09-09, after the Gonzalez double-thread.
+    - name: agent_last_outbound_seat
+      label: "[Agent] Last Outbound Seat"
+      group: master
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/presend.py (record_send). The
+        line or seat the last agent outbound went from, so a human can see at
+        a glance which side of the house last spoke to this contact.
+      options:
+        - value: charter_sales
+          label: "charter_sales line (Paola)"
+        - value: support
+          label: "support line (schedulers)"
+        - value: sales
+          label: "sales line"
+        - value: conference
+          label: "main line"
+        - value: email
+          label: "email"
+    - name: agent_last_inbound_at
+      label: "[Agent] Last Inbound At"
+      group: master
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/presend.py (stamp_last_inbound)
+        when the fleet observes the contact writing to us: an INCOMING inbox
+        message (stamped by email/src/main.py) or an inbound text seen by the
+        gate. Exists because hs_email_last_reply_date is never set by inbox
+        replies; lists and workflows can use this one.
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
