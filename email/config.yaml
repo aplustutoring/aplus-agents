@@ -206,7 +206,9 @@ low_balance:
   # for staff notes only. The PO is issued by the SCHOOL: we ask the family to
   # request it and offer vendor details; never "we handle the PO". Every
   # charter student has funds; the hours are simply running low. NO EM DASHES.
-  sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. When you have a moment, please ask {tor_name} at {school} to issue a new PO so sessions continue without a gap. Reply here with any questions."
+  # Text names no teacher: parents can submit the PO themselves, and many do
+  # (Roman 2026-09-09). The teacher is the fallback, named only in the email.
+  sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO with {school}, or ask your teacher of record to, so sessions continue without a gap. Reply here with any questions."
   family_email:
     mode: send                    # send (Resend, same rail as the What-to-Expect email) | off
     template: "templates/low_balance_charter.html"
