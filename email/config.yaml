@@ -242,11 +242,13 @@ low_balance:
   tor_email:
     mode: draft                   # draft = a real Gmail draft the seat sends in one click (email-only rule, Roman 2026-09-03)
     mailbox: seat                 # the seat's own Gmail (staff.<seat>.email); a literal address also works
-    subject: "New PO for {student_full} (A+ Tutoring)"
+    # First names only, for everyone we already work with (Roman 2026-09-09).
+    # {student_full} exists but is not used in customer copy.
+    subject: "New PO for {student} (A+ Tutoring)"
     body: |
       Hi {tor_first},
 
-      Hope you are well.{personal_line} We want to make sure {progress} continues without a gap, and {student_full}'s current A+ Tutoring purchase order{po_ref} has {hours} left. Could you issue a new PO when you have a chance?
+      Hope you are well.{personal_line} We want to make sure {progress} continues without a gap, and {student}'s current A+ Tutoring purchase order{po_ref} has {hours} left. Could you issue a new PO when you have a chance?
 
       Thank you for everything you do for {student}.
 

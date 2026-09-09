@@ -49,8 +49,8 @@ def _cfg(armed=False, **over):
                              "reply_to": "{sender_email}",
                              "subject": "{student}'s tutoring hours are running low"},
             "tor_email": {"mode": "draft", "mailbox": "seat",
-                          "subject": "New PO for {student_full} (A+ Tutoring)",
-                          "body": "Hi {tor_first},\n\n{student_full} has {hours} left on the current PO{po_ref}.\n\n{sender_name}"},
+                          "subject": "New PO for {student} (A+ Tutoring)",
+                          "body": "Hi {tor_first},\n\n{student} has {hours} left on the current PO{po_ref}.\n\n{sender_name}"},
         },
     }
     c["low_balance"].update(over)
@@ -195,8 +195,9 @@ def test_armed_case_texts_emails_and_drafts_from_the_seat(monkeypatch):
     assert h.emails[0][1]["sender_email"] == "paola@wetutorathome.com"
     to, subj, body, seat = h.drafts[0]
     assert to == "kylee@ileadexploration.org"
-    assert subj == "New PO for Taylor Rodriguez (A+ Tutoring)"
+    assert subj == "New PO for Taylor (A+ Tutoring)"
     assert body.startswith("Hi Kylee,") and "the current PO (PO 3114143406)." in body and body.endswith("Paola")
+    assert "Rodriguez" not in body and "Rodriguez" not in subj          # first names only, everyone
     assert "4 hours or less" in body and "4 hours left" not in body
     assert rec["tor_mailbox"] == "paola@wetutorathome.com" and rec["tor_draft_id"] == "d1"
     assert rec["sms_sent"] and rec["email_sent"] == "jessicalujanbd@gmail.com"
