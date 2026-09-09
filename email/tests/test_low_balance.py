@@ -41,7 +41,7 @@ def _cfg(armed=False, **over):
             "escalate_to": "visionary", "escalate_days": 10, "follow_up_business_days": 3,
             "draft_unsent_nag_hours": 24, "sla_hours": 8, "priority": "normal",
             "no_teacher_email_pipelines": ["72281989"],
-            "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. Please submit a new PO with {school}, or ask your teacher of record to. Reply here with any questions.",
+            "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
             "family_email": {"mode": "send", "template": "templates/low_balance_charter.html",
                              "from": "{sender_name}, A+ Tutoring <admin@wetutorathome.com>",
                              "reply_to": "{sender_email}",
@@ -178,9 +178,9 @@ def test_armed_case_texts_emails_and_drafts_from_the_seat(monkeypatch):
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
     assert h.sms == [("+1 909-454-8581",
                       "Hi Jessica, it's Paola with A+ Tutoring. Taylor has 4 hours or less left on the "
-                      "current PO. Please submit a new PO with iLead, or ask your teacher of record to. "
+                      "current PO. Please submit a new PO, or ask your teacher of record to. "
                       "Reply here with any questions.")]
-    assert "Kylee" not in h.sms[0][1]                    # the text never names the teacher
+    assert "Kylee" not in h.sms[0][1] and "iLead" not in h.sms[0][1]   # no teacher, no school
     assert h.emails and h.emails[0][0] == "jessicalujanbd@gmail.com"
     assert h.emails[0][1]["sender_email"] == "paola@wetutorathome.com"
     to, subj, body, seat = h.drafts[0]
@@ -343,3 +343,4 @@ def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     out = lb._render(tpl.read_text(), ctx)
     assert "{" not in out.replace("{{", "") and "—" not in out
     assert "Taylor has <strong>4 hours or less</strong>" in out and "Paola" in out
+    assert "iLead" not in out and "iLEAD" not in out and "Kylee" not in out   # no school, no teacher
