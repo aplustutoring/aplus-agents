@@ -216,19 +216,22 @@ low_balance:
   # sms_template. In the email, {personal_line} = " Taylor has been working
   # with Maria." plus the positivity sentence below, or nothing at all.
   # {po_ref} = " (PO 3114143406)" or empty.
-  sms_template_with_tutor: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to, so sessions continue without a gap. Reply here with any questions."
-  sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to, so sessions continue without a gap. Reply here with any questions."
-  # One warm sentence from the last 4 lesson notes ("Lately Taylor has been
-  # building confidence with fractions and word problems."), written by Claude
-  # from the tutor's notes and validated before use (no numbers, no
-  # exclamation, no em dash, 30 words max, else dropped). ON (Roman
-  # 2026-09-09: "yes to positivity"); which Teachworks note field comes
-  # through the API is recorded on every case (`notes_fields_seen`), and a
-  # case with no notes simply has no sentence.
+  # Framing for family AND teacher (Roman 2026-09-09): we want to keep the
+  # progress going; no educating anyone about POs, vendor details or rates.
+  sms_template_with_tutor: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to. Reply here with any questions."
+  sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. To keep sessions going without a gap, please submit a new PO, or ask your teacher of record to, when you have a moment. Reply here with any questions."
+  # One warm sentence DERIVED from the tutor's lesson notes of the last
+  # notes_window_days (Teachworks `public_notes`, confirmed live 2026-09-09),
+  # written by Claude and validated before use (no numbers, no exclamation,
+  # no em dash, 30 words max, else dropped). Roman 2026-09-09: "it cant be
+  # imagined. it only has to be derived from lesson notes from the last
+  # month, if not it should be general" — no notes in the window means no
+  # sentence, and the copy falls back to "{student}'s progress".
   positivity:
     enabled: true
     model: "claude-sonnet-4-6"
     max_tokens: 120
+    notes_window_days: 30
   lookback_days: 60                # Teachworks window when the student has no PO deal to date from
   family_email:
     mode: send                    # send (Resend, same rail as the What-to-Expect email) | off
@@ -243,7 +246,7 @@ low_balance:
     body: |
       Hi {tor_first},
 
-      A quick heads up that {student_full} has {hours} left on the current A+ Tutoring purchase order{po_ref}. To keep sessions going without a gap, could you issue a new PO when you have a chance? The vendor details and rate are the same as the current one, and I am happy to send anything you need for it.
+      Hope you are well.{personal_line} We want to make sure {progress} continues without a gap, and {student_full}'s current A+ Tutoring purchase order{po_ref} has {hours} left. Could you issue a new PO when you have a chance?
 
       Thank you for everything you do for {student}.
 

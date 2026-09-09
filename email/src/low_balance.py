@@ -264,6 +264,10 @@ _NOTE_FIELDS = ("notes", "lesson_notes", "shared_notes", "public_notes", "note",
 _ATTENDED = ("attend", "complete")
 
 
+def _today() -> date:
+    return date.today()
+
+
 def _first_name(full: str) -> str:
     """Teachworks names people 'Last, First' (employee_name, student_name);
     the 2026-09-09 replay texted a family about 'Torres,'. A comma means
@@ -327,12 +331,18 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
     out["sessions"] = len(lessons)
     if lessons:
         out["tutor_first"] = _first_name(lessons[0].get("employee_name") or "")
+    # notes only from the last notes_window_days (Roman 2026-09-09: derived
+    # from lesson notes from the last month, never imagined)
+    pc = lb.get("positivity") or {}
+    notes_since = (_today() - timedelta(days=int(pc.get("notes_window_days", 30)))).isoformat()
     seen: set = set()
     for l in lessons[:4]:
         nm = (l.get("name") or l.get("service_name") or "").strip()
         if nm and nm.lower() not in seen and sf not in nm.lower():
             seen.add(nm.lower())
             out["subjects"].append(nm)
+        if str(l.get("from_date") or "")[:10] < notes_since:
+            continue
         sources = [l] + [p for p in (l.get("participants") or [])
                          if sf in str(p.get("student_name") or "").lower()]
         for src in sources:
@@ -348,11 +358,13 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
 _POSITIVITY_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "You write ONE warm, specific sentence for a parent about what their child has been "
-    "working on in recent tutoring sessions, from the tutor's lesson notes. Rules: begin "
-    "with 'Lately' and use the child's first name once; at most 25 words; name the subject "
-    "or skill, not scores or grades; do not name the tutor; no problems, struggles, "
-    "behaviour, or absences; no exclamation marks; no em dashes; plain, human, true to the "
-    "notes. If the notes hold nothing positive and concrete, output exactly: NONE."
+    "working on in recent tutoring sessions, from the tutor's lesson notes. Every fact in "
+    "the sentence must appear in the notes: never infer, embellish, or generalise beyond "
+    "what is written. Rules: begin with 'Lately' and use the child's first name once; at "
+    "most 25 words; name the subject or skill the notes describe, not scores or grades; do "
+    "not name the tutor; no problems, struggles, behaviour, or absences; no exclamation "
+    "marks; no em dashes; plain and human. If the notes do not describe concrete work, "
+    "output exactly: NONE."
 )
 
 
@@ -456,6 +468,10 @@ def _context(alert: dict, deal: dict | None, contact: dict | None, sender: dict,
         "personal_sms": personal_sms,
         "personal_line": personal_line,
         "positivity": positivity,
+        # "we want to make sure THAT progress continues" reads only after a
+        # progress sentence; with nothing from Teachworks it names the student
+        "progress": "that progress" if personal_line else
+                    f"{alert.get('student_first') or 'your student'}'s progress",
     }
 
 

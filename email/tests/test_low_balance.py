@@ -41,9 +41,9 @@ def _cfg(armed=False, **over):
             "escalate_to": "visionary", "escalate_days": 10, "follow_up_business_days": 3,
             "draft_unsent_nag_hours": 24, "sla_hours": 8, "priority": "normal",
             "no_teacher_email_pipelines": ["72281989"],
-            "sms_template_with_tutor": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
+            "sms_template_with_tutor": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
             "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
-            "positivity": {"enabled": False, "model": "m", "max_tokens": 120},
+            "positivity": {"enabled": False, "model": "m", "max_tokens": 120, "notes_window_days": 30},
             "family_email": {"mode": "send", "template": "templates/low_balance_charter.html",
                              "from": "{sender_name}, A+ Tutoring <admin@wetutorathome.com>",
                              "reply_to": "{sender_email}",
@@ -352,15 +352,17 @@ def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)     # no Teachworks data
     out = lb._render(tpl.read_text(), ctx)
     assert "{" not in out.replace("{{", "") and "—" not in out
-    assert ("It's Paola with A+ Tutoring. A quick heads up: Taylor's current purchase order has "
-            "<strong>4 hours or less</strong> left.") in out
+    assert ("It's Paola with A+ Tutoring. We want to make sure Taylor's progress continues without a "
+            "gap, and Taylor's current purchase order has <strong>4 hours or less</strong> left.") in out
     assert "iLead" not in out and "iLEAD" not in out and "Kylee" not in out   # no school, no teacher
+    assert "vendor" in out and "rate" not in out                              # family gets the how, no rate talk
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT, RECENT,
                       "Lately Taylor has been building confidence with fractions.")
     out = lb._render(tpl.read_text(), ctx)
     assert ("It's Paola with A+ Tutoring. Taylor has been working with Sarah. "
             "Lately Taylor has been building confidence with fractions. "
-            "A quick heads up:") in out
+            "We want to make sure that progress continues without a gap, and Taylor's current "
+            "purchase order has <strong>4 hours or less</strong> left.") in out
     assert "has had" not in out and "August" not in out          # no duration, ever
 
 
@@ -371,7 +373,7 @@ def test_text_carries_the_tutor_first_name_only(monkeypatch):
                 positivity="Lately Taylor has been mastering fractions.")
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
     assert h.sms[0][1].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
-                                  "with Sarah and has 4 hours or less left")
+                                  "with Sarah and we want to keep that progress going. Taylor has 4 hours or less left")
     assert "session" not in h.sms[0][1] and "fractions" not in h.sms[0][1]   # positivity is email-only
     assert h.emails[0][1]["personal_line"] == (" Taylor has been working with Sarah. "
                                                "Lately Taylor has been mastering fractions.")
@@ -446,6 +448,7 @@ def test_positivity_is_off_by_default_and_validated(monkeypatch):
 def test_tw_recent_reads_tutor_sessions_and_note_fields(monkeypatch):
     from src import teachworks_client as tw
     monkeypatch.setattr(lb, "cfg", lambda: _cfg())
+    monkeypatch.setattr(lb, "_today", lambda: dt.date(2026, 9, 9))
     monkeypatch.setattr(tw, "accounts", lambda: {"online": "tok"})
     monkeypatch.setattr(tw, "customers_for_family", lambda e, l, f, token=None: [{"id": 7}])
     def fake_get(endpoint, params=None, token=None):
@@ -453,20 +456,27 @@ def test_tw_recent_reads_tutor_sessions_and_note_fields(monkeypatch):
             return [{"id": 1, "first_name": "Taylor"}, {"id": 2, "first_name": "Sibling"}]
         assert params["student_id"] == 1 and params["from_date[gte]"] == "2026-08-22"
         return [
-            {"from_date": "2026-09-01", "status": "Attended", "employee_name": "Sarah Lee",
+            {"from_date": "2026-09-01", "status": "Attended", "employee_name": "Torres, Sarah",
              "name": "Math Tutoring", "participants": [
                  {"student_name": "Taylor Rodriguez", "status": "Attended",
                   "notes": "Worked on fractions and word problems; Taylor is getting more confident."}]},
-            {"from_date": "2026-08-25", "status": "Attended", "employee_name": "Sarah Lee",
+            {"from_date": "2026-08-25", "status": "Attended", "employee_name": "Torres, Sarah",
              "name": "Math Tutoring", "participants": [{"student_name": "Taylor Rodriguez", "status": "Attended"}]},
+            # older than the 30-day notes window: attended (counts as a session) but its
+            # notes must never feed the positivity sentence
+            {"from_date": "2026-07-30", "status": "Attended", "employee_name": "Torres, Sarah",
+             "name": "Math Tutoring", "participants": [
+                 {"student_name": "Taylor Rodriguez", "status": "Attended",
+                  "notes": "STALE NOTE from July that must not be used for the sentence."}]},
             {"from_date": "2026-08-28", "status": "Cancelled", "employee_name": "Sarah Lee"},
             {"from_date": "2099-01-01", "status": "Scheduled", "employee_name": "Sarah Lee"},
         ]
     monkeypatch.setattr(tw, "tw_get", fake_get)
     r = lb._tw_recent(lb.parse_alert(ALERT), DEAL)
-    assert r["tutor_first"] == "Sarah" and r["sessions"] == 2 and r["since"] == "2026-08-22"
+    assert r["tutor_first"] == "Sarah" and r["sessions"] == 3 and r["since"] == "2026-08-22"
     assert r["subjects"] == ["Math Tutoring"] and r["notes_fields_seen"] == ["notes"]
-    assert r["notes"][0].startswith("Worked on fractions")
+    assert len(r["notes"]) == 1 and r["notes"][0].startswith("Worked on fractions")
+    assert not any("STALE" in n for n in r["notes"])
     # a Teachworks hiccup never blocks the case
     monkeypatch.setattr(tw, "tw_get", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("503")))
     assert lb._tw_recent(lb.parse_alert(ALERT), DEAL)["sessions"] == 0
