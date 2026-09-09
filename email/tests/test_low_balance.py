@@ -37,7 +37,7 @@ def _cfg(armed=False, **over):
         "deal_automation": {"stop_stage_patterns": ["stopped", "closed lost"]},
         "sms": {"justcall_number": "+18188691627", "send_hour_start_pt": 8, "send_hour_end_pt": 20},
         "low_balance": {
-            "enabled": True, "armed": armed, "owner": "charter_sales", "notify": ["charter_sales"],
+            "enabled": True, "armed": armed, "max_hours": 4, "owner": "charter_sales", "notify": ["charter_sales"],
             "escalate_to": "visionary", "escalate_days": 10, "follow_up_business_days": 3,
             "draft_unsent_nag_hours": 24, "sla_hours": 8, "priority": "normal",
             "no_teacher_email_pipelines": ["72281989"],
@@ -164,7 +164,8 @@ def test_held_case_files_ticket_and_dm_but_sends_nothing(monkeypatch):
     # the seat sees exactly what WOULD go out
     assert len(h.dms) == 1 and h.dms[0][0] == "UPAO"
     assert "No outreach (agent not armed)" in h.dms[0][1]
-    assert "Taylor has 4 hours left" in h.dms[0][1]
+    assert "Taylor has 4 hours or less left" in h.dms[0][1]      # the customer copy
+    assert "has 4 hours left on Charter - iLEAD" in h.dms[0][1]  # the exact balance, staff-facing
     assert "kylee@ileadexploration.org" in h.dms[0][1]
     assert h.tasks and "Low balance follow-up: Taylor Rodriguez" in h.tasks[0][0][0]
     # a second audit line carries the alert's own message id for triage dedupe
@@ -176,7 +177,7 @@ def test_armed_case_texts_emails_and_drafts_from_the_seat(monkeypatch):
     h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL])
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
     assert h.sms == [("+1 909-454-8581",
-                      "Hi Jessica, it's Paola with A+ Tutoring. Taylor has 4 hours left on the "
+                      "Hi Jessica, it's Paola with A+ Tutoring. Taylor has 4 hours or less left on the "
                       "current PO. Please ask Kylee Cooper-Robles at iLead to issue a new PO. "
                       "Reply here with any questions.")]
     assert h.emails and h.emails[0][0] == "jessicalujanbd@gmail.com"
@@ -185,6 +186,7 @@ def test_armed_case_texts_emails_and_drafts_from_the_seat(monkeypatch):
     assert to == "kylee@ileadexploration.org"
     assert subj == "New PO for Taylor Rodriguez (A+ Tutoring)"
     assert body.startswith("Hi Kylee,") and "PO 3114143406" in body and body.endswith("Paola")
+    assert "4 hours or less" in body and "4 hours left" not in body
     assert rec["tor_mailbox"] == "paola@wetutorathome.com" and rec["tor_draft_id"] == "d1"
     assert rec["sms_sent"] and rec["email_sent"] == "jessicalujanbd@gmail.com"
     assert "—" not in h.sms[0][1] and "--" not in h.sms[0][1]
@@ -332,10 +334,11 @@ def test_open_cases_folds_state_from_the_audit_log(monkeypatch):
     assert cases["low-balance:26/27:a:b"]["sms_sent"] and cases["low-balance:26/27:a:b"]["escalated"]
 
 
-def test_template_renders_without_leftover_tokens_or_em_dashes():
+def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     from pathlib import Path
     tpl = Path(__file__).resolve().parents[1] / "templates" / "low_balance_charter.html"
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)
     out = lb._render(tpl.read_text(), ctx)
     assert "{" not in out.replace("{{", "") and "—" not in out
-    assert "Taylor has <strong>4 hours</strong>" in out and "Paola" in out
+    assert "Taylor has <strong>4 hours or less</strong>" in out and "Paola" in out

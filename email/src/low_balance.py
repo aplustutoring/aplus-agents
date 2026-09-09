@@ -247,12 +247,19 @@ def _context(alert: dict, deal: dict | None, contact: dict | None, sender: dict)
     tor_name = (p.get("teacher_of_record_name") or "").strip()
     tor_first = tor_name.split()[0] if tor_name else ""
     first = (cp.get("firstname") or alert.get("parent_first") or "there").strip()
+    # Customer-facing copy says "4 hours or less" (Roman 2026-09-09), never
+    # the exact balance: the number moves between the alert and the read, and
+    # the line is what the family needs to act on. Staff notes keep the exact.
+    max_hours = (cfg().get("low_balance", {}) or {}).get("max_hours")
+    line = (_fmt_hours(float(max_hours), alert.get("unit", "hours")) + " or less"
+            if max_hours is not None else _fmt_hours(alert.get("hours", 0), alert.get("unit", "hours")))
     return {
         "first_name": first,
         "parent_name": alert.get("parent_name") or first,
         "student": alert.get("student_first") or alert.get("student") or "your student",
         "student_full": alert.get("student") or "",
-        "hours": _fmt_hours(alert.get("hours", 0), alert.get("unit", "hours")),
+        "hours": line,
+        "hours_exact": _fmt_hours(alert.get("hours", 0), alert.get("unit", "hours")),
         "tor_name": tor_name or "your teacher of record",
         "tor_first": tor_first or "there",
         "tor_or_ef": tor_name or "your teacher of record or educational facilitator",
@@ -410,7 +417,7 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     tor_blocked = pipeline in no_tor
     armed = bool(lb.get("armed")) and charter
     ctx = _context(alert, deal, contact, seat)
-    hrs = ctx["hours"]
+    hrs = ctx["hours_exact"]               # staff-facing: ticket, task, DM
 
     # ── ticket first (everything else hangs off it) ──
     hs_cfg = cfg()["hubspot"]
