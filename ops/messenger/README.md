@@ -19,6 +19,13 @@ messaging to customers whenever called upon. only for bulk options").
   live sends only 9:00–20:00 PT; phones normalized to E.164, unusable skipped.
 - **Tutor names**: templates use `last_tutor_name` which holds FIRST names
   only (customer-facing rule, Roman 2026-08-14).
+- **Journey playbook**: before contacting a family, teacher, or tutor, read
+  `knowledge/journey/README.md` and pass
+  `knowledge/journey/00-pre-send-checklist.md`. Act only on stages marked
+  REVIEWED. Win-back rounds are stage 09.
+- **Under 25 recipients, use `one_to_few.py`** (next section). It runs the
+  pre-send gate per contact. The 2026-09-08 follow-ups ran from session
+  scripts with none of these checks; that path is closed.
 
 ## Small sends: the one_to_few rail (1 to 24 recipients)
 

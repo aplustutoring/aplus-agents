@@ -532,6 +532,7 @@ KEY_PROPERTIES = sorted({prop for prop, _ in RECORD_FIELD_MAP.values()}
                            "hs_lead_status"})
 
 SUMMARY_PROMPT = """Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+Before contacting a family, teacher, or tutor, read knowledge/journey/README.md and pass knowledge/journey/00-pre-send-checklist.md. Act only on stages marked REVIEWED.
 
 You are processing a phone call ({direction_desc}) for A+ Tutoring, \
 a K-12 tutoring company in California (families/parents, partner schools and \
@@ -883,6 +884,7 @@ def _apply_name_corrections(d):
 RUBRIC_DIMENSIONS = ["U1", "U2", "U3", "U4", "U5", "S1", "S2", "S3", "S4", "V1", "V2"]
 
 COACHING_PROMPT = """Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+Before contacting a family, teacher, or tutor, read knowledge/journey/README.md and pass knowledge/journey/00-pre-send-checklist.md. Act only on stages marked REVIEWED.
 
 You are a supportive call coach for A+ Tutoring, reviewing \
 a call handled by {agent_name} ({direction_desc}). Score the call against the rubric \
