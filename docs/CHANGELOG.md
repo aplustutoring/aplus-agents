@@ -7,6 +7,46 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 (night) — Doorbell workflow rings deal-sync-relay; relay watchdog
+
+**Roman:** "is that really the best fix with all the tools at our disposal?" → go.
+
+**What:** the relay's HubSpot side is now an agent-managed workflow instead of a
+human-configured private-app webhook. `ops/deal-relay/doorbell/workflow.json`
++ `apply_doorbell.py` (idempotent by name, token never printed) created
+`[Agent] Doorbell - deal created or stage changed -> deal-sync relay`
+(1881460299): enrollment = createdate after 2026-09-09, re-enroll on any
+dealstage change, one WEBHOOK action → the worker. Deterministic, no CARE
+pointer. The private-app Webhooks API is not open to private-app tokens
+(403 "scope not available for public use"), so the workflow is the only path
+the fleet can own end to end; the `automation` scope we already hold covers
+it. deal-sync-relay `WEBHOOK_TOKEN` rotated (old value unknown to the
+session, nothing subscribed to it). Roman ran the apply (the auto-mode
+classifier blocked the session from creating the workflow itself).
+
+**Verified:** test deal created 22:15:00 UTC → worker logged the POST at
+22:15:07 and scheduled the dispatch. **Not yet verified:** the dispatch
+itself — the worker has no `GITHUB_TOKEN` secret (README step 2 was also
+never done), so the alarm throws and retries. Roman sets it:
+`cd ops/deal-relay && npx wrangler secret put GITHUB_TOKEN` (the call-relay
+PAT). Then one more test deal proves the whole path.
+
+**Watchdog:** `email/src/relay_watchdog.py`, run at the top of every deal_sync
+pass: on a `schedule` (cron) run, any new deal older than
+`relay_watchdog.max_lag_minutes` (10) means no event-driven run handled it →
+one DM to the visionary seat naming the deals, once per deal (audit
+`relay-miss:{id}`). Dispatch and local runs never fire it. 4 tests.
+
+**Cron stays** at the 15-min backstop until the first real deal round-trips
+through the doorbell; demote to hourly then (README "After it's verified live").
+
+**Files:** `ops/deal-relay/doorbell/{workflow.json,apply_doorbell.py}` (new),
+`ops/deal-relay/README.md`, `email/src/relay_watchdog.py` (new),
+`email/src/deal_sync.py`, `email/config.yaml`,
+`email/tests/test_relay_watchdog.py` (new), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-09 — New-deal scheduler ownership moves from Zapier into deal_sync
 
 **Roman:** "when danielle creates a free trial lesson from scholarship program

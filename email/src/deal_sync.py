@@ -340,6 +340,11 @@ def run() -> None:
             break
         body["after"] = after
     print(f"deal_sync: {len(deals)} new deal(s)")
+    try:
+        from . import relay_watchdog
+        relay_watchdog.check(deals)  # cron run finding an old new deal = doorbell dead
+    except Exception as e:  # noqa: BLE001 — the watchdog must never fail the sync
+        print(f"⚠️  relay_watchdog error: {e}")
     newest = since_ms
     synced = 0
     first_error_ms = None
