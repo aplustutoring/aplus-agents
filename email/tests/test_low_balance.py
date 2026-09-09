@@ -353,17 +353,16 @@ def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)     # no Teachworks data
     out = lb._render(tpl.read_text(), ctx)
     assert "{" not in out.replace("{{", "") and "—" not in out
-    assert ("It's Paola with A+ Tutoring. We want to make sure Taylor's progress continues without a "
-            "gap, and Taylor's current purchase order has <strong>4 hours or less</strong> left.") in out
+    assert ("Taylor's tutoring hours are running low, with <strong>4 hours or less</strong> left on the "
+            "current PO. We would love to keep Taylor's progress going.") in out
     assert "iLead" not in out and "iLEAD" not in out and "Kylee" not in out   # no school, no teacher
-    assert "vendor" in out and "rate" not in out                              # family gets the how, no rate talk
+    assert "vendor" not in out and "rate" not in out and "referral" not in out  # short, no lecture
     ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT, RECENT,
                       "Lately Taylor has been building confidence with fractions.")
     out = lb._render(tpl.read_text(), ctx)
-    assert ("It's Paola with A+ Tutoring. Taylor has been working with Sarah. "
+    assert ("current PO. Taylor has been working with Sarah. "
             "Lately Taylor has been building confidence with fractions. "
-            "We want to make sure that progress continues without a gap, and Taylor's current "
-            "purchase order has <strong>4 hours or less</strong> left.") in out
+            "We would love to keep that progress going.") in out
     assert "has had" not in out and "August" not in out          # no duration, ever
 
 
