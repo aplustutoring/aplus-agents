@@ -43,7 +43,10 @@ jobs:
   triage:
     runs-on: ubuntu-latest
     concurrency:
-      group: aplus-email-state
+      # A dry-run replay/backfill writes no state, so it must not queue behind
+      # (or be cancelled by) the 5-minute poll: GitHub keeps ONE pending run per
+      # group and cancels the older one, which killed run 34538803410.
+      group: aplus-email-state${{ (inputs.replay_thread != '' || inputs.backfill_days != '') && inputs.dry_run && '-dryrun' || '' }}
       cancel-in-progress: false
     defaults:
       run:
