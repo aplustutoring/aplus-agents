@@ -40,6 +40,12 @@ a note, never a second message.
 | 28 | Still nothing: closed as **Lost** (`no_response`), re-engagement list. | same |
 | any | New PO deal → ticket closed, deal → **Renewed**. Deal Stopped → **Not Renewing**. | Any new deal → Renewed. |
 
+**Scope (Roman 2026-09-10, later):** charter service codes only, out of
+pocket excluded (`low_balance.charter_only: true`). A private-pay or
+out-of-pocket alert is not this agent's: no case, no email; it takes the
+ordinary inbox triage path. The private-pay column below describes dormant
+code for when that switch is flipped.
+
 **Grouping (Roman 2026-09-10):** siblings alert minutes apart (the three
 Melaras, one hour between them), so the day-0 email is sent by the sweep
 after `email_delay_minutes` (60) as **one email per family naming every

@@ -184,6 +184,13 @@ low_balance:
   # send into the ticket note, DMs the seat, and touches no family or teacher.
   # Flip in a PR once Roman approves the copy below.
   armed: false
+  # Roman 2026-09-10: "only on charter service codes, excluding out of
+  # pocket. just a charter low balance alert agent that owns its job."
+  # true = a non-charter alert (private-pay packages, CHARTER - Out of
+  # Pocket) is not this agent's: no case, no email; the alert takes the
+  # ordinary inbox triage path. The private-pay upgrade code below stays
+  # dormant until this is flipped.
+  charter_only: true
   # A case opens only at this many unused hours or fewer (Roman 2026-09-09:
   # "4 hours or less"). Teachworks' own alert level is per package; alerts
   # that fire above this line are audited and skipped.

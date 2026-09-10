@@ -259,7 +259,7 @@ def test_level_up_terri_teacher_is_blocked_on_the_record(monkeypatch):
 def test_private_pay_gets_one_upgrade_email_and_no_text(monkeypatch):
     gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": "",
                                       "teacher_of_record_email": ""}}
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[gold], recent=RECENT)
+    h = Harness(monkeypatch, _cfg(armed=True, charter_only=False), deals=[gold], recent=RECENT)
     monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
     body = ALERT.replace("Charter - iLEAD", "2026 - Prep Package")
     rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
@@ -274,6 +274,22 @@ def test_private_pay_gets_one_upgrade_email_and_no_text(monkeypatch):
     assert subj == "Taylor's next tutoring package" and tpl.endswith("low_balance_private.html")
     assert ctx["upgrade_line"] == rec["upgrade_line"]
     assert not h.sms and not h.drafts
+
+
+def test_charter_only_declines_private_pay_and_out_of_pocket(monkeypatch):
+    # Roman 2026-09-10: "only on charter service codes, excluding out of pocket"
+    gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": ""}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[gold], recent=RECENT)      # charter_only defaults on
+    monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
+    for pkg in ("*2026 - Current - Prep Package (20)", "CHARTER - Out of Pocket"):
+        body = ALERT.replace("Charter - iLEAD", pkg)
+        assert lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body)) is None
+    assert not h.tickets and not h.emails and not h.sms and not h.drafts and not h.dms and not h.stamps
+    assert [r["action_taken"] for r in h.recs] == ["low_balance_out_of_scope"] * 2
+    # a charter alert still opens a case
+    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL])
+    assert lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))["action_taken"] == "low_balance_opened"
+    assert h2.tickets
 
 
 def test_out_of_pocket_charter_family_is_private_pay():
@@ -304,7 +320,7 @@ def test_private_pay_old_pricing_gets_no_auto_email(monkeypatch):
     # from the ticket instead.
     gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": "",
                                       "teacher_of_record_email": ""}}
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[gold], recent=RECENT)
+    h = Harness(monkeypatch, _cfg(armed=True, charter_only=False), deals=[gold], recent=RECENT)
     monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
     body = ALERT.replace("Charter - iLEAD", "2025 - Prep Package")
     rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
@@ -321,7 +337,7 @@ def test_private_pay_routes_to_commissioned_scheduler(monkeypatch):
     from src import router
     gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": "",
                                       "teacher_of_record_email": ""}}
-    cfgv = _cfg(armed=True)
+    cfgv = _cfg(armed=True, charter_only=False)            # dormant path: charter_only is the live default
     cfgv["staff"]["yolanda"] = {"name": "Yolanda", "hubspot_owner_id": "86868539",
                                 "slack_user_id": "UYO", "email": "yolanda@wetutorathome.com"}
     cfgv["roles"]["scheduler_m_z"] = "yolanda"

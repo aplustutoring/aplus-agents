@@ -815,6 +815,16 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     dp = (deal or {}).get("properties") or {}
     pipeline = str(dp.get("pipeline") or "")
     charter = is_charter_package(alert["package"], pipeline)
+    if not charter and lb.get("charter_only", True):
+        # Roman 2026-09-10: "only on charter service codes, excluding out of
+        # pocket. just a charter low balance alert agent that owns its job."
+        # Private pay and out-of-pocket alerts are NOT this agent's: no case,
+        # no ticket, no email. None hands the message back to the normal
+        # inbox triage, exactly as before this agent existed.
+        audit.append({**record, "action_taken": "low_balance_out_of_scope",
+                      "reason": f"not a charter service code: {alert['package']}"})
+        print(f"  ⏭ {alert['student']}: '{alert['package']}' is not a charter service code; not this agent's")
+        return None
     tor_email = (dp.get("teacher_of_record_email") or "").strip().lower()
     if not tor_email and charter and deal:
         tor_email = _tor_email_fallback(dp, contact)
@@ -1548,6 +1558,10 @@ def backfill(days: int) -> list[dict]:
                     out.append({"student": alert["student"], "skipped": "renewed"})
                     continue
                 rec = handle_alert(tid, m, alert)
+                if rec is None:
+                    out.append({"student": alert["student"], "skipped": "not charter",
+                                "package": alert["package"]})
+                    continue
                 if rec.get("action_taken") == "low_balance_opened":
                     open_now[key] = rec
                     opened_recs[key] = rec
@@ -1557,7 +1571,8 @@ def backfill(days: int) -> list[dict]:
         if not after:
             break
     print(f"backfill: {len(out)} alert(s) in the last {days} days, {len(opened_recs)} case(s) opened, "
-          f"{sum(1 for o in out if o.get('skipped'))} already renewed")
+          f"{sum(1 for o in out if o.get('skipped') == 'renewed')} already renewed, "
+          f"{sum(1 for o in out if o.get('skipped') == 'not charter')} not charter (out of scope)")
     if opened_recs:
         # The day-0 emails go NOW, one per family: the delay exists to collect
         # siblings arriving minutes apart, and a backfill batch is already

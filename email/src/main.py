@@ -427,7 +427,11 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     if low_balance.is_teachworks_sender(_sender_addrs(message)):
         lb_alert = low_balance.parse_alert(body)
         if lb_alert:
-            return low_balance.handle_alert(thread_id, message, lb_alert)
+            lb_rec = low_balance.handle_alert(thread_id, message, lb_alert)
+            if lb_rec is not None:
+                return lb_rec
+            # not a charter service code: the agent declines it and the alert
+            # takes the ordinary triage path below (classifier → ticket)
 
     # ── Identify contact ──
     contact = hs.find_contact_by_email(email) if email else None

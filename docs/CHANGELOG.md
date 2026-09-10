@@ -164,6 +164,13 @@ a newer PO deal skipped) and sends the grouped day-0 emails immediately.
 Dry-run replays/backfills got their own concurrency group (the 5-minute
 poll had cancelled run 34538803410). Suite 457.
 
+**Scope, 2026-09-10 (Roman: "only on charter service codes, excluding out
+of pocket. just a charter low balance alert agent that owns its job"):**
+`low_balance.charter_only: true`. A non-charter alert returns None from the
+agent and takes the ordinary triage path; the backfill reports it as out of
+scope. The private-pay upgrade path (and the other session's scheduler
+routing for it) stays in the code, dormant.
+
 **Still human (until armed):** everything the ticket note says the agent
 would have sent. **Roman:** run the hubspot-schema workflow (creates the five
 deal properties) and build the "Renewal Chase" saved view. **After arming:** sending the teacher draft from Gmail
