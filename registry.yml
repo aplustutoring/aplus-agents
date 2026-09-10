@@ -689,12 +689,13 @@ agents:
       - "HubSpot:deals (student's newest PO deal: school, pipeline, TOR, PO number; NEW PO deals close the case)"
       - email/state/audit_log.jsonl
     writes:
-      - "HubSpot:tickets ('Low balance: <student> (<school>), N hours left', owner charter_sales; closed when the new PO deal appears)"
-      - "HubSpot:tasks (follow-up for the seat, +3 business days)"
-      - "JustCall SMS to the family (armed only; quiet hours defer to the sweep)"
-      - "Resend email to the family from the seat's name, reply-to the seat (armed only)"
-      - "Gmail draft in the seat's mailbox to the teacher of record (armed only; never for Level Up Terri)"
-      - "Slack (one DM to charter_sales per case; stalled cases escalate to visionary)"
+      - "HubSpot:tickets ('Low balance: <student> (<school>), N hours left', owner charter_sales; 'RETENTION RISK' at day 7; closed on the new PO deal / Stopped / Lost)"
+      - "HubSpot:deals (retention_stage, retention_lost_reason, retention_low_balance_alert_date, retention_last_notice_sent, retention_last_touch)"
+      - "Resend email to the family from the seat's name, reply-to the seat, day 0 (armed only; private pay = upgrade email)"
+      - "JustCall SMS to the family, day 1 if no PO and no reply (armed only; charter only)"
+      - "Gmail draft in the seat's mailbox to the teacher of record, day 1 (armed only; never for Level Up Terri)"
+      - "HubSpot:lists (Lost contact → reengagement_list_id, when configured)"
+      - "Slack (one DM to charter_sales per case and per day-1 step; risk DM to seat + visionary)"
       - email/state/audit_log.jsonl
     depends_on: [email/config.yaml (low_balance block), email/templates/low_balance_charter.html, email/src/sms.py, email/src/draft_feedback.py]
     notes: >

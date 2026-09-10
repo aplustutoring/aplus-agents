@@ -1,7 +1,7 @@
-"""Low-balance renewal agent — alert parsing, case lifecycle, routing, guardrails."""
+"""Low-balance renewal agent — alert parsing, the staged case (email day 0,
+text + teacher day 1, retention risk day 7, lost day 28), private pay,
+routing, guardrails."""
 import datetime as dt
-
-import pytest
 
 from src import low_balance as lb
 
@@ -24,6 +24,11 @@ SEAT = {"name": "Paola", "hubspot_owner_id": "81494333", "slack_user_id": "UPAO"
         "email": "paola@wetutorathome.com"}
 ROMAN = {"name": "Roman", "slack_user_id": "UROM"}
 
+TIERS = {"online": [{"name": "Improvement", "hours": 8, "rate": 88}, {"name": "Prep", "hours": 20, "rate": 83},
+                    {"name": "Success", "hours": 50, "rate": 73}, {"name": "Soar", "hours": 100, "rate": 68}],
+         "in_person": [{"name": "Improvement", "hours": 8, "rate": 115}, {"name": "Prep", "hours": 20, "rate": 108},
+                       {"name": "Success", "hours": 50, "rate": 103}, {"name": "Soar", "hours": 100, "rate": 93}]}
+
 
 def _cfg(armed=False, **over):
     c = {
@@ -33,14 +38,14 @@ def _cfg(armed=False, **over):
                           "category_default": "GENERAL_INQUIRY", "source": "EMAIL"},
         "staff": {"paola": SEAT, "roman": ROMAN},
         "roles": {"charter_sales": "paola", "visionary": "roman"},
-        "deal_sync": {"charter_pipelines": ["907748", "72281989"]},
+        "deal_sync": {"charter_pipelines": ["907748", "72281989"], "in_person_pipelines": ["3067397"]},
         "deal_automation": {"stop_stage_patterns": ["stopped", "closed lost"]},
         "sms": {"justcall_number": "+18188691627", "send_hour_start_pt": 8, "send_hour_end_pt": 20},
         "low_balance": {
             "enabled": True, "armed": armed, "max_hours": 4, "owner": "charter_sales", "notify": ["charter_sales"],
-            "escalate_to": "visionary", "escalate_days": 10, "follow_up_business_days": 3,
-            "draft_unsent_nag_hours": 24, "sla_hours": 8, "priority": "normal",
-            "no_teacher_email_pipelines": ["72281989"],
+            "escalate_to": "visionary", "family_text_after_days": 1, "retention_risk_days": 7,
+            "lost_after_days": 21, "reengagement_list_id": "", "draft_unsent_nag_hours": 24,
+            "sla_hours": 8, "priority": "normal", "no_teacher_email_pipelines": ["72281989"],
             "sms_template_with_tutor": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
             "sms_template": "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. Please submit a new PO, or ask your teacher of record to. Reply here with any questions.",
             "positivity": {"enabled": False, "model": "m", "max_tokens": 120, "notes_window_days": 30},
@@ -48,6 +53,8 @@ def _cfg(armed=False, **over):
                              "from": "{sender_name}, A+ Tutoring <admin@wetutorathome.com>",
                              "reply_to": "{sender_email}",
                              "subject": "{student}'s tutoring hours are running low"},
+            "private_pay": {"template": "templates/low_balance_private.html",
+                            "subject": "{student}'s next tutoring package", "tiers": TIERS},
             "tor_email": {"mode": "draft", "mailbox": "seat",
                           "subject": "New PO for {student} (A+ Tutoring)",
                           "body": "Hi {tor_first},\n\n{student} has {hours} left on the current PO{po_ref}.\n\n{sender_name}"},
@@ -65,6 +72,11 @@ DEAL = {"id": "64250037589", "properties": {
     "student_first_name": "Taylor", "student_last_name_if_diff_from_parent": "Rodriguez"}}
 CONTACT = {"id": "3167401", "properties": {"email": "jessicalujanbd@gmail.com", "firstname": "Jessica",
                                            "lastname": "Lujan", "mobilephone": "+19094548581"}}
+RECENT = {"tutor_first": "Sarah", "sessions": 6, "since": "2026-08-22", "subjects": ["Math"],
+          "notes": [], "notes_fields_seen": []}
+NO_RECENT = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
+             "notes_fields_seen": []}
+MSG = {"id": "m-alert-1", "text": ALERT, "subject": "Package Balance Alert"}
 
 
 # ── parsing ──────────────────────────────────────────────────────────────
@@ -99,8 +111,7 @@ def test_sender_gate():
 
 def test_case_key_is_per_student_package_season():
     a = lb.parse_alert(ALERT)
-    d = dt.datetime(2026, 9, 8)
-    assert lb.case_key(a, d) == "low-balance:26/27:taylor-rodriguez:charter-ilead"
+    assert lb.case_key(a, dt.datetime(2026, 9, 8)) == "low-balance:26/27:taylor-rodriguez:charter-ilead"
     assert lb.season(dt.datetime(2027, 3, 1)) == "26/27"
     assert lb.season(dt.datetime(2027, 8, 1)) == "27/28"
 
@@ -113,31 +124,34 @@ def test_charter_detection(monkeypatch):
     assert not lb.is_charter_package("2025 - Prep Package", "default")
 
 
-# ── the case ─────────────────────────────────────────────────────────────
+def test_first_name_handles_teachworks_last_first():
+    assert lb._first_name("Torres, Maria") == "Maria"          # the replay's "Torres," bug
+    assert lb._first_name("Sarah Lee") == "Sarah"
+    assert lb._first_name("Torres,") == "Torres"
+    assert lb._first_name("") == ""
 
-RECENT = {"tutor_first": "Sarah", "sessions": 6, "since": "2026-08-22", "subjects": ["Math"],
-          "notes": [], "notes_fields_seen": []}
-NO_RECENT = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
-             "notes_fields_seen": []}
 
+# ── harness ──────────────────────────────────────────────────────────────
 
 class Harness:
     def __init__(self, monkeypatch, cfgv, deals=None, contact=CONTACT, open_cases=None,
-                 in_window=True, recent=None, positivity=""):
-        self.tickets, self.notes, self.tasks, self.dms = [], [], [], []
-        self.sms, self.emails, self.drafts, self.recs = [], [], [], []
-        self.stage_updates = []
+                 in_window=True, recent=None, positivity="", replied=False, ticket_open=True):
+        self.tickets, self.notes, self.dms, self.patches = [], [], [], []
+        self.sms, self.emails, self.private, self.drafts, self.recs = [], [], [], [], []
+        self.stage_updates, self.stamps = [], []
         monkeypatch.setattr(lb, "cfg", lambda: cfgv)
-        monkeypatch.setattr(lb, "_tw_recent", lambda a, d: dict(recent if recent is not None else NO_RECENT))
-        monkeypatch.setattr(lb, "_positivity", lambda s, t, n, client=None: positivity)
         monkeypatch.setattr(lb, "staff", lambda k: cfgv["staff"].get(cfgv["roles"].get(k, k), {}))
         monkeypatch.setattr(lb, "_student_deals", lambda f, l, after=None: list(deals or []))
         monkeypatch.setattr(lb, "_family_contact", lambda a: contact)
         monkeypatch.setattr(lb, "open_cases", lambda: dict(open_cases or {}))
         monkeypatch.setattr(lb, "_in_sms_window", lambda: in_window)
+        monkeypatch.setattr(lb, "_tw_recent", lambda a, d: dict(recent if recent is not None else NO_RECENT))
+        monkeypatch.setattr(lb, "_positivity", lambda s, t, n, client=None: positivity)
+        monkeypatch.setattr(lb, "_parent_replied", lambda c, s, l: replied)
+        monkeypatch.setattr(lb, "_ticket_open", lambda c: ticket_open)
         monkeypatch.setattr(lb, "_send_sms", lambda p, b: self.sms.append((p, b)) or {"ok": True})
-        monkeypatch.setattr(lb, "_send_family_email",
-                            lambda to, ctx, c: self.emails.append((to, ctx)))
+        monkeypatch.setattr(lb, "_send_family_email", lambda to, ctx, c: self.emails.append((to, ctx)))
+        monkeypatch.setattr(lb, "_send_private_email", lambda to, ctx, c: self.private.append((to, ctx)))
         monkeypatch.setattr(lb, "_tor_draft",
                             lambda to, s, b, c, seat: self.drafts.append((to, s, b, seat)) or
                             {"id": "d1", "message": {"id": "m1", "threadId": "t9"}})
@@ -146,104 +160,126 @@ class Harness:
                             lambda *a, **k: self.tickets.append((a, k)) or {"id": "T1"})
         monkeypatch.setattr(lb.hs, "link_thread_to_ticket", lambda t, i: {})
         monkeypatch.setattr(lb.hs, "add_ticket_note", lambda t, b: self.notes.append((t, b)))
-        monkeypatch.setattr(lb.hs, "create_task",
-                            lambda *a, **k: self.tasks.append((a, k)) or {"id": "K1"})
-        monkeypatch.setattr(lb.hs, "update_ticket_stage",
-                            lambda t, s: self.stage_updates.append((t, s)))
+        monkeypatch.setattr(lb.hs, "update_ticket_stage", lambda t, s: self.stage_updates.append((t, s)))
         monkeypatch.setattr(lb.hs, "ticket_url", lambda t: f"https://hs/t/{t}")
+
+        def fake_write(method, path, payload=None):
+            self.patches.append((method, path, payload))
+            if "/deals/" in path:
+                self.stamps.append((path.rsplit("/", 1)[1], (payload or {}).get("properties")))
+            return {"id": "X"}
+        monkeypatch.setattr(lb.hs, "_write", fake_write)
         monkeypatch.setattr(lb.slack_client, "dm", lambda u, t: self.dms.append((u, t)) or {"ok": True})
         monkeypatch.setattr(lb.audit, "append", lambda r: self.recs.append(r))
 
     def opened(self):
         return next(r for r in self.recs if r.get("action_taken") == "low_balance_opened")
 
+    def stage(self):
+        return [p.get("retention_stage") for _d, p in self.stamps if p and p.get("retention_stage")]
 
-MSG = {"id": "m-alert-1", "text": ALERT, "subject": "Package Balance Alert"}
 
+# ── day 0: the case ───────────────────────────────────────────────────────
 
 def test_held_case_files_ticket_and_dm_but_sends_nothing(monkeypatch):
-    h = Harness(monkeypatch, _cfg(armed=False), deals=[DEAL])
+    h = Harness(monkeypatch, _cfg(armed=False), deals=[DEAL], recent=RECENT)
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
     assert rec["action_taken"] == "low_balance_opened"
     assert rec["message_id"] == "low-balance:26/27:taylor-rodriguez:charter-ilead"
     assert h.tickets and h.tickets[0][0][0].startswith("Low balance: Taylor Rodriguez (iLead), 4 hours left")
-    assert h.tickets[0][0][1] == "81494333"            # the seat owns it
-    assert h.tickets[0][0][4] == "3167401"             # linked to the family
+    assert h.tickets[0][0][1] == "81494333" and h.tickets[0][0][4] == "3167401"
     assert not h.sms and not h.emails and not h.drafts
     assert rec["armed"] is False and rec["charter"] is True
-    # the seat sees exactly what WOULD go out
     assert len(h.dms) == 1 and h.dms[0][0] == "UPAO"
-    assert "No outreach (agent not armed)" in h.dms[0][1]
-    assert "Taylor has 4 hours or less left" in h.dms[0][1]      # the customer copy
-    assert "has 4 hours left on Charter - iLEAD" in h.dms[0][1]  # the exact balance, staff-facing
-    assert "kylee@ileadexploration.org" in h.dms[0][1]
-    assert h.tasks and "Low balance follow-up: Taylor Rodriguez" in h.tasks[0][0][0]
-    # a second audit line carries the alert's own message id for triage dedupe
+    assert "Agent not armed" in h.dms[0][1] and "Day 1" in h.dms[0][1]
+    assert not any("/tasks" in p for _m, p, _b in h.patches)          # ticket, not task
+    assert h.stage() == ["low_hours"]
     assert any(r.get("message_id") == "m-alert-1" and r["action_taken"] == "low_balance_alert_processed"
                for r in h.recs)
 
 
-def test_armed_case_texts_emails_and_drafts_from_the_seat(monkeypatch):
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL])
+def test_day0_sends_only_the_email_and_stores_the_rest_for_the_sweep(monkeypatch):
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=RECENT,
+                positivity="Lately Taylor has been mastering fractions.")
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.sms == [("+1 909-454-8581",
-                      "Hi Jessica, it's Paola with A+ Tutoring. Taylor has 4 hours or less left on the "
-                      "current PO. Please submit a new PO, or ask your teacher of record to. "
-                      "Reply here with any questions.")]
-    assert "Kylee" not in h.sms[0][1] and "iLead" not in h.sms[0][1]   # no teacher, no school
     assert h.emails and h.emails[0][0] == "jessicalujanbd@gmail.com"
     assert h.emails[0][1]["sender_email"] == "paola@wetutorathome.com"
-    to, subj, body, seat = h.drafts[0]
-    assert to == "kylee@ileadexploration.org"
-    assert subj == "New PO for Taylor (A+ Tutoring)"
-    assert body.startswith("Hi Kylee,") and "the current PO (PO 3114143406)." in body and body.endswith("Paola")
-    assert "Rodriguez" not in body and "Rodriguez" not in subj          # first names only, everyone
-    assert "4 hours or less" in body and "4 hours left" not in body
-    assert rec["tor_mailbox"] == "paola@wetutorathome.com" and rec["tor_draft_id"] == "d1"
-    assert rec["sms_sent"] and rec["email_sent"] == "jessicalujanbd@gmail.com"
-    assert "—" not in h.sms[0][1] and "--" not in h.sms[0][1]
+    assert h.emails[0][1]["personal_line"] == (" Taylor has been working with Sarah. "
+                                               "Lately Taylor has been mastering fractions.")
+    assert not h.sms and not h.drafts                                   # those are day 1
+    assert rec["email_sent"] == "jessicalujanbd@gmail.com"
+    assert rec["sms_body"].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
+                                      "with Sarah and we want to keep that progress going. Taylor has 4 hours or less left")
+    assert "Kylee" not in rec["sms_body"] and "iLead" not in rec["sms_body"] and "fractions" not in rec["sms_body"]
+    assert rec["phone"] == "+1 909-454-8581" and rec["tor_email"] == "kylee@ileadexploration.org"
+    assert rec["tor_subject"] == "New PO for Taylor (A+ Tutoring)"
+    assert rec["tor_body"].startswith("Hi Kylee,") and "the current PO (PO 3114143406)." in rec["tor_body"]
+    assert "Rodriguez" not in rec["tor_body"]
+    assert rec["tor_mailbox"] == "paola@wetutorathome.com"
+    assert "—" not in rec["sms_body"] and "--" not in rec["sms_body"]
+    stamp = dict(h.stamps[0][1])
+    assert stamp["retention_stage"] == "low_hours" and stamp["retention_low_balance_alert_date"]
+    assert stamp["retention_last_notice_sent"]
 
 
-def test_quiet_hours_queue_the_text_for_the_sweep(monkeypatch):
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], in_window=False)
+def test_four_hours_or_less_is_the_line(monkeypatch):
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL])
+    for hours in ("6.0", "4.5"):
+        body = ALERT.replace("4.0 unused hours", f"{hours} unused hours")
+        rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
+        assert rec["action_taken"] == "low_balance_above_threshold"
+    assert not h.tickets and not h.emails and not h.dms
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert not h.sms and rec["sms_pending"] and rec["phone"] == "+1 909-454-8581"
-    assert "queued" in rec["sms_body"] or rec["sms_body"].startswith("Hi Jessica")
-    # the sweep sends it once the window opens (case still open, armed)
-    case = dict(rec, opened_at=dt.datetime.now(dt.timezone.utc).isoformat())
-    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[], in_window=True,
-                 open_cases={rec["message_id"]: case})
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 9, 9, 3))
-    lb.run_sweep()
-    assert h2.sms == [("+1 909-454-8581", rec["sms_body"])]
+    assert rec["action_taken"] == "low_balance_opened" and h.tickets
 
 
-def test_level_up_terri_never_emails_the_teacher(monkeypatch):
+def test_level_up_terri_teacher_is_blocked_on_the_record(monkeypatch):
     terri = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "72281989"}}
     h = Harness(monkeypatch, _cfg(armed=True), deals=[terri])
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.sms and h.emails and not h.drafts
+    assert h.emails and rec["tor_blocked"] is True
     assert any("no-teacher-email" in f for f in rec["flags"])
 
 
-def test_non_charter_package_is_ticket_only(monkeypatch):
-    gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": ""}}
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[gold])
+def test_private_pay_gets_one_upgrade_email_and_no_text(monkeypatch):
+    gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": "",
+                                      "teacher_of_record_email": ""}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[gold], recent=RECENT)
     monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
     body = ALERT.replace("Charter - iLEAD", "2025 - Prep Package")
     rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
-    assert rec["charter"] is False and rec["armed"] is False
-    assert h.tickets and not h.sms and not h.emails and not h.drafts
-    assert "not a charter package" in h.dms[0][1]
+    assert rec["charter"] is False and rec["private_pay"] is True
+    assert h.private and not h.emails and not h.sms and not h.drafts
+    pctx = h.private[0][1]
+    assert pctx["current_tier"] == "Prep" and pctx["next_tier"] == "Success" and pctx["next_rate"] == "$73"
+    assert "$83 an hour" in pctx["upgrade_line"] and "$73 an hour" in pctx["upgrade_line"]
+    assert pctx["modality"] == "online"
+    assert rec["sms_body"] == "" and rec["tor_body"] == ""
+    assert h.tickets[0][0][0] == "Low balance: Taylor Rodriguez (private pay), 4 hours left"
+    assert "auto-renews" in h.dms[0][1]
 
 
-def test_repeat_alert_adds_a_note_and_never_re_texts(monkeypatch):
+def test_private_pay_in_person_tiers_and_unknown_tier(monkeypatch):
+    inp = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "3067397", "po_number": ""}}
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())
+    a = lb.parse_alert(ALERT.replace("Charter - iLEAD", "Soar 100"))
+    ctx = lb._context(a, inp, CONTACT, SEAT)
+    p = lb._private_ctx(a, inp, ctx, _cfg()["low_balance"])
+    assert p["modality"] == "in-person" and p["current_tier"] == "Soar" and p["next_tier"] == ""
+    assert "Success (50 hours) is $103 an hour" in p["upgrade_line"]   # top tier → general line
+    a2 = lb.parse_alert(ALERT.replace("Charter - iLEAD", "Mystery Pack"))
+    p2 = lb._private_ctx(a2, inp, ctx, _cfg()["low_balance"])
+    assert p2["current_tier"] == "" and "lower rates" in p2["upgrade_line"]
+
+
+def test_repeat_alert_adds_a_note_and_never_re_sends(monkeypatch):
     prior = {"ticket_id": "T1", "student": "Taylor Rodriguez"}
     h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL],
                 open_cases={"low-balance:26/27:taylor-rodriguez:charter-ilead": prior})
-    rec = lb.handle_alert("thr2", {**MSG, "id": "m-alert-2"}, lb.parse_alert(ALERT.replace("4.0 unused", "2.5 unused")))
+    rec = lb.handle_alert("thr2", {**MSG, "id": "m-alert-2"},
+                          lb.parse_alert(ALERT.replace("4.0 unused", "2.5 unused")))
     assert rec["action_taken"] == "low_balance_repeat" and rec["ticket_id"] == "T1"
-    assert not h.sms and not h.emails and not h.drafts and not h.tickets and not h.dms
+    assert not h.emails and not h.sms and not h.drafts and not h.tickets and not h.dms
     assert h.notes and "2.5 hours" in h.notes[0][1]
 
 
@@ -253,21 +289,28 @@ def test_missing_family_and_deal_are_flagged_not_fatal(monkeypatch):
     assert rec["action_taken"] == "low_balance_opened"
     assert any("family contact NOT found" in f for f in rec["flags"])
     assert any("no deal found" in f for f in rec["flags"])
-    assert not h.drafts                                  # no TOR to write to
-    assert h.sms                                         # phone came from the alert itself
-    assert "🚩" in h.dms[0][1]
+    assert h.emails                                     # the alert itself carries the email
+    assert rec["phone"] == "+1 909-454-8581" and rec["tor_email"] == ""
+    assert h.tickets[0][0][0].startswith("Low balance: Taylor Rodriguez (school unknown)")
+    assert "your charter school" not in h.dms[0][1] and "🚩" in h.dms[0][1]
+    assert not h.stamps                                 # no deal → nothing to stamp
 
 
-def test_four_hours_or_less_is_the_line(monkeypatch):
-    # Roman 2026-09-09: "4 hours or less". 4.0 opens a case; 4.5 and 6 do not.
-    h = Harness(monkeypatch, _cfg(armed=True, max_hours=4), deals=[DEAL])
-    for hours in ("6.0", "4.5"):
-        body = ALERT.replace("4.0 unused hours", f"{hours} unused hours")
-        rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
-        assert rec["action_taken"] == "low_balance_above_threshold"
-    assert not h.tickets and not h.sms and not h.dms
+def test_tor_email_resolved_from_name_when_deal_has_none(monkeypatch):
+    from src import po_inbox
+    no_email = {"id": "9", "properties": {**DEAL["properties"], "teacher_of_record_email": ""}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[no_email], recent=RECENT)
+    monkeypatch.setattr(po_inbox, "_tor_by_name",
+                        lambda f, l: [{"id": "77", "properties": {"email": "kylee@ileadexploration.org"}}]
+                        if (f, l) == ("Kylee", "Cooper-Robles") else [])
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert rec["action_taken"] == "low_balance_opened" and h.tickets
+    assert rec["tor_email"] == "kylee@ileadexploration.org"
+    monkeypatch.setattr(po_inbox, "_tor_by_name",
+                        lambda f, l: [{"properties": {"email": "a@x"}}, {"properties": {"email": "b@x"}}])
+    monkeypatch.setattr(lb.hs, "_get", lambda p, q=None: {"results": []})
+    Harness(monkeypatch, _cfg(armed=True), deals=[no_email], recent=RECENT)
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["tor_email"] == "" and any("no teacher-of-record email" in f for f in rec["flags"])
 
 
 def test_disabled_agent_only_audits(monkeypatch):
@@ -276,53 +319,157 @@ def test_disabled_agent_only_audits(monkeypatch):
     assert rec["action_taken"] == "low_balance_disabled" and not h.tickets
 
 
-# ── the sweep ────────────────────────────────────────────────────────────
+# ── the sweep: day 1, renewed, stopped, risk, lost ────────────────────────
 
 def _case(**over):
     base = {"message_id": "low-balance:26/27:taylor-rodriguez:charter-ilead", "student": "Taylor Rodriguez",
-            "school": "iLead", "ticket_id": "T1", "deal_id": "64250037589",
-            "opened_at": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=2)).isoformat()}
+            "school": "iLead", "ticket_id": "T1", "deal_id": "64250037589", "contact_id": "3167401",
+            "charter": True, "parent_email": "jessicalujanbd@gmail.com",
+            "phone": "+1 909-454-8581", "sms_body": "Hi Jessica, text body.", "opted_out": False,
+            "tor_email": "kylee@ileadexploration.org", "tor_subject": "New PO for Taylor (A+ Tutoring)",
+            "tor_body": "Hi Kylee, body.", "tor_mailbox": "paola@wetutorathome.com", "tor_blocked": False,
+            "opened_at": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1, hours=2)).isoformat()}
     base.update(over)
     return base
 
 
-def test_sweep_closes_case_when_the_new_po_lands(monkeypatch):
+def _active_deal(monkeypatch):
+    monkeypatch.setattr(lb.hs, "_get", lambda p, q=None: {"properties": {"pipeline": "907748", "dealstage": "x"}})
+    monkeypatch.setattr(lb.hs, "stage_label", lambda p, s: "Post-Lesson")
+
+
+def test_day1_texts_and_drafts_when_no_po_and_no_reply(monkeypatch):
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
+    lb.run_sweep(force=True)
+    assert h.sms == [("+1 909-454-8581", "Hi Jessica, text body.")]
+    assert h.drafts and h.drafts[0][0] == "kylee@ileadexploration.org"
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_contacted")
+    assert rec["sms_sent"] and rec["tor_draft_id"] == "d1" and rec["tor_mailbox"] == "paola@wetutorathome.com"
+    assert h.stage() == ["teacher_contacted"]
+    assert h.notes and "Day 1" in h.notes[0][1]
+    assert h.dms and h.dms[0][0] == "UPAO" and "Day 1" in h.dms[0][1]
+
+
+def test_day1_waits_for_the_next_business_morning(monkeypatch):
+    # opened Tuesday 09:00 PT → not due Tuesday, due Wednesday 08:00+
+    opened = dt.datetime(2026, 9, 8, 16, 0, tzinfo=dt.timezone.utc)     # 09:00 PT
+    case = _case(opened_at=opened.isoformat())
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg(armed=True))
+    monkeypatch.setattr(lb, "_in_sms_window", lambda: True)
+    assert not lb._day1_due(case, dt.datetime(2026, 9, 8, 15, 0), 1)
+    assert lb._day1_due(case, dt.datetime(2026, 9, 9, 9, 0), 1)
+    # opened Friday → due Monday, never Saturday
+    fri = dt.datetime(2026, 9, 11, 17, 0, tzinfo=dt.timezone.utc)
+    case_f = _case(opened_at=fri.isoformat())
+    assert not lb._day1_due(case_f, dt.datetime(2026, 9, 12, 10, 0), 1)
+    assert lb._day1_due(case_f, dt.datetime(2026, 9, 14, 9, 0), 1)
+
+
+def test_day1_skipped_when_the_family_replied(monkeypatch):
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case}, replied=True)
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+    assert any(r["action_taken"] == "low_balance_family_replied" for r in h.recs)
+    assert h.notes and "replied" in h.notes[0][1]
+
+
+def test_day1_skipped_when_paola_already_closed_the_ticket(monkeypatch):
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case}, ticket_open=False)
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+
+
+def test_day1_respects_terri_and_opt_out(monkeypatch):
+    case = _case(tor_blocked=True, opted_out=True)
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+    assert h.stage() == ["family_contacted"]
+    assert "opted out" in h.notes[0][1]
+
+
+def test_day1_held_when_not_armed(monkeypatch):
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=False), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts and "not armed" in h.notes[0][1]
+
+
+def test_day1_happens_once(monkeypatch):
+    case = _case(day1_done=True)
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+
+
+def test_sweep_closes_renewed_when_the_new_po_lands(monkeypatch):
     case = _case()
     new_po = {"id": "777", "properties": {"dealname": "Jessica Lujan - Taylor Rodriguez - iLead 2 - 26/27",
                                           "po_number": "3114150000", "createdate": "2026-09-10T00:00:00Z"}}
-    h = Harness(monkeypatch, _cfg(), deals=[new_po], open_cases={case["message_id"]: case})
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
-    lb.run_sweep()
-    assert h.stage_updates == [("T1", "4")]
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[new_po], open_cases={case["message_id"]: case})
+    lb.run_sweep(force=True)
+    assert h.stage_updates == [("T1", "4")] and h.stage() == ["renewed"]
     assert any(r["action_taken"] == "low_balance_resolved" and "3114150000" in r["reason"] for r in h.recs)
-    assert not h.dms
+    assert not h.sms and not h.dms
 
 
-def test_sweep_closes_case_when_the_deal_stops(monkeypatch):
+def test_sweep_closes_not_renewing_when_the_deal_stops(monkeypatch):
     case = _case()
-    h = Harness(monkeypatch, _cfg(), deals=[], open_cases={case["message_id"]: case})
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
     monkeypatch.setattr(lb.hs, "_get", lambda p, q=None: {"properties": {"pipeline": "907748", "dealstage": "x"}})
     monkeypatch.setattr(lb.hs, "stage_label", lambda p, s: "Stopped")
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
-    lb.run_sweep()
+    lb.run_sweep(force=True)
     assert h.stage_updates == [("T1", "4")]
-    assert any("not continuing" in r.get("reason", "") for r in h.recs)
+    assert h.stamps[-1][1] == {"retention_stage": "not_renewing", "retention_lost_reason": "stopped"}
 
 
-def test_sweep_escalates_stalled_cases_once(monkeypatch):
-    case = _case(opened_at=(dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=12)).isoformat())
-    h = Harness(monkeypatch, _cfg(), deals=[], open_cases={case["message_id"]: case})
-    monkeypatch.setattr(lb.hs, "_get", lambda p, q=None: {"properties": {"pipeline": "907748", "dealstage": "x"}})
-    monkeypatch.setattr(lb.hs, "stage_label", lambda p, s: "Post-Lesson")
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 20, 9, 3))
-    lb.run_sweep()
-    assert {u for u, _ in h.dms} == {"UPAO", "UROM"}
-    assert "NO PO after 10+ days" in h.dms[0][1] and "Taylor Rodriguez" in h.dms[0][1]
+def test_private_pay_case_renews_on_any_new_deal(monkeypatch):
+    case = _case(charter=False, sms_body="", tor_body="")
+    new_deal = {"id": "778", "properties": {"dealname": "Jessica Lujan - Taylor", "po_number": "",
+                                            "createdate": "2026-09-10T00:00:00Z"}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[new_deal], open_cases={case["message_id"]: case})
+    lb.run_sweep(force=True)
+    assert h.stage() == ["renewed"] and not h.sms
+
+
+def test_day7_turns_the_ticket_into_a_retention_risk_once(monkeypatch):
+    case = _case(day1_done=True, opened_at=(dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=8)).isoformat())
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    patch = next(p for m, path, p in h.patches if "/tickets/T1" in path)
+    assert patch["properties"]["subject"].startswith("RETENTION RISK: Taylor Rodriguez (iLead)")
+    assert patch["properties"]["hs_ticket_priority"] == "HIGH"
+    assert h.stage() == ["retention_risk"]
+    assert {u for u, _ in h.dms} == {"UPAO", "UROM"} and "RETENTION RISK" in h.dms[0][1]
     assert any(r["action_taken"] == "low_balance_escalated" for r in h.recs)
-    # already escalated → silent
-    h2 = Harness(monkeypatch, _cfg(), deals=[], open_cases={case["message_id"]: {**case, "escalated": True}})
-    lb.run_sweep()
-    assert not h2.dms
+    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: {**case, "escalated": True}})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert not h2.dms and not h2.patches
+
+
+def test_day28_closes_lost_and_queues_reengagement(monkeypatch):
+    case = _case(day1_done=True, escalated=True,
+                 opened_at=(dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=29)).isoformat())
+    h = Harness(monkeypatch, _cfg(armed=True, reengagement_list_id="3300"), deals=[],
+                open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert h.stage_updates == [("T1", "4")]
+    assert h.stamps[-1][1] == {"retention_stage": "lost", "retention_lost_reason": "no_response"}
+    assert any(m == "PUT" and "/lists/3300/memberships/add" in p and b == ["3167401"] for m, p, b in h.patches)
+    assert any(r["action_taken"] == "low_balance_resolved" and "Lost" in r["reason"] for r in h.recs)
 
 
 def test_sweep_self_gates_to_the_top_of_the_hour(monkeypatch):
@@ -335,82 +482,23 @@ def test_sweep_self_gates_to_the_top_of_the_hour(monkeypatch):
 def test_open_cases_folds_state_from_the_audit_log(monkeypatch):
     recs = [
         {"message_id": "low-balance:26/27:a:b", "action_taken": "low_balance_opened", "student": "A B"},
-        {"message_id": "low-balance:26/27:a:b:sms", "action_taken": "low_balance_sms_sent"},
+        {"message_id": "low-balance:26/27:a:b:day1", "action_taken": "low_balance_family_contacted",
+         "tor_draft_id": "d9", "tor_mailbox": "paola@x", "timestamp": "2026-09-10T15:00:00+00:00"},
         {"message_id": "low-balance:26/27:c:d", "action_taken": "low_balance_opened", "student": "C D"},
         {"message_id": "low-balance:26/27:c:d:resolved", "action_taken": "low_balance_resolved"},
         {"message_id": "low-balance:26/27:a:b:escalated", "action_taken": "low_balance_escalated"},
+        {"message_id": "low-balance:26/27:e:f", "action_taken": "low_balance_opened", "student": "E F"},
+        {"message_id": "low-balance:26/27:e:f:replied", "action_taken": "low_balance_family_replied"},
     ]
     monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs))
     cases = lb.open_cases()
-    assert list(cases) == ["low-balance:26/27:a:b"]
-    assert cases["low-balance:26/27:a:b"]["sms_sent"] and cases["low-balance:26/27:a:b"]["escalated"]
+    assert set(cases) == {"low-balance:26/27:a:b", "low-balance:26/27:e:f"}
+    ab = cases["low-balance:26/27:a:b"]
+    assert ab["day1_done"] and ab["tor_draft_id"] == "d9" and ab["escalated"] and ab["day1_at"]
+    assert cases["low-balance:26/27:e:f"]["replied"]
 
 
-def test_template_renders_without_leftover_tokens_or_em_dashes(monkeypatch):
-    from pathlib import Path
-    tpl = Path(__file__).resolve().parents[1] / "templates" / "low_balance_charter.html"
-    monkeypatch.setattr(lb, "cfg", lambda: _cfg())
-    ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT)     # no Teachworks data
-    out = lb._render(tpl.read_text(), ctx)
-    assert "{" not in out.replace("{{", "") and "—" not in out
-    assert ("Taylor's tutoring hours are running low, with <strong>4 hours or less</strong> left on the "
-            "current PO. We would love to keep Taylor's progress going.") in out
-    assert "iLead" not in out and "iLEAD" not in out and "Kylee" not in out   # no school, no teacher
-    assert "vendor" not in out and "rate" not in out and "referral" not in out  # short, no lecture
-    ctx = lb._context(lb.parse_alert(ALERT), DEAL, CONTACT, SEAT, RECENT,
-                      "Lately Taylor has been building confidence with fractions.")
-    out = lb._render(tpl.read_text(), ctx)
-    assert ("current PO. Taylor has been working with Sarah. "
-            "Lately Taylor has been building confidence with fractions. "
-            "We would love to keep that progress going.") in out
-    assert "has had" not in out and "August" not in out          # no duration, ever
-
-
-# ── personalisation ──────────────────────────────────────────────────────
-
-def test_text_carries_the_tutor_first_name_only(monkeypatch):
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=RECENT,
-                positivity="Lately Taylor has been mastering fractions.")
-    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.sms[0][1].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
-                                  "with Sarah and we want to keep that progress going. Taylor has 4 hours or less left")
-    assert "session" not in h.sms[0][1] and "fractions" not in h.sms[0][1]   # positivity is email-only
-    assert h.emails[0][1]["personal_line"] == (" Taylor has been working with Sarah. "
-                                               "Lately Taylor has been mastering fractions.")
-    assert rec["tutor_first"] == "Sarah" and rec["positivity"].startswith("Lately")
-
-
-def test_first_name_handles_teachworks_last_first():
-    assert lb._first_name("Torres, Maria") == "Maria"          # the replay's "Torres," bug
-    assert lb._first_name("Sarah Lee") == "Sarah"
-    assert lb._first_name("Torres,") == "Torres"
-    assert lb._first_name("") == ""
-
-
-def test_tor_email_resolved_from_name_when_deal_has_none(monkeypatch):
-    from src import po_inbox
-    no_email = {"id": "9", "properties": {**DEAL["properties"], "teacher_of_record_email": ""}}
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[no_email], recent=RECENT)
-    monkeypatch.setattr(po_inbox, "_tor_by_name",
-                        lambda f, l: [{"id": "77", "properties": {"email": "kylee@ileadexploration.org"}}]
-                        if (f, l) == ("Kylee", "Cooper-Robles") else [])
-    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert rec["tor_email"] == "kylee@ileadexploration.org" and h.drafts[0][0] == "kylee@ileadexploration.org"
-    # ambiguous name match → no guess, flagged
-    monkeypatch.setattr(po_inbox, "_tor_by_name", lambda f, l: [{"properties": {"email": "a@x"}}, {"properties": {"email": "b@x"}}])
-    monkeypatch.setattr(lb.hs, "_get", lambda p, q=None: {"results": []})
-    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[no_email], recent=RECENT)
-    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert rec["tor_email"] == "" and not h2.drafts and any("no teacher-of-record email" in f for f in rec["flags"])
-
-
-def test_missing_deal_leaves_no_po_ref_or_school_in_copy(monkeypatch):
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[], recent=RECENT)
-    lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.tickets[0][0][0].startswith("Low balance: Taylor Rodriguez (school unknown)")
-    assert "the current PO" not in h.sms[0][1] or "(the current PO)" not in h.sms[0][1]
-    assert "your charter school" not in h.dms[0][1]
-
+# ── copy ─────────────────────────────────────────────────────────────────
 
 def test_personal_line_variants():
     a = lb.parse_alert(ALERT)
@@ -426,31 +514,33 @@ class _FakeClaude:
     def __init__(self, text):
         self.text = text
         self.messages = self
+
     def create(self, **kw):
         import types
         return types.SimpleNamespace(content=[types.SimpleNamespace(type="text", text=self.text)])
 
 
-def test_positivity_is_off_by_default_and_validated(monkeypatch):
+def test_positivity_is_validated_and_never_invented(monkeypatch):
     notes = ["Worked on fractions and word problems, Taylor is getting faster and more confident."]
-    monkeypatch.setattr(lb, "cfg", lambda: _cfg())                    # enabled: False
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())                    # enabled: False in the test cfg
     assert lb._positivity("Taylor", "Sarah", notes, client=_FakeClaude("Lately Taylor has been mastering fractions.")) == ""
-    on = _cfg(positivity={"enabled": True, "model": "m", "max_tokens": 120})
+    on = _cfg(positivity={"enabled": True, "model": "m", "max_tokens": 120, "notes_window_days": 30})
     monkeypatch.setattr(lb, "cfg", lambda: on)
-    assert lb._positivity("Taylor", "Sarah", [], client=_FakeClaude("x")) == ""          # no notes, no call
+    assert lb._positivity("Taylor", "Sarah", [], client=_FakeClaude("x")) == ""          # no notes, no sentence
     assert lb._positivity("Taylor", "Sarah", notes, client=_FakeClaude(
-        "Lately Taylor has been mastering fractions with Sarah")) == "Lately Taylor has been mastering fractions with Sarah."
+        "Lately Taylor has been mastering fractions")) == "Lately Taylor has been mastering fractions."
     for bad in ("NONE", "Taylor scored 92 on the quiz.", "Great job Taylor!",
                 "Taylor — a star.", " ".join(["word"] * 31)):
         assert lb._positivity("Taylor", "Sarah", notes, client=_FakeClaude(bad)) == ""
 
 
-def test_tw_recent_reads_tutor_sessions_and_note_fields(monkeypatch):
+def test_tw_recent_reads_tutor_and_only_last_month_of_notes(monkeypatch):
     from src import teachworks_client as tw
     monkeypatch.setattr(lb, "cfg", lambda: _cfg())
     monkeypatch.setattr(lb, "_today", lambda: dt.date(2026, 9, 9))
     monkeypatch.setattr(tw, "accounts", lambda: {"online": "tok"})
     monkeypatch.setattr(tw, "customers_for_family", lambda e, l, f, token=None: [{"id": 7}])
+
     def fake_get(endpoint, params=None, token=None):
         if endpoint == "students":
             return [{"id": 1, "first_name": "Taylor"}, {"id": 2, "first_name": "Sibling"}]
@@ -462,21 +552,44 @@ def test_tw_recent_reads_tutor_sessions_and_note_fields(monkeypatch):
                   "notes": "Worked on fractions and word problems; Taylor is getting more confident."}]},
             {"from_date": "2026-08-25", "status": "Attended", "employee_name": "Torres, Sarah",
              "name": "Math Tutoring", "participants": [{"student_name": "Taylor Rodriguez", "status": "Attended"}]},
-            # older than the 30-day notes window: attended (counts as a session) but its
-            # notes must never feed the positivity sentence
             {"from_date": "2026-07-30", "status": "Attended", "employee_name": "Torres, Sarah",
              "name": "Math Tutoring", "participants": [
                  {"student_name": "Taylor Rodriguez", "status": "Attended",
                   "notes": "STALE NOTE from July that must not be used for the sentence."}]},
-            {"from_date": "2026-08-28", "status": "Cancelled", "employee_name": "Sarah Lee"},
-            {"from_date": "2099-01-01", "status": "Scheduled", "employee_name": "Sarah Lee"},
+            {"from_date": "2026-08-28", "status": "Cancelled", "employee_name": "Torres, Sarah"},
+            {"from_date": "2099-01-01", "status": "Scheduled", "employee_name": "Torres, Sarah"},
         ]
     monkeypatch.setattr(tw, "tw_get", fake_get)
     r = lb._tw_recent(lb.parse_alert(ALERT), DEAL)
     assert r["tutor_first"] == "Sarah" and r["sessions"] == 3 and r["since"] == "2026-08-22"
     assert r["subjects"] == ["Math Tutoring"] and r["notes_fields_seen"] == ["notes"]
     assert len(r["notes"]) == 1 and r["notes"][0].startswith("Worked on fractions")
-    assert not any("STALE" in n for n in r["notes"])
-    # a Teachworks hiccup never blocks the case
     monkeypatch.setattr(tw, "tw_get", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("503")))
     assert lb._tw_recent(lb.parse_alert(ALERT), DEAL)["sessions"] == 0
+
+
+def test_templates_render_clean(monkeypatch):
+    from pathlib import Path
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())
+    a = lb.parse_alert(ALERT)
+    tpl = Path(__file__).resolve().parents[1] / "templates" / "low_balance_charter.html"
+    out = lb._render(tpl.read_text(), lb._context(a, DEAL, CONTACT, SEAT))
+    assert "{" not in out and "—" not in out
+    assert ("Taylor's tutoring hours are running low, with <strong>4 hours or less</strong> left on the "
+            "current PO. We would love to keep Taylor's progress going.") in out
+    assert "iLead" not in out and "Kylee" not in out and "vendor" not in out and "referral" not in out
+    out = lb._render(tpl.read_text(), lb._context(a, DEAL, CONTACT, SEAT, RECENT,
+                                                  "Lately Taylor has been building confidence with fractions."))
+    assert ("current PO. Taylor has been working with Sarah. Lately Taylor has been building confidence "
+            "with fractions. We would love to keep that progress going.") in out
+    assert "has had" not in out and "August" not in out                 # no duration, ever
+    # private pay
+    gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default"}}
+    a2 = lb.parse_alert(ALERT.replace("Charter - iLEAD", "2025 - Prep Package"))
+    pctx = lb._private_ctx(a2, gold, lb._context(a2, gold, CONTACT, SEAT, RECENT), _cfg()["low_balance"])
+    tpl2 = Path(__file__).resolve().parents[1] / "templates" / "low_balance_private.html"
+    out2 = lb._render(tpl2.read_text(), pctx)
+    assert "{" not in out2 and "—" not in out2
+    assert "Taylor's current tutoring package is almost used up. Taylor has been working with Sarah." in out2
+    assert "Prep package at $83 an hour. Moving to Success (50 hours) brings that to $73 an hour" in out2
+    assert "renews on its own" in out2 and "Rodriguez" not in out2

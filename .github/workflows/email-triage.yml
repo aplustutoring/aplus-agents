@@ -27,6 +27,10 @@ on:
         description: "Low-balance agent: replay ONE Teachworks alert by HubSpot thread id instead of polling (pair with dry_run)"
         required: false
         default: ""
+      simulate_days:
+        description: "With replay_thread: then run the sweep as if the case opened N days ago (1 = text + teacher, 7 = risk, 28 = lost)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -63,6 +67,7 @@ jobs:
           GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
           DRY_RUN: ${{ inputs.dry_run }}
           LOW_BALANCE_REPLAY_THREAD: ${{ inputs.replay_thread }}
+          LOW_BALANCE_SIMULATE_DAYS: ${{ inputs.simulate_days }}
           LOW_BALANCE_FORCE_ARMED: ${{ inputs.replay_thread != '' && inputs.dry_run && '1' || '0' }}
         run: python -m src.main
 

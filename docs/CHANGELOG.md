@@ -97,8 +97,31 @@ Stephanie", email with a Claude sentence from the `public_notes` lesson
 field (confirmed live: that is where Teachworks notes come through), and
 the teacher draft to kylee.robles@ileadexploration.org in Paola's mailbox.
 
+**2026-09-10, the retention process (Roman, question by question):**
+retention starts at the first lesson, not the renewal, and the whole journey
+is now written down in **`docs/RETENTION-PROCESS.md`** (lesson-one brief and
+quality text, missing-notes ticket to Kath tied to the tutor, day-14 and
+day-45 call briefs with the call-outcome text, NPS on day 21 with
+reasoning, day-30 referral, day-75 spotlight from Paola's form, Lost with a
+reason and re-engagement). Low balance is step 1 and was **resequenced**:
+day 0 is the **email only**; the **text and the teacher draft move to the
+next business morning** and go only to families with no PO, no reply in the
+seat's inbox (read via the same delegation) and an open ticket; day 7 turns
+the **ticket into the retention issue** ("RETENTION RISK", HIGH, DM to seat +
+visionary); day 28 closes it as **Lost** and adds the contact to a
+re-engagement list. The HubSpot **task is gone** ("it's a ticket, not a
+task"). **Private pay** (auto-renews at 2 hours) gets **one upgrade email**
+with the package math from the 2026 pricing sheets, no text, no teacher.
+**Monday is retired** (quarterly goal): the list is five agent properties on
+the **deal** (`retention_stage`, `retention_lost_reason`,
+`retention_low_balance_alert_date`, `retention_last_notice_sent`,
+`retention_last_touch`, declared in properties.yml, group Retention journey)
+and a saved deal view "Renewal Chase". The replay gained `simulate_days`.
+Suite 452.
+
 **Still human (until armed):** everything the ticket note says the agent
-would have sent. **After arming:** sending the teacher draft from Gmail
+would have sent. **Roman:** run the hubspot-schema workflow (creates the five
+deal properties) and build the "Renewal Chase" saved view. **After arming:** sending the teacher draft from Gmail
 Drafts; anything the 🚩 flags name (family not found, no deal, no TOR email).
 
 **Not done:** the Monday board is not written to or read (nothing else reads

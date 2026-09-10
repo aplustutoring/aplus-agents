@@ -191,8 +191,15 @@ low_balance:
   owner: charter_sales
   notify: [charter_sales]
   escalate_to: visionary
-  escalate_days: 10               # no new PO deal after this → one DM to seat + escalate_to
-  follow_up_business_days: 3      # HubSpot task for the seat
+  # The sequence (Roman 2026-09-10): day 0 EMAIL only; the next business
+  # morning, if no PO and no reply, the TEXT and the TEACHER draft; day 7 with
+  # no PO the ticket becomes the retention issue (RETENTION RISK, priority
+  # HIGH, DM to the seat + escalate_to); 21 days after that, Lost + the
+  # re-engagement list. No HubSpot task: the ticket is the case.
+  family_text_after_days: 1       # business days after the day-0 email
+  retention_risk_days: 7
+  lost_after_days: 21             # after the risk flag
+  reengagement_list_id: ""        # HubSpot static list the Lost family joins (empty = skip)
   draft_unsent_nag_hours: 24      # teacher draft still in Drafts → one nag
   sla_hours: 8
   priority: normal
@@ -239,6 +246,23 @@ low_balance:
     from: "{sender_name}, A+ Tutoring <admin@wetutorathome.com>"   # verified sending address; the NAME is the seat's
     reply_to: "{sender_email}"    # replies reach the seat directly
     subject: "{student}'s tutoring hours are running low"
+  # Private pay auto-renews at 2 hours (Roman 2026-09-10): no text, no
+  # teacher, one email from the seat offering the next package up. Tiers from
+  # the 2026 pricing sheets; the email does the math for the family.
+  private_pay:
+    template: "templates/low_balance_private.html"
+    subject: "{student}'s next tutoring package"
+    tiers:
+      online:
+        - { name: Improvement, hours: 8,   rate: 88 }
+        - { name: Prep,        hours: 20,  rate: 83 }
+        - { name: Success,     hours: 50,  rate: 73 }
+        - { name: Soar,        hours: 100, rate: 68 }
+      in_person:
+        - { name: Improvement, hours: 8,   rate: 115 }
+        - { name: Prep,        hours: 20,  rate: 108 }
+        - { name: Success,     hours: 50,  rate: 103 }
+        - { name: Soar,        hours: 100, rate: 93 }
   tor_email:
     mode: draft                   # draft = a real Gmail draft the seat sends in one click (email-only rule, Roman 2026-09-03)
     mailbox: seat                 # the seat's own Gmail (staff.<seat>.email); a literal address also works

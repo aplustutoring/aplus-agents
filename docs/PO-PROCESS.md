@@ -198,17 +198,18 @@ unused hours" + parent name/email/phone). The triage pass recognises that
 wording **before the classifier** and opens one renewal case per student +
 package per school year:
 
-| What | Rule |
+This is step 1 of the retention journey; the full process, the copy rules and
+the HubSpot fields are in `docs/RETENTION-PROCESS.md`. In short:
+
+| When | Rule |
 |---|---|
-| Ticket | `Low balance: <student> (<school>), N hours left`, owner **charter_sales**, linked to the family contact and the alert thread, category new_deal_po. Repeated alerts (Teachworks re-fires on every balance change) add a note, never a second text. |
-| Family text (armed) | JustCall, from the seat's first name, asks the family to request a new PO from their TOR. Quiet hours 8am–8pm PT defer it to the hourly sweep. |
-| Family email (armed) | Resend, from "<seat name>, A+ Tutoring", reply-to the seat, copy in `email/templates/low_balance_charter.html`. The PO is issued by the **school**; we ask and offer vendor details, never "we handle the PO". |
-| Teacher of record (armed) | A real Gmail **draft** in the seat's own mailbox, email only (no calls, no meeting links). **Never** for Level Up Terri (pipeline 72281989): those teachers cannot issue additional POs. |
-| Task | Follow-up to the seat, due +3 business days. |
-| DM | One, to charter_sales only. |
-| Closes itself | A new PO deal for the student (Stage 3) closes the ticket with the PO number; a deal moved to Stopped closes it as not continuing. No PO after 10 days → one escalation DM (seat + visionary). |
-| Not charter | Gold / private-pay packages get the ticket only (phase 2). |
-| `armed: false` | The default until Roman approves the copy: ticket + note showing exactly what would be sent + DM; nothing reaches a family or teacher. |
+| Day 0 | Ticket `Low balance: <student> (<school>), N hours left`, owner **charter_sales**, linked to the family and the alert. **Email only** to the parent from the seat's name (tutor first name, one sentence from the last month of lesson notes, "please submit a new PO or ask your teacher of record to"). Deal `retention_stage` → Low Hours. Repeated alerts add a note, never a second message. |
+| Day 1, next business morning | No PO, no reply in the seat's inbox, ticket still open → **text** from the seat's line and the **teacher draft** in the seat's Gmail (never for Level Up Terri, pipeline 72281989). Deal → Family / Teacher Contacted. |
+| Day 7 | No PO → the ticket is the retention issue: "RETENTION RISK", priority HIGH, deal → Retention Risk, one DM to the seat and the visionary role. No task. |
+| Day 28 | Still nothing → closed as Lost (`no_response`), family to the re-engagement list. |
+| Any day | New PO deal (Stage 3) → ticket closed, deal → Renewed. Deal Stopped → Not Renewing. |
+| Private pay | One upgrade email (auto-renews at 2 hours); no text, no teacher. |
+| `armed: false` | The default until Roman flips it: ticket + note showing exactly what would be sent + DM; nothing reaches a family or teacher. |
 
 ## Stage 7 — Payment
 
