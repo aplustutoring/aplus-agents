@@ -1,9 +1,12 @@
 /**
  * Delilah's 5th Birthday / Rosh Hashanah 5787 photo booth — Cloudflare Worker
  *
- * POST /submit   { name, phone, photo (dataURL jpeg) }
- *   1. Archives the framed photo in KV (permanent), served at GET /photo/<key>
- *   2. If phone given: texts the photo via JustCall MMS from JUSTCALL_FROM
+ * POST /submit    { name, phone, photo (dataURL jpeg), kind: "photo" | "storybook" }
+ *   1. Archives the framed print in KV (permanent), served at GET /photo/<key>
+ *   2. If phone given: texts it via JustCall MMS from JUSTCALL_FROM
+ * POST /storybook { raw (dataURL jpeg of the un-framed capture), name }
+ *   Asks Gemini to repaint the guests into a Rosh Hashanah storybook orchard,
+ *   faces preserved. Returns { image: <base64 jpeg> } for the booth to frame + print.
  * GET  /photo/<key>   public photo host (unguessable UUID keys)
  * GET  /photos        JSON list of archived keys (for reprints / the album)
  *
@@ -33,9 +36,23 @@ export default {
     if (request.method === "GET" && url.pathname === "/photos") {
       const list = await env.PHOTOS.list({ limit: 1000 });
       const photos = list.keys
-        .map((k) => ({ key: k.name, name: k.metadata?.name || "", at: k.metadata?.at || "", url: `${url.origin}/photo/${k.name}` }))
+        .map((k) => ({ key: k.name, name: k.metadata?.name || "", at: k.metadata?.at || "", kind: k.metadata?.kind || "photo", url: `${url.origin}/photo/${k.name}` }))
         .sort((a, b) => (a.at < b.at ? -1 : 1));
       return json({ photos }, 200, env);
+    }
+
+    if (request.method === "POST" && url.pathname === "/storybook") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid JSON" }, 400, env); }
+      const raw = body.raw || "";
+      const m = /^data:(image\/(?:jpeg|png));base64,(.+)$/s.exec(raw);
+      if (!m) return json({ error: "raw (jpeg/png dataURL) required" }, 400, env);
+      try {
+        const image = await paintStorybook(env, { mimeType: m[1], base64: m[2] });
+        return json({ ok: true, image }, 200, env);
+      } catch (e) {
+        return json({ ok: false, error: String(e) }, 502, env);
+      }
     }
 
     if (request.method !== "POST" || url.pathname !== "/submit") {
@@ -51,6 +68,7 @@ export default {
       return json({ error: "Invalid JSON" }, 400, env);
     }
     const { name = "", phone = "", photo } = body;
+    const kind = body.kind === "storybook" ? "storybook" : "photo";
     if (!photo || !/^data:image\/jpeg;base64,/.test(photo)) {
       return json({ error: "photo (jpeg dataURL) required" }, 400, env);
     }
@@ -62,7 +80,7 @@ export default {
     try {
       const bytes = Uint8Array.from(atob(photo.replace(/^data:image\/jpeg;base64,/, "")), (c) => c.charCodeAt(0));
       const key = `${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID()}.jpg`;
-      await env.PHOTOS.put(key, bytes, { metadata: { name: String(name).slice(0, 60), at: new Date().toISOString() } });
+      await env.PHOTOS.put(key, bytes, { metadata: { name: String(name).slice(0, 60), at: new Date().toISOString(), kind } });
       archiveUrl = `${url.origin}/photo/${key}`;
       results.archive = { url: archiveUrl };
     } catch (e) {
@@ -73,7 +91,7 @@ export default {
     const to = normalizePhone(phone);
     if (to && archiveUrl) {
       try {
-        results.text = await sendPhotoText(env, { to, name, mediaUrl: archiveUrl });
+        results.text = await sendPhotoText(env, { to, name, mediaUrl: archiveUrl, kind });
       } catch (e) {
         results.text = { error: String(e) };
       }
@@ -92,12 +110,44 @@ export function normalizePhone(raw) {
   return null;
 }
 
-export function smsBody(env, name) {
+export function smsBody(env, name, kind = "photo") {
   const first = String(name || "").trim().split(/\s+/)[0] || "there";
-  return (env.SMS_BODY || "Hi {name}! Here is your photo.").replace("{name}", first);
+  const tpl = kind === "storybook"
+    ? (env.STORYBOOK_SMS_BODY || "And here is your storybook version, {name}!")
+    : (env.SMS_BODY || "Hi {name}! Here is your photo.");
+  return tpl.replace("{name}", first);
 }
 
-async function sendPhotoText(env, { to, name, mediaUrl }) {
+// Gemini image edit: the guest photo goes in as a reference part, the prompt
+// asks for a repaint that keeps every person recognizable. ~10 s in testing.
+export const STORYBOOK_PROMPT =
+  "Repaint the people in this photo as a hand-painted children's storybook illustration. " +
+  "Keep every person, their faces, hair, expressions, glasses and clothing colors recognizable, " +
+  "in the same positions and group pose. Place them in a sunlit pomegranate orchard for Rosh Hashanah: " +
+  "pomegranate trees heavy with fruit, baskets of red apples, a big jar of golden honey with a wooden dipper, " +
+  "a round challah, a few bees, and a soft golden sky. Warm watercolor and gouache style, gentle outlines, " +
+  "festive and cozy. No text, no letters, no watermark.";
+
+async function paintStorybook(env, { mimeType, base64 }) {
+  if (!env.GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not set");
+  const model = env.GEMINI_MODEL || "gemini-3.1-flash-image";
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ inlineData: { mimeType, data: base64 } }, { text: STORYBOOK_PROMPT }] }],
+      generationConfig: { responseModalities: ["TEXT", "IMAGE"], imageConfig: { aspectRatio: "4:5" } },
+    }),
+  });
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const out = await res.json();
+  const parts = out?.candidates?.[0]?.content?.parts || [];
+  const img = parts.find((p) => p.inlineData?.data);
+  if (!img) throw new Error(`Gemini returned no image (${out?.candidates?.[0]?.finishReason || "unknown"})`);
+  return img.inlineData.data;
+}
+
+async function sendPhotoText(env, { to, name, mediaUrl, kind = "photo" }) {
   const res = await fetch("https://api.justcall.io/v2.1/texts/new", {
     method: "POST",
     headers: {
@@ -108,7 +158,7 @@ async function sendPhotoText(env, { to, name, mediaUrl }) {
     body: JSON.stringify({
       justcall_number: env.JUSTCALL_FROM,
       contact_number: to,
-      body: smsBody(env, name),
+      body: smsBody(env, name, kind),
       media_url: mediaUrl,
     }),
   });

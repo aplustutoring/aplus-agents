@@ -7,6 +7,36 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
+
+**What:** each kept shot now yields two favors. After the real photo prints and is
+texted, the booth posts the un-framed capture to `POST /storybook`; the Worker calls
+`gemini-3.1-flash-image` with the photo as a reference part and a fixed prompt
+(`STORYBOOK_PROMPT`: hand-painted storybook, faces/hair/glasses/clothes preserved,
+pomegranate orchard, apples, honey jar, challah, bees). The page frames the result in
+the same 4x6 card with the banner "Once upon a Shana Tova", prints it, archives it
+(`kind: storybook`), and texts it with `STORYBOOK_SMS_BODY`.
+
+- `booth/delilah/worker.js` — `/storybook` + `paintStorybook()`; `/submit` takes
+  `kind`; album entries carry `kind`; SMS body picks by kind.
+- `booth/delilah/public/index.html` — `drawCard()` shared by both prints, raw
+  mirrored crop kept for Gemini, "painting" screen, 75 s abort, silent fallback.
+- `booth/delilah/wrangler.toml` — `STORYBOOK_SMS_BODY`, `GEMINI_MODEL`; secret
+  `GEMINI_API_KEY` set on the Worker.
+- `booth/delilah/test-worker.mjs` — 37 assertions incl. mocked Gemini success,
+  429 → 502, bad input → 400, storybook SMS body, album kinds.
+
+**Verified live:** `/storybook` on the deployed Worker returned a repaint of a
+stand-in family photo in 10 s with likeness intact; both cards rendered through
+`drawCard()` and were sent to Roman.
+
+**Why Gemini and not Workers AI or GPT:** the job is a subject-preserving edit from
+a reference photo; Gemini's image model does that in one call and the key was
+already in `.env`. Workers AI only had SD 1.5 img2img (weak on faces), GPT Image
+edits are slower.
+
+**Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-10 — Call relay ARMED; first grace retry crashed on a CWD-relative marker path (fixed)
 
 **Armed (Roman, ~15:40 PT):** GITHUB_TOKEN + WEBHOOK_TOKEN on
