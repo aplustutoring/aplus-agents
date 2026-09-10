@@ -27,11 +27,22 @@ hours-request drafts for the families whose teacher of record is confirmed
 were written as a review document for Roman and Paola (session scratchpad,
 not committed: family PII). Not sent; no Gmail draft exists; Paola sends by
 hand after review.
+**Corrections the same day (Roman):** the first drafts pro-rated 45-minute
+sessions ($675) and then quoted a monthly total ($720); the rule is $60 per
+45-minute session, never pro-rated, at least 8 to 12 sessions a month, and
+no monthly dollar total in front of a family or a teacher ("we can't sticker
+shock them"). The Sagua draft also offered "if you need our vendor details
+again, just say so"; Roman: "they definitely do not need our vendor info."
+A teacher who issued us a PO before already has us as a vendor, so the
+hours email asks for the PO and nothing about setup. Stages 04 and 10 now
+carry that rule; the teacher outreach sequence copy still promises "vendor
+details and hours" to every teacher and is listed as a gap.
 **Not done:** in-person and private-pay rates (Roman), a vendor-details
-artifact, a teacher-email template in the email engine.
+artifact for schools new to A+, a teacher-email template in the email
+engine, the sequence copy fix.
 **Files:** knowledge/program-model.md (new), knowledge/rate-card.yml (new),
 knowledge/README.md, knowledge/journey/04-qualified-to-deal.md,
-knowledge/journey/08-renewal.md.
+knowledge/journey/08-renewal.md, knowledge/journey/10-teacher-of-record.md.
 
 ---
 ## 2026-09-09 — Pre-send gate + one_to_few rail (the code behind the journey checklist)

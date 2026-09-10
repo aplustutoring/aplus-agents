@@ -72,8 +72,12 @@ any promise about start dates.
   arrives without them (`email/src/po_inbox.py`, the parent chase). Check the
   teacher's recent call context first; the chase draft already does.
 - For a returning family: "We spoke with {parent}; {student} is ready to pick
-  back up with {tutor} at {schedule}. Here are the hours and our vendor
-  details for the PO." No template exists for this; see gaps.
+  back up with {tutor} at {schedule}. Could the school issue the PO for
+  {month}? Once it is in, we schedule the same day." A teacher who issued us
+  a PO before already has us as a vendor; never offer vendor details to a
+  returning teacher (Roman 2026-09-09). Vendor details go only to a school
+  or teacher new to A+, and only when asked. No template exists for this;
+  see gaps.
 
 ## Questions the agent asks itself here
 
@@ -109,8 +113,8 @@ verified in the repo (open item).
 
 ## Known gaps
 
-- No template and no code for the hours-and-vendor-details email to a
-  teacher. The teacher outreach sequence promises it
+- No template and no code for the hours email to a returning teacher, or
+  the hours-and-vendor-details email to a new one. The teacher outreach sequence promises it
   (`ops/messenger/templates/teacher-outreach-2026-09/seq1_worked_with_us.md`),
   and Danielle writes it by hand.
 - No vendor-details artifact (how to issue the PO, vendor number) in the

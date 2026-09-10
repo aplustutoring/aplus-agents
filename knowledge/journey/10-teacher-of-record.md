@@ -55,8 +55,10 @@ email and link the family (intended standing go once `04` is REVIEWED); stamp
 `[Agent] School` from the email domain.
 
 **Draft:** the parent-info chase when a PO arrives without a parent (the PO
-agent already drafts it, a human sends); the hours-and-vendor-details email
-for a returning student; any reply to a teacher.
+agent already drafts it, a human sends); the hours email for a returning
+student (hours and the PO ask only; a returning teacher already has us as a
+vendor and is never offered vendor details, Roman 2026-09-09); any reply to a
+teacher.
 
 **Ask:** anything that creates a teacher from a name alone (never; email
 only), any teacher contact outside the sequence cadence, any mention of the
@@ -105,8 +107,9 @@ renewal asks for those families do not go to the teacher.
 
 ## Known gaps
 
-- No template or code for the hours-and-vendor-details email; the sequence
-  promises it and a human writes it.
+- No template or code for the hours email; the sequence promises "vendor
+  details and hours" to every teacher, but a returning teacher gets hours
+  only (2026-09-09 rule above). The sequence copy still says vendor details.
 - No vendor-details artifact in the repo.
 - New-teacher intake automation (ask for email, create, link) is not built; it
   ran by hand on 2026-09-08 and the shape is recorded in `docs/CHANGELOG.md`.
