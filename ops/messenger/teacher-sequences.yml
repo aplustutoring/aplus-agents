@@ -12,6 +12,7 @@ armed: true
 start_date: "2026-09-08"
 timezone: America/Los_Angeles
 daily_cap: 50                     # per sequence per run
+recent_touch_days: 7              # skip a teacher any seat contacted (logged email, call, or meeting) in the last N days
 
 sender:
   user_id: "46811240"             # Danielle's HubSpot user id (sequences are per-user)
@@ -40,6 +41,7 @@ notify:
 # Eligibility, checked at enroll time (lists were built 2026-09-04 and can drift):
 #   has email; not opted out; not hard-bounced; generic_inbox != Yes;
 #   campaign_replied != Yes; not currently enrolled in ANY sequence;
+#   not contacted by any seat in the last recent_touch_days (HubSpot Last Contacted);
 #   not already enrolled by this script (state).
 sequences:
   - key: worked_with_us

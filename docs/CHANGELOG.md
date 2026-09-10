@@ -7,6 +7,22 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — Teacher enroller skips teachers any seat contacted in the last 7 days
+
+**Why:** on 2026-09-10 Ashley Pontell (iLEAD) got Danielle's outreach
+sequence email at 11:58 AM and Paola's PO request at 12:14 PM. The enroller
+checked opt-out, bounce, generic inbox, campaign reply, and current
+enrollment, but not whether another seat was already talking to the teacher.
+Roman: "close the gap in the enroller."
+**What:** `recent_touch_days: 7` in `ops/messenger/teacher-sequences.yml`;
+the enroller reads HubSpot's Last Contacted (`notes_last_contacted`, any
+user's logged email, call, or meeting) and skips the contact with the
+reason "contacted by a seat in the last 7 days", counted in the run's skip
+report like every other reason. Tests added.
+**Files:** scripts/teacher_sequence_enroll.py, ops/messenger/teacher-sequences.yml,
+scripts/tests/test_teacher_sequence_enroll.py.
+
+---
 ## 2026-09-10 — booth/delilah: home photo booth for Delilah's 5th birthday + Rosh Hashanah 5787 (2026-09-11)
 
 **What:** `booth/delilah/` is a personal-event fork of the Sage Oak booth. Every kept
