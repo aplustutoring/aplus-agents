@@ -40,6 +40,18 @@ a note, never a second message.
 | 28 | Still nothing: closed as **Lost** (`no_response`), re-engagement list. | same |
 | any | New PO deal → ticket closed, deal → **Renewed**. Deal Stopped → **Not Renewing**. | Any new deal → Renewed. |
 
+**Grouping (Roman 2026-09-10):** siblings alert minutes apart (the three
+Melaras, one hour between them), so the day-0 email is sent by the sweep
+after `email_delay_minutes` (60) as **one email per family naming every
+student**; day 1 is **one text per family** and **one draft per teacher**
+naming every student that teacher has running low. **Backfill:** the
+email-triage workflow input `backfill_days=N` opens a case for every alert
+of the last N days that has none (skipping students whose newer PO deal
+already exists) and sends the day-0 emails at once; the rest follows the
+normal clock. **Private pay on pre-2026 service codes** (the Teachworks
+package name carries the pricing year) gets a ticket but no upgrade email:
+that renewal is a rate conversation for the seat.
+
 Copy rules, all locked by Roman on 2026-09-09: "4 hours or less", never the
 exact balance; **first names for everyone** (student, parent, tutor, teacher);
 **no school name and no teacher name** in family copy; **parent submits the

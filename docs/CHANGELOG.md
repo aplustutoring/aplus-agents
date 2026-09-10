@@ -126,6 +126,23 @@ the **deal** (`retention_stage`, `retention_lost_reason`,
 and a saved deal view "Renewal Chase". The replay gained `simulate_days`.
 Suite 452.
 
+**Later on 2026-09-10 (Roman: "back fill the last weeks low balance
+alerts... if a teacher has more than one student with a low balance alert
+we have to be smart enough to combine"):** the last 10 days of alerts (18,
+pulled from HubSpot conversations) showed three siblings alerting an hour
+apart, a **negative balance** ("-0.5 unused hours", the parser rejected it),
+and "CHARTER - Out of Pocket" (a charter family paying themselves: no PO to
+ask for, now private pay). So: the day-0 email is now **sent by the sweep**
+after `email_delay_minutes` (60) as **one email per family** naming every
+student (`low_balance_charter_multi.html`, `subject_multi`); day 1 is **one
+text per family** (`sms_template_multi`) and **one draft per teacher**
+(`tor_email.body_multi`) naming every student; negative balances parse;
+out-of-pocket is private pay. New `backfill_days` input on email-triage
+opens cases for every alert of the last N days that has none (students with
+a newer PO deal skipped) and sends the grouped day-0 emails immediately.
+Dry-run replays/backfills got their own concurrency group (the 5-minute
+poll had cancelled run 34538803410). Suite 457.
+
 **Still human (until armed):** everything the ticket note says the agent
 would have sent. **Roman:** run the hubspot-schema workflow (creates the five
 deal properties) and build the "Renewal Chase" saved view. **After arming:** sending the teacher draft from Gmail
