@@ -7,6 +7,69 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 (late) — Call relay: port the stuck-alarm fix, then find the relay was never armed
+
+**Why:** PR #200 fixed the deal relay's Dispatcher: an alarm that exhausted its
+retries (GITHUB_TOKEN unset) stayed pinned in the past, and because `fetch()`
+only re-armed when the alarm was null or later than the wanted time, every
+later webhook was silently absorbed (85 minutes on 2026-09-09).
+`ops/call_agent/webhook-relay/worker.js` is the same Dispatcher (the deal
+relay was cloned from it) and carried the identical latent bug.
+
+**Ported verbatim from 68bd0555 (deal relay), call-relay paths and delays
+kept:**
+- `fetch()` treats an alarm more than 2 minutes in the past as stale and
+  replaces it with `setAlarm(wantedAt)`; stores `lastScheduledAt`; the reply
+  carries `replacedStale`.
+- Token-gated `GET /status` on the worker, `status()` on the DO: alarm,
+  latestWantedAt, lastScheduledAt, lastDispatchAt, lastDispatchError.
+- `alarm()` stores `lastDispatchError` on failure (then rethrows so the
+  platform still retries) and `lastDispatchAt` on success, with
+  console.log/error so `wrangler tail` shows outcomes.
+
+**What deploying it surfaced.** `wrangler secret list` on
+`call-agent-webhook-relay` returns `[]`. The deployment history has exactly
+one deploy before this session (2026-09-08 18:42Z) and no `secret put` ever
+ran, so GITHUB_TOKEN and WEBHOOK_TOKEN were never set. The repo has no
+`CALL_RELAY_URL` / `CALL_RELAY_TOKEN` secrets either. So the relay cannot
+dispatch, and with the token undefined it answers 403 to everything,
+including `/status`. The workflow_dispatch runs of `call-agent.yml` on 9/7,
+9/8 and 9/9 that looked like relay traffic are not: their actor is
+`github-actions[bot]`, each one starts 20 seconds after a "Fleet retry
+sweeper" run, and every one is a DRY RUN (the sweeper posts `{"ref":"main"}`
+with no inputs, so `dry_run` takes its default of true and nothing persists).
+Net effect: since #146 removed the poll crons on 9/4, calls have been
+processed live exactly once a day, at the 00:30 UTC digest. The relay's
+one-time setup (README steps 1 to 4) is still entirely undone.
+
+**System change so this cannot hide again:** `GET /health` now returns 503
+`missing secrets: <names>` when either secret is unset, and `ok` only when
+both are present. No values are exposed, only names. Verified live: the
+worker answers `missing secrets: GITHUB_TOKEN, WEBHOOK_TOKEN health=503`.
+Anything that watches `/health` (a fleet-health probe, a curl in the README
+smoke test) now sees an unarmed relay as unhealthy instead of green.
+
+**Deploy:** `npx wrangler deploy` from `ops/call_agent/webhook-relay/`
+(versions 70887d9f, then 81af5fab with the health change). `/status` could
+not be exercised because there is no WEBHOOK_TOKEN to gate it with; the
+route's 403 gate was confirmed. `wrangler tail` during the session:
+nine minutes around 5 PM PT saw one request, this session's own `/health`
+curl. No JustCall traffic arrived, so whether the two JustCall webhooks were
+ever added is still unverified (a quiet window, not proof either way).
+
+**Still human (Roman):** create the fine-grained PAT, `wrangler secret put
+GITHUB_TOKEN` and `WEBHOOK_TOKEN`, add repo secrets `CALL_RELAY_URL` +
+`CALL_RELAY_TOKEN`, point the two JustCall webhooks at the worker. Then
+`curl /health` must say `ok` and `/status?token=...` must answer JSON.
+
+**Proposed, not done (needs a go):** the retry sweeper's catch-up dispatch of
+`call-agent.yml` is a no-op because it sends no inputs; it should pass
+`dry_run=false, no_digest=true` for that workflow or skip it and alert
+instead, since today it reports "A catch-up run was dispatched" for a run
+that writes nothing.
+
+**Files:** `ops/call_agent/webhook-relay/{worker.js,README.md}`,
+`docs/CHANGELOG.md`. The deal relay was not touched.
 ## 2026-09-09 (late) — Monday Pre-Lesson board RETIRED (Roman)
 
 **Roman:** "the board is retired." Monday board 18397928615 (Pre-Lesson /
