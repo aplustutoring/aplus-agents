@@ -200,34 +200,39 @@ def _student_deals(first: str, last: str, created_after_ms: int | None = None) -
             "limit": 100}
     res = hs._write("POST", "/crm/v3/objects/deals/search", body)   # searches pass through DRY_RUN
     deals = res.get("results", []) if isinstance(res, dict) else []
-    if not deals:
-        # The property is stamped by the PO agent since 2026-08; older and
-        # hand-made deals only carry the name ('Mayra Aguilar - Ezekiel Melara
-        # - Sky Mountain 2 - 26/27'). Fall back to the deal NAME (the 2026-09-10
-        # backfill: two of three Melara boys and Kailyn DaVault had deals the
-        # property search could not see).
+    ln = (last or "").strip().lower()
+    # a multi-word surname ('Marie DaVault', 'Cooper-Robles') matches on any
+    # token of 3+ letters; a stamped surname must match exactly
+    tokens = [t for t in re.split(r"[\s\-]+", ln) if len(t) >= 3] or [ln]
+
+    def _mine(cands: list[dict]) -> list[dict]:
+        if not ln:
+            return cands
+        out = []
+        for d in cands:
+            p = d.get("properties") or {}
+            stamped = (p.get("student_last_name_if_diff_from_parent") or "").strip().lower()
+            name = (p.get("dealname") or "").lower()
+            if stamped == ln or (not stamped and any(t in name for t in tokens)) \
+                    or any(f"{first.lower()} {t}" in name for t in tokens):
+                out.append(d)
+        return out
+
+    mine = _mine(deals)
+    if not mine:
+        # The stamped property can be missing (older / hand-made deals) or WRONG
+        # (the three Melara deals all say 'Mario', so 'Ezekiel' finds Ezekiel
+        # GARCIA and the surname filter empties it). Fall back to the deal NAME,
+        # which the PO agent writes as 'Parent - Student - School N - YY/YY'.
         body["filterGroups"] = [{"filters": [
             {"propertyName": "dealname", "operator": "CONTAINS_TOKEN", "value": first}]
             + ([{"propertyName": "createdate", "operator": "GT", "value": str(created_after_ms)}]
                if created_after_ms else [])}]
         res = hs._write("POST", "/crm/v3/objects/deals/search", body)
-        deals = [d for d in (res.get("results", []) if isinstance(res, dict) else [])
+        named = [d for d in (res.get("results", []) if isinstance(res, dict) else [])
                  if first.lower() in ((d.get("properties") or {}).get("dealname") or "").lower()]
-    ln = (last or "").strip().lower()
-    if not ln:
-        return deals
-    # a multi-word surname ('Marie DaVault', 'Cooper-Robles') matches on any
-    # token of 3+ letters; a stamped surname must match exactly
-    tokens = [t for t in re.split(r"[\s\-]+", ln) if len(t) >= 3] or [ln]
-    out = []
-    for d in deals:
-        p = d.get("properties") or {}
-        stamped = (p.get("student_last_name_if_diff_from_parent") or "").strip().lower()
-        name = (p.get("dealname") or "").lower()
-        if stamped == ln or (not stamped and any(t in name for t in tokens)) \
-                or any(f"{first.lower()} {t}" in name for t in tokens):
-            out.append(d)
-    return out
+        mine = _mine(named)
+    return mine
 
 
 def _current_po_deal(deals: list[dict]) -> dict | None:

@@ -498,9 +498,13 @@ def test_student_deals_falls_back_to_the_deal_name(monkeypatch):
     calls = []
     named = {"id": "9", "properties": {"dealname": "Mayra Aguilar - Ezekiel Melara - Sky Mountain 2 - 26/27",
                                        "po_number": "555", "createdate": "2026-08-30T00:00:00Z"}}
+    # the property search returns the WRONG Ezekiel (Garcia): the surname filter
+    # empties it and the name fallback must still run
+    garcia = {"id": "7", "properties": {"dealname": "Mishla Garcia - Ezekiel Garcia - Heartland 1 - 26/27",
+                                        "student_first_name": "Ezekiel", "po_number": "444"}}
     def fake_write(m, p, body=None):
         calls.append(body["filterGroups"][0]["filters"][0]["propertyName"])
-        return {"results": [] if calls[-1] == "student_first_name" else [named]}
+        return {"results": [garcia] if calls[-1] == "student_first_name" else [named]}
     monkeypatch.setattr(lb.hs, "_write", fake_write)
     assert lb._student_deals("Ezekiel", "Melara") == [named]
     assert calls == ["student_first_name", "dealname"]
