@@ -4857,3 +4857,35 @@ Gukasov x2 @$830, Feinstein x2 @$352); deal_sync ongoing divides by the contact'
 gold-deal count. Fakheri siblings stamped $3,300 each from their $6,600 invoice
 (per Roman). Remaining manual: Inna Garcia - Maximilian + Jenifer Peters (no TW
 invoice exists).
+
+## 2026-09-10 — Melara sibling deals: student name clobbered by a portal workflow, not by po_inbox
+**Why:** The low-balance backfill found all three Sky Mountain / Melara PO deals
+(64677367903 Ezekiel, 64684494965 Mario, 64659861919 Vincent; PO 1443416) carrying
+`student_first_name` = Mario while names and PO numbers were right. The first read
+was "the per-PO loop takes the wrong sibling".
+**What we found:** HubSpot property history on the deals shows the integration
+(po_inbox, source 39943154) stamped Ezekiel/6, Mario/9, Vincent/7 correctly at
+16:17Z; 80 s later AUTOMATION_PLATFORM enrollment 2802592531732 rewrote
+`student_first_name` = Mario and `student_grade` = 9 on the Ezekiel and Vincent
+deals. Live contact-based workflow **34950163 "Contact to Deal Properties"**
+(created 2020-07-31, last edited 2024-01-04, 3,317 lifetime enrollments) enrolls
+any contact with an associated deal in 9 stages (incl. charter Pre-Lesson 907749)
+and sets, on EVERY associated deal: `student_first_name` ← contact
+`student_last_name` (the legacy contact field that holds the FIRST name), `student_grade`
+← contact grade, plus `first_name`/`last_name`/`contact_record_id`. One contact,
+three siblings → every sibling deal gets the contact's one student. `_split_pos`
+in po_inbox is correct; the code path was never the bug.
+**What changed:** regression test `test_three_sibling_po_stamps_each_deals_own_student`
+(three-sibling certificate → three per-deal stamps, name + grade); Stage 3 note in
+docs/PO-PROCESS.md naming the workflow. Live data: Ezekiel/6 and Vincent/7 restored
+by API on 2026-09-10 (Mario/9 was already right). Post-8/1 scan of 298 deals with
+`student_first_name` found one more sibling casualty outside the PO pipeline:
+Lesly Elenes deals 64836791336 (Emma Rose) and 64837038724 (Nathan), both stamped
+"Adrian" on 2026-09-08 — left for Roman.
+**System fix (portal, needs Roman's go):** in workflow 34950163 delete the two
+actions that write `[Agent]` deal properties (`student_first_name`, action 1;
+`student_grade`, action 6). po_inbox and the teacher-form deal workflow already
+stamp those per deal; nothing else should. Keeping `first_name`/`last_name`/
+`contact_record_id` copies is harmless. Until that is done every multi-student
+family will be re-clobbered on the next enrollment. Decision-log entry pending.
+**Files:** email/tests/test_po_inbox.py, docs/PO-PROCESS.md, docs/CHANGELOG.md.
