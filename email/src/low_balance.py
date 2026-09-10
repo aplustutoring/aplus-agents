@@ -218,28 +218,44 @@ def _student_deals(first: str, last: str, created_after_ms: int | None = None) -
                 out.append(d)
         return out
 
-    mine = _mine(deals)
-    if not mine:
-        # The stamped property can be missing (older / hand-made deals) or WRONG
-        # (the three Melara deals all say 'Mario', so 'Ezekiel' finds Ezekiel
-        # GARCIA and the surname filter empties it). Fall back to the deal NAME,
-        # which the PO agent writes as 'Parent - Student - School N - YY/YY'.
-        body["filterGroups"] = [{"filters": [
-            {"propertyName": "dealname", "operator": "CONTAINS_TOKEN", "value": first}]
-            + ([{"propertyName": "createdate", "operator": "GT", "value": str(created_after_ms)}]
-               if created_after_ms else [])}]
-        res = hs._write("POST", "/crm/v3/objects/deals/search", body)
-        named = [d for d in (res.get("results", []) if isinstance(res, dict) else [])
+    # The stamped property can be missing (the three 26/27 Czaja deals carry
+    # none, so 'Emmalyn' found only her 2025 deals and the case sat on last
+    # June's), WRONG (the three Melara deals all say 'Mario', so 'Ezekiel'
+    # found Ezekiel GARCIA), or longer than the alert's first name ('Kailyn
+    # Marie'). So the deal NAME, 'Parent - Student - School N - YY/YY', is
+    # ALWAYS searched too and the two result sets are merged, newest first.
+    body["filterGroups"] = [{"filters": [
+        {"propertyName": "dealname", "operator": "CONTAINS_TOKEN", "value": first}]
+        + ([{"propertyName": "createdate", "operator": "GT", "value": str(created_after_ms)}]
+           if created_after_ms else [])}]
+    try:
+        res2 = hs._write("POST", "/crm/v3/objects/deals/search", body)
+        named = [d for d in (res2.get("results", []) if isinstance(res2, dict) else [])
                  if first.lower() in ((d.get("properties") or {}).get("dealname") or "").lower()]
-        mine = _mine(named)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  deal-name search failed (non-fatal): {e}")
+        named = []
+    merged: dict = {}
+    for d in deals + named:
+        merged.setdefault(str(d.get("id")), d)
+    mine = _mine(list(merged.values()))
+    mine.sort(key=lambda d: str((d.get("properties") or {}).get("createdate") or ""), reverse=True)
     return mine
 
 
-def _current_po_deal(deals: list[dict]) -> dict | None:
-    """The newest deal that carries a PO — the package the alert is about."""
-    for d in deals:
-        if ((d.get("properties") or {}).get("po_number") or "").strip():
-            return d
+def _current_po_deal(deals: list[dict], student: str = "") -> dict | None:
+    """The newest deal that carries a PO — the package the alert is about.
+    When several candidates carry a PO (three Melara deals all stamped
+    'Mario'), the one whose NAME carries this student's full name wins, so
+    Mario's case never sits on Vincent's deal."""
+    with_po = [d for d in deals if ((d.get("properties") or {}).get("po_number") or "").strip()]
+    full = (student or "").strip().lower()
+    if full:
+        named = [d for d in with_po if full in ((d.get("properties") or {}).get("dealname") or "").lower()]
+        if named:
+            return named[0]
+    if with_po:
+        return with_po[0]
     return deals[0] if deals else None
 
 
@@ -753,7 +769,7 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
         deals = _student_deals(alert.get("student_first", ""), alert.get("student_last", ""))
     except Exception as e:  # noqa: BLE001
         print(f"  ⚠️  deal lookup failed (non-fatal): {e}")
-    deal = _current_po_deal(deals)
+    deal = _current_po_deal(deals, alert.get("student", ""))
     dp = (deal or {}).get("properties") or {}
     pipeline = str(dp.get("pipeline") or "")
     charter = is_charter_package(alert["package"], pipeline)
