@@ -25884,3 +25884,11 @@
 {"message_id": "relay-miss:64881048713", "source": "relay_watchdog", "deal_id": "64881048713", "deal_name": "Kristy Garcia - iLEAD Flex", "age_minutes": 35, "action_taken": "relay_miss_flagged", "timestamp": "2026-09-10T21:56:15.751477+00:00"}
 {"message_id": "error:deal:64842808888", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/customers/family", "timestamp": "2026-09-10T21:56:17.360072+00:00"}
 {"message_id": "error:deal:64842808888", "source": "deal_sync", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/customers/family", "timestamp": "2026-09-10T22:34:13.971378+00:00"}
+{"ticket_id": "48460079023", "thread_id": "11178247817", "category": "school_partner", "action_taken": "auto_handled", "timestamp": "2026-09-10T22:44:49.631556+00:00"}
+{"ticket_id": "48139914638", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-10T22:48:40.207677+00:00"}
+{"ticket_id": "48435208197", "category": "po_inbox_other", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-10T22:49:08.571349+00:00"}
+{"ticket_id": "48439334918", "category": "cancellation", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-10T22:49:09.848470+00:00"}
+{"ticket_id": "48442372667", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-10T22:49:10.551975+00:00"}
+{"ticket_id": "48468497213", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-10T22:49:10.991084+00:00"}
+{"ticket_id": "48440739372", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-10T22:49:11.530019+00:00"}
+{"ticket_id": "48437235987", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-10T22:49:12.027045+00:00"}
