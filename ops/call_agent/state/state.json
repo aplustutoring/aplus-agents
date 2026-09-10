@@ -746,9 +746,11 @@
     413873146,
     413863567,
     413879143,
-    413882151
+    413882151,
+    413883582,
+    413884932
   ],
-  "last_run_utc": "2026-09-10T22:59:28.250806+00:00",
+  "last_run_utc": "2026-09-10T23:10:00.534100+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -1435,6 +1437,57 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 413883582,
+      "number": "18186428228",
+      "time_pt": "4:02 PM",
+      "matched": true,
+      "contact_label": "Kasgarli,Emel N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Miran Mavlan (mom of Aliye) called in confused about how to join the online tutoring session. Yolanda began to help, but Miran figured out how to log in on her phone mid-call and saw the tutor appear. Call ended amicably with no further action needed.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family already in the tutoring pipeline \u2014 status owned by deal pipeline, not to be demoted.",
+        "student_or_school_names_mentioned": [
+          "Aliye Mavlan"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Mom Miran called needing help logging into the online tutoring session for Aliye. She figured out the login on her phone during the call and connected with the tutor \u2014 no further help needed.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Mom Miran called needing help logging into the online tutoring session for Aliye. She figured out the login on her phone during the call and connected with the tutor \u2014 no further help needed."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
