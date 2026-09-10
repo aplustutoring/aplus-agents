@@ -27,8 +27,11 @@ draft rule said the scheduler reassigns. Roman: "do not reassign. nudge the
 tutors again, letting them know we need to know urgently, and if still no
 response these matters should be posted into the online tutoring channel."
 **What:** second nudge posted to both at 1:26 PM with a 3 pm deadline and
-the consequence named (#online-tutoring post). Stage 11 updated. The
-#online-tutoring post is a standing step once the deadline passes.
+the consequence named (#online-tutoring post). Stage 11 updated. Neither
+answered; at 3:10 PM PT Franny (Solis) and Eli (Richardson) were posted to
+#online-tutoring (C05NA8H67SM) in the schedulers' own format, first names
+only, silent tutor not named, Paola tagged to confirm. Francesca Strunk not
+posted (iLEAD holds her PO until classes are paid).
 **Files:** knowledge/journey/11-tutor.md.
 
 ---
