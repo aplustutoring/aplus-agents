@@ -7,6 +7,41 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — Call relay ARMED; first grace retry crashed on a CWD-relative marker path (fixed)
+
+**Armed (Roman, ~15:40 PT):** GITHUB_TOKEN + WEBHOOK_TOKEN on
+`call-agent-webhook-relay`, repo secrets CALL_RELAY_URL / CALL_RELAY_TOKEN,
+`/health` = ok. JustCall traffic flowed immediately: six relay-dispatched
+runs 22:43 to 23:14 UTC (actor = the PAT, not github-actions[bot]), all live
+with `--no-digest`; call 413883582 got its coaching note at 16:10 PT, six
+minutes after its transcript was still pending. Event-driven call processing
+is live for the first time since #146 (2026-09-04).
+
+**What the first real grace retry surfaced:** run 34540444397 (23:04 UTC)
+found one call awaiting transcript and crashed writing the retry marker:
+`FileNotFoundError: 'ops/call_agent/state/retry_wanted'`. The marker path was
+`Path(cfg["state"]["path"]).parent`, i.e. the config's repo-relative path
+resolved against the CWD, while the workflow runs with
+`working-directory: ops/call_agent`. Every other state path in the agent goes
+through `REPO_ROOT / path`; this one did not, and local runs (CWD = repo
+root) never showed it. Effect: the run failed, no `/redispatch` was posted,
+and the call was picked up only because another JustCall event dispatched
+the next run six minutes later. On a quiet afternoon the retry would have
+waited for the 00:30 UTC digest.
+
+**Fix:** `retry_marker_path()` / `write_retry_marker()` in call_agent.py
+resolve from `REPO_ROOT` (and mkdir the state dir). `tests/test_retry_marker.py`
+runs the write from a `ops/call_agent` CWD and asserts the workflow's own
+relative check (`state/retry_wanted`) sees the file. 40 tests green.
+
+**Also this morning:** #202 (relay stuck-alarm fix, /status, /health 503)
+and #203 (watchdog catch-up inputs) merged; the watchdog's first live
+catch-up verified (sweeper 34500756702 → call-agent 34500804048,
+`dry_run=false, no_digest=true`, 2 calls fetched).
+
+**Files:** ops/call_agent/call_agent.py, ops/call_agent/tests/test_retry_marker.py
+(new), docs/CHANGELOG.md.
+
 ## 2026-09-10 — Teacher enroller skips teachers any seat contacted in the last 7 days
 
 **Why:** on 2026-09-10 Ashley Pontell (iLEAD) got Danielle's outreach

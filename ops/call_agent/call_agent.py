@@ -134,6 +134,30 @@ def save_state(state, path, max_ids):
     log.info(f"State saved: {p.relative_to(REPO_ROOT)}")
 
 
+def retry_marker_path(cfg):
+    """state/retry_wanted next to state.json, resolved from the repo root like
+    every other state path. The workflow runs with working-directory
+    ops/call_agent and checks `state/retry_wanted`; resolving the config's
+    repo-relative path against the CWD instead pointed at
+    ops/call_agent/ops/call_agent/state/ and crashed the run on the first
+    transcript-grace retry the relay ever asked for (run 34540444397,
+    2026-09-10) — so no /redispatch was ever posted."""
+    return (REPO_ROOT / cfg["state"]["path"]).parent / "retry_wanted"
+
+
+def write_retry_marker(cfg, n_grace):
+    """Ask the workflow to schedule a relay redispatch when calls are still
+    inside the transcript grace window; clear the ask otherwise. Never
+    committed: the state-commit step adds only state.json and scores.jsonl."""
+    marker = retry_marker_path(cfg)
+    if n_grace:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(str(n_grace))
+    else:
+        marker.unlink(missing_ok=True)
+    return marker
+
+
 # ─── JustCall API ─────────────────────────────────────────────────────────────
 
 _jc_auth_mode = "plain"  # flips to "basic" if the documented plain form 401s
@@ -2084,11 +2108,7 @@ def main():
     # one via the webhook relay (see webhook-relay/README.md). Never committed:
     # the state-commit step adds only state.json and scores.jsonl.
     if not args.dry_run:
-        marker = Path(cfg["state"]["path"]).parent / "retry_wanted"
-        if n_grace:
-            marker.write_text(str(n_grace))
-        else:
-            marker.unlink(missing_ok=True)
+        write_retry_marker(cfg, n_grace)
 
     # Health verdict for the exit code. process_call failures are caught per
     # call so one bad call can't kill the run — but that also meant a run where
