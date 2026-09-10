@@ -22,9 +22,19 @@ task owned by charter_sales (five SEND due 9/10 11 am, three HOLD due 9/11
 family asked for 7:30 am and Tarisa is 3 pm or later. Rivera draft corrected
 to Cathy's confirmed Tuesday 9:00 am. Slack DM to Paola with the send order,
 holds, and the not-drafted list. Nothing sent to any teacher.
+**Correction the same afternoon:** Roman asked "can you check if the PO
+arrived?" It had. Deal 64883806991 (Sagua, PO 1614231512, 3.75 hours)
+landed 2026-09-09 4:27 PM PT, before the drafts were written, and Yolanda
+booked Tue/Thu 12 pm on 9/10. Stage 04 already says "search deals for this
+family before asking about the PO"; the drafting step skipped it. Sagua task
+closed, note and canvas marked do-not-send, Paola told. The other seven
+families have no 26/27 deal, so their emails stand. Rule for the next run:
+the draft script searches deals for a `26/27` deal with a PO number per
+family and refuses to draft when one exists.
 **Not done:** Gmail drafts in paola@ (needs the SA key locally or an Actions
 job that takes the drafts as an artifact); a repo script for this, the
-session scratchpad script is the only copy (family PII).
+session scratchpad script is the only copy (family PII); the deal check in
+the draft script.
 **Files:** none in the repo; scratchpad teacher_drafts_to_hubspot.py.
 
 ---
