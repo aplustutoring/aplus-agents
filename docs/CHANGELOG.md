@@ -7,7 +7,6 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
-<<<<<<< Updated upstream
 ## 2026-09-10 — Teacher enroller skips teachers any seat contacted in the last 7 days
 
 **Why:** on 2026-09-10 Ashley Pontell (iLEAD) got Danielle's outreach
@@ -198,7 +197,9 @@ that writes nothing.
 
 **Files:** `ops/call_agent/webhook-relay/{worker.js,README.md}`,
 `docs/CHANGELOG.md`. The deal relay was not touched.
-=======
+
+---
+
 ## 2026-09-10 — Call relay ARMED: secrets set, JustCall webhooks wired, dispatch verified
 
 The last unarmed relay is live. Roman set the four secrets via scratchpad
@@ -221,7 +222,6 @@ Cloudflare worker secrets, GitHub PAT + repo secrets.
 digests/sweeps per #AP (event-driven-over-cron, Roman 2026-09-04).
 
 ---
->>>>>>> Stashed changes
 ## 2026-09-09 (late) — Monday Pre-Lesson board RETIRED (Roman)
 
 **Roman:** "the board is retired." Monday board 18397928615 (Pre-Lesson /
