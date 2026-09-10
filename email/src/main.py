@@ -342,6 +342,41 @@ def _sender_addrs(message: dict) -> list[str]:
     return out
 
 
+def teachworks_notice_kind(addrs: list[str], subject: str) -> str | None:
+    """Which configured Teachworks notice this is ('low_balance', ...), or None.
+    Deterministic on sender domain + subject prefix — a system notice never
+    depends on a confidence score. Cancellation notifications from the same
+    sender are NOT listed here and still flow to the classifier as
+    `cancellation` (rules.md)."""
+    tn = cfg().get("teachworks_notices") or {}
+    if not tn.get("archive", True):
+        return None
+    domain = (tn.get("sender_domain") or "teachworks.com").lower()
+    if not any((a or "").lower().endswith("@" + domain) for a in addrs):
+        return None
+    s = (subject or "").strip().lower()
+    for kind, prefixes in (tn.get("subjects") or {}).items():
+        if any(s.startswith(str(p).lower()) for p in (prefixes or [])):
+            return kind
+    return None
+
+
+def _teachworks_notice(thread_id: str, message: dict, kind: str) -> dict:
+    """Archive a Teachworks system notice: no contact, no ticket, no task. The
+    audit record carries the subject so the daily summary can count it and a
+    human can still find the student it named."""
+    subj = message.get("subject") or "(no subject)"
+    record = {"message_id": message.get("id"), "thread_id": thread_id, "contact_id": None,
+              "new_contact": False, "category": "teachworks_notice", "risk": "low",
+              "confidence": 1.0, "owner": None, "reason": f"Teachworks {kind} notice",
+              "cancellation_reason": "", "subject": subj, "notice_kind": kind,
+              "action_taken": "tw_notice_archived"}
+    hs.archive_thread(thread_id)
+    audit.append(record)
+    print(f"  🔔 Teachworks {kind} notice → archived thread {thread_id} ({subj[:60]})")
+    return record
+
+
 def _po_handoff(thread_id: str, message: dict, reason: str) -> dict:
     """A PO document reached a triaged inbox. The PO agent mirrors PO-shaped mail
     into charter@ every run (po_sources); this side only makes sure a human is
@@ -418,6 +453,18 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         [a.get("name") or "" for a in (message.get("attachments") or [])])
     if po_reason:
         return _po_handoff(thread_id, message, po_reason)
+
+    # ── Teachworks system notices are machine mail: no person wrote them and
+    #    nobody can reply. Archive BEFORE the classifier. It rated them junk at
+    #    0.82 (< the 0.9 archive bar), held them as unknown, and 35 "Reply:
+    #    unknown — notifications" tasks piled on the Stuck seat in the first
+    #    nine days of Sept 2026 with zero completed. The balance signal itself
+    #    is the low-balance agent's job (it reads Teachworks directly). ──
+    tw_kind = teachworks_notice_kind(
+        _sender_addrs(message) + ([email.lower()] if email else []),
+        message.get("subject") or "")
+    if tw_kind:
+        return _teachworks_notice(thread_id, message, tw_kind)
 
     # ── Identify contact ──
     # Review-platform no-reply senders (Google/Yelp) never become contacts —

@@ -46,6 +46,8 @@ def recent_items(cutoff: datetime) -> list[str]:
                 out.append(f"   💸 {len(mv)} deal(s) auto-moved → Stopped")
         elif a == "junk_archived":
             out.append("junk → archived")
+        elif a == "tw_notice_archived":
+            out.append(f"Teachworks {r.get('notice_kind') or 'system'} notice → archived")
         elif a == "escalation":
             out.append(f"⚠️ escalation L{r.get('breach_level')} ({r.get('category')})")
     return out

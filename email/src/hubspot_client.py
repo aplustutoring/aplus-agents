@@ -746,7 +746,10 @@ def search_open_tickets() -> list[dict]:
 
 _TASK_PROPS = ["hs_task_subject", "hs_task_status", "hs_task_priority",
                "hs_timestamp", "hs_createdate", "hs_task_completion_date",
-               "hubspot_owner_id"]
+               "hubspot_owner_id", "hs_task_type",
+               # who made it: CRM_UI / INTEGRATION / AUTOMATION_PLATFORM, and
+               # for a workflow the workflow's name — the ration groups on it
+               "hs_object_source", "hs_object_source_detail_1"]
 
 
 def _search_all(path: str, filters: list[dict], props: list[str]) -> list[dict]:
@@ -812,6 +815,16 @@ def batch_complete_tasks(task_ids: list[str]) -> None:
         _write("POST", "/crm/v3/objects/tasks/batch/update", {
             "inputs": [{"id": tid, "properties": {"hs_task_status": "COMPLETED"}}
                        for tid in chunk]})
+
+
+def batch_update_task_due(updates: list[tuple[str, int]]) -> None:
+    """Re-date tasks: (task_id, due epoch ms) pairs, 100 per batch call
+    (DRY_RUN-aware via _write). hs_timestamp IS the task's due date."""
+    for i in range(0, len(updates), 100):
+        chunk = updates[i:i + 100]
+        _write("POST", "/crm/v3/objects/tasks/batch/update", {
+            "inputs": [{"id": tid, "properties": {"hs_timestamp": str(due_ms)}}
+                       for tid, due_ms in chunk]})
 
 
 def search_completed_tasks(owner_ids: list[str], since_ms: int) -> list[dict]:

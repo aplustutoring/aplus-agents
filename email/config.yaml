@@ -85,6 +85,21 @@ hourly_update:
 owner_task:
   enabled: true
 
+# Teachworks SYSTEM notices (notifications@teachworks.com) that no person wrote
+# and nobody can answer. Matched on sender domain + subject prefix BEFORE the
+# classifier and archived: no contact, no ticket, no task. Counted in the daily
+# summary as teachworks_notice. Added 2026-09-10: the classifier called these
+# junk at 0.82, below the 0.9 archive bar, so they landed on the Stuck seat as
+# "Reply: unknown — notifications" tasks (35 in nine days, 0 completed). The
+# balance itself is the low-balance agent's signal, read from Teachworks.
+# Cancellation notifications from the same sender are deliberately NOT listed:
+# rules.md classifies them as `cancellation`.
+teachworks_notices:
+  archive: true
+  sender_domain: teachworks.com
+  subjects:
+    low_balance: ["Low Package Balance for"]
+
 # Tutor-document auto-receipt. Amended 2026-09-03 (Roman, Option A): the agent's
 # outbound emails are this receipt PLUS the What-to-Expect single-send that rides
 # each new-PO family text (sms.pipelines.*.welcome_email_id). sender_actor_id is
@@ -668,7 +683,11 @@ task_sweep:
   # PO→invoice task (the money path) and was the one seat nobody watched.
   # Safe to watch only because autoclose_invoice_tasks (below) clears the
   # phantoms first — ten of her open tasks were already-done invoices.
-  monitor: [visionary, sales, charter_sales, scheduler_a_l, charter_admin]
+  # scheduling_lead + scheduler_m_z added 2026-09-10: the 9/1-9/9 task audit
+  # found the Stuck-queue seat holding 39 tasks (0 done, 28 overdue) and the
+  # M-Z scheduler 22, with nobody nagged because neither seat was listed.
+  monitor: [visionary, sales, charter_sales, scheduler_a_l, scheduler_m_z,
+            scheduling_lead, charter_admin]
   # An open "Convert PO to TW invoice" task whose deal already carries an
   # Invoice # is DONE — close it instead of nagging. false = report only.
   autoclose_invoice_tasks: true
@@ -682,6 +701,25 @@ task_sweep:
   per_person_cap: 8           # digest lists at most this many tasks per owner
   dm_list_cap: 10             # a DM itemizes at most this many; ONE DM per owner per run
   weekly_stats_weekday: 0     # Monday → append last-7-days completion scoreboard
+  # Bulk workflow call lists → a daily ration. A HubSpot workflow enrolling a
+  # list drops one CALL task per contact, all due the day they land: 98 on
+  # 2026-09-01 and 189 on 2026-09-04 for charter_sales, every one overdue by
+  # the next morning. That is a list, not a queue. Per OWNER, every workflow
+  # with >= min_batch open tasks of these types is pooled into one queue and
+  # re-dated per_day per business day starting today (workflows matching
+  # `order` first, then oldest first); recomputed every run so finished ones
+  # pull the rest forward. Workflows under min_batch (lead alerts, scholarship
+  # steps) are a trickle and stay as dated. The 2026-09-10 dry run pooled 497
+  # tasks for charter_sales: at 20/day that is ~25 business days, which is the
+  # honest size of the list. false = leave due dates alone.
+  ration:
+    enabled: true
+    per_day: 20
+    min_batch: 25
+    task_types: [CALL]
+    sources: [AUTOMATION_PLATFORM]
+    # substring match on the workflow name, hottest first; unmatched go last
+    order: ["QTL", "Win-back", "Never Started", "Pick Back Up", "Cold Revival"]
 
 # Categories that NEVER get a drafted reply regardless of routing.draft.
 no_draft_categories: [complaint, payment_dispute]

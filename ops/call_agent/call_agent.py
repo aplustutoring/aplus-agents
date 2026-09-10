@@ -649,6 +649,11 @@ record, creates follow-up tasks, and feeds a daily ops digest.
    this output — the summary, every action item, the handoff note and the
    record log entries. Never carry the old name into anything a teammate will
    read or say to the family.
+9. Set reached_live — true ONLY if a live person on the other end actually
+   took part in the conversation. False when the call went to voicemail (even
+   if a message was left), hit a call-screening service or an IVR, rang out,
+   or reached the wrong person. A voicemail is not a conversation, so no
+   "next step" could have been booked on it.
 
 CURRENT RECORD (HubSpot contact):
 {record_json}
@@ -700,6 +705,7 @@ SUMMARY_SCHEMA = {
         },
         "follow_up_needed": {"type": "boolean"},
         "next_step_scheduled": {"type": "boolean"},
+        "reached_live": {"type": "boolean"},
         "handoff_note": _NULLABLE_STR,
         "lead_status": {"type": "string", "enum": LEAD_STATUS_OPTIONS},
         "lead_status_reason": {"type": "string"},
@@ -729,8 +735,8 @@ SUMMARY_SCHEMA = {
     },
     "required": ["summary", "caller_type", "intent", "sentiment", "action_items",
                  "name_corrections",
-                 "follow_up_needed", "next_step_scheduled", "handoff_note",
-                 "lead_status", "lead_status_reason",
+                 "follow_up_needed", "next_step_scheduled", "reached_live",
+                 "handoff_note", "lead_status", "lead_status_reason",
                  "student_or_school_names_mentioned", "record_updates"],
     "additionalProperties": False,
 }
@@ -815,6 +821,9 @@ def _validate_summary(d):
     d["action_items"] = items
     d["follow_up_needed"] = bool(d["follow_up_needed"])
     d["next_step_scheduled"] = bool(d.get("next_step_scheduled", True))
+    # Absent (older payloads) = assume a conversation happened, so the
+    # no-next-step guard keeps its old behaviour rather than going silent.
+    d["reached_live"] = bool(d.get("reached_live", True))
     hn = d.get("handoff_note")
     d["handoff_note"] = str(hn).strip() or None if isinstance(hn, str) else None
     if not isinstance(d["student_or_school_names_mentioned"], list):
@@ -1474,6 +1483,43 @@ def task_subject(action_item):
     return f"{prefix}{action_item['item']}"[:250]
 
 
+def needs_next_step_task(summary):
+    """A prospective family we actually SPOKE with, and the call ended with no
+    concrete next step. Voicemails, screening services and rang-out calls
+    (reached_live false) never qualify: 2026-09-01 to 09-09 the guard raised
+    "Book next step" for 19 outbound voicemails, each an instant overdue on
+    the sales seat and none of them a lead that could have booked anything."""
+    return (summary.get("caller_type") == "parent"
+            and summary.get("intent") == "new inquiry"
+            and not summary.get("next_step_scheduled")
+            and bool(summary.get("reached_live", True)))
+
+
+def find_open_task(subject):
+    """Id of an open (not completed/deferred) HubSpot task with exactly this
+    subject, else None. The agent's subjects are deterministic per contact +
+    number, so an exact match IS the same ask already sitting in the queue.
+    Read-only; any lookup failure returns None so an API hiccup can never
+    suppress a task."""
+    try:
+        res = hs_post("crm/v3/objects/tasks/search", {
+            "filterGroups": [{"filters": [
+                {"propertyName": "hs_task_subject", "operator": "EQ", "value": subject},
+                {"propertyName": "hs_task_status", "operator": "NOT_IN",
+                 "values": ["COMPLETED", "DEFERRED"]},
+            ]}],
+            "properties": ["hs_task_subject"],
+            "limit": 5,
+        })
+    except Exception as e:
+        log.warning(f"  open-task lookup failed for {subject!r}: {e}")
+        return None
+    for t in (res or {}).get("results", []) or []:
+        if (t.get("properties") or {}).get("hs_task_subject") == subject:
+            return t.get("id")
+    return None
+
+
 def create_task(contact_id, subject, body, owner_id, due_utc, priority="MEDIUM"):
     """HubSpot Task on the contact (shows in the owner's tasks queue)."""
     payload = {
@@ -1724,9 +1770,7 @@ def process_call(call, cfg, dry_run, now_utc):
     except Exception:
         call_date_pt = now_utc.strftime("%Y-%m-%d")
     is_negative = (summary["sentiment"] == "negative" or summary["intent"] == "complaint")
-    no_next_step = (summary["caller_type"] == "parent"
-                    and summary["intent"] == "new inquiry"
-                    and not summary["next_step_scheduled"])
+    no_next_step = needs_next_step_task(summary)
     applied, skipped_updates, tasks_created, ticket_id = [], [], [], None
 
     # Handoff routing (Roman 2026-08-13): sales calls ring Roman first, but
@@ -1813,14 +1857,21 @@ def process_call(call, cfg, dry_run, now_utc):
         # next step gets a same-day HIGH task — "we'll follow up" is where
         # leads die.
         if no_next_step:
-            create_task(
-                contact["id"] if contact else None,
-                f"Book next step with {contact_label or fmt_phone(number)} ({fmt_phone(number)}) — none set on call",
-                f"[Call Agent] New-inquiry call ended without a concrete next "
-                f"step (assessment / first session / scheduled callback). Call "
-                f"back TODAY and lock one in.\n\n{handoff_block}{summary['summary']}",
-                _resolve_owner(None, cfg, answered_by), now_utc, priority="HIGH")
-            log.info(f"  call {cid}: no next step booked — same-day HIGH task created")
+            nns_subject = (f"Book next step with {contact_label or fmt_phone(number)} "
+                           f"({fmt_phone(number)}) — none set on call")
+            open_id = find_open_task(nns_subject)
+            if open_id:
+                log.info(f"  call {cid}: no next step booked — open task {open_id} "
+                         f"already says so, not duplicating")
+            else:
+                create_task(
+                    contact["id"] if contact else None,
+                    nns_subject,
+                    f"[Call Agent] New-inquiry call ended without a concrete next "
+                    f"step (assessment / first session / scheduled callback). Call "
+                    f"back TODAY and lock one in.\n\n{handoff_block}{summary['summary']}",
+                    _resolve_owner(None, cfg, answered_by), now_utc, priority="HIGH")
+                log.info(f"  call {cid}: no next step booked — same-day HIGH task created")
 
     # Coaching: rubric score, posted to the private coaching channel.
     # Never allowed to fail the call — it's an internal-quality side channel.
@@ -1953,6 +2004,11 @@ def handle_missed_call(call, cfg, dry_run, now_utc):
         subject = f"Call back {label or number} — {ctype} call on {line}"
         if dry_run:
             log.info(f"  DRY RUN — would create same-day call-back task: {subject}")
+        elif find_open_task(subject):
+            # Same number, same line, callback still open — a second ring is
+            # not a second ask. The alert above still fires (speed matters).
+            log.info(f"  call {call.get('id')}: call-back task already open for "
+                     f"{number} on {line} — not duplicating")
         else:
             create_task(
                 contact["id"] if contact else None,

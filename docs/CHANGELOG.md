@@ -7,6 +7,83 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — Task hygiene set: who creates HubSpot tasks and why (9/1 to 9/9 audit) + four system fixes
+
+**The audit (Roman: "analyze all of the tasks by their origin and who
+created them"):** 732 tasks created 9/1 to 9/9 PT. Humans made 41 (Paola 32,
+Danielle 8, Janelle 1). The rest: HubSpot workflows 331 (cold-revival 189 on
+9/4, charter win-back 98 on 9/1, QTL day-1 28, college counseling 24, lead
+alerts 8, scholarship 4, diagnostic 2, school-partnership 1), the call agent
+191 (post-call actions 133, "Book next step" 42, callbacks 14), email ops 146
+(PO to TW invoice 51, triage reply handoffs 95). Paola held 546 of the 732
+(478 open, 426 overdue). Mandy 39 with 0 done; Janelle 27 with 0 done; Kath
+49 of 53 done. Roman asked for all six proposed fixes ("do all of it").
+
+**Fix 1 — Teachworks notices archived before the classifier** (`main.py`
+`teachworks_notice_kind` / `_teachworks_notice`, config `teachworks_notices`).
+35 of Mandy's 39 tasks were "Reply: unknown — notifications": Teachworks "Low
+Package Balance for X" mail that the classifier rated junk at 0.82, under the
+0.9 archive bar, so `router.resolve` held it as unknown and `owner_task` made
+a task per notice. A system notice is decided by sender domain + subject
+prefix, not a score: archived, audit action `tw_notice_archived`, counted in
+the daily summary as `teachworks_notice`. Cancellation notifications from the
+same sender are deliberately not listed (rules.md: those are `cancellation`).
+The balance signal itself belongs to the low-balance agent (worktree
+`low-balance-agent`, still armed:false).
+
+**Fix 2 — task sweep now watches scheduling_lead + scheduler_m_z** (config
+`task_sweep.monitor`). Mandy and Yolanda were never in the monitor list, so
+Mandy's 28 overdue drew no DM. The dry run shows her at 109 overdue inside the
+horizon; the first live sweep will DM her once (bundled, dm_list_cap 10).
+
+**Fix 3 — bulk workflow call lists become a daily ration** (`task_sweep.py`
+`_ration_bulk_tasks`, `hubspot_client.batch_update_task_due`, `_TASK_PROPS`
++ `hs_task_type`/`hs_object_source`/`hs_object_source_detail_1`, config
+`task_sweep.ration`). A workflow enrolling a list drops one CALL task per
+contact, all due the day they land, so 287 tasks were overdue the morning
+after. Per owner, every workflow with >= 25 open CALL tasks is pooled into one
+queue (order: QTL, Win-back, Never Started, Pick Back Up, Cold Revival, then
+oldest first) and re-dated 20 per business day from today; recomputed every
+run so completions pull the rest forward; only changed dates are written. The
+first per-workflow draft gave Paola 60/day across four lists, which the live
+dry run exposed; per-owner is the honest version. Live dry run: 497 tasks
+pooled for charter_sales (PILOT 213, Cold Revival 189, Multi-student 60, QTL
+35), last batch due 2026-10-14. Digest gets one 🗂 line per rationed owner.
+
+**Fix 4 — call agent no-next-step guard: live conversations only, no
+duplicates** (`call_agent.py` `needs_next_step_task`, `find_open_task`, new
+summary field `reached_live` in prompt rule 9 + schema + validator). 19 of the
+42 "Book next step" tasks were outbound voicemails or screening services;
+four families got a second task while the first was open. The summary now
+says whether a live person took part; voicemails never raise the guard. Both
+"Book next step" and missed-call "Call back" tasks skip creation when an
+identical open task exists (exact-subject search, lookup failure = create).
+The 9/7 and 9/8 22:00 PT bursts were NOT replays: webhook-dispatched runs
+were still dry (default `dry_run=true` before the relay was armed 9/10), so
+the delayed 00:30 UTC digest run processed each whole day at once.
+
+**Fix 5 — PO invoice-task "duplicates": no fix, the audit was wrong.** The
+51 tasks for 48 PO numbers were one task per PO by design (#AP rule: one deal
+per PO number; Heartland PF252648 covers seven students, iLEAD issues one PO
+per service month). Every task had a distinct PO number, deal id and Gmail
+message id. Nothing changed.
+
+**Fix 6 — Janelle's 0 of 27 closed:** a Slack DM draft to Janelle sits in
+Roman's Drafts asking whether she works from a different list or does the
+work without closing. Roman sends it or edits it; no system change until she
+answers.
+
+**Tests:** email 470 green (new `test_tw_notices.py`, `test_task_ration.py`),
+call agent 49 green (new `test_next_step_gate.py`).
+
+**Still human:** flip `low_balance_agent` armed once its PR merges (the
+notices are now archived, so that agent is the only balance signal); Mandy's
+first sweep DM will list 10 of 109 overdue, most of them the same Teachworks
+notices from August that predate this fix, so a one-time bulk close of open
+"Reply: unknown — notifications" tasks is worth doing (not done here: Roman
+to say go).
+
+---
 ## 2026-09-10 — Call relay ARMED; first grace retry crashed on a CWD-relative marker path (fixed)
 
 **Armed (Roman, ~15:40 PT):** GITHUB_TOKEN + WEBHOOK_TOKEN on

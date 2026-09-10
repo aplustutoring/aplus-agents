@@ -45,6 +45,9 @@ def gather_today() -> dict:
         elif action == "junk_archived":
             junk += 1
             by_cat["junk"] += 1
+        elif action == "tw_notice_archived":
+            junk += 1
+            by_cat["teachworks_notice"] += 1
         elif action == "escalation":
             escalations += 1
     return {
