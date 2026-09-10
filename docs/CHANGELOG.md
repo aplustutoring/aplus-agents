@@ -7,6 +7,84 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 (late, 2) — Cron watchdog: catch-up dispatches carry inputs, so a call-agent catch-up is a real run
+
+**Why:** `ops/fleet-health/watchdog/cron_watchdog.py` redispatched stale
+workflows with `{"ref": "main"}` and no inputs, so every workflow_dispatch
+input took its default. `call-agent.yml` defaults `dry_run` to true (so a
+human clicking "Run workflow" gets a safe run). Since #146 removed the call
+agent's poll crons on 2026-09-04 it has no business-hours schedule, its age
+at every business-hours sweep is past the 60-min threshold, and the watchdog
+has dispatched it on every sweep — 9/9 alone: 16:32, 19:30, 21:57 UTC (runs
+34377323579, 34395415301, 34409712823), plus 34265433047 (9/8) and
+34150770451 (9/7). Every one was a DRY RUN: the job log shows
+`if [ "true" != "true" ] || [ "true" = "true" ]` and "DRY RUN MODE", nothing
+persisted, and the sweeper log said "catch-up dispatch ok". No Slack alert
+ever fired for it either: the once-per-episode window (threshold + 25 min)
+is meant for a workflow whose cron just stopped, and the call agent's age at
+its first business-hours sweep is ~15 h, always "already alerted". Net: with
+the relay unarmed (see the "Call relay" entry, PR #202), calls were processed
+live exactly once a day, and the thing that looked like a safety net wasn't.
+
+**Audit of the other watched workflows:** `email-po-inbox.yml`,
+`email-triage.yml`, `email-deal-sync.yml` all default `dry_run` to false, so
+their catch-ups (e.g. 9/9 16:32 UTC after a 109/133/274-min starvation) were
+real. Only the call agent had the trap. The other dispatch sites in the repo
+(`ops/deal-relay/worker.js`, `ops/call_agent/webhook-relay/worker.js`) send
+explicit inputs; `feedback_agent.py` uses repository_dispatch, a different
+mechanism.
+
+**Fix (option 1 of the two proposed, matching the relay):**
+- `DISPATCH_INPUTS = {"call-agent.yml": {"dry_run": "false", "no_digest": "true"}}`,
+  the exact payload `webhook-relay/worker.js` sends: live run, digest entries
+  held for the 00:30 UTC flush. `CALL_AGENT_LIVE` still gates real writes.
+  Other workflows keep the bare body.
+- `dispatch_trap()` reads the watched workflow's `on.workflow_dispatch.inputs`
+  from the checkout before every dispatch and REFUSES (log error + the
+  existing "dispatch FAILED, run it manually" alert) when a no-op switch
+  (`dry_run`, `check_only`) defaults to true with no override, when the map
+  sends an input the workflow doesn't declare (GitHub 422s and no run
+  starts), or when there is no workflow_dispatch trigger at all.
+- The Slack line now says what was dispatched: "A catch-up run was dispatched
+  with inputs dry_run=false, no_digest=true."; failures point at the sweeper
+  log. `--dry-run` prints the body it would send and any trap.
+- `ops/fleet-health/tests/test_cron_watchdog.py` (19 tests): every WATCHED
+  entry is trap-free against the REAL workflow files; the call-agent inputs
+  are parsed out of `worker.js` and must equal the map (if one side's payload
+  changes, the other must follow on purpose); the guard's four trap shapes;
+  `dispatch()` posts the inputs and never posts a trapped workflow.
+
+**Why not option 2 (exclude call-agent, alert instead):** an alert on every
+business-hours sweep saying the call agent "hadn't run" is noise: its cadence
+is event-driven by design, and the alert would carry no instruction a human
+could act on except "dispatch it live", which is what the watchdog can do
+itself. With inputs, the watchdog is the demoted business-hours safety-net
+poll for calls (about hourly, silent unless the dispatch fails) until the
+relay is armed; once it is, relay dispatches keep the run fresh on busy days
+and the watchdog's quiet-day polls find nothing and dedupe via state.json.
+
+**Not verified live:** no call-agent dispatch was fired from this session
+(a live poll writes coaching cards + HubSpot tasks; approval-first). The body
+format is the one the relay already uses and the dispatch API takes boolean
+inputs as the strings "true"/"false". The first business-hours sweep after
+merge proves it: the call-agent run's log must show `--dry-run` absent and
+`--no-digest` present, and the sweeper log "catch-up dispatch with inputs
+dry_run=false, no_digest=true ok".
+
+**Seen in passing, not changed:** the sweeper itself is starving. 9/9 had
+4 business-hours sweeps (16:31, 19:29, 21:57 UTC, then 00:06) against ~21
+scheduled at :07/:27/:47, so the "every 20 min" retry/watchdog cadence is
+really every 2 to 3 hours on a bad day. That is the "rides the scheduler it
+watches" limit in the module docstring, now with numbers; the PO-inbox
+heartbeat on Roman's Mac is the only layer outside GitHub cron.
+
+**Open for Roman:** once the relay is armed (PR #202 human steps), decide
+whether the call agent stays in WATCHED as the quiet-day safety-net poll or
+comes out (relay `/health` + `relay_watchdog`-style miss detection would be
+the replacement signal).
+
+**Files:** ops/fleet-health/watchdog/cron_watchdog.py,
+ops/fleet-health/tests/test_cron_watchdog.py (new), docs/CHANGELOG.md.
 ## 2026-09-09 (late) — Call relay: port the stuck-alarm fix, then find the relay was never armed
 
 **Why:** PR #200 fixed the deal relay's Dispatcher: an alarm that exhausted its
