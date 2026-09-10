@@ -200,15 +200,32 @@ def _student_deals(first: str, last: str, created_after_ms: int | None = None) -
             "limit": 100}
     res = hs._write("POST", "/crm/v3/objects/deals/search", body)   # searches pass through DRY_RUN
     deals = res.get("results", []) if isinstance(res, dict) else []
+    if not deals:
+        # The property is stamped by the PO agent since 2026-08; older and
+        # hand-made deals only carry the name ('Mayra Aguilar - Ezekiel Melara
+        # - Sky Mountain 2 - 26/27'). Fall back to the deal NAME (the 2026-09-10
+        # backfill: two of three Melara boys and Kailyn DaVault had deals the
+        # property search could not see).
+        body["filterGroups"] = [{"filters": [
+            {"propertyName": "dealname", "operator": "CONTAINS_TOKEN", "value": first}]
+            + ([{"propertyName": "createdate", "operator": "GT", "value": str(created_after_ms)}]
+               if created_after_ms else [])}]
+        res = hs._write("POST", "/crm/v3/objects/deals/search", body)
+        deals = [d for d in (res.get("results", []) if isinstance(res, dict) else [])
+                 if first.lower() in ((d.get("properties") or {}).get("dealname") or "").lower()]
     ln = (last or "").strip().lower()
     if not ln:
         return deals
+    # a multi-word surname ('Marie DaVault', 'Cooper-Robles') matches on any
+    # token of 3+ letters; a stamped surname must match exactly
+    tokens = [t for t in re.split(r"[\s\-]+", ln) if len(t) >= 3] or [ln]
     out = []
     for d in deals:
         p = d.get("properties") or {}
         stamped = (p.get("student_last_name_if_diff_from_parent") or "").strip().lower()
         name = (p.get("dealname") or "").lower()
-        if stamped == ln or (not stamped and ln in name) or f"{first.lower()} {ln}" in name:
+        if stamped == ln or (not stamped and any(t in name for t in tokens)) \
+                or any(f"{first.lower()} {t}" in name for t in tokens):
             out.append(d)
     return out
 
@@ -1157,6 +1174,17 @@ def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> Non
         else:
             for k in keys:
                 results[k]["lines"].append(f"⏸ Not armed: would text {phone}: \"{body}\"")
+    # siblings share a teacher: a case with no TOR email borrows a sibling's
+    # (same family, same package) so the teacher's one draft names every kid
+    for k, c in due.items():
+        if c.get("tor_email") or c.get("tor_blocked"):
+            continue
+        sib = next((s for sk, s in due.items() if sk != k and s.get("tor_email")
+                    and s.get("to_email") == c.get("to_email") and s.get("package") == c.get("package")), None)
+        if sib:
+            due[k] = {**c, "tor_email": sib["tor_email"], "tor_body": sib.get("tor_body") or "",
+                      "tor_subject": sib.get("tor_subject") or "", "tor_mailbox": sib.get("tor_mailbox") or "",
+                      "tor_from_sibling": sib.get("student")}
     # teacher drafts, per teacher
     tor_cases = {k: c for k, c in due.items()
                  if c.get("tor_email") and not c.get("tor_blocked") and (c.get("tor_body") or "")}

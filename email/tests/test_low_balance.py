@@ -472,6 +472,45 @@ def test_siblings_get_one_email_one_text_and_one_teacher_draft(monkeypatch):
     assert len([d for d in h.dms if "Day 1" in d[1]]) == 1
 
 
+def test_sibling_without_a_deal_borrows_the_teacher(monkeypatch):
+    ez = _case(message_id="k:ezekiel", student="Ezekiel Melara", student_first="Ezekiel", ticket_id="T1",
+               deal_id=None, to_email="schoolmve@gmail.com", phone="+17143537555", package="Charter - Sky Mountain",
+               tor_email="", tor_body="", tor_subject="", first_name="Mayra", sms_body="single ez")
+    ma = _case(message_id="k:mario", student="Mario Melara", student_first="Mario", ticket_id="T2",
+               deal_id="d2", to_email="schoolmve@gmail.com", phone="+17143537555", package="Charter - Sky Mountain",
+               tor_email="pdeker@ieminc.org", tor_body="Hi Paula,\n\nsingle ma", tor_subject="New PO for Mario (A+ Tutoring)",
+               first_name="Mayra", sms_body="single ma")
+    cases = {"k:ezekiel": ez, "k:mario": ma}
+    cfgv = _cfg(armed=True, sms_template_multi="Hi {first_name}, {students} each have {hours} left.",
+                tor_email={"mode": "draft", "mailbox": "seat", "subject": "x", "body": "x",
+                           "subject_multi": "New POs for {students} (A+ Tutoring)",
+                           "body_multi": "{greeting}\n\n{po_lines}\n\n{sender_name}"})
+    h = Harness(monkeypatch, cfgv, deals=[], open_cases=cases)
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert len(h.drafts) == 1 and h.drafts[0][0] == "pdeker@ieminc.org"
+    assert h.drafts[0][1] == "New POs for Ezekiel and Mario (A+ Tutoring)"
+    assert "Ezekiel's current PO" in h.drafts[0][2] and "Mario's current PO" in h.drafts[0][2]
+
+
+def test_student_deals_falls_back_to_the_deal_name(monkeypatch):
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg())
+    calls = []
+    named = {"id": "9", "properties": {"dealname": "Mayra Aguilar - Ezekiel Melara - Sky Mountain 2 - 26/27",
+                                       "po_number": "555", "createdate": "2026-08-30T00:00:00Z"}}
+    def fake_write(m, p, body=None):
+        calls.append(body["filterGroups"][0]["filters"][0]["propertyName"])
+        return {"results": [] if calls[-1] == "student_first_name" else [named]}
+    monkeypatch.setattr(lb.hs, "_write", fake_write)
+    assert lb._student_deals("Ezekiel", "Melara") == [named]
+    assert calls == ["student_first_name", "dealname"]
+    # multi-word surname matches on any token
+    calls.clear()
+    kd = {"id": "8", "properties": {"dealname": "Juan DaVault - Kailyn DaVault - iLead 1 - 26/27", "po_number": "1"}}
+    monkeypatch.setattr(lb.hs, "_write", lambda m, p, body=None: {"results": [kd]})
+    assert lb._student_deals("Kailyn", "Marie DaVault") == [kd]
+
+
 def test_day1_waits_for_the_next_business_morning(monkeypatch):
     # opened Tuesday 09:00 PT → not due Tuesday, due Wednesday 08:00+
     opened = dt.datetime(2026, 9, 8, 16, 0, tzinfo=dt.timezone.utc)     # 09:00 PT
