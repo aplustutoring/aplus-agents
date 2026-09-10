@@ -18,6 +18,7 @@ at 5:42 AM (Gia Faulk, Mondays 9 am, already worked out). The watch read
 each channel's top-level messages and never opened the reply threads, so a
 tutor who answered where we asked her to ("reply here") looked silent.
 Tarisa: "I have been replying! in the thread!" Paola stepped in at 4:15 PM.
+Aesha at 6:39 PM: "replied yes in two earlier chats about this."
 **System change:** checklist item 1 now lists Slack thread replies as a
 source that must be read for a tutor; stage 11 carries the repeat-ask rule
 with "read the replies under every ask before calling a tutor silent" and
