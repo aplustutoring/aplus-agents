@@ -118,7 +118,10 @@ length instead. The channel rules are the same.
 No reply in six hours: one repeat in the same channel, more direct, with a
 deadline and the consequence ("if we do not hear back we will set {student}
 up with another tutor so the family is not left waiting"). Tag charter_sales.
-After the deadline the scheduler reassigns. Before calling a tutor silent,
+Past the deadline (Roman 2026-09-10): do not reassign. One more nudge,
+marked urgent, with a same-day deadline. Still silent: post the request in
+the public #online-tutoring channel so another tutor can pick the student
+up. Reassignment is the schedulers' call after that. Before calling a tutor silent,
 read the replies under every ask we posted (Slack threads), the channel's
 top-level messages alone are not the record. A tutor who already answered
 and gets the repeat anyway reads it as not being listened to.

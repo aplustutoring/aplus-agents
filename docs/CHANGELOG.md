@@ -7,6 +7,19 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — Silent-tutor escalation: urgent nudge, then #online-tutoring (Roman: "do not reassign")
+
+**Why:** Christina and Angela did not answer by the 10 am deadline. The
+draft rule said the scheduler reassigns. Roman: "do not reassign. nudge the
+tutors again, letting them know we need to know urgently, and if still no
+response these matters should be posted into the online tutoring channel."
+**What:** second nudge posted to both at 1:26 PM with a 3 pm deadline and
+the consequence named (#online-tutoring post). Stage 11 updated. The
+#online-tutoring post is a standing step once the deadline passes.
+**Files:** knowledge/journey/11-tutor.md.
+
+---
+
 ## 2026-09-10 — Teacher hours-request drafts placed in HubSpot for Paola (notes + tasks)
 
 **Why:** Roman: "create the draft emails in HubSpot for teachers and send
