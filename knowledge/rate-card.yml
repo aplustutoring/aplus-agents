@@ -35,10 +35,12 @@ private_pay:
 recommended_cadence:             # knowledge/program-model.md
   sessions_per_week: 3
   minutes_per_session: 45
-  hours_per_po_month: 9
-  charter_online_monthly: 675    # 9 x 75
+  sessions_per_po_month: 12
+  charter_online_monthly: 720    # 12 sessions x $60 (Roman 2026-09-09: 45-minute
+                                 # sessions are $60 each, never 0.75 x the hourly rate)
 
 usage_rules:
-  - "Quote the per-hour rate for charter; never a monthly figure without the hours behind it."
+  - "Charter is $75 per hour for hour-based sessions OR $60 per 45-minute session. Never pro-rate one from the other (Roman 2026-09-09)."
+  - "Quote the per-hour or per-session rate; never a monthly figure without the hours or sessions behind it."
   - "A null rate is never guessed; say the seat will send the rate sheet."
   - "Never imply the NSSA Badge sets or endorses a price."

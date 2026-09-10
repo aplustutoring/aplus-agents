@@ -18,9 +18,11 @@ version: 0.1
 **Three sessions a week, 45 minutes each, with the same tutor.** Roman,
 2026-09-09: "the recommended schedule is three times a week, 45 minutes."
 
-Per week: 2 hours 15 minutes. Per PO month (four weeks): about 9 hours.
-Priced from `knowledge/rate-card.yml`: 9 hours at the online charter rate of
-$75 per hour is $675 a month.
+Per week: three sessions. Per PO month (four weeks): 12 sessions. Priced
+from `knowledge/rate-card.yml`: 45-minute sessions are $60 each, so 12
+sessions is $720 a month. Never pro-rate a 45-minute session from the $75
+hourly rate (Roman 2026-09-09: "for charter it's 75 per hour or 60 for a 45
+minute session").
 
 ## What it rests on
 
@@ -43,9 +45,9 @@ The family's stated cadence is the starting point, never the wrong answer.
 Offer the recommendation beside it, priced, and let them choose:
 
 > {Parent} asked for {their cadence}. Our recommended cadence is three
-> 45-minute sessions a week, about 9 hours a month, which is where we see
-> students settle in fastest. Either works; we are glad to start where the
-> family is comfortable and add sessions as {student} gets going.
+> 45-minute sessions a week, 12 sessions a month at $60 a session, which is
+> where we see students settle in fastest. Either works; we are glad to start
+> where the family is comfortable and add sessions as {student} gets going.
 
 Rules that apply (pointers, not restated): every charter student has funds,
 never "students with funds"; the school issues the PO, we send the teacher
@@ -53,19 +55,22 @@ the hours (`ops/messenger/CAMPAIGN-2026-09-08-teachers.md`); no em dashes
 (`CLAUDE.md`); never name an inactive tutor
 (`ops/hubspot-schema/properties.yml`, `last_tutor_active`).
 
-## Common cadences, priced (online charter, $75 per hour)
+## Common cadences, priced (online charter)
 
-| Cadence | Hours per week | Hours per PO month | Monthly amount |
+Two offerings, never blended: $75 per hour for hour-based sessions, $60 per
+45-minute session.
+
+| Cadence | Unit | Per PO month | Monthly amount |
 |---|---|---|---|
-| 1 x 60 min | 1 | 4 | $300 |
-| 2 x 60 min | 2 | 8 | $600 |
-| 2 x 30 min | 1 | 4 | $300 |
-| 3 x 45 min (recommended) | 2.25 | 9 | $675 |
-| 3 x 60 min | 3 | 12 | $900 |
+| 1 x 60 min | hour, $75 | 4 hours | $300 |
+| 2 x 60 min | hour, $75 | 8 hours | $600 |
+| 3 x 60 min | hour, $75 | 12 hours | $900 |
+| 2 x 45 min | session, $60 | 8 sessions | $480 |
+| 3 x 45 min (recommended) | session, $60 | 12 sessions | $720 |
 
-Per-session pricing and in-person rates are in `knowledge/rate-card.yml`;
-where that file says null, the seat quotes by hand and the number does not go
-in agent copy.
+In-person and private-pay rates are in `knowledge/rate-card.yml`; where that
+file says null, the seat quotes by hand and the number does not go in agent
+copy.
 
 ## Where this is referenced
 
