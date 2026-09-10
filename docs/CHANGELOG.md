@@ -7,6 +7,28 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — Teacher hours-request drafts placed in HubSpot for Paola (notes + tasks)
+
+**Why:** Roman: "create the draft emails in HubSpot for teachers and send
+Paola a slack message guiding her on who and what to send." HubSpot has no
+draft-email object and the Gmail service-account key (RETENTION_SA_JSON)
+lives only in Actions secrets, so real Gmail drafts in paola@ could not be
+made from a local session.
+**What:** for eight teachers (Sagua, Phillips, Elias, Solis, Salcedo,
+Barron, Rivera, Richardson) a note on the teacher's contact holding the
+full email ("[Agent] Draft email for Paola to send, NOT sent") and a HubSpot
+task owned by charter_sales (five SEND due 9/10 11 am, three HOLD due 9/11
+10 am, each naming the fact that has to land first). Crane not drafted: the
+family asked for 7:30 am and Tarisa is 3 pm or later. Rivera draft corrected
+to Cathy's confirmed Tuesday 9:00 am. Slack DM to Paola with the send order,
+holds, and the not-drafted list. Nothing sent to any teacher.
+**Not done:** Gmail drafts in paola@ (needs the SA key locally or an Actions
+job that takes the drafts as an artifact); a repo script for this, the
+session scratchpad script is the only copy (family PII).
+**Files:** none in the repo; scratchpad teacher_drafts_to_hubspot.py.
+
+---
+
 ## 2026-09-09 — Tutor deadline nudges sent to two tutors who had already answered (in Slack threads)
 
 **What happened:** at 4:01 PM the six-hour repeat ask ("reply with a yes or
