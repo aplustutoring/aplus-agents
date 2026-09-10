@@ -13,6 +13,9 @@ ALLOWED_ORIGIN = "https://delilah-booth.nameless-mountain-bafa.workers.dev"
 # used by booth/eo) is the closest match. Change here if that guess is wrong.
 JUSTCALL_FROM = "+18185736293"
 SMS_BODY = "Hi {name}! Here is your photo from Delilah's 5th birthday. Shana Tova and thank you for celebrating with us!"
+STORYBOOK_SMS_BODY = "And here is your storybook version, {name}. Once upon a Shana Tova!"
+# Gemini image model for the storybook repaint (GEMINI_API_KEY is a secret)
+GEMINI_MODEL = "gemini-3.1-flash-image"
 
 [assets]
 directory = "./public"
@@ -25,3 +28,4 @@ id = "cdaa219ac27248089b3867cf137812a4"
 # Secrets (never in this file — set via CLI):
 #   wrangler secret put JUSTCALL_API_KEY
 #   wrangler secret put JUSTCALL_API_SECRET
+#   wrangler secret put GEMINI_API_KEY
