@@ -48,7 +48,14 @@ npx wrangler secret put WEBHOOK_TOKEN   # e.g. openssl rand -hex 24
    These power the workflow's transcript-retry step; if unset, retries fall
    back to the daily digest sweep.
 
-Smoke test: `curl https://<worker>/health` → `ok`, then
+Health: `curl "https://<worker>/status?token=<WEBHOOK_TOKEN>"` shows the
+Dispatcher's alarm, last scheduled time, last dispatch time and last dispatch
+error. A `lastDispatchError` with no later `lastDispatchAt` means the GitHub
+dispatch is failing (check `GITHUB_TOKEN`); `wrangler tail` shows the same
+outcomes live.
+
+Smoke test: `curl https://<worker>/health` → `ok` (a 503 names whichever
+secret is still unset), then
 `curl -X POST "https://<worker>/call-completed?token=<WEBHOOK_TOKEN>&delay=0"`
 and confirm a `Call agent` run appears in Actions within ~a minute.
 

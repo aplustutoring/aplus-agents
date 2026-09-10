@@ -29,6 +29,8 @@ coherent.
 |---|---|---|---|---|---|
 | Teachworks family-creation zap | Teachworks | HubSpot | | DECIDER | ABSORB → Onboarding (succession per #AP011) |
 | Google Docs Decision Log append pipe | (chat/agent) | Google Docs | | GUARDRAIL | KEEP — house logging rail |
+| PRE LESSON --> MONDAY (347673126) | HubSpot wf 1764489615 webhook | monday.com, HubSpot Update Deal owner, Slack DM | errored since 2026-09-04 (board full), off 09-07 | DECIDER | KILL — board retired (Roman 2026-09-09); owner step ABSORBED → deal_sync owner_assign |
+| PRE LESSON --> Teachworks | HubSpot wf 1775892746 webhook | Teachworks | 2026-09-09 | PLUMBING | INVESTIGATE — deal_sync already upserts TW families; likely ABSORB → deal_sync |
 | | | | | | |
 | | | | | | |
 | | | | | | |
