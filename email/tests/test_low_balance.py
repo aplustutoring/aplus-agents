@@ -312,6 +312,30 @@ def test_private_pay_old_pricing_gets_no_auto_email(monkeypatch):
     assert "Old pricing" in str(h.tickets) + str(h.notes)
 
 
+def test_private_pay_routes_to_commissioned_scheduler(monkeypatch):
+    # Roman 2026-09-10: schedulers get commission on private-pay upgrades, so
+    # the ticket, the DM, and the sender identity are the assigned scheduler's.
+    from src import router
+    gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": "",
+                                      "teacher_of_record_email": ""}}
+    cfgv = _cfg(armed=True)
+    cfgv["staff"]["yolanda"] = {"name": "Yolanda", "hubspot_owner_id": "86868539",
+                                "slack_user_id": "UYO", "email": "yolanda@wetutorathome.com"}
+    cfgv["roles"]["scheduler_m_z"] = "yolanda"
+    h = Harness(monkeypatch, cfgv, deals=[gold], recent=RECENT)
+    monkeypatch.setattr(router, "scheduler_for_last_name", lambda ln: ("scheduler_m_z", []))
+    monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
+    body = ALERT.replace("Charter - iLEAD", "2026 - Prep Package")
+    rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
+    assert rec["owner"] == "scheduler_m_z"
+    assert h.tickets[0][0][1] == "86868539"                # ticket owner = the scheduler
+    assert h.dms and all(u == "UYO" for u, _t in h.dms)    # DM only the scheduler, not Paola
+    h.send_pending({rec["message_id"]: rec})
+    _to, _subj, _tpl, ctx = h.emails[0]
+    assert ctx["sender_first"] == "Yolanda"                # from-name + sign-off
+    assert ctx["sender_email"] == "yolanda@wetutorathome.com"   # reply-to
+
+
 def test_repeat_alert_adds_a_note_and_never_re_sends(monkeypatch):
     prior = {"ticket_id": "T1", "student": "Taylor Rodriguez"}
     h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL],

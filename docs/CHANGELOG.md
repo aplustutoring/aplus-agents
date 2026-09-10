@@ -53,6 +53,15 @@ deal-sync cycle.
   writes the exact copy it WOULD send into the ticket note and the DM, and
   touches no family or teacher. Roman approves the copy, flips the flag in
   a PR.
+- **Private pay routes to the schedulers (Roman 2026-09-10):** schedulers
+  get commission on private-pay upgrades, so a private-pay case's ticket
+  owner, DM, and sender identity (from-name, reply-to, sign-off) are the
+  assigned scheduler's via the existing A-L / M-Z split
+  (`router.scheduler_for_last_name`). Charter cases stay with
+  `low_balance.owner` (charter_sales). NOTE: the scheduler staff records
+  carry no `email:` yet, so private-pay reply-to falls back to admin@
+  (triage routes scheduling mail back to the split, so replies still land
+  right); add their addresses to `staff:` to make replies direct.
 - **Old-pricing gate (Roman 2026-09-10):** the private-pay upgrade email
   quotes the 2026 tiers, so it only goes to families whose Teachworks
   package name carries the 2026 service-code year

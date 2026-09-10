@@ -188,6 +188,10 @@ low_balance:
   # "4 hours or less"). Teachworks' own alert level is per package; alerts
   # that fire above this line are audited and skipped.
   max_hours: 4
+  # CHARTER cases only. Private-pay cases route to the assigned SCHEDULER
+  # (A-L / M-Z split): schedulers get commission on private-pay upgrades
+  # (Roman 2026-09-10), so the ticket, the DM, and the sender identity are
+  # theirs. The notify list below is charter-only for the same reason.
   owner: charter_sales
   notify: [charter_sales]
   escalate_to: visionary

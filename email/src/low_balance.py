@@ -740,6 +740,16 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
         tor_email = _tor_email_fallback(dp, contact)
     no_tor = [str(x) for x in lb.get("no_teacher_email_pipelines", [])]
     tor_blocked = pipeline in no_tor
+    if not charter:
+        # Private-pay upgrades are commissioned to the schedulers (Roman
+        # 2026-09-10): the ticket, the DM, and the sender identity (from-name,
+        # reply-to, sign-off) belong to the assigned scheduler via the A-L /
+        # M-Z split, not the charter seat.
+        from .router import scheduler_for_last_name
+        sched_key, _split_notes = scheduler_for_last_name(alert.get("parent_last") or "")
+        if sched_key and (staff(sched_key) or {}).get("hubspot_owner_id"):
+            seat_key, seat = sched_key, staff(sched_key)
+            record["owner"] = seat_key
     # LOW_BALANCE_FORCE_ARMED=1 lets a DRY_RUN replay walk every outreach
     # path (each rail is dry-run guarded) without touching config.
     armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
@@ -894,7 +904,8 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
           f"{alert.get('parent_email') or ''} {phone}\n" + "\n".join(lines)
           + (f"\n🚩 {'; '.join(flags)}" if flags else "")
           + (f"\nTicket: {hs.ticket_url(tid)}" if tid and tid != 'DRYRUN' else ""))
-    for role in lb.get("notify", [seat_key]) or []:
+    # private pay: only the commissioned scheduler, never the charter notify list
+    for role in ([seat_key] if not charter else (lb.get("notify", [seat_key]) or [])):
         s = staff(role) or {}
         if s.get("slack_user_id"):
             try:
@@ -1047,7 +1058,9 @@ def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, fo
     fe = lb.get("family_email") or {}
     for (to_email, private), members in _group(waiting, lambda c: (c.get("to_email"), bool(c.get("private_pay")))).items():
         keys = [k for k, _c in members]
-        fctx = _family_ctx(members, seat, lb)
+        # the case remembers its seat (private pay = the commissioned scheduler)
+        gseat = staff(members[0][1].get("owner") or "") or seat
+        fctx = _family_ctx(members, gseat, lb)
         multi = fctx["multi"]
         if private:
             subject = _render((lb.get("private_pay") or {}).get("subject", "{student}'s next tutoring package"), fctx)
