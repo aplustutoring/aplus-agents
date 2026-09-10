@@ -323,3 +323,24 @@
 {"call_id": 412889038, "date_pt": "2026-09-08", "agent": "Emily Shulman", "direction": "outgoing", "overall": 2.9, "scores": {"U1": 2, "U2": 4, "U3": 3, "U4": 2, "U5": 3, "S1": 3, "S2": 4, "S3": 2, "S4": 3}}
 {"call_id": 412891499, "date_pt": "2026-09-08", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
 {"call_id": 412929144, "date_pt": "2026-09-08", "agent": "Yolanda Rico", "direction": "outgoing", "overall": null, "scores": {}}
+{"call_id": 413376809, "date_pt": "2026-09-09", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 3.3, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 3, "U5": 3, "S1": 4, "S2": 4, "S3": 3, "S4": 2}}
+{"call_id": 413396613, "date_pt": "2026-09-09", "agent": "Mandy Thwaites", "direction": "incoming", "overall": 3.4, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 3, "U5": 3}}
+{"call_id": 413408369, "date_pt": "2026-09-09", "agent": "Yolanda Rico", "direction": "incoming", "overall": 3.3, "scores": {"U1": 4, "U2": 3, "U3": 3, "U4": 4, "U5": 3, "V1": 4, "V2": 2}}
+{"call_id": 413418524, "date_pt": "2026-09-09", "agent": "Mandy Thwaites", "direction": "incoming", "overall": 2.9, "scores": {"U1": 2, "U2": 4, "U3": 3, "U4": 2, "U5": 3, "V1": 4, "V2": 2}}
+{"call_id": 413242172, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.8, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 4, "U5": 4, "S4": 4, "V1": 4, "V2": 3}}
+{"call_id": 413258018, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.3, "scores": {"U1": 2, "U2": 4, "U3": 4, "U4": 4, "U5": 3, "S1": 4, "S2": 4, "S3": 2, "S4": 3}}
+{"call_id": 413253347, "date_pt": "2026-09-09", "agent": "Mandy Thwaites", "direction": "outgoing", "overall": 2.2, "scores": {"U1": 2, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 413328413, "date_pt": "2026-09-09", "agent": "Roman Slavinsky", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 4, "U2": 5, "U3": 3, "U5": 3, "V1": 4, "V2": 3}}
+{"call_id": 413329992, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 2.9, "scores": {"U1": 2, "U2": 4, "U3": 3, "U4": 3, "U5": 3, "V1": 3, "V2": 2}}
+{"call_id": 413361298, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 4, "U3": 4, "U5": 3, "S4": 2}}
+{"call_id": 413362077, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 4, "U3": 4, "U5": 3, "S4": 2}}
+{"call_id": 413362773, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 1.3, "scores": {"U1": 2, "U5": 1, "S4": 1}}
+{"call_id": 413364152, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 2, "S1": 2, "S4": 2}}
+{"call_id": 413365045, "date_pt": "2026-09-09", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
+{"call_id": 413367669, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.4, "scores": {"U1": 5, "U2": 4, "U3": 4, "U4": 3, "U5": 3, "S1": 2, "S4": 3}}
+{"call_id": 413398548, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 4, "U5": 3, "S1": 2, "S3": 3, "S4": 3}}
+{"call_id": 413413804, "date_pt": "2026-09-09", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 5, "U2": 4, "U3": 4, "U4": 3, "U5": 4, "S1": 2, "S2": 3, "S3": 4, "S4": 4}}
+{"call_id": 413415782, "date_pt": "2026-09-09", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U2": 3, "U3": 3, "U4": 2, "U5": 4, "S1": 2, "S2": 2, "S3": 3, "S4": 2}}
+{"call_id": 413427857, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.1, "scores": {"U1": 3, "U2": 3, "U3": 3, "U4": 3, "U5": 4, "V1": 3, "V2": 3}}
+{"call_id": 413443505, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 5, "U2": 4, "U3": 3, "U5": 3, "V1": 4, "V2": 3}}
+{"call_id": 413444786, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.5, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 3, "V1": 4, "V2": 2}}
