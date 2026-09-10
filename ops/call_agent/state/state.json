@@ -723,10 +723,107 @@
     413444786,
     413468741,
     413657550,
-    413672898
+    413672898,
+    413689361,
+    413694794
   ],
-  "last_run_utc": "2026-09-10T16:14:26.442847+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-10T17:15:19.079726+00:00",
+  "pending_digest": [
+    {
+      "call_id": 413694794,
+      "number": "13234934787",
+      "time_pt": "9:39 AM",
+      "matched": true,
+      "contact_label": "Divyesh Motiwalla",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Divyesh called in to book continued online tutoring with the tutor for his daughter Autumn \u2014 one hour today at 4PM and one hour next Tuesday at 4PM. He'll pay hourly for now (may buy a package next Tuesday) and asked Yolanda to text him the tutor's availability confirmation and a payment link. Note: Divyesh referred to the tutor as 'Ashley,' but prior record notes indicate 'Ashley' was a mistaken reference to the student Autumn \u2014 the actual tutor's name needs internal verification. Positive, engaged tone; family is actively moving forward.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm tutor availability for today at 4PM (1 hour) and next Tuesday at 4PM (1 hour) online for Autumn, then text Divyesh to confirm both sessions.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Divyesh a payment link for 1 hour today (hourly rate); he may purchase a package next Tuesday.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Internally verify the tutor's actual name \u2014 Divyesh called the tutor 'Ashley,' but prior notes suggest 'Ashley' was a misnaming of the student. Confirm who the assigned tutor is before texting the family.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Divyesh (dad of Autumn, 10th grade, Peacock Junior High) called in warm and ready to move forward. He wants to continue ONLINE tutoring at 4PM today (1 hour) and next Tuesday at 4PM (1 hour), hourly for now with a possible package purchase next Tuesday. He expects a text from Yolanda confirming the tutor's availability for both sessions AND a payment link for today's hour. Heads up: Divyesh referred to the tutor as 'Ashley,' but our prior notes show 'Ashley' was actually a mistaken reference to the student Autumn \u2014 verify the real tutor's name internally before texting so we don't confuse him. Suggested opener: 'Hi Divyesh, this is [name] from A+ Tutoring following up on your call with Yolanda \u2014 confirming Autumn's sessions today at 4PM and next Tuesday at 4PM online, and here's your payment link for today's hour.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer already in an OPEN_DEAL pipeline booking additional sessions \u2014 lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Autumn",
+          "Peacock Junior High"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Inbound] Divyesh called to book continued online tutoring for Autumn: 1 hour today at 4PM and 1 hour next Tuesday at 4PM. Wants hourly billing for now, may purchase a package next Tuesday. He referred to the tutor as 'Ashley' \u2014 need to verify the actual tutor's name internally since prior notes indicate 'Ashley' was a misnaming of the student. Positive, engaged tone.",
+          "what_we_can_do_to_help": "Yolanda to confirm tutor availability for today 4PM and next Tuesday 4PM (online), then text Divyesh to confirm both sessions and send a payment link for today's hour. Verify the assigned tutor's actual name before communicating further to avoid confusion.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Inbound] Divyesh called to book continued online tutoring for Autumn: 1 hour today at 4PM and 1 hour next Tuesday at 4PM. Wants hourly billing for now, may purchase a package next Tuesday. He referred to the tutor as 'Ashley' \u2014 need to verify the actual tutor's name internally since prior notes indicate 'Ashley' was a misnaming of the student. Positive, engaged tone."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to confirm tutor availability for today 4PM and next Tuesday 4PM (online), then text Divyesh to confirm both sessions and send a payment link for today's hour. Verify the assigned tutor's actual name before communicating further to avoid confusion."
+        ],
+        [
+          "online_or_in_person",
+          "In-Person Tutoring",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm tutor availability for today at 4PM (1 hour) and next Tuesday at 4PM (1 hour) online for Autumn, then text Divyesh to confirm both sessions.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Text Divyesh a payment link for 1 hour today (hourly rate); he may purchase a package next Tuesday.",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Internally verify the tutor's actual name \u2014 Divyesh called the tutor 'Ashley,' but prior notes suggest 'Ashley' was a misnaming of the student. Confirm who the assigned tutor is before texting the family.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18189274922",
