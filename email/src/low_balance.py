@@ -602,7 +602,11 @@ def _private_ctx(alert: dict, deal: dict | None, ctx: dict, lb: dict) -> dict:
     deal's pipeline (in-person pipelines per deal_sync), else online. The
     current tier is read from the Teachworks package name ('2025 - Prep
     Package' → Prep); the offer is the next tier up. Unknown tier → the two
-    largest tiers as a general 'larger packages, lower rates' line."""
+    largest tiers as a general 'larger packages, lower rates' line.
+    Old-pricing packages (service code missing the pricing_token year) get
+    NO upgrade math at all: quoting 2026 rates at a family whose package
+    predates them is a rate conversation, and that belongs to the seat
+    (Roman 2026-09-10)."""
     pp = lb.get("private_pay") or {}
     dp = (deal or {}).get("properties") or {}
     inperson = str(dp.get("pipeline") or "") in [str(p) for p in
@@ -612,7 +616,11 @@ def _private_ctx(alert: dict, deal: dict | None, ctx: dict, lb: dict) -> dict:
     cur_i = next((i for i, t in enumerate(tiers) if str(t.get("name", "")).lower() in pkg), None)
     out = dict(ctx)
     out.update(modality="in-person" if inperson else "online", current_tier="", current_rate="",
-               next_tier="", next_hours="", next_rate="", upgrade_line="")
+               next_tier="", next_hours="", next_rate="", upgrade_line="", old_pricing=False)
+    token = str(pp.get("pricing_token") or "").strip().lower()
+    if token and token not in pkg:
+        out["old_pricing"] = True
+        return out
     if cur_i is not None:
         cur = tiers[cur_i]
         out["current_tier"], out["current_rate"] = cur["name"], f"${cur['rate']}"
@@ -821,14 +829,20 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     # student with an open case, inside the send window (Roman: "we don't
     # want to message shit in the middle of the night"). Everything the
     # sweep needs to render is stored on the case.
-    record.update(email_pending=bool(to_email), first_name=ctx["first_name"],
+    old_pricing = bool(pctx.get("old_pricing")) if pctx else False
+    record.update(email_pending=bool(to_email) and not old_pricing, first_name=ctx["first_name"],
                   student_first=alert.get("student_first") or "",
                   personal_line=ctx["personal_line"],
                   upgrade_line=(pctx.get("upgrade_line") if pctx else ""),
-                  private_tier=(pctx.get("current_tier") if pctx else ""))
+                  private_tier=(pctx.get("current_tier") if pctx else ""),
+                  private_old_pricing=old_pricing)
     delay = int(lb.get("email_delay_minutes", 60))
     lines = []
-    if not to_email:
+    if old_pricing:
+        token = ((lb.get("private_pay") or {}).get("pricing_token") or "")
+        lines.append(f"⏸ Old pricing: package \"{alert['package']}\" predates the {token} service codes. "
+                     "No auto email; this renewal is a rate conversation for the seat.")
+    elif not to_email:
         lines.append("✉️ No family email on file; nothing to send")
     elif armed:
         lines.append(f"✉️ Email to {to_email} goes on the next sweep (within {delay} min, one email per family, "

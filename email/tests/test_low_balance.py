@@ -54,7 +54,8 @@ def _cfg(armed=False, **over):
                              "reply_to": "{sender_email}",
                              "subject": "{student}'s tutoring hours are running low"},
             "private_pay": {"template": "templates/low_balance_private.html",
-                            "subject": "{student}'s next tutoring package", "tiers": TIERS},
+                            "subject": "{student}'s next tutoring package",
+                            "pricing_token": "2026", "tiers": TIERS},
             "tor_email": {"mode": "draft", "mailbox": "seat",
                           "subject": "New PO for {student} (A+ Tutoring)",
                           "body": "Hi {tor_first},\n\n{student} has {hours} left on the current PO{po_ref}.\n\n{sender_name}"},
@@ -257,7 +258,7 @@ def test_private_pay_gets_one_upgrade_email_and_no_text(monkeypatch):
                                       "teacher_of_record_email": ""}}
     h = Harness(monkeypatch, _cfg(armed=True), deals=[gold], recent=RECENT)
     monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
-    body = ALERT.replace("Charter - iLEAD", "2025 - Prep Package")
+    body = ALERT.replace("Charter - iLEAD", "2026 - Prep Package")
     rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
     assert rec["charter"] is False and rec["private_pay"] is True
     assert rec["private_tier"] == "Prep"
@@ -284,14 +285,31 @@ def test_negative_balance_parses():
 def test_private_pay_in_person_tiers_and_unknown_tier(monkeypatch):
     inp = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "3067397", "po_number": ""}}
     monkeypatch.setattr(lb, "cfg", lambda: _cfg())
-    a = lb.parse_alert(ALERT.replace("Charter - iLEAD", "Soar 100"))
+    a = lb.parse_alert(ALERT.replace("Charter - iLEAD", "2026 - Soar 100"))
     ctx = lb._context(a, inp, CONTACT, SEAT)
     p = lb._private_ctx(a, inp, ctx, _cfg()["low_balance"])
     assert p["modality"] == "in-person" and p["current_tier"] == "Soar" and p["next_tier"] == ""
     assert "Success (50 hours) is $103 an hour" in p["upgrade_line"]   # top tier → general line
-    a2 = lb.parse_alert(ALERT.replace("Charter - iLEAD", "Mystery Pack"))
+    a2 = lb.parse_alert(ALERT.replace("Charter - iLEAD", "2026 Mystery Pack"))
     p2 = lb._private_ctx(a2, inp, ctx, _cfg()["low_balance"])
     assert p2["current_tier"] == "" and "lower rates" in p2["upgrade_line"]
+
+
+def test_private_pay_old_pricing_gets_no_auto_email(monkeypatch):
+    # Roman 2026-09-10: the upgrade email quotes 2026 rates, so a family on
+    # an older service code never gets it; the seat has the rate conversation
+    # from the ticket instead.
+    gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": "",
+                                      "teacher_of_record_email": ""}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[gold], recent=RECENT)
+    monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Gold Tutoring")
+    body = ALERT.replace("Charter - iLEAD", "2025 - Prep Package")
+    rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
+    assert rec["private_pay"] is True and rec["private_old_pricing"] is True
+    assert rec["email_pending"] is False and rec["upgrade_line"] == ""
+    h.send_pending({rec["message_id"]: rec})
+    assert not h.emails and not h.sms and not h.drafts   # nothing goes out, even armed
+    assert "Old pricing" in str(h.tickets) + str(h.notes)
 
 
 def test_repeat_alert_adds_a_note_and_never_re_sends(monkeypatch):
@@ -662,7 +680,7 @@ def test_templates_render_clean(monkeypatch):
     assert "has had" not in out and "August" not in out                 # no duration, ever
     # private pay
     gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default"}}
-    a2 = lb.parse_alert(ALERT.replace("Charter - iLEAD", "2025 - Prep Package"))
+    a2 = lb.parse_alert(ALERT.replace("Charter - iLEAD", "2026 - Prep Package"))
     pctx = lb._private_ctx(a2, gold, lb._context(a2, gold, CONTACT, SEAT, RECENT), _cfg()["low_balance"])
     tpl2 = Path(__file__).resolve().parents[1] / "templates" / "low_balance_private.html"
     out2 = lb._render(tpl2.read_text(), pctx)

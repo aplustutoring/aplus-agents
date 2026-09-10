@@ -258,6 +258,13 @@ low_balance:
   private_pay:
     template: "templates/low_balance_private.html"
     subject: "{student}'s next tutoring package"
+    # The upgrade email quotes the tiers below, which are the 2026 pricing
+    # sheets. Families on older service codes (the Teachworks package name
+    # carries the pricing year, e.g. "2025 - Prep Package") must NOT get
+    # this email: their renewal is a rate conversation, and the seat has it
+    # from the ticket (Roman 2026-09-10). Only packages whose name contains
+    # this token get the auto email; empty disables the gate.
+    pricing_token: "2026"
     tiers:
       online:
         - { name: Improvement, hours: 8,   rate: 88 }

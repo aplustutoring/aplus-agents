@@ -53,6 +53,13 @@ deal-sync cycle.
   writes the exact copy it WOULD send into the ticket note and the DM, and
   touches no family or teacher. Roman approves the copy, flips the flag in
   a PR.
+- **Old-pricing gate (Roman 2026-09-10):** the private-pay upgrade email
+  quotes the 2026 tiers, so it only goes to families whose Teachworks
+  package name carries the 2026 service-code year
+  (`private_pay.pricing_token: "2026"`). Older packages (e.g. "2025 - Prep")
+  still open the case, but the ticket says the renewal is a rate
+  conversation for the seat and no auto email is queued
+  (`private_old_pricing` on the case, `email_pending: false`).
 - **Self-closing.** `run_sweep` (from deal_sync, hourly): a new PO deal for
   the student (po_inbox creates it) closes the ticket with the PO number; a
   deal moved to Stopped closes it as "not continuing"; no PO after
