@@ -7,6 +7,39 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — booth/delilah: home photo booth for Delilah's 5th birthday + Rosh Hashanah 5787 (2026-09-11)
+
+**What:** `booth/delilah/` is a personal-event fork of the Sage Oak booth. Every kept
+photo auto-prints (the party favor); guests may add a cell number to get the framed
+photo by MMS. No HubSpot, no email, no consent, no cron (so no SUNSET needed).
+
+- `booth/delilah/public/index.html` — attract, camera + countdown, 1200x1800 framed
+  print (cream card, pomegranate border, honey mat, "Delilah is 5!", Shana Tova 5787
+  banner), name + phone form with "Just print it", auto-print, host album (press and
+  hold the top-right corner of the start screen) with Reprint / Print all.
+- `booth/delilah/worker.js` — `POST /submit` archives to KV (permanent, metadata
+  name+time) and texts via JustCall MMS; `GET /photo/<key>`; `GET /photos` (album);
+  all other GETs fall through to the assets binding. 22-assertion `test-worker.mjs`.
+- `booth/delilah/wrangler.toml` — Worker `delilah-booth` serves `public/` as
+  `[assets]` (one URL, same-origin API). KV `DELILAH_PHOTOS`
+  cdaa219ac27248089b3867cf137812a4. Secrets JUSTCALL_API_KEY/SECRET set.
+
+**Live:** https://delilah-booth.nameless-mountain-bafa.workers.dev. Verified: page
+200, archive-only submit, MMS submit accepted by JustCall (self-test to the main
+line 818-850-6284), `/photos` lists, test keys deleted.
+
+**Why the sender is 818-573-6293:** Roman asked for "the 6793 number"; no JustCall
+number ends in 6793. 6293 is "Roman's line" (ops/call_agent/config.yml), MMS-capable,
+and what `booth/eo` sent from. Flagged to Roman; one-line change in wrangler.toml.
+
+**Lesson:** `wrangler pages project create` on wrangler 4.131 deploys a Workers-style
+project and collided with the Worker of the same name (it overwrote it once). For
+new booths use a single Worker with `[assets]` instead of a separate Pages project.
+Also: Cloudflare returns 1010 to Python's default user agent on workers.dev; test
+with a browser UA (Safari on the iPad is unaffected).
+
+**Files:** `booth/delilah/{public/index.html,worker.js,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-09 (late, 2) — Cron watchdog: catch-up dispatches carry inputs, so a call-agent catch-up is a real run
 
 **Why:** `ops/fleet-health/watchdog/cron_watchdog.py` redispatched stale
