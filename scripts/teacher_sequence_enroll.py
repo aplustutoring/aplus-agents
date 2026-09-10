@@ -18,8 +18,9 @@ Dry-run by default; live needs --confirm ENROLL.
 
 Eligibility at enroll time: has email; not opted out; not hard-bounced;
 generic_inbox != Yes; campaign_replied != Yes; not currently enrolled in any
-sequence; not already enrolled by this script. Every skip is counted and
-reported (Accountable: say what was NOT done).
+sequence; not contacted by any seat in the last `recent_touch_days` days
+(HubSpot Last Contacted); not already enrolled by this script. Every skip is
+counted and reported (Accountable: say what was NOT done).
 """
 
 import argparse
@@ -27,7 +28,7 @@ import json
 import os
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -50,7 +51,8 @@ SLACK_TOKEN = os.getenv("SLACK_BOT_TOKEN", "")
 HS_BASE = "https://api.hubapi.com"
 H = {"Authorization": f"Bearer {HUBSPOT_TOKEN}", "Content-Type": "application/json"}
 PROPS = ["email", "firstname", "lastname", "school_canonical", "generic_inbox", "hs_email_optout",
-         "hs_email_bounce", "hs_sequences_is_enrolled", "campaign_replied", "hs_latest_sequence_enrolled"]
+         "hs_email_bounce", "hs_sequences_is_enrolled", "campaign_replied", "hs_latest_sequence_enrolled",
+         "notes_last_contacted"]
 
 
 def hs(method, path, **kw):
@@ -86,7 +88,21 @@ def batch_read(ids):
     return out
 
 
-def ineligible(p, done):
+def _ts_ms(value):
+    """HubSpot datetime property -> epoch milliseconds, or None if empty/unparseable.
+    The v3 API returns ISO-8601 with a trailing Z; older exports carry epoch-ms strings."""
+    v = (str(value) if value is not None else "").strip()
+    if not v:
+        return None
+    if v.isdigit():
+        return int(v)
+    try:
+        return int(datetime.fromisoformat(v.replace("Z", "+00:00")).timestamp() * 1000)
+    except ValueError:
+        return None
+
+
+def ineligible(p, done, touch_cutoff_ms=None, touch_days=0):
     email = (p.get("email") or "").strip().lower()
     if not email:
         return "no email"
@@ -100,6 +116,13 @@ def ineligible(p, done):
         return "already replied"
     if (p.get("hs_sequences_is_enrolled") or "") == "true":
         return "already in a sequence"
+    if touch_cutoff_ms:
+        # Any seat's logged email, call, or meeting (HubSpot Last Contacted). On
+        # 2026-09-10 Ashley Pontell got Danielle's sequence at 11:58 AM and
+        # Paola's PO request at 12:14 PM; nothing here asked who else was talking.
+        last = _ts_ms(p.get("notes_last_contacted"))
+        if last and last >= touch_cutoff_ms:
+            return f"contacted by a seat in the last {touch_days} days"
     if not (p.get("firstname") or "").strip():
         return "no first name"       # the templates open "Hi {{ contact.firstname }}," — never send "Hi ,"
     return None
@@ -161,6 +184,8 @@ def main():
     tz = ZoneInfo(cfg.get("timezone", "America/Los_Angeles"))
     now = datetime.now(tz)
     today = now.date().isoformat()
+    touch_days = int(cfg.get("recent_touch_days") or 0)
+    touch_cutoff_ms = int((now - timedelta(days=touch_days)).timestamp() * 1000) if touch_days else None
     state_path = ROOT / cfg["state_file"]
     state = json.loads(state_path.read_text()) if state_path.exists() else {"enrolled": {}, "runs": [], "sender_email_confirmed": None}
     done = state["enrolled"]
@@ -267,7 +292,7 @@ def main():
                 why = state["skipped_permanent"][cid].get("why", "contact rejected")
                 skips[f"HubSpot: {why}"] = skips.get(f"HubSpot: {why}", 0) + 1
                 continue
-            why = ineligible(p, done)
+            why = ineligible(p, done, touch_cutoff_ms, touch_days)
             if why:
                 skips[why] = skips.get(why, 0) + 1
                 continue
