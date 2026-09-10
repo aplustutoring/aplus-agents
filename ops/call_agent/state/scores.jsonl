@@ -353,3 +353,5 @@
 {"call_id": 413873146, "date_pt": "2026-09-10", "agent": "Roman Slavinsky", "direction": "incoming", "overall": 3.0, "scores": {"U1": 2, "U2": 4, "U3": 3, "U4": 2, "U5": 3, "S1": 3, "S2": 3, "S3": 5, "S4": 2}}
 {"call_id": 413863567, "date_pt": "2026-09-10", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 4.0, "scores": {"U1": 5, "U2": 4, "U3": 4, "U5": 3}}
 {"call_id": 413883582, "date_pt": "2026-09-10", "agent": "Yolanda Rico", "direction": "incoming", "overall": 3.2, "scores": {"U1": 2, "U2": 4, "U3": 4, "U5": 3}}
+{"call_id": 413889099, "date_pt": "2026-09-10", "agent": "Janelle Alinea", "direction": "incoming", "overall": 4.6, "scores": {"U1": 5, "U2": 5, "U3": 4, "U4": 3, "U5": 5, "V1": 5, "V2": 5}}
+{"call_id": 413888913, "date_pt": "2026-09-10", "agent": "Yolanda Rico", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 4, "U5": 4, "V1": 3, "V2": 3}}

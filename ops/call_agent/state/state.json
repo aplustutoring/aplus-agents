@@ -748,9 +748,11 @@
     413879143,
     413882151,
     413883582,
-    413884932
+    413884932,
+    413889099,
+    413888913
   ],
-  "last_run_utc": "2026-09-10T23:15:15.084035+00:00",
+  "last_run_utc": "2026-09-10T23:29:41.833298+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -1488,6 +1490,217 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 413889099,
+      "number": "14243201666",
+      "time_pt": "4:08 PM",
+      "matched": true,
+      "contact_label": "Lena D'Amour",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Lena D'Amour called Janelle back to restart weekly tutoring for daughter Valentina with tutor Sonia, using the two remaining prepaid sessions from last year before Sage Oak submits a new PO for the rest of the year. They booked recurring sessions Tuesdays at 12:00 and Thursdays at 2:30 with Sonia (math & ELA support). Lena gave glowing feedback on Sonia and offered to post about A+ in her homeschool Facebook communities; Janelle mentioned the referral credit program and offered to send a review link.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm Tuesday 12:00 and Thursday 2:30 recurring slots with Sonia and block Tuesday 12:00 (previously offered to another student)",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Lena SMS confirmation and lesson link for the Tuesday and Thursday sessions",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Inform Sonia that Valentina is resuming with math & ELA support on the new schedule",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Lena a review link so she can leave feedback for Sonia/A+",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Sage Oak / Karen on new PO for continuation of sessions through the school year after the two remaining credits are used",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Lena D'Amour (mom, warm and appreciative, dealing with a family medical situation \u2014 sister has brain biopsy) called back to restart Valentina with Sonia for math & ELA. We booked recurring Tues 12:00 and Thurs 2:30 with Sonia; Janelle promised to block the Tues 12:00 slot (was tentatively offered to another student), double-confirm with Sonia, and send Lena an SMS confirmation + lesson link. First two sessions will use the two leftover prepaid credits from May; Lena will then have Sage Oak submit a new PO to continue through the rest of the school year. Lena also expects a review link so she can rave about Sonia, and she was told about the referral credit program. Open with: 'Hi Lena, following up to confirm Valentina is all set with Sonia Tuesdays at 12 and Thursdays at 2:30 \u2014 sending the lesson link now, and here's that review link I promised.' Also check in gently about her sister.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer resuming service \u2014 status owned by deal pipeline, not to be changed here.",
+        "student_or_school_names_mentioned": [
+          "Valentina D'Amour",
+          "Sonia",
+          "Emily",
+          "Sage Oak",
+          "Mandy",
+          "Karen"
+        ],
+        "record_updates": {
+          "whats_going_on": "Lena called back to restart weekly tutoring for Valentina with Sonia. Confirmed two prepaid session credits remain from last year; Sage Oak will submit a new PO to continue through the rest of the school year after those are used. Lena is also going through a hard time (sister having brain biopsy) and loves Sonia \u2014 plans to post about A+ in her homeschool Facebook communities.",
+          "what_we_can_do_to_help": "Janelle booked Valentina with Sonia on Tuesdays 12:00 and Thursdays 2:30 (math & ELA, 45 min) \u2014 blocked the Tues 12:00 slot even though it had been tentatively offered elsewhere. Next steps: double-confirm with Sonia, send Lena SMS confirmation + lesson link, send review link, and follow up with Sage Oak/Karen on the new PO for continuation.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Lena called back to restart weekly tutoring for Valentina with Sonia. Confirmed two prepaid session credits remain from last year; Sage Oak will submit a new PO to continue through the rest of the school year after those are used. Lena is also going through a hard time (sister having brain biopsy) and loves Sonia \u2014 plans to post about A+ in her homeschool Facebook communities."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle booked Valentina with Sonia on Tuesdays 12:00 and Thursdays 2:30 (math & ELA, 45 min) \u2014 blocked the Tues 12:00 slot even though it had been tentatively offered elsewhere. Next steps: double-confirm with Sonia, send Lena SMS confirmation + lesson link, send review link, and follow up with Sage Oak/Karen on the new PO for continuation."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm Tuesday 12:00 and Thursday 2:30 recurring slots with Sonia and block Tuesday 12:00 (previously offered to another student)",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Send Lena SMS confirmation and lesson link for the Tuesday and Thursday sessions",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Inform Sonia that Valentina is resuming with math & ELA support on the new schedule",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Send Lena a review link so she can leave feedback for Sonia/A+",
+          80047202,
+          "follow_up"
+        ],
+        [
+          "Follow up with Sage Oak / Karen on new PO for continuation of sessions through the school year after the two remaining credits are used",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 413888913,
+      "number": "13108006569",
+      "time_pt": "4:19 PM",
+      "matched": true,
+      "contact_label": "Josh Kingman",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Josh Kingman to follow up on the billing dispute regarding his daughter Linda's tutoring. She confirmed A+ has stopped auto-renewal, paused future lessons, and sent a payment link for the two completed sessions. Josh again raised that he never signed a CC authorization or received receipts; Yolanda confirmed with colleague Roman that the auto-renewal disclosure was missed. Josh asked for prior receipts to be emailed and provided his email (joshkanan123@gmail.com). Call ended positively with Josh agreeing to fulfill the outstanding payment.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Email Josh receipts/statements for all prior charges on his card to joshkanan123@gmail.com",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Confirm in the system that auto-renewal is disabled on Josh's account and that any future charge requires explicit notification",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Monitor for Josh's payment on the two completed sessions (Aug 19, Aug 31) via the payment link already sent",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Josh Kingman (dad of student Linda) was reached by Yolanda for the billing follow-up. Tone was calm and cooperative \u2014 he said he'll fulfill the outstanding payment for the two completed sessions (Aug 19 and Aug 31) via the link already texted. Yolanda confirmed auto-renewal is off and future lessons are paused; Roman (who onboarded him) acknowledged he missed disclosing the auto-renewal at signup. Josh asked us to email him receipts for the prior charges \u2014 send to joshkanan123@gmail.com (NEW confirmed email, previously no email on file). He expects (1) the receipts email shortly and (2) no further charges without notice. If tutoring resumes later, we'll send a payment link rather than use the CC on file. Open with: \"Hi Josh, following up \u2014 here are the receipts you asked for, and just confirming auto-renewal is off on your account.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer family; status is owned by the deal/service pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Linda"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Yolanda reached Josh to confirm resolution steps on the billing issue. Auto-renewal has been disabled, future lessons paused, and a payment link was texted for the two completed sessions (Aug 19, Aug 31). Roman (original onboarder) acknowledged internally that he missed disclosing auto-renewal at signup. Josh committed to paying the outstanding balance and asked for prior receipts to be emailed to him.",
+          "what_we_can_do_to_help": "Email Josh receipts/statements for all prior charges to joshkanan123@gmail.com right away. Confirm auto-renewal is off in the system and flag the account so any future charge requires explicit customer notification. Watch for the outstanding payment on the two completed sessions; once received, close out billing. If Josh ever wants to resume tutoring, use a payment link \u2014 do not run the card on file.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": "joshkanan123@gmail.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Yolanda reached Josh to confirm resolution steps on the billing issue. Auto-renewal has been disabled, future lessons paused, and a payment link was texted for the two completed sessions (Aug 19, Aug 31). Roman (original onboarder) acknowledged internally that he missed disclosing auto-renewal at signup. Josh committed to paying the outstanding balance and asked for prior receipts to be emailed to him."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Email Josh receipts/statements for all prior charges to joshkanan123@gmail.com right away. Confirm auto-renewal is off in the system and flag the account so any future charge requires explicit customer notification. Watch for the outstanding payment on the two completed sessions; once received, close out billing. If Josh ever wants to resume tutoring, use a payment link \u2014 do not run the card on file."
+        ],
+        [
+          "email_correction",
+          "(blank)",
+          "joshkanan123@gmail.com"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Josh receipts/statements for all prior charges on his card to joshkanan123@gmail.com",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Confirm in the system that auto-renewal is disabled on Josh's account and that any future charge requires explicit notification",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Monitor for Josh's payment on the two completed sessions (Aug 19, Aug 31) via the payment link already sent",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
