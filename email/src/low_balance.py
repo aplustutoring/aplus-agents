@@ -1374,14 +1374,22 @@ def backfill(days: int) -> list[dict]:
     hs.SEARCH_PASSTHROUGH = True
     since = datetime.now(timezone.utc) - timedelta(days=int(days))
     open_now = open_cases()
-    out, after, seen_threads, opened_recs = [], None, set(), {}
+    out, after, seen_threads, opened_recs, pages = [], None, set(), {}, 0
     while True:
         page = hs.list_threads(latest_after=since.isoformat(), after=after, limit=100)
-        for th in page.get("results", []):
+        pages += 1
+        new = [th for th in page.get("results", []) if str(th.get("id")) not in seen_threads]
+        print(f"backfill: page {pages}, {len(page.get('results', []))} thread(s), {len(new)} new")
+        if not new or pages > 50:
+            # a page with nothing new means the cursor is not advancing
+            # (run 34538918424 spun for 40+ minutes on exactly this)
+            break
+        inbox_id = str((cfg().get("hubspot") or {}).get("inbox_id") or "")
+        for th in new:
             tid = str(th.get("id"))
-            if tid in seen_threads:
-                continue
             seen_threads.add(tid)
+            if inbox_id and str(th.get("inboxId")) != inbox_id:
+                continue                                    # admin@ only, like the poll
             try:
                 msgs = [m for m in hs.get_messages(tid)
                         if m.get("type") == "MESSAGE" and is_teachworks_sender(_addrs(m))]
