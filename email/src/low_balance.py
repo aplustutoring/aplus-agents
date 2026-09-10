@@ -590,6 +590,31 @@ def _tor_draft(to_addr: str, subject: str, body: str, lb: dict, seat: dict) -> d
     return draft or {}
 
 
+def _tor_send(to_addr: str, subject: str, body: str, lb: dict, seat: dict) -> None:
+    """Auto-send the teacher email (Roman 2026-09-10: "i want paolas email to
+    be automatic"). Rides the same Resend rail as the family email, from the
+    seat's name on admin@ with reply-to the seat's own Gmail, so replies land
+    with the seat. The seat's Gmail scope stays draft-only on purpose; this
+    does not touch it. Plain text: a personal note, not a template blast."""
+    reply_to = (seat.get("email") or "").strip() or "admin@wetutorathome.com"
+    payload = {"from": f"{seat.get('name', 'A+ Tutoring')}, A+ Tutoring <admin@wetutorathome.com>",
+               "to": [to_addr],
+               "reply_to": reply_to,
+               "subject": gm._scrub_outbound(subject),
+               "text": gm._scrub_outbound(body)}
+    bcc = (cfg().get("hubspot") or {}).get("bcc_log_address")
+    if bcc:
+        payload["bcc"] = [bcc]
+    if DRY_RUN:
+        print(f"[DRY_RUN] resend low-balance TEACHER email -> {to_addr}")
+        return
+    import requests
+    r = requests.post("https://api.resend.com/emails",
+                      headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                      json=payload, timeout=30)
+    r.raise_for_status()
+
+
 def _phone_for(alert: dict, contact: dict | None) -> str:
     cp = (contact or {}).get("properties") or {}
     return (alert.get("parent_phone") or cp.get("mobilephone") or cp.get("phone") or "").strip()
@@ -744,22 +769,39 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
 
     # Teachworks re-fires on every balance change: the open case gets a note,
     # never a second message (Paola's 2026-01-29 report: one family texted 3x).
+    # EXCEPT when the family already renewed since the case opened: schools
+    # issue 4-hour POs, so the new PO is born low and this alert is really the
+    # NEXT cycle (Roman 2026-09-10: "as soon as first po comes in, its already
+    # a low package balance alert"). Close the stale case and run the full
+    # sequence again, without waiting for the hourly sweep to notice.
     cases = open_cases()
     if key in cases:
         prior = cases[key]
-        tid = prior.get("ticket_id")
-        if tid and tid != "DRYRUN":
-            try:
-                hs.add_ticket_note(tid, f"🔁 Teachworks alerted again: {alert['student']} is now at "
-                                        f"{_fmt_hours(alert['hours'], alert['unit'])} on "
-                                        f"{alert['package']}. Case already open; no new outreach.")
-                hs.link_thread_to_ticket(thread_id, tid)
-            except Exception as e:  # noqa: BLE001
-                print(f"  ⚠️  repeat-alert note failed (non-fatal): {e}")
-        record.update(action_taken="low_balance_repeat", ticket_id=tid)
-        audit.append(record)
-        print(f"  🔁 low balance repeat for {alert['student']} (case open, ticket {tid})")
-        return record
+        renewal = None
+        try:
+            renewal = _renewal_deal(prior)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  repeat-alert renewal lookup failed (treating as repeat): {e}")
+        if renewal:
+            rp = renewal.get("properties") or {}
+            _resolve(key, prior, f"new {'PO ' + str(rp.get('po_number')) if rp.get('po_number') else 'deal'} "
+                                 f"received: {rp.get('dealname')} (deal {renewal['id']}); this alert "
+                                 "starts the next cycle", STAGE_RENEWED)
+            print(f"  🔄 {alert['student']}: prior case closed as renewed; opening the next cycle")
+        else:
+            tid = prior.get("ticket_id")
+            if tid and tid != "DRYRUN":
+                try:
+                    hs.add_ticket_note(tid, f"🔁 Teachworks alerted again: {alert['student']} is now at "
+                                            f"{_fmt_hours(alert['hours'], alert['unit'])} on "
+                                            f"{alert['package']}. Case already open; no new outreach.")
+                    hs.link_thread_to_ticket(thread_id, tid)
+                except Exception as e:  # noqa: BLE001
+                    print(f"  ⚠️  repeat-alert note failed (non-fatal): {e}")
+            record.update(action_taken="low_balance_repeat", ticket_id=tid)
+            audit.append(record)
+            print(f"  🔁 low balance repeat for {alert['student']} (case open, ticket {tid})")
+            return record
 
     # ── resolve who this is ──
     contact = _family_contact(alert)
@@ -900,8 +942,12 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     if charter:
         lines.append(f"📱 Day 1 (if no PO and no reply): text {phone or '(no phone)'}: \"{sms_body}\"")
         if tor_email and not tor_blocked and tor_body:
-            lines.append(f"🍎 Day 1 (same check): teacher draft to {tor_email} in {tor_mailbox or 'charter@'}"
-                         " (one draft per teacher, every student named)")
+            if (te.get("mode") or "draft").strip().lower() == "send":
+                lines.append(f"🍎 Day 1 (same check): teacher email SENT automatically to {tor_email}, "
+                             f"replies to {seat.get('name', 'the seat')} (one email per teacher, every student named)")
+            else:
+                lines.append(f"🍎 Day 1 (same check): teacher draft to {tor_email} in {tor_mailbox or 'charter@'}"
+                             " (one draft per teacher, every student named)")
     else:
         lines.append("📱 Private pay: no text, no teacher (auto-renews at 2 hours)")
 
@@ -965,6 +1011,21 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
 
 
 # ── the sweep: day-1 outreach, self-closing cases, risk, lost ───────────────
+
+def _renewal_deal(case: dict):
+    """The first deal with a PO created AFTER the case opened (the renewal),
+    or None. Deals created before the case are the very package the alert is
+    about and never close it — with 4-hour POs (iLEAD et al.) the alert can
+    fire the day the PO arrives."""
+    opened = case.get("opened_at") or case.get("timestamp") or ""
+    if not opened:
+        return None      # no opened_at = no "newer than"; a caseless date must never false-close
+    first = (case.get("student") or "").split()[0] if case.get("student") else ""
+    last = " ".join((case.get("student") or "").split()[1:])
+    newer = _student_deals(first, last, _ms(opened))
+    return next((d for d in newer if ((d.get("properties") or {}).get("po_number") or "").strip()
+                 or not case.get("charter", True)), None)
+
 
 def _resolve(key: str, case: dict, reason: str, stage: str, close_ticket: bool = True,
              extra_props: dict | None = None) -> None:
@@ -1227,14 +1288,28 @@ def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> Non
                 for k in keys:
                     results[k]["lines"].append("🍎 No multi-student teacher template; draft by hand")
                 continue
-        if armed:
+        naming = (f" naming {_names([c.get('student_first') for _k, c in members])}"
+                  if len(members) > 1 else "")
+        auto = (te.get("mode") or "draft").strip().lower() == "send"
+        if armed and auto:
+            try:
+                _tor_send(tor_email, subject, body, lb, seat)
+                for k in keys:
+                    results[k]["lines"].append(f"🍎 Teacher email SENT to {tor_email}{naming}; "
+                                               f"replies land with {seat.get('name', 'the seat')}")
+                    results[k]["tor_emailed"] = True
+                    results[k]["stage"] = STAGE_TEACHER
+            except Exception as e:  # noqa: BLE001
+                for k in keys:
+                    results[k]["lines"].append(f"⚠️ Teacher email to {tor_email} FAILED ({str(e)[:80]}); send it by hand")
+                    results[k]["tor_error"] = str(e)[:200]
+        elif armed:
             try:
                 draft = _tor_draft(tor_email, subject, body, lb, seat)
                 for k in keys:
                     results[k]["lines"].append(f"🍎 Teacher email DRAFTED to {tor_email} in "
                                                f"{first.get('tor_mailbox') or 'charter@'}"
-                                               + (f" naming {_names([c.get('student_first') for _k, c in members])}"
-                                                  if len(members) > 1 else "") + ": open Drafts, read, send")
+                                               + naming + ": open Drafts, read, send")
                     results[k]["tor_draft_id"] = (draft or {}).get("id")
                     results[k]["tor_mailbox"] = first.get("tor_mailbox") or ""
                     results[k]["stage"] = STAGE_TEACHER
@@ -1243,8 +1318,9 @@ def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> Non
                     results[k]["lines"].append(f"⚠️ Teacher draft FAILED ({str(e)[:80]}); email {tor_email} by hand")
                     results[k]["tor_error"] = str(e)[:200]
         else:
+            verb = "send to" if auto else "draft to"
             for k in keys:
-                results[k]["lines"].append(f"⏸ Not armed: would draft to {tor_email}: {subject}")
+                results[k]["lines"].append(f"⏸ Not armed: would {verb} {tor_email}: {subject}")
     # audit, stamp, note, DM
     for k, c in due.items():
         r = results[k]
@@ -1283,16 +1359,11 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
     live: dict = {}
     # 1 + 2: renewed / stopped cases close before anything is sent
     for key, case in cases.items():
-        opened = case.get("opened_at") or case.get("timestamp") or ""
-        first = (case.get("student") or "").split()[0] if case.get("student") else ""
-        last = " ".join((case.get("student") or "").split()[1:])
         try:
-            newer = _student_deals(first, last, _ms(opened) if opened else None)
+            po_deal = _renewal_deal(case)
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  low-balance sweep deal lookup failed for {key}: {e}")
-            newer = []
-        po_deal = next((d for d in newer if ((d.get("properties") or {}).get("po_number") or "").strip()
-                        or not case.get("charter", True)), None)
+            po_deal = None
         if po_deal:
             p = po_deal["properties"]
             _resolve(key, case, f"new {'PO ' + str(p.get('po_number')) if p.get('po_number') else 'deal'} "

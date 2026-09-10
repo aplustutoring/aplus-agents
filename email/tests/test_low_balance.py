@@ -156,6 +156,9 @@ class Harness:
         monkeypatch.setattr(lb, "_tor_draft",
                             lambda to, s, b, c, seat: self.drafts.append((to, s, b, seat)) or
                             {"id": "d1", "message": {"id": "m1", "threadId": "t9"}})
+        self.tor_sent = []
+        monkeypatch.setattr(lb, "_tor_send",
+                            lambda to, s, b, c, seat: self.tor_sent.append((to, s, b, seat)))
         monkeypatch.setattr(lb.hs, "pipeline_label", lambda p: "Charter Schools - Traditional")
         monkeypatch.setattr(lb.hs, "create_ticket",
                             lambda *a, **k: self.tickets.append((a, k)) or {"id": "T1"})
@@ -418,6 +421,49 @@ def test_day1_texts_and_drafts_when_no_po_and_no_reply(monkeypatch):
     assert h.stage() == ["teacher_contacted"]
     assert h.notes and "Day 1" in h.notes[0][1]
     assert h.dms and h.dms[0][0] == "UPAO" and "Day 1" in h.dms[0][1]
+
+
+def test_day1_teacher_email_sends_automatically_in_send_mode(monkeypatch):
+    # Roman 2026-09-10: "i want paolas email to be automatic" — tor_email.mode
+    # send skips the Gmail draft and sends via Resend, replies to the seat.
+    case = _case()
+    cfgv = _cfg(armed=True)
+    cfgv["low_balance"]["tor_email"]["mode"] = "send"
+    h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
+    lb.run_sweep(force=True)
+    assert h.tor_sent and h.tor_sent[0][0] == "kylee@ileadexploration.org"
+    assert not h.drafts                                       # no Gmail draft in send mode
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_contacted")
+    assert rec.get("tor_emailed") and not rec.get("tor_draft_id")
+    assert h.stage() == ["teacher_contacted"]
+
+
+def test_new_alert_after_renewal_starts_next_cycle(monkeypatch):
+    # 4-hour POs (iLEAD et al.): the renewal PO is born low, so the next
+    # Teachworks alert is the NEXT cycle, not a repeat. The stale case closes
+    # as renewed and the full sequence runs again (Roman 2026-09-10).
+    prior = _case()
+    new_po = {"id": "999", "properties": {**DEAL["properties"], "po_number": "NEXT111",
+                                          "dealname": "Jessica Lujan - Taylor Rodriguez - iLead 2 - 26/27"}}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[new_po], recent=RECENT,
+                open_cases={prior["message_id"]: prior})
+    rec = lb.handle_alert("thr2", {**MSG, "id": "m-alert-2"}, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_opened"        # a fresh case, not a repeat
+    resolved = [r for r in h.recs if r["action_taken"] == "low_balance_resolved"]
+    assert resolved and "NEXT111" in resolved[0]["reason"]
+    assert len(h.tickets) == 1                                # a new ticket for the new cycle
+    assert rec["email_pending"]                               # day-0 email queues again
+
+
+def test_repeat_alert_with_no_renewal_stays_quiet(monkeypatch):
+    prior = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], recent=RECENT,
+                open_cases={prior["message_id"]: prior})
+    rec = lb.handle_alert("thr2", {**MSG, "id": "m-alert-3"}, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_repeat"
+    assert not h.tickets and not h.emails and not h.sms
 
 
 def test_day1_never_leads_the_email(monkeypatch):

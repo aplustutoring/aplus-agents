@@ -53,6 +53,18 @@ deal-sync cycle.
   writes the exact copy it WOULD send into the ticket note and the DM, and
   touches no family or teacher. Roman approves the copy, flips the flag in
   a PR.
+- **Teacher email is AUTOMATIC (Roman 2026-09-10: "i want paolas email to
+  be automatic"):** `tor_email.mode: send` sends the day-1 teacher email via
+  Resend from the seat's name on admin@, reply-to the seat's own Gmail, so
+  replies land with Paola. The seat's Gmail scope stays draft-only (the
+  send-never guardrail is untouched); `mode: draft` remains available.
+- **Every PO cycle runs the full sequence (Roman 2026-09-10):** schools
+  issue 4-hour POs, so a renewal PO is born at the alert level. A new
+  Teachworks alert for a student whose open case already has a NEWER PO
+  deal closes that case as renewed on the spot and opens the next cycle
+  (full day 0 → 1 → 7 → 21), instead of being swallowed as a repeat.
+  Repeats with no renewal still just annotate the open ticket, and a case
+  with no opened_at can never false-close (`_renewal_deal`).
 - **Private pay routes to the schedulers (Roman 2026-09-10):** schedulers
   get commission on private-pay upgrades, so a private-pay case's ticket
   owner, DM, and sender identity (from-name, reply-to, sign-off) are the

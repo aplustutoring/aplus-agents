@@ -281,7 +281,12 @@ low_balance:
         - { name: Success,     hours: 50,  rate: 103 }
         - { name: Soar,        hours: 100, rate: 93 }
   tor_email:
-    mode: draft                   # draft = a real Gmail draft the seat sends in one click (email-only rule, Roman 2026-09-03)
+    # send = AUTOMATIC (Roman 2026-09-10: "i want paolas email to be
+    # automatic"): the teacher email goes out via Resend from the seat's name
+    # on admin@, reply-to the seat's own Gmail, so replies land with the seat.
+    # The seat's Gmail scope stays draft-only; nothing sends from Gmail.
+    # draft = the old mode: a real Gmail draft the seat sends in one click.
+    mode: send
     mailbox: seat                 # the seat's own Gmail (staff.<seat>.email); a literal address also works
     # First names only, for everyone we already work with (Roman 2026-09-09).
     # {student_full} exists but is not used in customer copy.
