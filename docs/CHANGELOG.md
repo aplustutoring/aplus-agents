@@ -7,6 +7,19 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — PO first, then scheduling (Roman)
+
+**Why:** asked whether to relay three tutors' offered times to their
+families, Roman: "for us our primary purpose is to get the purchase orders
+in first. then we can do the scheduling."
+**What:** stage 04 handoff now says a tutor's offered time is internal until
+the PO lands and is not relayed to the family before the deal exists. The
+teacher hours email is the priority artifact; the family relay is
+scheduling's step after the PO.
+**Files:** knowledge/journey/04-qualified-to-deal.md.
+
+---
+
 ## 2026-09-10 — Silent-tutor escalation: urgent nudge, then #online-tutoring (Roman: "do not reassign")
 
 **Why:** Christina and Angela did not answer by the 10 am deadline. The

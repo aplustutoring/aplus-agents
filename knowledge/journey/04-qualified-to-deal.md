@@ -106,7 +106,9 @@ verified in the repo (open item).
 - To Kath: nothing until the PO lands; then the PO agent takes over.
 - To scheduling: the deal itself is the handoff. The family's stated days and
   times must be on the deal (`schedule_preferences`) so the welcome text asks
-  to confirm rather than asking from scratch.
+  to confirm rather than asking from scratch. PO first, then scheduling
+  (Roman 2026-09-10): a tutor's offered time is an internal fact until the
+  PO lands; nobody relays it to the family before the deal exists.
 - Pattern: HubSpot note on the contact for every exchange, Gmail draft for
   the teacher email, Slack DM to the seat when a family asks a funds or price
   question.
