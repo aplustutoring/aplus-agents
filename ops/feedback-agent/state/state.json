@@ -67,7 +67,8 @@
     "Ev0BUCK81RL4",
     "Ev0BUATMA0BT",
     "Ev0BUKU5CFAM",
-    "Ev0BUNQG6ZT6"
+    "Ev0BUNQG6ZT6",
+    "Ev0C1357KNPN"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -486,6 +487,21 @@
       "ticket": "drafted",
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788370176851429"
+    },
+    {
+      "date": "2026-09-10",
+      "ts": "1789060685.425199",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-09-10-hubspot-publish-refresh-error.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/205",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1789060685425199"
     }
   ],
   "graduation": {
@@ -614,6 +630,24 @@
       "risk": "medium",
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-09-02T17:30:29.319813+00:00",
+      "reporter": "Danielle"
+    },
+    "1789060685.425199": {
+      "agent": "content-build",
+      "agent_label": "Content build (Saturday \u2014 approved slate \u2192 HubSpot drafts)",
+      "correction_path": "corrections/content-build/2026-09-10-hubspot-publish-refresh-error.md",
+      "branch": "fix/content-build-2026-09-10-425199",
+      "diagnosis": "HubSpot draft publish is failing with a generic UI error, which typically indicates the blog post JSON being sent by publish-to-hubspot.py contains a field HubSpot's CMS rejects (invalid HTML block, missing required meta, or a bad featured image URL) rather than an auth/rate issue. Root cause most likely lives in marketing/scripts/shared/publish-to-hubspot.py or the post body assembled in content-build.py for this specific Sept 11 slate item.",
+      "fix_plan": [
+        "Pull the HubSpot API response for the failed post (not just the UI error) by re-running publish-to-hubspot.py against the Sept 11 'Varsity Tutors For Schools Shut Down' draft with verbose logging to capture the actual 4xx body.",
+        "Inspect the assembled post payload in marketing/scripts/b2b/content-build.py + shared/publish-to-hubspot.py \u2014 check featured_image URL reachability, post_body HTML validity (embedded pull-quotes, graphics), and required meta fields (slug, meta_description length).",
+        "Run marketing/scripts/b2b/fix-links.py and embed-pull-quotes.py output through a validator; a malformed <a> or oversized data-URI image from build-graphics.py is the most common trigger for this exact HubSpot error.",
+        "Once identified, patch the offending field (retry as a draft), then add a preflight validation step in publish-to-hubspot.py that surfaces HubSpot's real error to Slack instead of swallowing it.",
+        "Manually re-publish Danielle's Sept 11 post as a draft so she's unblocked today."
+      ],
+      "risk": "medium",
+      "recommendation": "execute",
+      "proposed_utc": "2026-09-10T17:19:07.498059+00:00",
       "reporter": "Danielle"
     }
   }
