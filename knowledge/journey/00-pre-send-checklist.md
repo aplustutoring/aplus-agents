@@ -32,9 +32,14 @@ Together they would have stopped the Gonzalez texts.
 - charter@ threads (the PO agent's mailbox)
 - danielle@ and paola@ sequences
 - open HubSpot tickets and tasks on the contact
+- for a tutor: the replies under every ask we posted in their Slack channel
+  or group DM, not just the channel's top-level messages
 
 Do not use `hs_email_last_reply_date`. Inbox replies never stamp it. Scan the
-threads.
+threads. In Slack, a tutor's answer lives in the thread under our ask;
+reading the channel alone shows nothing and makes a tutor who answered look
+silent (2026-09-09: Tarisa and Aesha had both replied in-thread and got a
+deadline nudge anyway. Tarisa: "I have been replying! in the thread!").
 
 **Write:** one line per source, either "none" or "thread {id}, last message
 {date}, from {them or us}, owner {seat}".

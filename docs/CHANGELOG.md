@@ -7,6 +7,30 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 — Tutor deadline nudges sent to two tutors who had already answered (in Slack threads)
+
+**What happened:** at 4:01 PM the six-hour repeat ask ("reply with a yes or
+no by 10 am tomorrow, or we set the family up with another tutor") went to
+seven tutors judged silent. Two were not. Tarisa had answered in the thread
+under each ask (9/8 7:19 PM: classroom during the day, earliest 3 pm, Tue,
+Thu, Fri; 9/9 7:14 AM: cannot do 7:30 am). Aesha had answered in her thread
+at 5:42 AM (Gia Faulk, Mondays 9 am, already worked out). The watch read
+each channel's top-level messages and never opened the reply threads, so a
+tutor who answered where we asked her to ("reply here") looked silent.
+Tarisa: "I have been replying! in the thread!" Paola stepped in at 4:15 PM.
+**System change:** checklist item 1 now lists Slack thread replies as a
+source that must be read for a tutor; stage 11 carries the repeat-ask rule
+with "read the replies under every ask before calling a tutor silent" and
+lists the manual thread read as a known gap until a script does it. The
+Crane draft is marked HOLD (the 7:30 am paragraph is wrong) and the Faulk
+line records Aesha's Monday 9 am.
+**Not done:** an apology to Tarisa (a post, needs a go); a script that reads
+`conversations.replies` under every ask message the session posted.
+**Files:** knowledge/journey/00-pre-send-checklist.md,
+knowledge/journey/11-tutor.md.
+
+---
+
 ## 2026-09-09 — Program model + rate card written down; teacher hours-request drafts (dry run)
 
 **Why:** Roman asked for one reasoned email per confirmed family to their

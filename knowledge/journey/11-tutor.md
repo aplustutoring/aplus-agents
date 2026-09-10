@@ -113,8 +113,20 @@ length instead. The channel rules are the same.
   change that affects other students (`ops/tutor-issues/` is the quality
   channel, `#tutor-issues`).
 
+## The repeat ask (Roman 2026-09-09)
+
+No reply in six hours: one repeat in the same channel, more direct, with a
+deadline and the consequence ("if we do not hear back we will set {student}
+up with another tutor so the family is not left waiting"). Tag charter_sales.
+After the deadline the scheduler reassigns. Before calling a tutor silent,
+read the replies under every ask we posted (Slack threads), the channel's
+top-level messages alone are not the record. A tutor who already answered
+and gets the repeat anyway reads it as not being listened to.
+
 ## Known gaps
 
+- Reading Slack thread replies is a manual step; the Monitor tick and the
+  session scripts read channels, not threads, until a script does it.
 - Tutor-ask automation is not built. The bot lacks the Slack scopes for group
   DMs and is not in the private channels.
 - No file maps tutor to channel; it was discovered by search on 2026-09-08 and
