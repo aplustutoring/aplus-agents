@@ -32,15 +32,17 @@ private_pay:
   free_trial:
     first_session: 0             # email/templates/welcome_trial.html: card on file to confirm
 
-recommended_cadence:             # knowledge/program-model.md
-  sessions_per_week: 3
+encouraged_cadence:              # knowledge/program-model.md
+  sessions_per_month_min: 8      # "at least 8 to 12 45-minute sessions monthly" (Roman 2026-09-09)
+  sessions_per_month_max: 12
+  sessions_per_week: "2 to 3"
   minutes_per_session: 45
-  sessions_per_po_month: 12
-  charter_online_monthly: 720    # 12 sessions x $60 (Roman 2026-09-09: 45-minute
-                                 # sessions are $60 each, never 0.75 x the hourly rate)
+  # No monthly dollar total is stored here on purpose. Roman 2026-09-09: "we do
+  # not want to use the 720 figure... we can't sticker shock them." Copy quotes
+  # the per-session rate and the session range; the teacher computes the PO.
 
 usage_rules:
   - "Charter is $75 per hour for hour-based sessions OR $60 per 45-minute session. Never pro-rate one from the other (Roman 2026-09-09)."
-  - "Quote the per-hour or per-session rate; never a monthly figure without the hours or sessions behind it."
+  - "Customer-facing copy states the per-hour or per-session rate and the encouraged range (8 to 12 sessions a month). NEVER a monthly dollar total to a family or a teacher (sticker shock, Roman 2026-09-09)."
   - "A null rate is never guessed; say the seat will send the rate sheet."
   - "Never imply the NSSA Badge sets or endorses a price."

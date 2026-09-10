@@ -12,8 +12,9 @@ prompt or template.
   `public_ready` gate. Read via `scripts/credentials.py`.
 - `eos/README.md`: quarterly rocks, seats, and the Organizational Excellence
   work; who owns retention and quality this quarter.
-- `program-model.md`: the cadence we recommend (three 45-minute sessions a
-  week), what it rests on, how to offer it beside what the family asked for.
+- `program-model.md`: the cadence we encourage (at least 8 to 12 45-minute
+  sessions a month), what it rests on, how to offer it beside what the family
+  asked for, and the no-monthly-total rule.
 - `rate-card.yml`: what we charge, per offering, with sources; nulls are
   unconfirmed and never quoted by an agent.
 - `journey/README.md`: the customer journey communication playbook, first

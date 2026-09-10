@@ -65,9 +65,9 @@ cannot issue additional POs.
   take it to the teacher themselves (Gonzalez did); that is a yes.
 - Private pay: package size for the next block, and whether the schedule
   changes.
-- Recommended cadence, `knowledge/program-model.md`: three sessions a week,
-  45 minutes each, offered alongside whatever the family chose, never instead
-  of it.
+- Encouraged cadence, `knowledge/program-model.md`: at least 8 to 12
+  45-minute sessions a month, offered alongside whatever the family chose,
+  never instead of it, and never as a monthly dollar total.
 
 ## Questions we ask the teacher here
 
