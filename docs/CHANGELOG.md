@@ -7,6 +7,24 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-09 (late) — Monday Pre-Lesson board RETIRED (Roman)
+
+**Roman:** "the board is retired." Monday board 18397928615 (Pre-Lesson /
+Customer Journey), fed by Zapier zap "PRE LESSON --> MONDAY" (347673126),
+is retired. The zap stays OFF permanently (it also carried the deal-owner
+step now owned by `owner_assign` and a scheduler Slack DM). Its feeder,
+HubSpot workflow 1764489615 "Pre-Lesson -> Monday", now only POSTs to a dead
+Zapier hook on every Pre-Lesson deal; proposed OFF, awaiting Roman's go.
+Untouched and still live: workflow 1775892746 "Pre-Lesson -> Teachworks" →
+zap "PRE LESSON --> Teachworks" (ran today); deal_sync already does the TW
+family upsert, so that pair is the next candidate to retire, separate look.
+
+**Decision log candidates:** (1) deal ownership + new-deal doorbell are
+agent-owned, no zap/workflow writes `hubspot_owner_id`; (2) Monday Pre-Lesson
+board retired, zap 347673126 off for good.
+
+---
+
 ## 2026-09-09 (night) — Doorbell workflow rings deal-sync-relay; relay watchdog
 
 **Roman:** "is that really the best fix with all the tools at our disposal?" → go.
