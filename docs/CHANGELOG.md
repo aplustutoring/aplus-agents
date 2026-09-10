@@ -7,6 +7,7 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+<<<<<<< Updated upstream
 ## 2026-09-10 — Teacher enroller skips teachers any seat contacted in the last 7 days
 
 **Why:** on 2026-09-10 Ashley Pontell (iLEAD) got Danielle's outreach
@@ -197,6 +198,30 @@ that writes nothing.
 
 **Files:** `ops/call_agent/webhook-relay/{worker.js,README.md}`,
 `docs/CHANGELOG.md`. The deal relay was not touched.
+=======
+## 2026-09-10 — Call relay ARMED: secrets set, JustCall webhooks wired, dispatch verified
+
+The last unarmed relay is live. Roman set the four secrets via scratchpad
+script (worker GITHUB_TOKEN + WEBHOOK_TOKEN, repo CALL_RELAY_URL/TOKEN);
+his fine-grained PAT was generated empty (Public-repositories, no
+permissions → 403 "Resource not accessible"), fixed by editing the token
+in place (aplus-agents only, Actions RW — token value unchanged, no
+secret re-set needed). JustCall webhooks added via API v2.1 alongside the
+existing Zapier/HubSpot hooks: call.completed → relay /call-completed,
+call.missed → same with &delay=1. Smoke test: relay POST → workflow_dispatch
+→ call-agent run in 1 s. `/health` ok. call-agent.yml crons are already
+digest + scorecard only (inherently scheduled) — nothing to demote; the
+JustCall→relay→run path is now the primary trigger, digest is the backstop.
+Also: registry.yml deal-sync-relay status pending-deploy → active (stale;
+verified 2026-09-09). Files: registry.yml. Infra: JustCall webhook config,
+Cloudflare worker secrets, GitHub PAT + repo secrets.
+
+**Decision log candidate:** event-driven step 2 complete — both relays
+(deal-sync, call-agent) armed and verified; cron survives only for
+digests/sweeps per #AP (event-driven-over-cron, Roman 2026-09-04).
+
+---
+>>>>>>> Stashed changes
 ## 2026-09-09 (late) — Monday Pre-Lesson board RETIRED (Roman)
 
 **Roman:** "the board is retired." Monday board 18397928615 (Pre-Lesson /
