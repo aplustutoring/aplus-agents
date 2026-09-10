@@ -18,7 +18,12 @@
 //                          wait for a transcript.
 //   POST /redispatch       Called by the Actions workflow when calls are still
 //                          inside the transcript grace window (?delay=N).
-//   GET  /health           Unauthenticated liveness check.
+//   GET  /health           Unauthenticated liveness check. 200 "ok" only when
+//                          both secrets are set; 503 naming the missing ones
+//                          otherwise (2026-09-09: the worker ran a day with
+//                          neither secret and nothing said so).
+//   GET  /status           Dispatcher state: alarm, latestWantedAt,
+//                          lastScheduledAt, lastDispatchAt, lastDispatchError.
 //
 // Dispatches coalesce: one Durable Object holds a single alarm, and every
 // request only guarantees "a dispatch happens at or after my wanted time".
@@ -69,22 +74,50 @@ export class Dispatcher {
   // pull it earlier if this request wants an earlier time, and remember the
   // latest wanted time so the alarm handler can re-arm for stragglers.
   async fetch(request) {
+    if (new URL(request.url).pathname === "/status") {
+      return new Response(JSON.stringify(await this.status()), { headers: { "Content-Type": "application/json" } });
+    }
     const { wantedAt } = await request.json();
     const latest = Math.max((await this.state.storage.get("latestWantedAt")) || 0, wantedAt);
     await this.state.storage.put("latestWantedAt", latest);
     const alarm = await this.state.storage.getAlarm();
-    if (alarm === null || alarm > wantedAt) {
+    // A past alarm that never fired (2026-09-09, deal relay: retries exhausted
+    // while GITHUB_TOKEN was unset, then nothing re-armed) must not block new
+    // work. Same Dispatcher, same latent bug here.
+    const stale = alarm !== null && alarm < Date.now() - 120_000;
+    if (alarm === null || alarm > wantedAt || stale) {
       await this.state.storage.setAlarm(wantedAt);
     }
-    return new Response(JSON.stringify({ scheduled: true, at: new Date(wantedAt).toISOString() }), {
+    await this.state.storage.put("lastScheduledAt", Date.now());
+    return new Response(JSON.stringify({ scheduled: true, at: new Date(wantedAt).toISOString(), replacedStale: stale }), {
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  async status() {
+    return {
+      alarm: await this.state.storage.getAlarm(),
+      latestWantedAt: (await this.state.storage.get("latestWantedAt")) || null,
+      lastScheduledAt: (await this.state.storage.get("lastScheduledAt")) || null,
+      lastDispatchAt: (await this.state.storage.get("lastDispatchAt")) || null,
+      lastDispatchError: (await this.state.storage.get("lastDispatchError")) || null,
+      now: Date.now(),
+    };
   }
 
   async alarm() {
     // A throw here makes the platform retry the alarm with backoff — exactly
     // what we want for a transient GitHub API failure.
-    await dispatchWorkflow(this.env);
+    try {
+      await dispatchWorkflow(this.env);
+    } catch (e) {
+      await this.state.storage.put("lastDispatchError", `${new Date().toISOString()} ${String(e).slice(0, 300)}`);
+      console.error("dispatch failed", String(e));
+      throw e;
+    }
+    await this.state.storage.put("lastDispatchAt", Date.now());
+    await this.state.storage.delete("lastDispatchError");
+    console.log("dispatched call-agent");
     const latest = (await this.state.storage.get("latestWantedAt")) || 0;
     if (latest > Date.now() + 30_000) {
       await this.state.storage.setAlarm(latest); // stragglers arrived after this alarm was set
@@ -99,11 +132,21 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/health") {
+      const missing = ["GITHUB_TOKEN", "WEBHOOK_TOKEN"].filter((k) => !env[k]);
+      if (missing.length) {
+        return new Response(`missing secrets: ${missing.join(", ")}`, { status: 503 });
+      }
       return new Response("ok");
     }
 
     if (url.searchParams.get("token") !== env.WEBHOOK_TOKEN) {
       return new Response("forbidden", { status: 403 });
+    }
+
+    if (url.pathname === "/status") {
+      const stub = env.DISPATCHER.get(env.DISPATCHER.idFromName("dispatcher"));
+      const resp = await stub.fetch("https://dispatcher/status");
+      return new Response(await resp.text(), { headers: { "Content-Type": "application/json" } });
     }
 
     if (request.method !== "POST") {
