@@ -1,0 +1,86 @@
+{
+  "name": "[Agent] Doorbell - deal created or stage changed -> deal-sync relay",
+  "description": "AGENT DOORBELL - managed by ops/deal-relay/doorbell/apply_doorbell.py (aplus-agents). Deterministic, no business logic: every new deal, and every deal-stage change, POSTs to the deal-sync-relay worker, which coalesces the burst and dispatches email-deal-sync.yml about a minute later (Teachworks upsert, family SMS/email, scheduler ownership). Replaces the HubSpot private-app webhook that was never configured. Do not add steps here; the fleet owns the logic.",
+  "objectTypeId": "0-3",
+  "flowType": "WORKFLOW",
+  "type": "PLATFORM_FLOW",
+  "isEnabled": true,
+  "startActionId": "1",
+  "nextAvailableActionId": "2",
+  "actions": [
+    {
+      "actionId": "1",
+      "type": "WEBHOOK",
+      "method": "POST",
+      "webhookUrl": "__RELAY_URL__",
+      "queryParams": []
+    }
+  ],
+  "enrollmentCriteria": {
+    "type": "LIST_BASED",
+    "shouldReEnroll": true,
+    "unEnrollObjectsNotMeetingCriteria": false,
+    "listFilterBranch": {
+      "filterBranchType": "OR",
+      "filterBranchOperator": "OR",
+      "filters": [],
+      "filterBranches": [
+        {
+          "filterBranchType": "AND",
+          "filterBranchOperator": "AND",
+          "filterBranches": [],
+          "filters": [
+            {
+              "filterType": "PROPERTY",
+              "property": "createdate",
+              "operation": {
+                "operationType": "TIME_POINT",
+                "operator": "IS_AFTER",
+                "includeObjectsWithNoValueSet": false,
+                "endpointBehavior": "EXCLUSIVE",
+                "propertyParser": "VALUE",
+                "type": "TIME_POINT",
+                "timePoint": {
+                  "type": "TIME_POINT",
+                  "timeType": "DATE",
+                  "timezoneSource": "CUSTOM",
+                  "zoneId": "America/Los_Angeles",
+                  "year": 2026,
+                  "month": 9,
+                  "day": 9,
+                  "hour": 0,
+                  "minute": 0,
+                  "second": 0,
+                  "millisecond": 0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "reEnrollmentTriggersFilterBranches": [
+      {
+        "filterBranchType": "AND",
+        "filterBranchOperator": "AND",
+        "filterBranches": [],
+        "filters": [
+          {
+            "filterType": "PROPERTY",
+            "property": "hs_name",
+            "operation": {
+              "operationType": "STRING",
+              "operator": "IS_EQUAL_TO",
+              "includeObjectsWithNoValueSet": false,
+              "value": "dealstage"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "timeWindows": [],
+  "blockedDates": [],
+  "customProperties": {},
+  "dataSources": []
+}
