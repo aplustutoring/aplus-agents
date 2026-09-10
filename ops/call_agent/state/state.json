@@ -725,9 +725,20 @@
     413657550,
     413672898,
     413689361,
-    413694794
+    413694794,
+    413715845,
+    413738610,
+    413741696,
+    413749787,
+    413753880,
+    413771094,
+    413778620,
+    413786109,
+    413802737,
+    413722843,
+    413744940
   ],
-  "last_run_utc": "2026-09-10T17:15:19.079726+00:00",
+  "last_run_utc": "2026-09-10T19:53:23.991387+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -822,6 +833,155 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 413741696,
+      "number": "18186183831",
+      "time_pt": "10:55 AM",
+      "matched": true,
+      "contact_label": "Lucy Garcia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Lucy Garcia, an A+ tutor, called to let Paola know that LAUSD had re-sent their request for a letter of recommendation for Roman to admin@tutorathome.com about an hour before the call, since the prior response was never picked up. Paola located the email, confirmed receipt, and said she would follow up with Roman so he can respond. Lucy offered to resend her 'brag sheet'/short recommendation letter and Paola accepted. Call ended warmly.",
+        "caller_type": "tutor applicant",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Notify Roman that LAUSD re-sent the letter of recommendation request for Lucy Garcia to admin@tutorathome.com (~1 hr before this call) and ask him to respond ASAP.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Watch for Lucy's resent 'brag sheet'/short recommendation letter and forward it to Roman to support his response.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Lucy Garcia (A+ tutor, friendly and patient) called because LAUSD re-sent their letter-of-recommendation request for her \u2014 addressed to Roman \u2014 to admin@tutorathome.com about an hour before the call, since the original response never went through. Paola confirmed on the call that the email was received. Lucy is also resending her 'brag sheet'/short recommendation letter to support Roman's reply. Lucy now expects Roman to respond to LAUSD as soon as possible. Please ping Roman directly with the LAUSD email and Lucy's brag sheet once it arrives. If circling back to Lucy, open with: 'Hi Lucy \u2014 just confirming Roman has the LAUSD request and your brag sheet and is getting the response out.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Lucy is an existing A+ tutor (Tutor-Active); call is about her LAUSD credentialing paperwork, no status change warranted.",
+        "student_or_school_names_mentioned": [
+          "LAUSD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Lucy called to report that LAUSD re-sent their letter-of-recommendation request for Roman to admin@tutorathome.com about an hour before the call, because the prior response was never picked up. Paola confirmed on the call that the email was received.",
+          "what_we_can_do_to_help": "Paola to alert Roman about the new LAUSD email and have him respond ASAP; Lucy is resending her brag sheet/short recommendation letter to support Roman's reply.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Lucy called to report that LAUSD re-sent their letter-of-recommendation request for Roman to admin@tutorathome.com about an hour before the call, because the prior response was never picked up. Paola confirmed on the call that the email was received."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to alert Roman about the new LAUSD email and have him respond ASAP; Lucy is resending her brag sheet/short recommendation letter to support Roman's reply."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Notify Roman that LAUSD re-sent the letter of recommendation request for Lucy Garcia to admin@tutorathome.com (~1 hr before this call) and ask him to respond ASAP.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Watch for Lucy's resent 'brag sheet'/short recommendation letter and forward it to Roman to support his response.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 413744940,
+      "number": "17738426987",
+      "time_pt": "11:02 AM",
+      "matched": true,
+      "contact_label": "Gino Calantoni",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Gino Calantoni regarding a meeting booked for today to discuss tutoring for his daughter. The call went to Gino's voicemail and Paola left a message asking him to let her know a good time to connect. No new information was exchanged and no next step was confirmed.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Gino Calantoni to reschedule or confirm the missed meeting about tutoring for his daughter",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola called Gino Calantoni to follow up on a meeting that was booked for today about tutoring for his daughter, but reached voicemail and left a message asking him to call back with a good time to connect. No details about the daughter (name, grade, subject, school) are on file yet. Gino now expects a callback opportunity \u2014 he may reply by text or call back the main line. Suggested opener: 'Hi Gino, this is [name] from A+ Tutoring following up on Paola's message earlier \u2014 we had a meeting on the calendar today about tutoring for your daughter and wanted to find a better time to connect and learn more about what she needs.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Outbound follow-up on a booked meeting; only reached voicemail so no live conversation occurred. Keeping as a prospective family we're still trying to connect with.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola regarding a meeting booked for today about tutoring for Gino's daughter. Reached voicemail and left a message requesting a callback to reschedule/connect.",
+          "what_we_can_do_to_help": "Continue attempts to reach Gino to reschedule the intake conversation and learn about his daughter's grade, subjects, and tutoring needs so we can propose a plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola regarding a meeting booked for today about tutoring for Gino's daughter. Reached voicemail and left a message requesting a callback to reschedule/connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue attempts to reach Gino to reschedule the intake conversation and learn about his daughter's grade, subjects, and tutoring needs so we can propose a plan."
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Gino Calantoni to reschedule or confirm the missed meeting about tutoring for his daughter",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [

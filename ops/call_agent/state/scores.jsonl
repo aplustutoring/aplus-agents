@@ -345,3 +345,5 @@
 {"call_id": 413443505, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.7, "scores": {"U1": 5, "U2": 4, "U3": 3, "U5": 3, "V1": 4, "V2": 3}}
 {"call_id": 413444786, "date_pt": "2026-09-09", "agent": "Janelle Alinea", "direction": "outgoing", "overall": 3.5, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 3, "V1": 4, "V2": 2}}
 {"call_id": 413694794, "date_pt": "2026-09-10", "agent": "Yolanda Rico", "direction": "incoming", "overall": 3.6, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 3, "U5": 4, "V1": 4, "V2": 3}}
+{"call_id": 413741696, "date_pt": "2026-09-10", "agent": "Paola Sarmiento", "direction": "incoming", "overall": 3.6, "scores": {"U1": 3, "U2": 4, "U3": 4, "U4": 3, "U5": 4, "V1": 4, "V2": 3}}
+{"call_id": 413744940, "date_pt": "2026-09-10", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 5, "U3": 4, "U5": 2, "S4": 2}}
