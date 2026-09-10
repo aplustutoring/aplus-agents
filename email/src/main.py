@@ -820,8 +820,11 @@ if __name__ == "__main__":
     # instead of a poll (workflow input replay_thread; DRY_RUN prints the
     # rendered text / email / teacher draft). Nothing else runs in that mode.
     _replay = (os.environ.get("LOW_BALANCE_REPLAY_THREAD") or "").strip()
+    _backfill = (os.environ.get("LOW_BALANCE_BACKFILL_DAYS") or "").strip()
     if _replay:
         _sim = (os.environ.get("LOW_BALANCE_SIMULATE_DAYS") or "").strip()
         low_balance.replay_thread(_replay, int(_sim) if _sim.isdigit() else None)
+    elif _backfill.isdigit():
+        low_balance.backfill(int(_backfill))
     else:
         run()

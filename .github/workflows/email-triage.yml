@@ -31,6 +31,10 @@ on:
         description: "With replay_thread: then run the sweep as if the case opened N days ago (1 = text + teacher, 7 = risk, 28 = lost)"
         required: false
         default: ""
+      backfill_days:
+        description: "Low-balance agent: open cases for every Teachworks alert of the last N days that has none (pair with dry_run to preview)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -68,7 +72,8 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run }}
           LOW_BALANCE_REPLAY_THREAD: ${{ inputs.replay_thread }}
           LOW_BALANCE_SIMULATE_DAYS: ${{ inputs.simulate_days }}
-          LOW_BALANCE_FORCE_ARMED: ${{ inputs.replay_thread != '' && inputs.dry_run && '1' || '0' }}
+          LOW_BALANCE_BACKFILL_DAYS: ${{ inputs.backfill_days }}
+          LOW_BALANCE_FORCE_ARMED: ${{ (inputs.replay_thread != '' || inputs.backfill_days != '') && inputs.dry_run && '1' || '0' }}
         run: python -m src.main
 
       - name: Commit state changes

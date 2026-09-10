@@ -60,8 +60,8 @@ TEACHWORKS_DOMAIN = "teachworks.com"
 #  and is currently at 4.0 unused hours."
 _ALERT_RE = re.compile(
     r"that the\s+(?P<package>.+?)\s+package balance\s+for\s+(?P<student>.+?)\s+"
-    r"has reached the level of\s+(?P<level>\d+(?:\.\d+)?)\s+(?:hours?|lessons?)\s+"
-    r"and is currently at\s+(?P<hours>\d+(?:\.\d+)?)\s+unused\s+(?P<unit>hours?|lessons?)",
+    r"has reached the level of\s+(?P<level>-?\d+(?:\.\d+)?)\s+(?:hours?|lessons?)\s+"
+    r"and is currently at\s+(?P<hours>-?\d+(?:\.\d+)?)\s+unused\s+(?P<unit>hours?|lessons?)",
     re.I | re.S)
 _DETAIL_RE = re.compile(r"^[ \t]*(Name|Email|Home Phone|Mobile Phone|Student)[ \t]*:[ \t]*(.*?)[ \t]*$",
                         re.I | re.M)
@@ -105,8 +105,13 @@ def parse_alert(body: str) -> dict | None:
 
 def is_charter_package(package: str, pipeline_id: str = "") -> bool:
     """Charter = the package name says so, or the student's current deal sits in
-    a charter pipeline (deal_sync's list, or any pipeline named Charter)."""
-    if "charter" in (package or "").lower():
+    a charter pipeline (deal_sync's list, or any pipeline named Charter).
+    'CHARTER - Out of Pocket' is a charter family paying themselves: no PO to
+    ask for, so it is handled as private pay (Luke Aarvik, 2026-09-08)."""
+    pkg = (package or "").lower()
+    if "out of pocket" in pkg:
+        return False
+    if "charter" in pkg:
         return True
     ds = cfg().get("deal_sync", {}) or {}
     if pipeline_id and str(pipeline_id) in [str(p) for p in ds.get("charter_pipelines", [])]:
@@ -146,6 +151,10 @@ def open_cases() -> dict:
             opened[key] = dict(r)
         elif act == "low_balance_resolved":
             opened.pop(key.rsplit(":resolved", 1)[0], None)
+        elif act == "low_balance_email_sent":
+            base = key.rsplit(":email", 1)[0]
+            if base in opened:
+                opened[base]["email_sent"] = r.get("to") or True
         elif act == "low_balance_family_contacted":
             base = key.rsplit(":day1", 1)[0]
             if base in opened:
@@ -806,26 +815,31 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     record.update(sms_body=sms_body, phone=phone, to_email=to_email, tor_subject=tor_subject,
                   tor_body=tor_body, tor_mailbox=tor_mailbox, opted_out=_opted_out(contact),
                   private_pay=not charter, email_subject=email_subject)
+    # Siblings alert minutes apart (the three Melaras, 2026-09-10, one hour
+    # between them). The day-0 email is therefore SENT BY THE SWEEP, not here:
+    # it waits email_delay_minutes, then goes once per FAMILY naming every
+    # student with an open case, inside the send window (Roman: "we don't
+    # want to message shit in the middle of the night"). Everything the
+    # sweep needs to render is stored on the case.
+    record.update(email_pending=bool(to_email), first_name=ctx["first_name"],
+                  student_first=alert.get("student_first") or "",
+                  personal_line=ctx["personal_line"],
+                  upgrade_line=(pctx.get("upgrade_line") if pctx else ""),
+                  private_tier=(pctx.get("current_tier") if pctx else ""))
+    delay = int(lb.get("email_delay_minutes", 60))
     lines = []
-    if armed and to_email:
-        try:
-            if charter:
-                _send_family_email(to_email, ctx, lb)
-            else:
-                _send_private_email(to_email, pctx, lb)
-            record["email_sent"] = to_email
-            lines.append(f"✉️ Day 0: emailed the family at {to_email} ({email_subject})")
-        except Exception as e:  # noqa: BLE001
-            record["email_error"] = str(e)[:200]
-            lines.append(f"⚠️ Family email FAILED ({str(e)[:80]}); send it by hand")
+    if not to_email:
+        lines.append("✉️ No family email on file; nothing to send")
     elif armed:
-        lines.append("✉️ No family email on file; nothing sent on day 0")
+        lines.append(f"✉️ Email to {to_email} goes on the next sweep (within {delay} min, one email per family, "
+                     f"8am-8pm PT): {email_subject}")
     else:
-        lines.append(f"⏸ Agent not armed. Day 0 would email {to_email or '(no email)'}: {email_subject}")
+        lines.append(f"⏸ Agent not armed. Would email {to_email}: {email_subject}")
     if charter:
         lines.append(f"📱 Day 1 (if no PO and no reply): text {phone or '(no phone)'}: \"{sms_body}\"")
         if tor_email and not tor_blocked and tor_body:
-            lines.append(f"🍎 Day 1 (same check): teacher draft to {tor_email} in {tor_mailbox or 'charter@'}")
+            lines.append(f"🍎 Day 1 (same check): teacher draft to {tor_email} in {tor_mailbox or 'charter@'}"
+                         " (one draft per teacher, every student named)")
     else:
         lines.append("📱 Private pay: no text, no teacher (auto-renews at 2 hours)")
 
@@ -833,8 +847,6 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     _stamp_deal((deal or {}).get("id"), {
         "retention_stage": STAGE_LOW_HOURS,
         "retention_low_balance_alert_date": _today_iso(),
-        **({"retention_last_touch": now_iso, "retention_last_notice_sent": _today_iso()}
-           if record.get("email_sent") else {}),
     })
 
     if DRY_RUN:
@@ -957,6 +969,231 @@ def _day1_due(case: dict, now, days: int) -> bool:
     return now.date() >= d and _is_business_day(now.date()) and _in_sms_window()
 
 
+def _names(firsts: list[str]) -> str:
+    """'Ana' / 'Ana and Bo' / 'Ana, Bo and Cy'."""
+    firsts = [f for f in firsts if f]
+    if not firsts:
+        return "your student"
+    if len(firsts) == 1:
+        return firsts[0]
+    return ", ".join(firsts[:-1]) + " and " + firsts[-1]
+
+
+def _group(cases: dict, key_fn) -> dict:
+    """{group key: [(case_key, case), ...]} preserving order; falsy keys dropped."""
+    out: dict = {}
+    for k, c in cases.items():
+        g = key_fn(c)
+        if g:
+            out.setdefault(g, []).append((k, c))
+    return out
+
+
+def _family_ctx(members: list, seat: dict, lb: dict) -> dict:
+    """Render context for a grouped family message: every student named, each
+    student's tutor line and progress sentence kept (they are short and true)."""
+    firsts = [c.get("student_first") or (c.get("student") or "").split()[0] for _k, c in members]
+    lines = " ".join((c.get("personal_line") or "").strip() for _k, c in members if c.get("personal_line"))
+    hours = None
+    for _k, c in members:
+        h = c.get("hours")
+        if h is not None:
+            hours = h if hours is None else max(hours, h)
+    max_hours = lb.get("max_hours")
+    unit = "hours"
+    line = (_fmt_hours(float(max_hours), unit) + " or less") if max_hours is not None else _fmt_hours(hours or 0, unit)
+    multi = len(members) > 1
+    return {"first_name": members[0][1].get("first_name") or "there",
+            "student": _names(firsts), "students": _names(firsts),
+            "student_first": firsts[0] if firsts else "",
+            "hours": line, "personal_line": (" " + lines) if lines else "",
+            "progress": "that progress" if lines else f"{_names(firsts)}'s progress",
+            "each": "each " if multi else "", "po_word": "POs" if multi else "PO",
+            "is_are": "are" if multi else "is", "has_have": "have" if multi else "has",
+            "sender_first": seat.get("name", "A+ Tutoring").split()[0],
+            "sender_name": seat.get("name", "A+ Tutoring"),
+            "sender_email": seat.get("email", "admin@wetutorathome.com"),
+            "upgrade_line": members[0][1].get("upgrade_line") or "",
+            "multi": multi}
+
+
+def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, force: bool) -> set:
+    """Day 0, grouped: one email per family naming every student whose case is
+    waiting, after email_delay_minutes (siblings alert minutes apart) and
+    inside the send window. Returns the case keys emailed."""
+    delay = int(lb.get("email_delay_minutes", 60))
+    now_utc = datetime.now(timezone.utc)
+    waiting = {k: c for k, c in cases.items()
+               if c.get("email_pending") and not c.get("email_sent") and c.get("to_email")
+               and (force or (c.get("opened_at") and
+                              now_utc - datetime.fromisoformat(c["opened_at"]) >= timedelta(minutes=delay)))}
+    done: set = set()
+    if not waiting or not (force or _in_sms_window()):
+        return done
+    fe = lb.get("family_email") or {}
+    for (to_email, private), members in _group(waiting, lambda c: (c.get("to_email"), bool(c.get("private_pay")))).items():
+        keys = [k for k, _c in members]
+        fctx = _family_ctx(members, seat, lb)
+        multi = fctx["multi"]
+        if private:
+            subject = _render((lb.get("private_pay") or {}).get("subject", "{student}'s next tutoring package"), fctx)
+            tpl = (lb.get("private_pay") or {}).get("template") or "templates/low_balance_private.html"
+        else:
+            subject = _render(fe.get("subject_multi" if multi else "subject", "{student}'s tutoring hours are running low"), fctx)
+            tpl = (fe.get("template_multi") if multi else fe.get("template")) or \
+                  ("templates/low_balance_charter_multi.html" if multi else "templates/low_balance_charter.html")
+        line = ""
+        if armed:
+            try:
+                if private and not fctx["upgrade_line"]:
+                    raise ValueError("no upgrade line for this package")
+                _send_email(to_email, subject, tpl, fctx, lb)
+                line = f"✉️ Emailed {to_email}: {subject}"
+                done.update(keys)
+            except Exception as e:  # noqa: BLE001
+                line = f"⚠️ Family email to {to_email} FAILED ({str(e)[:80]}); send it by hand"
+        else:
+            line = f"⏸ Not armed: would email {to_email}: {subject}"
+        for k, c in members:
+            audit.append({"message_id": f"{k}:email", "source": "low_balance",
+                          "action_taken": "low_balance_email_sent" if k in done else "low_balance_email_held",
+                          "to": to_email, "subject": subject, "siblings": len(members),
+                          "ticket_id": c.get("ticket_id")})
+            tid = c.get("ticket_id")
+            if tid and tid != "DRYRUN":
+                try:
+                    hs.add_ticket_note(tid, "Day 0: " + line + (f" (one email for {fctx['students']})" if multi else ""))
+                except Exception as e:  # noqa: BLE001
+                    print(f"  ⚠️  day-0 note failed (non-fatal): {e}")
+            if k in done:
+                _stamp_deal(c.get("deal_id"), {"retention_last_touch": now_utc.isoformat(),
+                                               "retention_last_notice_sent": _today_iso()})
+        print(f"  ✉️ day 0 {'(held)' if not armed else ''}: {fctx['students']} → {to_email}")
+    return done
+
+
+def _send_email(to_email: str, subject: str, tpl_path: str, ctx: dict, lb: dict) -> None:
+    fe = lb.get("family_email") or {}
+    html = _render((ROOT / tpl_path).read_text(), ctx)
+    payload = {"from": _render(fe.get("from", "A+ Tutoring <admin@wetutorathome.com>"), ctx),
+               "to": [to_email],
+               "reply_to": _render(fe.get("reply_to", "{sender_email}"), ctx),
+               "subject": subject, "html": html}
+    bcc = (cfg().get("hubspot") or {}).get("bcc_log_address")
+    if bcc:
+        payload["bcc"] = [bcc]
+    if DRY_RUN:
+        print(f"[DRY_RUN] resend low-balance email -> {to_email} | {subject}")
+        return
+    import requests
+    r = requests.post("https://api.resend.com/emails",
+                      headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                      json=payload, timeout=30)
+    r.raise_for_status()
+
+
+def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> None:
+    """Day 1 for every due charter case at once: ONE text per family naming
+    every student, ONE teacher draft per teacher naming every student
+    (Roman 2026-09-10: "if a teacher has more than one student with a low
+    balance alert we have to be smart enough to combine")."""
+    te = lb.get("tor_email") or {}
+    results = {k: {"lines": [], "stage": STAGE_FAMILY} for k in due}
+    # texts, per family
+    for (phone, _e), members in _group(due, lambda c: (c.get("phone"), c.get("to_email") or c.get("parent_email"))).items():
+        keys = [k for k, _c in members]
+        if any(c.get("opted_out") for _k, c in members):
+            for k in keys:
+                results[k]["lines"].append("📱 No text: family opted out")
+            continue
+        fctx = _family_ctx(members, seat, lb)
+        tutors = sorted({c.get("tutor_first") for _k, c in members if c.get("tutor_first")})
+        if len(members) == 1:
+            body = members[0][1].get("sms_body") or ""
+        else:
+            tpl = lb.get("sms_template_multi", "")
+            body = _render(tpl, {**fctx, "tutor_first": _names(tutors)}) if tpl else ""
+        if not body:
+            for k in keys:
+                results[k]["lines"].append("📱 No text template for this case")
+            continue
+        if armed:
+            try:
+                _send_sms(phone, body)
+                for k in keys:
+                    results[k]["lines"].append(f"📱 Texted {phone}: \"{body}\"")
+                    results[k]["sms_sent"] = True
+            except Exception as e:  # noqa: BLE001
+                for k in keys:
+                    results[k]["lines"].append(f"⚠️ Text to {phone} FAILED ({str(e)[:80]}); send it by hand")
+                    results[k]["sms_error"] = str(e)[:200]
+        else:
+            for k in keys:
+                results[k]["lines"].append(f"⏸ Not armed: would text {phone}: \"{body}\"")
+    # teacher drafts, per teacher
+    tor_cases = {k: c for k, c in due.items()
+                 if c.get("tor_email") and not c.get("tor_blocked") and (c.get("tor_body") or "")}
+    for tor_email, members in _group(tor_cases, lambda c: c.get("tor_email")).items():
+        keys = [k for k, _c in members]
+        first = members[0][1]
+        if len(members) == 1:
+            subject, body = first.get("tor_subject") or "", first.get("tor_body") or ""
+        else:
+            fctx = _family_ctx(members, seat, lb)
+            tor_first = (first.get("tor_subject") or "")  # not stored; derive from body greeting
+            greet = (first.get("tor_body") or "").split("\n", 1)[0]
+            pos = " ".join(f"{c.get('student_first')}'s current PO has {fctx['hours']} left."
+                           for _k, c in members)
+            body = _render(te.get("body_multi", ""), {**fctx, "greeting": greet, "po_lines": pos}) \
+                if te.get("body_multi") else ""
+            subject = _render(te.get("subject_multi", "New POs for {students} (A+ Tutoring)"), fctx)
+            if not body:
+                for k in keys:
+                    results[k]["lines"].append("🍎 No multi-student teacher template; draft by hand")
+                continue
+        if armed:
+            try:
+                draft = _tor_draft(tor_email, subject, body, lb, seat)
+                for k in keys:
+                    results[k]["lines"].append(f"🍎 Teacher email DRAFTED to {tor_email} in "
+                                               f"{first.get('tor_mailbox') or 'charter@'}"
+                                               + (f" naming {_names([c.get('student_first') for _k, c in members])}"
+                                                  if len(members) > 1 else "") + ": open Drafts, read, send")
+                    results[k]["tor_draft_id"] = (draft or {}).get("id")
+                    results[k]["tor_mailbox"] = first.get("tor_mailbox") or ""
+                    results[k]["stage"] = STAGE_TEACHER
+            except Exception as e:  # noqa: BLE001
+                for k in keys:
+                    results[k]["lines"].append(f"⚠️ Teacher draft FAILED ({str(e)[:80]}); email {tor_email} by hand")
+                    results[k]["tor_error"] = str(e)[:200]
+        else:
+            for k in keys:
+                results[k]["lines"].append(f"⏸ Not armed: would draft to {tor_email}: {subject}")
+    # audit, stamp, note, DM
+    for k, c in due.items():
+        r = results[k]
+        if not r["lines"]:
+            r["lines"].append("📱 No phone on file; no text" if not c.get("phone") else "(nothing to send)")
+        audit.append({"message_id": f"{k}:day1", "source": "low_balance",
+                      "action_taken": "low_balance_family_contacted", "ticket_id": c.get("ticket_id"),
+                      **{kk: v for kk, v in r.items() if kk not in ("lines", "stage")}})
+        _stamp_deal(c.get("deal_id"), {"retention_stage": r["stage"],
+                                       "retention_last_touch": now_utc.isoformat(),
+                                       "retention_last_notice_sent": _today_iso()})
+        tid = c.get("ticket_id")
+        if tid and tid != "DRYRUN":
+            try:
+                hs.add_ticket_note(tid, "Day 1, no PO and no reply:\n" + "\n".join(r["lines"]))
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  day-1 note failed (non-fatal): {e}")
+    if due and seat.get("slack_user_id"):
+        summary = "\n".join(f"• *{c.get('student')}*: " + " · ".join(results[k]["lines"]) for k, c in due.items())
+        try:
+            slack_client.dm(seat["slack_user_id"], f"📉 Day 1, no PO and no reply ({len(due)}):\n{summary}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  day-1 DM failed (non-fatal): {e}")
+
+
 def _sweep(cases: dict, now, force: bool = False) -> None:
     lb = cfg().get("low_balance", {}) or {}
     stop_patterns = [p.lower() for p in cfg().get("deal_automation", {}).get(
@@ -967,13 +1204,12 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
     esc = staff(lb.get("escalate_to", "visionary")) or {}
     armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
     now_utc = datetime.now(timezone.utc)
-    risks = []
+    live: dict = {}
+    # 1 + 2: renewed / stopped cases close before anything is sent
     for key, case in cases.items():
         opened = case.get("opened_at") or case.get("timestamp") or ""
-        age = (now_utc - datetime.fromisoformat(opened)).days if opened else 0
         first = (case.get("student") or "").split()[0] if case.get("student") else ""
         last = " ".join((case.get("student") or "").split()[1:])
-        # 1. the next PO / package landed (po_inbox or a human made the deal) → renewed
         try:
             newer = _student_deals(first, last, _ms(opened) if opened else None)
         except Exception as e:  # noqa: BLE001
@@ -986,7 +1222,6 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
             _resolve(key, case, f"new {'PO ' + str(p.get('po_number')) if p.get('po_number') else 'deal'} "
                                 f"received: {p.get('dealname')} (deal {po_deal['id']})", STAGE_RENEWED)
             continue
-        # 2. the family stopped → not renewing
         did = case.get("deal_id")
         if did and did != "DRYRUN":
             try:
@@ -999,71 +1234,43 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
                     continue
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  low-balance sweep deal read failed for {key}: {e}")
-        charter = case.get("charter", True)
-        # 3. day 1: text + teacher draft, only for charter families who did not
-        #    answer the email and whose ticket Paola has not already closed
-        if charter and not case.get("day1_done") and not case.get("replied") and _ticket_open(case) \
-                and (force or _day1_due(case, now, int(lb.get("family_text_after_days", 1)))):
-            if _parent_replied(case, seat, lb):
-                audit.append({"message_id": f"{key}:replied", "source": "low_balance",
-                              "action_taken": "low_balance_family_replied", "ticket_id": case.get("ticket_id")})
-                tid = case.get("ticket_id")
-                if tid and tid != "DRYRUN":
-                    try:
-                        hs.add_ticket_note(tid, "💬 The family replied to the day-0 email in the seat's inbox. "
-                                                "No text, no teacher email; take it from the thread.")
-                    except Exception as e:  # noqa: BLE001
-                        print(f"  ⚠️  reply note failed (non-fatal): {e}")
-                print(f"  💬 {case.get('student')}: family replied; day-1 outreach skipped")
-                continue
-            lines, rec = [], {"message_id": f"{key}:day1", "source": "low_balance",
-                              "action_taken": "low_balance_family_contacted", "ticket_id": case.get("ticket_id")}
-            stage = STAGE_FAMILY
-            if armed:
-                phone, body = case.get("phone") or "", case.get("sms_body") or ""
-                if phone and body and not case.get("opted_out"):
-                    try:
-                        _send_sms(phone, body)
-                        rec["sms_sent"] = True
-                        lines.append(f"📱 Texted {phone}: \"{body}\"")
-                    except Exception as e:  # noqa: BLE001
-                        rec["sms_error"] = str(e)[:200]
-                        lines.append(f"⚠️ Text to {phone} FAILED ({str(e)[:80]}); send it by hand")
-                else:
-                    lines.append("📱 No text: " + ("family opted out" if case.get("opted_out") else "no phone on file"))
-                tor_email, tor_body = case.get("tor_email") or "", case.get("tor_body") or ""
-                if tor_email and not case.get("tor_blocked") and tor_body:
-                    try:
-                        draft = _tor_draft(tor_email, case.get("tor_subject") or "", tor_body, lb, seat)
-                        rec["tor_draft_id"] = (draft or {}).get("id")
-                        rec["tor_mailbox"] = case.get("tor_mailbox") or ""
-                        stage = STAGE_TEACHER
-                        lines.append(f"🍎 Teacher email DRAFTED to {tor_email} in "
-                                     f"{case.get('tor_mailbox') or 'charter@'}: open Drafts, read, send")
-                    except Exception as e:  # noqa: BLE001
-                        rec["tor_error"] = str(e)[:200]
-                        lines.append(f"⚠️ Teacher draft FAILED ({str(e)[:80]}); email {tor_email} by hand")
-            else:
-                lines.append("⏸ Agent not armed: day-1 text and teacher draft NOT sent")
-            audit.append(rec)
-            _stamp_deal(case.get("deal_id"), {"retention_stage": stage,
-                                              "retention_last_touch": now_utc.isoformat(),
-                                              "retention_last_notice_sent": _today_iso()})
+        live[key] = case
+    # 0: the day-0 email, one per family
+    emailed = _send_pending_emails(live, now, seat, lb, armed, force)
+    for k in emailed:
+        live[k] = {**live[k], "email_sent": live[k].get("to_email")}
+    # 3: day 1, grouped by family and by teacher
+    due: dict = {}
+    for key, case in live.items():
+        if not case.get("charter", True) or case.get("day1_done") or case.get("replied"):
+            continue
+        if not case.get("email_sent"):
+            continue                                    # the text follows the email, never leads
+        if not _ticket_open(case):
+            continue
+        if not (force or _day1_due(case, now, int(lb.get("family_text_after_days", 1)))):
+            continue
+        if _parent_replied(case, seat, lb):
+            audit.append({"message_id": f"{key}:replied", "source": "low_balance",
+                          "action_taken": "low_balance_family_replied", "ticket_id": case.get("ticket_id")})
             tid = case.get("ticket_id")
             if tid and tid != "DRYRUN":
                 try:
-                    hs.add_ticket_note(tid, "Day 1, no PO and no reply:\n" + "\n".join(lines))
+                    hs.add_ticket_note(tid, "💬 The family replied to the day-0 email in the seat's inbox. "
+                                            "No text, no teacher email; take it from the thread.")
                 except Exception as e:  # noqa: BLE001
-                    print(f"  ⚠️  day-1 note failed (non-fatal): {e}")
-            if seat.get("slack_user_id"):
-                try:
-                    slack_client.dm(seat["slack_user_id"],
-                                    f"📉 Day 1 for *{case.get('student')}* (no PO, no reply):\n" + "\n".join(lines))
-                except Exception as e:  # noqa: BLE001
-                    print(f"  ⚠️  day-1 DM failed (non-fatal): {e}")
-            case = {**case, "day1_done": True, "tor_draft_id": rec.get("tor_draft_id"),
-                    "tor_mailbox": rec.get("tor_mailbox")}
-        # 4. teacher draft still sitting unsent → one nag to the seat
+                    print(f"  ⚠️  reply note failed (non-fatal): {e}")
+            print(f"  💬 {case.get('student')}: family replied; day-1 outreach skipped")
+            continue
+        due[key] = case
+    if due:
+        _day1_outreach(due, seat, lb, armed, now_utc)
+    # 4 + 5 + 6: nag, risk, lost
+    risks = []
+    for key, case in live.items():
+        opened = case.get("opened_at") or case.get("timestamp") or ""
+        age = (now_utc - datetime.fromisoformat(opened)).days if opened else 0
+        charter = case.get("charter", True)
         if (case.get("tor_draft_id") and case["tor_draft_id"] != "DRYRUN" and not case.get("draft_nagged")
                 and case.get("day1_at") and now_utc - datetime.fromisoformat(case["day1_at"])
                 > timedelta(hours=float(lb.get("draft_unsent_nag_hours", 24)))):
@@ -1077,10 +1284,8 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
                                 f"in your Gmail Drafts. Send it or discard it so the case moves.")
                 audit.append({"message_id": f"{key}:draft-nag", "source": "low_balance",
                               "action_taken": "low_balance_draft_nag", "ticket_id": case.get("ticket_id")})
-        # 5. retention risk: no PO after risk_days → the ticket IS the retention issue
         if opened and not case.get("escalated") and age >= risk_days and (charter or force):
             risks.append((key, case, age))
-        # 6. lost: still nothing lost_days after the risk flag → closed as Lost + re-engagement
         if opened and case.get("escalated") and age >= risk_days + lost_days:
             reason = "no_response"
             _resolve(key, case, f"no PO {age} days after the alert; closed as Lost ({reason}) and "
@@ -1125,16 +1330,93 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
 
 
 def run_sweep(force: bool = False) -> None:
-    """Called from deal_sync.run() every cycle; self-gates to once an hour."""
+    """Called from deal_sync.run() every cycle; self-gates to every 15 min for
+    the day-0 emails (they wait email_delay_minutes anyway) and once an hour
+    for everything else."""
     lb = cfg().get("low_balance", {}) or {}
     if not lb.get("enabled", True):
         return
     now = now_la()
-    if not force and now.minute >= 15:
-        return
     cases = open_cases()
-    if cases:
-        _sweep(cases, now, force=False)
+    if not cases:
+        return
+    if not force and now.minute >= 15:
+        seat = staff(lb.get("owner", "charter_sales")) or {}
+        armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
+        _send_pending_emails(cases, now, seat, lb, armed, False)
+        return
+    _sweep(cases, now, force=False)
+
+
+# ── backfill: last N days of alerts already in the inbox ────────────────────
+
+def backfill(days: int) -> list[dict]:
+    """Open cases for every Teachworks package-balance alert of the last `days`
+    days that has no case yet (Roman 2026-09-10: "first back fill the last
+    weeks low balance alerts... they are definitely due for a renewal").
+    Skips alerts whose student already got a newer PO deal. Each case then
+    follows the normal clock from now: email on the next sweep, text + teacher
+    the next business morning."""
+    hs.SEARCH_PASSTHROUGH = True
+    since = datetime.now(timezone.utc) - timedelta(days=int(days))
+    open_now = open_cases()
+    out, after, seen_threads, opened_recs = [], None, set(), {}
+    while True:
+        page = hs.list_threads(latest_after=since.isoformat(), after=after, limit=100)
+        for th in page.get("results", []):
+            tid = str(th.get("id"))
+            if tid in seen_threads:
+                continue
+            seen_threads.add(tid)
+            try:
+                msgs = [m for m in hs.get_messages(tid)
+                        if m.get("type") == "MESSAGE" and is_teachworks_sender(_addrs(m))]
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  backfill: thread {tid} unreadable: {e}")
+                continue
+            for m in msgs:
+                alert = parse_alert(m.get("text") or m.get("richText") or "")
+                if not alert:
+                    continue
+                key = case_key(alert)
+                if key in open_now:
+                    print(f"  ↩ {alert['student']}: case already open, skipped")
+                    continue
+                created = m.get("createdAt") or th.get("latestMessageTimestamp") or ""
+                try:
+                    newer = _student_deals(alert.get("student_first", ""), alert.get("student_last", ""),
+                                           _ms(created) if created else None)
+                except Exception:  # noqa: BLE001
+                    newer = []
+                if any(((d.get("properties") or {}).get("po_number") or "").strip() for d in newer):
+                    print(f"  ✅ {alert['student']}: a newer PO deal exists since the alert, skipped")
+                    out.append({"student": alert["student"], "skipped": "renewed"})
+                    continue
+                rec = handle_alert(tid, m, alert)
+                if rec.get("action_taken") == "low_balance_opened":
+                    open_now[key] = rec
+                    opened_recs[key] = rec
+                out.append({"student": alert["student"], "action": rec.get("action_taken"),
+                            "hours": alert["hours"], "package": alert["package"], "alerted": created[:10]})
+        after = ((page.get("paging") or {}).get("next") or {}).get("after")
+        if not after:
+            break
+    print(f"backfill: {len(out)} alert(s) in the last {days} days, {len(opened_recs)} case(s) opened, "
+          f"{sum(1 for o in out if o.get('skipped'))} already renewed")
+    if opened_recs:
+        # The day-0 emails go NOW, one per family: the delay exists to collect
+        # siblings arriving minutes apart, and a backfill batch is already
+        # complete. Text + teacher follow the normal clock (next business
+        # morning). In DRY_RUN the audit log is not written, so the sweep
+        # runs on the in-memory cases to show what would go out.
+        print("\n══════ DAY 0 EMAILS (grouped by family) ══════")
+        _send_pending_emails(opened_recs if DRY_RUN else open_cases(), now_la(),
+                             staff((cfg().get("low_balance") or {}).get("owner", "charter_sales")) or {},
+                             cfg().get("low_balance") or {},
+                             bool((cfg().get("low_balance") or {}).get("armed"))
+                             or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1", force=True)
+        print("══════════════════════════════════════════════\n")
+    return out
 
 
 # ── replay: run one real alert through the agent (DRY_RUN for a preview) ───

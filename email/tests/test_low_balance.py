@@ -150,8 +150,8 @@ class Harness:
         monkeypatch.setattr(lb, "_parent_replied", lambda c, s, l: replied)
         monkeypatch.setattr(lb, "_ticket_open", lambda c: ticket_open)
         monkeypatch.setattr(lb, "_send_sms", lambda p, b: self.sms.append((p, b)) or {"ok": True})
-        monkeypatch.setattr(lb, "_send_family_email", lambda to, ctx, c: self.emails.append((to, ctx)))
-        monkeypatch.setattr(lb, "_send_private_email", lambda to, ctx, c: self.private.append((to, ctx)))
+        monkeypatch.setattr(lb, "_send_email",
+                            lambda to, subj, tpl, ctx, c: self.emails.append((to, subj, tpl, ctx)))
         monkeypatch.setattr(lb, "_tor_draft",
                             lambda to, s, b, c, seat: self.drafts.append((to, s, b, seat)) or
                             {"id": "d1", "message": {"id": "m1", "threadId": "t9"}})
@@ -178,6 +178,10 @@ class Harness:
     def stage(self):
         return [p.get("retention_stage") for _d, p in self.stamps if p and p.get("retention_stage")]
 
+    def send_pending(self, cases, armed=True):
+        """The day-0 email step, as the sweep runs it (forced past the sibling delay)."""
+        lb._send_pending_emails(cases, dt.datetime(2026, 9, 10, 9, 5), SEAT, lb.cfg()["low_balance"], armed, True)
+
 
 # ── day 0: the case ───────────────────────────────────────────────────────
 
@@ -198,16 +202,26 @@ def test_held_case_files_ticket_and_dm_but_sends_nothing(monkeypatch):
                for r in h.recs)
 
 
-def test_day0_sends_only_the_email_and_stores_the_rest_for_the_sweep(monkeypatch):
+def test_day0_queues_the_email_and_stores_the_rest_for_the_sweep(monkeypatch):
     h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=RECENT,
                 positivity="Lately Taylor has been mastering fractions.")
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.emails and h.emails[0][0] == "jessicalujanbd@gmail.com"
-    assert h.emails[0][1]["sender_email"] == "paola@wetutorathome.com"
-    assert h.emails[0][1]["personal_line"] == (" Taylor has been working with Sarah. "
-                                               "Lately Taylor has been mastering fractions.")
-    assert not h.sms and not h.drafts                                   # those are day 1
-    assert rec["email_sent"] == "jessicalujanbd@gmail.com"
+    assert not h.emails and not h.sms and not h.drafts               # nothing leaves at alert time
+    assert rec["email_pending"] and rec["to_email"] == "jessicalujanbd@gmail.com"
+    assert rec["personal_line"] == (" Taylor has been working with Sarah. "
+                                    "Lately Taylor has been mastering fractions.")
+    # the sweep sends it (one per family), and stamps the deal
+    h.send_pending({rec["message_id"]: rec})
+    assert len(h.emails) == 1
+    to, subj, tpl, ctx = h.emails[0]
+    assert to == "jessicalujanbd@gmail.com" and subj == "Taylor's tutoring hours are running low"
+    assert tpl.endswith("low_balance_charter.html") and ctx["sender_email"] == "paola@wetutorathome.com"
+    assert ctx["personal_line"] == rec["personal_line"] and ctx["progress"] == "that progress"
+    assert any(r["action_taken"] == "low_balance_email_sent" for r in h.recs)
+    assert h.stamps[-1][1]["retention_last_notice_sent"]
+    stamp0 = dict(h.stamps[0][1])
+    assert stamp0["retention_stage"] == "low_hours" and stamp0["retention_low_balance_alert_date"]
+    assert "retention_last_notice_sent" not in stamp0          # nothing sent at alert time
     assert rec["sms_body"].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
                                       "with Sarah and we want to keep that progress going. Taylor has 4 hours or less left")
     assert "Kylee" not in rec["sms_body"] and "iLead" not in rec["sms_body"] and "fractions" not in rec["sms_body"]
@@ -217,9 +231,6 @@ def test_day0_sends_only_the_email_and_stores_the_rest_for_the_sweep(monkeypatch
     assert "Rodriguez" not in rec["tor_body"]
     assert rec["tor_mailbox"] == "paola@wetutorathome.com"
     assert "—" not in rec["sms_body"] and "--" not in rec["sms_body"]
-    stamp = dict(h.stamps[0][1])
-    assert stamp["retention_stage"] == "low_hours" and stamp["retention_low_balance_alert_date"]
-    assert stamp["retention_last_notice_sent"]
 
 
 def test_four_hours_or_less_is_the_line(monkeypatch):
@@ -235,9 +246,9 @@ def test_four_hours_or_less_is_the_line(monkeypatch):
 
 def test_level_up_terri_teacher_is_blocked_on_the_record(monkeypatch):
     terri = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "72281989"}}
-    h = Harness(monkeypatch, _cfg(armed=True), deals=[terri])
+    Harness(monkeypatch, _cfg(armed=True), deals=[terri])
     rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
-    assert h.emails and rec["tor_blocked"] is True
+    assert rec["email_pending"] and rec["tor_blocked"] is True
     assert any("no-teacher-email" in f for f in rec["flags"])
 
 
@@ -249,14 +260,25 @@ def test_private_pay_gets_one_upgrade_email_and_no_text(monkeypatch):
     body = ALERT.replace("Charter - iLEAD", "2025 - Prep Package")
     rec = lb.handle_alert("thr1", {**MSG, "text": body}, lb.parse_alert(body))
     assert rec["charter"] is False and rec["private_pay"] is True
-    assert h.private and not h.emails and not h.sms and not h.drafts
-    pctx = h.private[0][1]
-    assert pctx["current_tier"] == "Prep" and pctx["next_tier"] == "Success" and pctx["next_rate"] == "$73"
-    assert "$83 an hour" in pctx["upgrade_line"] and "$73 an hour" in pctx["upgrade_line"]
-    assert pctx["modality"] == "online"
+    assert rec["private_tier"] == "Prep"
+    assert "Prep package at $83 an hour" in rec["upgrade_line"] and "$73 an hour" in rec["upgrade_line"]
     assert rec["sms_body"] == "" and rec["tor_body"] == ""
     assert h.tickets[0][0][0] == "Low balance: Taylor Rodriguez (private pay), 4 hours left"
     assert "auto-renews" in h.dms[0][1]
+    h.send_pending({rec["message_id"]: rec})
+    to, subj, tpl, ctx = h.emails[0]
+    assert subj == "Taylor's next tutoring package" and tpl.endswith("low_balance_private.html")
+    assert ctx["upgrade_line"] == rec["upgrade_line"]
+    assert not h.sms and not h.drafts
+
+
+def test_out_of_pocket_charter_family_is_private_pay():
+    assert not lb.is_charter_package("CHARTER - Out of Pocket")
+
+
+def test_negative_balance_parses():
+    a = lb.parse_alert(ALERT.replace("4.0 unused hours", "-0.5 unused hours"))
+    assert a and a["hours"] == -0.5
 
 
 def test_private_pay_in_person_tiers_and_unknown_tier(monkeypatch):
@@ -289,7 +311,7 @@ def test_missing_family_and_deal_are_flagged_not_fatal(monkeypatch):
     assert rec["action_taken"] == "low_balance_opened"
     assert any("family contact NOT found" in f for f in rec["flags"])
     assert any("no deal found" in f for f in rec["flags"])
-    assert h.emails                                     # the alert itself carries the email
+    assert rec["email_pending"]                         # the alert itself carries the email
     assert rec["phone"] == "+1 909-454-8581" and rec["tor_email"] == ""
     assert h.tickets[0][0][0].startswith("Low balance: Taylor Rodriguez (school unknown)")
     assert "your charter school" not in h.dms[0][1] and "🚩" in h.dms[0][1]
@@ -324,7 +346,10 @@ def test_disabled_agent_only_audits(monkeypatch):
 def _case(**over):
     base = {"message_id": "low-balance:26/27:taylor-rodriguez:charter-ilead", "student": "Taylor Rodriguez",
             "school": "iLead", "ticket_id": "T1", "deal_id": "64250037589", "contact_id": "3167401",
-            "charter": True, "parent_email": "jessicalujanbd@gmail.com",
+            "charter": True, "parent_email": "jessicalujanbd@gmail.com", "to_email": "jessicalujanbd@gmail.com",
+            "email_pending": True, "email_sent": "jessicalujanbd@gmail.com", "first_name": "Jessica",
+            "student_first": "Taylor", "tutor_first": "Sarah", "hours": 4.0,
+            "personal_line": " Taylor has been working with Sarah.",
             "phone": "+1 909-454-8581", "sms_body": "Hi Jessica, text body.", "opted_out": False,
             "tor_email": "kylee@ileadexploration.org", "tor_subject": "New PO for Taylor (A+ Tutoring)",
             "tor_body": "Hi Kylee, body.", "tor_mailbox": "paola@wetutorathome.com", "tor_blocked": False,
@@ -351,6 +376,58 @@ def test_day1_texts_and_drafts_when_no_po_and_no_reply(monkeypatch):
     assert h.stage() == ["teacher_contacted"]
     assert h.notes and "Day 1" in h.notes[0][1]
     assert h.dms and h.dms[0][0] == "UPAO" and "Day 1" in h.dms[0][1]
+
+
+def test_day1_never_leads_the_email(monkeypatch):
+    case = _case(email_sent=None)          # email not out yet (say, no window) → no text either
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case}, in_window=False)
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb, "_send_pending_emails", lambda *a, **k: set())
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+
+
+def test_siblings_get_one_email_one_text_and_one_teacher_draft(monkeypatch):
+    ez = _case(message_id="k:ezekiel", student="Ezekiel Melara", student_first="Ezekiel", ticket_id="T1",
+               deal_id="d1", first_name="Mayra", to_email="schoolmve@gmail.com", parent_email="schoolmve@gmail.com",
+               phone="+17143537555", tutor_first="Sarah", personal_line=" Ezekiel has been working with Sarah.",
+               sms_body="single ez", tor_body="Hi Kylee,\n\nsingle ez", tor_subject="New PO for Ezekiel (A+ Tutoring)")
+    ma = _case(message_id="k:mario", student="Mario Melara", student_first="Mario", ticket_id="T2",
+               deal_id="d2", first_name="Mayra", to_email="schoolmve@gmail.com", parent_email="schoolmve@gmail.com",
+               phone="+17143537555", tutor_first="Ana", personal_line=" Mario has been working with Ana.",
+               sms_body="single ma", tor_body="Hi Kylee,\n\nsingle ma", tor_subject="New PO for Mario (A+ Tutoring)")
+    cases = {"k:ezekiel": ez, "k:mario": ma}
+    cfgv = _cfg(armed=True,
+                sms_template_multi="Hi {first_name}, {students} have been working with {tutor_first}. Each has {hours} left.",
+                tor_email={"mode": "draft", "mailbox": "seat", "subject": "x", "body": "x",
+                           "subject_multi": "New POs for {students} (A+ Tutoring)",
+                           "body_multi": "{greeting}\n\nHope you are well.{personal_line} {po_lines} Could you issue new POs?\n\n{sender_name}"},
+                family_email={"mode": "send", "template": "templates/low_balance_charter.html",
+                              "template_multi": "templates/low_balance_charter_multi.html",
+                              "from": "{sender_name} <admin@wetutorathome.com>", "reply_to": "{sender_email}",
+                              "subject": "{student}'s tutoring hours are running low",
+                              "subject_multi": "{students}: tutoring hours are running low"})
+    h = Harness(monkeypatch, cfgv, deals=[], open_cases=cases)
+    # day 0: one email for the family
+    h.send_pending({k: {**c, "email_sent": None} for k, c in cases.items()})
+    assert len(h.emails) == 1
+    to, subj, tpl, ctx = h.emails[0]
+    assert to == "schoolmve@gmail.com" and subj == "Ezekiel and Mario: tutoring hours are running low"
+    assert tpl.endswith("low_balance_charter_multi.html") and ctx["students"] == "Ezekiel and Mario"
+    assert ctx["personal_line"] == " Ezekiel has been working with Sarah. Mario has been working with Ana."
+    assert sum(1 for r in h.recs if r["action_taken"] == "low_balance_email_sent") == 2
+    # day 1: one text, one teacher draft, both naming both kids
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert h.sms == [("+17143537555", "Hi Mayra, Ezekiel and Mario have been working with Ana and Sarah. "
+                                      "Each has 4 hours or less left.")]
+    assert len(h.drafts) == 1
+    to, subj, body, _seat = h.drafts[0]
+    assert to == "kylee@ileadexploration.org" and subj == "New POs for Ezekiel and Mario (A+ Tutoring)"
+    assert body.startswith("Hi Kylee,") and "Ezekiel's current PO has 4 hours or less left." in body \
+        and "Mario's current PO has 4 hours or less left." in body
+    assert sum(1 for r in h.recs if r["action_taken"] == "low_balance_family_contacted") == 2
+    assert len([d for d in h.dms if "Day 1" in d[1]]) == 1
 
 
 def test_day1_waits_for_the_next_business_morning(monkeypatch):
@@ -401,7 +478,7 @@ def test_day1_held_when_not_armed(monkeypatch):
     h = Harness(monkeypatch, _cfg(armed=False), deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
     lb.run_sweep(force=True)
-    assert not h.sms and not h.drafts and "not armed" in h.notes[0][1]
+    assert not h.sms and not h.drafts and "Not armed" in h.notes[0][1]
 
 
 def test_day1_happens_once(monkeypatch):
