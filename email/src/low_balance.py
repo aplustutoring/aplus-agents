@@ -857,6 +857,30 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     # POs with nothing used. So an alert on a PO with NO attended lesson yet
     # is "your package exists", not "your hours are running low": park it,
     # and the hourly sweep opens the case when the first lesson lands.
+    # A leftover package from LAST season (London Brixey's July PO, Alexzander
+    # Gonzalez's April PO, Nathan Sanchez's May PO in the Aug 1 → Sep 10 pool)
+    # is an archive question for the charter admin (Roman 2026-08-14: "their
+    # past hours should have been archived"), not a renewal chase. Skip it,
+    # audited, and say so on the DM so a human can archive it.
+    season_start = str(lb.get("season_start") or "")
+    po_created = (dp.get("createdate") or "")[:10]
+    if deal and season_start and po_created and po_created < season_start:
+        record.update(action_taken="low_balance_prior_season", deal_id=deal.get("id"),
+                      po_created=po_created, po_hours=dp.get("number_of_hours_in_this_po"))
+        audit.append(record)
+        print(f"  🗄 {alert['student']}: alert is on PO {dp.get('po_number') or '?'} from {po_created}, "
+              f"before the {season_start} season start; leftover package, not a renewal chase")
+        admin = staff(lb.get("prior_season_notify", "charter_admin")) or {}
+        if admin.get("slack_user_id"):
+            try:
+                slack_client.dm(admin["slack_user_id"],
+                                f"🗄 Teachworks low-balance alert for *{alert['student']}* is on last season's "
+                                f"package (PO {dp.get('po_number') or '?'} from {po_created}, "
+                                f"{_fmt_hours(alert['hours'], alert['unit'])} unused). Leftover hours to archive "
+                                f"or reassign; the renewal agent is not chasing it.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  prior-season DM failed (non-fatal): {e}")
+        return record
     try:
         po_hours_f = float(dp.get("number_of_hours_in_this_po") or 0)
     except (TypeError, ValueError):
@@ -882,6 +906,8 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     ctx = _context(alert, deal, contact, seat, recent, positivity)
     hrs = ctx["hours_exact"]               # staff-facing: ticket, DM
     record.update(tutor_first=recent.get("tutor_first") or "", sessions_on_po=recent.get("sessions") or 0,
+                  first_session=recent.get("first_session") or "", tw_found=bool(recent.get("found")),
+                  po_created=(dp.get("createdate") or "")[:10], po_hours=dp.get("number_of_hours_in_this_po"),
                   notes_fields_seen=recent.get("notes_fields_seen") or [],
                   positivity=positivity)
 
@@ -1652,6 +1678,7 @@ def backfill(days: int) -> list[dict]:
             break
     print(f"backfill: {len(out)} alert(s) in the last {days} days, {len(opened_recs)} case(s) opened, "
           f"{sum(1 for o in out if o.get('action') == 'low_balance_deferred')} parked (no lesson on the PO yet), "
+          f"{sum(1 for o in out if o.get('action') == 'low_balance_prior_season')} on last season's package, "
           f"{sum(1 for o in out if o.get('skipped') == 'renewed')} already renewed, "
           f"{sum(1 for o in out if o.get('skipped') == 'not charter')} not charter (out of scope)")
     if opened_recs:

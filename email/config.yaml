@@ -199,6 +199,11 @@ low_balance:
   # with no lesson → let go (the next alert starts fresh).
   require_attended_lesson: true
   defer_max_days: 30
+  # An alert on a PO created before this date is last season's leftover
+  # package (July / April / May POs in the pool): archive or reassign, not a
+  # renewal chase. Skipped, audited, one DM to prior_season_notify.
+  season_start: "2026-08-01"
+  prior_season_notify: charter_admin
   # A case opens only at this many unused hours or fewer (Roman 2026-09-09:
   # "4 hours or less"). Teachworks' own alert level is per package; alerts
   # that fire above this line are audited and skipped.

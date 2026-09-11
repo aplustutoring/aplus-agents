@@ -301,6 +301,24 @@ def test_alert_on_an_untouched_po_is_parked_until_the_first_lesson(monkeypatch):
     assert not h3.tickets and any(r["action_taken"] == "low_balance_defer_expired" for r in h3.recs)
 
 
+def test_last_seasons_package_is_an_archive_question_not_a_chase(monkeypatch):
+    old = {"id": "old", "properties": {**DEAL["properties"], "createdate": "2026-07-23T00:00:00Z",
+                                       "po_number": "PF224208"}}
+    cfgv = _cfg(armed=True, season_start="2026-08-01", prior_season_notify="charter_admin")
+    cfgv["staff"]["kath"] = {"name": "Kath", "slack_user_id": "UKATH", "hubspot_owner_id": "5"}
+    cfgv["roles"]["charter_admin"] = "kath"
+    h = Harness(monkeypatch, cfgv, deals=[old], recent=RECENT)
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_prior_season" and rec["po_created"] == "2026-07-23"
+    assert not h.tickets and not h.emails and not h.stamps
+    assert h.dms == [("UKATH", h.dms[0][1])] and "last season's package" in h.dms[0][1]
+    # this season's PO → normal case, and the record carries the first-lesson date
+    h2 = Harness(monkeypatch, cfgv, deals=[DEAL], recent=RECENT)
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_opened" and rec["first_session"] == "2026-08-25"
+    assert rec["po_created"] == "2026-08-22" and rec["tw_found"] is True
+
+
 def test_park_never_on_a_lookup_miss_or_when_hours_were_used(monkeypatch):
     fresh = {**NO_RECENT, "ok": True, "found": True, "sessions": 0}
     # no deal → nothing to park against → opens with flags
