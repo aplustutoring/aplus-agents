@@ -770,9 +770,10 @@
     414282660,
     414285529,
     414286640,
-    414292569
+    414292569,
+    414308148
   ],
-  "last_run_utc": "2026-09-11T21:15:59.218692+00:00",
+  "last_run_utc": "2026-09-11T22:04:09.926726+00:00",
   "pending_digest": [
     {
       "call_id": 414134815,
@@ -989,6 +990,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 414308148,
+      "number": "16504547308",
+      "time_pt": "2:57 PM",
+      "matched": true,
+      "contact_label": "Wireless Caller",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to a prospective family (Wireless Caller, 650-454-7308) regarding their earlier interest in tutoring. The call went to voicemail and Paola left a brief message asking the family to call back with a good time to connect. No new information about the student or family was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with the family if no callback is received in a few days",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola made an outbound follow-up call to a prospective family at 650-454-7308 (listed as 'Wireless Caller' \u2014 no name, student info, or details on file yet). Call went to voicemail; Paola left a friendly message asking them to call back with a good time to connect. Family now expects a callback opportunity on their end. If they don't respond in a few days, try again \u2014 open with: 'Hi, this is [name] from A+ Tutoring following up on Paola's message about tutoring for your family \u2014 I'd love to learn a bit about who we'd be supporting and how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound voicemail with no contact made; no new information to change status, and current status is null pending an actual conversation.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola regarding the family's earlier interest in tutoring. Reached voicemail and left a message asking them to call back with a good time to connect.",
+          "what_we_can_do_to_help": "Continue follow-up attempts to connect live, learn about the student's needs, and propose a tutoring plan once we understand the situation.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola regarding the family's earlier interest in tutoring. Reached voicemail and left a message asking them to call back with a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up attempts to connect live, learn about the student's needs, and propose a tutoring plan once we understand the situation."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with the family if no callback is received in a few days",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
