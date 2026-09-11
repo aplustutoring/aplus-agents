@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**48 registered agents** — 34 active · 11 manual · 3 deprecated · across 12 engines.
+**49 registered agents** — 35 active · 11 manual · 3 deprecated · across 12 engines.
 
 ## What this is
 
@@ -38,7 +38,7 @@ outranks those two. HubSpot is where humans act.
 |---|---|---|
 | B2B blogs | 6 | 3 |
 | B2C spotlights | 5 | 2 |
-| Email / inbox ops | 10 | 10 |
+| Email / inbox ops | 11 | 11 |
 | Data sync | 3 | 3 |
 | Call agent | 2 | 2 |
 | Messenger | 2 | 1 |
@@ -53,7 +53,7 @@ outranks those two. HubSpot is where humans act.
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (19):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
+**Writes to live systems on its own (20):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `email-low-balance`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
 **Reports, drafts, or waits for a human (15):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
@@ -94,6 +94,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **email-deal-sync**<br>Deal sync (HubSpot → Teachworks) + invoice sweep | every 15 min during business hours + hourly | active | HubSpot:deals, HubSpot:contacts, Teachworks:customers/students/lessons | Teachworks:customers+students (family upsert by email; per-pipeline billing; guards: charter contact must match deal-name parent, internal domains skipped), Slack (needs-review flags; invoice-sweep submit prompts to Kath) |
 | **email-draft-feedback**<br>Draft feedback weekly (Fri 4 PM PT) | 16:00 PDT Fri / 15:00 PST | active | Gmail:drafts, email/state/draft_registry.jsonl | corrections/email-drafts/, email/state/, Slack |
 | **email-hourly-update**<br>Hourly launch-monitoring update | hourly, business hours | active | email/state/audit_log.jsonl | Slack |
+| **email-low-balance**<br>Low-balance renewal agent (Teachworks alert → family + TOR outreach → self-closing case) | event | active | Gmail:admin@ (the Teachworks alert, via the triage poll), HubSpot:contacts (family by alert email, else student + surname), HubSpot:deals (student's newest PO deal: school, pipeline, TOR, PO number; NEW PO deals close the case), email/state/audit_log.jsonl | HubSpot:tickets, HubSpot:deals, Resend email to the family from the seat's name, reply-to the seat, day 0, JustCall SMS to the family, day 1 if no PO and no reply, Gmail draft in the seat's mailbox to the teacher of record, day 1, HubSpot:lists, Slack, email/state/audit_log.jsonl |
 | **email-po-daily-report**<br>PO day report (6 PM PT) | 18:00 PDT Mon-Fri / 17:00 PST | active | HubSpot:deals, Teachworks:invoices | Slack |
 | **email-po-inbox**<br>Charter PO inbox (charter@wetutorathome.com) | every 15 min during business hours + hourly | active | Gmail:charter@ (incl. PDF/image PO attachments), HubSpot:deals, HubSpot:contacts, Teachworks:lessons (upcoming-calendar check) | HubSpot:deals, HubSpot:contacts, HubSpot:files+notes, HubSpot:tickets+tasks, Gmail:labels, Slack |
 | **email-sla-sweep**<br>SLA sweep | hourly | active | HubSpot:tickets | Slack, HubSpot:tickets |
@@ -104,6 +105,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 - **task-completion-sweep** — First agent to READ HubSpot Tasks back (two agents create them; nothing checked completion)
 - **email-po-inbox** — Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
 - **email-deal-sync** — Invoice sweep (daily 9 AM PT inside this workflow): active charter PO deals — attended TW hours >= PO hours → prompt Kath to submit to the school's ops system now, else prompt at end of PO month (lessons_fulfilled_date)
+- **email-low-balance** — Replaces the Monday board "A+ Charter Low Balance Alerts" (8802830977) and the HubSpot flow "Low Balance Alerts - Charter" (552811839, off since 2025-10-01) that Paola fed by hand
 - **email-po-daily-report** — Read-only + one DM
 - **email-draft-feedback** — The team's edits ARE the training signal (#AP008 corrections path)
 
