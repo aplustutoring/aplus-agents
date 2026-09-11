@@ -16,6 +16,10 @@ SMS_BODY = "Hi {name}! Here is your photo from Delilah's 5th birthday. Shana Tov
 STORYBOOK_SMS_BODY = "And here is your storybook version, {name}. Once upon a Shana Tova!"
 # Gemini image model for the storybook repaint (GEMINI_API_KEY is a secret)
 GEMINI_MODEL = "gemini-3.1-flash-image"
+# Google Drive mirror: every print also lands in this folder (owned by the
+# spotlight-watcher service account, shared with roman@wetutorathome.com).
+# https://drive.google.com/drive/folders/1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t
+DRIVE_FOLDER_ID = "1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t"
 
 [assets]
 directory = "./public"
@@ -29,3 +33,4 @@ id = "cdaa219ac27248089b3867cf137812a4"
 #   wrangler secret put JUSTCALL_API_KEY
 #   wrangler secret put JUSTCALL_API_SECRET
 #   wrangler secret put GEMINI_API_KEY
+#   wrangler secret put GOOGLE_SA_JSON   (spotlight-watcher service-account JSON, one line)

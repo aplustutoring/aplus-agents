@@ -9,6 +9,12 @@
  *   faces preserved. Returns { image: <base64 jpeg> } for the booth to frame + print.
  * GET  /photo/<key>   public photo host (unguessable UUID keys)
  * GET  /photos        JSON list of archived keys (for reprints / the album)
+ * POST /drive-backfill  uploads every archived print not yet in the Drive folder
+ *
+ * Every archived print is also mirrored to a Google Drive folder (DRIVE_FOLDER_ID)
+ * with the service account in the GOOGLE_SA_JSON secret, in the background
+ * (ctx.waitUntil) so the guest never waits on Drive. Marker keys drive/<key> in
+ * KV hold the Drive file id so nothing uploads twice.
  *
  * No HubSpot, no email, no scheduled handler. Personal event, not a lead source.
  */
@@ -20,7 +26,7 @@ const cors = (env) => ({
 });
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") return new Response(null, { headers: cors(env) });
     const url = new URL(request.url);
 
@@ -33,9 +39,26 @@ export default {
       });
     }
 
+    if (request.method === "POST" && url.pathname === "/drive-backfill") {
+      const list = await env.PHOTOS.list({ limit: 1000 });
+      const report = { uploaded: [], skipped: 0, failed: [] };
+      for (const k of list.keys) {
+        if (k.name.startsWith("drive/")) continue;
+        if (await env.PHOTOS.get(`drive/${k.name}`)) { report.skipped++; continue; }
+        try {
+          const id = await mirrorToDrive(env, k.name, k.metadata || {});
+          report.uploaded.push({ key: k.name, id });
+        } catch (e) {
+          report.failed.push({ key: k.name, error: String(e) });
+        }
+      }
+      return json(report, 200, env);
+    }
+
     if (request.method === "GET" && url.pathname === "/photos") {
       const list = await env.PHOTOS.list({ limit: 1000 });
       const photos = list.keys
+        .filter((k) => !k.name.startsWith("drive/"))
         .map((k) => ({ key: k.name, name: k.metadata?.name || "", at: k.metadata?.at || "", kind: k.metadata?.kind || "photo", url: `${url.origin}/photo/${k.name}` }))
         .sort((a, b) => (a.at < b.at ? -1 : 1));
       return json({ photos }, 200, env);
@@ -80,9 +103,15 @@ export default {
     try {
       const bytes = Uint8Array.from(atob(photo.replace(/^data:image\/jpeg;base64,/, "")), (c) => c.charCodeAt(0));
       const key = `${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID()}.jpg`;
-      await env.PHOTOS.put(key, bytes, { metadata: { name: String(name).slice(0, 60), at: new Date().toISOString(), kind } });
+      const meta = { name: String(name).slice(0, 60), at: new Date().toISOString(), kind };
+      await env.PHOTOS.put(key, bytes, { metadata: meta });
       archiveUrl = `${url.origin}/photo/${key}`;
       results.archive = { url: archiveUrl };
+      // Drive mirror in the background: the print sheet is already open on the iPad.
+      if (env.DRIVE_FOLDER_ID && env.GOOGLE_SA_JSON) {
+        const job = mirrorToDrive(env, key, meta, bytes).catch((e) => console.error("drive mirror", key, String(e)));
+        if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+      }
     } catch (e) {
       results.archive = { error: String(e) };
     }
@@ -164,6 +193,70 @@ async function sendPhotoText(env, { to, name, mediaUrl, kind = "photo" }) {
   });
   if (!res.ok) throw new Error(`JustCall ${res.status}: ${await res.text()}`);
   return { sent: true, to };
+}
+
+// ---------- Google Drive mirror ----------
+// Service-account JWT (RS256 via WebCrypto) -> access token (cached in KV ~50 min)
+// -> multipart upload into DRIVE_FOLDER_ID. File names read like
+// "2026-09-11 19.05.12 Ari Cohen (storybook).jpg" in Los Angeles time.
+export function driveFileName(key, meta) {
+  const at = meta.at ? new Date(meta.at) : new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const la = new Date(at.toLocaleString("en-US", { timeZone: "America/Los_Angeles" }));
+  const stamp = `${la.getFullYear()}-${pad(la.getMonth() + 1)}-${pad(la.getDate())} ${pad(la.getHours())}.${pad(la.getMinutes())}.${pad(la.getSeconds())}`;
+  const who = String(meta.name || "Guest").replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim() || "Guest";
+  const kind = meta.kind === "storybook" ? " (storybook)" : "";
+  return `${stamp} ${who}${kind}.jpg`;
+}
+
+async function mirrorToDrive(env, key, meta, bytes) {
+  if (!bytes) {
+    bytes = await env.PHOTOS.get(key, "arrayBuffer");
+    if (!bytes) throw new Error("archive object missing");
+  }
+  const token = await driveToken(env);
+  const boundary = "booth" + crypto.randomUUID();
+  const metaPart = JSON.stringify({ name: driveFileName(key, meta), parents: [env.DRIVE_FOLDER_ID] });
+  const enc = new TextEncoder();
+  const head = enc.encode(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metaPart}\r\n--${boundary}\r\nContent-Type: image/jpeg\r\n\r\n`);
+  const tail = enc.encode(`\r\n--${boundary}--`);
+  const body = new Uint8Array(head.length + bytes.byteLength + tail.length);
+  body.set(head, 0);
+  body.set(new Uint8Array(bytes), head.length);
+  body.set(tail, head.length + bytes.byteLength);
+  const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": `multipart/related; boundary=${boundary}` },
+    body,
+  });
+  if (!res.ok) throw new Error(`Drive upload ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const { id } = await res.json();
+  await env.PHOTOS.put(`drive/${key}`, id, { metadata: { fileId: id } });
+  return id;
+}
+
+async function driveToken(env) {
+  const cached = await env.PHOTOS.get("drive/_token");
+  if (cached) return cached;
+  const sa = JSON.parse(env.GOOGLE_SA_JSON);
+  const now = Math.floor(Date.now() / 1000);
+  const b64url = (s) => btoa(typeof s === "string" ? s : String.fromCharCode(...new Uint8Array(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const header = b64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+  const claim = b64url(JSON.stringify({ iss: sa.client_email, scope: "https://www.googleapis.com/auth/drive", aud: "https://oauth2.googleapis.com/token", iat: now, exp: now + 3600 }));
+  const pem = sa.private_key.replace(/-----[A-Z ]+-----/g, "").replace(/\s+/g, "");
+  const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
+  const cryptoKey = await crypto.subtle.importKey("pkcs8", der, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, new TextEncoder().encode(`${header}.${claim}`));
+  const jwt = `${header}.${claim}.${b64url(sig)}`;
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=${encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer")}&assertion=${jwt}`,
+  });
+  if (!res.ok) throw new Error(`Google token ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const { access_token } = await res.json();
+  await env.PHOTOS.put("drive/_token", access_token, { expirationTtl: 3000 });
+  return access_token;
 }
 
 function json(obj, status, env) {
