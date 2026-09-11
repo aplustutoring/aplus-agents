@@ -72,6 +72,11 @@ jobs:
           # Same service account as the retention sync — the standalone email repo's
           # local JSON was wiped in the 6/29 secrets cleanup; the value lives on here.
           GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
+          # the low-balance agent sends the day-0 family email (Resend) and,
+          # on replay/backfill, reads JustCall for family replies
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
           DRY_RUN: ${{ inputs.dry_run }}
           LOW_BALANCE_REPLAY_THREAD: ${{ inputs.replay_thread }}
           LOW_BALANCE_SIMULATE_DAYS: ${{ inputs.simulate_days }}

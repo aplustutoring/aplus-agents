@@ -182,8 +182,9 @@ low_balance:
   enabled: true
   # armed: false = the agent files the ticket, writes the exact copy it WOULD
   # send into the ticket note, DMs the seat, and touches no family or teacher.
-  # Flip in a PR once Roman approves the copy below.
-  armed: false
+  # ARMED 2026-09-10 (Roman: "yes, let it run") after the copy was reviewed on
+  # Taylor Rodriguez's real alert and the Aug 1 pool was previewed end to end.
+  armed: true
   # Roman 2026-09-10: "only on charter service codes, excluding out of
   # pocket. just a charter low balance alert agent that owns its job."
   # true = a non-charter alert (private-pay packages, CHARTER - Out of
