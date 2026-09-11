@@ -771,9 +771,10 @@
     414285529,
     414286640,
     414292569,
-    414308148
+    414308148,
+    414311185
   ],
-  "last_run_utc": "2026-09-11T22:04:09.926726+00:00",
+  "last_run_utc": "2026-09-11T22:16:01.848383+00:00",
   "pending_digest": [
     {
       "call_id": 414134815,
@@ -1056,6 +1057,92 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 414311185,
+      "number": "13236363579",
+      "time_pt": "3:00 PM",
+      "matched": true,
+      "contact_label": "Karen Chung",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Karen Chung called in asking for Danielle, wanting to understand the consultation process before booking. Paola explained that the consultation is a phone call (not in-person/Zoom), that Paola would be her point of contact going forward, and that after the consult A+ would send an assessment, match a tutor, and coordinate with the charter teacher for PO/funds. Karen has a 6-year-old daughter working at first-grade level who is homeschooled. Karen asked Paola to email her a booking link; she'll book the consultation when she has time to check her available funds.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Email Karen the consultation booking link with Paola's calendar so she can pick a time.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "During consultation, collect student's school name and send the first-grade assessment.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Karen Chung (charter family) called in asking for Danielle but I (Paola) took the call. She was a bit confused about the process \u2014 thought the consultation was an in-person meeting. I clarified it's a phone call and that I'll be her point of contact going forward. She has a 6-year-old daughter, homeschooled, working at first-grade level. She wants to book the consultation but needs to check her available charter funds first. I promised to email her my calendar link right after the call; she prefers email over text. She did NOT book yet. Next step: confirm the booking link email went out and watch for her to schedule. If she hasn't booked in a couple of days, follow up by email. Suggested opener: \"Hi Karen, just making sure my calendar link reached you \u2014 happy to answer any questions before you pick a time for our consult about your daughter's tutoring.\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Record indicates charter family (How Did You Hear = From my Charter School) and Karen referenced checking available funds and a teacher/PO process, confirming charter-funded inquiry.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Karen called in asking for Danielle to understand the consultation process before booking. She has a 6-year-old daughter, homeschooled and working at first-grade level. Karen is a charter family and needs to check her available instructional funds before scheduling the consult.",
+          "what_we_can_do_to_help": "Paola sending Karen her consultation booking link by email (Karen prefers email over text). During the consult, gather school info, send the first-grade assessment, discuss session cadence based on available funds, then match a tutor and coordinate PO with her charter teacher.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "1",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Karen called in asking for Danielle to understand the consultation process before booking. She has a 6-year-old daughter, homeschooled and working at first-grade level. Karen is a charter family and needs to check her available instructional funds before scheduling the consult."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola sending Karen her consultation booking link by email (Karen prefers email over text). During the consult, gather school info, send the first-grade assessment, discuss session cadence based on available funds, then match a tutor and coordinate PO with her charter teacher."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "1"
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Karen the consultation booking link with Paola's calendar so she can pick a time.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "During consultation, collect student's school name and send the first-grade assessment.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
