@@ -463,6 +463,13 @@ def run() -> None:
         import traceback as _tb
         print(f"⚠️  low_balance sweep error: {e}")
         _tb.print_exc()
+    try:
+        from . import first_lesson
+        first_lesson.run()
+    except Exception as e:  # noqa: BLE001 — the stamp must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  first_lesson error: {e}")
+        _tb.print_exc()
 
 
 if __name__ == "__main__":

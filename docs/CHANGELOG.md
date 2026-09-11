@@ -186,6 +186,31 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-10 — first_lesson: Teachworks first attended lesson stamped on the deal + family (retention step 2 foundation)
+
+**What:** `email/src/first_lesson.py`, run from deal_sync every cycle and
+self-gated to every 6 hours: bulk-reads the last 10 days of lessons from both
+Teachworks accounts; for each attended student not yet in
+`state/first_lessons.json` reads the full lesson history, takes the first
+attended lesson ever, and stamps `[Agent] First lesson date`
+(`retention_first_lesson_date`, new on deals group retention and contacts
+group family) on the season's earliest deal and on the family contact
+(earliest across siblings). Students with no deal yet are retried after 3
+days; returning students are stamped but only first lessons within 60 days
+are audited as `first_lesson_stamped`. Workflow input
+`first_lesson_backfill_days` (+ dry_run preview) on email-deal-sync.
+
+**Why:** Roman 2026-09-10 "Let's work on the gap": the New Starts (Care
+Calls) view keyed off HubSpot's batched "date entered Post-Lesson", so the
+day-14 / day-45 care calls could be days off. The lesson date is the truth.
+
+**Files:** email/src/first_lesson.py, email/src/deal_sync.py (hook),
+email/config.yaml (first_lesson block), ops/hubspot-schema/properties.yml,
+.github/workflows/email-deal-sync.yml, email/state/first_lessons.json,
+email/tests/test_first_lesson.py (+9), registry.yml, docs/RETENTION-PROCESS.md.
+
+---
+
 ## 2026-09-10 — HubSpot: "Renewal Chase" and "New Starts (Care Calls)" deal views for Paola
 
 **What:** two shared saved deal views (owner Roman, Paola added), built in the
