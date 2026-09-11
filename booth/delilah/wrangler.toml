@@ -15,10 +15,12 @@ SMS_BODY = "Hi {name}! Here is your photo from Delilah's 5th birthday. Shana Tov
 STORYBOOK_SMS_BODY = "And here is your storybook version, {name}. Once upon a Shana Tova!"
 # Gemini image model for the storybook repaint (GEMINI_API_KEY is a secret)
 GEMINI_MODEL = "gemini-3.1-flash-image"
-# Google Drive mirror: every print also lands in this folder (owned by the
-# spotlight-watcher service account, shared with roman@wetutorathome.com).
-# https://drive.google.com/drive/folders/1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t
-DRIVE_FOLDER_ID = "1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t"
+# Google Drive mirror: every print lands at the top of the "Delilah's Bday"
+# SHARED DRIVE (Roman is manager, the spotlight-watcher service account is
+# content manager). Must be a shared drive: Google gives service accounts no
+# storage quota, so an SA-owned folder in My Drive rejects uploads (403).
+# https://drive.google.com/drive/folders/0AFzOAF0xZUy-Uk9PVA
+DRIVE_FOLDER_ID = "0AFzOAF0xZUy-Uk9PVA"
 
 [assets]
 directory = "./public"

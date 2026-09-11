@@ -42,18 +42,30 @@ Every print (real and storybook) is copied to one Google Drive folder the moment
 it is archived, named like `2026-09-11 19.05.12 Ari Cohen (storybook).jpg`
 (Los Angeles time, guest name, kind). Open it here:
 
-https://drive.google.com/drive/folders/1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t
+https://drive.google.com/drive/folders/0AFzOAF0xZUy-Uk9PVA
+
+That is the **"Delilah's Bday" Shared Drive** in the A+ Workspace (Roman:
+manager; spotlight-watcher service account: content manager). Files land at
+its top level.
 
 How: the Worker signs a service-account JWT (WebCrypto RS256) with the
 `GOOGLE_SA_JSON` secret (spotlight-watcher SA), caches the access token in KV
-for 50 minutes, and multipart-uploads into `DRIVE_FOLDER_ID`. The upload runs
-in `ctx.waitUntil`, after the response, so the iPad never waits on Drive.
-Marker keys `drive/<key>` in KV hold the Drive file id; `/photos` hides them.
+for 50 minutes, and multipart-uploads into `DRIVE_FOLDER_ID` with
+`supportsAllDrives=true`. The upload runs in `ctx.waitUntil`, after the
+response, so the iPad never waits on Drive. Marker keys `drive/<key>` in KV
+hold the Drive file id; `/photos` hides them.
 
-The folder is owned by the A+ service account and shared with
-roman@wetutorathome.com as editor. Roman confirmed 2026-09-10 that it stays an
-A+ folder (no move to a personal Drive). SA-owned files count against the SA
-quota, which is plenty for one party.
+**It must be a Shared Drive.** Google gives service accounts no storage quota,
+so an SA-owned folder in My Drive accepts the folder but rejects every upload
+with 403 "Service Accounts do not have storage quota". The SA also cannot
+create shared drives itself ("The authenticated user cannot create new shared
+drives"); a human creates the drive and adds the SA as Content manager. Shared
+drive writes are eventually consistent: a file can 404 on get/delete for a few
+seconds after create.
+
+Reuse for future booths: `A+ Events` (`0ABqrqCiZrGoVUk9PVA`) is the existing
+shared drive with the Sage Oak booth photos; create a folder inside it and set
+`DRIVE_FOLDER_ID` to that folder.
 
 Backfill anything archived before the mirror existed, or after a Drive outage:
 
