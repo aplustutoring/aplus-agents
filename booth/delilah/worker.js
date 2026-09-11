@@ -161,6 +161,17 @@ export default {
       results.text = { error: "Phone number not recognised" };
     }
 
+    // 3. Storybook, SERVER-SIDE. If the photo submit carried the un-framed
+    // capture (`raw`) and a text is going out, the Worker paints and texts it
+    // in the background. The iPad can reload, lose Wi-Fi or be put down; the
+    // painting still arrives (2026-09-11: Leo's painting was generated but the
+    // iPad never sent it on).
+    if (kind === "photo" && to && archiveUrl && body.raw && env.GEMINI_API_KEY && env.STORYBOOK !== "off") {
+      const job = paintAndText(env, url.origin, { raw: body.raw, name, to }).catch((e) => console.error("storybook job", name, String(e)));
+      if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+      results.storybook = { queued: true };
+    }
+
     return json({ ok: true, ...results }, 200, env);
   },
 };
@@ -207,6 +218,36 @@ async function paintStorybook(env, { mimeType, base64 }) {
   const img = parts.find((p) => p.inlineData?.data);
   if (!img) throw new Error(`Gemini returned no image (${out?.candidates?.[0]?.finishReason || "unknown"})`);
   return img.inlineData.data;
+}
+
+// Background storybook: two Gemini attempts, archive as kind "storybook",
+// Drive mirror, then the storybook text. Any final failure is recorded at /errors.
+async function paintAndText(env, origin, { raw, name, to }) {
+  const m = /^data:(image\/(?:jpeg|png));base64,(.+)$/s.exec(raw);
+  if (!m) throw new Error("raw is not a jpeg/png dataURL");
+  let image = null, lastErr = null;
+  for (let attempt = 1; attempt <= 2 && !image; attempt++) {
+    try { image = await paintStorybook(env, { mimeType: m[1], base64: m[2] }); }
+    catch (e) { lastErr = String(e); if (attempt === 1) await new Promise((r) => setTimeout(r, 1500)); }
+  }
+  if (!image) {
+    await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), stage: "storybook-server", name, error: lastErr }), { expirationTtl: 60 * 60 * 24 * 30 });
+    throw new Error(lastErr);
+  }
+  const bytes = Uint8Array.from(atob(image), (c) => c.charCodeAt(0));
+  const key = `${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID()}.jpg`;
+  const meta = { name: String(name).slice(0, 60), at: new Date().toISOString(), kind: "storybook" };
+  await env.PHOTOS.put(key, bytes, { metadata: meta });
+  if (env.DRIVE_FOLDER_ID && env.GOOGLE_SA_JSON) {
+    try { await mirrorToDrive(env, key, meta, bytes); } catch (e) { console.error("drive mirror", key, String(e)); }
+  }
+  try {
+    await sendPhotoText(env, { to, name, mediaUrl: `${origin}/photo/${key}`, kind: "storybook" });
+  } catch (e) {
+    await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), stage: "storybook-text", name, error: String(e) }), { expirationTtl: 60 * 60 * 24 * 30 });
+    throw e;
+  }
+  return key;
 }
 
 async function sendPhotoText(env, { to, name, mediaUrl, kind = "photo" }) {
