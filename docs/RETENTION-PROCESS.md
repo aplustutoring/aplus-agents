@@ -35,13 +35,17 @@ Paola added by name. HubSpot has no API for saved views (every
 | **Renewal Chase** | 72185740 | Every family that still owes a PO after a low-balance alert. A deal leaves on its own when the new PO lands (Renewed) or the deal stops (Not Renewing). | `[Agent] Retention stage` is any of Low Hours, Family Contacted, Teacher Contacted, Retention Risk. Columns: the five retention properties, PO number, student, teacher of record. |
 | **New Starts (Care Calls)** | 72186918 | Families whose tutoring started in the last 60 days, for the day-14 and day-45 calls. Sorted oldest first. All pipelines. | Charter: stage Post-Lesson or Invoice Submitted, date entered Post-Lesson under 60 days ago, deal name contains `1 - 26/27` (the season's first PO, so a family's 2nd to 5th pre-created deals do not repeat it). Gold Tutoring and In-Person: stage Post-Lesson, date entered Post-Lesson under 60 days ago. Columns add the three "date entered Post-Lesson" fields, Last Contacted, Next Activity Date. |
 
-**Known gaps of New Starts:** "date entered Post-Lesson" is when the deal was
-moved, not the Teachworks first-lesson date; a family's pre-created deals all
-move together and moves come in batches, so the date can lag the first lesson
-by days. Build step 2 (the lesson-one brief) stamps the real first-lesson date
-from Teachworks; switch the view to it then. Payment-link deals named "Charter
-Private Pay - ... via Payment Link" show up with no family name; the deal's
-contact carries it.
+**The first-lesson date (gap closed 2026-09-10, `email/src/first_lesson.py`):**
+"date entered Post-Lesson" is when a human moved the deal, in batches, with
+every pre-created sibling deal at once, so it lags the real first lesson by
+days. The first-lesson sweep (deal-sync cycle, every 6 hours) reads attended
+lessons from both Teachworks accounts and stamps each student's FIRST attended
+lesson ever as `[Agent] First lesson date` on the season's earliest deal and
+on the family contact (earliest across siblings). Once the backfill has run,
+New Starts filters on that one property (first lesson under 60 days ago, any
+pipeline) and the day-14 / day-45 calls count from the lesson, not the stage
+move. Payment-link deals named "Charter Private Pay - ... via Payment Link"
+still show no family name in the title; the deal's contact carries it.
 
 ## Low balance (step 1, built 2026-09-08 to 10, `email/src/low_balance.py`)
 

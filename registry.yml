@@ -705,6 +705,35 @@ agents:
       school year; repeated Teachworks alerts add a note, never a second text.
       Non-charter (Gold / private pay) alerts get a ticket only (phase 2).
       Alerts go to the charter_sales seat only (Danielle 2026-08-12).
+  - id: email-first-lesson
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: First-lesson stamp (Teachworks first attended lesson → [Agent] First lesson date on deal + family)
+    owner: roman@wetutorathome.com
+    status: active                     # BUILT 2026-09-10, retention step 2 foundation
+    trigger:
+      type: schedule
+      cron: "45 * * * *"               # rides the email-deal-sync cycle; self-gated to every 6 hours
+      workflow: .github/workflows/email-deal-sync.yml
+    entrypoint: email/src/first_lesson.py
+    reads:
+      - "Teachworks:lessons (both accounts; last 10 days in bulk, full history per new student)"
+      - "Teachworks:students + customers (student id, parent email)"
+      - "HubSpot:deals (the student's deals by agent-stamped first name)"
+      - "HubSpot:contacts (family by parent email)"
+      - email/state/first_lessons.json
+    writes:
+      - "HubSpot:deals (retention_first_lesson_date on the season's earliest deal)"
+      - "HubSpot:contacts (retention_first_lesson_date, earliest across siblings)"
+      - email/state/first_lessons.json
+      - email/state/audit_log.jsonl (first_lesson_stamped for first lessons within 60 days)
+    depends_on: [email/config.yaml (first_lesson block), email/src/teachworks_client.py, email/src/hubspot_client.py]
+    notes: >
+      The "New Starts (Care Calls)" deal view (72186918) and the day-14 / day-45
+      care calls key off this date instead of HubSpot's batched "date entered
+      Post-Lesson". Deterministic: no prompt. Backfill / preview via the
+      workflow input first_lesson_backfill_days (+ dry_run).
+
   - id: email-po-daily-report
     runtime: github-actions
     engine: Email / inbox ops

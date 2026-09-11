@@ -245,6 +245,15 @@ properties:
     # so humans in the portal can tell agent-maintained fields from intake
     # capture at a glance. Applies to new declarations; existing agent props
     # were relabeled in-portal the same day (sync never relabels).
+    - name: retention_first_lesson_date
+      label: "[Agent] First lesson date"
+      group: family
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/first_lesson.py. The family's
+        first attended lesson in Teachworks (earliest across siblings), the
+        day the retention journey starts (day-14 / day-45 care calls).
     - name: sms_opt_out
       label: "[Agent] SMS Opt Out"
       group: master
@@ -926,6 +935,15 @@ properties:
       description: >-
         AGENT PROPERTY — written by the retention agents (low_balance.py
         today). The most recent automated touch of any kind on this journey.
+    - name: retention_first_lesson_date
+      label: "[Agent] First lesson date"
+      group: retention
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/first_lesson.py. The student's
+        first ATTENDED lesson in Teachworks, ever; stamped on the season's
+        earliest deal. The "New Starts (Care Calls)" view filters on it.
 
     # ── Consolidation keepers (approved by Roman 2026-08-10) — see KEEPERS.md ──
     # Deal TOR fields (teacher_of_record_name/email, tor_first/last_name) retire
