@@ -753,9 +753,10 @@
     413888913,
     413900389,
     413918223,
-    413920013
+    413920013,
+    413937920
   ],
-  "last_run_utc": "2026-09-11T01:37:25.422707+00:00",
+  "last_run_utc": "2026-09-11T03:02:58.926602+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -1855,6 +1856,72 @@
         [
           "Retry outreach to Cindy Boyden to check on Ocean Grove EF meeting/PO status and move forward with scheduling a math tutor for her 3rd-grade daughter.",
           81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 413937920,
+      "number": "18183913189",
+      "time_pt": "7:53 PM",
+      "matched": true,
+      "contact_label": "Judy Goldzweig",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle called Judy Goldzweig to help her complete a form she was having trouble filling out. Janelle offered to resend the link by email or SMS and re-sent the email. Judy said she was busy watching something with her husband and would complete it tomorrow. Call ended cordially with no issues.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Judy tomorrow if she hasn't completed the form (likely credit card update / package agreement) to offer assistance.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Janelle (scheduling) called Judy Goldzweig to walk her through a form she couldn't locate/complete (likely the CC update or package agreement tied to Rebecca's Algebra 1 tutoring with Odd Eye). Judy was polite but busy watching something with her husband and said she'd do it tomorrow. Janelle re-sent the email link. No new scheduling changes \u2014 Rebecca's ongoing Wednesday 4:30 PM Algebra 1 plan still stands pending Judy's package decision. Tomorrow, check whether Judy submitted the form; if not, open with: 'Hi Judy, it's Janelle from A+ \u2014 just checking if you were able to pull up that form we talked about last night, or if you'd like me to walk you through it now or text you the link instead.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Judy is an active customer (Rebecca is in ongoing tutoring); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Janelle called Judy to help her complete the form (likely CC update / package agreement). Judy couldn't find the original email; Janelle resent it. Judy was watching something with her husband and asked to complete it tomorrow.",
+          "what_we_can_do_to_help": "Janelle to follow up with Judy tomorrow to confirm she completed the form, and offer to walk her through it or text the link if she still needs help.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Janelle called Judy to help her complete the form (likely CC update / package agreement). Judy couldn't find the original email; Janelle resent it. Judy was watching something with her husband and asked to complete it tomorrow."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle to follow up with Judy tomorrow to confirm she completed the form, and offer to walk her through it or text the link if she still needs help."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Judy tomorrow if she hasn't completed the form (likely credit card update / package agreement) to offer assistance.",
+          80047202,
           "follow_up"
         ]
       ],
