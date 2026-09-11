@@ -19,3 +19,13 @@ status: open
 ## Classification
 
 Request to route low-balance alerts exclusively to Paola and remove the reporter from that notification.
+
+## Resolution (2026-09-08)
+
+Misfiled against the call agent: the "low balance alerts" are the Teachworks
+Package Balance Alerts emails (and the Monday board / HubSpot flow they fed).
+The low-balance renewal agent built 2026-09-08 (`email/src/low_balance.py`)
+routes every case to the `charter_sales` seat only: ticket owner, follow-up
+task, and the single Slack DM (`low_balance.notify: [charter_sales]`). The
+sales seat is not copied. Applied in code; status stays open until the
+close-loop workflow confirms.

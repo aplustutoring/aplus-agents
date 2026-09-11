@@ -36,9 +36,19 @@ def _get(path: str, params: dict | None = None) -> dict:
     return r.json()
 
 
+# A /search POST is a READ. With this flag on, DRY_RUN lets searches through
+# so a replay can actually find the family, the deal and the teacher (the
+# 2026-09-09 low-balance replay reported a student with a live PO deal as
+# "no deal found" because the search was blanked). Off by default: the unit
+# suite and the scheduled dry runs rely on unmocked searches returning
+# nothing. Set by low_balance.replay_thread only.
+SEARCH_PASSTHROUGH = False
+
+
 def _write(method: str, path: str, payload: dict | None = None):
-    """POST/PATCH/PUT/DELETE — short-circuited in DRY_RUN."""
-    if DRY_RUN:
+    """POST/PATCH/PUT/DELETE — short-circuited in DRY_RUN (except /search reads
+    when SEARCH_PASSTHROUGH is on, see above)."""
+    if DRY_RUN and not (SEARCH_PASSTHROUGH and path.endswith("/search")):
         print(f"[DRY_RUN] hubspot {method} {path} {payload if payload else ''}")
         return {"id": "DRYRUN", "dry_run": True}
     r = requests.request(method, f"{HS_BASE}{path}", headers=_headers(), json=payload, timeout=30)

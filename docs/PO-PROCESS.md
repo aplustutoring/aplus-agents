@@ -117,7 +117,7 @@ invoice hour-tracking.
 | `should_this_deal_be_posted_to_a_slack_channel_` | true | **Always** — the HubSpot workflow behind the checkbox posts the deal to the per-pipeline Slack channel. |
 | `is_the_family_currently_being_tutored_by_us_` | Yes / No / unset | **Yes** = the student has a TW lesson booked **in the PO's service month** (month unparseable → any upcoming lesson). **No** = that month is unbooked — including student not in TW at all. **Unset** = couldn't verify (no parent email / TW error) → 🚩 gap DM, never guessed. Routes the SMS flow: **both values text**; "No" adds an internal staff alert + delay first. |
 | `schedule_preferences` | Wednesdays 3:30 PM with Sarah Lee | The student's live TW schedule — upcoming slots first, else the recent 30-day pattern. Feeds the SMS's `{{schedule_preference}}` token. Underivable → unset + 🚩 gap DM (the text would end in a blank). |
-| `student_first_name` | Isaac | From the PO (separate non-fatal stamp). |
+| `student_first_name` | Isaac | From the PO (separate non-fatal stamp). On a multi-student PO each deal is stamped from its OWN `pos[]` entry. ⚠️ Live HubSpot workflow 34950163 "Contact to Deal Properties" (2020) overwrites this AND `student_grade` on EVERY deal of an enrolled contact with the contact's single `student_last_name` / grade, so siblings all get one name (Melara, 2026-09-04). Replaced 2026-09-10 by the fill-only stamp in `email/src/student_stamp.py` (deal_sync); the workflow is retired by `ops/fleet-health/audit/retire_contact_to_deal_workflows.py`. |
 | `student_last_name_if_diff_from_parent` | Jaramillo | From the PO. |
 | `student_grade` | 3 | From the PO. |
 | `student_school` | iCC1 for iLEAD Hybrid Exploration | From the PO (full extracted name). |
@@ -206,6 +206,28 @@ service month ends: submit the TW invoice to the school's ops system, then
 **stamp `invoice_submitted_date` and move the deal to Invoice Submitted**.
 Deals missing that stamp are what the sweep counts as unbilled.
 
+## Stage 6b — Hours run low: the renewal chase (`email/src/low_balance.py`)
+
+Teachworks' Package Balance Alerts add-on emails admin@ (via info@) when a
+student's unused package hours reach the alert level ("...package balance for
+Taylor Rodriguez has reached the level of 4 hours and is currently at 4.0
+unused hours" + parent name/email/phone). The triage pass recognises that
+wording **before the classifier** and opens one renewal case per student +
+package per school year:
+
+This is step 1 of the retention journey; the full process, the copy rules and
+the HubSpot fields are in `docs/RETENTION-PROCESS.md`. In short:
+
+| When | Rule |
+|---|---|
+| Day 0 | Ticket `Low balance: <student> (<school>), N hours left`, owner **charter_sales**, linked to the family and the alert. **Email only** to the parent from the seat's name (tutor first name, one sentence from the last month of lesson notes, "please submit a new PO or ask your teacher of record to"). Deal `retention_stage` → Low Hours. Repeated alerts add a note, never a second message. |
+| Day 1, next business morning | No PO, no reply in the seat's inbox, ticket still open → **text** from the seat's line and the **teacher draft** in the seat's Gmail (never for Level Up Terri, pipeline 72281989). Deal → Family / Teacher Contacted. |
+| Day 7 | No PO → the ticket is the retention issue: "RETENTION RISK", priority HIGH, deal → Retention Risk, one DM to the seat and the visionary role. No task. |
+| Day 28 | Still nothing → closed as Lost (`no_response`), family to the re-engagement list. |
+| Any day | New PO deal (Stage 3) → ticket closed, deal → Renewed. Deal Stopped → Not Renewing. |
+| Private pay | One upgrade email (auto-renews at 2 hours); no text, no teacher. |
+| `armed: false` | The default until Roman flips it: ticket + note showing exactly what would be sent + DM; nothing reaches a family or teacher. |
+
 ## Stage 7 — Payment
 
 School pays → deal moves to closed/won manually. (No agent watches this stage
@@ -218,4 +240,5 @@ yet — open roadmap item.)
 | **Agent** | Everything in Stages 0–4; all property stamping above except the two Kath fields. |
 | **Kath** | Convert PO → TW invoice; fill `Invoice #`; confirm the due date; submit at month end + stamp `invoice_submitted_date`; confirm pending OAs in school portals; send parent-chase drafts from Gmail Drafts. |
 | **Schedulers (Janelle / Yolanda)** | Get lessons booked within the 72-hr Post-Lesson window; deals arrive in their queue + DM. |
+| **Paola (charter_sales)** | Owns every low-balance renewal case (Stage 6b): sends the teacher draft from Gmail Drafts, works the follow-up task, handles anything the case flags. |
 | **Roman** | Gets every 🚩 missing-info DM and the CC of Kath's pings; owns rule changes (this doc + Decision Log). |

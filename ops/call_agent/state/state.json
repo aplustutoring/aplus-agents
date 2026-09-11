@@ -750,9 +750,12 @@
     413883582,
     413884932,
     413889099,
-    413888913
+    413888913,
+    413900389,
+    413918223,
+    413920013
   ],
-  "last_run_utc": "2026-09-10T23:29:41.833298+00:00",
+  "last_run_utc": "2026-09-11T01:37:25.422707+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -1694,6 +1697,163 @@
         ],
         [
           "Monitor for Josh's payment on the two completed sessions (Aug 19, Aug 31) via the payment link already sent",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 413918223,
+      "number": "17738426987",
+      "time_pt": "6:22 PM",
+      "matched": true,
+      "contact_label": "Gino Calantoni",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound follow-up call to Gino Calantoni to confirm the free trial session for his daughter Elvina. Gino confirmed availability on Tuesdays or Thursdays after 6PM, and confirmed Elvina is in 2nd grade needing ELA support. Janelle said she would find the best match tutor and update Gino via SMS. Call was positive and productive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Find best match tutor for Elvina (2nd grade, ELA support) for free trial on Tuesday or Thursday after 6PM",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send SMS update to Gino with tutor match and confirmed trial schedule",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Gino (dad) was friendly and cooperative on Janelle's outbound follow-up. Confirmed free trial availability: Tuesdays OR Thursdays after 6PM for daughter Elvina, 2nd grade, ELA/writing support. Janelle promised to find a best-match tutor and text him with the update. He now expects an SMS with a proposed tutor and specific trial day/time. Open with: 'Hi Gino, following up from our call \u2014 we've matched Elvina with [tutor name]; can we lock in [Tues/Thurs] at [time] for the free trial?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in an open deal/active trial-scheduling stage; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Elvina",
+          "Kester Avenue Elementary School"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound follow-up] Janelle reached Gino and confirmed the free trial for Elvina (2nd grade, ELA support). Availability confirmed as Tuesdays or Thursdays after 6PM. Janelle will match a tutor and follow up via SMS.",
+          "what_we_can_do_to_help": "Match Elvina with a best-fit ELA/Writing tutor available Tuesdays or Thursdays after 6PM and confirm the free trial via SMS with Gino.",
+          "student_first_name": "Elvina",
+          "student_last_name": null,
+          "grade_level": "2",
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound follow-up] Janelle reached Gino and confirmed the free trial for Elvina (2nd grade, ELA support). Availability confirmed as Tuesdays or Thursdays after 6PM. Janelle will match a tutor and follow up via SMS."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Elvina with a best-fit ELA/Writing tutor available Tuesdays or Thursdays after 6PM and confirm the free trial via SMS with Gino."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Find best match tutor for Elvina (2nd grade, ELA support) for free trial on Tuesday or Thursday after 6PM",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Send SMS update to Gino with tutor match and confirmed trial schedule",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 413920013,
+      "number": "14082027768",
+      "time_pt": "6:30 PM",
+      "matched": true,
+      "contact_label": "Cindy Boyden",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call to Cindy Boyden regarding her 3rd-grade daughter's math tutoring through Ocean Grove charter. Reached her voicemail; no message content captured beyond her outgoing greeting. No new information obtained; need to try again to confirm PO status and next steps.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry outreach to Cindy Boyden to check on Ocean Grove EF meeting/PO status and move forward with scheduling a math tutor for her 3rd-grade daughter.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound call to Cindy Boyden (parent, Ocean Grove charter family) hit her voicemail \u2014 no message left in transcript. Prior call (2026-08-26) established her 3rd-grade daughter needs math tutoring (foundational add/sub facts, early multiplication, word-problem strategies); we quoted $60/45-min and $75/hour and recommended starting 1x/week on a monthly PO, with option to move to 2x/week 45-min. Cindy was meeting her Ocean Grove EF the next day to request a PO. Please try her again \u2014 suggested opener: 'Hi Cindy, it's ___ from A+ Tutoring following up on your daughter's math tutoring \u2014 just checking in to see how the meeting with your Ocean Grove EF went and whether the PO is in motion so we can get her matched with a math tutor.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Charter family (Ocean Grove instructional funds) \u2014 status remains QTL - Charter; call was voicemail so no change warranted.",
+        "student_or_school_names_mentioned": [
+          "Ocean Grove"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Reached Cindy's voicemail; no message content beyond her greeting. Still awaiting update on Ocean Grove EF meeting and PO request for 3rd-grade daughter's math tutoring.",
+          "what_we_can_do_to_help": "[outbound call] Retry Cindy in a day or two to confirm PO status; once PO is in hand, match with a math tutor and schedule first session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Reached Cindy's voicemail; no message content beyond her greeting. Still awaiting update on Ocean Grove EF meeting and PO request for 3rd-grade daughter's math tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Retry Cindy in a day or two to confirm PO status; once PO is in hand, match with a math tutor and schedule first session."
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry outreach to Cindy Boyden to check on Ocean Grove EF meeting/PO status and move forward with scheduling a math tutor for her 3rd-grade daughter.",
           81494333,
           "follow_up"
         ]

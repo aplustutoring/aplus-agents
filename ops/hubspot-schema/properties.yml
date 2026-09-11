@@ -21,6 +21,9 @@ groups:
       label: Tutor
     - name: review
       label: Review
+  deals:
+    - name: retention              # the retention journey lives on the deal (HubSpot is the list; Monday retired)
+      label: Retention journey
   contacts:
     - name: master
       label: Master
@@ -838,6 +841,92 @@ properties:
           label: "No"
 
   deals:
+    # ── Retention journey (Roman 2026-09-10): the list that ties low balance,
+    #    check-ins, NPS, referrals and spotlight together lives on the DEAL in
+    #    HubSpot. Written by email/src/low_balance.py today; the later journey
+    #    steps (lesson-one brief, day-14/45 calls, NPS, referral, spotlight)
+    #    write the same fields. Saved view "Renewal Chase" filters on
+    #    retention_stage. See docs/RETENTION-PROCESS.md.
+    - name: retention_stage
+      label: "[Agent] Retention stage"
+      group: retention
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/low_balance.py. Where the family
+        is in the retention journey. Low Hours = Teachworks alerted at 4 hours
+        or fewer and the day-0 email went; Family Contacted = day-1 text;
+        Teacher Contacted = day-1 teacher draft; Retention Risk = no PO after
+        7 days; Renewed = the next PO/package deal appeared; Not Renewing =
+        deal moved to Stopped; Lost = 21 days of silence after the risk flag.
+        Declared in aplus-agents/ops/hubspot-schema/properties.yml.
+      options:
+        - value: active
+          label: "Active"
+        - value: low_hours
+          label: "Low Hours"
+        - value: family_contacted
+          label: "Family Contacted"
+        - value: teacher_contacted
+          label: "Teacher Contacted"
+        - value: retention_risk
+          label: "Retention Risk"
+        - value: renewed
+          label: "Renewed"
+        - value: not_renewing
+          label: "Not Renewing"
+        - value: lost
+          label: "Lost"
+    - name: retention_lost_reason
+      label: "[Agent] Retention lost reason"
+      group: retention
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/low_balance.py; a human overrides
+        it when they know better. Why a family did not continue. The agent
+        writes no_response (silence) or stopped (deal moved to Stopped); Paola
+        picks the rest.
+      options:
+        - value: no_response
+          label: "No response"
+        - value: stopped
+          label: "Stopped (deal)"
+        - value: moved_on
+          label: "Moved on / no longer needs tutoring"
+        - value: cost
+          label: "Cost"
+        - value: schedule
+          label: "Schedule"
+        - value: tutor_fit
+          label: "Tutor fit"
+        - value: school_funding
+          label: "School stopped funding"
+    - name: retention_low_balance_alert_date
+      label: "[Agent] Low balance alert date"
+      group: retention
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/low_balance.py. The day
+        Teachworks' package-balance alert opened the renewal case (day 0).
+    - name: retention_last_notice_sent
+      label: "[Agent] Last renewal notice sent"
+      group: retention
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/low_balance.py. The last day the
+        family heard from us about renewing (day-0 email, day-1 text).
+    - name: retention_last_touch
+      label: "[Agent] Retention last touch"
+      group: retention
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by the retention agents (low_balance.py
+        today). The most recent automated touch of any kind on this journey.
+
     # ── Consolidation keepers (approved by Roman 2026-08-10) — see KEEPERS.md ──
     # Deal TOR fields (teacher_of_record_name/email, tor_first/last_name) retire
     # after the Teachworks low-balance alert replaces Monday.
@@ -911,6 +1000,30 @@ properties:
       group: dealinformation
       type: string
       fieldType: text
+      # po_inbox stamps it from the PO; student_stamp.py (deal_sync) fills it
+      # when blank from the deal name, else the Family contact. Never overwritten.
+    # Parent-name + contact-id copies, formerly HubSpot workflow 34950163
+    # "Contact to Deal Properties" (OFF 2026-09-10). Fill-only via
+    # email/src/student_stamp.py. Read by the Charter "Continued - Out of
+    # Pocket", Gold "Renewed" and Teacher Scholarship WF-04 workflows.
+    - name: first_name
+      label: "[Agent] Parent First Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync) from the deal's Family contact, fill-only. Replaced workflow 34950163 on 2026-09-10."
+    - name: last_name
+      label: "[Agent] Parent Last Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync) from the deal's Family contact, fill-only. Replaced workflow 34950163 on 2026-09-10."
+    - name: contact_record_id
+      label: "[Agent] Contact Record ID"
+      group: dealinformation
+      type: number
+      fieldType: number
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync): the deal's Family contact id, fill-only. Replaced workflow 34950163 on 2026-09-10. No known reader; kept for legacy reports."
     - name: student_last_name_if_diff_from_parent
       label: "[Agent] Student Last Name"
       group: scheduling_information
