@@ -116,17 +116,23 @@ def earliest_attended(lessons: list[dict]) -> str:
     return min(dates) if dates else ""
 
 
-def choose_deal(deals: list[dict], season_start: str, exclude_pipelines: set | None = None) -> dict | None:
-    """The student's earliest-created deal of the season: for charter the
-    '1 - YY/YY' PO deal (its siblings 2..5 are pre-created later), for private
-    pay the single purchase deal. None when the student has no deal this
-    season yet (the stamp waits; the family contact still gets it)."""
+def choose_deal(deals: list[dict], first_date: str, lookback_days: int = 60,
+                exclude_pipelines: set | None = None) -> dict | None:
+    """The deal the student started on: the earliest deal created within
+    `lookback_days` before the first lesson (or any time after it). For
+    charter that is the '1 - YY/YY' PO deal (its siblings 2..5 are
+    pre-created later), for private pay the purchase deal. A season-start
+    gate was wrong here: July private-pay starts had July deals (the
+    Savathasuks, Lozano, Weingold in the 2026-09-10 preview). None when the
+    student has no such deal yet (the stamp waits; the contact still gets it)."""
     ex = exclude_pipelines or set()
+    floor = (datetime.fromisoformat(first_date) - timedelta(days=lookback_days)).date().isoformat() \
+        if first_date else ""
     cands = []
     for d in deals:
         p = d.get("properties") or {}
         cd = (p.get("createdate") or "")[:10]
-        if not cd or cd < season_start or (p.get("pipeline") or "") in ex:
+        if not cd or cd < floor or (p.get("pipeline") or "") in ex:
             continue
         cands.append((cd, d))
     if not cands:
@@ -253,7 +259,7 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
             pass
     env_days = (os.environ.get("FIRST_LESSON_BACKFILL_DAYS") or "").strip()
     window = int(window_days or (env_days if env_days.isdigit() else 0) or fc.get("window_days", 10))
-    season_start = str(fc.get("season_start") or "2026-08-01")
+    lookback = int(fc.get("deal_lookback_days", 60))
     exclude = set((cfg().get("deal_sync") or {}).get("exclude_pipelines") or [])
     new_window_days = int(fc.get("new_start_days", 60))
     passthrough = getattr(hs, "SEARCH_PASSTHROUGH", None)
@@ -322,7 +328,7 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
                     deals = _student_deals(first, last)
                     if not deals and entry.get("contact_id"):
                         deals = _contact_deals(first, entry["contact_id"])
-                    deal = choose_deal(deals, season_start, exclude)
+                    deal = choose_deal(deals, first_date, lookback, exclude)
                     if deal:
                         dp = deal.get("properties") or {}
                         if (dp.get(PROP) or "")[:10] != first_date:

@@ -500,7 +500,7 @@ first_lesson:
   every_hours: 6
   window_days: 10                  # bulk lessons window per run; new students cost a history call
   new_start_days: 60               # first lesson within this = a "new start" (audit + summary line)
-  season_start: "2026-08-01"       # the season's earliest deal is the one that gets the stamp
+  deal_lookback_days: 60           # the stamp goes on the earliest deal created within this many days before the first lesson
   retry_days: 3                    # student with no deal yet: look again after this many days
 
 deal_sync:

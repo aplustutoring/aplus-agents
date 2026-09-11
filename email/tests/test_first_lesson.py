@@ -8,7 +8,7 @@ TODAY = dt.date(2026, 9, 10)
 
 def _cfg():
     return {"first_lesson": {"enabled": True, "every_hours": 6, "window_days": 10,
-                             "new_start_days": 60, "season_start": "2026-08-01", "retry_days": 3},
+                             "new_start_days": 60, "deal_lookback_days": 60, "retry_days": 3},
             "deal_sync": {"exclude_pipelines": ["971802"]}}
 
 
@@ -63,13 +63,17 @@ def test_last_comma_first_participant_resolves_and_stamps(monkeypatch):
     assert out["new_starts"] == ["Ariana Fiore (2026-09-01)"]
 
 
-def test_choose_deal_picks_the_seasons_earliest_and_skips_excluded_pipelines():
+def test_choose_deal_picks_the_deal_the_student_started_on():
     deals = [{"id": "5", "properties": {"createdate": "2026-09-04T00:00:00Z", "pipeline": "907748", "dealname": "x 5"}},
              {"id": "1", "properties": {"createdate": "2026-08-20T00:00:00Z", "pipeline": "907748", "dealname": "x 1"}},
              {"id": "old", "properties": {"createdate": "2025-09-01T00:00:00Z", "pipeline": "907748", "dealname": "x old"}},
-             {"id": "tutor", "properties": {"createdate": "2026-08-01T00:00:00Z", "pipeline": "971802", "dealname": "tutor"}}]
-    assert fl.choose_deal(deals, "2026-08-01", {"971802"})["id"] == "1"
-    assert fl.choose_deal([deals[2]], "2026-08-01") is None
+             {"id": "tutor", "properties": {"createdate": "2026-08-10T00:00:00Z", "pipeline": "971802", "dealname": "tutor"}}]
+    # first lesson 2026-09-01: the August PO deal, not the pre-created #5, never last season's, never New Tutor
+    assert fl.choose_deal(deals, "2026-09-01", 60, {"971802"})["id"] == "1"
+    # a July private-pay start with a July deal (the season gate used to drop these)
+    july = {"id": "j", "properties": {"createdate": "2026-07-10T00:00:00Z", "pipeline": "default", "dealname": "P - S"}}
+    assert fl.choose_deal([july], "2026-07-13", 60)["id"] == "j"
+    assert fl.choose_deal([deals[2]], "2026-09-01", 60) is None
 
 
 class Wire:
