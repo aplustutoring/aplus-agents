@@ -74,6 +74,13 @@ def test_choose_deal_picks_the_deal_the_student_started_on():
     july = {"id": "j", "properties": {"createdate": "2026-07-10T00:00:00Z", "pipeline": "default", "dealname": "P - S"}}
     assert fl.choose_deal([july], "2026-07-13", 60)["id"] == "j"
     assert fl.choose_deal([deals[2]], "2026-09-01", 60) is None
+    # a Free Trial deal loses to a real tutoring deal in the window, but stands alone
+    trial = {"id": "t", "properties": {"createdate": "2026-08-10T00:00:00Z", "pipeline": "19120821", "dealname": "A - E"}}
+    assert fl.choose_deal([trial, deals[1]], "2026-09-01", 60, None, {"19120821"})["id"] == "1"
+    assert fl.choose_deal([trial], "2026-09-01", 60, None, {"19120821"})["id"] == "t"
+    # scholarship tracking deals are never the one
+    schol = {"id": "s", "properties": {"createdate": "2026-08-05T00:00:00Z", "pipeline": "918901819", "dealname": "M - Teacher Scholarship"}}
+    assert fl.choose_deal([schol, deals[1]], "2026-09-01", 60, {"918901819"})["id"] == "1"
 
 
 class Wire:

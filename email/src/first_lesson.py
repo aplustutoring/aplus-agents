@@ -117,7 +117,7 @@ def earliest_attended(lessons: list[dict]) -> str:
 
 
 def choose_deal(deals: list[dict], first_date: str, lookback_days: int = 60,
-                exclude_pipelines: set | None = None) -> dict | None:
+                exclude_pipelines: set | None = None, trial_pipelines: set | None = None) -> dict | None:
     """The deal the student started on: the earliest deal created within
     `lookback_days` before the first lesson (or any time after it). For
     charter that is the '1 - YY/YY' PO deal (its siblings 2..5 are
@@ -138,7 +138,11 @@ def choose_deal(deals: list[dict], first_date: str, lookback_days: int = 60,
     if not cands:
         return None
     cands.sort(key=lambda t: t[0])
-    return cands[0][1]
+    # a Free Trial deal is the family's first deal by construction; when a
+    # real tutoring deal exists in the window it is the one Paola works from
+    # (Elias Van Reuter, 2026-09-11: trial deal stamped, charter deal not)
+    real = [t for t in cands if (t[1].get("properties") or {}).get("pipeline") not in (trial_pipelines or set())]
+    return (real or cands)[0][1]
 
 
 def split_name(name: str) -> tuple[str, str]:
@@ -260,7 +264,8 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
     env_days = (os.environ.get("FIRST_LESSON_BACKFILL_DAYS") or "").strip()
     window = int(window_days or (env_days if env_days.isdigit() else 0) or fc.get("window_days", 10))
     lookback = int(fc.get("deal_lookback_days", 60))
-    exclude = set((cfg().get("deal_sync") or {}).get("exclude_pipelines") or [])
+    trial = set(fc.get("trial_pipelines") or [])
+    exclude = set(fc.get("exclude_pipelines") or []) | set((cfg().get("deal_sync") or {}).get("exclude_pipelines") or [])
     new_window_days = int(fc.get("new_start_days", 60))
     passthrough = getattr(hs, "SEARCH_PASSTHROUGH", None)
     if DRY_RUN:
@@ -328,7 +333,7 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
                     deals = _student_deals(first, last)
                     if not deals and entry.get("contact_id"):
                         deals = _contact_deals(first, entry["contact_id"])
-                    deal = choose_deal(deals, first_date, lookback, exclude)
+                    deal = choose_deal(deals, first_date, lookback, exclude, trial)
                     if deal:
                         dp = deal.get("properties") or {}
                         if (dp.get(PROP) or "")[:10] != first_date:
