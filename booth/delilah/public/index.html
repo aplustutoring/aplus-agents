@@ -107,10 +107,13 @@
   #print-area{display:none;}
   @media print{
     body>*{display:none !important;}
-    #print-area{display:block !important;position:static;}
-    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
-    @page{margin:0;}
-    html,body{margin:0 !important;padding:0 !important;}
+    /* The card is exactly 2:3. Pin the page to 4x6 and fill it, so Safari does
+       not size the image to the screen viewport (which cropped the bottom band
+       on the Selphy, 2026-09-11). */
+    @page{size:4in 6in;margin:0;}
+    html,body{margin:0 !important;padding:0 !important;height:100% !important;overflow:visible !important;}
+    #print-area{display:block !important;position:static;width:100%;height:100%;}
+    #print-area img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;}
   }
   @media (prefers-reduced-motion:reduce){.attract-cta,.count-pop,.spinner{animation:none;}}
 </style>
@@ -448,6 +451,9 @@ const CONFIG = {
     });
   }
 
+  function logError(stage, name, error){
+    try{ fetch(CONFIG.WORKER_URL+"/log",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ stage, name, error }), keepalive:true }).catch(()=>{}); }catch(e){}
+  }
   async function postSubmit(payload){
     const res=await fetch(CONFIG.WORKER_URL+"/submit",{
       method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
@@ -465,11 +471,16 @@ const CONFIG = {
 
     // The real photo. Print first if asked (no network), then archive, and text if asked.
     if(wantPrint && CONFIG.AUTO_PRINT) await printPhoto(photo);
-    let texted=false, storyTexted=false, storyOk=false;
-    try{
-      const out=await postSubmit({ name, phone: wantText ? phone : "", photo, kind:"photo" });
-      texted=!!(out && out.text && out.text.sent);
-    }catch(e){}
+    let texted=false, storyTexted=false, storyOk=false, photoOk=false;
+    // Two attempts, and every failure is reported to the Worker so it shows at /errors.
+    for(let attempt=1; attempt<=2 && !photoOk; attempt++){
+      try{
+        const out=await postSubmit({ name, phone: wantText ? phone : "", photo, kind:"photo" });
+        if(out && out.ok && out.archive && out.archive.url){ photoOk=true; texted=!!(out.text && out.text.sent); if(wantText && phone && !texted) logError("photo-text", name, JSON.stringify(out.text||{})); }
+        else logError("photo-submit", name, "attempt "+attempt+": "+JSON.stringify(out||null).slice(0,200));
+      }catch(e){ logError("photo-submit", name, "attempt "+attempt+": "+String(e)); }
+      if(!photoOk && attempt===1) await new Promise(r=>setTimeout(r,1500));
+    }
 
     // The storybook painting travels by text only, so it is painted only when a text is going out.
     if(CONFIG.STORYBOOK && raw && wantText && phone){
