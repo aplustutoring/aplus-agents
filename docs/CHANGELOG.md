@@ -1346,6 +1346,7 @@ at the Upper South regional at iLEAD HQ on 2026-09-17.
 
 **Files:** `booth/aplus-2026/{schools.yml,schools-dropdown.json,README.md}`, `docs/CHANGELOG.md`.
 
+<<<<<<< HEAD
 ## 2026-09-12 — PO duplicate guard fails closed; pending-approval follow-up removed
 
 **Why.** Roman: "Let's get rid of the approval checks, we will work on Kath
@@ -1420,6 +1421,8 @@ with this branch stashed.
 `docs/PO-PROCESS.md`, `knowledge/journey/04-qualified-to-deal.md`.
 
 ---
+=======
+>>>>>>> b8da8c50 (booth/aplus-2026: APLUS+ conference school list with staff email domains)
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
