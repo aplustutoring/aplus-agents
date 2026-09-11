@@ -986,6 +986,26 @@ agents:
       Re-run after registering a new agent so source_agent picks up the new
       option. CHECK_ONLY smoke mode.
 
+  # Archive (soft-delete) CRM objects by id — the cleanup tool for duplicates
+  # the fleet itself created (2026-09-10: stale-checkout bug, 16 dupes). Prints
+  # every object before archiving; dry_run defaults true; recycle bin 90 days.
+  - id: hubspot-archive
+    runtime: github-actions
+    engine: Fleet health
+    name: HubSpot archive objects by id (manual)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/hubspot-archive.yml
+    entrypoint: ops/hubspot-schema/archive_objects.py
+    reads:
+      - HubSpot                             # the listed objects, for the audit line
+    writes:
+      - HubSpot                             # archives the listed objects only
+    depends_on: [HUBSPOT_PRIVATE_APP_TOKEN]
+
   # ───────────────────────── Events (booth capture) ────────────────────
   # Registered 2026-08-20, right after PR #66 merged — the registry_check
   # discovery heuristic flagged booth/wrangler.toml within a minute of the
