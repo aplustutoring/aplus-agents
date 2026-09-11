@@ -409,7 +409,10 @@ def run() -> None:
             audit.append({"message_id": f"error:deal:{d.get('id')}", "source": "deal_sync",
                           "deal_id": str(d.get("id")), "action_taken": "error",
                           "error": str(e)[:200]})
-            _alert_repeated_error(d, str(e))
+            try:
+                _alert_repeated_error(d, str(e))
+            except Exception as e2:  # noqa: BLE001 - the alert must never kill the run
+                print(f"  \u26a0\ufe0f  error-alert failed (non-fatal): {e2}")
             cd = d["properties"].get("createdate")
             if cd:
                 ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)

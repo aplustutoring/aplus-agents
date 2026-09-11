@@ -802,7 +802,7 @@ _NOREPLY_RE = re.compile(r"no-?reply|do-?not-?reply|notifications?@|@mailer\.", 
 # Portal / vendor-desk mailboxes: a real inbox, but not a teacher. Never a TOR
 # contact (Visions "vendorsupport@viedu.org" was attached as Justin LaRue's
 # Teacher of Record on 2026-09-10 and linked to the family as their TOR).
-_ROBOT_TOR_RE = re.compile(r"vendor-?support|vendor-?desk|procurify|launchpad|"
+_ROBOT_TOR_RE = re.compile(r"vendor-?support|vendor-?desk|procurify|launchpad\.viedu|"
                            r"^(orders?|purchasing|procurement|billing|invoices?)@", re.I)
 
 
