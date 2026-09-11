@@ -87,6 +87,11 @@ invoice hour-tracking.
 
 ## Stage 3 — The deal and every property on it
 
+> Journey hand-over point: once this deal exists the family belongs to
+> scheduling and is texted from the support line, never the lead line. See
+> `knowledge/journey/05-deal-open-pre-lesson.md` and the pre-send checklist
+> `knowledge/journey/00-pre-send-checklist.md`.
+
 | Property | Example / value | How it's decided |
 |---|---|---|
 | `dealname` | Jessica Jaramillo - Isaac Jaramillo - iLead 1 - 26/27 | `Parent - Student - School N - YY/YY`. Shorthand from `po_inbox.school_short_names` (unmapped → extracted name + ticket flag). N = the student's deal count at that school this school year + 1, counted from an **exact search on the student name properties** (never name tokens — a limit-10 unsorted token search made every 10+-deal student restart at N=1: the McGraw/Saenz duplicate names, fixed 2026-08-26) and kept contiguous across all emails of a run by a run-scoped counter (the search index lags same-run creations). School year from the PO's service month (Aug–Dec = first year). Parent unresolved → `NEEDS PARENT - …`. |
@@ -100,7 +105,7 @@ invoice hour-tracking.
 | `should_this_deal_be_posted_to_a_slack_channel_` | true | **Always** — the HubSpot workflow behind the checkbox posts the deal to the per-pipeline Slack channel. |
 | `is_the_family_currently_being_tutored_by_us_` | Yes / No / unset | **Yes** = the student has a TW lesson booked **in the PO's service month** (month unparseable → any upcoming lesson). **No** = that month is unbooked — including student not in TW at all. **Unset** = couldn't verify (no parent email / TW error) → 🚩 gap DM, never guessed. Routes the SMS flow: **both values text**; "No" adds an internal staff alert + delay first. |
 | `schedule_preferences` | Wednesdays 3:30 PM with Sarah Lee | The student's live TW schedule — upcoming slots first, else the recent 30-day pattern. Feeds the SMS's `{{schedule_preference}}` token. Underivable → unset + 🚩 gap DM (the text would end in a blank). |
-| `student_first_name` | Isaac | From the PO (separate non-fatal stamp). |
+| `student_first_name` | Isaac | From the PO (separate non-fatal stamp). On a multi-student PO each deal is stamped from its OWN `pos[]` entry. ⚠️ Live HubSpot workflow 34950163 "Contact to Deal Properties" (2020) overwrites this AND `student_grade` on EVERY deal of an enrolled contact with the contact's single `student_last_name` / grade, so siblings all get one name (Melara, 2026-09-04). Replaced 2026-09-10 by the fill-only stamp in `email/src/student_stamp.py` (deal_sync); the workflow is retired by `ops/fleet-health/audit/retire_contact_to_deal_workflows.py`. |
 | `student_last_name_if_diff_from_parent` | Jaramillo | From the PO. |
 | `student_grade` | 3 | From the PO. |
 | `student_school` | iCC1 for iLEAD Hybrid Exploration | From the PO (full extracted name). |

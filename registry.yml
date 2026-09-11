@@ -384,7 +384,7 @@ agents:
     engine: Email ops
     name: Deal-sync webhook relay
     owner: roman@wetutorathome.com
-    status: pending-deploy   # active after Roman's one-time setup (ops/deal-relay/README.md)
+    status: active   # round-trip verified 2026-09-09 (doorbell wf 1881460299, 96 s)
     trigger:
       type: event
       events: [http_post]

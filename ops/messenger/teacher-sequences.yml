@@ -12,15 +12,26 @@ armed: true
 start_date: "2026-09-08"
 timezone: America/Los_Angeles
 daily_cap: 50                     # per sequence per run
+recent_touch_days: 7              # skip a teacher any seat contacted (logged email, call, or meeting) in the last N days
 
 sender:
   user_id: "46811240"             # Danielle's HubSpot user id (sequences are per-user)
   # The API must name a CONNECTED inbox of that user. Candidates are tried in
   # order on the first live enrollment; the one that works is remembered in
   # state (sender_email_confirmed) and used from then on.
+  #
+  # success@wetutorathome.com was removed 2026-09-08. It is not a connected
+  # inbox of user 46811240, and HubSpot said so on every attempt: "User
+  # 46811240 for Portal 6312752 has no connected inboxes for specified user
+  # email". A fallback that can never succeed is not resilience. It cost two
+  # API calls per failing contact and, worse, turned the real error into the
+  # generic "no sender candidate accepted", which is why day one's dead
+  # recipient addresses were first read as a sender fault.
+  #
+  # If a real fallback is wanted, connect that inbox to Danielle's HubSpot user
+  # first, then add it back. Until then a danielle@ failure should be loud.
   email_candidates:
     - danielle@wetutorathome.com
-    - success@wetutorathome.com
 
 notify:
   slack_user_ids:
@@ -30,6 +41,7 @@ notify:
 # Eligibility, checked at enroll time (lists were built 2026-09-04 and can drift):
 #   has email; not opted out; not hard-bounced; generic_inbox != Yes;
 #   campaign_replied != Yes; not currently enrolled in ANY sequence;
+#   not contacted by any seat in the last recent_touch_days (HubSpot Last Contacted);
 #   not already enrolled by this script (state).
 sequences:
   - key: worked_with_us

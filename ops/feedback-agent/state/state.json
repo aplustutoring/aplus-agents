@@ -67,7 +67,9 @@
     "Ev0BUCK81RL4",
     "Ev0BUATMA0BT",
     "Ev0BUKU5CFAM",
-    "Ev0BUNQG6ZT6"
+    "Ev0BUNQG6ZT6",
+    "Ev0C1357KNPN",
+    "Ev0C1682FLQ4"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -334,7 +336,7 @@
       "correction_path": "corrections/content-build/2026-08-24-content-build-post-fails-error.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/109",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787594850024069"
     },
     {
@@ -409,7 +411,7 @@
       "correction_path": "corrections/email-po-inbox/2026-08-28-po-received-no-hubspot-deal.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/140",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1787954945643559"
     },
     {
@@ -454,7 +456,7 @@
       "correction_path": "corrections/content-build/2026-08-31-weekly-caption-link-phrasing.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/147",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788190269210389"
     },
     {
@@ -484,12 +486,27 @@
       "correction_path": "corrections/content-build/2026-09-02-content-build-publish-error.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/158",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1788370176851429"
+    },
+    {
+      "date": "2026-09-10",
+      "ts": "1789060685.425199",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Danielle",
+      "reporter_slack_id": "U05NMABF3B2",
+      "agent": "content-build",
+      "type": "BROKEN",
+      "severity": "normal",
+      "correction_path": "corrections/content-build/2026-09-10-hubspot-publish-refresh-error.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/205",
+      "ticket": "drafted",
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1789060685425199"
     }
   ],
   "graduation": {
-    "clean_merges": 15
+    "clean_merges": 19
   },
   "pending_proposals": {
     "1786554388.265099": {

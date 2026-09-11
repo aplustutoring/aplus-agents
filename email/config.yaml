@@ -53,6 +53,7 @@ ticket_fields:
     tutor_document: "Tutor Issue"
     recruitment: "GENERAL_INQUIRY"
     charter_newsletter: "GENERAL_INQUIRY"
+    review_received: "Review"      # option added to hs_ticket_category 2026-08-26
     unknown: "GENERAL_INQUIRY"
   # cancellation's category depends on its TYPE (drives the cancellation-rate KPI).
   cancellation_category_map:
@@ -370,6 +371,42 @@ staff:
 # ── Accountability chart (EOS seats) ─────────────────────────────
 # Functional config references ROLES; this block maps seat → person.
 # Team change = edit here, nothing else. (Roman, 2026-08-14)
+# ── Pre-send gate (knowledge/journey/00-pre-send-checklist.md in code) ──
+# One gate for every outbound to a family, teacher, or tutor (Roman
+# 2026-09-09, after the Gonzalez double-thread). email/src/presend.py.
+# enabled false = SHADOW: engines log the decision as presend_shadow and keep
+# their old behaviour. Flip after a week of clean audit.
+presend:
+  enabled: false
+  season_start: "2026-08-15"        # a deal created on/after this = scheduling owns the family
+  thread_window_days: 14            # "active thread" lookback on JustCall + inbox
+  min_gap_hours: 20                 # agent_last_outbound_at inside this = hold (unless in-thread)
+  max_sms_per_day: 2                # JustCall outbound count across ALL lines
+  max_few: 25                       # one_to_few refuses above this; == ops/messenger min_bulk
+  lines:                            # must match ops/messenger/config.yml sms.numbers
+    charter_sales: "+18185736644"   # Paola's line: families with NO deal (leads), teacher about one student
+    sales: "+18185736644"
+    support: "+18188691627"         # schedulers' line: families WITH a deal, SMS-only tutors
+    conference: "+18188506284"
+  line_owner:                       # who owns an active thread on that line
+    charter_sales: charter_sales
+    sales: sales
+    support: scheduler_split        # by student last name (scheduler_split below)
+    conference: sales
+  standing_go: [po_welcome, low_balance_family]   # tor_confirm, tor_email_ask, tutor_ask join
+                                                  # only when their journey stage is REVIEWED
+  stop_line_exempt: [po_welcome, po_push, tor_confirm, tor_email_ask, tutor_ask]  # in-conversation
+  purposes:
+    po_welcome:    { audience: scheduling, line: support }
+    low_balance_family: { audience: scheduling, line: support }
+    po_push:       { audience: lead,       line: charter_sales }
+    tor_confirm:   { audience: lead,       line: charter_sales }
+    tor_email_ask: { audience: lead,       line: charter_sales }
+    lead_relay:    { audience: lead,       line: charter_sales }   # per-go, always
+    tutor_ask:     { audience: tutor,      line: support }
+  approvers: [visionary, scheduling_lead]
+  proposal_ttl_hours: 24
+
 roles:
   visionary: roman          # Director / owner
   operations: emily         # ops; last-resort escalation
@@ -379,6 +416,7 @@ roles:
   charter_admin: kath       # PO → invoice, tickets, billing
   sales: danielle           # partnerships / school partners / biz dev
   charter_sales: paola      # family follow-up / sales support
+  quality: paola            # reviews / service quality (Roman 2026-08-26)
 
 # ── Routing table (LOCKED) ───────────────────────────────────────
 # owner: a staff key above, or the special token "assigned_scheduler" /
@@ -402,6 +440,7 @@ routing:
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
   recruitment:         { owner: scheduling_lead,             sla_hours: 1.5, draft: true,  priority: low }
   charter_newsletter:  { owner: sales,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
+  review_received:     { owner: quality,        sla_hours: 8,   draft: false, priority: normal }  # respond ON the platform, not by email
   junk:                { owner: null,              sla_hours: null, draft: false, auto_archive: true }
   unknown:             { owner: scheduling_lead,             sla_hours: 4,   draft: false, review: true }  # Mandy owns the Stuck queue
 
@@ -496,6 +535,57 @@ deal_sync:
     overdue_grace_days: 1       # "at least one day past the invoice due date" (Roman 2026-09-02)
     escalate_after_days: 3
     escalate_to: visionary
+
+# ── New-deal owner assignment (Roman 2026-09-09) ────────────────
+# Replaces the Zapier zap (HubSpot app 25200) that re-owned every new deal to
+# a scheduler by family last name and died silently 2026-09-04 23:45 UTC.
+# Every new deal in these pipelines → owner = scheduler_split by the Family
+# contact's last name (deal-name parent as fallback). Runs from deal_sync, so
+# the deal-relay webhook lands it ~1 min after creation. Already the right
+# scheduler → no write. One decision per deal (audit owner:{id}).
+# Turn the zap OFF once this has re-owned a real deal (double-writes are the
+# same value, but two owners of one rule is how the last one died unnoticed).
+owner_assign:
+  enabled: true
+  pipelines:
+    - "19120821"   # Free Trial
+    - "default"    # Gold Tutoring
+    - "16547180"   # Gold Tutoring - Renewal
+    - "3067397"    # In-Person
+    - "16858643"   # In-Person - Renewal
+
+# ── Fill-only student/parent stamp (Roman 2026-09-10) ──
+# Replaces HubSpot workflow 34950163 "Contact to Deal Properties" (OFF
+# 2026-09-10), which copied the contact's ONE student onto EVERY associated
+# deal and overwrote po_inbox's per-deal stamps (Melara siblings). Runs from
+# deal_sync for each NEW deal in these pipelines; never overwrites a value.
+student_stamp:
+  enabled: true
+  pipelines:
+    - "907748"     # Charter Schools - Traditional Vendor Funds
+    - "default"    # Gold Tutoring
+    - "19120821"   # Free Trial
+    - "3067397"    # In-Person
+    - "16547180"   # Gold Tutoring - Renewal
+    - "16858643"   # In-Person - Renewal
+    - "72281989"   # Charter Terri (iLead Level Up)
+    - "88841552"   # Charter Amy
+    - "5119061"    # IEM Inc
+    - "30837103"   # Summer Boost - In-Person
+    - "30830920"   # Summer Boost - Online
+    - "1066195"    # CFGC
+    - "21277473"   # Subscription
+
+# ── Relay watchdog (Roman 2026-09-09: "is that really the best fix?") ──
+# deal created / stage changed → "[Agent] Doorbell" workflow (1881460299,
+# ops/deal-relay/doorbell/) → deal-sync-relay → workflow_dispatch → deal_sync
+# ~1 min later. If a CRON run ever finds a new deal older than max_lag_minutes,
+# no event-driven run handled it → one DM to `notify`, once per deal
+# (audit relay-miss:{id}). The zap died silently for 5 days; this cannot.
+relay_watchdog:
+  enabled: true
+  max_lag_minutes: 10
+  notify: visionary
 
 # Returning-family deal creation: when a `scheduling` email is a returning customer
 # booking new service (existing-customer signals + high confidence), create a NEW deal
@@ -705,6 +795,16 @@ internal:
   # The visionary seat does not own support tickets (Roman 2026-08-26) — anything
   # that would have landed on him goes to his second, the operations seat.
   fallback: operations
+
+# Review-platform notification senders (review_received category). Never
+# create a HubSpot contact for these no-reply addresses (the CallRail/
+# JustCall junk-contact lesson); the ticket is tied to the FAMILY the
+# classifier's reviewer_name resolves to — or left unassociated (flagged in
+# the ticket body) when the match isn't exact and unique.
+review_platforms:
+  sender_domains:
+    - google.com
+    - yelp.com
 
 # Confidence + autonomy thresholds (LOCKED).
 thresholds:

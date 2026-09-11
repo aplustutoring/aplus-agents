@@ -19,6 +19,8 @@ groups:
       label: Fleet automation
     - name: tutor
       label: Tutor
+    - name: review
+      label: Review
   deals:
     - name: retention              # the retention journey lives on the deal (HubSpot is the list; Monday retired)
       label: Retention journey
@@ -195,6 +197,48 @@ properties:
         the weekly Teachworks detectors, rolling-30d anchor date for the
         report-driven types.
 
+    # ── Review tickets (email engine, Roman approved 2026-08-26). A ticket
+    # tied to the FAMILY contact when a review-notification email arrives
+    # (Google/Yelp), so reviews are trackable on the board.
+    - name: review_platform
+      label: "[Agent] Review platform"
+      group: review
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (triage,
+        review_received category). Which platform the review landed on.
+      options:
+        - value: google
+          label: "Google"
+        - value: yelp
+          label: "Yelp"
+        - value: other
+          label: "Other"
+
+    - name: review_rating
+      label: "[Agent] Review rating"
+      group: review
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (triage,
+        review_received category). Star rating (1-5) when the notification
+        states it; unset when unknown.
+
+    - name: review_reviewer_name
+      label: "[Agent] Review reviewer name"
+      group: review
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/main.py (triage,
+        review_received category). Reviewer display name as the platform
+        shows it (may be partial, e.g. "Maria A."). The family association
+        is only made on an exact unique contact match; this field preserves
+        the raw name either way.
+
+
   contacts:
     # ── LABEL CONVENTION (Roman 2026-08-14): every property an AGENT writes
     # carries the "[Agent] " label prefix + a description naming the writer,
@@ -335,6 +379,48 @@ properties:
           label: "Yes"
         - value: "false"
           label: "No"
+    - name: agent_last_outbound_at
+      label: "[Agent] Last Outbound At"
+      group: master
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/presend.py (record_send) after
+        every agent-sent text or email to this contact, on any line. The
+        pre-send gate reads it to hold a second touch inside min_gap_hours
+        unless the contact wrote first. Persona-agnostic, hence master.
+        Roman 2026-09-09, after the Gonzalez double-thread.
+    - name: agent_last_outbound_seat
+      label: "[Agent] Last Outbound Seat"
+      group: master
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/presend.py (record_send). The
+        line or seat the last agent outbound went from, so a human can see at
+        a glance which side of the house last spoke to this contact.
+      options:
+        - value: charter_sales
+          label: "charter_sales line (Paola)"
+        - value: support
+          label: "support line (schedulers)"
+        - value: sales
+          label: "sales line"
+        - value: conference
+          label: "main line"
+        - value: email
+          label: "email"
+    - name: agent_last_inbound_at
+      label: "[Agent] Last Inbound At"
+      group: master
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/presend.py (stamp_last_inbound)
+        when the fleet observes the contact writing to us: an INCOMING inbox
+        message (stamped by email/src/main.py) or an inbound text seen by the
+        gate. Exists because hs_email_last_reply_date is never set by inbox
+        replies; lists and workflows can use this one.
     - name: teacher_of_record_name
       label: "Teacher of Record Name"
       group: family
@@ -914,6 +1000,30 @@ properties:
       group: dealinformation
       type: string
       fieldType: text
+      # po_inbox stamps it from the PO; student_stamp.py (deal_sync) fills it
+      # when blank from the deal name, else the Family contact. Never overwritten.
+    # Parent-name + contact-id copies, formerly HubSpot workflow 34950163
+    # "Contact to Deal Properties" (OFF 2026-09-10). Fill-only via
+    # email/src/student_stamp.py. Read by the Charter "Continued - Out of
+    # Pocket", Gold "Renewed" and Teacher Scholarship WF-04 workflows.
+    - name: first_name
+      label: "[Agent] Parent First Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync) from the deal's Family contact, fill-only. Replaced workflow 34950163 on 2026-09-10."
+    - name: last_name
+      label: "[Agent] Parent Last Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync) from the deal's Family contact, fill-only. Replaced workflow 34950163 on 2026-09-10."
+    - name: contact_record_id
+      label: "[Agent] Contact Record ID"
+      group: dealinformation
+      type: number
+      fieldType: number
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync): the deal's Family contact id, fill-only. Replaced workflow 34950163 on 2026-09-10. No known reader; kept for legacy reports."
     - name: student_last_name_if_diff_from_parent
       label: "[Agent] Student Last Name"
       group: scheduling_information

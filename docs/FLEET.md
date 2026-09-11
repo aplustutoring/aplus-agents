@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**48 registered agents** — 33 active · 11 manual · 3 deprecated · across 12 engines.
+**48 registered agents** — 34 active · 11 manual · 3 deprecated · across 12 engines.
 
 ## What this is
 
@@ -46,7 +46,7 @@ outranks those two. HubSpot is where humans act.
 | Fleet health | 6 | 5 |
 | Charter analysis | 7 | 1 |
 | Events | 2 | 2 |
-| Email ops | 1 | 0 |
+| Email ops | 1 | 1 |
 | Tutor issues | 1 | 1 |
 
 ## Autonomy — what acts without asking
@@ -202,7 +202,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
-| **deal-sync-relay**<br>Deal-sync webhook relay | event<br>*cloudflare-worker* | pending-deploy | — | GitHub Actions API: workflow_dispatch on email-deal-sync.yml (defaults) |
+| **deal-sync-relay**<br>Deal-sync webhook relay | event<br>*cloudflare-worker* | active | — | GitHub Actions API: workflow_dispatch on email-deal-sync.yml (defaults) |
 
 ### Tutor issues
 

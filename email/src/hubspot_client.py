@@ -269,12 +269,14 @@ def get_contact_deals(contact_id: str) -> list[dict]:
     out = []
     for did in ids[:30]:
         try:
-            d = _get(f"/crm/v3/objects/deals/{did}", {"properties": "dealname,pipeline,dealstage"})
+            d = _get(f"/crm/v3/objects/deals/{did}",
+                     {"properties": "dealname,pipeline,dealstage,createdate"})
         except requests.HTTPError:
             continue
         p = d.get("properties") or {}
         out.append({"id": did, "name": p.get("dealname") or "",
-                    "pipeline": p.get("pipeline"), "stage": p.get("dealstage")})
+                    "pipeline": p.get("pipeline"), "stage": p.get("dealstage"),
+                    "createdate": p.get("createdate") or ""})
     return out
 
 
@@ -461,6 +463,23 @@ def contact_deal_names(contact_id: str) -> list[str]:
         except requests.HTTPError:
             continue
     return names
+
+
+def find_contact_by_name(firstname: str, lastname: str) -> list[dict]:
+    """Exact first+last contact search (review reviewer → family). Case-exact
+    per HubSpot EQ semantics; the caller associates only on a UNIQUE result."""
+    if not (firstname and lastname):
+        return []
+    body = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "firstname", "operator": "EQ", "value": firstname},
+            {"propertyName": "lastname", "operator": "EQ", "value": lastname},
+        ]}],
+        "properties": ["email", "firstname", "lastname", "a_persona"],
+        "limit": 5,
+    }
+    res = _write("POST", "/crm/v3/objects/contacts/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
 
 
 def find_family_contact(student_first: str, lastname: str) -> list[dict]:
@@ -939,6 +958,63 @@ def add_deal_note(deal_id: str, body: str, attachment_ids: list[str] | None = No
         }],
     }
     return _write("POST", "/crm/v3/objects/notes", payload)
+
+
+def add_contact_note(contact_id: str, body: str) -> dict:
+    """Attach a note engagement to a CONTACT (typeId 202). The pre-send gate's
+    send log of record: one note per agent outbound, machine-parseable first
+    line, so a human sees every agent touch on the timeline."""
+    payload = {
+        "properties": {"hs_note_body": body, "hs_timestamp": _now_ms()},
+        "associations": [{
+            "to": {"id": contact_id},
+            "types": [{"associationCategory": "HUBSPOT_DEFINED", "associationTypeId": 202}],
+        }],
+    }
+    return _write("POST", "/crm/v3/objects/notes", payload)
+
+
+def patch_contact_props(contact_id: str, props: dict) -> dict:
+    return _write("PATCH", f"/crm/v3/objects/contacts/{contact_id}", {"properties": props})
+
+
+def contact_inbound_since(contact_id: str, since_iso: str) -> list[dict]:
+    """INCOMING conversation messages for a contact since `since_iso`, oldest
+    first, each with whether an OUTGOING followed it. Inbox replies never
+    stamp hs_email_last_reply_date, so "has this family written to us?" has
+    to be answered by scanning threads (found the hard way 2026-09-08: 13
+    repliers were missing from a property-based exclusion)."""
+    data = _get("/conversations/v3/conversations/threads",
+                {"associatedContactId": str(contact_id), "limit": 100})
+    out: list[dict] = []
+    for th in data.get("results", []):
+        latest = str(th.get("latestMessageTimestamp") or "")
+        if latest and latest < since_iso:
+            continue
+        msgs = [m for m in get_messages(th["id"]) if m.get("type") == "MESSAGE"]
+        msgs.sort(key=lambda m: m.get("createdAt", ""))
+        for i, m in enumerate(msgs):
+            at = m.get("createdAt", "")
+            if m.get("direction") != "INCOMING" or at < since_iso:
+                continue
+            answered = any(x.get("direction") == "OUTGOING" and x.get("createdAt", "") > at
+                           for x in msgs[i + 1:])
+            out.append({"at": at, "thread_id": th["id"], "channel_id": m.get("channelId"),
+                        "answered": answered, "text": (m.get("text") or "")[:200]})
+    out.sort(key=lambda x: x["at"])
+    return out
+
+
+def open_tickets_for_contact(contact_id: str) -> list[dict]:
+    """Open tickets associated to a contact, with owner. The pre-send gate
+    holds a lead-line text when scheduling already has a ticket open."""
+    body = {"filterGroups": [{"filters": [
+        {"propertyName": "associations.contact", "operator": "EQ", "value": str(contact_id)},
+        {"propertyName": "hs_is_closed", "operator": "NEQ", "value": "true"}]}],
+        "properties": ["subject", "hubspot_owner_id", "hs_pipeline_stage", "hs_ticket_category"],
+        "limit": 20}
+    res = _get_search("/crm/v3/objects/tickets/search", body)
+    return res.get("results", []) if isinstance(res, dict) else []
 
 
 def add_ticket_note(ticket_id: str, body: str) -> dict:

@@ -35,7 +35,7 @@ from datetime import datetime, timedelta, timezone
 
 import requests
 
-from . import audit, hubspot_client as hs, slack_client
+from . import audit, hubspot_client as hs, presend, slack_client
 from .business_hours import now_la
 from .config import (DRY_RUN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET,
                      RESEND_API_KEY, ROOT, cfg, staff)
@@ -310,6 +310,29 @@ def run_sweep() -> None:
         body = _scrub_outbound(template.format(
             first_name=first, student=_fmt_students(students[:1]),
             students=_fmt_students(students), schedule=sched))
+        # pre-send gate (knowledge/journey/00-pre-send-checklist.md in code).
+        # Shadow while presend.enabled is false: log, keep sending. Enforcing:
+        # block -> skipped for good (existing marker), hold -> retried next
+        # sweep + one DM to the seat that owns the active thread.
+        gate = presend.check(cid, "sms", "support", "po_welcome",
+                             phone=phone, contact=full, body=body)
+        if not gate.allowed:
+            audit.append({"message_id": f"presend:{dids[0]}:{gate.verdict}", "source": "sms",
+                          "action_taken": "presend_shadow" if not presend.enabled() else
+                          ("sms_skipped_unverified" if gate.verdict == "block" else "sms_held"),
+                          "deal_id": dids[0], "contact_id": cid, "verdict": gate.verdict,
+                          "reasons": gate.reasons[:5]})
+            if presend.enabled():
+                if gate.verdict == "hold" and gate.owner and gate.owner.get("slack_user_id") \
+                        and not state["alerted"].get(dids[0]):
+                    slack_client.dm(gate.owner["slack_user_id"],
+                                    f"⏸ Held the PO welcome text for {_fmt_students(students)} "
+                                    f"({phone}): {gate.reasons[0]}. You have the thread; "
+                                    f"the text retries next sweep once it clears.")
+                    for did in dids:
+                        audit.append({"message_id": f"sms-alert:{did}", "source": "sms",
+                                      "action_taken": "sms_staff_alerted", "deal_id": did})
+                continue
         try:
             _jc_send(phone, body)
         except Exception as e:  # noqa: BLE001
@@ -324,6 +347,11 @@ def run_sweep() -> None:
                                     f"⚠️ SMS failed 3x for {_fmt_students(students)} "
                                     f"({phone}) — text the family manually.")
             continue
+        try:
+            presend.record_send(cid, "sms", "support", "po_welcome", phone, body,
+                                "sms_sweep", True)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  presend record_send failed (non-fatal): {e}")
         # the welcome email rides the SAME event: one family, one text, one
         # "What to Expect" email. A failed email never voids the text (audited
         # + flagged instead), and the family markers below dedupe both.

@@ -28,7 +28,7 @@ VALID_CATEGORIES = {
     "reschedule", "scheduling", "cancellation", "tutor_issue",
     "school_partner", "business_dev", "complaint", "payment_dispute",
     "tor_inquiry", "new_po", "tutor_document", "recruitment",
-    "charter_newsletter", "campaign_family", "campaign_school",
+    "charter_newsletter", "review_received", "campaign_family", "campaign_school",
     "low_balance", "junk", "unknown",
 }
 
@@ -90,6 +90,8 @@ def _rules_md() -> str:
 
 SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
+    "Before contacting a family, teacher, or tutor, read knowledge/journey/README.md "
+    "and pass knowledge/journey/00-pre-send-checklist.md. Act only on stages marked REVIEWED. "
     "You are the triage classifier for A+ Tutoring's company inbox. "
     "Classify the email using the rules provided. "
     "Respond with a SINGLE JSON object and nothing else — no prose, no code fences. "

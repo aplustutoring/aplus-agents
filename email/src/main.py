@@ -41,6 +41,7 @@ _CATEGORY_LABELS = {
     "tutor_issue": "Tutor Issue",
     "tutor_document": "Tutor Document",
     "recruitment": "Recruitment",
+    "review_received": "Review",
     "junk": "Junk",
     "unknown": "Unknown",
 }
@@ -434,9 +435,16 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             # takes the ordinary triage path below (classifier → ticket)
 
     # ── Identify contact ──
+    # Review-platform no-reply senders (Google/Yelp) never become contacts —
+    # the CallRail/JustCall junk-contact lesson. Their tickets are tied to
+    # the FAMILY the reviewer name resolves to (see the review branch below).
+    _rp_domains = cfg().get("review_platforms", {}).get("sender_domains", [])
+    platform_sender = bool(email) and any(
+        email.lower().endswith("@" + d) or email.lower().endswith("." + d)
+        for d in _rp_domains)
     contact = hs.find_contact_by_email(email) if email else None
     new_contact = False
-    if not contact and email:
+    if not contact and email and not platform_sender:
         contact = hs.create_contact(email)
         new_contact = True
     contact_id = contact.get("id") if contact else None
@@ -499,6 +507,32 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             ticket_contact_id = fam[0]["id"]
             family_email = (fam[0].get("properties") or {}).get("email") or email
 
+    # #5 Review notification (Google/Yelp) → tie the ticket to the FAMILY who left the
+    # review, never to the platform's no-reply sender. Association only on an exact,
+    # UNIQUE first+last contact match — a partial name ("Maria A.") or an ambiguous
+    # match leaves the ticket unassociated with the reason in its notes (a refusal is
+    # a signal, a guess is a landmine).
+    if decision.category == "review_received":
+        ticket_contact_id = None
+        reviewer = (result.get("reviewer_name") or "").strip()
+        parts = reviewer.split()
+        if len(parts) >= 2 and len(parts[-1].rstrip(".")) > 1:
+            matches = hs.find_contact_by_name(parts[0], parts[-1])
+            if len(matches) == 1:
+                ticket_contact_id = matches[0]["id"]
+            else:
+                decision.notes.append(
+                    f"reviewer {reviewer!r} matched {len(matches)} contacts — "
+                    "left unassociated, link the family manually")
+        elif reviewer:
+            decision.notes.append(
+                f"reviewer name {reviewer!r} is partial — left unassociated, "
+                "link the family manually")
+        else:
+            decision.notes.append("notification names no reviewer — left unassociated")
+        if reviewer:
+            contact_name = reviewer   # subject: 'Maria A. — Review', not the no-reply localpart
+
     record = {
         "message_id": message_id,
         "thread_id": thread_id,
@@ -560,8 +594,19 @@ def process_message(thread_id: str, message: dict) -> dict | None:
                               ccm.get("default", tf.get("category_default")))
     else:
         hs_category = tf.get("category_map", {}).get(decision.category, tf.get("category_default"))
+    review_props = None
+    if decision.category == "review_received":
+        platform = str(result.get("review_platform") or "").lower()
+        review_props = {
+            "review_platform": platform if platform in ("google", "yelp") else "other",
+            "review_reviewer_name": (result.get("reviewer_name") or "")[:100],
+        }
+        rating = result.get("review_rating")
+        if isinstance(rating, (int, float)) and 1 <= rating <= 5:
+            review_props["review_rating"] = rating
     ticket = hs.create_ticket(subject, owner_id, entry_stage, desc, ticket_contact_id,
-                              priority=hs_priority, category=hs_category, source=tf.get("source"))
+                              priority=hs_priority, category=hs_category, source=tf.get("source"),
+                              extra_props=review_props)
     ticket_id = ticket.get("id")
     record["ticket_id"] = ticket_id
     record["sla_due"] = sla_due.isoformat() if sla_due else None
@@ -574,6 +619,16 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             record["campaign_replied"] = True
         except Exception as e:  # never let a stamp failure block the ticket
             print(f"  ⚠️  campaign_replied stamp failed for {contact_id} (non-fatal): {e}")
+
+    # Every inbound email stamps [Agent] Last Inbound At, because
+    # hs_email_last_reply_date never moves for inbox replies and the pre-send
+    # gate needs "has this contact written to us?" to be answerable.
+    if contact_id:
+        try:
+            from . import presend
+            presend.stamp_last_inbound(contact_id, datetime.now(timezone.utc).isoformat())
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  last-inbound stamp failed for {contact_id} (non-fatal): {e}")
 
     # Attach the email two ways: (1) associate the conversation thread, and (2) post the
     # email body as a NOTE — the note reliably renders on the ticket in the UI even when

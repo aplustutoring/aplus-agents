@@ -223,6 +223,822 @@ registry.yml, docs/PO-PROCESS.md, docs/CHANGELOG.md.
 **Decision log:** #AP### pending — "Teachworks package-balance alert is the
 renewal trigger; the case is a HubSpot ticket owned by charter_sales; the
 Monday low-balance board retires."
+## 2026-09-10 — booth/delilah: every print mirrors to a Google Drive folder
+
+**What:** Roman asked for "a folder that stores everything". Each archived print
+(real photo and storybook) is now also uploaded to one Google Drive folder,
+`Delilah is 5 - Photo Booth 2026-09-11` (id `1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t`),
+owned by the spotlight-watcher service account and shared with
+roman@wetutorathome.com as editor. File names: `2026-09-11 19.05.12 Ari Cohen
+(storybook).jpg`, Los Angeles time.
+
+- `booth/delilah/worker.js` — `mirrorToDrive()` + `driveToken()` (service-account
+  JWT signed with WebCrypto RS256, token cached in KV 50 min, multipart upload);
+  runs in `ctx.waitUntil` after `/submit` responds so the iPad never waits.
+  Marker keys `drive/<key>` prevent double uploads; `/photos` hides them.
+  New `POST /drive-backfill` uploads anything archived without a marker (idempotent).
+- `booth/delilah/wrangler.toml` — `DRIVE_FOLDER_ID`; secret `GOOGLE_SA_JSON`.
+- `booth/delilah/test-worker.mjs` — 60 assertions; the Drive tests sign a real
+  RSA key generated in the test and assert the JWT shape, header, marker, token
+  reuse, backfill skip/upload counts, and that no Google call happens without config.
+
+**Why the service account and not Roman's Drive OAuth:** no browser consent flow
+on a Worker, and the SA key already exists for the spotlight pipeline. Why a
+Worker-side mirror and not a pull script: the folder should fill itself with no
+human step (event-driven rule, 2026-09-04).
+
+**Blocked in-session:** the auto-mode classifier refused to pipe the SA private
+key into `wrangler secret put`. Roman runs that one command (README, Deploy);
+until then the Worker skips Drive silently and `/drive-backfill` catches up.
+
+**Roman, 2026-09-10, two confirmations:** the Drive folder stays an A+
+(service-account-owned) folder, no move to a personal Drive; and the booth's
+sender number is 818-573-6293, the JustCall number found in-session (his "6793"
+was a typo). The "flagged" wording in wrangler.toml and README is removed.
+
+**Files:** `booth/delilah/{worker.js,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+
+## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
+
+**What:** each kept shot now yields two favors. After the real photo prints and is
+texted, the booth posts the un-framed capture to `POST /storybook`; the Worker calls
+`gemini-3.1-flash-image` with the photo as a reference part and a fixed prompt
+(`STORYBOOK_PROMPT`: hand-painted storybook, faces/hair/glasses/clothes preserved,
+pomegranate orchard, apples, honey jar, challah, bees). The page frames the result in
+the same 4x6 card with the banner "Once upon a Shana Tova", prints it, archives it
+(`kind: storybook`), and texts it with `STORYBOOK_SMS_BODY`.
+
+- `booth/delilah/worker.js` — `/storybook` + `paintStorybook()`; `/submit` takes
+  `kind`; album entries carry `kind`; SMS body picks by kind.
+- `booth/delilah/public/index.html` — `drawCard()` shared by both prints, raw
+  mirrored crop kept for Gemini, "painting" screen, 75 s abort, silent fallback.
+- `booth/delilah/wrangler.toml` — `STORYBOOK_SMS_BODY`, `GEMINI_MODEL`; secret
+  `GEMINI_API_KEY` set on the Worker.
+- `booth/delilah/test-worker.mjs` — 37 assertions incl. mocked Gemini success,
+  429 → 502, bad input → 400, storybook SMS body, album kinds.
+
+**Verified live:** `/storybook` on the deployed Worker returned a repaint of a
+stand-in family photo in 10 s with likeness intact; both cards rendered through
+`drawCard()` and were sent to Roman.
+
+**Why Gemini and not Workers AI or GPT:** the job is a subject-preserving edit from
+a reference photo; Gemini's image model does that in one call and the key was
+already in `.env`. Workers AI only had SD 1.5 img2img (weak on faces), GPT Image
+edits are slower.
+
+**Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+
+## 2026-09-10 — Call relay ARMED; first grace retry crashed on a CWD-relative marker path (fixed)
+
+**Armed (Roman, ~15:40 PT):** GITHUB_TOKEN + WEBHOOK_TOKEN on
+`call-agent-webhook-relay`, repo secrets CALL_RELAY_URL / CALL_RELAY_TOKEN,
+`/health` = ok. JustCall traffic flowed immediately: six relay-dispatched
+runs 22:43 to 23:14 UTC (actor = the PAT, not github-actions[bot]), all live
+with `--no-digest`; call 413883582 got its coaching note at 16:10 PT, six
+minutes after its transcript was still pending. Event-driven call processing
+is live for the first time since #146 (2026-09-04).
+
+**What the first real grace retry surfaced:** run 34540444397 (23:04 UTC)
+found one call awaiting transcript and crashed writing the retry marker:
+`FileNotFoundError: 'ops/call_agent/state/retry_wanted'`. The marker path was
+`Path(cfg["state"]["path"]).parent`, i.e. the config's repo-relative path
+resolved against the CWD, while the workflow runs with
+`working-directory: ops/call_agent`. Every other state path in the agent goes
+through `REPO_ROOT / path`; this one did not, and local runs (CWD = repo
+root) never showed it. Effect: the run failed, no `/redispatch` was posted,
+and the call was picked up only because another JustCall event dispatched
+the next run six minutes later. On a quiet afternoon the retry would have
+waited for the 00:30 UTC digest.
+
+**Fix:** `retry_marker_path()` / `write_retry_marker()` in call_agent.py
+resolve from `REPO_ROOT` (and mkdir the state dir). `tests/test_retry_marker.py`
+runs the write from a `ops/call_agent` CWD and asserts the workflow's own
+relative check (`state/retry_wanted`) sees the file. 40 tests green.
+
+**Also this morning:** #202 (relay stuck-alarm fix, /status, /health 503)
+and #203 (watchdog catch-up inputs) merged; the watchdog's first live
+catch-up verified (sweeper 34500756702 → call-agent 34500804048,
+`dry_run=false, no_digest=true`, 2 calls fetched).
+
+**Files:** ops/call_agent/call_agent.py, ops/call_agent/tests/test_retry_marker.py
+(new), docs/CHANGELOG.md.
+
+## 2026-09-10 — Teacher enroller skips teachers any seat contacted in the last 7 days
+
+**Why:** on 2026-09-10 Ashley Pontell (iLEAD) got Danielle's outreach
+sequence email at 11:58 AM and Paola's PO request at 12:14 PM. The enroller
+checked opt-out, bounce, generic inbox, campaign reply, and current
+enrollment, but not whether another seat was already talking to the teacher.
+Roman: "close the gap in the enroller."
+**What:** `recent_touch_days: 7` in `ops/messenger/teacher-sequences.yml`;
+the enroller reads HubSpot's Last Contacted (`notes_last_contacted`, any
+user's logged email, call, or meeting) and skips the contact with the
+reason "contacted by a seat in the last 7 days", counted in the run's skip
+report like every other reason. Tests added.
+**Files:** scripts/teacher_sequence_enroll.py, ops/messenger/teacher-sequences.yml,
+scripts/tests/test_teacher_sequence_enroll.py.
+
+---
+## 2026-09-10 — booth/delilah: home photo booth for Delilah's 5th birthday + Rosh Hashanah 5787 (2026-09-11)
+
+**What:** `booth/delilah/` is a personal-event fork of the Sage Oak booth. Every kept
+photo auto-prints (the party favor); guests may add a cell number to get the framed
+photo by MMS. No HubSpot, no email, no consent, no cron (so no SUNSET needed).
+
+- `booth/delilah/public/index.html` — attract, camera + countdown, 1200x1800 framed
+  print (cream card, pomegranate border, honey mat, "Delilah is 5!", Shana Tova 5787
+  banner), name + phone form with "Just print it", auto-print, host album (press and
+  hold the top-right corner of the start screen) with Reprint / Print all.
+- `booth/delilah/worker.js` — `POST /submit` archives to KV (permanent, metadata
+  name+time) and texts via JustCall MMS; `GET /photo/<key>`; `GET /photos` (album);
+  all other GETs fall through to the assets binding. 22-assertion `test-worker.mjs`.
+- `booth/delilah/wrangler.toml` — Worker `delilah-booth` serves `public/` as
+  `[assets]` (one URL, same-origin API). KV `DELILAH_PHOTOS`
+  cdaa219ac27248089b3867cf137812a4. Secrets JUSTCALL_API_KEY/SECRET set.
+
+**Live:** https://delilah-booth.nameless-mountain-bafa.workers.dev. Verified: page
+200, archive-only submit, MMS submit accepted by JustCall (self-test to the main
+line 818-850-6284), `/photos` lists, test keys deleted.
+
+**Why the sender is 818-573-6293:** Roman asked for "the 6793 number"; no JustCall
+number ends in 6793. 6293 is "Roman's line" (ops/call_agent/config.yml), MMS-capable,
+and what `booth/eo` sent from. Flagged to Roman; one-line change in wrangler.toml.
+
+**Lesson:** `wrangler pages project create` on wrangler 4.131 deploys a Workers-style
+project and collided with the Worker of the same name (it overwrote it once). For
+new booths use a single Worker with `[assets]` instead of a separate Pages project.
+Also: Cloudflare returns 1010 to Python's default user agent on workers.dev; test
+with a browser UA (Safari on the iPad is unaffected).
+
+**Files:** `booth/delilah/{public/index.html,worker.js,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+
+## 2026-09-09 (late, 2) — Cron watchdog: catch-up dispatches carry inputs, so a call-agent catch-up is a real run
+
+**Why:** `ops/fleet-health/watchdog/cron_watchdog.py` redispatched stale
+workflows with `{"ref": "main"}` and no inputs, so every workflow_dispatch
+input took its default. `call-agent.yml` defaults `dry_run` to true (so a
+human clicking "Run workflow" gets a safe run). Since #146 removed the call
+agent's poll crons on 2026-09-04 it has no business-hours schedule, its age
+at every business-hours sweep is past the 60-min threshold, and the watchdog
+has dispatched it on every sweep — 9/9 alone: 16:32, 19:30, 21:57 UTC (runs
+34377323579, 34395415301, 34409712823), plus 34265433047 (9/8) and
+34150770451 (9/7). Every one was a DRY RUN: the job log shows
+`if [ "true" != "true" ] || [ "true" = "true" ]` and "DRY RUN MODE", nothing
+persisted, and the sweeper log said "catch-up dispatch ok". No Slack alert
+ever fired for it either: the once-per-episode window (threshold + 25 min)
+is meant for a workflow whose cron just stopped, and the call agent's age at
+its first business-hours sweep is ~15 h, always "already alerted". Net: with
+the relay unarmed (see the "Call relay" entry, PR #202), calls were processed
+live exactly once a day, and the thing that looked like a safety net wasn't.
+
+**Audit of the other watched workflows:** `email-po-inbox.yml`,
+`email-triage.yml`, `email-deal-sync.yml` all default `dry_run` to false, so
+their catch-ups (e.g. 9/9 16:32 UTC after a 109/133/274-min starvation) were
+real. Only the call agent had the trap. The other dispatch sites in the repo
+(`ops/deal-relay/worker.js`, `ops/call_agent/webhook-relay/worker.js`) send
+explicit inputs; `feedback_agent.py` uses repository_dispatch, a different
+mechanism.
+
+**Fix (option 1 of the two proposed, matching the relay):**
+- `DISPATCH_INPUTS = {"call-agent.yml": {"dry_run": "false", "no_digest": "true"}}`,
+  the exact payload `webhook-relay/worker.js` sends: live run, digest entries
+  held for the 00:30 UTC flush. `CALL_AGENT_LIVE` still gates real writes.
+  Other workflows keep the bare body.
+- `dispatch_trap()` reads the watched workflow's `on.workflow_dispatch.inputs`
+  from the checkout before every dispatch and REFUSES (log error + the
+  existing "dispatch FAILED, run it manually" alert) when a no-op switch
+  (`dry_run`, `check_only`) defaults to true with no override, when the map
+  sends an input the workflow doesn't declare (GitHub 422s and no run
+  starts), or when there is no workflow_dispatch trigger at all.
+- The Slack line now says what was dispatched: "A catch-up run was dispatched
+  with inputs dry_run=false, no_digest=true."; failures point at the sweeper
+  log. `--dry-run` prints the body it would send and any trap.
+- `ops/fleet-health/tests/test_cron_watchdog.py` (19 tests): every WATCHED
+  entry is trap-free against the REAL workflow files; the call-agent inputs
+  are parsed out of `worker.js` and must equal the map (if one side's payload
+  changes, the other must follow on purpose); the guard's four trap shapes;
+  `dispatch()` posts the inputs and never posts a trapped workflow.
+
+**Why not option 2 (exclude call-agent, alert instead):** an alert on every
+business-hours sweep saying the call agent "hadn't run" is noise: its cadence
+is event-driven by design, and the alert would carry no instruction a human
+could act on except "dispatch it live", which is what the watchdog can do
+itself. With inputs, the watchdog is the demoted business-hours safety-net
+poll for calls (about hourly, silent unless the dispatch fails) until the
+relay is armed; once it is, relay dispatches keep the run fresh on busy days
+and the watchdog's quiet-day polls find nothing and dedupe via state.json.
+
+**Not verified live:** no call-agent dispatch was fired from this session
+(a live poll writes coaching cards + HubSpot tasks; approval-first). The body
+format is the one the relay already uses and the dispatch API takes boolean
+inputs as the strings "true"/"false". The first business-hours sweep after
+merge proves it: the call-agent run's log must show `--dry-run` absent and
+`--no-digest` present, and the sweeper log "catch-up dispatch with inputs
+dry_run=false, no_digest=true ok".
+
+**Seen in passing, not changed:** the sweeper itself is starving. 9/9 had
+4 business-hours sweeps (16:31, 19:29, 21:57 UTC, then 00:06) against ~21
+scheduled at :07/:27/:47, so the "every 20 min" retry/watchdog cadence is
+really every 2 to 3 hours on a bad day. That is the "rides the scheduler it
+watches" limit in the module docstring, now with numbers; the PO-inbox
+heartbeat on Roman's Mac is the only layer outside GitHub cron.
+
+**Open for Roman:** once the relay is armed (PR #202 human steps), decide
+whether the call agent stays in WATCHED as the quiet-day safety-net poll or
+comes out (relay `/health` + `relay_watchdog`-style miss detection would be
+the replacement signal).
+
+**Files:** ops/fleet-health/watchdog/cron_watchdog.py,
+ops/fleet-health/tests/test_cron_watchdog.py (new), docs/CHANGELOG.md.
+## 2026-09-09 (late) — Call relay: port the stuck-alarm fix, then find the relay was never armed
+
+**Why:** PR #200 fixed the deal relay's Dispatcher: an alarm that exhausted its
+retries (GITHUB_TOKEN unset) stayed pinned in the past, and because `fetch()`
+only re-armed when the alarm was null or later than the wanted time, every
+later webhook was silently absorbed (85 minutes on 2026-09-09).
+`ops/call_agent/webhook-relay/worker.js` is the same Dispatcher (the deal
+relay was cloned from it) and carried the identical latent bug.
+
+**Ported verbatim from 68bd0555 (deal relay), call-relay paths and delays
+kept:**
+- `fetch()` treats an alarm more than 2 minutes in the past as stale and
+  replaces it with `setAlarm(wantedAt)`; stores `lastScheduledAt`; the reply
+  carries `replacedStale`.
+- Token-gated `GET /status` on the worker, `status()` on the DO: alarm,
+  latestWantedAt, lastScheduledAt, lastDispatchAt, lastDispatchError.
+- `alarm()` stores `lastDispatchError` on failure (then rethrows so the
+  platform still retries) and `lastDispatchAt` on success, with
+  console.log/error so `wrangler tail` shows outcomes.
+
+**What deploying it surfaced.** `wrangler secret list` on
+`call-agent-webhook-relay` returns `[]`. The deployment history has exactly
+one deploy before this session (2026-09-08 18:42Z) and no `secret put` ever
+ran, so GITHUB_TOKEN and WEBHOOK_TOKEN were never set. The repo has no
+`CALL_RELAY_URL` / `CALL_RELAY_TOKEN` secrets either. So the relay cannot
+dispatch, and with the token undefined it answers 403 to everything,
+including `/status`. The workflow_dispatch runs of `call-agent.yml` on 9/7,
+9/8 and 9/9 that looked like relay traffic are not: their actor is
+`github-actions[bot]`, each one starts 20 seconds after a "Fleet retry
+sweeper" run, and every one is a DRY RUN (the sweeper posts `{"ref":"main"}`
+with no inputs, so `dry_run` takes its default of true and nothing persists).
+Net effect: since #146 removed the poll crons on 9/4, calls have been
+processed live exactly once a day, at the 00:30 UTC digest. The relay's
+one-time setup (README steps 1 to 4) is still entirely undone.
+
+**System change so this cannot hide again:** `GET /health` now returns 503
+`missing secrets: <names>` when either secret is unset, and `ok` only when
+both are present. No values are exposed, only names. Verified live: the
+worker answers `missing secrets: GITHUB_TOKEN, WEBHOOK_TOKEN health=503`.
+Anything that watches `/health` (a fleet-health probe, a curl in the README
+smoke test) now sees an unarmed relay as unhealthy instead of green.
+
+**Deploy:** `npx wrangler deploy` from `ops/call_agent/webhook-relay/`
+(versions 70887d9f, then 81af5fab with the health change). `/status` could
+not be exercised because there is no WEBHOOK_TOKEN to gate it with; the
+route's 403 gate was confirmed. `wrangler tail` during the session:
+nine minutes around 5 PM PT saw one request, this session's own `/health`
+curl. No JustCall traffic arrived, so whether the two JustCall webhooks were
+ever added is still unverified (a quiet window, not proof either way).
+
+**Still human (Roman):** create the fine-grained PAT, `wrangler secret put
+GITHUB_TOKEN` and `WEBHOOK_TOKEN`, add repo secrets `CALL_RELAY_URL` +
+`CALL_RELAY_TOKEN`, point the two JustCall webhooks at the worker. Then
+`curl /health` must say `ok` and `/status?token=...` must answer JSON.
+
+**Proposed, not done (needs a go):** the retry sweeper's catch-up dispatch of
+`call-agent.yml` is a no-op because it sends no inputs; it should pass
+`dry_run=false, no_digest=true` for that workflow or skip it and alert
+instead, since today it reports "A catch-up run was dispatched" for a run
+that writes nothing.
+
+**Files:** `ops/call_agent/webhook-relay/{worker.js,README.md}`,
+`docs/CHANGELOG.md`. The deal relay was not touched.
+
+---
+
+## 2026-09-10 — Call relay ARMED: secrets set, JustCall webhooks wired, dispatch verified
+
+The last unarmed relay is live. Roman set the four secrets via scratchpad
+script (worker GITHUB_TOKEN + WEBHOOK_TOKEN, repo CALL_RELAY_URL/TOKEN);
+his fine-grained PAT was generated empty (Public-repositories, no
+permissions → 403 "Resource not accessible"), fixed by editing the token
+in place (aplus-agents only, Actions RW — token value unchanged, no
+secret re-set needed). JustCall webhooks added via API v2.1 alongside the
+existing Zapier/HubSpot hooks: call.completed → relay /call-completed,
+call.missed → same with &delay=1. Smoke test: relay POST → workflow_dispatch
+→ call-agent run in 1 s. `/health` ok. call-agent.yml crons are already
+digest + scorecard only (inherently scheduled) — nothing to demote; the
+JustCall→relay→run path is now the primary trigger, digest is the backstop.
+Also: registry.yml deal-sync-relay status pending-deploy → active (stale;
+verified 2026-09-09). Files: registry.yml. Infra: JustCall webhook config,
+Cloudflare worker secrets, GitHub PAT + repo secrets.
+
+**Decision log candidate:** event-driven step 2 complete — both relays
+(deal-sync, call-agent) armed and verified; cron survives only for
+digests/sweeps per #AP (event-driven-over-cron, Roman 2026-09-04).
+
+---
+## 2026-09-09 (late) — Monday Pre-Lesson board RETIRED (Roman)
+
+**Roman:** "the board is retired." Monday board 18397928615 (Pre-Lesson /
+Customer Journey), fed by Zapier zap "PRE LESSON --> MONDAY" (347673126),
+is retired. The zap stays OFF permanently (it also carried the deal-owner
+step now owned by `owner_assign` and a scheduler Slack DM). Its feeder,
+HubSpot workflow 1764489615 "Pre-Lesson -> Monday", now only POSTs to a dead
+Zapier hook on every Pre-Lesson deal; proposed OFF, awaiting Roman's go.
+Untouched and still live: workflow 1775892746 "Pre-Lesson -> Teachworks" →
+zap "PRE LESSON --> Teachworks" (ran today); deal_sync already does the TW
+family upsert, so that pair is the next candidate to retire, separate look.
+
+**Decision log candidates:** (1) deal ownership + new-deal doorbell are
+agent-owned, no zap/workflow writes `hubspot_owner_id`; (2) Monday Pre-Lesson
+board retired, zap 347673126 off for good.
+
+---
+
+## 2026-09-09 (night) — Doorbell workflow rings deal-sync-relay; relay watchdog
+
+**Roman:** "is that really the best fix with all the tools at our disposal?" → go.
+
+**What:** the relay's HubSpot side is now an agent-managed workflow instead of a
+human-configured private-app webhook. `ops/deal-relay/doorbell/workflow.json`
++ `apply_doorbell.py` (idempotent by name, token never printed) created
+`[Agent] Doorbell - deal created or stage changed -> deal-sync relay`
+(1881460299): enrollment = createdate after 2026-09-09, re-enroll on any
+dealstage change, one WEBHOOK action → the worker. Deterministic, no CARE
+pointer. The private-app Webhooks API is not open to private-app tokens
+(403 "scope not available for public use"), so the workflow is the only path
+the fleet can own end to end; the `automation` scope we already hold covers
+it. deal-sync-relay `WEBHOOK_TOKEN` rotated (old value unknown to the
+session, nothing subscribed to it). Roman ran the apply (the auto-mode
+classifier blocked the session from creating the workflow itself).
+
+**Verified:** test deal created 22:15:00 UTC → worker logged the POST at
+22:15:07 and scheduled the dispatch. **Not yet verified:** the dispatch
+itself — the worker has no `GITHUB_TOKEN` secret (README step 2 was also
+never done), so the alarm throws and retries. Roman sets it:
+`cd ops/deal-relay && npx wrangler secret put GITHUB_TOKEN` (the call-relay
+PAT). Then one more test deal proves the whole path.
+
+**Watchdog:** `email/src/relay_watchdog.py`, run at the top of every deal_sync
+pass: on a `schedule` (cron) run, any new deal older than
+`relay_watchdog.max_lag_minutes` (10) means no event-driven run handled it →
+one DM to the visionary seat naming the deals, once per deal (audit
+`relay-miss:{id}`). Dispatch and local runs never fire it. 4 tests.
+
+**Then the relay itself was stuck.** With `GITHUB_TOKEN` set (Roman, 23:2x UTC)
+a test deal still produced no dispatch. New `/status` endpoint on the worker
+showed why: the Durable Object alarm was pinned at 22:16:07, 85 minutes in
+the past, never firing (its retries had been exhausted while the token was
+missing), and `Dispatcher.fetch` only re-arms when the existing alarm is
+null or LATER than the wanted time, so every new hook since had been
+silently absorbed. Fix deployed (worker.js): a past alarm older than 2 min is
+replaced; `/status` (token-gated) exposes alarm / lastDispatchAt /
+lastDispatchError; alarm logs success and failure so `wrangler tail` shows
+them. **Verified end to end:** test deal 23:42:17 UTC → hook 23:42:19 →
+alarm 23:43:19 → workflow_dispatch 23:43:21 → re-owned Janelle 23:43:47.
+**96 seconds from creation to scheduler.** Test deal deleted.
+
+**Cron demoted** to the hourly backstop (`45 * * * *`), per README "After it's
+verified live"; relay_watchdog DMs if the backstop ever catches a deal.
+
+**Same latent bug in the call relay** (`ops/call_agent/webhook-relay/worker.js`
+is the same Dispatcher): if its GitHub dispatch ever fails through all
+retries, it will wedge the same way. Port the stale-alarm fix there next.
+
+**Files:** `ops/deal-relay/doorbell/{workflow.json,apply_doorbell.py}` (new),
+`ops/deal-relay/README.md`, `email/src/relay_watchdog.py` (new),
+`email/src/deal_sync.py`, `email/config.yaml`,
+`email/tests/test_relay_watchdog.py` (new), `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-08 (evening) — Enroller: a failure count is not a record
+
+**Why:** Day one of the teacher outreach enroller. Wave 1 enrolled 50/50, Wave 2
+enrolled 46/50. The log for the four failures read `FAILED 4:` and then named
+three of them. `scripts/teacher_sequence_enroll.py` printed `fail[:3]`, so the
+fourth teacher existed only as a number, in both the run log and the Slack
+digest. Nobody could act on a person they cannot name.
+
+**Also:** the sender fallback `success@wetutorathome.com` could never work.
+HubSpot rejected it on every single attempt with "User 46811240 for Portal
+6312752 has no connected inboxes for specified user email" — it is not a
+connected inbox of Danielle's user, which is what the sequences API requires.
+It cost two API calls per failing contact, and it replaced the real HubSpot
+error with the generic "no sender candidate accepted". That is precisely why
+day one's dead recipient addresses were first read as a sender fault.
+
+**Changed:**
+- `scripts/teacher_sequence_enroll.py` — print every failure with its address
+  and reason, never a truncated list; carry the last real HubSpot error into
+  the returned detail instead of discarding it.
+- `ops/messenger/teacher-sequences.yml` — removed the `success@` candidate,
+  with the reason recorded inline. A danielle@ failure should now be loud
+  rather than masked by a second attempt that cannot succeed. If a real
+  fallback is wanted, connect that inbox to Danielle's HubSpot user first.
+
+**A correction on the same investigation:** I first reported that the enroller
+was mishandling bounced recipients as sender faults and needed fixing. It does
+not. That handling landed in #187 at 10:42 PT; the run I read was 10:38 PT, four
+minutes earlier. I read a stale log and did not check the timestamp against the
+merge. The same failure shape as the rest of the day: the evidence was fine, my
+reading of when it was taken was not.
+
+**Files:** `scripts/teacher_sequence_enroll.py`,
+`ops/messenger/teacher-sequences.yml`, `docs/CHANGELOG.md`.
+
+**Follow-up the same evening: there is no second inbox to have, and that is the
+finding.** Roman proposed `admin@`, then established that `success@` is an ALIAS
+on Danielle's Gmail account rather than a separate mailbox. That settles it:
+even if HubSpot had accepted `success@`, it is the same physical account, so it
+fails at the same moment `danielle@` does. Zero redundancy by construction.
+`admin@` is a community inbox, which is the wrong sender identity for outreach
+that is supposed to read as a hand-written email from the sales seat, and it is
+the mailbox that already swallowed the Heartwood PO behind a spam filter. Any
+inbox that WOULD provide real redundancy belongs to a different person, which
+changes who the teacher thinks emailed them.
+
+Real redundancy and correct sender identity are mutually exclusive here. Per the
+investigation rule this is the explicit "no system fix exists, because X" case:
+no fallback sender is possible, so the fix is to make the single sender's
+failure impossible to miss.
+
+- `scripts/teacher_sequence_enroll.py` — `SENDER_FAIL_ABORT = 3`. Three
+  CONSECUTIVE sender-level rejections (`do_enroll` returning `sender=None`,
+  meaning no candidate inbox was accepted) abort the batch, skip the remaining
+  sequences, and lead the Slack DM with a red alert naming the last real
+  HubSpot error. Three rather than one because `CONTACT_ERRORS` is a prefix
+  heuristic: an unusual contact-specific errorType it fails to match would
+  otherwise masquerade as a dead inbox.
+
+  Before this, a disconnected inbox spent 50 API calls proving it and marked 50
+  teachers "failed" for a problem that was not theirs, inside a digest that read
+  like an ordinary day.
+
+  7 scenario tests: a dead inbox stops after 3 calls instead of 50; 50 bounced
+  recipients never abort; the real 2026-09-08 shape (46 enrolled, 4 bounced)
+  does not abort; the counter resets on a success or a contact error so only a
+  true run of 3 trips it; transient 500s do not abort; a clean day is untouched.
+
+**Also sent and then retracted a Slack DM to Danielle** asking her to connect
+`success@`, before Roman pointed out the alias. Retraction sent within the hour.
+Worth recording: I asked her to CHECK whether it could be added alongside rather
+than to just do it, and explicitly told her not to disconnect `danielle@`,
+because HubSpot may only allow one connected personal inbox per user and a swap
+would have changed the sender for the 206 teachers still to be enrolled. That
+caution was the only reason the wrong request could not have broken the live
+campaign.
+
+## 2026-09-09 — Pre-send gate + one_to_few rail (the code behind the journey checklist)
+
+**Why:** 2026-09-09, an agent told to "watch for responses" texted the
+Gonzalez family three times from Paola's lead line while scheduling had them
+booked on the support line. Nothing in either SMS engine looked at the other
+line, the inbox, or open tickets before sending; "has this family replied?"
+had no helper (inbox replies never stamp `hs_email_last_reply_date`); and
+every send under 25 recipients ran from a session script with none of the
+bulk engine's checks. Roman: "we have to learn more and ask questions."
+The playbook (PR #198) writes the questions down; this PR makes an agent
+unable to skip them.
+
+**What:**
+- `email/src/presend.py`: `check(contact_id, channel, from_line, purpose,
+  ...)` → allow / hold / block with reasons and the owning seat. Checks, in
+  order: opt-out; quiet hours (shared `sms._in_send_window`); stage-to-line
+  (persona + deals since `presend.season_start`: tutor and scheduling → support
+  line, lead and TOR → charter_sales line; the LOCKED 2026-09-08 rule);
+  active thread on another company line inside `thread_window_days` (JustCall
+  index, now carrying `line` and `agent` per text) → HOLD naming the owner
+  (support line resolves by student last name through `scheduler_split`);
+  unanswered reply on any line or in the inbox → HOLD; open ticket owned by
+  scheduling while texting from another line → HOLD; frequency (JustCall
+  outbound today across all lines, and the new `agent_last_outbound_at`
+  inside `min_gap_hours`, both waived when the contact wrote first);
+  standing go (`presend.standing_go`) else `--confirm SEND`; STOP line
+  required on a cold SMS, not on a reply in-thread. Any unreadable source is a
+  HOLD "could not verify", never a silent allow. `record_send` is the send log
+  of record: HubSpot note on the contact with a machine-parseable first line,
+  the two `[Agent]` properties, one audit line. `has_replied_since` replaces
+  the session thread-scan scripts.
+- `email/src/hubspot_client.py`: `contact_inbound_since` (threads by
+  contact, INCOMING with answered flag), `open_tickets_for_contact`,
+  `add_contact_note`, `patch_contact_props`; `get_contact_deals` now returns
+  `createdate`.
+- `email/src/sms.py`: gate before `_jc_send`, `record_send` after. SHADOW
+  while `presend.enabled` is false (audit `presend_shadow`, behaviour
+  unchanged); enforcing: block → `sms_skipped_unverified`, hold → `sms_held`
+  (retried next sweep) + one DM to the owning seat. `po_welcome` is standing.
+- `email/src/main.py`: every processed inbound email stamps
+  `agent_last_inbound_at`.
+- `ops/hubspot-schema/properties.yml`: `agent_last_outbound_at`,
+  `agent_last_outbound_seat`, `agent_last_inbound_at` ([Agent], master group).
+  NOT yet synced to the portal; run `create_properties.py --dry-run` then live.
+- `email/config.yaml` `presend:` block: lines (parity-tested against
+  `ops/messenger/config.yml` numbers), line owners, purposes, `standing_go`
+  (po_welcome, low_balance_family; tor_confirm / tor_email_ask / tutor_ask
+  join when their journey stages are REVIEWED), `stop_line_exempt`, approvers.
+- `ops/messenger/one_to_few.py`: the small-send rail, 1 to `max_few` (25 =
+  `min_bulk`, so the two rails tile). `--contacts` or `--list-id`,
+  `--purpose` and `--from` required with no defaults, `--template` or
+  `--bodies`, dry-run default printing ALLOW/HOLD/BLOCK per contact with the
+  owner for holds, `--live --confirm SEND` sends ALLOW rows only, em-dash scrub
+  on every body, `state/sends/<date>-<purpose>.jsonl`.
+- Tests: `email/tests/test_presend.py` (the Gonzalez case holds and names the scheduler by last-name split),
+  `ops/messenger/tests/test_one_to_few.py`.
+
+**Rollout:** shadow for a week; the regression check before flipping
+`presend.enabled` is a dry run of the next yes-replier follow-up showing
+Gonzalez as HOLD with the scheduler named. PR C (the `#agent-sends`
+doorbell, reply `go <id>`) follows.
+**Decision log for Roman:** "one gate for every outbound"; standing-go list.
+**Files:** email/src/presend.py (new), email/src/hubspot_client.py,
+email/src/justcall_client.py, email/src/sms.py, email/src/main.py,
+email/config.yaml, ops/hubspot-schema/properties.yml,
+ops/messenger/one_to_few.py (new), ops/messenger/tests/ (new),
+ops/messenger/README.md, email/tests/test_presend.py (new).
+
+---
+## 2026-09-09 — Customer journey communication playbook + pre-send checklist (Roman: "we have to learn more and ask questions")
+
+**Why:** on 2026-09-09, during the charter SMS win-back round (PR #195), an
+agent told to "watch for responses" relayed tutor availability to families and
+posted tutor asks on its own. The Gonzalez family was texted three times from
+Paola's lead line while scheduling had already booked them on the support
+line. Mom: "I don't know how many people I'm talking to at A+." Roman: "I love
+the initiative, this is the future, but we have to learn more and ask
+questions... what questions to ask, and tie everything together." Three
+repo explorations then showed the journey was encoded in a dozen places with
+no single map: the back half of the lead funnel is stamped by nobody, four
+post-yes steps (teacher hours request, tutor pick, lesson booking, payment)
+have no code and no documented owner, eight live templates still said "we
+handle the PO" against the 2026-09-02 rule, and small (<25) sends have no
+rail.
+
+**What:** `knowledge/journey/`, one file per stage from first touch to
+renewal for charter and private pay, plus two parallel tracks (teacher of
+record, tutor) and a six-item pre-send checklist
+(`00-pre-send-checklist.md`) that every agent and human passes before any
+outbound to a family, teacher, or tutor. Every stage has the same headings
+(entry and exit marker, owner seat, channel and identity, may do alone /
+must draft / must ask, questions we ask them, questions the agent asks
+itself, charter vs private pay, handoff out, known gaps) and frontmatter
+(`status`, `owner_seat`, `reviewers`, `agent_readable`). All stages are
+DRAFT. Rule: an agent reads a stage only when Roman has flipped it to
+REVIEWED and agent_readable after collecting the seat's sign-off; an
+unreviewed stage means "ask the owner seat"; "watch" means read and report.
+Pointer line added under the CARE line in `CLAUDE.md`, `email/src/classifier.py`,
+`email/src/po_inbox.py`, `ops/call_agent/call_agent.py` (both prompts),
+`ops/feedback-agent/feedback_agent.py`, and the messenger README guardrails.
+Cross-links in `email/TEAM_PLAYBOOK.md` (stage 07), `docs/PO-PROCESS.md`
+Stage 3 (the line hand-over point), `ops/call_agent/rubric.md` S1 (stage 03).
+`knowledge/README.md` now indexes credentials, eos, and journey instead of
+saying "empty".
+**Same-PR copy fixes:** the eight `campaign-2026-08-17` templates and
+`charter_win_back.txt` rewritten to "we send your teacher the hours for the
+purchase order, and once the school issues it we take everything from
+there"; every em dash removed; the TOR outreach template's "grab 10 minutes"
+call offer removed (teachers are email only). Sent copies in HubSpot are
+untouched; these are the source drafts for future rounds.
+**Not done (plan approved 2026-09-09, next PRs):** PR B, the code guards:
+`email/src/presend.py` (opt-out, quiet hours, stage-to-line block, cross-line
+active-thread hold naming the owner, frequency cap, standing-go check, STOP
+rule), `ops/messenger/one_to_few.py` (the small-send rail, dry-run default),
+the `sms.py` shadow hook, three `[Agent]` properties, tests. PR C, the
+approval doorbell (`#agent-sends`, reply `go <id>`). Open items are listed in
+`knowledge/journey/README.md` (the `operations` role collision, SLA
+disagreement, private-pay markers, renewal-ask identity, and more).
+**Decision log for Roman:** "watch = read and report; relaying, posting,
+texting each need a go"; "one pre-send checklist for every outbound";
+"stages readable by agents only when REVIEWED"; standing go after review for
+the TOR confirmation text, the new-teacher email ask + create + link, and the
+tutor ask in the tutor's own channel.
+**Files:** knowledge/journey/ (13 files), knowledge/README.md, CLAUDE.md,
+email/src/classifier.py, email/src/po_inbox.py, ops/call_agent/call_agent.py,
+ops/feedback-agent/feedback_agent.py, ops/messenger/README.md,
+ops/messenger/templates/charter_win_back.txt,
+ops/messenger/templates/campaign-2026-08-17/*.md, email/TEAM_PLAYBOOK.md,
+docs/PO-PROCESS.md, ops/call_agent/rubric.md.
+
+---
+## 2026-09-09 — New-deal scheduler ownership moves from Zapier into deal_sync
+
+**Roman:** "when danielle creates a free trial lesson from scholarship program
+they dont get assigned to the schedulers, they get assigned to the person
+creating it" → "build and then turn off the zap, right?"
+
+**What was actually broken:** not Danielle, not the scholarship. HubSpot gives
+a hand-created deal to its creator; a Zapier zap (HubSpot app 25200) then
+re-owned it to a scheduler by the family contact's last name (A-L Janelle,
+M-Z Yolanda) 1-2 minutes later. It did that on every Paola/Roman-created
+Free Trial, Gold and In-Person deal from June through 2026-09-04 23:45 UTC,
+then went silent. No alert. Six deals since 9/8 (Danielle's three Elenes
+trials, Paola's Albee Li and Matiukhina x2, Mandy's Howell) sat with their
+creator for 2 min to 17 h until a scheduler noticed and took them by hand.
+Zapier has no zap-listing API, so the cause on their side is unknown.
+
+**Second finding, worse:** on charter PO deals the zap was FIGHTING po_inbox.
+po_inbox sets the owner deliberately (student-last-name split); the zap
+rewrote 55 of the last 100 Charter Trad deals to the other scheduler within
+a minute, and Yolanda/Janelle hand-reverted ~35 of them (Villa, Siddique,
+Miramontes, Munoz, Beck, Smith ...). Two owners of one rule, one of them
+invisible.
+
+**Fix:** `email/src/owner_assign.py`, run from `deal_sync` for every NEW deal
+(the deal-relay webhook lands it ~1 min after creation, same latency as the
+zap). Config `owner_assign:` — pipelines Free Trial, Gold, Gold Renewal,
+In-Person, In-Person Renewal (charter pipelines deliberately excluded:
+po_inbox owns those). Owner = `scheduler_split` by the Family contact's last
+name, deal-name parent as fallback, A-L default + "needs review" note when
+neither exists. Already the right scheduler → `owner_kept`, no write. One
+decision per deal (audit `owner:{id}`); a failed PATCH holds the cursor and
+retries. FORCE_DEAL_ID runs the pass too. 8 new tests, suite 434 green.
+Dry-run against the live Elenes and Matiukhina deals resolved the right
+scheduler from the contact.
+
+**Still human:** Roman turns the zap OFF in Zapier after the first real deal
+round-trips (both write the same value, so overlap is harmless; the reason to
+kill it is the charter fight and the silent-death class). Candidate zap: the
+one with a "New Deal" HubSpot trigger and an "Update Deal → owner" action;
+check its history for why it stopped on 9/4, and whether other zaps on the
+same HubSpot connection died with it.
+
+**Verified live (same day, Roman: "you can create a test deal too"):** PR #197
+merged (fce0c5d5). Test deal "Test Mavis - Ownerpass Student" created in Free
+Trial owned by Danielle at 20:47:24 UTC; deal_sync run 34403172659 (manual
+dispatch) re-owned it to Yolanda at 20:48:12 UTC, log line `👤 deal 64884786248
+→ Yolanda [dealname:Mavis]`. Test deal deleted (HTTP 204, restorable 90 days).
+
+**The zap, identified (Roman: "you can turn the zap off too"):** it is
+"PRE LESSON --> MONDAY", Zapier zap 347673126
+(https://zapier.com/editor/347673126), fed by HubSpot workflow 1764489615
+"Pre-Lesson -> Monday" (webhook). Step 9 is HubSpot "Update Deal". It is
+ALREADY OFF: every run since 2026-09-04 09:37 PT errored at the monday.com
+"Create Item" step with `(RecordInvalidException) Board has reached its max
+size` (board 18397928615, the Pre-Lesson board), the last run was 09-07
+12:16 PT, and the zap shows Off / last modified 09-07. The 09-04 04:44:59 PT
+errored run is the one whose step 9 made the portal's last zap owner write
+(23:45:12 UTC). No manual switch-off needed; it must NOT be turned back on
+with step 9 in it.
+
+**New open item (Roman):** that zap did more than owners. Since 09-04 no
+Pre-Lesson deal has reached the Monday Pre-Lesson board (board full) and no
+scheduler Slack DM (step 14) has gone out. Either archive/clear board
+18397928615 and republish the zap WITHOUT step 9, or let the fleet own the
+Pre-Lesson notification too (deal_sync already DMs; the board is the
+question). "PRE LESSON --> Teachworks" (zap, still On, ran today) is the
+other survivor of that webhook pair; deal_sync's TW upsert already covers it.
+
+**Also observed:** email-deal-sync had no webhook-dispatched run between
+09-08 21:47 and 09-09 16:32 UTC although 4 B2C deals were created 09-08
+21:55 and 09-09 17:55; the relay may not be receiving every deal.creation.
+The cron backstop caught them. Worth a look before the cron is demoted.
+
+**Danielle's live test (same evening):** deal 64877481221 "Narayana Gramegna -
+Keyana" (Free Trial, created 20:58 UTC) sat with Danielle 17 min; a manual
+deal_sync dispatch re-owned it to Janelle at 21:16 (`[contact:Gramegna]`). The
+17 minutes are the relay, not the pass: `wrangler tail` on deal-sync-relay
+showed ZERO requests in the 75 s after a test deal was created (twice), and
+no email-deal-sync dispatch has ever come from the relay's PAT (every
+github-actions[bot] dispatch is paired to the second with a call-agent
+dispatch, i.e. some other trigger; the rest are manual). The worker itself
+answers (403 on /call-completed without token). So HubSpot is not sending
+deal.creation to it: README step 4 (private app → Webhooks → target URL
+`https://deal-sync-relay.nameless-mountain-bafa.workers.dev/call-completed?token=<WEBHOOK_TOKEN>&delay=1`,
+subscriptions deal.creation + deal.propertyChange:dealstage) was never done.
+Until it is, new deals wait for the cron (throttled to ~hourly by GitHub
+today). Human step, Roman: the token is a wrangler secret only he holds.
+Three throwaway test deals created and deleted during this check.
+
+**Decision to log:** deal ownership is agent-owned (deal_sync); no Zapier or
+workflow may write `hubspot_owner_id` on deals. Follows the 2026-08-31
+"transactional SMS is agent-owned" precedent.
+
+**Files:** `email/src/owner_assign.py` (new), `email/src/deal_sync.py`,
+`email/config.yaml`, `email/tests/test_owner_assign.py` (new), `docs/CHANGELOG.md`.
+
+---
+
+---
+## 2026-09-08 — Charter SMS round 2: opened-but-silent families (Roman: "try the Charter SMS first")
+
+**What:** First live use of the bulk messenger's SMS rail. Audience = charter
+gap families (list 3104) with NO 26/27 charter deal who OPENED a win-back email
+(per-recipient HubSpot email events, bot opens excluded) and never replied:
+117 → static list 3237 "Charter 26/27 SMS Round 2 - Opened, no reply (Sep
+2026)". Buckets of the 402 unconverted: opened-silent 117, delivered-never-
+opened 198, never-sent 57, unsubscribed 12, replied 16, bounced 2 (audience
+CSV in the session scratchpad; the never-sent 57 and never-opened 198 are the
+next rounds, not this one). Engine changes: (1) `MERGE_PROPS` now carries
+`student_names` + `student_count`; (2) new `--sms-template-multi` (workflow
+input `sms_template_multi`) renders multi-student families from a second
+template, since the single-student tutor token undersold 81/389 families in
+August; (3) from-number routing LOCKED by Roman the same afternoon: "scheduling
+stays with scheduling, those that are not deals yet are leads... they need
+to go from Paola's number" → new role key `charter_sales` = 818-573-6644
+(Paola's line, verified from JustCall outbound history) for every family
+with no deal yet, and `support` = 818-869-1627 reserved for scheduling texts
+to families that already have a PO/deal. Both batches (the 95 win-back texts
+and the follow-up push to yes-repliers without a PO) go from charter_sales. Templates:
+`templates/charter_r2_opened_single.txt` (tutor + student named) and
+`templates/charter_r2_opened_multi.txt` ({{student_names}} + "their tutors"),
+signed Paola (charter_sales seat = families), no em dashes, PO language per
+the 2026-09-02 rule (school issues the PO; we send the teacher the hours),
+STOP line, 2 GSM segments. Dry run (read-only replica of the engine's skip
+logic): 108 sendable (84 single, 24 multi), 9 skipped for missing tutor/student
+stamps, 0 opted out, 0 bad phones.
+**Found on the way:** inbox replies do NOT stamp `hs_email_last_reply_date`
+(Sporykhin replied 8/31 via the inbox, property still empty), so any "replied"
+filter must also scan conversation threads — done here with a thread scan
+(`associatedContactId` → INCOMING messages since 8/18) before the send; the
+same gap is why `campaign_replied` is unset on all 17 August repliers.
+**SENT 2026-09-08 ~1:40 PM PT (Roman: "instantly message those 13 people,
+lowest hanging fruit"):** 12 personal PO-push texts from Paola's line
+(818-573-6644) to the August yes-repliers who still had no 26/27 charter
+deal at send time (rechecked live): Elias, Solis, Simmons, Barber, Aguila,
+Carrillo, Moore, Villacin, Lizcano, Ballesteros, Richardson, Hurtado De La
+Cruz. Copy: "Glad {student} wants to keep going with {tutor}. We have not
+seen the PO from your school yet. Want me to send your teacher the hours so
+they can issue it? Reply YES and I will get it moving." (multi-kid variant:
+"{students} want to keep going with their tutors"; no STOP line, per Roman:
+a reply inside a live conversation about a service they asked for).
+Sporykhina held out (replied 9/2: no funds this semester). 12/12 accepted by
+JustCall; an [Agent] note with the exact text is on each contact. Sent via a
+session script calling the messenger's `jc_send_sms` because the bulk rail
+refuses <25 recipients by design; this is the shape the reply-chase agent
+will automate. Replies land on Paola's line.
+**WIN-BACK BATCH SENT 2026-09-08 4:50 PM PT (Roman: "send now, it's
+4:49 pm"):** 95/95 texts from Paola's line (charter_sales) to list 3237,
+75 single-student + 20 multi-student, 9 skipped for missing tutor/student
+stamps. Send-time checks: inbox re-scan (0 new repliers since 1 PM), no
+26/27 charter deal on any recipient, opt-out/phone guards. Ran via a session
+script importing the worktree messenger (same code as this PR) because
+Actions needs the templates on main; [Agent] note with the exact text on
+each contact; send log in the session scratchpad. Paola was DM'd on Slack
+about both batches. Replies land on Paola's line.
+**FIRST 20 MINUTES (5:10 PM PT):** 20 replies from 107 recipients. Yes /
+send-teacher-hours: Simmons, Elias, Gonzalez, Molina (Selene), Crane,
+Richardson (Pamela), Phillips, Solis, Salcedo. Holding: Carrillo (school
+schedule first), Sagua (open thread, confused, needs Paola personally),
+Acevedo (asked "does the school pay?"). Lost: Butcher (Firefly), Potts (not
+now). STOP x4 (Earley, Benitez, M. Molina, Karpekin) → `sms_opt_out=true`
+stamped by hand-run script each time, since no ingester exists.
+**TOR CONFIRMATION SENT 5:12 PM PT (Roman: "ask everyone that said yes to
+confirm their teacher of record / facilitator, same as last year"):** 9
+texts from Paola's line naming the TOR on file (Family→TOR association
+typeId 15, legacy field fallback; all 9 had one): "is {student}'s teacher of
+record or facilitator still {TOR}, same as last year? Reply YES if so, or
+reply with the new name if it changed." 9/9 accepted; notes on contacts;
+log in scratchpad. Elias's "Mrs. Hernandez" matched Ruth Hernandez on file.
+**BY 6:25 PM PT:** 52 replies from 107. TOR confirmed by text: Elias (Ruth
+Hernandez), Phillips (Kristi Williamson), Simmons (Whitney VonMoos), Crane
+(Dana Eiremo), Sagua (Karla Diaz Salazar). TOR CHANGED: Salcedo → "Sean
+Alves"; Molina (Selene) → "Amy Aceto". Roman's rule, applied live: ask the
+family for the new teacher's email, then create the teacher the way
+po_inbox does. Salcedo replied salves@viedu.org → contact 247274215530
+created (persona TOR, lead status TOR, owner sales seat/Danielle,
+school_canonical "Visions In Education" from the viedu.org alias), family
+linked typeId 15 ADD-only, notes both sides. Molina asked for Aceto's email
+(pending). New yes: Barron (Ellie, Stephanie) → TOR check sent naming
+Toolie Younger. 5th STOP (Patterson) stamped. Faulk and Barber are being
+worked by Paola directly on the line (Faulk sending criteria to paola@;
+Barber asked cost + discount for 4 kids, needs the "school pays" answer).
+**TUTOR ASKS POSTED 6:56 PM PT (Roman: "check if those teachers have their
+own Slack channels, if so post the requests there now"):** per-tutor PRIVATE
+channels DO exist, named first-last (created by Danielle 2023-24, Kath
+2025-26). Posted one "can you take {student}, {days/times}?" request in
+each, tagging Paola: #cathy-westcot (Sariyah Simmons), #tarisa-r (Willow
+Crane), #stephanie-torres (Daryl Phillips + Ellie Barron),
+#lisarose-blanchette (Matteo Molina), #christina-daniels (Franny Solis),
+#jonathan-szatkowski (Phillip Salcedo), #aesha-siddiqui (Gia Faulk).
+Wrong-channel guard before posting: each first name → exactly ONE tutor
+with an active roster status in HubSpot AND one Slack user, matching the
+channel. NO channel for Christa (Elias, Gonzalez), Frederick (Sagua),
+Angela Salyer (Richardson): those three asks are still open.
+**CHRISTA BY SMS 7:15 PM PT (Roman: "Christa only uses SMS; for Christa and
+these situations use the 869 number and text her"):** tutors who are
+SMS-only or have no Slack channel get the ask by text from the SUPPORT line
+818-869-1627. Sent Christa (818-339-5667, confirmed via her Slack profile;
+HubSpot holds two Christa records, 160787711301 with the phone and
+201052445204 Bretz with the email, left unmerged) the ask for Joseph Elias
+and Alexzander & Andrew Gonzalez; note on the tutor contact. Frederick and
+Angela Salyer: posted 9:25 PM PT in their existing team GROUP DMs
+(C09TVHNMTQT, C0AF2U503AQ; every tutor has one with the whole team, found
+via Slack search `from:<@tutor>` in mpim). Frederick had already agreed on
+Aug 21 to resume Christian Sagua (Tue/Thu after 9), so his post is a
+re-confirm; the real blocker there is the TOR/PO, not the tutor. Angela
+asked for Eli Richardson.
+**Roman's next asks (not built):** (a) new-teacher intake automation =
+ask email → create TOR → link, as done by hand above; (b) tutor ask
+automation: post in the tutor's own channel when one exists, else a group
+DM with Paola/Yolanda/Janelle (bot needs `mpim:write`/`mpim:read` for
+that; Roman to add and reinstall).
+**Not done / needs Roman:**
+STOP-reply ingestion (README phase 2) is still not built, so opt-outs rely on
+JustCall's native STOP handling until then.
+**Files:** ops/messenger/messenger.py, ops/messenger/config.yml,
+.github/workflows/messenger.yml, ops/messenger/README.md,
+ops/messenger/templates/charter_r2_opened_{single,multi}.txt.
 
 ---
 ## 2026-09-08 — EO booth crons killed; booths now enforce their own sunset
@@ -715,6 +1531,31 @@ docs/PO-PROCESS.md.
 **Roman before merge:** add the RESEND_API_KEY GitHub secret (same key as
 .env), then the live probe in the session notes.
 
+## 2026-09-02 — `/council` command: fixed seats, evidence first, one verdict
+
+**What:** New Claude Code command `.claude/commands/council.md`. `/council <question
+or thesis> [--save]` convenes seven fixed seats (sales seat, charter_sales seat, Ops /
+PO desk, Finance / data, Risk / brand, the customer's chair, Devil's advocate), each
+of which must cite a fact from the repo or a read-only portal query and take a
+position, then converges on a verdict, a plan table, the fixes that must be true
+before go, and one go line. `--save` writes the output to `docs/councils/`. Roles, not
+names; labels, not values; no em dashes; CARE pointer at the top (it reasons). First
+saved council: `docs/councils/2026-09-02-charter-teacher-outreach.md`.
+
+**Why:** Roman 2026-09-02, while planning charter teacher outreach: "I would like a
+#council command and analysis." His thesis (teachers who already worked with us get a
+plain referral ask, cold teachers get the Teacher Scholarship program as the door) was
+tested seat by seat and held with two changes: the scholarship's own pipeline (13
+teacher deals, 11 sitting at "sent flyer"; 10 family deals, 3 unresponsive) says it must
+be sent as a two-minute nomination, not a call, and IEM's ~300 teachers are a network
+conversation, not an email list. A single perspective writes the plan; the council makes
+the seats that pay for it (ops, the customer, finance) speak before the send.
+
+**Files:** `.claude/commands/council.md` (new), `docs/councils/2026-09-02-charter-teacher-outreach.md`
+(new), `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-02 — Campaign routing logged as #AP046
 
 **What:** Appended the campaign-routing decision (PRs #134 + #159) to the A+
@@ -951,6 +1792,44 @@ number and appends via the existing Zapier Google Docs pipe.
 
 **Files:** `ops/fleet-health/audit/reports/decision-log-draft.txt`,
 `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-02 — Sage Oak booth: append the event tag instead of replacing it (#AP032)
+
+**What changed**
+- `booth/worker.js` — adds `mergeEventTags()`, fetches `aplus_event_tag` in the
+  contact search, and unions on update instead of writing flat.
+- `booth/test-worker.mjs` — new, 7 tests.
+
+**Why**
+`aplus_event_tag` is `fieldType: checkbox` (multi-select), so a flat PATCH
+replaces the whole set. The Sage Oak booth searched with
+`properties: ["email"]` and wrote the tag flat — correct while it was the only
+event, a data-loss bug the moment Blue Ridge shipped. A teacher who attended
+Blue Ridge and then hit the Sage Oak booth again would have had
+`blue_ridge_btsc_2026` silently erased.
+
+Ported from `booth/blue-ridge/worker.js`, where the same logic is already live
+and was verified against production on 2026-09-01 (a contact seeded with
+sage_oak came back `sage_oak_btsc_2026;blue_ridge_btsc_2026`).
+
+**Also done this session (data, no code)**
+- The 26 Blue Ridge booth leads were assigned to Danielle (Roman 2026-09-02).
+  24 were unassigned because the owner-routing Worker was never redeployed;
+  the routing itself is merged and takes effect on the next `wrangler deploy`.
+- Backfilled `po_work_type` + `ticket_source` on the 12 remaining PO-inbox
+  tickets that predate PR #136, classified only from the subject prefix and the
+  agent's own "Not a PO:" summary. 4 purchase_order, 2 ar_followup, 2 other,
+  1 each marketing_junk / vendor_onboarding / scam / po_cancellation.
+
+**Files touched**
+- `booth/worker.js`, `booth/test-worker.mjs`, `docs/CHANGELOG.md`
+
+**Verification** — `node booth/test-worker.mjs`: 7 passed, including that the
+search requests the tag (without it the merge has nothing to merge).
+
+**Decision log** — #AP032 is now enforced in both booths and covered by tests.
 
 ---
 
@@ -1597,6 +2476,33 @@ escalations land on Operations." Not yet numbered.
 
 ---
 
+
+## 2026-08-26 — Review tickets tied to families (email engine, PR pending)
+
+**What:** New `review_received` triage category: Google/Yelp
+review-notification emails become HubSpot tickets (category "Review",
+owner = quality role = Paola, 8 business-hr SLA, no draft — replies happen
+on the platform). The ticket is tied to the FAMILY contact via an exact
+unique first+last match on the classifier-extracted reviewer name; a
+partial name ("Maria A.") or ambiguous match leaves the ticket
+unassociated with the reason in its notes. Platform no-reply senders
+never become contacts (CallRail/JustCall junk-contact lesson). New ticket
+properties review_platform / review_rating / review_reviewer_name declared
+in properties.yml (tickets group `review`); "Review" option added to
+hs_ticket_category in-portal (additive PATCH, Roman-authorized). 9 new
+tests (suite 269 green).
+
+**Why:** Roman 2026-08-26: "tickets tied to families when they leave a
+review allows us to better track". No review notifications exist in inbox
+history — Roman must point Google Business Profile + Yelp notification
+emails at admin@wetutorathome.com for the category to ever fire.
+
+**Files:** `email/rules.md`, `email/config.yaml`, `email/src/classifier.py`,
+`email/src/main.py`, `email/src/hubspot_client.py`,
+`email/tests/test_review_received.py`, `ops/hubspot-schema/properties.yml`,
+`docs/CHANGELOG.md`.
+
+---
 
 ## 2026-08-26 — Tutor-issue ticketing LIVE
 
@@ -4232,3 +5138,72 @@ Gukasov x2 @$830, Feinstein x2 @$352); deal_sync ongoing divides by the contact'
 gold-deal count. Fakheri siblings stamped $3,300 each from their $6,600 invoice
 (per Roman). Remaining manual: Inna Garcia - Maximilian + Jenifer Peters (no TW
 invoice exists).
+
+## 2026-09-10 — Melara sibling deals: student name clobbered by a portal workflow, not by po_inbox
+**Why:** The low-balance backfill found all three Sky Mountain / Melara PO deals
+(64677367903 Ezekiel, 64684494965 Mario, 64659861919 Vincent; PO 1443416) carrying
+`student_first_name` = Mario while names and PO numbers were right. The first read
+was "the per-PO loop takes the wrong sibling".
+**What we found:** HubSpot property history on the deals shows the integration
+(po_inbox, source 39943154) stamped Ezekiel/6, Mario/9, Vincent/7 correctly at
+16:17Z; 80 s later AUTOMATION_PLATFORM enrollment 2802592531732 rewrote
+`student_first_name` = Mario and `student_grade` = 9 on the Ezekiel and Vincent
+deals. Live contact-based workflow **34950163 "Contact to Deal Properties"**
+(created 2020-07-31, last edited 2024-01-04, 3,317 lifetime enrollments) enrolls
+any contact with an associated deal in 9 stages (incl. charter Pre-Lesson 907749)
+and sets, on EVERY associated deal: `student_first_name` ← contact
+`student_last_name` (the legacy contact field that holds the FIRST name), `student_grade`
+← contact grade, plus `first_name`/`last_name`/`contact_record_id`. One contact,
+three siblings → every sibling deal gets the contact's one student. `_split_pos`
+in po_inbox is correct; the code path was never the bug.
+**What changed:** regression test `test_three_sibling_po_stamps_each_deals_own_student`
+(three-sibling certificate → three per-deal stamps, name + grade); Stage 3 note in
+docs/PO-PROCESS.md naming the workflow. Live data: Ezekiel/6 and Vincent/7 restored
+by API on 2026-09-10 (Mario/9 was already right). Post-8/1 scan of 298 deals with
+`student_first_name` found one more sibling casualty outside the PO pipeline:
+Lesly Elenes deals 64836791336 (Emma Rose) and 64837038724 (Nathan), both stamped
+"Adrian" on 2026-09-08 — left for Roman.
+**System fix (portal, needs Roman's go):** in workflow 34950163 delete the two
+actions that write `[Agent]` deal properties (`student_first_name`, action 1;
+`student_grade`, action 6). po_inbox and the teacher-form deal workflow already
+stamp those per deal; nothing else should. Keeping `first_name`/`last_name`/
+`contact_record_id` copies is harmless. Until that is done every multi-student
+family will be re-clobbered on the next enrollment. Decision-log entry pending.
+**Files:** email/tests/test_po_inbox.py, docs/PO-PROCESS.md, docs/CHANGELOG.md.
+
+## 2026-09-10 — student_stamp: fill-only student/parent deal stamp replaces workflow 34950163 (PR #209)
+**Why:** Roman, same day, on the Melara finding: "yes, and turn off the workflows."
+Workflow 34950163 "Contact to Deal Properties" (2020) copied the contact's ONE
+student name + grade and parent first/last + contact id onto EVERY associated
+deal, overwriting po_inbox's per-deal stamps (Melara 9/4, Elenes 9/8). It also
+never re-enrolled a contact, so repeat families' later deals got nothing: the
+backfill dry run found 227 of 305 post-8/1 deals in the covered pipelines with
+at least one of the four name fields blank. Six live workflows read those deal
+fields as tokens (Gold/In-Person Renewed, In-Person Renewal, Charter Continued
+Out of Pocket, Teacher Scholarship WF-01/03/04), so deleting the copies without a
+replacement would have blanked their notifications.
+**What:** `email/src/student_stamp.py`, called from deal_sync for every NEW deal
+in `student_stamp.pipelines` (the workflow's 8 Pre-Lesson pipelines + CFGC + the
+scheduling pipelines). FILL ONLY, never overwrites. Student first name from the
+deal name first ("Lesly Elenes - Nathan"), the contact's student field second;
+two students in one deal name → left for a human and flagged; grade copied only
+when the student IS the contact's student; parent first/last + contact id from
+the deal's Family contact, never from a TOR/ES contact (`is_family_contact`
+guard). Non-fatal: a HubSpot error never holds the deal_sync cursor. Backfill:
+`python3 -m src.student_stamp --since 2026-08-01T00:00:00Z [--live]`.
+Registry: deal `first_name` / `last_name` / `contact_record_id` declared as
+[Agent] properties (labels to be patched live). Retirement script
+`ops/fleet-health/audit/retire_contact_to_deal_workflows.py` backs up both flows,
+switches 34950163 OFF and removes only the student_first_name copy (action 24)
+from 366207297 (Summer Boost Online Pre-Lesson), keeping its other actions.
+**Live, verified 2026-09-10:** 34950163 OFF; action 24 removed from 366207297 (its
+other four copies intact); the three deal properties relabeled [Agent]. Melara
+deals restored earlier the same day. **Still to run (Claude Code's auto-mode
+classifier blocked the bulk write):** the fill-only backfill, after merge:
+`cd email && python3 -m src.student_stamp --since 2026-08-01T00:00:00Z --live`
+(dry run showed 227 of 305 deals gain blank fields only; 0 overwrites). Elenes
+deals 64836791336 / 64837038724 restored from property history (Emma Rose / 7,
+Nathan / 5, as Danielle typed them 90 s before the workflow fired) 2026-09-10.
+**Files:** email/src/student_stamp.py, email/src/deal_sync.py, email/config.yaml,
+email/tests/test_student_stamp.py, ops/hubspot-schema/properties.yml,
+ops/fleet-health/audit/retire_contact_to_deal_workflows.py, docs/PO-PROCESS.md.

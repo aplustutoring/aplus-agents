@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Delilah is 5 Photo Booth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum:#3B1F3D;
+    --plum-deep:#2A1530;
+    --pom:#C2383F;
+    --pom-deep:#9E2A31;
+    --honey:#F2B33D;
+    --honey-deep:#D9962A;
+    --cream:#FFF7E8;
+    --leaf:#4E7A47;
+    --ink:#2B1B2E;
+    --lilac:#E8D5EA;
+    --radius:28px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+  body{font-family:'Nunito',system-ui,sans-serif;background:var(--plum);color:var(--ink);}
+  .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;padding:40px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .screen.active{display:flex;}
+  .screen::before,.screen::after{content:"";flex:1 0 0;}
+  .screen > *{flex-shrink:0;}
+  h1,h2,.display{font-family:'Fredoka','Nunito',sans-serif;}
+
+  /* ---------- Attract ---------- */
+  #screen-attract{background:radial-gradient(ellipse at 50% 30%,#5A2F5E 0%,var(--plum) 55%,var(--plum-deep) 100%);color:var(--cream);text-align:center;cursor:pointer;}
+  .attract-eyebrow{letter-spacing:.24em;text-transform:uppercase;font-weight:900;font-size:16px;color:var(--honey);margin-bottom:18px;}
+  #screen-attract h1{font-size:clamp(56px,9vw,120px);font-weight:700;line-height:1;}
+  #screen-attract h1 em{font-style:normal;color:var(--honey);}
+  .attract-sub{margin-top:18px;font-size:24px;font-weight:700;color:var(--lilac);}
+  .attract-emoji{font-size:64px;margin-top:26px;letter-spacing:.15em;}
+  .attract-cta{margin-top:44px;background:var(--honey);color:var(--ink);font-family:'Fredoka',sans-serif;font-weight:700;font-size:30px;padding:26px 68px;border:none;border-radius:999px;animation:breathe 2.4s ease-in-out infinite;box-shadow:0 14px 40px rgba(0,0,0,.35);}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .attract-frame{position:absolute;inset:22px;border:4px dashed rgba(242,179,61,.45);border-radius:40px;pointer-events:none;}
+  .attract-foot{position:absolute;bottom:34px;left:0;right:0;text-align:center;font-weight:800;font-size:16px;color:rgba(232,213,234,.7);letter-spacing:.08em;}
+  #host-hotspot{position:absolute;top:0;right:0;width:120px;height:120px;}
+
+  /* ---------- Shared ---------- */
+  .light{background:var(--cream);color:var(--ink);}
+  .step-eyebrow{letter-spacing:.2em;text-transform:uppercase;font-weight:900;font-size:14px;color:var(--pom);margin-bottom:10px;}
+  .step-title{font-size:clamp(32px,4.6vw,50px);font-weight:700;text-align:center;line-height:1.08;}
+  .btn{font-family:'Fredoka',sans-serif;font-weight:700;border:none;border-radius:999px;font-size:24px;padding:22px 48px;cursor:pointer;}
+  .btn-primary{background:var(--pom);color:var(--cream);}
+  .btn-honey{background:var(--honey);color:var(--ink);}
+  .btn-ghost{background:transparent;color:var(--pom);border:3px solid var(--pom);}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.45;}
+  .back-link{position:absolute;top:26px;left:26px;background:none;border:none;font-family:'Nunito',sans-serif;font-weight:900;font-size:18px;color:var(--pom);cursor:pointer;padding:12px;}
+
+  /* ---------- Camera ---------- */
+  #screen-camera{background:var(--plum-deep);padding:0;}
+  .cam-stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  #video{height:78%;aspect-ratio:1080/1250;object-fit:cover;border-radius:24px;transform:scaleX(-1);background:#000;}
+  .cam-frame{position:absolute;pointer-events:none;border:6px solid var(--honey);border-radius:24px;height:78%;aspect-ratio:1080/1250;}
+  #btn-shutter{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:100px;height:100px;border-radius:50%;background:var(--honey);border:7px solid var(--cream);cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.4);}
+  #countdown-overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(42,21,48,.35);}
+  #countdown-overlay.on{display:flex;}
+  #count-num{font-family:'Fredoka',sans-serif;font-weight:700;font-size:160px;color:var(--ink);width:260px;height:260px;border-radius:50%;background:var(--honey);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 50px rgba(0,0,0,.35);}
+  .count-pop{animation:pop .95s ease both;}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.15);opacity:1}60%{transform:scale(1)}100%{opacity:1}}
+  #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .35s;}
+  .cam-hint{position:absolute;top:30px;left:0;right:0;text-align:center;color:var(--lilac);font-weight:800;font-size:20px;}
+  #cam-error{max-width:520px;text-align:center;color:var(--cream);font-size:19px;line-height:1.5;display:none;}
+
+  /* ---------- Review ---------- */
+  #review-img{height:64vh;border-radius:20px;box-shadow:0 20px 60px rgba(42,21,48,.3);}
+  .review-actions{display:flex;gap:20px;margin-top:30px;}
+
+  /* ---------- Form ---------- */
+  #screen-form form{width:min(600px,92vw);margin-top:26px;display:flex;flex-direction:column;gap:16px;}
+  .field label{display:block;font-weight:900;font-size:15px;margin-bottom:7px;color:var(--pom);}
+  .field input{width:100%;font-family:'Nunito',sans-serif;font-size:24px;font-weight:700;padding:18px 20px;border:3px solid var(--lilac);border-radius:18px;background:#fff;color:var(--ink);user-select:text;-webkit-user-select:text;}
+  .field input:focus{outline:none;border-color:var(--pom);}
+  .form-note{text-align:center;font-weight:700;color:#6B5570;font-size:16px;line-height:1.4;}
+  .form-actions{display:flex;gap:14px;justify-content:center;margin-top:8px;flex-wrap:wrap;}
+  #form-error{color:var(--pom);font-weight:900;font-size:16px;display:none;text-align:center;}
+
+  /* ---------- Sending / Done ---------- */
+  #screen-sending,#screen-done{background:radial-gradient(ellipse at 50% 30%,#5A2F5E 0%,var(--plum) 55%,var(--plum-deep) 100%);color:var(--cream);text-align:center;}
+  .spinner{width:74px;height:74px;border-radius:50%;border:7px solid rgba(232,213,234,.25);border-top-color:var(--honey);animation:spin 1s linear infinite;margin-bottom:34px;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #screen-done h2{font-size:clamp(44px,7vw,80px);font-weight:700;}
+  #screen-done h2 em{font-style:normal;color:var(--honey);}
+  .done-sub{margin-top:18px;font-size:22px;font-weight:700;color:var(--lilac);max-width:34ch;line-height:1.5;}
+  .done-reset{margin-top:46px;font-size:15px;color:rgba(232,213,234,.6);font-weight:800;}
+
+  /* ---------- Album (host only) ---------- */
+  #screen-album{background:var(--cream);}
+  .album-bar{display:flex;gap:14px;align-items:center;margin-bottom:18px;flex-wrap:wrap;justify-content:center;}
+  .album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;width:min(1000px,94vw);}
+  .album-item{position:relative;border-radius:14px;overflow:hidden;background:#fff;border:3px solid var(--lilac);}
+  .album-item img{width:100%;display:block;}
+  .album-item .cap{font-size:13px;font-weight:800;padding:6px 8px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .album-item button{width:100%;border:none;background:var(--honey);font-family:'Fredoka',sans-serif;font-weight:700;font-size:16px;padding:10px;cursor:pointer;}
+  .album-empty{font-weight:800;color:#6B5570;}
+
+  /* ---------- Print ---------- */
+  #print-area{display:none;}
+  @media print{
+    body>*{display:none !important;}
+    #print-area{display:block !important;position:static;}
+    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
+    @page{margin:0;}
+    html,body{margin:0 !important;padding:0 !important;}
+  }
+  @media (prefers-reduced-motion:reduce){.attract-cta,.count-pop,.spinner{animation:none;}}
+</style>
+</head>
+<body>
+
+<!-- ============ CONFIG ============ -->
+<script>
+const CONFIG = {
+  WORKER_URL: location.origin,   // page and API are served by the same Worker
+  NAME: "Delilah",
+  AGE: 5,
+  DATE_LABEL: "9.11.26",
+  HEBREW_YEAR: "5787",
+  AUTO_PRINT: true,       // every kept photo prints (party favor)
+  STORYBOOK: true,        // second print: guests repainted into a Rosh Hashanah storybook (Gemini)
+  STORYBOOK_BANNER: "Once upon a Shana Tova",
+  IDLE_RESET_MS: 90000,
+  DONE_RESET_MS: 8000
+};
+</script>
+
+<!-- ============ ATTRACT ============ -->
+<div class="screen active" id="screen-attract">
+  <div class="attract-frame"></div>
+  <div id="host-hotspot" aria-hidden="true"></div>
+  <div class="attract-eyebrow">Rosh Hashanah &middot; 5787</div>
+  <h1>Delilah<br>is <em>5!</em></h1>
+  <div class="attract-sub">Grab a photo to take home with you</div>
+  <div class="attract-emoji">&#127822; &#127855; &#127853; &#127826;</div>
+  <button class="attract-cta">Tap to start &#128248;</button>
+  <div class="attract-foot">SHANA TOVA &middot; SWEET NEW YEAR</div>
+</div>
+
+<!-- ============ CAMERA ============ -->
+<div class="screen" id="screen-camera">
+  <div class="cam-stage">
+    <div class="cam-hint">Squeeze in, then tap the honey button</div>
+    <video id="video" autoplay playsinline muted></video>
+    <div class="cam-frame"></div>
+    <div id="cam-error">Camera unavailable. In iPad Settings, open Safari, allow camera access for this site, then reload.</div>
+    <button id="btn-shutter" aria-label="Take photo"></button>
+    <div id="countdown-overlay"><div id="count-num">3</div></div>
+  </div>
+</div>
+
+<!-- ============ REVIEW ============ -->
+<div class="screen light" id="screen-review">
+  <div class="step-eyebrow">Looking sweet</div>
+  <img id="review-img" alt="Your photo">
+  <div class="review-actions">
+    <button class="btn btn-ghost" id="btn-retake">Retake</button>
+    <button class="btn btn-primary" id="btn-keep">Love it!</button>
+  </div>
+</div>
+
+<!-- ============ FORM ============ -->
+<div class="screen light" id="screen-form">
+  <button class="back-link" data-back="review">&larr; Back</button>
+  <div class="step-eyebrow">Almost done</div>
+  <h2 class="step-title">Want it texted to you too?</h2>
+  <form id="lead-form" autocomplete="off">
+    <div class="field"><label for="f-name">Your name (goes on the album)</label><input id="f-name" type="text" placeholder="Bubbe &amp; Zayde" maxlength="40"></div>
+    <div class="field"><label for="f-phone">Cell number</label><input id="f-phone" type="tel" inputmode="tel" placeholder="(818) 555-0123"></div>
+    <div id="form-error"></div>
+    <div class="form-note">Two prints are coming either way: your photo and a storybook version. The text is a bonus.</div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" type="button" id="btn-skip">Just print it</button>
+      <button class="btn btn-primary" type="submit">Print + text me</button>
+    </div>
+  </form>
+</div>
+
+<!-- ============ SENDING ============ -->
+<div class="screen" id="screen-sending">
+  <div class="spinner"></div>
+  <h2 class="display" style="font-size:38px;">Printing your photo&hellip;</h2>
+  <div class="done-sub">Grab it from the printer in a moment</div>
+</div>
+
+<!-- ============ PAINTING (storybook) ============ -->
+<div class="screen" id="screen-painting">
+  <div class="spinner"></div>
+  <h2 class="display" style="font-size:38px;">Painting your storybook&hellip;</h2>
+  <div class="done-sub">Grab your first print. A second one is being painted for you, about 20 seconds.</div>
+  <img id="painting-preview" alt="" style="height:38vh;border-radius:16px;margin-top:26px;box-shadow:0 16px 50px rgba(0,0,0,.35);">
+</div>
+
+<!-- ============ DONE ============ -->
+<div class="screen" id="screen-done">
+  <h2>Shana <em>Tova!</em></h2>
+  <div class="done-sub" id="done-msg"></div>
+  <div class="done-reset">Resetting for the next guest&hellip;</div>
+</div>
+
+<!-- ============ ALBUM (host only: press and hold the top-right corner of the start screen) ============ -->
+<div class="screen" id="screen-album">
+  <button class="back-link" data-back="attract">&larr; Back to booth</button>
+  <div class="step-eyebrow">Host album</div>
+  <div class="album-bar">
+    <span id="album-count" class="album-empty"></span>
+    <button class="btn btn-honey" id="btn-print-all" style="font-size:18px;padding:14px 26px;">Print all</button>
+    <button class="btn btn-ghost" id="btn-album-refresh" style="font-size:18px;padding:14px 26px;">Refresh</button>
+  </div>
+  <div class="album-grid" id="album-grid"></div>
+</div>
+
+<div id="flash"></div>
+<div id="print-area"><img id="print-img" alt=""></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = { photoDataUrl:null, rawDataUrl:null, stream:null, album:[] };
+
+  // ---------- Navigation ----------
+  const screens = ["attract","camera","review","form","sending","painting","done","album"];
+  function show(name){
+    screens.forEach(s => $("screen-"+s).classList.toggle("active", s===name));
+    resetIdleTimer(name);
+    if(name==="camera") startCamera();
+    else if(state.stream && name!=="camera") stopCamera();
+  }
+  document.querySelectorAll("[data-back]").forEach(b =>
+    b.addEventListener("click", e => { e.stopPropagation(); show(b.dataset.back); }));
+
+  // ---------- Idle reset ----------
+  let idleTimer=null;
+  function resetIdleTimer(current){
+    clearTimeout(idleTimer);
+    if(current && !["attract","sending","painting","album"].includes(current)){
+      idleTimer=setTimeout(fullReset, CONFIG.IDLE_RESET_MS);
+    }
+  }
+  ["touchstart","click","keydown"].forEach(ev =>
+    document.addEventListener(ev, () => {
+      const active = screens.find(s => $("screen-"+s).classList.contains("active"));
+      resetIdleTimer(active);
+    }, {passive:true}));
+
+  function fullReset(){
+    state.photoDataUrl=null; state.rawDataUrl=null;
+    $("lead-form").reset();
+    $("form-error").style.display="none";
+    show("attract");
+  }
+
+  // ---------- Fonts: warm the canvas faces so the first print is not a fallback font ----------
+  if(document.fonts && document.fonts.load){
+    ["700 118px Fredoka","700 58px Fredoka","900 34px Nunito"].forEach(f=>document.fonts.load(f).catch(()=>{}));
+  }
+
+  // ---------- Attract ----------
+  $("screen-attract").addEventListener("click", () => show("camera"));
+  // Host hotspot: press and hold the top-right corner ~1.2s to open the album.
+  let holdTimer=null;
+  const hot=$("host-hotspot");
+  const startHold=e=>{ e.stopPropagation(); holdTimer=setTimeout(()=>{ holdTimer=null; openAlbum(); },1200); };
+  const endHold=e=>{ e.stopPropagation(); if(holdTimer){ clearTimeout(holdTimer); holdTimer=null; } };
+  hot.addEventListener("touchstart",startHold,{passive:true}); hot.addEventListener("mousedown",startHold);
+  hot.addEventListener("touchend",endHold); hot.addEventListener("mouseup",endHold); hot.addEventListener("click",e=>e.stopPropagation());
+
+  // ---------- Camera ----------
+  async function startCamera(){
+    try{
+      if(!state.stream){
+        state.stream=await navigator.mediaDevices.getUserMedia({
+          video:{facingMode:"user", width:{ideal:1920}, height:{ideal:1440}}, audio:false
+        });
+      }
+      $("video").srcObject=state.stream;
+      $("video").style.display=""; $("cam-error").style.display="none";
+    }catch(e){
+      $("video").style.display="none"; $("cam-error").style.display="block";
+    }
+  }
+  function stopCamera(){
+    if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; }
+  }
+
+  $("btn-shutter").addEventListener("click", runCountdown);
+  async function runCountdown(){
+    const overlay=$("countdown-overlay"), num=$("count-num");
+    overlay.classList.add("on");
+    for(const n of [3,2,1]){
+      num.textContent=n; num.classList.remove("count-pop"); void num.offsetWidth;
+      num.classList.add("count-pop");
+      await new Promise(r=>setTimeout(r,950));
+    }
+    overlay.classList.remove("on");
+    $("flash").style.opacity="1";
+    capture();
+    setTimeout(()=>{$("flash").style.opacity="0";},180);
+  }
+
+  // ---------- Frame ----------
+  // 1200x1800 (2:3, 4x6 print). Cream card, pomegranate double border,
+  // honey mat, headline on top, banner below. Used for both prints: the real
+  // photo (banner: Shana Tova) and the Gemini storybook (banner: Once upon...).
+  const CARD={ W:1200, H:1800, photoTop:250, photoH:1250, photoPad:60 };
+  function coverCrop(srcW,srcH,dstW,dstH){
+    const vr=srcW/srcH, tr=dstW/dstH;
+    let sw,sh,sx,sy;
+    if(vr>tr){ sh=srcH; sw=sh*tr; sx=(srcW-sw)/2; sy=0; }
+    else{ sw=srcW; sh=sw/tr; sx=0; sy=(srcH-sh)/2; }
+    return {sx,sy,sw,sh};
+  }
+  function drawCard(source, srcW, srcH, {mirror=false, banner}){
+    const {W,H,photoTop,photoH,photoPad}=CARD;
+    const pw=W-photoPad*2;
+    const canvas=document.createElement("canvas");
+    canvas.width=W; canvas.height=H;
+    const ctx=canvas.getContext("2d");
+    const {sx,sy,sw,sh}=coverCrop(srcW,srcH,pw,photoH);
+
+    ctx.fillStyle="#FFF7E8"; ctx.fillRect(0,0,W,H);
+    confetti(ctx,W,H);
+    ctx.strokeStyle="#C2383F"; ctx.lineWidth=16; ctx.strokeRect(22,22,W-44,H-44);
+    ctx.strokeStyle="#F2B33D"; ctx.lineWidth=5;  ctx.strokeRect(48,48,W-96,H-96);
+
+    ctx.save();
+    ctx.fillStyle="#F2B33D"; roundRect(ctx,photoPad-14,photoTop-14,pw+28,photoH+28,34); ctx.fill();
+    roundRect(ctx,photoPad,photoTop,pw,photoH,24); ctx.clip();
+    if(mirror){ ctx.translate(W,0); ctx.scale(-1,1); }
+    ctx.drawImage(source,sx,sy,sw,sh, photoPad,photoTop,pw,photoH);
+    ctx.restore();
+
+    ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+    ctx.fillStyle="#2B1B2E";
+    const title=`${CONFIG.NAME} is ${CONFIG.AGE}!`;
+    fitText(ctx, title, 640, 118, "700", "'Fredoka','Nunito',sans-serif");
+    ctx.fillText(title, W/2, 170);
+    ctx.font="88px 'Apple Color Emoji','Segoe UI Emoji',sans-serif";
+    ctx.fillText("🍎🍯", 150, 172);
+    ctx.fillText("🎂🎈", W-150, 172);
+
+    const bannerY=photoTop+photoH+96;
+    ctx.fillStyle="#C2383F";
+    roundRect(ctx, W/2-470, bannerY-58, 940, 100, 50); ctx.fill();
+    ctx.fillStyle="#FFF7E8";
+    fitText(ctx, banner, 860, 58, "700", "'Fredoka','Nunito',sans-serif");
+    ctx.fillText(banner, W/2, bannerY+3);
+
+    ctx.fillStyle="#9E2A31";
+    const foot=`${CONFIG.NAME}'s ${CONFIG.AGE}th Birthday  •  ${CONFIG.DATE_LABEL}`;
+    fitText(ctx, foot, 1000, 34, "900", "'Nunito',sans-serif");
+    ctx.fillText(foot, W/2, H-78);
+    return canvas.toDataURL("image/jpeg",0.9);
+  }
+
+  function capture(){
+    const video=$("video");
+    const vw=video.videoWidth, vh=video.videoHeight;
+    // Framed print
+    state.photoDataUrl=drawCard(video, vw, vh, {mirror:true, banner:`Shana Tova ${CONFIG.HEBREW_YEAR}  •  Sweet New Year`});
+    // Un-framed crop (mirrored like the print) for the storybook repaint
+    const pw=CARD.W-CARD.photoPad*2, ph=CARD.photoH;
+    const raw=document.createElement("canvas"); raw.width=pw; raw.height=ph;
+    const rc=raw.getContext("2d"); const {sx,sy,sw,sh}=coverCrop(vw,vh,pw,ph);
+    rc.translate(pw,0); rc.scale(-1,1); rc.drawImage(video,sx,sy,sw,sh,0,0,pw,ph);
+    state.rawDataUrl=raw.toDataURL("image/jpeg",0.85);
+    $("review-img").src=state.photoDataUrl;
+    show("review");
+  }
+  // Base64 jpeg from Gemini -> framed storybook print
+  function frameStorybook(b64){
+    return new Promise((res,rej)=>{
+      const img=new Image();
+      img.onload=()=>res(drawCard(img, img.naturalWidth, img.naturalHeight, {banner:CONFIG.STORYBOOK_BANNER}));
+      img.onerror=rej;
+      img.src="data:image/jpeg;base64,"+b64;
+    });
+  }
+  function confetti(ctx,W,H){
+    // Deterministic scatter so every print matches the preview
+    const colors=["#F2B33D","#C2383F","#4E7A47","#E8D5EA","#D9962A"];
+    let seed=5787;
+    const rnd=()=>{ seed=(seed*9301+49297)%233280; return seed/233280; };
+    for(let i=0;i<110;i++){
+      const x=60+rnd()*(W-120), y=60+rnd()*(H-120);
+      // keep the photo window clear
+      if(x>40 && x<W-40 && y>230 && y<1520) continue;
+      ctx.fillStyle=colors[i%colors.length];
+      ctx.globalAlpha=.55+rnd()*.4;
+      ctx.beginPath();
+      if(i%3===0){ ctx.arc(x,y,5+rnd()*7,0,Math.PI*2); }
+      else { ctx.save(); ctx.translate(x,y); ctx.rotate(rnd()*Math.PI); ctx.rect(-9,-4,18,8); ctx.restore(); }
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  // Shrink the font until the text fits maxW (long names, long banners)
+  function fitText(ctx,text,maxW,size,weight,family){
+    for(let px=size; px>=18; px-=2){
+      ctx.font=`${weight} ${px}px ${family}`;
+      if(ctx.measureText(text).width<=maxW) return;
+    }
+  }
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  // ---------- Review ----------
+  $("btn-retake").addEventListener("click",()=>show("camera"));
+  $("btn-keep").addEventListener("click",()=>show("form"));
+  window.addEventListener("beforeprint",()=>{document.title=" ";});
+  window.addEventListener("afterprint",()=>{document.title="Delilah is 5 Photo Booth";});
+
+  // ---------- Form ----------
+  $("btn-skip").addEventListener("click",()=>submitAll({ name:$("f-name").value.trim(), phone:"" }));
+  $("lead-form").addEventListener("submit", e=>{
+    e.preventDefault();
+    const err=$("form-error");
+    const phone=$("f-phone").value.trim();
+    if(phone.replace(/\D/g,"").length<10){
+      err.textContent="That number looks short. Add your area code, or tap Just print it."; err.style.display="block";
+      return;
+    }
+    err.style.display="none";
+    submitAll({ name:$("f-name").value.trim(), phone });
+  });
+
+  // ---------- Print + send ----------
+  function printPhoto(dataUrl){
+    return new Promise(res=>{
+      const img=$("print-img");
+      img.onload=()=>{ setTimeout(()=>{ window.print(); res(); },250); };
+      img.src=dataUrl;
+    });
+  }
+
+  async function postSubmit(payload){
+    const res=await fetch(CONFIG.WORKER_URL+"/submit",{
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
+    });
+    return res.ok ? await res.json() : null;
+  }
+
+  async function submitAll({name, phone}){
+    show("sending");
+    const photo=state.photoDataUrl, raw=state.rawDataUrl;
+    state.album.push({ name, at:new Date().toISOString(), dataUrl:photo, kind:"photo" });
+
+    // Favor 1: the real photo. Print first (no network), then archive + text.
+    if(CONFIG.AUTO_PRINT) await printPhoto(photo);
+    let texted=false, storyTexted=false, storyOk=false;
+    try{
+      const out=await postSubmit({ name, phone, photo, kind:"photo" });
+      texted=!!(out && out.text && out.text.sent);
+    }catch(e){}
+
+    // Favor 2: the storybook repaint. Best effort; the guest already has print 1.
+    if(CONFIG.STORYBOOK && raw){
+      $("painting-preview").src=photo;
+      show("painting");
+      try{
+        const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),75000);
+        const res=await fetch(CONFIG.WORKER_URL+"/storybook",{
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ raw, name }), signal:ctl.signal
+        });
+        clearTimeout(t);
+        const out=res.ok ? await res.json() : null;
+        if(out && out.image){
+          const story=await frameStorybook(out.image);
+          storyOk=true;
+          state.album.push({ name, at:new Date().toISOString(), dataUrl:story, kind:"storybook" });
+          if(CONFIG.AUTO_PRINT) await printPhoto(story);
+          try{
+            const o2=await postSubmit({ name, phone, photo:story, kind:"storybook" });
+            storyTexted=!!(o2 && o2.text && o2.text.sent);
+          }catch(e){}
+        }
+      }catch(e){}
+    }
+
+    const first=(name||"").split(/\s+/)[0]||"friend";
+    let msg;
+    if(storyOk) msg=`Two prints are coming out, ${first}: your photo and your storybook.`;
+    else if(CONFIG.STORYBOOK) msg=`Your print is coming out, ${first}. The storybook painter was busy, so ask Roman for it later.`;
+    else msg=`Enjoy your print, ${first}!`;
+    if(phone) msg+= (texted||storyTexted) ? " Check your phone too." : " The text did not go through, so ask Roman to resend it.";
+    $("done-msg").textContent=msg;
+    show("done");
+    setTimeout(fullReset, CONFIG.DONE_RESET_MS);
+  }
+
+  // ---------- Album (host) ----------
+  async function openAlbum(){
+    show("album");
+    await loadAlbum();
+  }
+  $("btn-album-refresh").addEventListener("click",loadAlbum);
+  async function loadAlbum(){
+    const grid=$("album-grid"); grid.innerHTML="";
+    let items=[];
+    try{
+      const res=await fetch(CONFIG.WORKER_URL+"/photos");
+      const out=await res.json();
+      items=out.photos.map(p=>({ name:p.name, at:p.at, src:p.url, kind:p.kind }));
+    }catch(e){
+      items=state.album.map(p=>({ name:p.name, at:p.at, src:p.dataUrl, kind:p.kind }));
+    }
+    $("album-count").textContent=items.length ? `${items.length} photo${items.length===1?"":"s"}` : "No photos yet";
+    items.forEach((p,i)=>{
+      const el=document.createElement("div"); el.className="album-item";
+      const img=document.createElement("img"); img.src=p.src; img.alt=p.name||`Photo ${i+1}`;
+      const cap=document.createElement("div"); cap.className="cap";
+      cap.textContent=(p.name||"Guest")+(p.kind==="storybook"?" (storybook)":"")+" · "+new Date(p.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+      const btn=document.createElement("button"); btn.textContent="Reprint";
+      btn.addEventListener("click",()=>printPhoto(p.src));
+      el.append(img,cap,btn); grid.appendChild(el);
+    });
+    state.albumItems=items;
+  }
+  $("btn-print-all").addEventListener("click",async()=>{
+    for(const p of (state.albumItems||[])){ await printPhoto(p.src); }
+  });
+})();
+</script>
+</body>
+</html>

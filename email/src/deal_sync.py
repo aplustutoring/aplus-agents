@@ -24,13 +24,16 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import audit, hubspot_client as hs, slack_client, teachworks_client as tw
+from . import audit, hubspot_client as hs, owner_assign, slack_client, student_stamp, teachworks_client as tw
 from .config import DRY_RUN, cfg
 
 CUR_PATH = Path(__file__).resolve().parent.parent / "state" / "sync_cursor.json"
 
 CONTACT_PROPS = ["email", "firstname", "lastname", "phone", "mobilephone",
-                 "address", "city", "state", "zip"]
+                 "address", "city", "state", "zip",
+                 # student_stamp sources (fill-only deal stamp, 2026-09-10)
+                 "a_persona", "student_first_name", "student_last_name",
+                 "what_is_your_child_s_current_grade_level_"]
 
 
 def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
@@ -287,7 +290,7 @@ def run() -> None:
     if force_id:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
-                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount"})
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount,hubspot_owner_id"})
         # Optional trace-by-contact-email: fetch the contact, fix the missing
         # association on the HubSpot deal, and sync with that contact.
         contact = None
@@ -309,6 +312,13 @@ def run() -> None:
               + (f" — {rec['reason']}" if rec.get("reason") else ""))
         if rec.get("action_taken") == "sync_skipped" and "no contact email" in (rec.get("reason") or ""):
             print("  ↳ associate the parent/family contact on the deal in HubSpot, then re-run.")
+        fam = contact or _deal_contact(force_id, d["properties"].get("dealname", ""))
+        oa = owner_assign.maybe_assign(d, fam) or {}
+        if oa:
+            print(f"deal_sync FORCE {force_id}: {oa.get('action_taken')} → {oa.get('owner')}")
+        st = student_stamp.maybe_stamp(d, fam) or {}
+        if st:
+            print(f"deal_sync FORCE {force_id}: {st.get('action_taken')} {st.get('stamped')}")
         return
     state = json.loads(CUR_PATH.read_text()) if CUR_PATH.exists() else {}
     since_ms = state.get("last_createdate_ms")
@@ -322,7 +332,8 @@ def run() -> None:
         "filterGroups": [{"filters": [
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
-        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount"],
+        "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount",
+                       "hubspot_owner_id"],
         "limit": 50}
     deals: list = []
     while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
@@ -335,6 +346,11 @@ def run() -> None:
             break
         body["after"] = after
     print(f"deal_sync: {len(deals)} new deal(s)")
+    try:
+        from . import relay_watchdog
+        relay_watchdog.check(deals)  # cron run finding an old new deal = doorbell dead
+    except Exception as e:  # noqa: BLE001 — the watchdog must never fail the sync
+        print(f"⚠️  relay_watchdog error: {e}")
     newest = since_ms
     synced = 0
     first_error_ms = None
@@ -342,6 +358,12 @@ def run() -> None:
         try:
             if sync_deal(d):
                 synced += 1
+            # Scheduler ownership (replaces the dead Zapier zap). Inside the same
+            # try: a failed PATCH holds the cursor and the deal retries next run.
+            fam = _deal_contact(d["id"], d["properties"].get("dealname", ""))
+            owner_assign.maybe_assign(d, fam)
+            # Fill-only student/parent stamp (replaces HubSpot workflow 34950163).
+            student_stamp.maybe_stamp(d, fam)
             cd = d["properties"].get("createdate")
             if cd:
                 ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)

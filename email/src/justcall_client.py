@@ -102,6 +102,11 @@ def index_by_number(since_days: int = 90) -> dict:
         idx.setdefault(n, {"texts": [], "calls": []})["texts"].append({
             "at": _stamp(t.get("sms_date"), t.get("sms_time")),
             "direction": str(t.get("direction") or "").lower(),
+            # which company line the text was on, and who sent it: the
+            # pre-send gate needs both to answer "who already has this thread"
+            # (the Gonzalez double-thread, 2026-09-09)
+            "line": str(t.get("justcall_number") or ""),
+            "agent": str(t.get("agent_name") or ""),
             "text": ((t.get("sms_info") or {}).get("body") or "")[:200]})
     for c in _pull("calls", since_days):
         n = norm_number(c.get("contact_number"))
