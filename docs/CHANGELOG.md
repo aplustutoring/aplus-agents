@@ -106,6 +106,25 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-10 — HubSpot: "Renewal Chase" and "New Starts (Care Calls)" deal views for Paola
+
+**What:** two shared saved deal views (owner Roman, Paola added), built in the
+HubSpot UI because saved views have no API: **Renewal Chase** (72185740,
+retention stage in the four chase stages, drops off on Renewed / Not
+Renewing) and **New Starts (Care Calls)** (72186918, families whose tutoring
+started in the last 60 days across charter, Gold Tutoring and In-Person,
+oldest first). Filters, columns and known gaps are in
+docs/RETENTION-PROCESS.md, "Where the lists live".
+
+**Why:** Roman 2026-09-10: "we need to keep a list of some sorts somewhere that
+tracks and ties this all to retention" and "a view for paola of all families
+that are starting with us so that we can have the care calls organized".
+Monday is retired; HubSpot views are the lists.
+
+**Files:** docs/RETENTION-PROCESS.md, docs/CHANGELOG.md. No code.
+
+---
+
 ## 2026-09-10 — low_balance: same-evening text (`day1_now`), texts from the charter_sales line, teacher email split to the next morning
 
 **What:** Roman, the evening the agent went live ("lets also do the text right
