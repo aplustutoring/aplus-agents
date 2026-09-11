@@ -136,10 +136,23 @@ def choose_deal(deals: list[dict], season_start: str, exclude_pipelines: set | N
 
 
 def split_name(name: str) -> tuple[str, str]:
-    parts = (name or "").strip().split()
+    """(first, last). Teachworks writes participants as 'Last, First' (the
+    'Torres, Maria' lesson in the low-balance replay); plain 'First Last' is
+    accepted too. The 2026-09-10 preview resolved 0 of 164 students before
+    the comma form was handled."""
+    name = (name or "").strip()
+    if "," in name:
+        last, first = [p.strip() for p in name.split(",", 1)]
+        return first, last
+    parts = name.split()
     if not parts:
         return "", ""
     return parts[0], " ".join(parts[1:])
+
+
+def display_name(name: str) -> str:
+    first, last = split_name(name)
+    return f"{first} {last}".strip()
 
 
 # ── Teachworks + HubSpot lookups ────────────────────────────────────────────
@@ -263,7 +276,7 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
                     summary["new"] += 1
                 email = cur.get("email") or _customer_email(s.get("customer_id"), token)
                 is_new_start = (now_la().date() - datetime.fromisoformat(first_date).date()).days <= new_window_days
-                entry = {"name": rec["name"], "first": first_date, "email": email,
+                entry = {"name": display_name(rec["name"]), "first": first_date, "email": email,
                          "tw_student_id": str(s.get("id")), "checked": _today()}
                 entry.update({k: cur[k] for k in ("deal_id", "contact_id", "no_deal_until") if k in cur})
                 # deal: the season's earliest
@@ -303,9 +316,9 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
                 elif not email:
                     summary["no_contact"] += 1
                 if is_new_start and not cur.get("first"):
-                    summary["new_starts"].append(f"{rec['name']} ({first_date})")
+                    summary["new_starts"].append(f"{display_name(rec['name'])} ({first_date})")
                     audit.append({"message_id": f"first-lesson:{skey}:{first_date}", "source": "first_lesson",
-                                  "action_taken": "first_lesson_stamped", "student": rec["name"],
+                                  "action_taken": "first_lesson_stamped", "student": display_name(rec["name"]),
                                   "first_lesson": first_date, "account": acct,
                                   "deal_id": entry.get("deal_id"), "contact_id": entry.get("contact_id")})
                 state[skey] = entry
