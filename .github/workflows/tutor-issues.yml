@@ -12,9 +12,9 @@ env:
 #   - every 2h in the business window: inbound reports + Slack intake only
 #   - repository_dispatch (type: tutor-sms): an inbound text fires the SMS leg
 #     within a minute instead of waiting up to 2h for the next poll. Live, same
-#     flags as the schedule, --mode inbound. The JustCall webhook + relay worker
-#     that sends this event is NOT built yet (follow-up PR); until it lands the
-#     event can be fired by hand and the cron is still the real latency.
+#     flags as the schedule, --mode inbound. Fired by ops/tutor-issues/sms-relay
+#     (Cloudflare Worker, JustCall sms.received webhook). Until Roman deploys it
+#     and registers the webhook, the cron is still the real latency.
 on:
   schedule:
     - cron: "0 17 * * 1"               # Monday sweep

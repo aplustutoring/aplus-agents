@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**50 registered agents** — 35 active · 12 manual · 3 deprecated · across 12 engines.
+**51 registered agents** — 35 active · 12 manual · 3 deprecated · across 12 engines.
 
 ## What this is
 
@@ -47,7 +47,7 @@ outranks those two. HubSpot is where humans act.
 | Charter analysis | 7 | 1 |
 | Events | 2 | 2 |
 | Email ops | 1 | 1 |
-| Tutor issues | 1 | 1 |
+| Tutor issues | 2 | 1 |
 
 ## Autonomy — what acts without asking
 
@@ -55,7 +55,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (20):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `email-low-balance`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
-**Reports, drafts, or waits for a human (15):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
+**Reports, drafts, or waits for a human (16):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`, `tutor-sms-relay`.
 
 **Manual dispatch only (12):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `hubspot-archive`, `bulk-messenger`.
 
@@ -212,8 +212,10 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
 | **tutor-issues**<br>Tutor-issue ticketing (sweep + inbound reports + intake) | Monday sweep, 09/10 PT | active | Teachworks, email/state/audit_log.jsonl, HubSpot, JustCall, Slack | HubSpot, Slack, ops/tutor-issues/state/ |
+| **tutor-sms-relay**<br>Tutor-issue SMS relay | event<br>*cloudflare-worker* | unverified | — | GitHub API: repository_dispatch event_type=tutor-sms |
 
 - **tutor-issues** — Tickets on the tutor's contact record for 5 issue types; owner = Operations role (Mandy); silent internal log in v1 (nothing tutor-facing)
+- **tutor-sms-relay** — Deterministic dispatch relay, no reasoning and no message content read, so no CARE pointer
 
 ## Working rules every agent follows
 

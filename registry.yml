@@ -1326,7 +1326,7 @@ agents:
     trigger:
       type: cron
       schedule: ["0 17 * * 1 (Monday sweep, 09/10 PT)", "0 16,18,20,22,0 * * 1-5 (inbound/intake polls)"]
-      events: [workflow_dispatch]           # inputs: dry_run (default TRUE), mode, force_sweep, probe_lateness
+      events: [workflow_dispatch, repository_dispatch]   # dispatch inputs: dry_run (default TRUE), mode, force_sweep, probe_lateness; repository_dispatch type tutor-sms runs the inbound leg live
       workflow: .github/workflows/tutor-issues.yml
     entrypoint: ops/tutor-issues/tutor_issues.py
     reads:
@@ -1353,3 +1353,36 @@ agents:
       first run, one open ticket per tutor/type/period, one digest per run,
       hard caps abort loudly, idempotent reruns. Unresolvable tutor = NO
       ticket, flagged (refusal is a signal, a guess is a landmine).
+
+  - id: tutor-sms-relay
+    runtime: cloudflare-worker
+    engine: Tutor issues
+    name: Tutor-issue SMS relay
+    owner: roman@wetutorathome.com
+    status: unverified       # built 2026-09-10; NOT deployed, JustCall webhook not registered
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        JustCall sms.received webhook (inbound texts on every line) -> POST
+        /sms?token=... -> repository_dispatch tutor-sms on tutor-issues.yml.
+        Always-on HTTP. Coalesces bursts behind one Durable Object alarm and
+        holds a MIN_INTERVAL_SECONDS (90) floor between dispatches. The
+        weekday inbound cron stays as the backstop.
+    source: ops/tutor-issues/sms-relay/worker.js
+    entrypoint: ops/tutor-issues/sms-relay/worker.js
+    reads: []
+    writes:
+      - "GitHub API: repository_dispatch event_type=tutor-sms"
+    depends_on:
+      - "Worker secrets: GITHUB_TOKEN (same fine-grained PAT as the call + deal relays), WEBHOOK_TOKEN"
+      - tutor-issues workflow
+    notes: >
+      Deterministic dispatch relay, no reasoning and no message content read,
+      so no CARE pointer. Fires only for inbound texts, and fires anyway when
+      the payload carries no direction field (sms.received implies inbound; a
+      spurious run of an idempotent engine beats a missed late report). No
+      line or number filter: the engine already reads every line. Logs key
+      NAMES only (never bodies, numbers or names) so the unverified JustCall
+      payload shape can be read off wrangler tail after the first real text,
+      then trimmed.
