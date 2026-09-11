@@ -501,6 +501,11 @@ first_lesson:
   window_days: 10                  # bulk lessons window per run; new students cost a history call
   new_start_days: 60               # first lesson within this = a "new start" (audit + summary line)
   deal_lookback_days: 60           # the stamp goes on the earliest deal created within this many days before the first lesson
+  # Never the deal that gets the stamp: not tutoring deals (deal_sync.exclude_pipelines
+  # apply too). Teacher Scholarship tracking took Malinally Mata-Villa's stamp on 2026-09-11.
+  exclude_pipelines: ["917641511", "918901819", "75e28846-ad0d-4be2-a027-5e1da6590b98", "1066195"]
+  # A trial deal is the family's first by construction; a real tutoring deal in the window wins.
+  trial_pipelines: ["19120821"]
   retry_days: 3                    # student with no deal yet: look again after this many days
 
 deal_sync:
