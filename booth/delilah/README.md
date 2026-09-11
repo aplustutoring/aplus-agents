@@ -1,10 +1,11 @@
 # booth/delilah — Delilah's 5th birthday + Rosh Hashanah 5787 (2026-09-11)
 
 Personal home-party photo booth. iPad on a stand, Canon Selphy over AirPrint.
-Every kept shot prints ONE 4x6 (the party favor): the real photo. Guests who
-type a cell number also get the photo by text, plus a storybook painting of it
-(Gemini repaints the guests into a Rosh Hashanah pomegranate orchard, faces
-preserved). The painting is text only, never printed (Roman, 2026-09-11).
+After the shot the guest picks **Text me, Print it, or Both**. Print is one 4x6
+of the real photo. Text (needs a cell) is the photo plus a storybook painting
+of it (Gemini repaints the guests into a Rosh Hashanah pomegranate orchard,
+faces preserved). The painting is text only, never printed, and is only painted
+when a text is going out (Roman, 2026-09-11).
 
 Forked from `booth/` (Sage Oak) with HubSpot, email, consent and roles removed.
 No cron, so no SUNSET is needed: nothing runs unattended.
