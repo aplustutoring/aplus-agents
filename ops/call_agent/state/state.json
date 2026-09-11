@@ -756,10 +756,150 @@
     413920013,
     413937920,
     414118016,
-    414133370
+    414133370,
+    414134815,
+    414135503
   ],
-  "last_run_utc": "2026-09-11T16:06:37.955544+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-11T16:11:31.093526+00:00",
+  "pending_digest": [
+    {
+      "call_id": 414134815,
+      "number": "13107407849",
+      "time_pt": "9:07 AM",
+      "matched": true,
+      "contact_label": "Sivan Radnia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Sivan Radnia to confirm today's 9:30 AM trial lesson for her four children. The call was intercepted by Sivan's AI call assistant/voicemail screener, so Yolanda left a brief message identifying herself and the purpose. No live conversation occurred and no confirmation was received back from Sivan.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Sivan via text to confirm the 9:30 AM trial lesson for all four children happened / went well, since the call went to an AI screener",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Yolanda placed an outbound call to Sivan Radnia to confirm today's 9:30 AM trial lesson for her four kids (Maytal 7th, Liya 5th, twins Yoel & Benyamin 4th). Call was picked up by Sivan's AI call-screener assistant, not Sivan herself \u2014 Yolanda left a short message identifying A+ and the 9:30 trial. No live confirmation received. Please text Sivan to confirm the trial is on and tutors are ready; open with: 'Hi Sivan, this is Yolanda at A+ Tutoring \u2014 just left you a quick voicemail. Wanted to confirm we're all set for the 9:30 trial this morning for Maytal, Liya, Yoel, and Benyamin.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family in an open deal / active trial scheduling \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Yolanda called Sivan to confirm today's 9:30 AM trial lesson for the four kids. Call was answered by Sivan's AI call-screening assistant rather than Sivan, so Yolanda left a brief message but did not get live confirmation.",
+          "what_we_can_do_to_help": "Yolanda to follow up with Sivan by text to confirm the 9:30 AM trial is on and that tutors are ready for all four students.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda called Sivan to confirm today's 9:30 AM trial lesson for the four kids. Call was answered by Sivan's AI call-screening assistant rather than Sivan, so Yolanda left a brief message but did not get live confirmation."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to follow up with Sivan by text to confirm the 9:30 AM trial is on and that tutors are ready for all four students."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Sivan via text to confirm the 9:30 AM trial lesson for all four children happened / went well, since the call went to an AI screener",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 414135503,
+      "number": "13107407849",
+      "time_pt": "9:07 AM",
+      "matched": true,
+      "contact_label": "Sivan Radnia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Sivan to confirm the 9:30 AM trial lessons for all four children. Sivan confirmed she received the tutor info sent last night and that 9:30 works for all four kids. Sivan asked Yolanda to resend the Zoom/join links via text for all four trials. Call ended cordially with confirmation the trials are on.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Text Sivan the join links for all four students' 9:30 AM trial lessons",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Yolanda (scheduling) already owns this \u2014 she promised Sivan she'd text over the join links for all four kids' 9:30 AM trials today. Sivan (warm, appreciative) confirmed 9:30 works for all four and had received last night's tutor info. She now expects a text with the four Zoom/join links shortly. If picking this up for Yolanda, open with: \"Hi Sivan, this is [name] with Yolanda's team at A+ \u2014 sending over those four trial join links now for the 9:30 lessons.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family already in an open deal / active trial \u2014 status owned by deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Maytal",
+          "Liya",
+          "Yoel",
+          "Benyamin"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda reached Sivan live to confirm today's 9:30 AM trial lessons for all four children. Sivan confirmed she received last night's tutor info and that 9:30 works for all four kids.",
+          "what_we_can_do_to_help": "[call] Yolanda to text Sivan the join links for all four students' 9:30 AM trial lessons.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda reached Sivan live to confirm today's 9:30 AM trial lessons for all four children. Sivan confirmed she received last night's tutor info and that 9:30 works for all four kids."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to text Sivan the join links for all four students' 9:30 AM trial lessons."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Sivan the join links for all four students' 9:30 AM trial lessons",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18183500878",
