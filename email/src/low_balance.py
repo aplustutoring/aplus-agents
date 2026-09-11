@@ -622,8 +622,15 @@ def _tor_send(to_addr: str, subject: str, body: str, lb: dict, seat: dict) -> No
 
 
 def _phone_for(alert: dict, contact: dict | None) -> str:
+    """E.164 from whatever Teachworks / HubSpot hold ('+1 909-454-8581',
+    '2133278184', '+113145706029' with a doubled country code: Ember Seeley,
+    2026-09-11). Ten US digits or nothing."""
     cp = (contact or {}).get("properties") or {}
-    return (alert.get("parent_phone") or cp.get("mobilephone") or cp.get("phone") or "").strip()
+    for raw in (alert.get("parent_phone"), cp.get("mobilephone"), cp.get("phone")):
+        digits = re.sub(r"\D", "", str(raw or ""))
+        if len(digits) >= 10:
+            return "+1" + digits[-10:]
+    return ""
 
 
 def _opted_out(contact: dict | None) -> bool:
@@ -836,6 +843,13 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
         tor_email = _tor_email_fallback(dp, contact)
     no_tor = [str(x) for x in lb.get("no_teacher_email_pipelines", [])]
     tor_blocked = pipeline in no_tor
+    # 'ap@heartlandcharterschool.com' is accounts payable, not a teacher
+    # (Londyn Brixey's deal, 2026-09-11). A generic school inbox never gets
+    # the personal teacher note; the case says so and the family still does.
+    generic = [g.lower() for g in lb.get("generic_inbox_locals", [])]
+    tor_generic = bool(tor_email) and tor_email.split("@")[0].lower() in generic
+    if tor_generic:
+        tor_email = ""
     if not charter:
         # Private-pay upgrades are commissioned to the schedulers (Roman
         # 2026-09-10): the ticket, the DM, and the sender identity (from-name,
@@ -926,7 +940,10 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
         flags.append("no deal found for this student (name lookup)")
     elif charter and not dp.get("po_number"):
         flags.append("student's newest deal has no PO number")
-    if charter and not tor_email:
+    if charter and tor_generic:
+        flags.append("the deal's teacher email is a generic school inbox (accounts payable / office); "
+                     "no teacher note on day 1, find the real teacher of record")
+    elif charter and not tor_email:
         flags.append("no teacher-of-record email on the deal; teacher will not be contacted on day 1")
     if tor_blocked:
         flags.append("pipeline is on the no-teacher-email list (Level Up Terri cannot issue "

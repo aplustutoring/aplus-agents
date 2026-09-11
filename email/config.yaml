@@ -232,6 +232,10 @@ low_balance:
   # Level Up Terri (Charter Terri pipeline) teachers cannot issue additional
   # POs (Roman 2025-10-29): family only, never the teacher.
   no_teacher_email_pipelines: ["72281989"]
+  # A deal whose teacher email is a generic school inbox (ap@, accounts@,
+  # office@ ...) has no teacher to write to: the family is still contacted,
+  # the case is flagged, no personal note goes to a payables desk.
+  generic_inbox_locals: [ap, accounts, accountspayable, payables, billing, invoices, office, admin, info, hello, support, purchasing, orders]
   # Copy. Tokens: {first_name} {student} {student_full} {hours} {tor_name}
   # {tor_first} {tor_or_ef} {school} {po_number} {sender_first} {sender_name}
   # {sender_email}. {hours} renders as "4 hours or less" (max_hours; Roman

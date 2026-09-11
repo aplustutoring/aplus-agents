@@ -232,7 +232,7 @@ def test_day0_queues_the_email_and_stores_the_rest_for_the_sweep(monkeypatch):
     assert rec["sms_body"].startswith("Hi Jessica, it's Paola with A+ Tutoring. Taylor has been working "
                                       "with Sarah and we want to keep that progress going. Taylor has 4 hours or less left")
     assert "Kylee" not in rec["sms_body"] and "iLead" not in rec["sms_body"] and "fractions" not in rec["sms_body"]
-    assert rec["phone"] == "+1 909-454-8581" and rec["tor_email"] == "kylee@ileadexploration.org"
+    assert rec["phone"] == "+19094548581" and rec["tor_email"] == "kylee@ileadexploration.org"
     assert rec["tor_subject"] == "New PO for Taylor (A+ Tutoring)"
     assert rec["tor_body"].startswith("Hi Kylee,") and "the current PO (PO 3114143406)." in rec["tor_body"]
     assert "Rodriguez" not in rec["tor_body"]
@@ -346,6 +346,23 @@ def test_deferred_alerts_folds_the_audit_log(monkeypatch):
     assert list(lb.deferred_alerts()) == ["k:a"]
 
 
+def test_phone_normalises_to_e164():
+    assert lb._phone_for({"parent_phone": "+113145706029"}, None) == "+13145706029"   # Ember's doubled 1
+    assert lb._phone_for({"parent_phone": "+1 909-454-8581"}, None) == "+19094548581"
+    assert lb._phone_for({"parent_phone": "2133278184"}, None) == "+12133278184"
+    assert lb._phone_for({"parent_phone": ""}, {"properties": {"mobilephone": "(805) 310-2664"}}) == "+18053102664"
+    assert lb._phone_for({"parent_phone": "n/a"}, None) == ""
+
+
+def test_generic_school_inbox_is_not_a_teacher(monkeypatch):
+    ap = {"id": "9", "properties": {**DEAL["properties"], "teacher_of_record_email": "ap@heartlandcharterschool.com"}}
+    h = Harness(monkeypatch, _cfg(armed=True, generic_inbox_locals=["ap", "office"]), deals=[ap], recent=RECENT)
+    monkeypatch.setattr(lb, "_tor_email_fallback", lambda dp, c: "")
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_opened" and rec["tor_email"] == ""
+    assert any("generic school inbox" in f for f in rec["flags"]) and rec["email_pending"]
+
+
 def test_charter_only_declines_private_pay_and_out_of_pocket(monkeypatch):
     # Roman 2026-09-10: "only on charter service codes, excluding out of pocket"
     gold = {"id": "9", "properties": {**DEAL["properties"], "pipeline": "default", "po_number": ""}}
@@ -443,7 +460,7 @@ def test_missing_family_and_deal_are_flagged_not_fatal(monkeypatch):
     assert any("family contact NOT found" in f for f in rec["flags"])
     assert any("no deal found" in f for f in rec["flags"])
     assert rec["email_pending"]                         # the alert itself carries the email
-    assert rec["phone"] == "+1 909-454-8581" and rec["tor_email"] == ""
+    assert rec["phone"] == "+19094548581" and rec["tor_email"] == ""
     assert h.tickets[0][0][0].startswith("Low balance: Taylor Rodriguez (school unknown)")
     assert "your charter school" not in h.dms[0][1] and "🚩" in h.dms[0][1]
     assert not h.stamps                                 # no deal → nothing to stamp
