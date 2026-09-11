@@ -40,13 +40,25 @@ def check(deals: list[dict], event_name: str | None = None,
     if event != "schedule":
         return []
     max_lag = float(rw.get("max_lag_minutes", 10))
+    # A deal deal_sync already touched (synced, deferred, errored) was handled by
+    # SOME run; it is only in this window because the cursor is held behind an
+    # error. Hazel Barnett, 2026-09-10: the doorbell was fine, the DM was false.
+    handled = set()
+    for r in audit._iter_records():
+        if r.get("source") != "deal_sync":
+            continue
+        mid = str(r.get("message_id") or "")
+        if r.get("deal_id"):
+            handled.add(str(r["deal_id"]))
+        if ":deal:" in mid:
+            handled.add(mid.rsplit(":", 1)[1])
     missed = []
     for d in deals:
         cd = (d.get("properties") or {}).get("createdate")
         if not cd:
             continue
         key = f"relay-miss:{d['id']}"
-        if audit.already_processed(key):
+        if audit.already_processed(key) or str(d["id"]) in handled:
             continue
         age = _age_minutes(cd, now)
         if age < max_lag:

@@ -180,3 +180,23 @@ def test_find_duplicate_pos_clean_portal_is_empty():
     from src import po_daily_report as pr
     deals = [{"properties": {"po_number": str(1000 + n), "dealname": "X"}} for n in range(5)]
     assert pr.find_duplicate_pos(deals) == ({}, 0)
+
+
+def test_po_report_lists_deals_waiting_on_parent(monkeypatch):
+    from src import po_daily_report as pdr, po_inbox as po
+    recs = [{"message_id": "parent-chase:D1", "action_taken": "parent_chase_opened",
+             "thread_id": "TH1", "deal_id": "D1", "po_number": "PF252648-HazelBarnett",
+             "deal_name": "NEEDS PARENT - Hazel Barnett - Heartland 1 - 26/27",
+             "chase_to": "ap@heartlandcharterschool.com", "timestamp": "2026-09-08T21:25:56+00:00"},
+            {"message_id": "parent-chase:D2", "action_taken": "parent_chase_opened",
+             "thread_id": "TH2", "deal_id": "D2", "deal_name": "NEEDS PARENT - Kid Two - X 1",
+             "chase_to": "t@x.org", "timestamp": "2026-09-01T00:00:00+00:00"},
+            {"message_id": "parent-chase-resolved:D2", "action_taken": "parent_chase_resolved",
+             "deal_id": "D2"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    lines = pdr._waiting_on_parent_lines()
+    assert lines and "1 PO deal(s)" in lines[0]
+    assert len(lines) == 2 and "Hazel Barnett" in lines[1] and "ap@heartlandcharterschool.com" in lines[1]
+    assert "Kid Two" not in "\n".join(lines)   # resolved chases drop off
+    recs[:] = [recs[2]]
+    assert pdr._waiting_on_parent_lines() == []

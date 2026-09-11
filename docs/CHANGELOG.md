@@ -7,6 +7,78 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-11 — Parent chase: can't get parent info → charter sales seat asked, one DM, standing list in the PO day report
+
+**Decision (Roman, 2026-09-11):** first "escalate to Danielle to ask for
+assistance when we can't get parent info to fulfill a PO", then, same day:
+"maybe not to Danielle. is this a Paola issue? I just can't have deals falling
+through. and I can't have my team getting 300 tasks, 200 tickets, and 50 DMs."
+Resolved per the sender-routing rule (a teacher about a SPECIFIC student is the
+charter_sales seat; Danielle is multi-student acquisition): the seat is Paola,
+the cost is ONE DM per deal, and "nothing falls through" is a standing list,
+not more DMs.
+
+**What:**
+1. `po_inbox._request_parent_assist()` DMs the seat in
+   `parent_chase.assist_seat` (charter_sales) the moment the school replies to
+   a chase WITHOUT parent info (new reply-path branch: open chase on the
+   thread, no `parent_email` extracted, sender not internal). Audit
+   `parent_chase_assist_requested`. It COUNTS AS the existing 24h "still
+   missing" ping to the same seat (and vice versa), so a deal costs Paola one
+   DM whichever fires first. No reply at all is already the 24h ping; an
+   escalation-time ask was built and removed as dead code (the 2-business-day
+   escalation always comes after the 24h ping).
+2. `po_daily_report._waiting_on_parent_lines()`: every open parent chase
+   (NEEDS PARENT deal), with age and who was asked, in the 6 PM PO day report
+   Roman already reads, every day until it resolves. Zero new DMs.
+
+**Why now:** Heartland PF252648, Sept 8. Hazel Barnett's certificate carried no
+parent info; the chase went to Heartland's AP mailbox; Cherri Crawford replied
+"privacy laws, we cannot share it, we'll have the family reach out." That reply
+was filed as `po_inbox_other` and nobody who could help was told. The deal has
+sat as NEEDS PARENT since, with no Teachworks family, no text, no invoice.
+
+**Also fixed in the same session (Roman: "do what has to be done"):**
+- **NEEDS PARENT deals never reach the school staffer.** `deal_sync._deal_contact`
+  used to fall back to the FIRST associated contact, which on a NEEDS PARENT deal
+  is the TOR/ES. Keanu Hsu, Sept 10: iLEAD's Courtney Gannon got "we received
+  Keanu's PO", the What-to-Expect email and a Teachworks family in her name
+  (TW 2173071); parent Charlene Wetzell, associated an hour later, gets nothing
+  because the deals are marked sent. Same path on Sept 3 put Coyote Resch under
+  Sage Oak's Kristin Wolven (TW 2165423). Now: a contact tagged Teacher of
+  Record and NOT Family is never the family (`hs.is_family_contact`; a parent
+  who is also the EF keeps both labels and still qualifies); a deal-name match
+  still wins. No family → the SMS sweep skips without marking sent (retries
+  every sweep) and `sync_deal` records `sync_deferred` (`deferred:deal:<id>`)
+  instead of a permanent `sync_skipped`, so the parent-chase resolution's
+  immediate sync (or `_sync_fixed_deal`, new, on a human-fixed deal) creates
+  the family later. Hazel's Teachworks 400 loop ends the same way.
+- **Repeated sync errors are loud.** From the 2nd consecutive failure on one
+  deal, one DM to `deal_sync.error_alert` (charter_admin) with the error and
+  the FORCE_DEAL_ID re-run (audit `error-alert:deal:<id>`). Hazel: 40 silent 400s.
+- **Relay watchdog false alarm.** A deal deal_sync already touched (synced,
+  deferred, errored) is never a "doorbell dead" miss; it is only in the cron
+  window because an error holds the cursor.
+- **Vendor/portal mailboxes are never Teacher of Record** (`_robot_tor_addr`:
+  vendorsupport, procurify, launchpad, orders@/purchasing@/billing@, plus the
+  noreply set). The name-only lookup still runs when the PO names a teacher.
+- Owner DM wording: "in about 15 minutes" → "on the next deal-sync run
+  (usually within the hour)"; the cron is hourly since 09-09 (Delina waited 58 min).
+
+**Deliberately NOT flipped: `presend.enabled`.** 8 of this week's PO welcome
+texts logged a shadow HOLD ("active thread on the charter_sales line, owned by
+Paola"). Every one was the family Paola had just pushed the PO for, i.e. the
+designed lead → scheduling handoff. Enforcing would hold every such family's
+schedule text and DM Paola instead. Roman's call, not a bug fix.
+
+**Manual follow-ups sent by Slack DM this session:** Danielle (Hazel assist,
+retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charlene Wetzell about Keanu by hand), Paola
+(quick note to Courtney Gannon), Kath (Teachworks families 2173071 and
+2165423 are under school staff emails).
+
+**Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
+email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
+test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
 ## 2026-09-10 — low_balance: same-evening text (`day1_now`), texts from the charter_sales line, teacher email split to the next morning
 
 **What:** Roman, the evening the agent went live ("lets also do the text right

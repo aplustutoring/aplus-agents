@@ -490,6 +490,7 @@ deal_automation:
 # identifier; HubSpot contact info wins on update) and create the student. Account by
 # pipeline; charter students get billing_method=Package, private pay=Service List Cost.
 deal_sync:
+  error_alert: charter_admin   # DM'd once per deal from the 2nd consecutive sync failure (Hazel Barnett, 09-08: 40 silent 400s)
   enabled: true
   dry_run_first: false         # LIVE since 2026-08-03 (pilot ran 2026-07-22 → 2026-08-03)
   in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account
@@ -666,6 +667,7 @@ po_inbox:
     escalate_business_hours: 16        # 2 business days AFTER the draft is SENT
     draft_unsent_nag_business_hours: 4 # draft still in Gmail Drafts → 🚩 nag
     notify_charter_sales_after_hours: 24  # info still missing 24h after the email → charter sales
+    assist_seat: charter_sales         # can't get parent info (school declines, or no reply past the window) → ONE DM per deal to this seat, folded into the 24h ping (Roman 2026-09-11: teacher about a specific student = charter_sales; not Danielle)
   # Pending order-agreement POs with no approval signal (duplicate alert =
   # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
   # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the

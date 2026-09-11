@@ -917,6 +917,114 @@ def test_parent_chase_escalates_after_window(monkeypatch):
     assert dms == []
 
 
+def test_no_reply_costs_the_charter_sales_seat_one_dm(monkeypatch):
+    """Roman 2026-09-11: nothing falls through, but no DM storms. A chase with
+    no reply past both windows reaches the charter sales seat exactly once
+    (the 24h ping); the assist ask never doubles it."""
+    dms, appended = [], []
+    recs = [{"message_id": "parent-chase:D9", "action_taken": "parent_chase_opened",
+             "thread_id": "TH9", "deal_id": "D9", "student": "Hazel Barnett",
+             "school": "Heartland Charter School", "po_number": "PF252648-HazelBarnett",
+             "deal_name": "NEEDS PARENT - Hazel Barnett - Heartland 1 - 26/27",
+             "chase_to": "ap@heartlandcharterschool.com", "sla_due": "2026-08-01T10:00:00-07:00",
+             "timestamp": "2026-07-31T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    po._sweep_parent_chases()
+    seat_uid = po.staff("charter_sales")["slack_user_id"]
+    assert [t for u, t in dms if u == seat_uid and "STILL MISSING" in t]
+    assert sum(1 for u, _t in dms if u == seat_uid) == 1
+    assert not [a for a in appended if a.get("action_taken") == "parent_chase_assist_requested"]
+    # second sweep: silent
+    recs.extend(appended)
+    dms.clear()
+    po._sweep_parent_chases()
+    assert dms == []
+
+
+def test_school_reply_without_parent_info_asks_sales_for_assist(monkeypatch):
+    """The Heartland case: the school answers the chase with 'privacy laws, we
+    cannot share it' -> sales is asked to assist immediately, once per deal.
+    Our OWN outbound chase email landing on the thread never triggers it."""
+    dms, appended = [], []
+    chase = {"message_id": "parent-chase:D9", "action_taken": "parent_chase_opened",
+             "thread_id": "TH9", "deal_id": "D9", "student": "Hazel Barnett",
+             "school": "Heartland Charter School", "po_number": "PF252648-HazelBarnett",
+             "deal_name": "NEEDS PARENT - Hazel Barnett - Heartland 1 - 26/27",
+             "chase_to": "ap@heartlandcharterschool.com",
+             "timestamp": "2026-09-08T21:25:56+00:00"}
+    recs = [chase]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    # our own sent chase (internal sender) -> nothing
+    assert po._internal_email(po._sender_addr({"sender": "A+ Charter <charter@wetutorathome.com>"}))
+    # the school's reply, no parent email extracted
+    assert po._sender_addr({"sender": "AP Department <ap@heartlandcharterschool.com>"}) \
+        == "ap@heartlandcharterschool.com"
+    sibling = {**chase, "message_id": "parent-chase:D10", "deal_id": "D10",
+               "student": "Ivy Barnett", "po_number": "PF252648-IvyBarnett",
+               "deal_name": "NEEDS PARENT - Ivy Barnett - Heartland 1 - 26/27"}
+    recs.append(sibling)
+    asked = po._request_parent_assist([chase, sibling],
+                                      "The school replied without it: \"privacy laws\"")
+    assert [c["deal_id"] for c in asked] == ["D9", "D10"]
+    sales_uid = po.staff("charter_sales")["slack_user_id"]
+    # a multi-kid thread is ONE DM naming both students, one audit row per deal
+    assert [u for u, _t in dms] == [sales_uid]
+    assert "privacy laws" in dms[0][1] and "2 POs" in dms[0][1]
+    assert "Hazel Barnett" in dms[0][1] and "Ivy Barnett" in dms[0][1]
+    assist = [a for a in appended if a.get("action_taken") == "parent_chase_assist_requested"]
+    assert sorted(a["deal_id"] for a in assist) == ["D10", "D9"]
+    # once per deal: a second reply on the same chases is silent
+    recs.extend(appended)
+    assert po._request_parent_assist([chase, sibling], "again") == []
+    assert len(dms) == 1
+    # and a deal the 24h ping already covered is never asked about again
+    recs.append({"message_id": "parent-chase-sales:D11", "action_taken": "parent_chase_sales_notified",
+                 "deal_id": "D11"})
+    assert po._request_parent_assist([{**chase, "message_id": "parent-chase:D11", "deal_id": "D11"}],
+                                     "no reply") == []
+
+
+def test_vendor_robot_mailbox_is_never_teacher_of_record(monkeypatch):
+    """Visions eVoucher, 2026-09-10: vendorsupport@viedu.org was created/linked
+    as Justin LaRue's TOR and as the family's Teacher of Record."""
+    assert po._robot_tor_addr("vendorsupport@viedu.org")
+    assert po._robot_tor_addr("notifications@mailer.procurify.com")
+    assert po._robot_tor_addr("orders@sageoak.education")
+    assert not po._robot_tor_addr("ap@heartlandcharterschool.com")
+    assert not po._robot_tor_addr("kwolven@sageoak.education")
+    created, associated, notes = [], [], []
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, **k: None)
+    monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
+    monkeypatch.setattr(po.hs, "create_contact", lambda *a, **k: created.append(a) or {"id": "T1"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: associated.append((d, c)))
+    monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [])
+    p = {"tor_email": "vendorsupport@viedu.org", "parent_email": "mom@x.com"}
+    po._associate_tor("D1", p, notes)
+    assert not created and not associated
+    assert p["tor_email"] == "" and any("vendor mailbox" in n for n in notes)
+    # a real teacher address still goes through
+    p2 = {"tor_email": "lindsey.williams@viedu.org", "parent_email": "mom@x.com",
+          "tor_first": "Lindsey", "tor_last": "Williams"}
+    po._associate_tor("D1", p2, notes)
+    assert created and associated == [("D1", "T1")]
+
+
+def test_human_fixed_needs_parent_deal_gets_synced(monkeypatch):
+    synced = []
+    monkeypatch.setattr(po.hs, "_get", lambda path, params=None: {
+        "id": "D5", "properties": {"dealname": "Ana Diaz - Kid - iLead 1 - 26/27",
+                                   "pipeline": "907748", "po_number": "P1"}})
+    monkeypatch.setattr(dsy_mod, "sync_deal", lambda d, **k: synced.append(d) or {"action_taken": "tw_synced"})
+    po._sync_fixed_deal("D5")
+    assert synced and synced[0]["properties"]["dealname"].startswith("Ana Diaz")
+    po._sync_fixed_deal("DRYRUN")
+    assert len(synced) == 1
+
+
 def test_norm_po_number():
     # Roman 2026-08-10: the number only, never a PO prefix
     assert po._norm_po_number("PO7514044381") == "7514044381"
