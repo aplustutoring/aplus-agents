@@ -7,6 +7,64 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — content-build: preflight the draft a human publishes (3rd report of the same HubSpot error)
+
+**Reported (Danielle, 3rd time):** a weekly draft will not publish from the
+HubSpot UI, "Error Something went wrong. Please try refreshing." Same report on
+2026-08-24 (Title III EL RFA), 2026-09-02 (iLEAD Day 30), 2026-09-10 (Varsity
+Tutors shutdown, post id 221200515332). Corrections filed each time; nothing
+fixed, because each investigation had nothing to look at.
+
+**Diagnosis corrected.** The intake diagnosis assumed `publish-to-hubspot.py`
+was getting a 4xx and that re-running it with verbose logging would show the
+bad field. It will not. The agent only ever writes DRAFTS (`state: DRAFT`,
+hardcoded), and every one of these three drafts was written successfully:
+`publish_rc=0`, post ids recorded in `history.json`, "drafts are ready" posted
+to Slack. The failure happens later, in HubSpot's UI, when Danielle clicks
+Publish, which is a step no A+ script participates in. That is why three
+investigations produced no evidence.
+
+**The real failure class:** nothing in the pipeline ever looks at what it
+shipped. `publish-to-hubspot.py` writes a clean body, then
+`embed-pull-quotes.py` and `fix-links.py` each GET that body, rewrite it and
+PATCH it back. That last patched body is what the publish button renders, and
+it was unexamined. HubSpot stores a draft verbatim but only renders it on
+publish, so markup it will refuse lands silently and a human finds out from a
+generic error. The one forensic trail, `hubspot-usage.log`, is gitignored and
+dies with the CI runner.
+
+**What changed:**
+- `marketing/scripts/shared/hubspot_preflight.py` (new) — deterministic,
+  offline checks on body + meta: tag balance, unterminated tags/attribute
+  quotes, anchors with empty/`javascript:`/double-escaped hrefs, `data:` URI
+  images, empty src/alt, slug and meta-description shape, featured-image URL.
+  Built-in `--self-test` in the `seo_validators.py` style.
+- `publish-to-hubspot.py` — runs preflight before the write (advisory;
+  `--strict-preflight` makes fail-severity fatal). A flagged draft a human can
+  fix beats no draft.
+- `content-build.py` — runs preflight against the LIVE draft after embed and
+  link repair, and folds `EMBED` / `LINKS` / `PREFLIGHT` failures into `flags`,
+  so they reach the Slack summary and `history.json`. They were `logger.warning`
+  into a CI log nobody reads. The Slack summary now calls publish-blockers out
+  separately from content flags. `RuntimeError` on a failed write carries
+  HubSpot's own message, not just an exit code.
+- `fix-links.py` — three swallowed failures: an unchecked GET left `html=""`
+  and printed "all links ok" for a post it never read; a rejected postBody PATCH
+  was printed and ignored, `main()` always returned 0; hrefs were HTTP-checked
+  still HTML-escaped (`?a=1&amp;b=2`), so a live source with a query string
+  could read as 404 and get UNLINKED. Replacement URLs are now escaped on write.
+
+**Honest limit:** this does not name the field that broke Danielle's Sept 11
+post. No HubSpot token in this environment, so the live draft could not be
+pulled and nothing could be re-published for her. What it does is make the next
+occurrence self-evidencing instead of invisible. Next run of content-build
+prints preflight findings per draft; if 221200515332 still will not publish,
+`python3 marketing/scripts/shared/hubspot_preflight.py --post-id 221200515332`
+with the token now answers the question in one call.
+
+**Files:** `marketing/scripts/shared/{hubspot_preflight.py,publish-to-hubspot.py}`,
+`marketing/scripts/b2b/{content-build.py,fix-links.py}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
 
 **What:** each kept shot now yields two favors. After the real photo prints and is

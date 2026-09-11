@@ -23,6 +23,7 @@ Deferred follow-ons (tracked separately):
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
 import re
@@ -100,6 +101,11 @@ def _slack_post(text: str) -> None:
         logger.warning("slack summary post error: %s", e)
 
 
+# Flag prefixes that mean "this draft may not publish", as opposed to the
+# content flags (FACT/BRAND/SEO) that mean "this draft needs an edit".
+DELIVERY_FLAG_PREFIXES = ("PREFLIGHT", "EMBED", "LINKS")
+
+
 def _post_summary(results: list[dict]) -> None:
     """One Slack message: each ready draft + HubSpot link + its specific flags."""
     staged = [r for r in results if r.get("status") == "staged"]
@@ -116,17 +122,28 @@ def _post_summary(results: list[dict]) -> None:
         if r.get("seo_issues"):
             qa.append(f"seo:{r['seo_issues']}")
         lines.append("  " + " · ".join(qa))
-        for fd in r.get("flag_details", []):
-            lines.append(f"  :warning: {' '.join(fd.split())[:300]}")
+        details = r.get("flag_details", [])
+        # Call the publish-blockers out separately. A content flag means "edit
+        # this before posting"; a delivery flag means the publish button itself
+        # may fail, which is the thing nobody could see before.
+        if any(fd.startswith(DELIVERY_FLAG_PREFIXES) for fd in details):
+            lines.append("  :rotating_light: *This draft may not publish as-is — see below before clicking Publish.*")
+        for fd in details:
+            icon = ":rotating_light:" if fd.startswith(DELIVERY_FLAG_PREFIXES) else ":warning:"
+            lines.append(f"  {icon} {' '.join(fd.split())[:300]}")
         lines.append("")
     _slack_post("\n".join(lines).rstrip())
 
 
-def _publish_draft(bundle_dir: Path, update_post_id: "str | None" = None) -> "tuple[int, str | None]":
+def _publish_draft(bundle_dir: Path, update_post_id: "str | None" = None) -> "tuple[int, str | None, str]":
     """Run publish-to-hubspot.py, capturing the HubSpot post id it prints.
 
     If update_post_id is given, PATCHes that existing draft (no duplicate);
-    otherwise creates a new draft. Returns (return_code, post_id).
+    otherwise creates a new draft. Returns (return_code, post_id, stderr_tail).
+
+    The stderr tail carries HubSpot's own error body on a failed write, so the
+    caller can put the real reason in front of a human instead of a bare exit
+    code.
     """
     cmd = ["python3", str(bp.REPO_ROOT / "scripts" / "shared" / "publish-to-hubspot.py"), "--bundle", str(bundle_dir)]
     if update_post_id:
@@ -137,7 +154,59 @@ def _publish_draft(bundle_dir: Path, update_post_id: "str | None" = None) -> "tu
     if r.stderr:
         sys.stderr.write(r.stderr)
     m = re.search(r"Post ID:\s*(\S+)", r.stdout)
-    return r.returncode, (m.group(1) if m else update_post_id)
+    return r.returncode, (m.group(1) if m else update_post_id), (r.stderr or "")[-1200:]
+
+
+def _preflight_live_draft(post_id: str) -> "list[str]":
+    """Check the draft a human will actually publish, and return flag lines.
+
+    This runs LAST on purpose. publish-to-hubspot.py writes a clean body, then
+    embed-pull-quotes.py and fix-links.py each GET it, rewrite it and PATCH it
+    back. That final patched body is what the HubSpot publish button renders,
+    and until now nothing in the pipeline ever looked at it. When it will not
+    render, HubSpot tells the human "Something went wrong. Please try
+    refreshing." and tells us nothing at all.
+    """
+    cmd = ["python3", str(bp.REPO_ROOT / "scripts" / "shared" / "hubspot_preflight.py"),
+           "--post-id", str(post_id), "--json"]
+    try:
+        r = subprocess.run(cmd, cwd=str(bp.REPO_ROOT), capture_output=True, text=True, timeout=120)
+    except Exception as e:
+        logger.warning("preflight error: %s", e)
+        return [f"PREFLIGHT — could not run ({e})"]
+    if r.stderr:
+        sys.stderr.write(r.stderr)
+    try:
+        payload = json.loads(r.stdout.strip() or "{}")
+    except ValueError:
+        logger.warning("preflight returned unparseable output: %s", r.stdout[:300])
+        return ["PREFLIGHT — check did not return a result; draft was not verified"]
+    if not payload.get("fetched"):
+        return [f"PREFLIGHT — could not read draft {post_id} back from HubSpot to verify it"]
+    fails = [i for i in payload.get("issues", []) if i.get("severity") == "fail"]
+    lines = []
+    for i in fails:
+        detail = f" ({i['detail']})" if i.get("detail") else ""
+        lines.append(f"PREFLIGHT — {i.get('field')}: {i.get('rule')}{detail}")
+    if fails:
+        logger.warning("preflight post_id=%s found %d fail-severity issue(s)", post_id, len(fails))
+    else:
+        logger.info("preflight post_id=%s clean", post_id)
+    return lines
+
+
+def _write_review_flags(bundle_dir: Path, flags: "list[str]") -> None:
+    """(Re)write the bundle's review-flags file. Called again after the HubSpot
+    steps so late findings (embed, link repair, preflight) land in the bundle
+    too, not just in Slack."""
+    path = bundle_dir / "review-flags.md"
+    if not flags:
+        return
+    path.write_text(
+        "# Review flags — check/fix in HubSpot before posting\n\n"
+        + "\n".join(f"- {f}" for f in flags) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _build_graphics(bundle_dir: Path) -> None:
@@ -322,12 +391,7 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
         bundle_dir, body, bp.format_meta_for_hubspot_script(meta, topic),
         {"fact-check": fact_result, "brand-check": brand_result},
     )
-    if flags:
-        (bundle_dir / "review-flags.md").write_text(
-            "# Review flags — check/fix in HubSpot before posting\n\n"
-            + "\n".join(f"- {f}" for f in flags) + "\n",
-            encoding="utf-8",
-        )
+    _write_review_flags(bundle_dir, flags)
     logger.info(
         "bundle_written slot=%s path=%s flags=%d (fact=%s brand=%s seo=%d)",
         slot, bundle_dir, len(flags), fact_pass, brand_pass, len(seo_issues),
@@ -344,14 +408,22 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
                 "fact_pass": fact_pass, "brand_pass": brand_pass,
                 "seo_issues": len(seo_issues), "flags": len(flags), "flag_details": flags, "dry_run": True}
 
-    publish_rc, post_id = _publish_draft(bundle_dir, update_post_id=existing_post_id)
+    publish_rc, post_id, publish_err = _publish_draft(bundle_dir, update_post_id=existing_post_id)
     if publish_rc != 0:
-        raise RuntimeError(f"slot {slot}: publish-to-hubspot.py exited {publish_rc}")
+        # Carry HubSpot's own words, not just the exit code — that message is the
+        # only thing that tells a human what to fix.
+        raise RuntimeError(
+            f"slot {slot}: publish-to-hubspot.py exited {publish_rc}\n{publish_err}")
     action = "updated" if existing_post_id else "created"
     logger.info("hubspot_draft_%s slot=%s post_id=%s", action, slot, post_id)
 
     # Embed pull-quote figures inline in the draft body (best-effort). --reset-figures
     # makes it idempotent so re-runs refresh figures instead of stacking duplicates.
+    #
+    # These two steps are the LAST writers of postBody, so when one half-applies the
+    # human gets a draft nobody checked. A warning in the CI log is not telling
+    # anyone: the failures go on `flags` so they reach the Slack summary Danielle
+    # actually reads.
     if post_id:
         try:
             r = subprocess.run(
@@ -362,8 +434,12 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
             sys.stdout.write(r.stdout)
             if r.returncode != 0:
                 logger.warning("embed-pull-quotes slot=%s rc=%s: %s", slot, r.returncode, (r.stderr or "")[:300])
+                flags.append(
+                    f"EMBED — pull-quote/data-viz embed failed (rc={r.returncode}); "
+                    f"figures may be missing or partial: {' '.join((r.stderr or '').split())[:240]}")
         except Exception as e:
             logger.warning("embed-pull-quotes slot=%s error: %s", slot, e)
+            flags.append(f"EMBED — pull-quote embed did not run: {e}")
 
     # Verify + repair source-article hyperlinks in the published draft body:
     # HTTP-check every link, web-search a correct live URL for any dead/generic
@@ -379,8 +455,20 @@ def build_slot(slot: int, topic: dict, week: str, runner: SkillsRunner, *, dry_r
             sys.stdout.write(r.stdout)
             if r.returncode != 0:
                 logger.warning("fix-links slot=%s rc=%s: %s", slot, r.returncode, (r.stderr or "")[:300])
+                flags.append(
+                    f"LINKS — link verification/repair failed (rc={r.returncode}); "
+                    f"source links in this draft are unverified: "
+                    f"{' '.join((r.stderr or '').split())[:240]}")
         except Exception as e:
             logger.warning("fix-links slot=%s error: %s", slot, e)
+            flags.append(f"LINKS — link repair did not run: {e}")
+
+    # Last word on the body: read the draft back and check the markup a human is
+    # about to publish. Everything above this line writes; nothing above it looks.
+    if post_id:
+        flags += _preflight_live_draft(post_id)
+
+    _write_review_flags(bundle_dir, flags)
 
     slack_rc = _deliver_to_slack(bundle_dir, post_id)
     if slack_rc != 0:
@@ -471,7 +559,6 @@ def main() -> int:
     except Exception as e:
         logger.exception("content_build_failed: %s", e)
         return 1
-    import json
     print(json.dumps({"results": results}, indent=2))
     return 0
 
