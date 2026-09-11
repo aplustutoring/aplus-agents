@@ -171,6 +171,27 @@ agent and takes the ordinary triage path; the backfill reports it as out of
 scope. The private-pay upgrade path (and the other session's scheduler
 routing for it) stays in the code, dormant.
 
+**The Aug 1 → Sep 10 pool (Roman: "get a larger data pool"), 48 alerts,
+23 charter, 22 students.** Renewals arrive in 0 to 6 days or not at all
+(Keesee 0 and 6, Garcia x2 3, Doyal 4; nothing between day 7 and 27), so
+**Retention Risk at day 7 stands.** PO sizes 0.75 to 6.5 hours, median 4,
+16 of 21 at 4 or under. I hypothesised the 4-hour alert fires at package
+creation and built a gate (`require_attended_lesson`: park the alert until
+the first attended lesson on the PO, hourly re-check, 30-day expiry). Run
+through the real pool it parked **nobody**: every one of the 14 charter
+alerts fired on or after the first attended lesson on its PO (Cali, the
+three Melaras, Kailyn: first lesson and alert the same day). The alert IS a
+consumption signal; the gate stays as a safety net and is a no-op today.
+What the pool did change: **three alerts sat on last season's packages**
+(London Brixey's July PO, Alexzander Gonzalez's April PO, Franny Diaz's
+April PO). Those are an archive question for charter_admin (Roman
+2026-08-14: "their past hours should have been archived"), not a renewal
+chase: `season_start: 2026-08-01`, skipped with a DM to charter_admin. That
+also dissolved the London/Londyn Brixey double (two spellings, two
+packages, one child). Final pool through every gate: 14 charter cases
+would open on their alert day, 3 to Kath, 10 skipped as already renewed,
+21 out of scope (private pay / out of pocket). Suite 468.
+
 **Still human (until armed):** everything the ticket note says the agent
 would have sent. **Roman:** run the hubspot-schema workflow (creates the five
 deal properties) and build the "Renewal Chase" saved view. **After arming:** sending the teacher draft from Gmail

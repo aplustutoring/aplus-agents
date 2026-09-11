@@ -46,6 +46,15 @@ out-of-pocket alert is not this agent's: no case, no email; it takes the
 ordinary inbox triage path. The private-pay column below describes dormant
 code for when that switch is flipped.
 
+**Two more gates from the Aug 1 → Sep 10 pool:** an alert on a PO created
+before `season_start` (2026-08-01) is last season's leftover package and
+goes to charter_admin as an archive question, not a chase; an alert whose
+numbers say nothing was used on the PO and whose student Teachworks shows
+with no attended lesson is parked until the first lesson (a safety net; the
+pool showed the alert already fires with the first lesson). Renewals in the
+pool arrived in 0 to 6 days or not at all, which is why Retention Risk is
+day 7.
+
 **Grouping (Roman 2026-09-10):** siblings alert minutes apart (the three
 Melaras, one hour between them), so the day-0 email is sent by the sweep
 after `email_delay_minutes` (60) as **one email per family naming every
