@@ -8,9 +8,8 @@ compatibility_date = "2026-08-11"
 [vars]
 # The Worker serves public/index.html itself (assets below), so the API is same-origin.
 ALLOWED_ORIGIN = "https://delilah-booth.nameless-mountain-bafa.workers.dev"
-# JustCall MMS sender. Roman asked for "the 6793 number"; no JustCall number ends
-# in 6793. 818-573-6293 ("Roman's line" in ops/call_agent/config.yml, MMS-capable,
-# used by booth/eo) is the closest match. Change here if that guess is wrong.
+# JustCall MMS sender: 818-573-6293 ("Roman's line" in ops/call_agent/config.yml,
+# MMS-capable). Confirmed by Roman 2026-09-10 (his "6793" was a typo for this one).
 JUSTCALL_FROM = "+18185736293"
 SMS_BODY = "Hi {name}! Here is your photo from Delilah's 5th birthday. Shana Tova and thank you for celebrating with us!"
 STORYBOOK_SMS_BODY = "And here is your storybook version, {name}. Once upon a Shana Tova!"

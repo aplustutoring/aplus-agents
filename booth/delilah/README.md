@@ -50,10 +50,10 @@ for 50 minutes, and multipart-uploads into `DRIVE_FOLDER_ID`. The upload runs
 in `ctx.waitUntil`, after the response, so the iPad never waits on Drive.
 Marker keys `drive/<key>` in KV hold the Drive file id; `/photos` hides them.
 
-The folder is owned by the service account and shared with
-roman@wetutorathome.com as editor. To keep it forever, open it and use "Add
-shortcut to Drive" or copy the files into your own folder (SA-owned files count
-against the SA quota, not yours).
+The folder is owned by the A+ service account and shared with
+roman@wetutorathome.com as editor. Roman confirmed 2026-09-10 that it stays an
+A+ folder (no move to a personal Drive). SA-owned files count against the SA
+quota, which is plenty for one party.
 
 Backfill anything archived before the mirror existed, or after a Drive outage:
 
@@ -65,9 +65,9 @@ Returns `{ uploaded, skipped, failed }`. Safe to run any number of times.
 
 ## Sender number
 
-Roman asked for "the 6793 number". No JustCall number ends in 6793. The Worker
-sends from 818-573-6293 ("Roman's line", MMS-capable, same number the EO booth
-used). Change `JUSTCALL_FROM` in `wrangler.toml` and redeploy if that is wrong.
+Texts go out from 818-573-6293 ("Roman's line" in JustCall, MMS-capable, the
+same number the EO booth used). Confirmed by Roman 2026-09-10. `JUSTCALL_FROM`
+in `wrangler.toml`.
 
 ## Deploy
 

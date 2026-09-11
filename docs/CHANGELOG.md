@@ -35,6 +35,11 @@ human step (event-driven rule, 2026-09-04).
 key into `wrangler secret put`. Roman runs that one command (README, Deploy);
 until then the Worker skips Drive silently and `/drive-backfill` catches up.
 
+**Roman, 2026-09-10, two confirmations:** the Drive folder stays an A+
+(service-account-owned) folder, no move to a personal Drive; and the booth's
+sender number is 818-573-6293, the JustCall number found in-session (his "6793"
+was a typo). The "flagged" wording in wrangler.toml and README is removed.
+
 **Files:** `booth/delilah/{worker.js,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
 
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
