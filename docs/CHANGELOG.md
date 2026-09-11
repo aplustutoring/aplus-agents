@@ -4920,8 +4920,9 @@ other four copies intact); the three deal properties relabeled [Agent]. Melara
 deals restored earlier the same day. **Still to run (Claude Code's auto-mode
 classifier blocked the bulk write):** the fill-only backfill, after merge:
 `cd email && python3 -m src.student_stamp --since 2026-08-01T00:00:00Z --live`
-(dry run showed 227 of 305 deals gain blank fields only; 0 overwrites). Also
-still wrong by hand: Elenes deals 64836791336 / 64837038724 (both "Adrian").
+(dry run showed 227 of 305 deals gain blank fields only; 0 overwrites). Elenes
+deals 64836791336 / 64837038724 restored from property history (Emma Rose / 7,
+Nathan / 5, as Danielle typed them 90 s before the workflow fired) 2026-09-10.
 **Files:** email/src/student_stamp.py, email/src/deal_sync.py, email/config.yaml,
 email/tests/test_student_stamp.py, ops/hubspot-schema/properties.yml,
 ops/fleet-health/audit/retire_contact_to_deal_workflows.py, docs/PO-PROCESS.md.
