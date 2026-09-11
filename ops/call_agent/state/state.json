@@ -762,9 +762,10 @@
     414160032,
     414202479,
     414214954,
-    414227593
+    414227593,
+    414231434
   ],
-  "last_run_utc": "2026-09-11T19:03:53.410019+00:00",
+  "last_run_utc": "2026-09-11T19:10:50.628867+00:00",
   "pending_digest": [
     {
       "call_id": 414134815,
@@ -902,6 +903,85 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 414231434,
+      "number": "13109105142",
+      "time_pt": "12:03 PM",
+      "matched": true,
+      "contact_label": "Charlene Wetzell",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Charlene Wetzell called in asking for Paola but was helped by Yolanda, who is handling her scheduling. Charlene requested tutoring availability for Keanu on Mondays and Wednesdays at 11am (not Tuesday/Friday). Yolanda confirmed she can find a tutor for that slot. Charlene said she would text to confirm.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Confirm a tutor available Mondays and Wednesdays at 11am for Keanu and lock in the schedule once Charlene's confirmation text arrives.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Watch for Charlene's incoming text and respond to finalize Mon/Wed 11am sessions.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Charlene Wetzell (mom of Keanu, 1st grade, iLEAD Exploration) called in a friendly tone asking for Paola but was fine working with Yolanda on scheduling. She wants online tutoring on Mondays and Wednesdays at 11am \u2014 explicitly NOT Tuesdays or Fridays. Yolanda told her she can find a tutor for that slot. Charlene said she would text right after the call to confirm. Next step: watch for her text, confirm the Mon/Wed 11am recurring slot, and share the tutor profile once the iLEAD PO is in. Open with: \"Hi Charlene, got your text \u2014 confirming Keanu on Mondays and Wednesdays at 11am. I'll send the tutor's profile as soon as the PO from Courtney is in.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing charter family already in QTL - Charter working through scheduling; deal pipeline owns status.",
+        "student_or_school_names_mentioned": [
+          "Keanu",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Charlene called to request Keanu's online tutoring on Mondays and Wednesdays at 11am (not Tuesdays or Fridays). She asked for Paola but was helped by Yolanda, who confirmed availability at that time. Charlene said she would text to confirm.",
+          "what_we_can_do_to_help": "Yolanda to match a tutor for Mon/Wed 11am online sessions for Keanu and confirm once Charlene's text comes in; share tutor profile once iLEAD PO is received.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Charlene called to request Keanu's online tutoring on Mondays and Wednesdays at 11am (not Tuesdays or Fridays). She asked for Paola but was helped by Yolanda, who confirmed availability at that time. Charlene said she would text to confirm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to match a tutor for Mon/Wed 11am online sessions for Keanu and confirm once Charlene's text comes in; share tutor profile once iLEAD PO is received."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm a tutor available Mondays and Wednesdays at 11am for Keanu and lock in the schedule once Charlene's confirmation text arrives.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Watch for Charlene's incoming text and respond to finalize Mon/Wed 11am sessions.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
