@@ -7,6 +7,40 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-11 — Parent chase: can't get parent info → sales seat asked to assist
+
+**Decision (Roman, 2026-09-11):** "this is something that needs to get escalated
+to Danielle to ask for assistance when we can't get parent info to fulfill a PO."
+
+**What:** `po_inbox._request_parent_assist()` DMs the SALES seat (role
+`parent_chase.assist_seat: sales`, never a name in code) once per deal, audit
+`parent_chase_assist_requested`, on either trigger:
+1. the school replies to the chase WITHOUT parent info (new reply-path branch:
+   open chase on the thread, no `parent_email` extracted, sender not internal);
+2. the chase window expires with no reply (rides the existing escalation).
+The DM names the deal, student, school, PO, who we asked and when, and why the
+PO is stuck (Teachworks family, schedule text and invoice all blocked).
+
+**Why now:** Heartland PF252648, Sept 8. Hazel Barnett's certificate carried no
+parent info; the chase went to Heartland's AP mailbox; Cherri Crawford replied
+"privacy laws, we cannot share it, we'll have the family reach out." That reply
+was filed as `po_inbox_other` and nobody who could help was told. The deal has
+sat as NEEDS PARENT since, with no Teachworks family, no text, no invoice.
+
+**Also found in the same check (not fixed here, awaiting Roman's go):**
+- `deal_sync._deal_contact` falls back to the first associated contact, so a
+  NEEDS PARENT deal texts + emails the TOR/ES (Keanu Hsu, Sept 10: iLEAD's
+  Courtney Gannon got "we received Keanu's PO"; parent Charlene Wetzell never
+  will, the deals are marked sent) and creates Teachworks families under the
+  school staffer (TW 2173071, 2165423), or loops on a 400 with no DM (Hazel).
+- Vendor robot mailboxes (vendorsupport@viedu.org) get attached as Teacher of
+  Record (LaRue, Sept 10).
+- presend is still shadow: 8 PO texts this week went from the support line
+  while Paola had an active charter_sales thread with the family.
+
+**Files:** email/src/po_inbox.py, email/config.yaml, email/tests/test_po_inbox.py
+(2 tests), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
 
 **What:** each kept shot now yields two favors. After the real photo prints and is

@@ -80,6 +80,12 @@ Tried in order; the first hit wins:
    the contact, renames the deal, fires the Teachworks sync, and arms the
    family's SMS. Open chases also **self-resolve** if the family contact
    appears on its own. No reply 2 business days after the SEND → escalation DM.
+   **Can't get the info** (the school replies without it, e.g. Heartland's
+   "privacy laws, we cannot share it", or the window expires with no reply)
+   → the **sales seat is asked to assist** (one DM per deal, audit
+   `parent_chase_assist_requested`; seat in `parent_chase.assist_seat`,
+   Roman 2026-09-11). Sales owns the school relationship and can get the
+   family connected when the AP mailbox will not.
 
 Why it matters: the Teachworks sync keys the family on the deal's parent
 contact email — no parent contact means no TW family, no scheduling, no

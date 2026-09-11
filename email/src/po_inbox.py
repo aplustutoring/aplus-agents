@@ -795,6 +795,13 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str]) -> str:
 _NOREPLY_RE = re.compile(r"no-?reply|do-?not-?reply|notifications?@|@mailer\.", re.I)
 
 
+def _sender_addr(msg: dict) -> str:
+    """Bare lowercase address out of a 'Name <addr>' sender header."""
+    raw = (msg or {}).get("sender") or ""
+    mm = re.search(r"<([^>]+)>", raw)
+    return (mm.group(1) if mm else raw).strip().lower()
+
+
 def _human_addr(addr: str) -> bool:
     """Robot mailboxes are never draft recipients — a reply to noreply@ is a
     dead letter that silently kills the chase."""
@@ -1050,6 +1057,51 @@ def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
                           "create/associate the contact manually.")
 
 
+def _request_parent_assist(chases: list, why: str) -> list:
+    """Roman, 2026-09-11: when we cannot get parent info to fulfill a PO, the
+    SALES seat (school partnerships; a role mapped in config, never a name in
+    code) is asked for assistance. Two triggers: the school replied to the
+    chase WITHOUT the info (Heartland, Sept 9: "privacy laws, we cannot share
+    it"), or the chase window expired with no reply at all. ONE DM per call
+    naming every student (a multi-kid certificate is one ask, not five), one
+    audit row per deal, never twice for the same deal. Returns the chases
+    that were newly asked about."""
+    ch = cfg()["po_inbox"].get("parent_chase", {})
+    fresh = []
+    for c in chases:
+        did = str(c.get("deal_id") or "")
+        if did and did != "DRYRUN" and not audit.already_processed(f"parent-chase-assist:{did}"):
+            fresh.append(c)
+    if not fresh:
+        return []
+    seat_key = ch.get("assist_seat") or "sales"
+    seat = staff(seat_key)
+    first = fresh[0]
+    asked = (first.get("chase_to") or "the school").strip()
+    when = (first.get("timestamp") or "")[:10]
+    lines = [f"  - {c.get('deal_name')} (student {c.get('student') or '?'}, "
+             f"PO {c.get('po_number') or '?'})" for c in fresh]
+    if seat.get("slack_user_id"):
+        try:
+            slack_client.dm(
+                seat["slack_user_id"],
+                f"\U0001f91d Need your help getting parent info to fulfill "
+                f"{'a PO' if len(fresh) == 1 else f'{len(fresh)} POs'} from "
+                f"{first.get('school') or 'the school'}. We asked {asked} on {when or '?'}. "
+                f"{why}\n" + "\n".join(lines) + "\n"
+                f"Until we have the parent's name, email and phone, the Teachworks family, "
+                f"the schedule text and the invoice are all blocked. Can you reach the school "
+                f"or the family through your contacts?")
+        except Exception as e:  # noqa: BLE001 - the ask must never break the sweep
+            print(f"  \u26a0\ufe0f  parent-assist DM failed (non-fatal): {e}")
+    for c in fresh:
+        audit.append({"message_id": f"parent-chase-assist:{c.get('deal_id')}",
+                      "source": "po_inbox", "action_taken": "parent_chase_assist_requested",
+                      "deal_id": str(c.get("deal_id")), "thread_id": c.get("thread_id"),
+                      "seat": seat_key, "reason": why[:200]})
+    return fresh
+
+
 def _sweep_parent_chases() -> None:
     """Chase past its window with no reply → one escalation DM to the owner
     (chase by phone). Never re-pings a deal."""
@@ -1117,6 +1169,8 @@ def _sweep_parent_chases() -> None:
         audit.append({"message_id": f"parent-chase-escalation:{r.get('deal_id')}",
                       "source": "po_inbox", "action_taken": "parent_chase_escalated",
                       "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id")})
+        # no reply at all past the window = we cannot get the info -> sales assist
+        _request_parent_assist([r], "No reply from the school.")
 
 
 def _sweep_chase_drafts() -> None:
@@ -1893,6 +1947,17 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         if chases and (po.get("parent_email") or "").strip():
             _resolve_parent_chases(chases, po, note_parts)
             record["category"] = "parent_info_reply"
+        elif chases and not _internal_email(_sender_addr(m)):
+            # the school answered the chase but gave NO parent info (privacy,
+            # "we'll have the family call you") -> the sales seat is asked to
+            # help, right now, not after the SLA clock (Roman 2026-09-11)
+            why = f"The school replied without it: \"{(po.get('summary') or '')[:160]}\""
+            asked = _request_parent_assist(list(chases), why)
+            if asked:
+                seat = cfg()["po_inbox"].get("parent_chase", {}).get("assist_seat") or "sales"
+                note_parts.append(f"\U0001f91d Reply carried no parent info; the {seat} seat "
+                                  f"was DM'd to assist ({', '.join(c.get('student') or '?' for c in asked)}).")
+            record["category"] = "parent_chase_no_info_reply"
         if hint:
             record["category_hint"] = hint
         note_parts.append(f"Not a PO: {po.get('summary','')[:200]}")

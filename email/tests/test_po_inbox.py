@@ -917,6 +917,74 @@ def test_parent_chase_escalates_after_window(monkeypatch):
     assert dms == []
 
 
+def test_parent_chase_escalation_asks_sales_for_assist(monkeypatch):
+    """Roman 2026-09-11: can't get parent info to fulfill a PO -> the sales
+    seat is asked to assist. No reply past the window is one trigger."""
+    dms, appended = [], []
+    recs = [{"message_id": "parent-chase:D9", "action_taken": "parent_chase_opened",
+             "thread_id": "TH9", "deal_id": "D9", "student": "Hazel Barnett",
+             "school": "Heartland Charter School", "po_number": "PF252648-HazelBarnett",
+             "deal_name": "NEEDS PARENT - Hazel Barnett - Heartland 1 - 26/27",
+             "chase_to": "ap@heartlandcharterschool.com", "sla_due": "2026-08-01T10:00:00-07:00",
+             "timestamp": "2026-07-31T10:00:00+00:00"}]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    po._sweep_parent_chases()
+    sales_uid = po.staff("sales")["slack_user_id"]
+    assist = [t for u, t in dms if u == sales_uid and "Need your help getting parent info" in t]
+    assert len(assist) == 1
+    assert "Hazel Barnett" in assist[0] and "PF252648-HazelBarnett" in assist[0]
+    assert "No reply from the school" in assist[0]
+    rec = [a for a in appended if a.get("action_taken") == "parent_chase_assist_requested"]
+    assert len(rec) == 1 and rec[0]["deal_id"] == "D9" and rec[0]["seat"] == "sales"
+    # second sweep: assist already requested -> silent
+    recs.extend(appended)
+    dms.clear()
+    po._sweep_parent_chases()
+    assert dms == []
+
+
+def test_school_reply_without_parent_info_asks_sales_for_assist(monkeypatch):
+    """The Heartland case: the school answers the chase with 'privacy laws, we
+    cannot share it' -> sales is asked to assist immediately, once per deal.
+    Our OWN outbound chase email landing on the thread never triggers it."""
+    dms, appended = [], []
+    chase = {"message_id": "parent-chase:D9", "action_taken": "parent_chase_opened",
+             "thread_id": "TH9", "deal_id": "D9", "student": "Hazel Barnett",
+             "school": "Heartland Charter School", "po_number": "PF252648-HazelBarnett",
+             "deal_name": "NEEDS PARENT - Hazel Barnett - Heartland 1 - 26/27",
+             "chase_to": "ap@heartlandcharterschool.com",
+             "timestamp": "2026-09-08T21:25:56+00:00"}
+    recs = [chase]
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    # our own sent chase (internal sender) -> nothing
+    assert po._internal_email(po._sender_addr({"sender": "A+ Charter <charter@wetutorathome.com>"}))
+    # the school's reply, no parent email extracted
+    assert po._sender_addr({"sender": "AP Department <ap@heartlandcharterschool.com>"}) \
+        == "ap@heartlandcharterschool.com"
+    sibling = {**chase, "message_id": "parent-chase:D10", "deal_id": "D10",
+               "student": "Ivy Barnett", "po_number": "PF252648-IvyBarnett",
+               "deal_name": "NEEDS PARENT - Ivy Barnett - Heartland 1 - 26/27"}
+    recs.append(sibling)
+    asked = po._request_parent_assist([chase, sibling],
+                                      "The school replied without it: \"privacy laws\"")
+    assert [c["deal_id"] for c in asked] == ["D9", "D10"]
+    sales_uid = po.staff("sales")["slack_user_id"]
+    # a multi-kid thread is ONE DM naming both students, one audit row per deal
+    assert [u for u, _t in dms] == [sales_uid]
+    assert "privacy laws" in dms[0][1] and "2 POs" in dms[0][1]
+    assert "Hazel Barnett" in dms[0][1] and "Ivy Barnett" in dms[0][1]
+    assist = [a for a in appended if a.get("action_taken") == "parent_chase_assist_requested"]
+    assert sorted(a["deal_id"] for a in assist) == ["D10", "D9"]
+    # once per deal: a second reply on the same chases is silent
+    recs.extend(appended)
+    assert po._request_parent_assist([chase, sibling], "again") == []
+    assert len(dms) == 1
+
+
 def test_norm_po_number():
     # Roman 2026-08-10: the number only, never a PO prefix
     assert po._norm_po_number("PO7514044381") == "7514044381"
