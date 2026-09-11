@@ -4889,3 +4889,39 @@ stamp those per deal; nothing else should. Keeping `first_name`/`last_name`/
 `contact_record_id` copies is harmless. Until that is done every multi-student
 family will be re-clobbered on the next enrollment. Decision-log entry pending.
 **Files:** email/tests/test_po_inbox.py, docs/PO-PROCESS.md, docs/CHANGELOG.md.
+
+## 2026-09-10 — student_stamp: fill-only student/parent deal stamp replaces workflow 34950163 (PR #209)
+**Why:** Roman, same day, on the Melara finding: "yes, and turn off the workflows."
+Workflow 34950163 "Contact to Deal Properties" (2020) copied the contact's ONE
+student name + grade and parent first/last + contact id onto EVERY associated
+deal, overwriting po_inbox's per-deal stamps (Melara 9/4, Elenes 9/8). It also
+never re-enrolled a contact, so repeat families' later deals got nothing: the
+backfill dry run found 227 of 305 post-8/1 deals in the covered pipelines with
+at least one of the four name fields blank. Six live workflows read those deal
+fields as tokens (Gold/In-Person Renewed, In-Person Renewal, Charter Continued
+Out of Pocket, Teacher Scholarship WF-01/03/04), so deleting the copies without a
+replacement would have blanked their notifications.
+**What:** `email/src/student_stamp.py`, called from deal_sync for every NEW deal
+in `student_stamp.pipelines` (the workflow's 8 Pre-Lesson pipelines + CFGC + the
+scheduling pipelines). FILL ONLY, never overwrites. Student first name from the
+deal name first ("Lesly Elenes - Nathan"), the contact's student field second;
+two students in one deal name → left for a human and flagged; grade copied only
+when the student IS the contact's student; parent first/last + contact id from
+the deal's Family contact, never from a TOR/ES contact (`is_family_contact`
+guard). Non-fatal: a HubSpot error never holds the deal_sync cursor. Backfill:
+`python3 -m src.student_stamp --since 2026-08-01T00:00:00Z [--live]`.
+Registry: deal `first_name` / `last_name` / `contact_record_id` declared as
+[Agent] properties (labels to be patched live). Retirement script
+`ops/fleet-health/audit/retire_contact_to_deal_workflows.py` backs up both flows,
+switches 34950163 OFF and removes only the student_first_name copy (action 24)
+from 366207297 (Summer Boost Online Pre-Lesson), keeping its other actions.
+**Live, verified 2026-09-10:** 34950163 OFF; action 24 removed from 366207297 (its
+other four copies intact); the three deal properties relabeled [Agent]. Melara
+deals restored earlier the same day. **Still to run (Claude Code's auto-mode
+classifier blocked the bulk write):** the fill-only backfill, after merge:
+`cd email && python3 -m src.student_stamp --since 2026-08-01T00:00:00Z --live`
+(dry run showed 227 of 305 deals gain blank fields only; 0 overwrites). Also
+still wrong by hand: Elenes deals 64836791336 / 64837038724 (both "Adrian").
+**Files:** email/src/student_stamp.py, email/src/deal_sync.py, email/config.yaml,
+email/tests/test_student_stamp.py, ops/hubspot-schema/properties.yml,
+ops/fleet-health/audit/retire_contact_to_deal_workflows.py, docs/PO-PROCESS.md.

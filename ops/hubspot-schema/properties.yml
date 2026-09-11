@@ -911,6 +911,30 @@ properties:
       group: dealinformation
       type: string
       fieldType: text
+      # po_inbox stamps it from the PO; student_stamp.py (deal_sync) fills it
+      # when blank from the deal name, else the Family contact. Never overwritten.
+    # Parent-name + contact-id copies, formerly HubSpot workflow 34950163
+    # "Contact to Deal Properties" (OFF 2026-09-10). Fill-only via
+    # email/src/student_stamp.py. Read by the Charter "Continued - Out of
+    # Pocket", Gold "Renewed" and Teacher Scholarship WF-04 workflows.
+    - name: first_name
+      label: "[Agent] Parent First Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync) from the deal's Family contact, fill-only. Replaced workflow 34950163 on 2026-09-10."
+    - name: last_name
+      label: "[Agent] Parent Last Name"
+      group: dealinformation
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync) from the deal's Family contact, fill-only. Replaced workflow 34950163 on 2026-09-10."
+    - name: contact_record_id
+      label: "[Agent] Contact Record ID"
+      group: dealinformation
+      type: number
+      fieldType: number
+      description: "AGENT PROPERTY — written by student_stamp.py (deal_sync): the deal's Family contact id, fill-only. Replaced workflow 34950163 on 2026-09-10. No known reader; kept for legacy reports."
     - name: student_last_name_if_diff_from_parent
       label: "[Agent] Student Last Name"
       group: scheduling_information

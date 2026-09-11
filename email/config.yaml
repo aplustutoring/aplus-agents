@@ -378,6 +378,28 @@ owner_assign:
     - "3067397"    # In-Person
     - "16858643"   # In-Person - Renewal
 
+# ── Fill-only student/parent stamp (Roman 2026-09-10) ──
+# Replaces HubSpot workflow 34950163 "Contact to Deal Properties" (OFF
+# 2026-09-10), which copied the contact's ONE student onto EVERY associated
+# deal and overwrote po_inbox's per-deal stamps (Melara siblings). Runs from
+# deal_sync for each NEW deal in these pipelines; never overwrites a value.
+student_stamp:
+  enabled: true
+  pipelines:
+    - "907748"     # Charter Schools - Traditional Vendor Funds
+    - "default"    # Gold Tutoring
+    - "19120821"   # Free Trial
+    - "3067397"    # In-Person
+    - "16547180"   # Gold Tutoring - Renewal
+    - "16858643"   # In-Person - Renewal
+    - "72281989"   # Charter Terri (iLead Level Up)
+    - "88841552"   # Charter Amy
+    - "5119061"    # IEM Inc
+    - "30837103"   # Summer Boost - In-Person
+    - "30830920"   # Summer Boost - Online
+    - "1066195"    # CFGC
+    - "21277473"   # Subscription
+
 # ── Relay watchdog (Roman 2026-09-09: "is that really the best fix?") ──
 # deal created / stage changed → "[Agent] Doorbell" workflow (1881460299,
 # ops/deal-relay/doorbell/) → deal-sync-relay → workflow_dispatch → deal_sync
