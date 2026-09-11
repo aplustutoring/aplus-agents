@@ -35,6 +35,11 @@ on:
         description: "Low-balance agent: open cases for every Teachworks alert of the last N days that has none (pair with dry_run to preview)"
         required: false
         default: ""
+      day1_now:
+        description: "Low-balance agent: text every open family NOW instead of the next business morning (teacher emails still wait for the morning; pair with dry_run to preview)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -46,7 +51,7 @@ jobs:
       # A dry-run replay/backfill writes no state, so it must not queue behind
       # (or be cancelled by) the 5-minute poll: GitHub keeps ONE pending run per
       # group and cancels the older one, which killed run 34538803410.
-      group: aplus-email-state${{ (inputs.replay_thread != '' || inputs.backfill_days != '') && inputs.dry_run && '-dryrun' || '' }}
+      group: aplus-email-state${{ (inputs.replay_thread != '' || inputs.backfill_days != '' || inputs.day1_now) && inputs.dry_run && '-dryrun' || '' }}
       cancel-in-progress: false
     defaults:
       run:
@@ -81,6 +86,7 @@ jobs:
           LOW_BALANCE_REPLAY_THREAD: ${{ inputs.replay_thread }}
           LOW_BALANCE_SIMULATE_DAYS: ${{ inputs.simulate_days }}
           LOW_BALANCE_BACKFILL_DAYS: ${{ inputs.backfill_days }}
+          LOW_BALANCE_DAY1_NOW: ${{ inputs.day1_now && '1' || '0' }}
           LOW_BALANCE_FORCE_ARMED: ${{ (inputs.replay_thread != '' || inputs.backfill_days != '') && inputs.dry_run && '1' || '0' }}
         run: python -m src.main
 

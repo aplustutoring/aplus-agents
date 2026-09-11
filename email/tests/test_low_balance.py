@@ -701,7 +701,7 @@ def test_day1_skipped_when_the_family_texted_the_line(monkeypatch):
     lb.run_sweep(force=True)
     assert not h.sms and not h.drafts
     rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_replied")
-    assert rec["channel"] == "text" and "texted the support line" in h.notes[0][1]
+    assert rec["channel"] == "text" and "texted us" in h.notes[0][1]
     # an OLD inbound text (before the case) or an outbound one does not count
     monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
         "9094548581": {"texts": [{"at": "2026-08-01T10:00:00", "direction": "incoming", "text": "hi"},
@@ -942,3 +942,90 @@ def test_templates_render_clean(monkeypatch):
     assert "Taylor's current tutoring package is almost used up. Taylor has been working with Sarah." in out2
     assert "Prep package at $83 an hour. Moving to Success (50 hours) brings that to $73 an hour" in out2
     assert "renews on its own" in out2 and "Rodriguez" not in out2
+
+
+# ── same-evening text (day1_now) + next-morning teacher pass ───────────────
+
+def test_sms_line_resolves_the_role_to_paolas_number(monkeypatch):
+    # Roman 2026-09-10: "make these texts go out from 6644"
+    cfgv = _cfg(armed=True)
+    cfgv["low_balance"]["sms_line"] = "charter_sales"
+    cfgv["presend"] = {"lines": {"charter_sales": "+18185736644", "support": "+18188691627"}}
+    monkeypatch.setattr(lb, "cfg", lambda: cfgv)
+    assert lb._sms_line() == "+18185736644"
+    cfgv["low_balance"]["sms_line"] = ""
+    assert lb._sms_line() == ""                      # falls back to sms.justcall_number
+    sent = []
+    monkeypatch.setattr(lb, "cfg", lambda: {**cfgv, "low_balance": {**cfgv["low_balance"], "sms_line": "charter_sales"}})
+    from src import sms as sms_mod
+    monkeypatch.setattr(sms_mod, "_jc_send", lambda to, body, from_number=None: sent.append((to, body, from_number)))
+    lb._send_sms("+19094548581", "hi")
+    assert sent == [("+19094548581", "hi", "+18185736644")]
+
+
+def test_day1_now_texts_tonight_and_leaves_the_teacher_for_the_morning(monkeypatch):
+    case = _case()
+    cfgv = _cfg(armed=True)
+    cfgv["low_balance"]["tor_email"]["mode"] = "send"
+    h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 18, 50))   # same evening
+    lb.day1_now()
+    assert h.sms == [("+1 909-454-8581", "Hi Jessica, text body.")]
+    assert not h.tor_sent and not h.drafts
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_contacted")
+    assert rec["message_id"].endswith(":day1") and rec["sms_sent"] and rec["tor_pending"] is True
+    assert h.stage() == ["family_contacted"]
+    assert h.notes and "Same-day text" in h.notes[0][1] and "next business morning" in h.notes[0][1]
+
+
+def test_day1_now_holds_outside_the_text_window(monkeypatch):
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case}, in_window=False)
+    _active_deal(monkeypatch)
+    lb.day1_now()
+    assert not h.sms and not h.recs
+
+
+def test_morning_sweep_sends_the_owed_teacher_email_once(monkeypatch):
+    case = _case(day1_done=True, tor_pending=True, day1_at="2026-09-11T01:50:00+00:00")
+    cfgv = _cfg(armed=True)
+    cfgv["low_balance"]["tor_email"]["mode"] = "send"
+    h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 11, 9, 3))
+    lb.run_sweep(force=True)
+    assert not h.sms                                  # never a second text
+    assert h.tor_sent and h.tor_sent[0][0] == "kylee@ileadexploration.org"
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_contacted")
+    assert rec["message_id"].endswith(":day1-teacher") and rec["tor_emailed"] and not rec.get("tor_pending")
+    assert h.stage() == ["teacher_contacted"]
+
+
+def test_open_cases_folds_tor_pending_then_clears_it_after_the_teacher_email(monkeypatch):
+    key = "low-balance:26/27:taylor-rodriguez:charter-ilead"
+    opened = {"message_id": key, "action_taken": "low_balance_opened"}
+    texted = {"message_id": key + ":day1", "action_taken": "low_balance_family_contacted",
+              "sms_sent": True, "tor_pending": True, "timestamp": "2026-09-11T01:50:00+00:00"}
+    teacher = {"message_id": key + ":day1-teacher", "action_taken": "low_balance_family_contacted",
+               "tor_emailed": True, "timestamp": "2026-09-11T16:03:00+00:00"}
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: [opened, texted])
+    c = lb.open_cases()[key]
+    assert c["day1_done"] and c["tor_pending"]
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: [opened, texted, teacher])
+    c = lb.open_cases()[key]
+    assert c["day1_done"] and not c["tor_pending"]
+
+
+def test_owed_teacher_email_skipped_when_the_family_replied_to_the_text(monkeypatch):
+    case = _case(day1_done=True, tor_pending=True)
+    cfgv = _cfg(armed=True)
+    cfgv["low_balance"]["tor_email"]["mode"] = "send"
+    h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
+        "9094548581": {"texts": [{"direction": "incoming", "at": "2026-09-10 19:02"}], "calls": []}})
+    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 11, 9, 3))
+    lb.run_sweep(force=True)
+    assert not h.tor_sent and not h.sms
+    assert any(r["action_taken"] == "low_balance_family_replied" and r["channel"] == "text" for r in h.recs)
