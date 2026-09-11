@@ -97,6 +97,8 @@ class Wire:
             return []
         monkeypatch.setattr(fl.tw, "tw_get", tw_get)
         monkeypatch.setattr(fl.hs, "search_deals_by_student", lambda first: list(deals or []))
+        self.contact_deals = []
+        monkeypatch.setattr(fl.hs, "get_contact_deals", lambda cid: list(self.contact_deals))
         monkeypatch.setattr(fl.hs, "find_contact_by_email", lambda e, properties=None: contact)
         monkeypatch.setattr(fl.hs, "_write", lambda m, p, body=None: self.patches.append((m, p, body)) or {})
         monkeypatch.setattr(fl.audit, "append", lambda r: self.audit.append(r))
@@ -159,6 +161,21 @@ def test_no_deal_yet_parks_and_retries_later(monkeypatch):
               students=[STUDENT], customers=[CUSTOMER], deals=[DEAL1], contact=CONTACT)
     fl.run(force=True)
     assert not w2.patches
+
+
+def test_private_pay_deal_without_surname_found_through_the_contact(monkeypatch):
+    # 'Boston Powers - Iuri': the surname route finds nothing, the family contact's deals do
+    student = {"id": 200, "first_name": "Iuri", "last_name": "Kvirikashvili", "customer_id": 9}
+    w = Wire(monkeypatch, lessons=[_lesson("2026-09-05", ["Kvirikashvili, Iuri"])],
+             history=[{"from_date": "2026-09-02", "status": "Attended"}],
+             students=[student], customers=[{"id": 9, "email": "boston@x.com"}], deals=[],
+             contact={"id": "C9", "properties": {"email": "boston@x.com"}})
+    w.contact_deals = [{"id": 555, "name": "Boston Powers - Iuri", "pipeline": "default", "createdate": "2026-08-28T00:00:00Z"},
+                       {"id": 556, "name": "Boston Powers - Nino", "pipeline": "default", "createdate": "2026-08-01T00:00:00Z"}]
+    out = fl.run(force=True)
+    assert out["stamped_deals"] == 1 and out["no_deal"] == 0
+    assert ("PATCH", "/crm/v3/objects/deals/555", {"properties": {"retention_first_lesson_date": "2026-09-02"}}) in w.patches
+    assert w.saved["online:kvirikashvili, iuri"]["deal_id"] == "555"
 
 
 def test_fully_stamped_student_costs_nothing(monkeypatch):
