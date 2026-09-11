@@ -1159,6 +1159,64 @@ def _family_texted_since(case: dict, jc_idx: dict) -> bool:
                for t in jc_idx[n].get("texts", []))
 
 
+def _latest_inbound_text(case: dict, jc_idx: dict) -> dict:
+    """The family's most recent inbound text since the case opened
+    ({at, line, text}) or {}; the DM to the seat quotes it."""
+    n = jc.norm_number(case.get("phone") or "")
+    opened = (case.get("opened_at") or "")[:10]
+    if not n or not opened or n not in (jc_idx or {}):
+        return {}
+    hits = [t for t in jc_idx[n].get("texts", [])
+            if str(t.get("direction", "")).startswith("in") and str(t.get("at") or "")[:10] >= opened]
+    return max(hits, key=lambda t: str(t.get("at") or "")) if hits else {}
+
+
+def _watch_replies(live: dict, seat: dict, lb: dict, jc_idx: dict) -> set:
+    """Every sweep, every open charter case: a reply by EMAIL (the seat's
+    inbox, the email's reply-to) or by TEXT (any JustCall line) is written to
+    the audit log, posted on the ticket and DM'd to the seat with the words,
+    so Paola sees it within the hour whichever line it came in on (Roman
+    2026-09-11: "send from admin and responses go to Paola"). Returns the
+    case keys that replied this sweep; day 1 and the teacher email skip them."""
+    replied: set = set()
+    lines = []
+    for key, case in live.items():
+        if not case.get("charter", True) or not case.get("email_sent") or case.get("replied"):
+            continue
+        channel, quote, line = "", "", ""
+        if _parent_replied(case, seat, lb):
+            channel = "email"
+        else:
+            t = _latest_inbound_text(case, jc_idx)
+            if t:
+                channel, quote, line = "text", (t.get("text") or "").strip(), str(t.get("line") or "")
+        if not channel:
+            continue
+        replied.add(key)
+        audit.append({"message_id": f"{key}:replied", "source": "low_balance",
+                      "action_taken": "low_balance_family_replied", "channel": channel,
+                      "text": quote[:200], "line": line, "ticket_id": case.get("ticket_id")})
+        tid = case.get("ticket_id")
+        note = ("💬 The family replied to the day-0 email in the seat's inbox." if channel == "email"
+                else f"💬 The family texted us since the case opened{(' (' + line + ')') if line else ''}: \"{quote[:200]}\"")
+        if tid and tid != "DRYRUN":
+            try:
+                hs.add_ticket_note(tid, note + " No agent text, no teacher email; take it from the thread.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  reply note failed (non-fatal): {e}")
+        print(f"  💬 {case.get('student')}: family replied by {channel}; agent steps out")
+        link = f" <{hs.ticket_url(tid)}|ticket>" if tid and tid != "DRYRUN" else ""
+        who = case.get("first_name") or "the family"
+        lines.append(f"• *{case.get('student')}*: {who} replied by {channel}"
+                     + (f": \"{quote[:160]}\"" if quote else "") + link)
+    if lines and seat.get("slack_user_id"):
+        try:
+            slack_client.dm(seat["slack_user_id"], "💬 Low balance replies, yours to answer:\n" + "\n".join(lines))
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  reply DM failed (non-fatal): {e}")
+    return replied
+
+
 def _parent_replied(case: dict, seat: dict, lb: dict) -> bool:
     """Did the family write back to the seat's mailbox since the case opened?
     Replies to the day-0 email land on the seat (reply-to), so the agent
@@ -1509,12 +1567,24 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
     emailed = _send_pending_emails(live, now, seat, lb, armed, force)
     for k in emailed:
         live[k] = {**live[k], "email_sent": live[k].get("to_email")}
-    # 3: day 1, grouped by family and by teacher
+    # 3a: replies, every sweep, every open case (Roman 2026-09-11: the texts
+    # leave from the support line and the email from A+ Tutoring, so every
+    # reply, on any line, is posted to the ticket and DM'd to the seat)
+    jc_idx, jc_ok = {}, True
+    watched = [c for c in live.values() if c.get("charter", True) and c.get("email_sent") and not c.get("replied")]
+    if watched:
+        try:
+            jc_idx = jc.index_by_number(since_days=int(lb.get("text_reply_window_days", 14)))
+        except Exception as e:  # noqa: BLE001 — JustCallUnavailable and friends
+            jc_ok, jc_idx = False, {}
+            print(f"  ⚠️  JustCall unreadable ({str(e)[:80]}): day-1 texts HELD this sweep, "
+                  f"a family mid-conversation by text must not be texted on top")
+    replied = _watch_replies(live, seat, lb, jc_idx) if jc_ok else set()
+    # 3b: day 1, grouped by family and by teacher
     due: dict = {}
     due_teacher: dict = {}                              # texted earlier, teacher email still owed
-    jc_idx, jc_ok = None, True
     for key, case in live.items():
-        if not case.get("charter", True) or case.get("replied"):
+        if not case.get("charter", True) or case.get("replied") or key in replied:
             continue
         teacher_pass = bool(case.get("day1_done")) and bool(case.get("tor_pending"))
         if case.get("day1_done") and not teacher_pass:
@@ -1527,37 +1597,8 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
             continue
         if not (force or _day1_due(case, now, int(lb.get("family_text_after_days", 1)))):
             continue
-        # a reply by EMAIL (the seat's inbox) or by TEXT (the JustCall line the
-        # family already uses) means Paola takes the thread; the agent stays out
-        if jc_idx is None and jc_ok:
-            try:
-                jc_idx = jc.index_by_number(since_days=int(lb.get("text_reply_window_days", 14)))
-            except Exception as e:  # noqa: BLE001 — JustCallUnavailable and friends
-                jc_ok, jc_idx = False, {}
-                print(f"  ⚠️  JustCall unreadable ({str(e)[:80]}): day-1 texts HELD this sweep, "
-                      f"a family mid-conversation by text must not be texted on top")
         if not jc_ok:
-            continue
-        channel = ""
-        if _parent_replied(case, seat, lb):
-            channel = "email"
-        elif _family_texted_since(case, jc_idx):
-            channel = "text"
-        if channel:
-            audit.append({"message_id": f"{key}:replied", "source": "low_balance",
-                          "action_taken": "low_balance_family_replied", "channel": channel,
-                          "ticket_id": case.get("ticket_id")})
-            tid = case.get("ticket_id")
-            if tid and tid != "DRYRUN":
-                try:
-                    hs.add_ticket_note(tid, ("💬 The family replied to the day-0 email in the seat's inbox."
-                                             if channel == "email" else
-                                             "💬 The family texted us since the case opened.")
-                                       + " No agent text, no teacher email; take it from the thread.")
-                except Exception as e:  # noqa: BLE001
-                    print(f"  ⚠️  reply note failed (non-fatal): {e}")
-            print(f"  💬 {case.get('student')}: family replied by {channel}; day-1 outreach skipped")
-            continue
+            continue                                    # held: a text reply may be sitting unread
         (due_teacher if teacher_pass else due)[key] = case
     if due and texts_only:
         _day1_outreach(due, seat, lb, armed, now_utc, texts=True, teachers=False,

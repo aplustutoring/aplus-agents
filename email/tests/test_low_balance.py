@@ -515,7 +515,7 @@ def test_day1_texts_and_drafts_when_no_po_and_no_reply(monkeypatch):
     case = _case()
     h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
+    monkeypatch.setattr(lb, "_day1_due", lambda c, n, d: True)   # the wait itself is tested below
     lb.run_sweep(force=True)
     assert h.sms == [("+1 909-454-8581", "Hi Jessica, text body.")]
     assert h.drafts and h.drafts[0][0] == "kylee@ileadexploration.org"
@@ -535,6 +535,7 @@ def test_day1_teacher_email_sends_automatically_in_send_mode(monkeypatch):
     h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
     monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
+    monkeypatch.setattr(lb, "_day1_due", lambda c, n, d: True)
     lb.run_sweep(force=True)
     assert h.tor_sent and h.tor_sent[0][0] == "kylee@ileadexploration.org"
     assert not h.drafts                                       # no Gmail draft in send mode
@@ -713,6 +714,38 @@ def test_day1_skipped_when_the_family_texted_the_line(monkeypatch):
     _active_deal(monkeypatch)
     lb.run_sweep(force=True)
     assert h2.sms
+
+
+def test_reply_watcher_runs_every_sweep_and_dms_the_seat_with_the_words(monkeypatch):
+    # Roman 2026-09-11: texts leave from the support line, replies on any line
+    # reach Paola: a family that answers AFTER day 1 is still caught and DM'd
+    case = _case(day1_done=True, tor_pending=False)
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    opened_day = case["opened_at"][:10]
+    monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
+        "9094548581": {"texts": [{"at": f"{opened_day}T19:50:00", "direction": "incoming",
+                                  "line": "+18188691627", "text": "Just sent the PO to iLead, thank you!"}], "calls": []}})
+    lb.run_sweep(force=True)
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_replied")
+    assert rec["channel"] == "text" and rec["text"] == "Just sent the PO to iLead, thank you!" and rec["line"] == "+18188691627"
+    assert h.notes and "Just sent the PO" in h.notes[0][1]
+    assert h.dms and h.dms[0][0] == "UPAO" and "Just sent the PO" in h.dms[0][1] and "replied by text" in h.dms[0][1]
+    assert not h.sms and not h.tor_sent
+
+
+def test_sms_leaves_from_the_support_line_signed_by_the_office():
+    import yaml
+    cfgv = yaml.safe_load(open(str(lb.ROOT / "config.yaml")))
+    lbc = cfgv["low_balance"]
+    assert lbc["sms_line"] == "support" and cfgv["presend"]["lines"]["support"] == "+18188691627"
+    for k in ("sms_template", "sms_template_with_tutor", "sms_template_multi"):
+        assert lbc[k].startswith("Hi {first_name}, this is A+ Tutoring.") and "sender_first" not in lbc[k]
+    assert lbc["family_email"]["from"] == "A+ Tutoring <admin@wetutorathome.com>"
+    assert lbc["family_email"]["reply_to"] == "{sender_email}"
+    for tpl in ("templates/low_balance_charter.html", "templates/low_balance_charter_multi.html"):
+        body = (lb.ROOT / tpl).read_text()
+        assert "{sender_name}<br>" not in body and "A+ Tutoring<br>" in body
 
 
 def test_day1_held_when_justcall_is_unreadable(monkeypatch):

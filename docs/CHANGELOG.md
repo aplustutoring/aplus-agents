@@ -212,6 +212,31 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-11 — low_balance: the office writes (A+ Tutoring / support line), replies reach Paola every sweep
+
+**What:** the day-0 email now comes from "A+ Tutoring <admin@wetutorathome.com>"
+(reply-to paola@ unchanged, sign-off without the seat's name); the day-1 text
+leaves from the SUPPORT line (`low_balance.sms_line: support`, 818-869-1627)
+and opens "Hi {first_name}, this is A+ Tutoring."; the teacher email keeps
+Paola's name. New `_watch_replies` runs every hourly sweep over every open
+charter case: a reply by email or by text on any JustCall line is audited
+(`low_balance_family_replied` with the words and the line), posted on the
+ticket, and DM'd to the charter_sales seat; day 1 and the teacher email skip
+that family. Before, replies were only checked at the day-1 gate.
+
+**Why:** Paola, 2026-09-11 morning: why do PO reminders go out from her sales
+and relationship line? Roman: "send from Admin and responses go to Paola",
+and she is an agent on the support line in JustCall. This restores the
+2026-09-08 rule (deal exists = support line) that last night's "from 6644"
+had overridden. Days 0 and 1 are billing logistics from the office; day 7
+Retention Risk stays Paola's.
+
+**Files:** email/src/low_balance.py, email/config.yaml, email/templates/
+low_balance_charter.html, email/templates/low_balance_charter_multi.html,
+email/tests/test_low_balance.py (+2), docs/RETENTION-PROCESS.md.
+
+---
+
 ## 2026-09-10 — first_lesson: Teachworks first attended lesson stamped on the deal + family (retention step 2 foundation)
 
 **What:** `email/src/first_lesson.py`, run from deal_sync every cycle and
