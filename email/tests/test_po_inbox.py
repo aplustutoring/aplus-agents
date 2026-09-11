@@ -917,9 +917,10 @@ def test_parent_chase_escalates_after_window(monkeypatch):
     assert dms == []
 
 
-def test_parent_chase_escalation_asks_sales_for_assist(monkeypatch):
-    """Roman 2026-09-11: can't get parent info to fulfill a PO -> the sales
-    seat is asked to assist. No reply past the window is one trigger."""
+def test_no_reply_costs_the_charter_sales_seat_one_dm(monkeypatch):
+    """Roman 2026-09-11: nothing falls through, but no DM storms. A chase with
+    no reply past both windows reaches the charter sales seat exactly once
+    (the 24h ping); the assist ask never doubles it."""
     dms, appended = [], []
     recs = [{"message_id": "parent-chase:D9", "action_taken": "parent_chase_opened",
              "thread_id": "TH9", "deal_id": "D9", "student": "Hazel Barnett",
@@ -931,14 +932,11 @@ def test_parent_chase_escalation_asks_sales_for_assist(monkeypatch):
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
     po._sweep_parent_chases()
-    sales_uid = po.staff("sales")["slack_user_id"]
-    assist = [t for u, t in dms if u == sales_uid and "Need your help getting parent info" in t]
-    assert len(assist) == 1
-    assert "Hazel Barnett" in assist[0] and "PF252648-HazelBarnett" in assist[0]
-    assert "No reply from the school" in assist[0]
-    rec = [a for a in appended if a.get("action_taken") == "parent_chase_assist_requested"]
-    assert len(rec) == 1 and rec[0]["deal_id"] == "D9" and rec[0]["seat"] == "sales"
-    # second sweep: assist already requested -> silent
+    seat_uid = po.staff("charter_sales")["slack_user_id"]
+    assert [t for u, t in dms if u == seat_uid and "STILL MISSING" in t]
+    assert sum(1 for u, _t in dms if u == seat_uid) == 1
+    assert not [a for a in appended if a.get("action_taken") == "parent_chase_assist_requested"]
+    # second sweep: silent
     recs.extend(appended)
     dms.clear()
     po._sweep_parent_chases()
@@ -972,7 +970,7 @@ def test_school_reply_without_parent_info_asks_sales_for_assist(monkeypatch):
     asked = po._request_parent_assist([chase, sibling],
                                       "The school replied without it: \"privacy laws\"")
     assert [c["deal_id"] for c in asked] == ["D9", "D10"]
-    sales_uid = po.staff("sales")["slack_user_id"]
+    sales_uid = po.staff("charter_sales")["slack_user_id"]
     # a multi-kid thread is ONE DM naming both students, one audit row per deal
     assert [u for u, _t in dms] == [sales_uid]
     assert "privacy laws" in dms[0][1] and "2 POs" in dms[0][1]
@@ -983,6 +981,11 @@ def test_school_reply_without_parent_info_asks_sales_for_assist(monkeypatch):
     recs.extend(appended)
     assert po._request_parent_assist([chase, sibling], "again") == []
     assert len(dms) == 1
+    # and a deal the 24h ping already covered is never asked about again
+    recs.append({"message_id": "parent-chase-sales:D11", "action_taken": "parent_chase_sales_notified",
+                 "deal_id": "D11"})
+    assert po._request_parent_assist([{**chase, "message_id": "parent-chase:D11", "deal_id": "D11"}],
+                                     "no reply") == []
 
 
 def test_vendor_robot_mailbox_is_never_teacher_of_record(monkeypatch):

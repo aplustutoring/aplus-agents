@@ -1075,22 +1075,27 @@ def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
 
 def _request_parent_assist(chases: list, why: str) -> list:
     """Roman, 2026-09-11: when we cannot get parent info to fulfill a PO, the
-    SALES seat (school partnerships; a role mapped in config, never a name in
-    code) is asked for assistance. Two triggers: the school replied to the
-    chase WITHOUT the info (Heartland, Sept 9: "privacy laws, we cannot share
-    it"), or the chase window expired with no reply at all. ONE DM per call
-    naming every student (a multi-kid certificate is one ask, not five), one
-    audit row per deal, never twice for the same deal. Returns the chases
-    that were newly asked about."""
+    CHARTER SALES seat (a teacher about a SPECIFIC student is that seat by the
+    sender-routing rule; a role mapped in config, never a name in code) is
+    asked for assistance the moment the school replies to the chase WITHOUT
+    the info (Heartland, Sept 9: "privacy laws, we cannot share it"). No reply
+    at all is already covered by the 24h "still missing" ping to the same
+    seat; this ask counts as that ping, so a deal costs Paola ONE DM total.
+    ONE DM per call naming every student (a multi-kid certificate is one ask,
+    not five), one audit row per deal. Returns the chases newly asked about."""
     ch = cfg()["po_inbox"].get("parent_chase", {})
     fresh = []
     for c in chases:
         did = str(c.get("deal_id") or "")
-        if did and did != "DRYRUN" and not audit.already_processed(f"parent-chase-assist:{did}"):
+        # one DM per deal to this seat, whichever fires first: this ask or the
+        # 24h "still missing" ping in _sweep_parent_chases (Roman 2026-09-11:
+        # "I can't have my team getting 50 DMs")
+        if did and did != "DRYRUN" and not audit.already_processed(f"parent-chase-assist:{did}") \
+                and not audit.already_processed(f"parent-chase-sales:{did}"):
             fresh.append(c)
     if not fresh:
         return []
-    seat_key = ch.get("assist_seat") or "sales"
+    seat_key = ch.get("assist_seat") or "charter_sales"
     seat = staff(seat_key)
     first = fresh[0]
     asked = (first.get("chase_to") or "the school").strip()
@@ -1146,7 +1151,7 @@ def _sweep_parent_chases() -> None:
         # Roman, 2026-08-14: family contact info still missing 24 HOURS after
         # the email went out → CHARTER SALES (role, mapped in config — never a
         # person's name in code) is notified too, ahead of the escalation.
-        if did not in sales_pinged:
+        if did not in sales_pinged and not audit.already_processed(f"parent-chase-assist:{did}"):
             try:
                 anchor = datetime.fromisoformat((s or r).get("timestamp") or "")
             except (TypeError, ValueError):
@@ -1165,6 +1170,7 @@ def _sweep_parent_chases() -> None:
                               "source": "po_inbox",
                               "action_taken": "parent_chase_sales_notified",
                               "deal_id": did, "thread_id": r.get("thread_id")})
+                sales_pinged.add(did)
         if did in escalated:
             continue
         try:
@@ -1185,8 +1191,6 @@ def _sweep_parent_chases() -> None:
         audit.append({"message_id": f"parent-chase-escalation:{r.get('deal_id')}",
                       "source": "po_inbox", "action_taken": "parent_chase_escalated",
                       "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id")})
-        # no reply at all past the window = we cannot get the info -> sales assist
-        _request_parent_assist([r], "No reply from the school.")
 
 
 def _sweep_chase_drafts() -> None:
@@ -1988,7 +1992,7 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             why = f"The school replied without it: \"{(po.get('summary') or '')[:160]}\""
             asked = _request_parent_assist(list(chases), why)
             if asked:
-                seat = cfg()["po_inbox"].get("parent_chase", {}).get("assist_seat") or "sales"
+                seat = cfg()["po_inbox"].get("parent_chase", {}).get("assist_seat") or "charter_sales"
                 note_parts.append(f"\U0001f91d Reply carried no parent info; the {seat} seat "
                                   f"was DM'd to assist ({', '.join(c.get('student') or '?' for c in asked)}).")
             record["category"] = "parent_chase_no_info_reply"

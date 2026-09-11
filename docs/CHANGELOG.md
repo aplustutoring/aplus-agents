@@ -7,19 +7,30 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
-## 2026-09-11 — Parent chase: can't get parent info → sales seat asked to assist
+## 2026-09-11 — Parent chase: can't get parent info → charter sales seat asked, one DM, standing list in the PO day report
 
-**Decision (Roman, 2026-09-11):** "this is something that needs to get escalated
-to Danielle to ask for assistance when we can't get parent info to fulfill a PO."
+**Decision (Roman, 2026-09-11):** first "escalate to Danielle to ask for
+assistance when we can't get parent info to fulfill a PO", then, same day:
+"maybe not to Danielle. is this a Paola issue? I just can't have deals falling
+through. and I can't have my team getting 300 tasks, 200 tickets, and 50 DMs."
+Resolved per the sender-routing rule (a teacher about a SPECIFIC student is the
+charter_sales seat; Danielle is multi-student acquisition): the seat is Paola,
+the cost is ONE DM per deal, and "nothing falls through" is a standing list,
+not more DMs.
 
-**What:** `po_inbox._request_parent_assist()` DMs the SALES seat (role
-`parent_chase.assist_seat: sales`, never a name in code) once per deal, audit
-`parent_chase_assist_requested`, on either trigger:
-1. the school replies to the chase WITHOUT parent info (new reply-path branch:
-   open chase on the thread, no `parent_email` extracted, sender not internal);
-2. the chase window expires with no reply (rides the existing escalation).
-The DM names the deal, student, school, PO, who we asked and when, and why the
-PO is stuck (Teachworks family, schedule text and invoice all blocked).
+**What:**
+1. `po_inbox._request_parent_assist()` DMs the seat in
+   `parent_chase.assist_seat` (charter_sales) the moment the school replies to
+   a chase WITHOUT parent info (new reply-path branch: open chase on the
+   thread, no `parent_email` extracted, sender not internal). Audit
+   `parent_chase_assist_requested`. It COUNTS AS the existing 24h "still
+   missing" ping to the same seat (and vice versa), so a deal costs Paola one
+   DM whichever fires first. No reply at all is already the 24h ping; an
+   escalation-time ask was built and removed as dead code (the 2-business-day
+   escalation always comes after the 24h ping).
+2. `po_daily_report._waiting_on_parent_lines()`: every open parent chase
+   (NEEDS PARENT deal), with age and who was asked, in the 6 PM PO day report
+   Roman already reads, every day until it resolves. Zero new DMs.
 
 **Why now:** Heartland PF252648, Sept 8. Hazel Barnett's certificate carried no
 parent info; the chase went to Heartland's AP mailbox; Cherri Crawford replied
@@ -61,13 +72,13 @@ designed lead → scheduling handoff. Enforcing would hold every such family's
 schedule text and DM Paola instead. Roman's call, not a bug fix.
 
 **Manual follow-ups sent by Slack DM this session:** Danielle (Hazel assist,
-retroactive), Janelle (text Charlene Wetzell about Keanu by hand), Paola
+retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charlene Wetzell about Keanu by hand), Paola
 (quick note to Courtney Gannon), Kath (Teachworks families 2173071 and
 2165423 are under school staff emails).
 
-**Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms}.py, email/config.yaml,
-email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog}.py (8 tests, 468
-pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+**Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
+email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
+test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
 
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
 

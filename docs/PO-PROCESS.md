@@ -85,11 +85,13 @@ Tried in order; the first hit wins:
    school's staffer, 2026-09-11). No reply 2 business days after the SEND →
    escalation DM.
    **Can't get the info** (the school replies without it, e.g. Heartland's
-   "privacy laws, we cannot share it", or the window expires with no reply)
-   → the **sales seat is asked to assist** (one DM per deal, audit
-   `parent_chase_assist_requested`; seat in `parent_chase.assist_seat`,
-   Roman 2026-09-11). Sales owns the school relationship and can get the
-   family connected when the AP mailbox will not.
+   "privacy laws, we cannot share it") → the **charter sales seat is asked to
+   assist** right then (audit `parent_chase_assist_requested`; seat in
+   `parent_chase.assist_seat`, Roman 2026-09-11: a teacher about a specific
+   student is that seat). That ask and the 24h "still missing" ping are the
+   SAME one DM per deal, whichever fires first. Every open chase is also listed
+   in the 6 PM **PO day report** until it resolves, so nothing falls through
+   without anyone getting another DM.
 
 Why it matters: the Teachworks sync keys the family on the deal's parent
 contact email — no parent contact means no TW family, no scheduling, no
