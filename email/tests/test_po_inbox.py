@@ -2339,3 +2339,46 @@ def test_normal_po_numbers_display_unchanged(monkeypatch):
                                 po_month="2026-09", amount="60"), [])
     assert "SCHOOL'S PO number" not in tasks[0]
     assert "105712-C029-LVC" in tasks[0]
+
+
+# ── 2026-09-10: Melara siblings — per-deal student stamp on a multi-student PO ─
+
+def test_three_sibling_po_stamps_each_deals_own_student(monkeypatch):
+    """Regression for the Sky Mountain / Melara PO 1443416 (2026-09-04): one
+    email, three siblings, three deals. The deal NAMES and PO numbers were
+    right but every deal's student_first_name read "Mario". This locks in that
+    po_inbox stamps EACH deal from ITS OWN pos[] entry (first name AND grade).
+    (The live clobber came from HubSpot workflow 34950163 "Contact to Deal
+    Properties" copying the parent contact's single student onto every
+    associated deal 80 s later — see docs/CHANGELOG.md 2026-09-10.)"""
+    created, patches = [], []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C-mom", "properties": {
+                            "firstname": "Mayra", "lastname": "Aguilar"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k:
+                        created.append(name) or {"id": f"D{len(created)}"})
+    monkeypatch.setattr(po.hs, "_write",
+                        lambda m, path, payload=None: patches.append((path, payload)) or {})
+    po._handle_deal(_po(school="Sky Mountain Charter School", student_first="",
+                        student_last="", grade="", po_number="",
+                        parent_email="schoolmve@gmail.com", po_month="2026-09", pos=[
+        {"po_number": "1443416-EzekielMelara", "amount": "300", "hours": "4",
+         "student_first": "Ezekiel", "student_last": "Melara", "grade": "6"},
+        {"po_number": "1443416-MarioMelara", "amount": "300", "hours": "4",
+         "student_first": "Mario", "student_last": "Melara", "grade": "9"},
+        {"po_number": "1443416-VincentMelara", "amount": "300", "hours": "4",
+         "student_first": "Vincent", "student_last": "Melara", "grade": "7"}]), [])
+    assert [n.split(" - ")[1] for n in created] == \
+        ["Ezekiel Melara", "Mario Melara", "Vincent Melara"]
+    stamps = {path.rsplit("/", 1)[1]: (payload or {}).get("properties", {})
+              for path, payload in patches
+              if path.startswith("/crm/v3/objects/deals/D")
+              and "student_first_name" in (payload or {}).get("properties", {})}
+    assert {k: (v["student_first_name"], v["student_last_name_if_diff_from_parent"],
+                v["student_grade"]) for k, v in stamps.items()} == {
+        "D1": ("Ezekiel", "Melara", "6"),
+        "D2": ("Mario", "Melara", "9"),
+        "D3": ("Vincent", "Melara", "7")}

@@ -4887,3 +4887,72 @@ Gukasov x2 @$830, Feinstein x2 @$352); deal_sync ongoing divides by the contact'
 gold-deal count. Fakheri siblings stamped $3,300 each from their $6,600 invoice
 (per Roman). Remaining manual: Inna Garcia - Maximilian + Jenifer Peters (no TW
 invoice exists).
+
+## 2026-09-10 — Melara sibling deals: student name clobbered by a portal workflow, not by po_inbox
+**Why:** The low-balance backfill found all three Sky Mountain / Melara PO deals
+(64677367903 Ezekiel, 64684494965 Mario, 64659861919 Vincent; PO 1443416) carrying
+`student_first_name` = Mario while names and PO numbers were right. The first read
+was "the per-PO loop takes the wrong sibling".
+**What we found:** HubSpot property history on the deals shows the integration
+(po_inbox, source 39943154) stamped Ezekiel/6, Mario/9, Vincent/7 correctly at
+16:17Z; 80 s later AUTOMATION_PLATFORM enrollment 2802592531732 rewrote
+`student_first_name` = Mario and `student_grade` = 9 on the Ezekiel and Vincent
+deals. Live contact-based workflow **34950163 "Contact to Deal Properties"**
+(created 2020-07-31, last edited 2024-01-04, 3,317 lifetime enrollments) enrolls
+any contact with an associated deal in 9 stages (incl. charter Pre-Lesson 907749)
+and sets, on EVERY associated deal: `student_first_name` ← contact
+`student_last_name` (the legacy contact field that holds the FIRST name), `student_grade`
+← contact grade, plus `first_name`/`last_name`/`contact_record_id`. One contact,
+three siblings → every sibling deal gets the contact's one student. `_split_pos`
+in po_inbox is correct; the code path was never the bug.
+**What changed:** regression test `test_three_sibling_po_stamps_each_deals_own_student`
+(three-sibling certificate → three per-deal stamps, name + grade); Stage 3 note in
+docs/PO-PROCESS.md naming the workflow. Live data: Ezekiel/6 and Vincent/7 restored
+by API on 2026-09-10 (Mario/9 was already right). Post-8/1 scan of 298 deals with
+`student_first_name` found one more sibling casualty outside the PO pipeline:
+Lesly Elenes deals 64836791336 (Emma Rose) and 64837038724 (Nathan), both stamped
+"Adrian" on 2026-09-08 — left for Roman.
+**System fix (portal, needs Roman's go):** in workflow 34950163 delete the two
+actions that write `[Agent]` deal properties (`student_first_name`, action 1;
+`student_grade`, action 6). po_inbox and the teacher-form deal workflow already
+stamp those per deal; nothing else should. Keeping `first_name`/`last_name`/
+`contact_record_id` copies is harmless. Until that is done every multi-student
+family will be re-clobbered on the next enrollment. Decision-log entry pending.
+**Files:** email/tests/test_po_inbox.py, docs/PO-PROCESS.md, docs/CHANGELOG.md.
+
+## 2026-09-10 — student_stamp: fill-only student/parent deal stamp replaces workflow 34950163 (PR #209)
+**Why:** Roman, same day, on the Melara finding: "yes, and turn off the workflows."
+Workflow 34950163 "Contact to Deal Properties" (2020) copied the contact's ONE
+student name + grade and parent first/last + contact id onto EVERY associated
+deal, overwriting po_inbox's per-deal stamps (Melara 9/4, Elenes 9/8). It also
+never re-enrolled a contact, so repeat families' later deals got nothing: the
+backfill dry run found 227 of 305 post-8/1 deals in the covered pipelines with
+at least one of the four name fields blank. Six live workflows read those deal
+fields as tokens (Gold/In-Person Renewed, In-Person Renewal, Charter Continued
+Out of Pocket, Teacher Scholarship WF-01/03/04), so deleting the copies without a
+replacement would have blanked their notifications.
+**What:** `email/src/student_stamp.py`, called from deal_sync for every NEW deal
+in `student_stamp.pipelines` (the workflow's 8 Pre-Lesson pipelines + CFGC + the
+scheduling pipelines). FILL ONLY, never overwrites. Student first name from the
+deal name first ("Lesly Elenes - Nathan"), the contact's student field second;
+two students in one deal name → left for a human and flagged; grade copied only
+when the student IS the contact's student; parent first/last + contact id from
+the deal's Family contact, never from a TOR/ES contact (`is_family_contact`
+guard). Non-fatal: a HubSpot error never holds the deal_sync cursor. Backfill:
+`python3 -m src.student_stamp --since 2026-08-01T00:00:00Z [--live]`.
+Registry: deal `first_name` / `last_name` / `contact_record_id` declared as
+[Agent] properties (labels to be patched live). Retirement script
+`ops/fleet-health/audit/retire_contact_to_deal_workflows.py` backs up both flows,
+switches 34950163 OFF and removes only the student_first_name copy (action 24)
+from 366207297 (Summer Boost Online Pre-Lesson), keeping its other actions.
+**Live, verified 2026-09-10:** 34950163 OFF; action 24 removed from 366207297 (its
+other four copies intact); the three deal properties relabeled [Agent]. Melara
+deals restored earlier the same day. **Still to run (Claude Code's auto-mode
+classifier blocked the bulk write):** the fill-only backfill, after merge:
+`cd email && python3 -m src.student_stamp --since 2026-08-01T00:00:00Z --live`
+(dry run showed 227 of 305 deals gain blank fields only; 0 overwrites). Elenes
+deals 64836791336 / 64837038724 restored from property history (Emma Rose / 7,
+Nathan / 5, as Danielle typed them 90 s before the workflow fired) 2026-09-10.
+**Files:** email/src/student_stamp.py, email/src/deal_sync.py, email/config.yaml,
+email/tests/test_student_stamp.py, ops/hubspot-schema/properties.yml,
+ops/fleet-health/audit/retire_contact_to_deal_workflows.py, docs/PO-PROCESS.md.
