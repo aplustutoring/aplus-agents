@@ -346,7 +346,7 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
     from . import teachworks_client as tw
     lb = cfg().get("low_balance", {}) or {}
     out = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
-           "notes_fields_seen": [], "first_session": "", "ok": False}
+           "notes_fields_seen": [], "first_session": "", "ok": False, "found": False}
     email = (alert.get("parent_email") or "").strip().lower()
     sf = (alert.get("student_first") or "").strip().lower()
     if not email or not sf:
@@ -363,8 +363,11 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
             for cust in tw.customers_for_family(email, alert.get("parent_last", ""),
                                                 alert.get("parent_first", ""), token=token):
                 for s in tw.tw_get("students", {"customer_id": cust.get("id")}, token=token):
-                    if (s.get("first_name") or "").strip().lower() != sf:
+                    tw_first = (s.get("first_name") or "").strip().lower()
+                    # 'Kailyn Marie' in Teachworks, 'Kailyn' in the alert
+                    if tw_first != sf and not tw_first.startswith(sf + " "):
                         continue
+                    out["found"] = True
                     for l in tw.tw_get("lessons", {"student_id": s["id"], "from_date[gte]": since},
                                        token=token):
                         d = str(l.get("from_date") or "")[:10]
@@ -854,8 +857,17 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     # POs with nothing used. So an alert on a PO with NO attended lesson yet
     # is "your package exists", not "your hours are running low": park it,
     # and the hourly sweep opens the case when the first lesson lands.
-    if (lb.get("require_attended_lesson", True) and deal and recent.get("ok")
-            and int(recent.get("sessions") or 0) == 0):
+    try:
+        po_hours_f = float(dp.get("number_of_hours_in_this_po") or 0)
+    except (TypeError, ValueError):
+        po_hours_f = 0.0
+    untouched_by_alert = po_hours_f > 0 and float(alert.get("hours") or 0) >= po_hours_f
+    # Park ONLY when the alert's own numbers say nothing was used (unused >= the
+    # PO's hours) AND Teachworks found the student and shows no attended lesson
+    # on this PO. Ariana Fiore (0.75 of 1.5 left) and Kailyn ('Kailyn Marie' in
+    # Teachworks) would otherwise have been parked on a lookup miss.
+    if (lb.get("require_attended_lesson", True) and deal and untouched_by_alert
+            and recent.get("found") and int(recent.get("sessions") or 0) == 0):
         record.update(action_taken="low_balance_deferred", deal_id=deal.get("id"),
                       po_hours=dp.get("number_of_hours_in_this_po"), po_created=(dp.get("createdate") or "")[:10],
                       alert=alert, alert_text=(message.get("text") or "")[:1500],
