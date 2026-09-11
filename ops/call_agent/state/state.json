@@ -751,9 +751,10 @@
     413884932,
     413889099,
     413888913,
-    413900389
+    413900389,
+    413918223
   ],
-  "last_run_utc": "2026-09-11T00:11:49.448115+00:00",
+  "last_run_utc": "2026-09-11T01:30:03.637856+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -1697,6 +1698,90 @@
           "Monitor for Josh's payment on the two completed sessions (Aug 19, Aug 31) via the payment link already sent",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 413918223,
+      "number": "17738426987",
+      "time_pt": "6:22 PM",
+      "matched": true,
+      "contact_label": "Gino Calantoni",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring made an outbound follow-up call to Gino Calantoni to confirm the free trial session for his daughter Elvina. Gino confirmed availability on Tuesdays or Thursdays after 6PM, and confirmed Elvina is in 2nd grade needing ELA support. Janelle said she would find the best match tutor and update Gino via SMS. Call was positive and productive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Find best match tutor for Elvina (2nd grade, ELA support) for free trial on Tuesday or Thursday after 6PM",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send SMS update to Gino with tutor match and confirmed trial schedule",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Gino (dad) was friendly and cooperative on Janelle's outbound follow-up. Confirmed free trial availability: Tuesdays OR Thursdays after 6PM for daughter Elvina, 2nd grade, ELA/writing support. Janelle promised to find a best-match tutor and text him with the update. He now expects an SMS with a proposed tutor and specific trial day/time. Open with: 'Hi Gino, following up from our call \u2014 we've matched Elvina with [tutor name]; can we lock in [Tues/Thurs] at [time] for the free trial?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in an open deal/active trial-scheduling stage; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Elvina",
+          "Kester Avenue Elementary School"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound follow-up] Janelle reached Gino and confirmed the free trial for Elvina (2nd grade, ELA support). Availability confirmed as Tuesdays or Thursdays after 6PM. Janelle will match a tutor and follow up via SMS.",
+          "what_we_can_do_to_help": "Match Elvina with a best-fit ELA/Writing tutor available Tuesdays or Thursdays after 6PM and confirm the free trial via SMS with Gino.",
+          "student_first_name": "Elvina",
+          "student_last_name": null,
+          "grade_level": "2",
+          "student_school": null,
+          "subject_need": "English Language Arts",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound follow-up] Janelle reached Gino and confirmed the free trial for Elvina (2nd grade, ELA support). Availability confirmed as Tuesdays or Thursdays after 6PM. Janelle will match a tutor and follow up via SMS."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Elvina with a best-fit ELA/Writing tutor available Tuesdays or Thursdays after 6PM and confirm the free trial via SMS with Gino."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Find best match tutor for Elvina (2nd grade, ELA support) for free trial on Tuesday or Thursday after 6PM",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Send SMS update to Gino with tutor match and confirmed trial schedule",
+          80047202,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
