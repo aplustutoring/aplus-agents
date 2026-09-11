@@ -27041,3 +27041,4 @@
 {"task_id": "116572415877", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-11T18:12:02.071432+00:00"}
 {"task_id": "116582604822", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-11T18:12:02.071461+00:00"}
 {"task_id": "116267368792", "owner": "danielle", "action_taken": "task_nag", "days_overdue": 9, "timestamp": "2026-09-11T18:12:02.332585+00:00"}
+{"message_id": "deal:64935468319", "source": "deal_sync", "deal_id": "64935468319", "deal_name": "Erica Porter - South Sutter", "tw_account": "online", "charter": false, "owner": null, "tw_customer_id": 2173642, "tw_action": "created", "tw_student_created": "South", "action_taken": "tw_synced", "timestamp": "2026-09-11T18:12:21.126539+00:00"}
