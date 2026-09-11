@@ -118,6 +118,21 @@ intake:
   # one source of truth per type.
   allowed_types: ["tutor_change_requested", "scheduling_flip_flop", "tech_issue_unreported"]
 
+# "The tutor is late" texts (Roman 2026-09-10). A family text that reasons to
+# missed_lesson_or_late opens the ticket with BOTH contacts on it (tutor and
+# the family who texted) and hands it to that student's scheduler, so nobody
+# has to tell a scheduler by hand. The block is the switch: delete it (or set
+# enabled: false) and the engine goes back to tutor-only, Operations-owned.
+late_reports:
+  enabled: true
+  route_to_scheduler: true   # missed_lesson_or_late tickets go to the student's scheduler, not operations
+  associate_family: true     # add the texting family contact to the ticket alongside the tutor
+  # The A-L / M-Z split keys on the STUDENT'S SURNAME, read from
+  # student_last_name_if_diff_from_parent and falling back to the family
+  # contact's lastname. NOT student_last_name: that property is labelled
+  # "Student FIRST Name" in ops/hubspot-schema/properties.yml, so routing on
+  # it would split the schedulers by first initial.
+
 # Priority defaulted by type (stated in the PR; hs_ticket_priority values).
 priority_by_type:
   missed_lesson_or_late: HIGH        # family was stood up — retention risk now

@@ -148,3 +148,201 @@ def test_caps_abort_loudly_on_live_report_on_dry(cfg):
 def test_priority_mapping_covers_all_types(cfg):
     assert set(cfg["priority_by_type"]) == set(ti.ISSUE_TYPES)
     assert set(cfg["dedupe_period"]) == set(ti.ISSUE_TYPES)
+
+
+# ── family resolution from the texting number (Roman 2026-09-10) ─────────────
+
+def _contact(cid, persona="Family", first="Dana", last="Alvarez",
+             surname="", email="dana@example.com", source=""):
+    return {"id": cid, "properties": {
+        "firstname": first, "lastname": last, "a_persona": persona,
+        "email": email, "student_last_name": "",
+        "student_last_name_if_diff_from_parent": surname,
+        "hs_object_source_detail_1": source}}
+
+
+def _families(monkeypatch, hits):
+    monkeypatch.setattr(ti, "search_contacts_by_phone", lambda number: hits)
+
+
+def test_phone_digits_normalizes_to_last_ten():
+    assert ti.phone_digits("+1 (818) 573-6644") == "8185736644"
+    assert ti.phone_digits("18185736644") == "8185736644"
+    assert ti.phone_digits("573-6644") == ""
+
+
+def test_find_family_none_when_nothing_matches(monkeypatch):
+    _families(monkeypatch, [])
+    assert ti.find_family_by_phone("+18185550100") is None
+
+
+def test_find_family_returns_the_single_family(monkeypatch):
+    _families(monkeypatch, [_contact("555")])
+    fam = ti.find_family_by_phone("+18185550100")
+    assert fam["id"] == "555" and fam["lastname"] == "Alvarez"
+    assert "Family" in fam["a_persona"]
+
+
+def test_find_family_refuses_when_several_match(monkeypatch):
+    _families(monkeypatch, [_contact("555"), _contact("556", last="Nguyen")])
+    plan = ti.Plan()
+    assert ti.find_family_by_phone("+18185550100", plan=plan) is None
+    assert plan.refusals and "555" in plan.refusals[0]["reason"]
+
+
+def test_find_family_refuses_a_tutor_texting_about_themselves(monkeypatch):
+    _families(monkeypatch, [_contact("777", persona="Tutors", first="Christa",
+                                     last="Bretz")])
+    assert ti.find_family_by_phone("+18183395667") is None
+
+
+def test_find_family_refuses_a_teacher_of_record(monkeypatch):
+    _families(monkeypatch, [_contact("888", persona="Teacher of Record/EF/ES")])
+    assert ti.find_family_by_phone("+18185550100") is None
+
+
+def test_find_family_skips_callrail_shells(monkeypatch):
+    _families(monkeypatch, [
+        _contact("900", persona="", first="Inglewood", last="Ca", email="",
+                 source="CallRail"),
+        _contact("901")])
+    assert ti.find_family_by_phone("+18185550100")["id"] == "901"
+
+
+# ── both contacts land on the ticket ─────────────────────────────────────────
+
+def _capture_create(monkeypatch):
+    seen = {}
+
+    def fake(method, path, payload=None, params=None):
+        seen["method"], seen["path"], seen["payload"] = method, path, payload
+        return {"id": "T9"}
+    monkeypatch.setattr(ti, "hs_req", fake)
+    return seen
+
+
+def test_create_ticket_carries_tutor_then_family(monkeypatch):
+    seen = _capture_create(monkeypatch)
+    ti.create_ticket({"subject": "s"}, ["101", "555"])
+    assocs = seen["payload"]["associations"]
+    assert [a["to"]["id"] for a in assocs] == ["101", "555"]
+    assert all(a["types"][0]["associationTypeId"] == 16 for a in assocs)
+    assert all(a["types"][0]["associationCategory"] == "HUBSPOT_DEFINED"
+               for a in assocs)
+
+
+def test_create_ticket_one_association_without_a_family(monkeypatch):
+    seen = _capture_create(monkeypatch)
+    ti.create_ticket({"subject": "s"}, ["101", None, "101"])
+    assert [a["to"]["id"] for a in seen["payload"]["associations"]] == ["101"]
+
+
+FAMILY = {"id": "555", "firstname": "Dana", "lastname": "Alvarez",
+          "a_persona": "Family", "student_last_name": "Zoe",
+          "student_surname": ""}
+
+
+def _late(cfg, family=None, issue="missed_lesson_or_late", quote=None):
+    plan = ti.Plan()
+    ti.plan_ticket(plan, cfg, {}, TUTOR, issue, _events(1),
+                   source="family text (SMS)", evidence="tutor never showed",
+                   family=family, quote=quote)
+    return plan.tickets[0]
+
+
+def test_late_report_associates_both_contacts(cfg):
+    assert _late(cfg, FAMILY)["contact_ids"] == ["101", "555"]
+
+
+def test_report_without_a_family_stays_tutor_only(cfg):
+    assert _late(cfg)["contact_ids"] == ["101"]
+
+
+# ── routing: the scheduler owns a tutor-late text, not Operations ────────────
+
+def test_late_report_routes_a_to_l_to_janelle(cfg):
+    t = _late(cfg, FAMILY)
+    assert t["owner_role"] == "janelle"
+    assert t["props"]["hubspot_owner_id"] == cfg["staff"]["janelle"]["hubspot_owner_id"]
+
+
+def test_late_report_routes_m_to_z_to_yolanda(cfg):
+    fam = dict(FAMILY, lastname="Martinez")
+    t = _late(cfg, fam)
+    assert t["owner_role"] == "yolanda"
+    assert t["props"]["hubspot_owner_id"] == cfg["staff"]["yolanda"]["hubspot_owner_id"]
+
+
+def test_routing_uses_the_student_surname_not_student_last_name(cfg):
+    # student_last_name is labelled "Student FIRST Name" in the registry, so a
+    # student called Zoe Martinez under parent Alvarez must route M-Z.
+    fam = dict(FAMILY, student_surname="Martinez")
+    assert _late(cfg, fam)["owner_role"] == "yolanda"
+    # and the parent's lastname is the fallback when no student surname is set
+    assert ti.family_routing_surname(FAMILY) == "Alvarez"
+
+
+def test_late_report_without_a_family_stays_with_operations(cfg):
+    t = _late(cfg)
+    ops = cfg["hubspot"]["roles"]["operations"]
+    assert t["props"]["hubspot_owner_id"] == cfg["staff"][ops]["hubspot_owner_id"]
+
+
+def test_other_categories_keep_operations_even_with_a_family(cfg):
+    t = _late(cfg, FAMILY, issue="tutor_change_requested")
+    ops = cfg["hubspot"]["roles"]["operations"]
+    assert t["props"]["hubspot_owner_id"] == cfg["staff"][ops]["hubspot_owner_id"]
+    assert t["owner_role"] == ops
+
+
+# ── the family's own words on the ticket ─────────────────────────────────────
+
+QUOTE = {"text": "Hi, Marcus still isn't here and it's 4:09. Should we wait?",
+         "sender": "+18185550100", "line": "+18186869627",
+         "received": "2026-09-10 16:09:00"}
+
+
+def test_description_quotes_the_text_verbatim(cfg):
+    body = _late(cfg, FAMILY, quote=QUOTE)["props"]["content"]
+    assert QUOTE["text"] in body
+    assert "+18185550100" in body and "+18186869627" in body
+    assert "2026-09-10 16:09:00" in body
+    assert "Family: Dana Alvarez (contact 555)" in body
+
+
+def test_quote_is_trimmed_to_500_chars(cfg):
+    long_quote = dict(QUOTE, text="late " * 300)
+    body = _late(cfg, FAMILY, quote=long_quote)["props"]["content"]
+    quoted = body.split('"')[1]
+    assert len(quoted) <= 500
+
+
+# ── the config block is the switch: flags off reproduces today's behavior ────
+
+@pytest.fixture
+def cfg_flags_off(cfg):
+    c = json.loads(json.dumps(cfg))
+    c["late_reports"] = {"enabled": True, "route_to_scheduler": False,
+                         "associate_family": False}
+    return c
+
+
+def test_flags_off_reproduces_todays_behavior(cfg_flags_off):
+    t = _late(cfg_flags_off, FAMILY, quote=QUOTE)
+    ops = cfg_flags_off["hubspot"]["roles"]["operations"]
+    assert t["contact_ids"] == ["101"]
+    assert t["props"]["hubspot_owner_id"] == cfg_flags_off["staff"][ops]["hubspot_owner_id"]
+
+
+def test_missing_late_reports_block_reproduces_todays_behavior(cfg):
+    c = json.loads(json.dumps(cfg))
+    c.pop("late_reports", None)
+    t = _late(c, FAMILY, quote=QUOTE)
+    ops = c["hubspot"]["roles"]["operations"]
+    assert t["contact_ids"] == ["101"]
+    assert t["props"]["hubspot_owner_id"] == c["staff"][ops]["hubspot_owner_id"]
+
+
+def test_config_ships_the_flags_on(cfg):
+    lr = cfg["late_reports"]
+    assert lr["enabled"] and lr["route_to_scheduler"] and lr["associate_family"]
