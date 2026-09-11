@@ -777,9 +777,10 @@
     414321618,
     414322540,
     414323147,
-    414319839
+    414319839,
+    414327654
   ],
-  "last_run_utc": "2026-09-11T23:39:21.562500+00:00",
+  "last_run_utc": "2026-09-11T23:42:23.287953+00:00",
   "pending_digest": [
     {
       "call_id": 414134815,
@@ -1368,6 +1369,162 @@
         [
           "Check on Teresa's trial lesson notes for Maytal and ensure tutor feedback notes for all four students have been sent to Sivan's email.",
           86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 414327654,
+      "number": "16504547308",
+      "time_pt": "4:30 PM",
+      "matched": true,
+      "contact_label": "Wireless Caller",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Angela Topcu, mother of 11th-grader Cody, who attends Valley View Pacific Charter and needs a math (geometry) tutor per his IST's recommendation. Paola explained A+'s charter rate ($75/hr or $64 for 45 min), online model, and offered a free trial session, which Angela accepted. Angela shared availability (M 11-2, T/Th 10:30-1:30, W 10:30-1) and her charter teacher's contact (Charmaine Dominguez, charmaine.dominguez@pacific-charters.org). Cody has ADHD and Asperger's, so a patient, experienced tutor match is important. Paola promised scheduling would reach out today or Monday to set up the trial.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Angela the rate sheet and vendor listing information for Valley View Pacific Charter via email (wolftres@yahoo.com).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Scheduling team to reach out to Angela today or Monday to book a free trial geometry session for Cody, matching him with a patient, experienced tutor mindful of his ADHD and Asperger's. Availability: Mon 11-2, Tue/Thu 10:30-1:30, Wed 10:30-1.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Send tutor profile to Angela for approval before booking the trial session.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "After trial, if family moves forward, email Charmaine Dominguez (charmaine.dominguez@pacific-charters.org) at Valley View Pacific Charter to request a PO.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Update contact record with parent name Angela Topcu and email wolftres@yahoo.com.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Wireless Caller",
+            "correct": "Angela Topcu"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Angela Topcu (mom, warm and engaged) is comparing A+ against another in-person provider for her 11th-grade son Cody, who needs geometry help at Valley View Pacific Charter (charter-funded). Cody has ADHD and Asperger's and is coming off a rough school experience \u2014 she stressed she needs a patient, experienced tutor who's a good fit. Paola quoted the charter rate ($75/hr or $64 per 45-min) and offered a FREE TRIAL session, which Angela accepted; Paola also promised to email rate/vendor info and said scheduling would reach out today or Monday. Angela's availability: Mon 11-2, Tue/Thu 10:30-1:30, Wed 10:30-1. She's open to 2x30-min sessions/week. Charter teacher for PO: Charmaine Dominguez, charmaine.dominguez@pacific-charters.org. Parent email: wolftres@yahoo.com. Open with: 'Hi Angela, this is [name] from A+ Tutoring following up on your call with Paola \u2014 I'd love to get Cody's free trial geometry session on the calendar and share the tutor profile with you before we book.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Valley View Pacific Charter instructional funds \u2014 qualified charter lead.",
+        "student_or_school_names_mentioned": [
+          "Cody Topcu",
+          "Angela Topcu",
+          "Valley View Pacific Charter",
+          "Charmaine Dominguez"
+        ],
+        "record_updates": {
+          "whats_going_on": "Connected live with mom Angela Topcu. Her 11th-grade son Cody attends Valley View Pacific Charter and needs a geometry/math tutor \u2014 his IST recommended tutoring due to low test scores. Cody has ADHD and Asperger's; family recently switched to homeschooling after a difficult school experience, so a patient, experienced tutor fit is critical. Angela is comparing A+ (online) against another in-person option.",
+          "what_we_can_do_to_help": "Offered charter rate ($75/hr or $64 per 45-min) and a free online trial session; Angela accepted. Scheduling to match Cody with a patient, seasoned geometry tutor and send profile for approval before booking. Availability: Mon 11-2, Tue/Thu 10:30-1:30, Wed 10:30-1; open to 2x30-min/week format. After trial, request PO through charter teacher Charmaine Dominguez (charmaine.dominguez@pacific-charters.org).",
+          "student_first_name": "Cody",
+          "student_last_name": "Topcu",
+          "grade_level": "11",
+          "student_school": "Valley View Pacific Charter",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": "wolftres@yahoo.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected live with mom Angela Topcu. Her 11th-grade son Cody attends Valley View Pacific Charter and needs a geometry/math tutor \u2014 his IST recommended tutoring due to low test scores. Cody has ADHD and Asperger's; family recently switched to homeschooling after a difficult school experience, so a patient, experienced tutor fit is critical. Angela is comparing A+ (online) against another in-person option."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Offered charter rate ($75/hr or $64 per 45-min) and a free online trial session; Angela accepted. Scheduling to match Cody with a patient, seasoned geometry tutor and send profile for approval before booking. Availability: Mon 11-2, Tue/Thu 10:30-1:30, Wed 10:30-1; open to 2x30-min/week format. After trial, request PO through charter teacher Charmaine Dominguez (charmaine.dominguez@pacific-charters.org)."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Cody"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Topcu"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "11"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Valley View Pacific Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "email_correction",
+          "6504547308@call.com",
+          "wolftres@yahoo.com"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Angela the rate sheet and vendor listing information for Valley View Pacific Charter via email (wolftres@yahoo.com).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Scheduling team to reach out to Angela today or Monday to book a free trial geometry session for Cody, matching him with a patient, experienced tutor mindful of his ADHD and Asperger's. Availability: Mon 11-2, Tue/Thu 10:30-1:30, Wed 10:30-1.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send tutor profile to Angela for approval before booking the trial session.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "After trial, if family moves forward, email Charmaine Dominguez (charmaine.dominguez@pacific-charters.org) at Valley View Pacific Charter to request a PO.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Update contact record with parent name Angela Topcu and email wolftres@yahoo.com.",
+          81494333,
           "follow_up"
         ]
       ],
