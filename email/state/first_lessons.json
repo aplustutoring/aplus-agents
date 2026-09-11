@@ -1,1 +1,1198 @@
-{}
+{
+ "_last_run": "2026-09-11T05:18:20.673389+00:00",
+ "in_person:ahmed, skye": {
+  "checked": "2026-09-10",
+  "contact_id": "1523951",
+  "email": "amirazza@icloud.com",
+  "first": "2022-02-07",
+  "name": "Skye Ahmed",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1327486"
+ },
+ "in_person:bogert, daniel": {
+  "checked": "2026-09-10",
+  "contact_id": "638901",
+  "email": "ldbogie80@aol.com",
+  "first": "2021-04-15",
+  "name": "Daniel Bogert",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1186785"
+ },
+ "in_person:elyshkevich, sophia": {
+  "checked": "2026-09-10",
+  "contact_id": "237487061887",
+  "email": "mayaelyshkevich@yahoo.com",
+  "first": "2025-10-13",
+  "name": "Sophia Elyshkevich",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2120168"
+ },
+ "in_person:hayes, christian": {
+  "checked": "2026-09-10",
+  "contact_id": "1175351",
+  "deal_id": "64333476736",
+  "email": "rena_hayes@yahoo.com",
+  "first": "2021-10-14",
+  "name": "Christian Hayes",
+  "tw_student_id": "1277535"
+ },
+ "in_person:hutchinson, kade": {
+  "checked": "2026-09-10",
+  "contact_id": "247697561139",
+  "deal_id": "64576209940",
+  "email": "michelempcc@yahoo.com",
+  "first": "2026-09-08",
+  "name": "Kade Hutchinson",
+  "tw_student_id": "2342298"
+ },
+ "in_person:leitch, donovan": {
+  "checked": "2026-09-10",
+  "contact_id": "242794787604",
+  "deal_id": "64133843574",
+  "email": "donovanleitch33@gmail.com",
+  "first": "2025-10-27",
+  "name": "Donovan Leitch",
+  "tw_student_id": "2131928"
+ },
+ "in_person:manukyan, alec": {
+  "checked": "2026-09-10",
+  "contact_id": "8461",
+  "email": "anni@swiftrecoverygrp.com",
+  "first": "2026-01-13",
+  "name": "Alec Manukyan",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2164550"
+ },
+ "in_person:moynihan, dorothy": {
+  "checked": "2026-09-10",
+  "contact_id": "239413763486",
+  "deal_id": "63436249782",
+  "email": "brynnmaureen@icloud.com",
+  "first": "2026-08-12",
+  "name": "Dorothy Moynihan",
+  "tw_student_id": "2286217"
+ },
+ "in_person:patyuk, zo\u00e9 rose": {
+  "checked": "2026-09-10",
+  "contact_id": "2681401",
+  "email": "elina.fogel@gmail.com",
+  "first": "2023-03-11",
+  "name": "Zo\u00e9 Rose Patyuk",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1591791"
+ },
+ "in_person:weingold, hudson erice": {
+  "checked": "2026-09-10",
+  "contact_id": "227193930594",
+  "email": "cweingold@gmail.com",
+  "first": "2026-07-14",
+  "name": "Hudson Erice Weingold",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2274280"
+ },
+ "in_person:zimmerman, evie": {
+  "checked": "2026-09-10",
+  "contact_id": "4020351",
+  "deal_id": "64175260191",
+  "email": "aaronzimmerman@ucsb.edu",
+  "first": "2026-01-29",
+  "name": "Evie Zimmerman",
+  "tw_student_id": "2184631"
+ },
+ "online:aarvik, luke": {
+  "checked": "2026-09-10",
+  "contact_id": "3791101",
+  "email": "aarvikwarrior@gmail.com",
+  "first": "2024-01-25",
+  "name": "Luke Aarvik",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1758500"
+ },
+ "online:ahn, paxton": {
+  "checked": "2026-09-10",
+  "contact_id": "3620301",
+  "deal_id": "64807547510",
+  "email": "zoelee@gmail.com",
+  "first": "2023-11-27",
+  "name": "Paxton Ahn",
+  "tw_student_id": "1744276"
+ },
+ "online:arriaga, lizbeth": {
+  "checked": "2026-09-10",
+  "contact_id": "173992378943",
+  "deal_id": "64663769784",
+  "email": "chrismichael92@att.net",
+  "first": "2025-11-17",
+  "name": "Lizbeth Arriaga",
+  "tw_student_id": "2141681"
+ },
+ "online:barajas, zackarias": {
+  "checked": "2026-09-10",
+  "contact_id": "204281266536",
+  "deal_id": "63803213403",
+  "email": "barajasmaricarmen0806@gmail.com",
+  "first": "2026-03-03",
+  "name": "Zackarias Barajas",
+  "tw_student_id": "2205529"
+ },
+ "online:barber, carys": {
+  "checked": "2026-09-10",
+  "contact_id": "236803151538",
+  "deal_id": "64133283489",
+  "email": "tedbarber1@gmail.com",
+  "first": "2026-08-21",
+  "name": "Carys Barber",
+  "tw_student_id": "2328566"
+ },
+ "online:beck, jil": {
+  "checked": "2026-09-10",
+  "contact_id": "209537356160",
+  "deal_id": "64466125711",
+  "email": "jimenezevelin7@gmail.com",
+  "first": "2026-03-30",
+  "name": "Jil Beck",
+  "tw_student_id": "2217511"
+ },
+ "online:beck, lia": {
+  "checked": "2026-09-10",
+  "contact_id": "209537356160",
+  "deal_id": "64541380107",
+  "email": "jimenezevelin7@gmail.com",
+  "first": "2026-03-31",
+  "name": "Lia Beck",
+  "tw_student_id": "2217513"
+ },
+ "online:berengian, aleah": {
+  "checked": "2026-09-10",
+  "contact_id": "183114032148",
+  "email": "kkraft@stradlinglaw.com",
+  "first": "2025-12-08",
+  "name": "Aleah Berengian",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2160414"
+ },
+ "online:bershadsky, ethan": {
+  "checked": "2026-09-10",
+  "contact_id": "214413396042",
+  "deal_id": "64133841075",
+  "email": "bbershadsky@gmail.com",
+  "first": "2026-08-20",
+  "name": "Ethan Bershadsky",
+  "tw_student_id": "2328608"
+ },
+ "online:bershadsky, nathan": {
+  "checked": "2026-09-10",
+  "contact_id": "214413396042",
+  "email": "bbershadsky@gmail.com",
+  "first": "2026-04-24",
+  "name": "Nathan Bershadsky",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2227977"
+ },
+ "online:braden, ethan": {
+  "checked": "2026-09-10",
+  "contact_id": "113961507700",
+  "deal_id": "64286105264",
+  "email": "littlebluecelt@yahoo.com",
+  "first": "2025-04-23",
+  "name": "Ethan Braden",
+  "tw_student_id": "2016114"
+ },
+ "online:brixey, londyn": {
+  "checked": "2026-09-10",
+  "contact_id": "232789953905",
+  "deal_id": "64219174989",
+  "email": "nikitabrixey@gmail.com",
+  "first": "2026-07-27",
+  "name": "Londyn Brixey",
+  "tw_student_id": "2281131"
+ },
+ "online:canada, joseph": {
+  "checked": "2026-09-10",
+  "contact_id": "242794607109",
+  "email": "blancaxoxo12@gmail.com",
+  "first": "2026-09-03",
+  "name": "Joseph Canada",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1820555"
+ },
+ "online:czaja, charlotte": {
+  "checked": "2026-09-10",
+  "contact_id": "198008137574",
+  "deal_id": "63856324679",
+  "email": "angela.czaja5@gmail.com",
+  "first": "2026-03-02",
+  "name": "Charlotte Czaja",
+  "tw_student_id": "2191455"
+ },
+ "online:czaja, emmalyn": {
+  "checked": "2026-09-10",
+  "contact_id": "198008137574",
+  "deal_id": "63863294213",
+  "email": "angela.czaja5@gmail.com",
+  "first": "2026-03-02",
+  "name": "Emmalyn Czaja",
+  "tw_student_id": "2191463"
+ },
+ "online:davault, kailyn marie": {
+  "checked": "2026-09-10",
+  "contact_id": "213088341792",
+  "deal_id": "63943636265",
+  "email": "jcdavault@gmail.com",
+  "first": "2026-04-14",
+  "name": "Kailyn Marie DaVault",
+  "tw_student_id": "2225303"
+ },
+ "online:di nardo, giada": {
+  "checked": "2026-09-10",
+  "contact_id": "241098072088",
+  "deal_id": "64050956321",
+  "email": "lgonzales428@gmail.com",
+  "first": "2026-08-27",
+  "name": "Giada Di Nardo",
+  "tw_student_id": "2327962"
+ },
+ "online:diaz, franny": {
+  "checked": "2026-09-10",
+  "contact_id": "118790443789",
+  "email": "misskati87.ks@gmail.com",
+  "first": "2025-05-13",
+  "name": "Franny Diaz",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2025839"
+ },
+ "online:dougherty, callie": {
+  "checked": "2026-09-10",
+  "contact_id": "227837832470",
+  "deal_id": "64653013028",
+  "email": "conordougherty77@gmail.com",
+  "first": "2026-07-28",
+  "name": "Callie Dougherty",
+  "tw_student_id": "2281142"
+ },
+ "online:doyal, cooper": {
+  "checked": "2026-09-10",
+  "contact_id": "95643687311",
+  "deal_id": "63839735097",
+  "email": "kristy.doyal@heartlandcharterschool.com",
+  "first": "2025-09-25",
+  "name": "Cooper Doyal",
+  "tw_student_id": "2103712"
+ },
+ "online:edwards, evrsen": {
+  "checked": "2026-09-10",
+  "contact_id": "201180586884",
+  "deal_id": "63679420183",
+  "email": "alydaly@mac.com",
+  "first": "2022-05-18",
+  "name": "Evrsen Edwards",
+  "tw_student_id": "1380853"
+ },
+ "online:escandon, cali": {
+  "checked": "2026-09-10",
+  "contact_id": "244765291801",
+  "deal_id": "64647214081",
+  "email": "escandonfamily5@gmail.com",
+  "first": "2026-09-10",
+  "name": "Cali Escandon",
+  "tw_student_id": "2344842"
+ },
+ "online:fakheri, michael": {
+  "checked": "2026-09-10",
+  "contact_id": "179441506671",
+  "deal_id": "63739916315",
+  "email": "kfakheri@gmail.com",
+  "first": "2022-09-15",
+  "name": "Michael Fakheri",
+  "tw_student_id": "1461797"
+ },
+ "online:feinstein, emmett": {
+  "checked": "2026-09-10",
+  "contact_id": "336001",
+  "deal_id": "64627634857",
+  "email": "feinstein.adam@gmail.com",
+  "first": "2020-09-04",
+  "name": "Emmett Feinstein",
+  "tw_student_id": "1114945"
+ },
+ "online:finkelshteyn, noah": {
+  "checked": "2026-09-10",
+  "contact_id": "302901",
+  "deal_id": "64416139917",
+  "email": "yelena.mozgovaya@gmail.com",
+  "first": "2024-03-26",
+  "name": "Noah Finkelshteyn",
+  "tw_student_id": "1802046"
+ },
+ "online:fiore, mateo": {
+  "checked": "2026-09-10",
+  "contact_id": "218327793509",
+  "deal_id": "64464582696",
+  "email": "sfiore1822@gmail.com",
+  "first": "2026-05-04",
+  "name": "Mateo Fiore",
+  "tw_student_id": "2239165"
+ },
+ "online:fiore, tony": {
+  "checked": "2026-09-10",
+  "contact_id": "218327793509",
+  "deal_id": "64479215283",
+  "email": "sfiore1822@gmail.com",
+  "first": "2026-04-30",
+  "name": "Tony Fiore",
+  "tw_student_id": "2239079"
+ },
+ "online:ganzburg, chaya tova": {
+  "checked": "2026-09-10",
+  "contact_id": "218796604031",
+  "email": "sheynaleg33@gmail.com",
+  "first": "2026-05-04",
+  "name": "Chaya tova Ganzburg",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2240478"
+ },
+ "online:garcia, ezekiel": {
+  "checked": "2026-09-10",
+  "contact_id": "214629808198",
+  "deal_id": "64226227985",
+  "email": "mishigarcia07@gmail.com",
+  "first": "2026-05-15",
+  "name": "Ezekiel Garcia",
+  "tw_student_id": "2242836"
+ },
+ "online:garcia, israel": {
+  "checked": "2026-09-10",
+  "contact_id": "214629808198",
+  "deal_id": "64215757682",
+  "email": "mishigarcia07@gmail.com",
+  "first": "2026-05-15",
+  "name": "Israel Garcia",
+  "tw_student_id": "2242851"
+ },
+ "online:garcia, maximilian": {
+  "checked": "2026-09-10",
+  "contact_id": "465901",
+  "deal_id": "64500312470",
+  "email": "legalinna@yahoo.com",
+  "first": "2026-08-31",
+  "name": "Maximilian Garcia",
+  "tw_student_id": "2337244"
+ },
+ "online:gemberling, arthur": {
+  "checked": "2026-09-10",
+  "contact_id": "162767000583",
+  "email": "andreakrosen@gmail.com",
+  "first": "2025-11-17",
+  "name": "Arthur Gemberling",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2143643"
+ },
+ "online:goldzweig, rebecca": {
+  "checked": "2026-09-10",
+  "contact_id": "10125",
+  "deal_id": "64877424266",
+  "email": "judy@lantrxinc.com",
+  "first": "2026-09-09",
+  "name": "Rebecca Goldzweig",
+  "tw_student_id": "2349967"
+ },
+ "online:gukasov, elona": {
+  "checked": "2026-09-10",
+  "contact_id": "92953693573",
+  "deal_id": "64132125347",
+  "email": "susanna.gukasov@gmail.com",
+  "first": "2026-06-16",
+  "name": "Elona Gukasov",
+  "tw_student_id": "2262344"
+ },
+ "online:gukasov, seda": {
+  "checked": "2026-09-10",
+  "contact_id": "92953693573",
+  "deal_id": "64168426603",
+  "email": "susanna.gukasov@gmail.com",
+  "first": "2025-01-21",
+  "name": "Seda Gukasov",
+  "tw_student_id": "1967984"
+ },
+ "online:higinbotham, ava and eden": {
+  "checked": "2026-09-10",
+  "contact_id": "2423651",
+  "email": "jasmineyun@hotmail.com",
+  "first": "2022-12-10",
+  "name": "Ava and Eden Higinbotham",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1512974"
+ },
+ "online:hua, kaily": {
+  "checked": "2026-09-10",
+  "contact_id": "1085151",
+  "email": "mhuamarroquin@gmail.com",
+  "first": "2021-09-07",
+  "name": "Kaily Hua",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1259504"
+ },
+ "online:jaramillo, isaac": {
+  "checked": "2026-09-10",
+  "contact_id": "217026937989",
+  "deal_id": "63679052192",
+  "email": "jessv13@hotmail.com",
+  "first": "2026-05-07",
+  "name": "Isaac Jaramillo",
+  "tw_student_id": "2236189"
+ },
+ "online:kaufman, valhalla": {
+  "checked": "2026-09-10",
+  "contact_id": "235281397049",
+  "email": "deannawithlove@gmail.com",
+  "first": "2026-07-27",
+  "name": "Valhalla Kaufman",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2281140"
+ },
+ "online:keesee, harper": {
+  "checked": "2026-09-10",
+  "contact_id": "170256398678",
+  "deal_id": "64249074551",
+  "email": "nikkicate@gmail.com",
+  "first": "2025-11-03",
+  "name": "Harper Keesee",
+  "tw_student_id": "2135685"
+ },
+ "online:khemani, roshni": {
+  "checked": "2026-09-10",
+  "contact_id": "768601",
+  "deal_id": "63680207384",
+  "email": "sonyrams@gmail.com",
+  "first": "2021-05-05",
+  "name": "Roshni Khemani",
+  "tw_student_id": "1205284"
+ },
+ "online:khemani, tejas": {
+  "checked": "2026-09-10",
+  "contact_id": "768601",
+  "deal_id": "63680193464",
+  "email": "sonyrams@gmail.com",
+  "first": "2021-05-05",
+  "name": "Tejas Khemani",
+  "tw_student_id": "1205223"
+ },
+ "online:kingman, luna": {
+  "checked": "2026-09-10",
+  "contact_id": "174442212108",
+  "deal_id": "63499198330",
+  "email": "mclendonbiz11@gmail.com",
+  "first": "2025-11-17",
+  "name": "Luna Kingman",
+  "tw_student_id": "2142857"
+ },
+ "online:kvirikashvili, iuri": {
+  "checked": "2026-09-10",
+  "contact_id": "245023148113",
+  "deal_id": "64472613662",
+  "email": "powersboston@yahoo.com",
+  "first": "2026-09-02",
+  "name": "Iuri Kvirikashvili",
+  "tw_student_id": "2336153"
+ },
+ "online:labeaune, elle": {
+  "checked": "2026-09-10",
+  "contact_id": "223025044272",
+  "deal_id": "64412673131",
+  "email": "rlabeaune@gmail.com",
+  "first": "2026-06-05",
+  "name": "Elle Labeaune",
+  "tw_student_id": "2257070"
+ },
+ "online:lago, vivienne": {
+  "checked": "2026-09-10",
+  "contact_id": "3384301",
+  "deal_id": "64251888909",
+  "email": "alyson.lago@gmail.com",
+  "first": "2023-09-19",
+  "name": "Vivienne Lago",
+  "tw_student_id": "1706631"
+ },
+ "online:lascher, chelsea": {
+  "checked": "2026-09-10",
+  "contact_id": "13601",
+  "deal_id": "64524561845",
+  "email": "dlasch@mac.com",
+  "first": "2019-09-11",
+  "name": "Chelsea Lascher",
+  "tw_student_id": "971244"
+ },
+ "online:lo, ella": {
+  "checked": "2026-09-10",
+  "contact_id": "98476623452",
+  "deal_id": "64632330111",
+  "email": "dorothylo28@yahoo.com",
+  "first": "2025-03-04",
+  "name": "Ella Lo",
+  "tw_student_id": "1980612"
+ },
+ "online:lozano, noah": {
+  "checked": "2026-09-10",
+  "contact_id": "101966668136",
+  "deal_id": "64246753605",
+  "email": "lozanomychelle@gmail.com",
+  "first": "2025-04-09",
+  "name": "Noah Lozano",
+  "tw_student_id": "1992163"
+ },
+ "online:lozano, sebastian": {
+  "checked": "2026-09-10",
+  "contact_id": "210756239010",
+  "email": "flozano72@gmail.com",
+  "first": "2026-07-13",
+  "name": "Sebastian Lozano",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2271409"
+ },
+ "online:maddocks, mia": {
+  "checked": "2026-09-10",
+  "contact_id": "156508823679",
+  "email": "jennmaddocks@icloud.com",
+  "first": "2025-09-24",
+  "name": "Mia Maddocks",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2113185"
+ },
+ "online:marcano, kash": {
+  "checked": "2026-09-10",
+  "contact_id": "3690251",
+  "email": "alexamarcano11@gmail.com",
+  "first": "2024-02-01",
+  "name": "Kash Marcano",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1769789"
+ },
+ "online:marcano, kingston": {
+  "checked": "2026-09-10",
+  "contact_id": "3690251",
+  "email": "alexamarcano11@gmail.com",
+  "first": "2024-01-30",
+  "name": "Kingston Marcano",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1769679"
+ },
+ "online:mcgraw, violet": {
+  "checked": "2026-09-10",
+  "contact_id": "161772952588",
+  "deal_id": "64247819434",
+  "email": "colinmcgraw02@gmail.com",
+  "first": "2025-10-20",
+  "name": "Violet McGraw",
+  "tw_student_id": "2127530"
+ },
+ "online:mcwilliams, londyn": {
+  "checked": "2026-09-10",
+  "contact_id": "155632421380",
+  "email": "mzkandi90@gmail.com",
+  "first": "2025-10-08",
+  "name": "Londyn McWilliams",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2114528"
+ },
+ "online:mejia, sofia": {
+  "checked": "2026-09-10",
+  "deal_id": "64217686953",
+  "email": "mejiarebeca33@yahoo.com",
+  "first": "2026-03-31",
+  "name": "Sofia Mejia",
+  "tw_student_id": "2209726"
+ },
+ "online:mejia, velena": {
+  "checked": "2026-09-10",
+  "deal_id": "64201523521",
+  "email": "mejiarebeca33@yahoo.com",
+  "first": "2026-03-11",
+  "name": "Velena Mejia",
+  "tw_student_id": "2209631"
+ },
+ "online:melara, ezekiel": {
+  "checked": "2026-09-10",
+  "contact_id": "201200460323",
+  "deal_id": "64677367903",
+  "email": "schoolmve@gmail.com",
+  "first": "2026-09-10",
+  "name": "Ezekiel Melara",
+  "tw_student_id": "2346572"
+ },
+ "online:melara, mario": {
+  "checked": "2026-09-10",
+  "contact_id": "201200460323",
+  "deal_id": "64684494965",
+  "email": "schoolmve@gmail.com",
+  "first": "2026-02-18",
+  "name": "Mario Melara",
+  "tw_student_id": "2196424"
+ },
+ "online:melara, vincent": {
+  "checked": "2026-09-10",
+  "contact_id": "201200460323",
+  "deal_id": "64659861919",
+  "email": "schoolmve@gmail.com",
+  "first": "2026-09-10",
+  "name": "Vincent Melara",
+  "tw_student_id": "2346573"
+ },
+ "online:motiwalla, autumn": {
+  "checked": "2026-09-10",
+  "contact_id": "241120347008",
+  "deal_id": "64416681031",
+  "email": "divyesh86@gmail.com",
+  "first": "2026-09-01",
+  "name": "Autumn Motiwalla",
+  "tw_student_id": "2335699"
+ },
+ "online:muranaka, maya": {
+  "checked": "2026-09-10",
+  "contact_id": "238535241827",
+  "email": "russellmuranaka@gmail.com",
+  "first": "2024-12-21",
+  "name": "Maya Muranaka",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1949714"
+ },
+ "online:naumova, diana": {
+  "checked": "2026-09-10",
+  "contact_id": "154115174782",
+  "deal_id": "64175365905",
+  "email": "yanaperemoga@yahoo.com",
+  "first": "2026-08-27",
+  "name": "Diana Naumova",
+  "tw_student_id": "2331524"
+ },
+ "online:naumova, masha": {
+  "checked": "2026-09-10",
+  "contact_id": "154115174782",
+  "deal_id": "64175365905",
+  "email": "yanaperemoga@yahoo.com",
+  "first": "2025-09-29",
+  "name": "Masha Naumova",
+  "tw_student_id": "2113145"
+ },
+ "online:neri, harlow": {
+  "checked": "2026-09-10",
+  "contact_id": "216612380082",
+  "email": "emily@sheltonwilder.com",
+  "first": "2026-04-27",
+  "name": "Harlow Neri",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2234034"
+ },
+ "online:noll, darius": {
+  "checked": "2026-09-10",
+  "contact_id": "220304048676",
+  "email": "janekyang@gmail.com",
+  "first": "2026-06-20",
+  "name": "Darius Noll",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2255557"
+ },
+ "online:nourn bernard, dahlia": {
+  "checked": "2026-09-10",
+  "contact_id": "3255351",
+  "deal_id": "64536918540",
+  "email": "bernard_deanna@hotmail.com",
+  "first": "2023-09-01",
+  "name": "Dahlia Nourn Bernard",
+  "tw_student_id": "1695639"
+ },
+ "online:nourn bernard, phoenix": {
+  "checked": "2026-09-10",
+  "contact_id": "3255351",
+  "deal_id": "64518930702",
+  "email": "bernard_deanna@hotmail.com",
+  "first": "2023-09-01",
+  "name": "Phoenix Nourn Bernard",
+  "tw_student_id": "1694111"
+ },
+ "online:payton, trey": {
+  "checked": "2026-09-10",
+  "contact_id": "160981290274",
+  "deal_id": "64096910920",
+  "email": "cassandra.payton2@gmail.com",
+  "first": "2026-03-26",
+  "name": "Trey Payton",
+  "tw_student_id": "2220218"
+ },
+ "online:perez, jonathan": {
+  "checked": "2026-09-10",
+  "contact_id": "100111469122",
+  "deal_id": "64543716530",
+  "email": "s.m.p010186@gmail.com",
+  "first": "2025-03-10",
+  "name": "Jonathan Perez",
+  "tw_student_id": "1993443"
+ },
+ "online:peters, hudson": {
+  "checked": "2026-09-10",
+  "contact_id": "2154801",
+  "deal_id": "64414590546",
+  "email": "jeniferannpeters@gmail.com",
+  "first": "2022-09-26",
+  "name": "Hudson Peters",
+  "tw_student_id": "1468980"
+ },
+ "online:pifko, whitney": {
+  "checked": "2026-09-10",
+  "contact_id": "240897230161",
+  "deal_id": "64877412923",
+  "email": "nicole.pifko@gmail.com",
+  "first": "2026-08-14",
+  "name": "Whitney Pifko",
+  "tw_student_id": "2290959"
+ },
+ "online:pineda, camila": {
+  "checked": "2026-09-10",
+  "contact_id": "211388146589",
+  "deal_id": "64443416424",
+  "email": "kpineda.kp@gmail.com",
+  "first": "2026-04-17",
+  "name": "Camila Pineda",
+  "tw_student_id": "2220918"
+ },
+ "online:prado, aria": {
+  "checked": "2026-09-10",
+  "contact_id": "180893735437",
+  "email": "lilstinker@gmail.com",
+  "first": "2025-01-25",
+  "name": "Aria Prado",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1290646"
+ },
+ "online:quarry, perla elbaz": {
+  "checked": "2026-09-10",
+  "contact_id": "244592959581",
+  "deal_id": "64338333263",
+  "email": "adriennequarry@gmail.com",
+  "first": "2026-08-31",
+  "name": "Perla Elbaz Quarry",
+  "tw_student_id": "2335176"
+ },
+ "online:quintanilla, santiago": {
+  "checked": "2026-09-10",
+  "contact_id": "177657910416",
+  "deal_id": "63436491326",
+  "email": "mrs.marienaq@gmail.com",
+  "first": "2025-12-09",
+  "name": "Santiago Quintanilla",
+  "tw_student_id": "2160900"
+ },
+ "online:resch, coyote": {
+  "checked": "2026-09-10",
+  "contact_id": "245676544623",
+  "deal_id": "64600229770",
+  "email": "jshackelford23@gmail.com",
+  "first": "2026-09-09",
+  "name": "Coyote Resch",
+  "tw_student_id": "2342461"
+ },
+ "online:richardson, charlotte": {
+  "checked": "2026-09-10",
+  "contact_id": "8302",
+  "deal_id": "63433691726",
+  "email": "lmb2410@gmail.com",
+  "first": "2020-03-05",
+  "name": "Charlotte Richardson",
+  "tw_student_id": "1057102"
+ },
+ "online:rivas, amelia \"milly\"": {
+  "checked": "2026-09-10",
+  "contact_id": "351001",
+  "email": "crivas@gmail.com",
+  "first": "2020-09-17",
+  "name": "Amelia \"Milly\" Rivas",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1121849"
+ },
+ "online:rodriguez, mariah": {
+  "checked": "2026-09-10",
+  "contact_id": "126638540678",
+  "deal_id": "64251227670",
+  "email": "jessicalujanbd@gmail.com",
+  "first": "2025-06-09",
+  "name": "Mariah Rodriguez",
+  "tw_student_id": "2041778"
+ },
+ "online:rodriguez, taylor": {
+  "checked": "2026-09-10",
+  "contact_id": "126638540678",
+  "deal_id": "64250037589",
+  "email": "jessicalujanbd@gmail.com",
+  "first": "2025-06-11",
+  "name": "Taylor Rodriguez",
+  "tw_student_id": "2041769"
+ },
+ "online:rojas, zie": {
+  "checked": "2026-09-10",
+  "contact_id": "205723111261",
+  "deal_id": "63772458250",
+  "email": "jayleneparra@gmail.com",
+  "first": "2026-03-03",
+  "name": "Zie Rojas",
+  "tw_student_id": "2207978"
+ },
+ "online:saenz, raul": {
+  "checked": "2026-09-10",
+  "contact_id": "73346503214",
+  "deal_id": "64386349149",
+  "email": "rosimiramontes@live.com",
+  "first": "2025-03-12",
+  "name": "Raul Saenz",
+  "tw_student_id": "1995178"
+ },
+ "online:saenz, roman": {
+  "checked": "2026-09-10",
+  "contact_id": "73346503214",
+  "deal_id": "64369952614",
+  "email": "rosimiramontes@live.com",
+  "first": "2025-02-04",
+  "name": "Roman Saenz",
+  "tw_student_id": "1971604"
+ },
+ "online:saenz, romi": {
+  "checked": "2026-09-10",
+  "contact_id": "73346503214",
+  "deal_id": "64366688904",
+  "email": "rosimiramontes@live.com",
+  "first": "2024-11-04",
+  "name": "Romi Saenz",
+  "tw_student_id": "1921342"
+ },
+ "online:sanchez, nathan": {
+  "checked": "2026-09-10",
+  "contact_id": "13692695654",
+  "deal_id": "64890807210",
+  "email": "sanchezfamkingdom@gmail.com",
+  "first": "2024-04-29",
+  "name": "Nathan Sanchez",
+  "tw_student_id": "1812677"
+ },
+ "online:santamaria, yanisel": {
+  "checked": "2026-09-10",
+  "contact_id": "2663151",
+  "deal_id": "64544654204",
+  "email": "yanisel5@hotmail.com",
+  "first": "2023-03-06",
+  "name": "Yanisel Santamaria",
+  "tw_student_id": "1587187"
+ },
+ "online:saragoza, easton": {
+  "checked": "2026-09-10",
+  "contact_id": "201630987050",
+  "email": "tarynsaragoza@gmail.com",
+  "first": "2026-03-03",
+  "name": "Easton Saragoza",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2209578"
+ },
+ "online:savathasuk, daniel": {
+  "checked": "2026-09-10",
+  "contact_id": "226924092793",
+  "email": "tasame@att.net",
+  "first": "2026-07-17",
+  "name": "Daniel Savathasuk",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2277529"
+ },
+ "online:savathasuk, matthew": {
+  "checked": "2026-09-10",
+  "contact_id": "226924092793",
+  "email": "tasame@att.net",
+  "first": "2026-07-20",
+  "name": "Matthew Savathasuk",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2277004"
+ },
+ "online:schnurstein, ellie": {
+  "checked": "2026-09-10",
+  "contact_id": "206760634418",
+  "email": "schnurstein@yahoo.com",
+  "first": "2026-03-11",
+  "name": "Ellie Schnurstein",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2213150"
+ },
+ "online:seeley, ember": {
+  "checked": "2026-09-10",
+  "contact_id": "243333671074",
+  "deal_id": "64071868968",
+  "email": "dreamyhomeschool@gmail.com",
+  "first": "2026-03-10",
+  "name": "Ember Seeley",
+  "tw_student_id": "2210554"
+ },
+ "online:shahar, emma": {
+  "checked": "2026-09-10",
+  "contact_id": "68571333641",
+  "email": "karine.shahar@gmail.com",
+  "first": "2025-12-02",
+  "name": "Emma Shahar",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2157991"
+ },
+ "online:shahar, noa": {
+  "checked": "2026-09-10",
+  "contact_id": "68571333641",
+  "deal_id": "63676963999",
+  "email": "karine.shahar@gmail.com",
+  "first": "2024-10-17",
+  "name": "Noa Shahar",
+  "tw_student_id": "1913547"
+ },
+ "online:siddique, ibraheem": {
+  "checked": "2026-09-10",
+  "contact_id": "84564363800",
+  "deal_id": "64472318642",
+  "email": "kikijuliet1991@gmail.com",
+  "first": "2026-09-02",
+  "name": "Ibraheem Siddique",
+  "tw_student_id": "2336362"
+ },
+ "online:siddique, zaeem": {
+  "checked": "2026-09-10",
+  "contact_id": "84564363800",
+  "deal_id": "64363249541",
+  "email": "kikijuliet1991@gmail.com",
+  "first": "2025-01-13",
+  "name": "Zaeem Siddique",
+  "tw_student_id": "1950861"
+ },
+ "online:slavinsky, delilah": {
+  "checked": "2026-09-10",
+  "contact_id": "102951",
+  "email": "anna.azovskaya@gmail.com",
+  "first": "2026-08-17",
+  "name": "Delilah Slavinsky",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2290459"
+ },
+ "online:slavinsky, jake": {
+  "checked": "2026-09-10",
+  "contact_id": "102951",
+  "email": "anna.azovskaya@gmail.com",
+  "first": "2025-07-10",
+  "name": "Jake Slavinsky",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2060615"
+ },
+ "online:slavinsky, sasha": {
+  "checked": "2026-09-10",
+  "contact_id": "102951",
+  "email": "anna.azovskaya@gmail.com",
+  "first": "2024-09-18",
+  "name": "Sasha Slavinsky",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1884678"
+ },
+ "online:smith, charlotte": {
+  "checked": "2026-09-10",
+  "contact_id": "98564184484",
+  "deal_id": "64591767319",
+  "email": "allofme4christ@gmail.com",
+  "first": "2025-03-19",
+  "name": "Charlotte Smith",
+  "tw_student_id": "1998501"
+ },
+ "online:smith, claire": {
+  "checked": "2026-09-10",
+  "contact_id": "98564184484",
+  "deal_id": "64583566683",
+  "email": "allofme4christ@gmail.com",
+  "first": "2025-03-11",
+  "name": "Claire Smith",
+  "tw_student_id": "1990911"
+ },
+ "online:song, andrew": {
+  "checked": "2026-09-10",
+  "contact_id": "2289951",
+  "deal_id": "64736865309",
+  "email": "jessiedrake@gmail.com",
+  "first": "2022-11-12",
+  "name": "Andrew Song",
+  "tw_student_id": "1492612"
+ },
+ "online:spainhour, michael": {
+  "checked": "2026-09-10",
+  "contact_id": "4023901",
+  "email": "dependablesusie@gmail.com",
+  "first": "2024-03-19",
+  "name": "Michael Spainhour",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1795913"
+ },
+ "online:swing, weston": {
+  "checked": "2026-09-10",
+  "contact_id": "214640550980",
+  "deal_id": "64899138075",
+  "email": "mekelal@gmail.com",
+  "first": "2026-04-10",
+  "name": "Weston Swing",
+  "tw_student_id": "2228854"
+ },
+ "online:taylor, kieran": {
+  "checked": "2026-09-10",
+  "contact_id": "126624703643",
+  "deal_id": "64215629105",
+  "email": "jerusink@yahoo.com",
+  "first": "2025-06-09",
+  "name": "Kieran Taylor",
+  "tw_student_id": "2041760"
+ },
+ "online:tiu, angelo": {
+  "checked": "2026-09-10",
+  "contact_id": "53576282955",
+  "email": "slingnar@gmail.com",
+  "first": "2024-08-31",
+  "name": "Angelo Tiu",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1877254"
+ },
+ "online:tokunow, nomi": {
+  "checked": "2026-09-10",
+  "contact_id": "92718287785",
+  "email": "lara_perkins@yahoo.com",
+  "first": "2025-01-31",
+  "name": "Nomi Tokunow",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1971769"
+ },
+ "online:trejo, araceli": {
+  "checked": "2026-09-10",
+  "contact_id": "212516157058",
+  "email": "evelyntrejo91@hotmail.com",
+  "first": "2026-04-06",
+  "name": "Araceli Trejo",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2224700"
+ },
+ "online:van reuter, elias": {
+  "checked": "2026-09-10",
+  "contact_id": "239685829982",
+  "deal_id": "63717549241",
+  "email": "vanreuteraudrey@gmail.com",
+  "first": "2026-08-20",
+  "name": "Elias Van Reuter",
+  "tw_student_id": "2290260"
+ },
+ "online:villa, ezekiel": {
+  "checked": "2026-09-10",
+  "contact_id": "165992981655",
+  "deal_id": "64526661003",
+  "email": "abigailvilla077@gmail.com",
+  "first": "2026-09-03",
+  "name": "Ezekiel Villa",
+  "tw_student_id": "2341148"
+ },
+ "online:villatoro, khana": {
+  "checked": "2026-09-10",
+  "contact_id": "217795927447",
+  "email": "6susana.v@gmail.com",
+  "first": "2026-04-28",
+  "name": "Khana Villatoro",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2237176"
+ },
+ "online:volodinsky, jacob": {
+  "checked": "2026-09-10",
+  "contact_id": "85201",
+  "email": "volodinsky@gmail.com",
+  "first": "2024-12-09",
+  "name": "Jacob Volodinsky",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1932706"
+ },
+ "online:volodinsky, myron": {
+  "checked": "2026-09-10",
+  "contact_id": "85201",
+  "deal_id": "64333350793",
+  "email": "volodinsky@gmail.com",
+  "first": "2020-02-04",
+  "name": "Myron Volodinsky",
+  "tw_student_id": "1043783"
+ },
+ "online:vouniozos, kruz": {
+  "checked": "2026-09-10",
+  "contact_id": "241771911259",
+  "deal_id": "63875447959",
+  "email": "august12v@gmail.com",
+  "first": "2026-08-20",
+  "name": "Kruz Vouniozos",
+  "tw_student_id": "2291520"
+ },
+ "online:wang, emma": {
+  "checked": "2026-09-10",
+  "contact_id": "160468719369",
+  "deal_id": "64836789032",
+  "email": "leealbee@hotmail.com",
+  "first": "2026-09-09",
+  "name": "Emma Wang",
+  "tw_student_id": "2348983"
+ },
+ "online:west, isabella": {
+  "checked": "2026-09-10",
+  "contact_id": "46480761009",
+  "email": "maykwong@hotmail.com",
+  "first": "2024-09-11",
+  "name": "Isabella West",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1882885"
+ },
+ "online:whates, brooklyn": {
+  "checked": "2026-09-10",
+  "contact_id": "157931963977",
+  "email": "rawhates@yahoo.com",
+  "first": "2025-09-24",
+  "name": "Brooklyn Whates",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2113174"
+ },
+ "online:white-kjoss, lars": {
+  "checked": "2026-09-10",
+  "contact_id": "206828393569",
+  "email": "andreawhitekjoss@gmail.com",
+  "first": "2026-03-05",
+  "name": "Lars White-Kjoss",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2210605"
+ },
+ "online:williams, graham": {
+  "checked": "2026-09-10",
+  "contact_id": "242076839497",
+  "deal_id": "64576837301",
+  "email": "williamsfamily90210@gmail.com",
+  "first": "2026-09-08",
+  "name": "Graham Williams",
+  "tw_student_id": "2342318"
+ },
+ "online:yeshchurovskyi, eva": {
+  "checked": "2026-09-10",
+  "contact_id": "229178436610",
+  "email": "djexcellent.ds@gmail.com",
+  "first": "2026-07-02",
+  "name": "Eva Yeshchurovskyi",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "2269757"
+ },
+ "online:yi, jo": {
+  "checked": "2026-09-10",
+  "contact_id": "65238719241",
+  "email": "linayi2024@gmail.com",
+  "first": "2024-10-17",
+  "name": "Jo Yi",
+  "no_deal_until": "2026-09-13",
+  "tw_student_id": "1907816"
+ },
+ "online:zeltzer, micaela": {
+  "checked": "2026-09-10",
+  "contact_id": "391001",
+  "deal_id": "64288819747",
+  "email": "drmillazeltzer@gmail.com",
+  "first": "2026-08-27",
+  "name": "Micaela Zeltzer",
+  "tw_student_id": "2331519"
+ }
+}
