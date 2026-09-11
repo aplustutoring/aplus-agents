@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-11T05:18:20.673389+00:00",
+ "_last_run": "2026-09-11T14:38:08.499457+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-10",
   "contact_id": "1523951",
@@ -215,6 +215,15 @@
   "name": "Joseph Canada",
   "no_deal_until": "2026-09-13",
   "tw_student_id": "1820555"
+ },
+ "online:castro, kayla": {
+  "checked": "2026-09-11",
+  "contact_id": "1585651",
+  "deal_id": "64333747040",
+  "email": "ihwang@firstplaceforyouth.org",
+  "first": "2026-09-10",
+  "name": "Kayla Castro",
+  "tw_student_id": "2332779"
  },
  "online:czaja, charlotte": {
   "checked": "2026-09-10",
@@ -595,7 +604,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-10",
+  "checked": "2026-09-11",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
