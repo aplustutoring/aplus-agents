@@ -192,6 +192,15 @@ packages, one child). Final pool through every gate: 14 charter cases
 would open on their alert day, 3 to Kath, 10 skipped as already renewed,
 21 out of scope (private pay / out of pocket). Suite 468.
 
+**Last-contact analysis of the 11 open families (2026-09-11):** six had
+texted the support line the day before, every thread was scheduling with
+our word last, none mentioned the PO; the four oldest cases were also the
+quietest (17 to 28 days). Roman: "add the check" → the day-1 gate now also
+reads JustCall: an **inbound text since the case opened counts as a reply**
+(no agent text, no teacher email, Paola takes the thread), and when
+JustCall cannot be read the day-1 step **holds** for that hour rather than
+texting a family mid-conversation. Suite 470.
+
 **Still human (until armed):** everything the ticket note says the agent
 would have sent. **Roman:** run the hubspot-schema workflow (creates the five
 deal properties) and build the "Renewal Chase" saved view. **After arming:** sending the teacher draft from Gmail

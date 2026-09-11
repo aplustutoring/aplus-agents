@@ -48,7 +48,8 @@ import os
 import re
 from datetime import date, datetime, timedelta, timezone
 
-from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, slack_client
+from . import (audit, draft_feedback, gmail_client as gm, hubspot_client as hs,
+               justcall_client as jc, slack_client)
 from .business_hours import add_business_hours, now_la
 from .config import DRY_RUN, RESEND_API_KEY, ROOT, cfg, staff
 from .gmail_client import _scrub_outbound
@@ -1115,6 +1116,20 @@ def _ms(iso: str) -> int:
     return int(datetime.fromisoformat(iso.replace("Z", "+00:00")).timestamp() * 1000)
 
 
+def _family_texted_since(case: dict, jc_idx: dict) -> bool:
+    """Did the family TEXT us since the case opened? Six of eleven families in
+    the Sep 11 pool had texted the support line the day before; a family mid-
+    conversation by text must not get the agent's text on top (Roman
+    2026-09-11: "add the check"). Same JustCall index the ticket reasoner
+    reads; day granularity, inbound only."""
+    n = jc.norm_number(case.get("phone") or "")
+    opened = (case.get("opened_at") or "")[:10]
+    if not n or not opened or n not in (jc_idx or {}):
+        return False
+    return any(t.get("direction", "").startswith("in") and str(t.get("at") or "")[:10] >= opened
+               for t in jc_idx[n].get("texts", []))
+
+
 def _parent_replied(case: dict, seat: dict, lb: dict) -> bool:
     """Did the family write back to the seat's mailbox since the case opened?
     Replies to the day-0 email land on the seat (reply-to), so the agent
@@ -1455,6 +1470,7 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
         live[k] = {**live[k], "email_sent": live[k].get("to_email")}
     # 3: day 1, grouped by family and by teacher
     due: dict = {}
+    jc_idx, jc_ok = None, True
     for key, case in live.items():
         if not case.get("charter", True) or case.get("day1_done") or case.get("replied"):
             continue
@@ -1464,17 +1480,36 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
             continue
         if not (force or _day1_due(case, now, int(lb.get("family_text_after_days", 1)))):
             continue
+        # a reply by EMAIL (the seat's inbox) or by TEXT (the JustCall line the
+        # family already uses) means Paola takes the thread; the agent stays out
+        if jc_idx is None and jc_ok:
+            try:
+                jc_idx = jc.index_by_number(since_days=int(lb.get("text_reply_window_days", 14)))
+            except Exception as e:  # noqa: BLE001 — JustCallUnavailable and friends
+                jc_ok, jc_idx = False, {}
+                print(f"  ⚠️  JustCall unreadable ({str(e)[:80]}): day-1 texts HELD this sweep, "
+                      f"a family mid-conversation by text must not be texted on top")
+        if not jc_ok:
+            continue
+        channel = ""
         if _parent_replied(case, seat, lb):
+            channel = "email"
+        elif _family_texted_since(case, jc_idx):
+            channel = "text"
+        if channel:
             audit.append({"message_id": f"{key}:replied", "source": "low_balance",
-                          "action_taken": "low_balance_family_replied", "ticket_id": case.get("ticket_id")})
+                          "action_taken": "low_balance_family_replied", "channel": channel,
+                          "ticket_id": case.get("ticket_id")})
             tid = case.get("ticket_id")
             if tid and tid != "DRYRUN":
                 try:
-                    hs.add_ticket_note(tid, "💬 The family replied to the day-0 email in the seat's inbox. "
-                                            "No text, no teacher email; take it from the thread.")
+                    hs.add_ticket_note(tid, ("💬 The family replied to the day-0 email in the seat's inbox."
+                                             if channel == "email" else
+                                             "💬 The family texted the support line since the case opened.")
+                                       + " No agent text, no teacher email; take it from the thread.")
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  reply note failed (non-fatal): {e}")
-            print(f"  💬 {case.get('student')}: family replied; day-1 outreach skipped")
+            print(f"  💬 {case.get('student')}: family replied by {channel}; day-1 outreach skipped")
             continue
         due[key] = case
     if due:

@@ -35,7 +35,7 @@ a note, never a second message.
 | Day | Charter | Private pay (auto-renews at 2 hours) |
 |---|---|---|
 | 0 | **Email** to the parent from Paola's name, reply-to paola@: hours are running low, tutor's first name, one true sentence from the last 30 days of lesson notes, "we would love to keep that progress going", please submit a new PO or ask your teacher of record to. Ticket opens for Paola. Deal → **Low Hours**. | **One upgrade email**: current tier and rate, the next tier and rate, "or keep going as you are and it renews on its own". No text, no teacher. Deal → Low Hours. |
-| 1, next business morning | If **no PO deal, no reply from the parent in paola@'s inbox, and the ticket is still open**: **text** from Paola's line (same progress line) and the **teacher draft** in Paola's Gmail (progress line, PO number, "could you issue a new PO"). Never for Level Up Terri teachers. Deal → Family Contacted / Teacher Contacted. | nothing |
+| 1, next business morning | If **no PO deal, no reply from the parent by email (paola@'s inbox) or by text (JustCall, since the case opened), and the ticket is still open**: **text** from Paola's line (same progress line) and the **teacher draft** in Paola's Gmail (progress line, PO number, "could you issue a new PO"). Never for Level Up Terri teachers. Deal → Family Contacted / Teacher Contacted. | nothing |
 | 7 | No PO: the ticket **is the retention issue**. Subject "RETENTION RISK: …", priority HIGH, deal → **Retention Risk**, one DM to Paola and Roman. No task. | |
 | 28 | Still nothing: closed as **Lost** (`no_response`), re-engagement list. | same |
 | any | New PO deal → ticket closed, deal → **Renewed**. Deal Stopped → **Not Renewing**. | Any new deal → Renewed. |

@@ -221,6 +221,7 @@ low_balance:
   # HIGH, DM to the seat + escalate_to); 21 days after that, Lost + the
   # re-engagement list. No HubSpot task: the ticket is the case.
   email_delay_minutes: 60         # day-0 email waits this long so siblings' alerts (minutes apart) become ONE email
+  text_reply_window_days: 14      # JustCall lookback for "did the family text us since the case opened" (day-1 gate)
   family_text_after_days: 1       # business days after the day-0 email
   retention_risk_days: 7
   lost_after_days: 21             # after the risk flag

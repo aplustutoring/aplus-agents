@@ -151,6 +151,7 @@ class Harness:
         monkeypatch.setattr(lb, "_tw_recent", lambda a, d: dict(recent if recent is not None else NO_RECENT))
         monkeypatch.setattr(lb, "_positivity", lambda s, t, n, client=None: positivity)
         monkeypatch.setattr(lb, "_parent_replied", lambda c, s, l: replied)
+        monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {})
         monkeypatch.setattr(lb, "_ticket_open", lambda c: ticket_open)
         monkeypatch.setattr(lb, "_send_sms", lambda p, b: self.sms.append((p, b)) or {"ok": True})
         monkeypatch.setattr(lb, "_send_email",
@@ -669,6 +670,43 @@ def test_day1_skipped_when_the_family_replied(monkeypatch):
     assert not h.sms and not h.drafts
     assert any(r["action_taken"] == "low_balance_family_replied" for r in h.recs)
     assert h.notes and "replied" in h.notes[0][1]
+
+
+def test_day1_skipped_when_the_family_texted_the_line(monkeypatch):
+    # Ariana Fiore, Sep 10: the family texted the support line the day before
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    opened_day = case["opened_at"][:10]
+    monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
+        "9094548581": {"texts": [{"at": f"{opened_day}T16:06:47", "direction": "incoming",
+                                  "text": "I completely understand, thank you"}], "calls": []}})
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_family_replied")
+    assert rec["channel"] == "text" and "texted the support line" in h.notes[0][1]
+    # an OLD inbound text (before the case) or an outbound one does not count
+    monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
+        "9094548581": {"texts": [{"at": "2026-08-01T10:00:00", "direction": "incoming", "text": "hi"},
+                                 {"at": f"{opened_day}T17:00:00", "direction": "outgoing", "text": "ours"}], "calls": []}})
+    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
+        "9094548581": {"texts": [{"at": "2026-08-01T10:00:00", "direction": "incoming", "text": "hi"},
+                                 {"at": f"{opened_day}T17:00:00", "direction": "outgoing", "text": "ours"}], "calls": []}})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert h2.sms
+
+
+def test_day1_held_when_justcall_is_unreadable(monkeypatch):
+    case = _case()
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb.jc, "index_by_number",
+                        lambda since_days=14: (_ for _ in ()).throw(lb.jc.JustCallUnavailable("401")))
+    lb.run_sweep(force=True)
+    assert not h.sms and not h.drafts
+    assert not any(r["action_taken"] == "low_balance_family_contacted" for r in h.recs)   # retried next hour
 
 
 def test_day1_skipped_when_paola_already_closed_the_ticket(monkeypatch):
