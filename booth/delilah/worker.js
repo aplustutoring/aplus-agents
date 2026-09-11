@@ -43,7 +43,7 @@ export default {
       const list = await env.PHOTOS.list({ limit: 1000 });
       const report = { uploaded: [], skipped: 0, failed: [] };
       for (const k of list.keys) {
-        if (k.name.startsWith("drive/")) continue;
+        if (k.name.startsWith("drive/") || k.name.startsWith("err/")) continue;
         if (await env.PHOTOS.get(`drive/${k.name}`)) { report.skipped++; continue; }
         try {
           const id = await mirrorToDrive(env, k.name, k.metadata || {});
@@ -58,7 +58,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/photos") {
       const list = await env.PHOTOS.list({ limit: 1000 });
       const photos = list.keys
-        .filter((k) => !k.name.startsWith("drive/"))
+        .filter((k) => !k.name.startsWith("drive/") && !k.name.startsWith("err/"))
         .map((k) => ({ key: k.name, name: k.metadata?.name || "", at: k.metadata?.at || "", kind: k.metadata?.kind || "photo", url: `${url.origin}/photo/${k.name}` }))
         .sort((a, b) => (a.at < b.at ? -1 : 1));
       return json({ photos }, 200, env);
@@ -70,12 +70,42 @@ export default {
       const raw = body.raw || "";
       const m = /^data:(image\/(?:jpeg|png));base64,(.+)$/s.exec(raw);
       if (!m) return json({ error: "raw (jpeg/png dataURL) required" }, 400, env);
-      try {
-        const image = await paintStorybook(env, { mimeType: m[1], base64: m[2] });
-        return json({ ok: true, image }, 200, env);
-      } catch (e) {
-        return json({ ok: false, error: String(e) }, 502, env);
+      // Two attempts inside the Worker: Gemini 429/5xx and empty responses are
+      // transient (2026-09-11: a shot failed once and replayed fine 30 min later).
+      let lastErr = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const image = await paintStorybook(env, { mimeType: m[1], base64: m[2] });
+          return json({ ok: true, image, attempt }, 200, env);
+        } catch (e) {
+          lastErr = String(e);
+          if (attempt === 1) await new Promise((r) => setTimeout(r, 1500));
+        }
       }
+      // Never silent: the failure is written where the host view can see it.
+      try {
+        await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), name: String(body.name || "").slice(0, 60), error: lastErr }), { expirationTtl: 60 * 60 * 24 * 30 });
+      } catch {}
+      console.error("storybook failed", body.name, lastErr);
+      return json({ ok: false, error: lastErr }, 502, env);
+    }
+
+    // The iPad reports its own failures here (a request that never reached
+    // /submit is invisible to the Worker otherwise).
+    if (request.method === "POST" && url.pathname === "/log") {
+      let body = {};
+      try { body = await request.json(); } catch {}
+      const rec = { at: new Date().toISOString(), stage: String(body.stage || "client").slice(0, 40), name: String(body.name || "").slice(0, 60), error: String(body.error || "").slice(0, 300), ua: (request.headers.get("User-Agent") || "").slice(0, 120) };
+      console.error("client", JSON.stringify(rec));
+      try { await env.PHOTOS.put(`err/${rec.at}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify(rec), { expirationTtl: 60 * 60 * 24 * 30 }); } catch {}
+      return json({ ok: true }, 200, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/errors") {
+      const list = await env.PHOTOS.list({ prefix: "err/", limit: 200 });
+      const errors = [];
+      for (const k of list.keys) { const v = await env.PHOTOS.get(k.name, "json"); if (v) errors.push(v); }
+      return json({ errors }, 200, env);
     }
 
     if (request.method !== "POST" || url.pathname !== "/submit") {
@@ -91,6 +121,7 @@ export default {
       return json({ error: "Invalid JSON" }, 400, env);
     }
     const { name = "", phone = "", photo } = body;
+    console.log("submit", body.kind || "photo", JSON.stringify(name).slice(0, 40), "phone:", !!phone, "photo bytes:", String(photo || "").length);
     const kind = body.kind === "storybook" ? "storybook" : "photo";
     if (!photo || !/^data:image\/jpeg;base64,/.test(photo)) {
       return json({ error: "photo (jpeg dataURL) required" }, 400, env);
@@ -114,6 +145,8 @@ export default {
       }
     } catch (e) {
       results.archive = { error: String(e) };
+      console.error("archive failed", name, String(e));
+      try { await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), stage: "archive", name, error: String(e) }), { expirationTtl: 60 * 60 * 24 * 30 }); } catch {}
     }
 
     // 2. Text (only if a phone was entered)
@@ -126,6 +159,17 @@ export default {
       }
     } else if (phone && !to) {
       results.text = { error: "Phone number not recognised" };
+    }
+
+    // 3. Storybook, SERVER-SIDE. If the photo submit carried the un-framed
+    // capture (`raw`) and a text is going out, the Worker paints and texts it
+    // in the background. The iPad can reload, lose Wi-Fi or be put down; the
+    // painting still arrives (2026-09-11: Leo's painting was generated but the
+    // iPad never sent it on).
+    if (kind === "photo" && to && archiveUrl && body.raw && env.GEMINI_API_KEY && env.STORYBOOK !== "off") {
+      const job = paintAndText(env, url.origin, { raw: body.raw, name, to }).catch((e) => console.error("storybook job", name, String(e)));
+      if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+      results.storybook = { queued: true };
     }
 
     return json({ ok: true, ...results }, 200, env);
@@ -174,6 +218,36 @@ async function paintStorybook(env, { mimeType, base64 }) {
   const img = parts.find((p) => p.inlineData?.data);
   if (!img) throw new Error(`Gemini returned no image (${out?.candidates?.[0]?.finishReason || "unknown"})`);
   return img.inlineData.data;
+}
+
+// Background storybook: two Gemini attempts, archive as kind "storybook",
+// Drive mirror, then the storybook text. Any final failure is recorded at /errors.
+async function paintAndText(env, origin, { raw, name, to }) {
+  const m = /^data:(image\/(?:jpeg|png));base64,(.+)$/s.exec(raw);
+  if (!m) throw new Error("raw is not a jpeg/png dataURL");
+  let image = null, lastErr = null;
+  for (let attempt = 1; attempt <= 2 && !image; attempt++) {
+    try { image = await paintStorybook(env, { mimeType: m[1], base64: m[2] }); }
+    catch (e) { lastErr = String(e); if (attempt === 1) await new Promise((r) => setTimeout(r, 1500)); }
+  }
+  if (!image) {
+    await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), stage: "storybook-server", name, error: lastErr }), { expirationTtl: 60 * 60 * 24 * 30 });
+    throw new Error(lastErr);
+  }
+  const bytes = Uint8Array.from(atob(image), (c) => c.charCodeAt(0));
+  const key = `${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID()}.jpg`;
+  const meta = { name: String(name).slice(0, 60), at: new Date().toISOString(), kind: "storybook" };
+  await env.PHOTOS.put(key, bytes, { metadata: meta });
+  if (env.DRIVE_FOLDER_ID && env.GOOGLE_SA_JSON) {
+    try { await mirrorToDrive(env, key, meta, bytes); } catch (e) { console.error("drive mirror", key, String(e)); }
+  }
+  try {
+    await sendPhotoText(env, { to, name, mediaUrl: `${origin}/photo/${key}`, kind: "storybook" });
+  } catch (e) {
+    await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), stage: "storybook-text", name, error: String(e) }), { expirationTtl: 60 * 60 * 24 * 30 });
+    throw e;
+  }
+  return key;
 }
 
 async function sendPhotoText(env, { to, name, mediaUrl, kind = "photo" }) {

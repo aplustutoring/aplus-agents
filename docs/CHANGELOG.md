@@ -7,6 +7,46 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-11 — booth/delilah: storybook paint failed once, silently; now retried twice and never silent
+
+**Incident:** Roman ran the booth at 15:28 PT ("Roman and Anna"); print 1 came
+out, the storybook did not. The album confirmed it: the two shots before it had
+storybooks, this one did not. Replaying the same photo through `/storybook` 30
+minutes later succeeded in 11 s, so Gemini can paint it; the failure was
+transient (a Gemini 429/5xx, an empty candidate, or a dropped request on the
+home Wi-Fi). Which one is unknowable because the page swallowed the error and
+the Worker had no persisted logs. That silence is the bug.
+
+**System change:**
+- `worker.js` `/storybook` now makes two Gemini attempts 1.5 s apart, and on
+  final failure writes `err/<ts>` to KV (30-day TTL) and `console.error`s;
+  new `GET /errors` lists them; `/photos` hides them.
+- `public/index.html` retries the whole request once from the iPad (2 s gap,
+  75 s abort each), so a dropped request is also covered. Four Gemini attempts
+  worst case before the done screen says "ask Roman for it later".
+- `wrangler.toml` `[observability] enabled = true`: Workers Logs keep the
+  `console.error` in the dashboard.
+- Tests: the failure case asserts two attempts, the KV record, `/errors`, and
+  that `/photos` stays clean (68 assertions).
+
+**Recovery:** the replayed painting of "Roman and Anna" was archived into the
+album as a storybook entry (unframed), so it can be texted or reprinted from
+the host view. No text was sent (no number on file for that entry).
+
+**Roman, 2026-09-11, locked:** the Gemini painting is TEXT ONLY, never printed
+("that will be a huge waste of paper"). `CONFIG.STORYBOOK_PRINT = false` in
+`public/index.html`; the booth prints one 4x6 per guest, the real photo. The
+painting screen, form note and done messages now say the storybook goes to the
+phone. Same rule already applied to the APLUS+ conference booth.
+
+**Roman, 2026-09-11, second change:** print is not mandatory. The form now
+offers **Text me / Print it / Both**. Text needs a cell and sends the photo then
+the painting; Print needs nothing; Both does both. The painting is only
+generated when a text is going out (no Gemini call for print-only guests).
+Done and progress messages follow the choice.
+
+**Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
