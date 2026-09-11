@@ -31,6 +31,35 @@ the `tutor_issue_*` audit fields (type, source record ids, detected-at,
 last-event-at, occurrences, period) declared in
 `ops/hubspot-schema/properties.yml`.
 
+### "The tutor is late" texts (Roman 2026-09-10)
+
+One category breaks the tutor-only shape. When an inbound text reasons to
+`missed_lesson_or_late`, the sender's number is resolved to the **family**
+contact (two-tier phone search ported from `ops/call_agent/call_agent.py`,
+CallRail caller-ID shells skipped) and the ticket is opened with:
+
+- **both contacts associated** (tutor first, family second, association
+  type 16 on each),
+- **owner = that student's scheduler** (A-L Janelle, M-Z Yolanda) instead
+  of Operations, so nobody has to tell a scheduler by hand,
+- **the family's own words quoted verbatim** in the body (trimmed to 500
+  chars) with the sender number, the line it arrived on, and the timestamp.
+
+The split keys on the student's SURNAME, read from
+`student_last_name_if_diff_from_parent` and falling back to the family
+contact's `lastname`. Not `student_last_name`: that property is labelled
+"Student FIRST Name" in the registry.
+
+Refusal still beats a guess. More than one non-junk contact on the number,
+or a number whose only match is a Tutor or Teacher of Record (a tutor
+texting about their own lesson is not a family report), resolves to no
+family: the ticket is still created tutor-only and owned by Operations, and
+the ambiguity is printed in the run report.
+
+The `late_reports` block in `config.yml` is the switch
+(`route_to_scheduler`, `associate_family`); with the block missing or
+disabled the engine behaves exactly as it did before.
+
 ## Sources
 
 - **sweep** (Mondays, last complete Sun-Sat week, both Teachworks
@@ -98,6 +127,12 @@ never persists state.
 On Actions: `.github/workflows/tutor-issues.yml` (manual dispatch, dry-run
 default TRUE; the schedule stays commented out until the baseline is
 verified and Roman flips it on).
+
+The workflow also accepts a `repository_dispatch` of type `tutor-sms`,
+which runs the inbound leg live (`--mode inbound`) within a minute instead
+of waiting up to two hours for the next weekday poll. Nothing fires it yet:
+the JustCall inbound-SMS webhook plus a relay worker is a follow-up PR, so
+until it lands the cron is still the real latency.
 
 ## Setup still pending before live
 

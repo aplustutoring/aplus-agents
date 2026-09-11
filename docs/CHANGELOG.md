@@ -34,6 +34,86 @@ SA-owned folder `1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t` (empty), a stray folder
 
 **Files:** `booth/delilah/{wrangler.toml,README.md}`, `docs/CHANGELOG.md`.
 
+## 2026-09-10 - Tutor-late texts open a scheduler-owned ticket tied to tutor and family
+
+**Why (Roman, 2026-09-10):** "can we create an agent that monitors all incoming
+text and if ever somebody text messages that a Tutor is late automatically a
+ticket is created for that Tutor with that Family as well as associated contact
+so I don't have to tell the schedulers to do it."
+
+The same day, Frederick was nine minutes late to Ezekiel's lesson. Nothing in
+the fleet noticed: Yolanda spotted it herself and asked by hand. The pieces
+were all already built (the SMS leg has pulled inbound texts off every JustCall
+line since 2026-08-26, and `missed_lesson_or_late` has been a category the
+whole time), but the ticket landed on the tutor alone, owned by Operations,
+with the reasoning summary instead of the family's own sentence. A scheduler
+could not act on it without going back to the phone, so a human stayed in the
+loop for the one report where minutes matter.
+
+**What:** `ops/tutor-issues` now treats a "the tutor is late" text as a
+two-party event, gated by a new `late_reports` block in `config.yml`
+(`enabled` / `route_to_scheduler` / `associate_family`); with the block missing
+or disabled the engine behaves exactly as it did before.
+
+1. `find_family_by_phone()` resolves the sender's number to the FAMILY contact.
+   Minimal port of `find_contact_by_phone` from `ops/call_agent/call_agent.py`
+   (cited in a comment, not imported: different package, no shared module):
+   normalize to the last 10 digits, tier 1 exact `IN` on phone/mobilephone
+   variants, tier 2 `CONTAINS_TOKEN`, CallRail caller-ID shells filtered out.
+   Refusal beats a guess: more than one surviving contact returns None and
+   records the ambiguity in the run report, and a number whose only match is a
+   Tutor or Teacher of Record returns None (a tutor texting about their own
+   lesson is not a family report).
+2. `create_ticket()` takes an ordered list of contact ids instead of one, and
+   emits one association (type 16) per id. Tutor first, family second when
+   resolved. Empty entries and duplicates are dropped.
+3. Owner routing: for `missed_lesson_or_late` ONLY, and only when a family was
+   resolved, the ticket goes to that student's scheduler (A-L Janelle, M-Z
+   Yolanda) instead of the Operations role, and the Slack notification follows
+   the same owner. Every other category is untouched. The split keys on the
+   student's SURNAME, read from `student_last_name_if_diff_from_parent` with
+   the family contact's `lastname` as the fallback. NOT `student_last_name`:
+   that property is labelled "Student FIRST Name" in the registry, so routing
+   on it would have split the schedulers by first initial. This is a
+   deliberate deviation from the written spec for this session.
+4. The ticket body now quotes the text verbatim (trimmed to 500 chars) under
+   the `[Tutor Issue]` prefix, with the sender number, the JustCall line it
+   arrived on, and the timestamp, plus a `Family:` line naming the contact. A
+   scheduler should need nothing but that block to act.
+5. Speed: `.github/workflows/tutor-issues.yml` accepts a `repository_dispatch`
+   of type `tutor-sms` that runs `--mode inbound` live with the same flags the
+   schedule uses (state is committed on that event too). The SMS leg polls on a
+   weekday cron every two hours, so an in-session "the tutor isn't here" could
+   sit two hours before anyone saw it.
+6. Tests: `ops/tutor-issues/tests/conftest.py` added (it had none), in the style
+   of `ops/messenger/tests/conftest.py`: sys.path insert plus an autouse fixture
+   that makes any live `requests` call fail the test. This engine writes
+   production tickets; a unit suite must not be able to reach HubSpot at all.
+   19 new cases cover the phone resolution, both association shapes, the A-L
+   and M-Z routing, the non-late category keeping Operations, the verbatim
+   quote, and the flags-off path reproducing today's behavior.
+   32 passed in `ops/tutor-issues/tests`, 576 in `email ops/messenger
+   scripts/tests`. Nothing was run against live HubSpot.
+
+**Not done:**
+- The JustCall inbound-SMS webhook and the relay worker that would fire the
+  `tutor-sms` dispatch. The workflow is dispatchable, but nothing dispatches it
+  yet, so real latency is still the two-hour cron. The event name JustCall
+  actually accepts for inbound SMS is undocumented (see `booth/eo/jc-webhook.py`
+  for the one we had to discover by trial for calls), so wiring it needs a live
+  probe against the account, not a guess.
+- Lateness from Teachworks data stays off (no actual-start field), so "late" is
+  only ever known because a family says so.
+- No contact is added to an UPDATE of an existing in-period ticket; the family
+  association happens on create. A second family texting about the same tutor in
+  the same week still updates the one ticket.
+
+**Files:** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
+`ops/tutor-issues/README.md`, `ops/tutor-issues/tests/conftest.py` (new),
+`ops/tutor-issues/tests/test_tutor_issues.py`,
+`.github/workflows/tutor-issues.yml`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-11 — Parent chase: can't get parent info → charter sales seat asked, one DM, standing list in the PO day report
 
 **Decision (Roman, 2026-09-11):** first "escalate to Danielle to ask for

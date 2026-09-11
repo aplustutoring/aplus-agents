@@ -19,6 +19,11 @@ Three sources, one ticket shape:
   intake   structured Slack messages in #tutor-issues for types 2/4/5:
              tutor-issue <type> | <tutor> | <one-line evidence>
 
+A "the tutor is late" text is the one case that does NOT stop at the tutor
+(see late_reports in config.yml): the sender's number resolves to the FAMILY
+contact, the ticket carries both contacts, the family's own words are quoted
+on it, and the owner is that student's scheduler instead of Operations.
+
 Guards (non-negotiable): baseline-stamp first run creates nothing; one open
 ticket per tutor per type per period (recurrence updates it); one digest per
 run; hard caps abort loudly BEFORE any write; same-day reruns are no-ops.
@@ -237,6 +242,168 @@ def find_tutor_contact(email):
     return c["id"], personas, name
 
 
+# ─── Family resolution from the sender's phone number ────────────────────────
+# Minimal port of find_contact_by_phone / _is_callrail_junk_contact from
+# ops/call_agent/call_agent.py:1283 (different package, no shared module, so
+# the logic is copied rather than imported). Two tiers: exact IN-match on the
+# formatting variants, then CONTAINS_TOKEN on the last 10 digits. CallRail
+# caller-ID shells are skipped, and anything still ambiguous refuses.
+
+US_STATE_ABBRS = {
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID",
+    "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS",
+    "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK",
+    "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV",
+    "WI", "WY", "DC", "PR", "VI", "GU",
+}
+GENERIC_CNAM_NAMES = ("wireless caller", "toll free", "unavailable",
+                      "voip caller", "anonymous", "restricted")
+
+FAMILY_LOOKUP_PROPS = ["firstname", "lastname", "a_persona", "email",
+                       "student_last_name", "student_last_name_if_diff_from_parent",
+                       "hs_object_source_detail_1"]
+
+
+def phone_digits(number):
+    """Last 10 digits of a US number, or '' when it is not a 10-digit number."""
+    digits = re.sub(r"\D", "", str(number or ""))
+    if len(digits) == 11 and digits.startswith("1"):
+        digits = digits[1:]
+    return digits if len(digits) == 10 else ""
+
+
+def phone_variants(number):
+    """Common US formatting variants HubSpot may hold for one number."""
+    digits = phone_digits(number)
+    if not digits:
+        raw = str(number or "").strip()
+        return [raw] if raw else []
+    a, b, c = digits[:3], digits[3:6], digits[6:]
+    return [f"+1{digits}", digits, f"1{digits}", f"({a}) {b}-{c}",
+            f"{a}-{b}-{c}", f"{a}.{b}.{c}", f"+1 {a}-{b}-{c}"]
+
+
+def _is_cnam_name(name):
+    """True when a contact name looks like a telco caller-ID string: a generic
+    label, or a location ending in a state abbreviation ("Inglewood Ca")."""
+    name = " ".join((name or "").split())
+    if not name:
+        return False
+    low = name.lower()
+    if any(low == g or low.startswith(g + " ") for g in GENERIC_CNAM_NAMES):
+        return True
+    tokens = name.split()
+    last = tokens[-1]
+    return bool(len(tokens) >= 2 and re.fullmatch(r"[A-Z][a-z]", last)
+                and last.upper() in US_STATE_ABBRS)
+
+
+def _is_callrail_junk_contact(contact):
+    """CallRail auto-created caller-ID shell: sourced from CallRail, no email,
+    named after the CNAM string. Any email or a human name clears the record."""
+    p = contact.get("properties") or {}
+    if (p.get("hs_object_source_detail_1") or "").strip().lower() != "callrail":
+        return False
+    if (p.get("email") or "").strip():
+        return False
+    return _is_cnam_name(f"{p.get('firstname') or ''} {p.get('lastname') or ''}".strip())
+
+
+def _personas(contact):
+    p = contact.get("properties") or {}
+    return [s.strip() for s in (p.get("a_persona") or "").split(";") if s.strip()]
+
+
+def search_contacts_by_phone(number):
+    """Raw HubSpot hits for a number (tier 1 exact, then tier 2 token)."""
+    variants = phone_variants(number)
+    if not variants:
+        return []
+    res = hs_req("POST", "crm/v3/objects/contacts/search", {
+        "filterGroups": [
+            {"filters": [{"propertyName": "phone", "operator": "IN", "values": variants}]},
+            {"filters": [{"propertyName": "mobilephone", "operator": "IN", "values": variants}]},
+        ],
+        "properties": FAMILY_LOOKUP_PROPS,
+        "limit": 5,
+    })
+    hits = res.get("results") or []
+    if hits:
+        return hits
+    digits = phone_digits(number)
+    if not digits:
+        return []
+    res = hs_req("POST", "crm/v3/objects/contacts/search", {
+        "filterGroups": [
+            {"filters": [{"propertyName": "phone", "operator": "CONTAINS_TOKEN",
+                          "value": f"*{digits}"}]},
+            {"filters": [{"propertyName": "mobilephone", "operator": "CONTAINS_TOKEN",
+                          "value": f"*{digits}"}]},
+        ],
+        "properties": FAMILY_LOOKUP_PROPS,
+        "limit": 5,
+    })
+    return res.get("results") or []
+
+
+def find_family_by_phone(number, plan=None):
+    """The FAMILY contact behind an inbound text, or None.
+
+    None (never a guess) when: nothing matches, the survivors are ambiguous,
+    or the only matches are staff personas (a tutor texting about their own
+    lesson is not a family report). Ambiguity is recorded on the plan so it
+    lands in the run report instead of disappearing.
+    """
+    hits = [c for c in search_contacts_by_phone(number)
+            if not _is_callrail_junk_contact(c)]
+    if not hits:
+        return None
+
+    families = [c for c in hits if "Family" in _personas(c)]
+    if families:
+        pool = families
+    else:
+        staff_personas = ("Tutors", "Teacher of Record/EF/ES")
+        pool = [c for c in hits
+                if not any(p in staff_personas for p in _personas(c))]
+        if not pool:
+            return None      # tutor or teacher texting, not a family report
+
+    if len(pool) > 1:
+        if plan is not None:
+            plan.refusals.append({
+                "source": "family lookup (SMS sender)",
+                "reason": (f"{len(pool)} non-junk contacts share {number} "
+                           "(ids: " + ", ".join(c.get("id", "?") for c in pool)
+                           + "). Not associating a family."),
+                "detail": "",
+            })
+        return None
+
+    c = pool[0]
+    p = c.get("properties") or {}
+    return {
+        "id": c.get("id"),
+        "firstname": (p.get("firstname") or "").strip(),
+        "lastname": (p.get("lastname") or "").strip(),
+        "a_persona": p.get("a_persona") or "",
+        # Registry trap: student_last_name is LABELLED "Student FIRST Name".
+        # The student's real surname is student_last_name_if_diff_from_parent,
+        # and when that is blank the student shares the parent's lastname, so
+        # the A-L / M-Z split below must never read student_last_name.
+        "student_last_name": (p.get("student_last_name") or "").strip(),
+        "student_surname": (p.get("student_last_name_if_diff_from_parent") or "").strip(),
+    }
+
+
+def family_routing_surname(family):
+    """Surname the A-L / M-Z scheduler split keys on for a family contact."""
+    if not family:
+        return ""
+    return (family.get("student_surname") or "").strip() \
+        or (family.get("lastname") or "").strip()
+
+
 def get_ticket(ticket_id):
     try:
         return hs_req("GET", f"crm/v3/objects/tickets/{ticket_id}",
@@ -248,15 +415,27 @@ def get_ticket(ticket_id):
         raise
 
 
-def create_ticket(props, contact_id):
+def create_ticket(props, contact_ids):
+    """contact_ids: ordered list (tutor first, family second when resolved).
+    Empty entries and duplicates are dropped; every id gets the same
+    HubSpot-defined ticket->contact association."""
+    if isinstance(contact_ids, (str, int)):
+        contact_ids = [contact_ids]
+    ordered, seen = [], set()
+    for cid in contact_ids or []:
+        cid = str(cid) if cid else ""
+        if not cid or cid in seen:
+            continue
+        seen.add(cid)
+        ordered.append(cid)
     payload = {
         "properties": props,
         "associations": [{
-            "to": {"id": contact_id},
+            "to": {"id": cid},
             # 16 = HubSpot-defined ticket->contact association
             "types": [{"associationCategory": "HUBSPOT_DEFINED",
                        "associationTypeId": 16}],
-        }],
+        } for cid in ordered],
     }
     return hs_req("POST", "crm/v3/objects/tickets", payload).get("id")
 
@@ -445,6 +624,31 @@ def scheduler_for_student(student_name, cfg):
     return cfg["hubspot"]["roles"]["fallback_scheduler"]
 
 
+def late_reports_cfg(cfg, key):
+    """late_reports flags. A missing block means the OLD behavior (every
+    ticket owned by Operations, tutor-only association), so the config is
+    the switch and an old checkout keeps behaving exactly as it did."""
+    block = cfg.get("late_reports") or {}
+    if not block.get("enabled"):
+        return False
+    return bool(block.get(key))
+
+
+def late_report_owner_role(cfg, issue_type, family):
+    """Scheduler role that owns a tutor-late report from a KNOWN family, or
+    None when the ticket should stay with Operations (wrong category, no
+    family resolved, or the routing flag is off)."""
+    if issue_type != "missed_lesson_or_late" or not family:
+        return None
+    if not late_reports_cfg(cfg, "route_to_scheduler"):
+        return None
+    surname = family_routing_surname(family)
+    if not surname:
+        return None
+    role = scheduler_for_student(surname, cfg)
+    return role if role in cfg.get("staff", {}) else None
+
+
 # ─── Detectors (sweep: Teachworks proof only) ────────────────────────────────
 
 def sweep_events(cfg, week_start, week_end):
@@ -532,8 +736,24 @@ def within_period(issue_type, existing_period, event_date, cfg):
     return (d - anchor).days <= 30
 
 
+def format_inbound_quote(quote):
+    """The reporter's own words on the ticket, verbatim. A scheduler should
+    need nothing but this block to act."""
+    text = " ".join((quote.get("text") or "").split())[:500]
+    lines = ["[Tutor Issue] Family's own words (inbound text, verbatim):",
+             f'"{text}"']
+    if quote.get("sender"):
+        lines.append(f"Sent from: {quote['sender']}")
+    if quote.get("line"):
+        lines.append(f"Arrived on line: {quote['line']}")
+    if quote.get("received"):
+        lines.append(f"Received: {quote['received']}")
+    return "\n".join(lines)
+
+
 def plan_ticket(plan, cfg, tickets_index, tutor, issue_type, events,
-                source, evidence, student=None, reasoning=None):
+                source, evidence, student=None, reasoning=None,
+                family=None, quote=None):
     """One open ticket per tutor per type per period: update if the indexed
     ticket is still open and in-period, else create."""
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -582,18 +802,32 @@ def plan_ticket(plan, cfg, tickets_index, tutor, issue_type, events,
                f"Source: {source}", f"Evidence: {evidence}"]
     if student:
         content.append(f"Student: {student}")
+    if family:
+        fam_name = f"{family.get('firstname') or ''} {family.get('lastname') or ''}".strip()
+        content.append(f"Family: {fam_name or 'unnamed contact'} "
+                       f"(contact {family.get('id')})")
     if reasoning:
         content.append(f"Reasoning: {reasoning}")
+    if quote:
+        content.append(format_inbound_quote(quote))
     content.append("Silent internal log (v1) — do not contact the tutor from this ticket.")
+
+    owner_role = late_report_owner_role(cfg, issue_type, family) \
+        or cfg["hubspot"]["roles"]["operations"]
+    contact_ids = [tutor["contact_id"]]
+    if family and family.get("id") and late_reports_cfg(cfg, "associate_family"):
+        contact_ids.append(family["id"])
+
     plan.tickets.append({
         "action": "create", "tutor": tutor, "issue_type": issue_type,
+        "family": family, "contact_ids": contact_ids, "owner_role": owner_role,
         "props": {
             "subject": f"[Tutor Issue] {TYPE_LABELS[issue_type]}: {tutor['name']} ({subject_detail})",
             "content": "\n".join(content),
             "hs_pipeline": cfg["hubspot"]["ticket"]["pipeline"],
             "hs_pipeline_stage": cfg["hubspot"]["ticket"]["stage"],
             "hs_ticket_priority": cfg["priority_by_type"][issue_type],
-            "hubspot_owner_id": cfg["staff"][cfg["hubspot"]["roles"]["operations"]]["hubspot_owner_id"],
+            "hubspot_owner_id": cfg["staff"][owner_role]["hubspot_owner_id"],
             "ticket_source": "tutor_issues",
             "source_agent": cfg["registry_id"],
             "tutor_issue_type": issue_type,
@@ -646,7 +880,8 @@ def run_sweep(plan, cfg, state, employees, baseline_mode):
 
 
 def _handle_report(plan, cfg, state, employees, *, event_key, source_label,
-                   source_id, text, baseline_mode):
+                   source_id, text, baseline_mode, sender_number=None,
+                   quote=None):
     """Shared email/SMS path: reason -> resolve -> ticket+notify, or flag."""
     if event_key in set(state["processed"]):
         return
@@ -683,12 +918,22 @@ def _handle_report(plan, cfg, state, employees, *, event_key, source_label,
                      f"tutor couldn't be matched ({tutor['refused']}) — "
                      f"please file manually. Summary: {ex.get('evidence_summary')}")})
         return
+    # Who texted us? Resolved only once the report is real and the tutor is
+    # known, so an ordinary text costs no extra HubSpot search.
+    family = None
+    if sender_number and (cfg.get("late_reports") or {}).get("enabled"):
+        family = find_family_by_phone(sender_number, plan=plan)
+    sched_role = late_report_owner_role(cfg, issue_type, family)
+    if sched_role:
+        scheduler = sched_role
+
     events = [{"key": event_key, "source_id": source_id,
                "date": ex.get("event_date") or datetime.now().date().isoformat(),
                "student": ex.get("student_name") or "", "status": "reported"}]
     plan_ticket(plan, cfg, state["tickets"], tutor, issue_type, events,
                 source=source_label, evidence=ex.get("evidence_summary", ""),
-                student=ex.get("student_name"), reasoning=ex.get("reasoning"))
+                student=ex.get("student_name"), reasoning=ex.get("reasoning"),
+                family=family, quote=quote)
     plan.notifications.append({
         "scheduler": scheduler, "ticket_ref": len(plan.tickets) - 1,
         "text": (f"Tutor-issue ticket {{ticket_id}} filed from a {source_label} "
@@ -758,11 +1003,19 @@ def run_inbound_sms(plan, cfg, state, employees, baseline_mode):
         sender = t.get("contact_number") or t.get("from") or "unknown"
         if not body.strip():
             continue
+        info = t.get("sms_info") or {}
+        received = " ".join(x for x in [t.get("sms_date") or info.get("sms_date") or "",
+                                        t.get("sms_time") or info.get("sms_time") or ""]
+                            if x).strip() or t.get("datetime") or ""
         _handle_report(plan, cfg, state, employees,
                        event_key=f"jcsms:{sms_id}",
                        source_label="family text (SMS)",
                        source_id=f"jcsms:{sms_id} from {sender}",
-                       text=body, baseline_mode=baseline_mode)
+                       text=body, baseline_mode=baseline_mode,
+                       sender_number=sender,
+                       quote={"text": body, "sender": sender,
+                              "line": t.get("justcall_number") or "",
+                              "received": received})
 
 
 INTAKE_RE = re.compile(r"^\s*tutor-issue\s+(\S+)\s*\|\s*([^|]+?)\s*\|\s*(.+)$",
@@ -863,12 +1116,18 @@ def execute(plan, cfg, state, dry_run):
             if dry_run:
                 tid = f"DRY-{len(created)+1}"
             else:
-                tid = create_ticket(t["props"], t["tutor"]["contact_id"])
+                tid = create_ticket(t["props"],
+                                    t.get("contact_ids") or [t["tutor"]["contact_id"]])
             created.append(tid)
             t["ticket_id"] = tid
             state["tickets"][t["idx_key"]] = {"ticket_id": tid, "period": t["period"]}
+            routed = ""
+            if t.get("owner_role") and t["owner_role"] != cfg["hubspot"]["roles"]["operations"]:
+                routed = f" [owner: {t['owner_role']}]"
+            if t.get("family"):
+                routed += f" [family contact {t['family'].get('id')} associated]"
             plan.digest_lines.append(
-                f"CREATED {tid}: {t['props']['subject']}")
+                f"CREATED {tid}: {t['props']['subject']}{routed}")
         else:
             if not dry_run:
                 update_ticket(t["ticket_id"], t["props"])
@@ -919,6 +1178,9 @@ def report(plan, extra=None):
     return {
         "would_create": len(creates),
         "would_update": len(plan.tickets) - len(creates),
+        "family_associated": sum(1 for t in creates if t.get("family")),
+        "scheduler_routed": sorted({t["owner_role"] for t in creates
+                                    if t.get("owner_role")}),
         "by_issue_type": dict(by_type),
         "by_tutor": dict(sorted(by_tutor.items(), key=lambda kv: -kv[1])),
         "top_tutors": sorted(by_tutor.items(), key=lambda kv: -kv[1])[:10],
