@@ -475,44 +475,23 @@ const CONFIG = {
     // Two attempts, and every failure is reported to the Worker so it shows at /errors.
     for(let attempt=1; attempt<=2 && !photoOk; attempt++){
       try{
-        const out=await postSubmit({ name, phone: wantText ? phone : "", photo, kind:"photo" });
-        if(out && out.ok && out.archive && out.archive.url){ photoOk=true; texted=!!(out.text && out.text.sent); if(wantText && phone && !texted) logError("photo-text", name, JSON.stringify(out.text||{})); }
+        // `raw` (the un-framed capture) rides along so the Worker paints and
+        // texts the storybook itself, after this response, with no further
+        // help from the iPad.
+        const out=await postSubmit({ name, phone: wantText ? phone : "", photo, kind:"photo", raw: (CONFIG.STORYBOOK && wantText && phone) ? raw : undefined });
+        if(out && out.ok && out.archive && out.archive.url){ photoOk=true; texted=!!(out.text && out.text.sent); storyOk=!!(out.storybook && out.storybook.queued); storyTexted=storyOk; if(wantText && phone && !texted) logError("photo-text", name, JSON.stringify(out.text||{})); }
         else logError("photo-submit", name, "attempt "+attempt+": "+JSON.stringify(out||null).slice(0,200));
       }catch(e){ logError("photo-submit", name, "attempt "+attempt+": "+String(e)); }
       if(!photoOk && attempt===1) await new Promise(r=>setTimeout(r,1500));
     }
 
-    // The storybook painting travels by text only, so it is painted only when a text is going out.
-    if(CONFIG.STORYBOOK && raw && wantText && phone){
+    // The storybook painting is made and texted by the Worker in the background
+    // (see worker.js paintAndText). Nothing here depends on the iPad any more.
+    // A short painting screen keeps the guest informed while it happens.
+    if(storyOk){
       $("painting-preview").src=photo;
       show("painting");
-      // Up to two tries from the iPad (the Worker retries Gemini once per try),
-      // so a dropped Wi-Fi request or one bad Gemini call does not lose the print.
-      let out=null;
-      for(let attempt=1; attempt<=2 && !(out && out.image); attempt++){
-        try{
-          const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),75000);
-          const res=await fetch(CONFIG.WORKER_URL+"/storybook",{
-            method:"POST", headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({ raw, name, attempt }), signal:ctl.signal
-          });
-          clearTimeout(t);
-          out=res.ok ? await res.json() : null;
-        }catch(e){ out=null; }
-        if(!(out && out.image) && attempt===1) await new Promise(r=>setTimeout(r,2000));
-      }
-      try{
-        if(out && out.image){
-          const story=await frameStorybook(out.image);
-          storyOk=true;
-          state.album.push({ name, at:new Date().toISOString(), dataUrl:story, kind:"storybook" });
-          if(CONFIG.STORYBOOK_PRINT) await printPhoto(story);   // off: text only
-          try{
-            const o2=await postSubmit({ name, phone, photo:story, kind:"storybook" });
-            storyTexted=!!(o2 && o2.text && o2.text.sent);
-          }catch(e){}
-        }
-      }catch(e){}
+      await new Promise(r=>setTimeout(r,4000));
     }
 
     const first=(name||"").split(/\s+/)[0]||"friend";
