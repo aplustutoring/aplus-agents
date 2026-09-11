@@ -59,6 +59,8 @@ jobs:
         working-directory: ops/tutor-issues
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # branch TIP at job start, not the dispatch-time SHA: a run queued behind another run of this concurrency group must see that run's state commit, or it re-does the work and its own state commit collides (2026-09-10: 16 duplicate tickets/tasks/notes)
 
       - uses: actions/setup-python@v5
         with:
@@ -111,6 +113,7 @@ jobs:
             git commit -m "tutor-issues: persist state for $(date -u +%Y-%m-%dT%H:%M)"
             for i in 1 2 3; do
               git pull --rebase --autostash origin main && git push && break
+              git rebase --abort 2>/dev/null || true
               sleep 5
             done
           fi

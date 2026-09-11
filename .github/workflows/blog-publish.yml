@@ -35,6 +35,8 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # branch TIP at job start, not the dispatch-time SHA: a run queued behind another run of this concurrency group must see that run's state commit, or it re-does the work and its own state commit collides (2026-09-10: 16 duplicate tickets/tasks/notes)
 
       - uses: actions/setup-python@v5
         with:
