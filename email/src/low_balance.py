@@ -160,7 +160,8 @@ def open_cases() -> dict:
             base = key.rsplit(":day1", 1)[0]
             if base in opened:
                 opened[base].update(day1_done=True, day1_at=r.get("timestamp"),
-                                    tor_draft_id=r.get("tor_draft_id"),
+                                    tor_pending=bool(r.get("tor_pending")),
+                                    tor_draft_id=r.get("tor_draft_id") or opened[base].get("tor_draft_id"),
                                     tor_mailbox=r.get("tor_mailbox") or opened[base].get("tor_mailbox"))
         elif act == "low_balance_family_replied":
             base = key.rsplit(":replied", 1)[0]
@@ -567,9 +568,20 @@ def _send_family_email(to_email: str, ctx: dict, lb: dict) -> None:
     r.raise_for_status()
 
 
+def _sms_line(lb: dict | None = None) -> str:
+    """The JustCall number the renewal text leaves from. `sms_line` names a
+    ROLE (presend.lines maps it to the number); Roman 2026-09-10: these texts
+    go out from the charter_sales line (818-573-6644), the number the family
+    will keep talking to about the PO. Empty = the schedulers' support line."""
+    lb = lb if lb is not None else (cfg().get("low_balance", {}) or {})
+    role = (lb.get("sms_line") or "").strip()
+    lines = (cfg().get("presend") or {}).get("lines") or {}
+    return str(lines.get(role) or "").strip() if role else ""
+
+
 def _send_sms(phone: str, body: str) -> dict:
     from .sms import _jc_send
-    return _jc_send(phone, body)
+    return _jc_send(phone, body, from_number=_sms_line() or None)
 
 
 def _in_sms_window() -> bool:
@@ -1317,15 +1329,23 @@ def _send_email(to_email: str, subject: str, tpl_path: str, ctx: dict, lb: dict)
     r.raise_for_status()
 
 
-def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> None:
+def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc,
+                   texts: bool = True, teachers: bool = True,
+                   label: str = "Day 1, no PO and no reply") -> None:
     """Day 1 for every due charter case at once: ONE text per family naming
     every student, ONE teacher draft per teacher naming every student
     (Roman 2026-09-10: "if a teacher has more than one student with a low
-    balance alert we have to be smart enough to combine")."""
+    balance alert we have to be smart enough to combine").
+
+    texts=True, teachers=False is the same-evening text (Roman 2026-09-10:
+    "lets also do the text right now"): the record carries tor_pending and
+    the next business morning's sweep runs the teacher half (teachers=True,
+    texts=False) after the same PO / reply / ticket checks."""
     te = lb.get("tor_email") or {}
-    results = {k: {"lines": [], "stage": STAGE_FAMILY} for k in due}
+    results = {k: {"lines": [], "stage": STAGE_FAMILY if texts else STAGE_TEACHER} for k in due}
     # texts, per family
-    for (phone, _e), members in _group(due, lambda c: (c.get("phone"), c.get("to_email") or c.get("parent_email"))).items():
+    for (phone, _e), members in (_group(due, lambda c: (c.get("phone"), c.get("to_email") or c.get("parent_email")))
+                                 if texts else {}).items():
         keys = [k for k, _c in members]
         if any(c.get("opted_out") for _k, c in members):
             for k in keys:
@@ -1368,7 +1388,7 @@ def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> Non
                       "tor_from_sibling": sib.get("student")}
     # teacher drafts, per teacher
     tor_cases = {k: c for k, c in due.items()
-                 if c.get("tor_email") and not c.get("tor_blocked") and (c.get("tor_body") or "")}
+                 if teachers and c.get("tor_email") and not c.get("tor_blocked") and (c.get("tor_body") or "")}
     for tor_email, members in _group(tor_cases, lambda c: c.get("tor_email")).items():
         keys = [k for k, _c in members]
         first = members[0][1]
@@ -1424,8 +1444,12 @@ def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> Non
     for k, c in due.items():
         r = results[k]
         if not r["lines"]:
-            r["lines"].append("📱 No phone on file; no text" if not c.get("phone") else "(nothing to send)")
-        audit.append({"message_id": f"{k}:day1", "source": "low_balance",
+            r["lines"].append("📱 No phone on file; no text" if texts and not c.get("phone")
+                              else "🍎 No teacher email on file" if not texts else "(nothing to send)")
+        if texts and not teachers:
+            r["tor_pending"] = True
+            r["lines"].append("🍎 Teacher email follows the next business morning")
+        audit.append({"message_id": f"{k}:day1" if texts else f"{k}:day1-teacher", "source": "low_balance",
                       "action_taken": "low_balance_family_contacted", "ticket_id": c.get("ticket_id"),
                       **{kk: v for kk, v in r.items() if kk not in ("lines", "stage")}})
         _stamp_deal(c.get("deal_id"), {"retention_stage": r["stage"],
@@ -1434,18 +1458,18 @@ def _day1_outreach(due: dict, seat: dict, lb: dict, armed: bool, now_utc) -> Non
         tid = c.get("ticket_id")
         if tid and tid != "DRYRUN":
             try:
-                hs.add_ticket_note(tid, "Day 1, no PO and no reply:\n" + "\n".join(r["lines"]))
+                hs.add_ticket_note(tid, f"{label}:\n" + "\n".join(r["lines"]))
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  day-1 note failed (non-fatal): {e}")
     if due and seat.get("slack_user_id"):
         summary = "\n".join(f"• *{c.get('student')}*: " + " · ".join(results[k]["lines"]) for k, c in due.items())
         try:
-            slack_client.dm(seat["slack_user_id"], f"📉 Day 1, no PO and no reply ({len(due)}):\n{summary}")
+            slack_client.dm(seat["slack_user_id"], f"📉 {label} ({len(due)}):\n{summary}")
         except Exception as e:  # noqa: BLE001
             print(f"  ⚠️  day-1 DM failed (non-fatal): {e}")
 
 
-def _sweep(cases: dict, now, force: bool = False) -> None:
+def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> None:
     lb = cfg().get("low_balance", {}) or {}
     stop_patterns = [p.lower() for p in cfg().get("deal_automation", {}).get(
         "stop_stage_patterns", ["stopped", "closed lost", "cancelled"])]
@@ -1487,9 +1511,15 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
         live[k] = {**live[k], "email_sent": live[k].get("to_email")}
     # 3: day 1, grouped by family and by teacher
     due: dict = {}
+    due_teacher: dict = {}                              # texted earlier, teacher email still owed
     jc_idx, jc_ok = None, True
     for key, case in live.items():
-        if not case.get("charter", True) or case.get("day1_done") or case.get("replied"):
+        if not case.get("charter", True) or case.get("replied"):
+            continue
+        teacher_pass = bool(case.get("day1_done")) and bool(case.get("tor_pending"))
+        if case.get("day1_done") and not teacher_pass:
+            continue
+        if teacher_pass and texts_only:
             continue
         if not case.get("email_sent"):
             continue                                    # the text follows the email, never leads
@@ -1522,15 +1552,21 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
                 try:
                     hs.add_ticket_note(tid, ("💬 The family replied to the day-0 email in the seat's inbox."
                                              if channel == "email" else
-                                             "💬 The family texted the support line since the case opened.")
+                                             "💬 The family texted us since the case opened.")
                                        + " No agent text, no teacher email; take it from the thread.")
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  reply note failed (non-fatal): {e}")
             print(f"  💬 {case.get('student')}: family replied by {channel}; day-1 outreach skipped")
             continue
-        due[key] = case
-    if due:
+        (due_teacher if teacher_pass else due)[key] = case
+    if due and texts_only:
+        _day1_outreach(due, seat, lb, armed, now_utc, texts=True, teachers=False,
+                       label="Same-day text, no PO and no reply")
+    elif due:
         _day1_outreach(due, seat, lb, armed, now_utc)
+    if due_teacher:
+        _day1_outreach(due_teacher, seat, lb, armed, now_utc, texts=False, teachers=True,
+                       label="Day 1 teacher email, still no PO and no reply")
     # 4 + 5 + 6: nag, risk, lost
     risks = []
     for key, case in live.items():
@@ -1660,6 +1696,28 @@ def run_sweep(force: bool = False) -> None:
         _send_pending_emails(cases, now, seat, lb, armed, False)
         return
     _sweep(cases, now, force=False)
+
+
+def day1_now() -> None:
+    """Text every open charter family tonight instead of tomorrow morning
+    (workflow input day1_now; Roman 2026-09-10: "lets also do the text right
+    now ... ive had good success at this time of day"). Same gates as the
+    morning sweep (new PO, reply by email or text, ticket open, opted out),
+    only the business-morning wait is skipped. The teacher email is NOT sent
+    here: the case carries tor_pending and the next business morning's sweep
+    sends it, still only if no PO and no reply by then."""
+    lb = cfg().get("low_balance", {}) or {}
+    if not lb.get("enabled", True):
+        print("day1_now: low_balance disabled")
+        return
+    if not _in_sms_window():
+        print("day1_now: outside the text window (8am-8pm PT); nothing sent")
+        return
+    cases = open_cases()
+    print(f"day1_now: {len(cases)} open case(s); texting from {_sms_line(lb) or 'the support line'}")
+    if not cases:
+        return
+    _sweep(cases, now_la(), force=True, texts_only=True)
 
 
 # ── backfill: last N days of alerts already in the inbox ────────────────────
