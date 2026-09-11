@@ -11,12 +11,14 @@ FERPA: only the email body + the structured enrichment summary go to Claude.
 """
 from __future__ import annotations
 
+import os
 import sys
 import traceback
 from datetime import date, datetime, time, timedelta, timezone
 from types import SimpleNamespace
 
-from . import audit, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
+from . import (audit, hubspot_client as hs, low_balance, po_sources, slack_client,
+               teachworks_client as tw)
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
 from .config import DRY_RUN, ROOT, cfg, require, staff
@@ -418,6 +420,19 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         [a.get("name") or "" for a in (message.get("attachments") or [])])
     if po_reason:
         return _po_handoff(thread_id, message, po_reason)
+
+    # ── Teachworks package-balance alerts are a renewal trigger, not a support
+    #    email. Recognised deterministically (sender + the alert's fixed wording)
+    #    so the classifier never files them as unknown/scheduling again (55 of
+    #    81 alerts since June went to the Stuck queue). ──
+    if low_balance.is_teachworks_sender(_sender_addrs(message)):
+        lb_alert = low_balance.parse_alert(body)
+        if lb_alert:
+            lb_rec = low_balance.handle_alert(thread_id, message, lb_alert)
+            if lb_rec is not None:
+                return lb_rec
+            # not a charter service code: the agent declines it and the alert
+            # takes the ordinary triage path below (classifier → ticket)
 
     # ── Identify contact ──
     # Review-platform no-reply senders (Google/Yelp) never become contacts —
@@ -860,4 +875,15 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    # A single Teachworks low-balance alert can be replayed through the agent
+    # instead of a poll (workflow input replay_thread; DRY_RUN prints the
+    # rendered text / email / teacher draft). Nothing else runs in that mode.
+    _replay = (os.environ.get("LOW_BALANCE_REPLAY_THREAD") or "").strip()
+    _backfill = (os.environ.get("LOW_BALANCE_BACKFILL_DAYS") or "").strip()
+    if _replay:
+        _sim = (os.environ.get("LOW_BALANCE_SIMULATE_DAYS") or "").strip()
+        low_balance.replay_thread(_replay, int(_sim) if _sim.isdigit() else None)
+    elif _backfill.isdigit():
+        low_balance.backfill(int(_backfill))
+    else:
+        run()

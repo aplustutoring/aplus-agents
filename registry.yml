@@ -666,6 +666,45 @@ agents:
       Manual tools: FORCE_DEAL_ID / FORCE_CONTACT_EMAIL / FORCE_STUDENT_FIRST
       workflow inputs (one-deal real sync).
 
+  - id: email-low-balance
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Low-balance renewal agent (Teachworks alert → family + TOR outreach → self-closing case)
+    owner: roman@wetutorathome.com
+    status: active                     # BUILT 2026-09-08, armed: false (ticket + DM only) until Roman approves the copy
+    trigger:
+      type: event
+      events: [email arrival, deal-sync cycle]
+      source: >
+        Teachworks Package Balance Alerts add-on emails admin@ (via info@) when a
+        student's unused package hours reach the alert level. email-triage recognises
+        the alert deterministically (sender + wording) and calls low_balance.handle_alert
+        in the same run; email-deal-sync runs low_balance.run_sweep every cycle
+        (self-gated hourly) for deferred texts, self-closing, and escalation.
+      workflow: .github/workflows/email-triage.yml
+    entrypoint: email/src/low_balance.py
+    reads:
+      - "Gmail:admin@ (the Teachworks alert, via the triage poll)"
+      - "HubSpot:contacts (family by alert email, else student + surname)"
+      - "HubSpot:deals (student's newest PO deal: school, pipeline, TOR, PO number; NEW PO deals close the case)"
+      - email/state/audit_log.jsonl
+    writes:
+      - "HubSpot:tickets ('Low balance: <student> (<school>), N hours left', owner charter_sales; 'RETENTION RISK' at day 7; closed on the new PO deal / Stopped / Lost)"
+      - "HubSpot:deals (retention_stage, retention_lost_reason, retention_low_balance_alert_date, retention_last_notice_sent, retention_last_touch)"
+      - "Resend email to the family from the seat's name, reply-to the seat, day 0 (armed only; private pay = upgrade email)"
+      - "JustCall SMS to the family, day 1 if no PO and no reply (armed only; charter only)"
+      - "Gmail draft in the seat's mailbox to the teacher of record, day 1 (armed only; never for Level Up Terri)"
+      - "HubSpot:lists (Lost contact → reengagement_list_id, when configured)"
+      - "Slack (one DM to charter_sales per case and per day-1 step; risk DM to seat + visionary)"
+      - email/state/audit_log.jsonl
+    depends_on: [email/config.yaml (low_balance block), email/templates/low_balance_charter.html, email/src/sms.py, email/src/draft_feedback.py]
+    notes: >
+      Replaces the Monday board "A+ Charter Low Balance Alerts" (8802830977) and
+      the HubSpot flow "Low Balance Alerts - Charter" (552811839, off since
+      2025-10-01) that Paola fed by hand. One case per student + package per
+      school year; repeated Teachworks alerts add a note, never a second text.
+      Non-charter (Gold / private pay) alerts get a ticket only (phase 2).
+      Alerts go to the charter_sales seat only (Danielle 2026-08-12).
   - id: email-po-daily-report
     runtime: github-actions
     engine: Email / inbox ops

@@ -7,6 +7,222 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-08 — Low-balance renewal agent: Teachworks alert → family + TOR outreach → self-closing case (BUILT, not armed)
+
+**Why:** Roman: "when a family hits a low balance alert on hours in Teachworks,
+families get contacted." The trigger already existed and was being wasted:
+the Teachworks Package Balance Alerts add-on has emailed admin@ (via info@)
+every time a student's unused hours reach the alert level, 81 alerts since
+June at 1 to 5 per weekday. The triage classifier filed 55 of them as
+`unknown` (Stuck queue, Mandy) and 9 as `scheduling` (the schedulers), and
+7 as junk. The renewal chase itself lived on a Monday board Paola fed by
+hand ("A+ Charter Low Balance Alerts", 358 items, last touched Jan 2026)
+that drove a HubSpot flow ("Low Balance Alerts - Charter", 552811839) that
+has been off since 2025-10-01. KEEPERS.md has carried "retire after the
+Teachworks low-balance alert replaces Monday" since August. This is that
+replacement.
+
+**What:** `email/src/low_balance.py`, wired into the triage pass and the
+deal-sync cycle.
+- **Recognition is deterministic.** `main.process_message` checks the sender
+  (`@teachworks.com`) and the alert's fixed wording ("package balance for
+  <student> has reached the level of N hours and is currently at N unused
+  hours" + the CUSTOMER DETAILS block) before the classifier runs. No LLM in
+  the loop; the misfiling class is gone. `low_balance` is also a classifier
+  category (rules.md) as the fallback if wording drifts.
+- **One case per student + package per school year**, keyed in the audit
+  log (`low-balance:26/27:<student>:<package>`). Teachworks re-fires on
+  every balance change (Paola's 2026-01-29 report: one family texted three
+  times); a repeat adds a note to the open ticket and nothing else.
+- **The case is a HubSpot ticket** ("Low balance: Taylor Rodriguez (iLead),
+  4 hours left") owned by the charter_sales seat, linked to the family
+  contact and the alert thread, category new_deal_po, with a follow-up task
+  due in 3 business days. The ticket reasoner skips these (own lifecycle).
+- **Outreach from the seat, armed only:** JustCall text to the family
+  (quiet hours defer it to the hourly sweep, never dropped); Resend email to
+  the family from "<seat name>, A+ Tutoring", reply-to the seat's own
+  address, HubSpot BCC; a real Gmail DRAFT to the teacher of record in the
+  seat's own mailbox (domain-wide delegation; `gmail_client` and
+  `draft_feedback` now take a `mailbox`) that the seat sends in one click.
+  Teachers are emailed only (Roman 2026-09-03). Level Up Terri (pipeline
+  72281989) teachers are never emailed: they cannot issue additional POs
+  (Roman 2025-10-29). Copy obeys the locked rules: the PO is issued by the
+  school, we ask and offer vendor details; every charter student has funds;
+  no em dashes (scrubbed at the choke point anyway).
+- **Not armed:** `low_balance.armed: false`. The agent files the ticket,
+  writes the exact copy it WOULD send into the ticket note and the DM, and
+  touches no family or teacher. Roman approves the copy, flips the flag in
+  a PR.
+- **Teacher email is AUTOMATIC (Roman 2026-09-10: "i want paolas email to
+  be automatic"):** `tor_email.mode: send` sends the day-1 teacher email via
+  Resend from the seat's name on admin@, reply-to the seat's own Gmail, so
+  replies land with Paola. The seat's Gmail scope stays draft-only (the
+  send-never guardrail is untouched); `mode: draft` remains available.
+- **Every PO cycle runs the full sequence (Roman 2026-09-10):** schools
+  issue 4-hour POs, so a renewal PO is born at the alert level. A new
+  Teachworks alert for a student whose open case already has a NEWER PO
+  deal closes that case as renewed on the spot and opens the next cycle
+  (full day 0 → 1 → 7 → 21), instead of being swallowed as a repeat.
+  Repeats with no renewal still just annotate the open ticket, and a case
+  with no opened_at can never false-close (`_renewal_deal`).
+- **Private pay routes to the schedulers (Roman 2026-09-10):** schedulers
+  get commission on private-pay upgrades, so a private-pay case's ticket
+  owner, DM, and sender identity (from-name, reply-to, sign-off) are the
+  assigned scheduler's via the existing A-L / M-Z split
+  (`router.scheduler_for_last_name`). Charter cases stay with
+  `low_balance.owner` (charter_sales). NOTE: the scheduler staff records
+  carry no `email:` yet, so private-pay reply-to falls back to admin@
+  (triage routes scheduling mail back to the split, so replies still land
+  right); add their addresses to `staff:` to make replies direct.
+- **Old-pricing gate (Roman 2026-09-10):** the private-pay upgrade email
+  quotes the 2026 tiers, so it only goes to families whose Teachworks
+  package name carries the 2026 service-code year
+  (`private_pay.pricing_token: "2026"`). Older packages (e.g. "2025 - Prep")
+  still open the case, but the ticket says the renewal is a rate
+  conversation for the seat and no auto email is queued
+  (`private_old_pricing` on the case, `email_pending: false`).
+- **Self-closing.** `run_sweep` (from deal_sync, hourly): a new PO deal for
+  the student (po_inbox creates it) closes the ticket with the PO number; a
+  deal moved to Stopped closes it as "not continuing"; no PO after
+  `escalate_days` (10) → one DM to the seat and the visionary role; a
+  teacher draft still unsent after 24h → one nag.
+- **Routing:** DM to charter_sales only (Danielle 2026-08-12 correction
+  honoured; no copy to sales). Non-charter packages (Gold / private pay,
+  the second Monday board) get a ticket only, flagged "phase 2".
+
+**Copy rulings, 2026-09-09 (Roman, reviewing the drafts):** a case opens only
+at **4 unused hours or fewer** (`max_hours`, matches Teachworks' own alert
+level); customer copy says **"4 hours or less"**, never the exact balance
+(staff notes keep the number); **parents submit the PO themselves** and we
+prefer that, the teacher of record is the unnamed backup; **no school name
+and no teacher name** anywhere in family text or email ("does not build
+credibility, we know this"). Personalisation from Teachworks: the family
+text and email carry the **tutor's first name and the number of sessions on
+this PO** (attended lessons since the PO deal was created; nothing found →
+the sentence disappears), and an optional **one-sentence positivity from
+the last four lesson notes** written by Claude and validated (no numbers,
+no exclamation, no em dash, 30 words max, else dropped). Positivity is OFF:
+which Teachworks note field comes through the API is unverified, and the
+first live alert reports it (`notes_fields_seen` on the audit record).
+
+**Later the same day (Roman):** "lets just use tutors name, first name. no
+duration. yes to positivity. lets do a test case." Duration dropped; the
+text uses `sms_template_with_tutor` when Teachworks names a tutor;
+positivity ON. **Test case = Taylor Rodriguez's real 2026-09-07 alert**,
+replayed three times through GitHub Actions in DRY_RUN with the live
+Teachworks and Claude keys (workflow input `replay_thread` on email-triage;
+also `.github/workflows/email-low-balance-replay.yml` for after merge).
+Run 1 caught three real defects before any family saw them: the tutor
+rendered as "Torres," (Teachworks names are 'Last, First'; `_first_name`
+now handles both), every HubSpot lookup came back empty (DRY_RUN blanked
+the /search POSTs; `hs.SEARCH_PASSTHROUGH` now lets reads through during a
+replay only), and the teacher draft read "(the current PO)" with no PO on
+file (`{po_ref}` token, empty when unknown). Run 2 was clean except the
+deal named the TOR without an email; run 3 resolved it through the PO
+agent's TOR name match (`_tor_email_fallback`, unique hit only, else the
+family→TOR association) and produced the full set: text with "working with
+Stephanie", email with a Claude sentence from the `public_notes` lesson
+field (confirmed live: that is where Teachworks notes come through), and
+the teacher draft to kylee.robles@ileadexploration.org in Paola's mailbox.
+
+**2026-09-10, the retention process (Roman, question by question):**
+retention starts at the first lesson, not the renewal, and the whole journey
+is now written down in **`docs/RETENTION-PROCESS.md`** (lesson-one brief and
+quality text, missing-notes ticket to Kath tied to the tutor, day-14 and
+day-45 call briefs with the call-outcome text, NPS on day 21 with
+reasoning, day-30 referral, day-75 spotlight from Paola's form, Lost with a
+reason and re-engagement). Low balance is step 1 and was **resequenced**:
+day 0 is the **email only**; the **text and the teacher draft move to the
+next business morning** and go only to families with no PO, no reply in the
+seat's inbox (read via the same delegation) and an open ticket; day 7 turns
+the **ticket into the retention issue** ("RETENTION RISK", HIGH, DM to seat +
+visionary); day 28 closes it as **Lost** and adds the contact to a
+re-engagement list. The HubSpot **task is gone** ("it's a ticket, not a
+task"). **Private pay** (auto-renews at 2 hours) gets **one upgrade email**
+with the package math from the 2026 pricing sheets, no text, no teacher.
+**Monday is retired** (quarterly goal): the list is five agent properties on
+the **deal** (`retention_stage`, `retention_lost_reason`,
+`retention_low_balance_alert_date`, `retention_last_notice_sent`,
+`retention_last_touch`, declared in properties.yml, group Retention journey)
+and a saved deal view "Renewal Chase". The replay gained `simulate_days`.
+Suite 452.
+
+**Later on 2026-09-10 (Roman: "back fill the last weeks low balance
+alerts... if a teacher has more than one student with a low balance alert
+we have to be smart enough to combine"):** the last 10 days of alerts (18,
+pulled from HubSpot conversations) showed three siblings alerting an hour
+apart, a **negative balance** ("-0.5 unused hours", the parser rejected it),
+and "CHARTER - Out of Pocket" (a charter family paying themselves: no PO to
+ask for, now private pay). So: the day-0 email is now **sent by the sweep**
+after `email_delay_minutes` (60) as **one email per family** naming every
+student (`low_balance_charter_multi.html`, `subject_multi`); day 1 is **one
+text per family** (`sms_template_multi`) and **one draft per teacher**
+(`tor_email.body_multi`) naming every student; negative balances parse;
+out-of-pocket is private pay. New `backfill_days` input on email-triage
+opens cases for every alert of the last N days that has none (students with
+a newer PO deal skipped) and sends the grouped day-0 emails immediately.
+Dry-run replays/backfills got their own concurrency group (the 5-minute
+poll had cancelled run 34538803410). Suite 457.
+
+**Scope, 2026-09-10 (Roman: "only on charter service codes, excluding out
+of pocket. just a charter low balance alert agent that owns its job"):**
+`low_balance.charter_only: true`. A non-charter alert returns None from the
+agent and takes the ordinary triage path; the backfill reports it as out of
+scope. The private-pay upgrade path (and the other session's scheduler
+routing for it) stays in the code, dormant.
+
+**The Aug 1 → Sep 10 pool (Roman: "get a larger data pool"), 48 alerts,
+23 charter, 22 students.** Renewals arrive in 0 to 6 days or not at all
+(Keesee 0 and 6, Garcia x2 3, Doyal 4; nothing between day 7 and 27), so
+**Retention Risk at day 7 stands.** PO sizes 0.75 to 6.5 hours, median 4,
+16 of 21 at 4 or under. I hypothesised the 4-hour alert fires at package
+creation and built a gate (`require_attended_lesson`: park the alert until
+the first attended lesson on the PO, hourly re-check, 30-day expiry). Run
+through the real pool it parked **nobody**: every one of the 14 charter
+alerts fired on or after the first attended lesson on its PO (Cali, the
+three Melaras, Kailyn: first lesson and alert the same day). The alert IS a
+consumption signal; the gate stays as a safety net and is a no-op today.
+What the pool did change: **three alerts sat on last season's packages**
+(London Brixey's July PO, Alexzander Gonzalez's April PO, Franny Diaz's
+April PO). Those are an archive question for charter_admin (Roman
+2026-08-14: "their past hours should have been archived"), not a renewal
+chase: `season_start: 2026-08-01`, skipped with a DM to charter_admin. That
+also dissolved the London/Londyn Brixey double (two spellings, two
+packages, one child). Final pool through every gate: 14 charter cases
+would open on their alert day, 3 to Kath, 10 skipped as already renewed,
+21 out of scope (private pay / out of pocket). Suite 468.
+
+**Last-contact analysis of the 11 open families (2026-09-11):** six had
+texted the support line the day before, every thread was scheduling with
+our word last, none mentioned the PO; the four oldest cases were also the
+quietest (17 to 28 days). Roman: "add the check" → the day-1 gate now also
+reads JustCall: an **inbound text since the case opened counts as a reply**
+(no agent text, no teacher email, Paola takes the thread), and when
+JustCall cannot be read the day-1 step **holds** for that hour rather than
+texting a family mid-conversation. Suite 470.
+
+**Still human (until armed):** everything the ticket note says the agent
+would have sent. **Roman:** run the hubspot-schema workflow (creates the five
+deal properties) and build the "Renewal Chase" saved view. **After arming:** sending the teacher draft from Gmail
+Drafts; anything the 🚩 flags name (family not found, no deal, no TOR email).
+
+**Not done:** the Monday board is not written to or read (nothing else reads
+it; Paola can stop feeding it once armed). The deal TOR fields flagged
+"retire after Monday" in KEEPERS.md are STILL READ by this agent
+(teacher_of_record_email/name on the deal) — keep them; the Monday-only
+dependency is gone, the fields are not.
+
+**Files:** email/src/low_balance.py (new), email/src/main.py,
+email/src/deal_sync.py, email/src/ticket_reasoner.py,
+email/src/gmail_client.py, email/src/draft_feedback.py,
+email/src/classifier.py, email/config.yaml, email/rules.md,
+email/templates/low_balance_charter.html (new),
+email/tests/test_low_balance.py (new, 20 tests; suite 437 green),
+registry.yml, docs/PO-PROCESS.md, docs/CHANGELOG.md.
+
+**Decision log:** #AP### pending — "Teachworks package-balance alert is the
+renewal trigger; the case is a HubSpot ticket owned by charter_sales; the
+Monday low-balance board retires."
 ## 2026-09-10 — booth/delilah: every print mirrors to a Google Drive folder
 
 **What:** Roman asked for "a folder that stores everything". Each archived print

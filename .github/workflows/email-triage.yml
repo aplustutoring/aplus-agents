@@ -23,6 +23,18 @@ on:
         required: false
         type: boolean
         default: false
+      replay_thread:
+        description: "Low-balance agent: replay ONE Teachworks alert by HubSpot thread id instead of polling (pair with dry_run)"
+        required: false
+        default: ""
+      simulate_days:
+        description: "With replay_thread: then run the sweep as if the case opened N days ago (1 = text + teacher, 7 = risk, 28 = lost)"
+        required: false
+        default: ""
+      backfill_days:
+        description: "Low-balance agent: open cases for every Teachworks alert of the last N days that has none (pair with dry_run to preview)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -31,7 +43,10 @@ jobs:
   triage:
     runs-on: ubuntu-latest
     concurrency:
-      group: aplus-email-state
+      # A dry-run replay/backfill writes no state, so it must not queue behind
+      # (or be cancelled by) the 5-minute poll: GitHub keeps ONE pending run per
+      # group and cancels the older one, which killed run 34538803410.
+      group: aplus-email-state${{ (inputs.replay_thread != '' || inputs.backfill_days != '') && inputs.dry_run && '-dryrun' || '' }}
       cancel-in-progress: false
     defaults:
       run:
@@ -57,7 +72,16 @@ jobs:
           # Same service account as the retention sync — the standalone email repo's
           # local JSON was wiped in the 6/29 secrets cleanup; the value lives on here.
           GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}
+          # the low-balance agent sends the day-0 family email (Resend) and,
+          # on replay/backfill, reads JustCall for family replies
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
           DRY_RUN: ${{ inputs.dry_run }}
+          LOW_BALANCE_REPLAY_THREAD: ${{ inputs.replay_thread }}
+          LOW_BALANCE_SIMULATE_DAYS: ${{ inputs.simulate_days }}
+          LOW_BALANCE_BACKFILL_DAYS: ${{ inputs.backfill_days }}
+          LOW_BALANCE_FORCE_ARMED: ${{ (inputs.replay_thread != '' || inputs.backfill_days != '') && inputs.dry_run && '1' || '0' }}
         run: python -m src.main
 
       - name: Commit state changes

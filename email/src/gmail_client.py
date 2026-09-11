@@ -259,9 +259,12 @@ def _scrub_outbound(text: str) -> str:
 
 
 def create_draft_reply(thread_id: str, to_addr: str, subject: str, body: str,
-                       in_reply_to: str = "", bcc: str = "") -> dict:
+                       in_reply_to: str = "", bcc: str = "",
+                       mailbox: str | None = None) -> dict:
     """A REAL Gmail draft on the thread — sits in Drafts until a human sends it.
-    bcc: the HubSpot log address, so the send lands on the contact timeline."""
+    bcc: the HubSpot log address, so the send lands on the contact timeline.
+    mailbox: whose Drafts (default charter@; the low-balance agent drafts in
+    the charter_sales seat's own mailbox so the send carries that identity)."""
     mime = MIMEText(_scrub_outbound(body))
     mime["To"] = to_addr
     mime["Subject"] = subject if subject.lower().startswith("re:") else f"Re: {subject}"
@@ -271,10 +274,11 @@ def create_draft_reply(thread_id: str, to_addr: str, subject: str, body: str,
         mime["In-Reply-To"] = in_reply_to
         mime["References"] = in_reply_to
     raw = base64.urlsafe_b64encode(mime.as_bytes()).decode()
-    return _post("/drafts", {"message": {"threadId": thread_id, "raw": raw}})
+    return _post("/drafts", {"message": {"threadId": thread_id, "raw": raw}}, mailbox=mailbox)
 
 
-def create_draft(to_addr: str, subject: str, body: str, bcc: str = "") -> dict:
+def create_draft(to_addr: str, subject: str, body: str, bcc: str = "",
+                 mailbox: str | None = None) -> dict:
     """A fresh-thread Gmail draft (outreach that should NOT quote a robot
     notification thread — e.g. parent-info requests to a TOR). Returns the
     draft resource; message.threadId is the NEW thread replies will land on."""
@@ -284,12 +288,12 @@ def create_draft(to_addr: str, subject: str, body: str, bcc: str = "") -> dict:
     if bcc:
         mime["Bcc"] = bcc
     raw = base64.urlsafe_b64encode(mime.as_bytes()).decode()
-    return _post("/drafts", {"message": {"raw": raw}})
+    return _post("/drafts", {"message": {"raw": raw}}, mailbox=mailbox)
 
 
-def get_draft(draft_id: str) -> dict | None:
+def get_draft(draft_id: str, mailbox: str | None = None) -> dict | None:
     """The draft, or None once it's been sent/discarded (404)."""
     try:
-        return _get(f"/drafts/{draft_id}")
+        return _get(f"/drafts/{draft_id}", mailbox=mailbox)
     except Exception:  # noqa: BLE001 — 404 = no longer a draft
         return None
