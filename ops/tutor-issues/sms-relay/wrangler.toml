@@ -1,0 +1,29 @@
+name = "tutor-sms-relay"
+main = "worker.js"
+compatibility_date = "2026-08-28"
+
+[vars]
+GITHUB_REPO = "aplustutoring/aplus-agents"
+# repository_dispatch event type, matched by tutor-issues.yml (PR #217).
+EVENT_TYPE = "tutor-sms"
+# JustCall fires the moment the text lands. 1 minute is only to coalesce
+# bursts (a family sending three texts in a row is one run, not three).
+DEFAULT_DELAY_MINUTES = "1"
+# Cost floor: never more than one dispatch per this many seconds. A win-back
+# blast can draw dozens of replies in minutes and each one would otherwise be
+# an Actions run.
+MIN_INTERVAL_SECONDS = "90"
+
+# Alarm-based dispatch coalescing lives in one Durable Object instance.
+# SQLite-backed class, runs on the Workers free plan.
+[[durable_objects.bindings]]
+name = "DISPATCHER"
+class_name = "Dispatcher"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Dispatcher"]
+
+# Secrets (never in this file, set via CLI):
+#   wrangler secret put GITHUB_TOKEN    # SAME fine-grained PAT as the call + deal relays (Actions RW, this repo only)
+#   wrangler secret put WEBHOOK_TOKEN   # fresh random string, rides in the JustCall webhook URL

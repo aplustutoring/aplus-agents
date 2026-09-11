@@ -34,6 +34,65 @@ SA-owned folder `1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t` (empty), a stray folder
 
 **Files:** `booth/delilah/{wrangler.toml,README.md}`, `docs/CHANGELOG.md`.
 
+## 2026-09-10 - Tutor-late SMS relay: inbound text fires the ticket run in about a minute
+
+**Why:** PR #217 (merged earlier today) built both ends of the late-tutor
+ticket and taught `tutor-issues.yml` to accept
+`repository_dispatch: types: [tutor-sms]`, but nothing fired that event. The
+real latency was unchanged: the weekday inbound cron runs at 16, 18, 20, 22
+and 00 UTC, so a family texting "our tutor isn't here" at 10:05 had no ticket
+until noon. A probe of the live JustCall account settled the three facts the
+relay needed: the inbound-SMS event type is `sms.received` (not the guessed
+names), it has been Active since 2026-08-20 pointing at the photo booth
+worker, and JustCall allows multiple urls per event type (`call.completed` and
+`call.missed` each carry two today), so adding ours is additive and leaves the
+booth alone. `v1/webhooks` returns 403; v2.1 is the live API.
+
+**What:** `ops/tutor-issues/sms-relay/`, the third instance of the relay
+worker from PR #146 (after `ops/deal-relay`). Same Durable Object, same single
+coalescing alarm, same throw-so-the-platform-retries behavior, with three
+differences that matter:
+
+- it POSTs `/repos/<repo>/dispatches` with `{"event_type": "tutor-sms"}` and
+  expects 204, rather than a `workflow_dispatch` on a named workflow file;
+- **inbound only, read defensively.** The payload shape is unverified, so the
+  worker unwraps `data` the way `booth/eo/worker.js` does and takes the first
+  of `direction` / `sms_direction` / `type` whose value looks like a direction.
+  No direction field at all fires ANYWAY (the event is named `sms.received`,
+  and a spurious run of an idempotent engine is far cheaper than a missed late
+  report). No line or number filter: the engine already reads every line;
+- **a cost floor.** `DEFAULT_DELAY_MINUTES = "1"` coalesces a burst into one
+  run, and `MIN_INTERVAL_SECONDS = "90"` refuses to dispatch more often than
+  once per 90 seconds, because a win-back blast can draw dozens of replies in
+  minutes and each one would otherwise be an Actions run.
+
+Every delivery logs the top-level key names and the key names under `data`,
+plus which direction field matched, and nothing else: no message bodies, no
+phone numbers, no contact names. That is how the shape gets settled off
+`wrangler tail` after the first real text, and the README says to remove or
+reduce the log once it is known. Duplicate or coalesced dispatches are
+harmless (stable event keys in `state/processed.json`, per-period dedupe, and
+#217 made `repository_dispatch` runs commit their state), and the cron stays
+as the backstop.
+
+**Tested:** the two decisions that matter are exported pure functions
+(`isInbound`, `floorWantedAt`, plus `shapeLog` and the clamps) and were
+exercised against 8 payload shapes and 4 floor cases under Node; the contracts
+are tabled in the relay README, since the repo has no JS test runner. The
+existing suites still pass (608 tests). `registry_check.py` accepts the new
+entry, `docs/FLEET.md` regenerated.
+
+**Not done:** the worker is **not deployed**, the JustCall webhook is **not
+registered**, and the payload shape stays **unverified** until a first real
+delivery. Roman runs the four documented steps (`wrangler deploy`, the two
+secrets, the v2.1 webhook POST that ADDS a second url to `sms.received`
+without touching the booth's), then verifies with one text to the support
+line.
+
+**Files:** `ops/tutor-issues/sms-relay/{worker.js,wrangler.toml,README.md}`,
+`ops/tutor-issues/README.md`, `.github/workflows/tutor-issues.yml` (comment),
+`registry.yml`, `docs/FLEET.md`, `docs/CHANGELOG.md`.
+
 ## 2026-09-10 - Tutor-late texts open a scheduler-owned ticket tied to tutor and family
 
 **Why (Roman, 2026-09-10):** "can we create an agent that monitors all incoming

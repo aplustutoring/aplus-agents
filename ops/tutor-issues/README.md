@@ -128,11 +128,35 @@ On Actions: `.github/workflows/tutor-issues.yml` (manual dispatch, dry-run
 default TRUE; the schedule stays commented out until the baseline is
 verified and Roman flips it on).
 
-The workflow also accepts a `repository_dispatch` of type `tutor-sms`,
-which runs the inbound leg live (`--mode inbound`) within a minute instead
-of waiting up to two hours for the next weekday poll. Nothing fires it yet:
-the JustCall inbound-SMS webhook plus a relay worker is a follow-up PR, so
-until it lands the cron is still the real latency.
+## Latency
+
+| path | when a "the tutor is late" text becomes a ticket |
+|---|---|
+| cron only | up to 2 hours (weekday polls at 16, 18, 20, 22, 00 UTC) |
+| relay deployed | about 1 minute, 90 seconds worst case behind a burst |
+
+The workflow accepts a `repository_dispatch` of type `tutor-sms`, which runs
+the inbound leg live (`--mode inbound`) and commits its state like a
+scheduled run. `sms-relay/` is the Cloudflare Worker that fires it: JustCall
+posts its `sms.received` webhook the moment a text lands, the worker
+coalesces the burst behind one alarm, and the dispatch goes out about a
+minute later. Duplicate or coalesced dispatches are harmless (stable event
+keys in `state/processed.json` plus the per-period dedupe), and the cron
+stays as the backstop, so a dead relay costs hours rather than reports.
+
+**Not deployed yet.** Roman runs the four steps in `sms-relay/README.md`:
+`wrangler deploy`, `wrangler secret put GITHUB_TOKEN` (the same fine-grained
+PAT the call and deal relays use), `wrangler secret put WEBHOOK_TOKEN` (a
+fresh random string), then register the url with JustCall:
+
+    POST https://api.justcall.io/v2.1/webhooks
+    Authorization: <JUSTCALL_API_KEY>:<JUSTCALL_API_SECRET>
+    {"type": "sms.received",
+     "webhook_url": "https://<worker>.workers.dev/sms?token=<WEBHOOK_TOKEN>"}
+
+That ADDS a second url to the `sms.received` type, which has been Active
+since 2026-08-20 pointing at the photo booth. JustCall allows multiple urls
+per type. The booth's url must not be removed.
 
 ## Setup still pending before live
 
