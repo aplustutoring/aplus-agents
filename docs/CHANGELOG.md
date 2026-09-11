@@ -7,6 +7,79 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 (night) — Queued runs started from stale checkouts: 16 duplicate HubSpot items, the GitHub failure emails, and the fix
+
+**Roman:** "we have been getting a lot of github emails of actions failing" → investigated, then "go and delete".
+
+**What was happening.** Every state-writing workflow checks out `github.sha`,
+the commit the run was CREATED against. A run queued behind another run of
+the same concurrency group waits correctly, then starts from a checkout that
+predates the run ahead of it, so it (1) reads a state file without that run's
+processed ids and re-does its work, and (2) fails its own state commit-back
+because the rebase collides on the same appended lines. That failure emails
+Roman, and the retry sweeper reruns the job up to three more times, each from
+the same stale sha, each re-doing the work and failing again. Verified on
+call-agent runs 34542375324 (job 23:29:29 to 23:31:30, committed 3843250d at
+23:31:26) and 34542423755 (job started 23:31:32, checkout 23:31:33 of the
+23:30:06 sha, so without 3843250d): the second run re-summarized calls
+413889099 and 413888913, re-updated both records, created 8 duplicate tasks
+and 2 duplicate coaching notes, then lost its commit-back. Same shape on the
+email side: PO-inbox 34413438564 queued behind an SLA sweep, then reran 3
+times, creating a Kath "po_inbox review — Herrera Family" ticket 5 times;
+34538856718 (iCC1 PO 3114235357) and 34425025733 attempt 2 (Gorman PO
+1614231512) each added one more duplicate ticket. Nothing family-facing was
+duplicated. The relay going live (queued call-agent runs every few minutes)
+made an existing bug fire more often; the PO inbox had been hitting it since
+at least 9/9 22:41 UTC.
+
+**The fleet had already learned this once:** `feedback-digest.yml` and
+`feedback-intake.yml` pin `ref: main` on checkout with a comment saying
+exactly why. It was never propagated to the other 13 state writers.
+
+**Fix (this PR):**
+1. `ref: main` on checkout in the 13 unpinned state-writing workflows
+   (approval-deadline, approval-poll, blog-publish, call-agent, content-build,
+   email-deal-sync, email-po-inbox, email-sla-sweep, email-triage, task-sweep,
+   teacher-sequence-enroll, topic-gen, tutor-issues). fleet-docs excluded (it
+   runs on pull_request). With serialized jobs + the branch tip at job start,
+   the commit-back always fast-forwards; no two concurrency groups write the
+   same state files (checked: marketing/state, email/state, call_agent/state,
+   feedback-agent/state, messenger/state, tutor-issues state are disjoint).
+2. The commit loops `git rebase --abort` before retrying, so attempts 2 and 3
+   are real instead of "Pulling is not possible because you have unmerged
+   files".
+3. Retry sweeper (`sweep.py`): a failed run is HELD (alerted once, never
+   rerun) when its only failed step is the state commit-back (the work is
+   done; a rerun re-does it) or when a non-commit step's log shows a non-429
+   4xx client error (deal-sync 34377320031: Teachworks 400 on deal
+   64842808888, rerun 4 times, identical each time). 7 tests in
+   `ops/fleet-health/tests/test_sweep.py`.
+4. `ops/hubspot-schema/archive_objects.py` + `hubspot-archive.yml` (manual
+   workflow_dispatch, dry_run default true, choice-typed object type, ids
+   validated numeric, prints every object before archiving so the run log is
+   the audit trail). The HubSpot connector can create and update but not
+   archive, and no token exists outside Actions, so until now duplicates the
+   fleet created were a human's job to remove.
+
+**Cleanup (Roman's "delete", executed via the archive workflow after merge):**
+tickets 48466930455, 48458045756, 48467090578, 48444801204 (Herrera dupes;
+48435208197 kept), 48441459894 (iCC1 dupe; 48467882921 kept), 48436914729
+(Gorman dupe; 48448664726 kept); tasks 116712432209, 116711390247,
+116712393776, 116712615522, 116712905363, 116712914473, 116712138384,
+116712844396; notes 116709471660, 116712374078. All 16 verified present and
+unarchived via the connector before the go.
+
+**Also seen:** two triage runs were cancelled by the queue this afternoon
+(GitHub keeps one pending run per group and cancels older pending ones);
+the sweeper ignores cancellations, so those polls were silently skipped.
+Not addressed here. GitHub's own per-failure emails are separate from the
+fleet's Slack alerting; `sweep.py`'s docstring already says where to turn
+them off.
+
+**Files:** .github/workflows/{13 state writers}.yml, .github/workflows/hubspot-archive.yml
+(new), ops/fleet-health/retry/sweep.py, ops/fleet-health/tests/test_sweep.py
+(new), ops/hubspot-schema/archive_objects.py (new), registry.yml, docs/CHANGELOG.md.
+
 ## 2026-09-08 — Low-balance renewal agent: Teachworks alert → family + TOR outreach → self-closing case (BUILT, not armed)
 
 **Why:** Roman: "when a family hits a low balance alert on hours in Teachworks,
