@@ -1,0 +1,914 @@
+[
+ {
+  "label": "Alder Grove Charter School",
+  "region": "Upper Northern California",
+  "domains": [
+   "aldergrovecharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "CORE Butte Charter School",
+  "region": "Upper Northern California",
+  "domains": [
+   "corebutte.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Evergreen Institute of Excellence",
+  "region": "Upper Northern California",
+  "domains": [
+   "eie.evergreenusd.org",
+   "evergreenusd.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Golden Eagle Charter School",
+  "region": "Upper Northern California",
+  "domains": [
+   "gecs.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Northern Summit Academy",
+  "region": "Upper Northern California",
+  "domains": [
+   "ns-academy.org",
+   "nsa-academy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Northern United - Siskiyou Charter School",
+  "region": "Upper Northern California",
+  "domains": [
+   "nucharters.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Northern United - Humboldt Charter School",
+  "region": "Upper Northern California",
+  "domains": [
+   "nucharters.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Phoenix Charter Academy",
+  "region": "Upper Northern California",
+  "domains": [
+   "ourpca.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Shasta Charter Academy",
+  "region": "Upper Northern California",
+  "domains": [
+   "sca-edu.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "CalPac Sonoma Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "cal-pacs.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Choices Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "choicescharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Circle of Independent Learning (COIL)",
+  "region": "Lower Northern California",
+  "domains": [
+   "coilk12.net"
+  ],
+  "known": false
+ },
+ {
+  "label": "Compass Charter Schools of Yolo",
+  "region": "Lower Northern California",
+  "domains": [
+   "compasscharters.org",
+   "compasscharter.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Connecting Waters East Bay Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "eastbay.connectingwaters.org",
+   "connectingwaters.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "CORE Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "corecharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Forest Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "forestcharter.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "Heritage Peak Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "pacificcharters.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Marconi Learning Academy, Powered by Learn4Life",
+  "region": "Lower Northern California",
+  "domains": [
+   "marconilearning.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Ocean Grove Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "ogcs.org",
+   "ieminc.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Pathways Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "pathwayscharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "South Sutter Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "southsuttercs.org",
+   "ieminc.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Sutter Peak Charter Academy",
+  "region": "Lower Northern California",
+  "domains": [
+   "sutterpeak.org",
+   "pacificcharters.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "The Cottonwood School",
+  "region": "Lower Northern California",
+  "domains": [
+   "cottonwoodk12.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Twin Ridges Home Study Charter School",
+  "region": "Lower Northern California",
+  "domains": [
+   "twinridgeshomestudy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Ambassador Phillip V. Sanchez II Public Charter School, Powered by Learn4Life",
+  "region": "Central California",
+  "domains": [
+   "ambsanchezcharter2.org",
+   "cvcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Connecting Waters Central Valley",
+  "region": "Central California",
+  "domains": [
+   "centralvalley.connectingwaters.org",
+   "connectingwaters.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Connecting Waters Charter School",
+  "region": "Central California",
+  "domains": [
+   "connectingwaters.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Crescent Valley Public Charter School II, Powered by Learn4Life",
+  "region": "Central California",
+  "domains": [
+   "crescentvalley2.org",
+   "cvcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Crescent View South Public Charter School II, Powered by Learn4Life",
+  "region": "Central California",
+  "domains": [
+   "cvsouth2.org",
+   "cvcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Crescent View West Charter High School, Powered by Learn4Life",
+  "region": "Central California",
+  "domains": [
+   "cvwest.org",
+   "cvcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Endeavor Charter School",
+  "region": "Central California",
+  "domains": [
+   "endeavorcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Glacier High School Charter",
+  "region": "Central California",
+  "domains": [
+   "glacierhighcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Kings Valley Academy II, Powered by Learn4Life",
+  "region": "Central California",
+  "domains": [
+   "kingsvalleycharter2.org",
+   "cvcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Monarch River Academy (MRA)",
+  "region": "Central California",
+  "domains": [
+   "monarchriveracademy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Mountain Home School Charter",
+  "region": "Central California",
+  "domains": [
+   "mountainhomecharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Rio Valley Charter School",
+  "region": "Central California",
+  "domains": [
+   "riovalley.org",
+   "pacificcharters.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Sierra Charter School",
+  "region": "Central California",
+  "domains": [
+   "sierracharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Valley View Charter Prep",
+  "region": "Central California",
+  "domains": [
+   "pacificcharters.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "W.E.B. DuBois Charter School",
+  "region": "Central California",
+  "domains": [
+   "agapeschools.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Yosemite Valley Charter School (YVCS)",
+  "region": "Central California",
+  "domains": [
+   "yosemitevalleycharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Family Partnership Charter School",
+  "region": "Central Coast California",
+  "domains": [
+   "fpcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Golden Valley Charter School",
+  "region": "Central Coast California",
+  "domains": [
+   "goldenvcs.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Olive Grove Charter-Orcutt/Santa Maria",
+  "region": "Central Coast California",
+  "domains": [
+   "olivegrovecharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "River Oaks Academy Charter School",
+  "region": "Central Coast California",
+  "domains": [
+   "riveroakscharter.com"
+  ],
+  "known": false
+ },
+ {
+  "label": "Trivium Charter School",
+  "region": "Central Coast California",
+  "domains": [
+   "triviumcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Trivium Charter School: Adventure",
+  "region": "Central Coast California",
+  "domains": [
+   "triviumcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Trivium Charter School: Voyage",
+  "region": "Central Coast California",
+  "domains": [
+   "triviumcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Vista Real Charter High School, Powered by Learn4Life",
+  "region": "Central Coast California",
+  "domains": [
+   "vrchs.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "CalPac San Diego Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "cal-pacs.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Citrus Springs Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "springscs.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Compass Charter Schools of San Diego",
+  "region": "Lower Southern California",
+  "domains": [
+   "compasscharters.org",
+   "compasscharter.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Diego Hills Central Public Charter High School, Powered by Learn4Life",
+  "region": "Lower Southern California",
+  "domains": [
+   "dhcentralcharter.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Diego Valley East Public Charter School, Powered by Learn4Life",
+  "region": "Lower Southern California",
+  "domains": [
+   "diegovalleyeast.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Empire Springs Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "springscs.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Epic California Academy",
+  "region": "Lower Southern California",
+  "domains": [
+   "epiccalifornia.org",
+   "epiccharterschools.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Excel Academy",
+  "region": "Lower Southern California",
+  "domains": [
+   "excelacademy.education"
+  ],
+  "known": true
+ },
+ {
+  "label": "Harbor Springs Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "springscs.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Motivated Youth (MY) Academy",
+  "region": "Lower Southern California",
+  "domains": [
+   "myacademy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Options for Youth - San Juan",
+  "region": "Lower Southern California",
+  "domains": [
+   "ofy-sj.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Opportunities for Learning - Capistrano",
+  "region": "Lower Southern California",
+  "domains": [
+   "ofl-sjc.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Orange County Innovation High School, Powered by Learn4Life",
+  "region": "Lower Southern California",
+  "domains": [
+   "innovationhigh.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Pacific Springs Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "springscs.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Pacific View Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "pacificview.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "River Springs Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "springscs.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "San Diego Workforce Innovation High School, Powered by Learn4Life",
+  "region": "Lower Southern California",
+  "domains": [
+   "innovationsandiego.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "The Learning Choice Academy",
+  "region": "Lower Southern California",
+  "domains": [
+   "learningchoice.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "The Learning Choice Academy Chula Vista",
+  "region": "Lower Southern California",
+  "domains": [
+   "learningchoice.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "The Learning Choice Academy East County",
+  "region": "Lower Southern California",
+  "domains": [
+   "learningchoice.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Vista Springs Charter School",
+  "region": "Lower Southern California",
+  "domains": [
+   "springscs.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Alta Vista Innovation High School, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "innovationaltavista.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Antelope Valley Learning Academy, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "avlearning.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Assurance Learning Academy, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "assurancelearning.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "CalPac Los Angeles Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "cal-pacs.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Compass Charter Schools of Los Angeles",
+  "region": "Upper Southern California",
+  "domains": [
+   "compasscharters.org",
+   "compasscharter.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Desert Sands Charter High School, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "dschs.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Empower Generations Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "empowergenerations.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Excel Academy East",
+  "region": "Upper Southern California",
+  "domains": [
+   "excelacademy.education"
+  ],
+  "known": true
+ },
+ {
+  "label": "Gorman Learning Center San Bernardino/Santa Clarita",
+  "region": "Upper Southern California",
+  "domains": [
+   "gormanlcn.org",
+   "gormanlc.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Gorman Learning Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "gormanlcn.org",
+   "gormanlc.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Granite Mountain Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "granitemountainschool.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "iLEAD Hybrid Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "ileadhybrid.org",
+   "ileadexploration.org",
+   "ileadexploration.com",
+   "ileadlancaster.org",
+   "ileadcalifornia.org",
+   "ileadav.org",
+   "ileadaguadulce.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "iLEAD Online Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "ileadonline.org",
+   "ileadexploration.org",
+   "ileadexploration.com",
+   "ileadlancaster.org",
+   "ileadcalifornia.org",
+   "ileadav.org",
+   "ileadaguadulce.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Mission Academy High School, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "missionacademyhs.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Mission View Public Charter, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "missionview.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Options for Youth - Acton",
+  "region": "Upper Southern California",
+  "domains": [
+   "ofy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Options for Youth - Duarte",
+  "region": "Upper Southern California",
+  "domains": [
+   "ofy-d.org",
+   "ofy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Options for Youth - San Gabriel",
+  "region": "Upper Southern California",
+  "domains": [
+   "lions.ofy.org",
+   "ofy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Options for Youth - San Bernardino",
+  "region": "Upper Southern California",
+  "domains": [
+   "saints.ofy.org",
+   "ofy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Options for Youth - Victor Valley",
+  "region": "Upper Southern California",
+  "domains": [
+   "mustangs.ofy.org",
+   "ofy.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Opportunities for Learning - Baldwin Park",
+  "region": "Upper Southern California",
+  "domains": [
+   "ofl-bp.org",
+   "oflschools.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Opportunities for Learning - Duarte",
+  "region": "Upper Southern California",
+  "domains": [
+   "ofl-d.org",
+   "oflschools.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Opportunities for Learning - William S. Hart",
+  "region": "Upper Southern California",
+  "domains": [
+   "ofl-wsh.org",
+   "oflschools.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Sage Oak Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "sageoak.education"
+  ],
+  "known": true
+ },
+ {
+  "label": "Sky Mountain Charter School",
+  "region": "Upper Southern California",
+  "domains": [
+   "skymountaincs.org",
+   "ieminc.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Vista Norte Public Charter School, Powered by Learn4Life",
+  "region": "Upper Southern California",
+  "domains": [
+   "vistanortecharter.org",
+   "learn4life.org"
+  ],
+  "known": false
+ },
+ {
+  "label": "Elite Academic Academy",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "eliteacademic.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "Visions In Education",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "viedu.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Blue Ridge Academy",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "theblueridgeacademy.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "Heartland Charter School",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "gmail.com",
+   "heartlandcharterschool.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "Julian Charter School",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "jcs-inc.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Pacific Coast Academy",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "pacificcoastacademy.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Suncoast Preparatory Academy",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "suncoastprep.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Heartwood Charter School",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "heartwoodcharterschool.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Horizon Charter Schools",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "hcs.12.ca.us",
+   "hcs.k12.ca.us"
+  ],
+  "known": true
+ },
+ {
+  "label": "Taylion Homeschool",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "taylion.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "BEST Academy",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "bestacademycs.com"
+  ],
+  "known": true
+ },
+ {
+  "label": "Brighton Hall School",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "brightonhallschool.org"
+  ],
+  "known": true
+ },
+ {
+  "label": "Arete Charter Academy",
+  "region": "(not an APLUS+ member)",
+  "domains": [
+   "prsd.us"
+  ],
+  "known": true
+ }
+]

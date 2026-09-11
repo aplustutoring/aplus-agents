@@ -1,0 +1,37 @@
+name = "aplus-conference-booth"
+main = "worker.js"
+compatibility_date = "2026-08-11"
+
+# APLUS+ Network 23rd Annual Conference, Sheraton Park Anaheim, 2026-10-21..23.
+# A+ Tutoring = exhibitor table PC6 + Preferred Partner.
+# Group-selfie booth: one print per contact entered, prints queued to a Mac
+# running print-agent/print_agent.py next to the Selphy.
+# No cron, so no SUNSET is needed: nothing runs unattended.
+
+[vars]
+# The Worker serves public/ itself (assets below), so the API is same-origin.
+ALLOWED_ORIGIN = "https://aplus-conference-booth.nameless-mountain-bafa.workers.dev"
+EVENT_TAG = "aplus_conference_2026"          # aplus_event_tag option (properties.yml)
+EVENT_NAME = "APLUS+ Conference 2026"
+# Outbound texts to teachers/admins come from the SALES seat (Danielle) per the
+# 2026-08-25 sender-routing rule. Number = Danielle's JustCall line.
+JUSTCALL_FROM = "+18185736258"
+SMS_BODY = "Hi {name}! Here is your team photo from the A+ Tutoring booth at the APLUS+ Conference. Great to meet you. Danielle, A+ Tutoring"
+# Google Drive mirror: folder inside the "A+ Events" Shared Drive (0ABqrqCiZrGoVUk9PVA).
+# https://drive.google.com/drive/folders/18dhJTAOSUnxOxkGJuQeUUyv2IH42r83w
+DRIVE_FOLDER_ID = "18dhJTAOSUnxOxkGJuQeUUyv2IH42r83w"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[kv_namespaces]]
+binding = "PHOTOS"
+id = "9331154493e840e5ab80640de9e04306"
+
+# Secrets (never in this file — set via CLI):
+#   wrangler secret put HUBSPOT_TOKEN          (private app, crm.objects.contacts write + notes)
+#   wrangler secret put JUSTCALL_API_KEY
+#   wrangler secret put JUSTCALL_API_SECRET
+#   wrangler secret put GOOGLE_SA_JSON         (spotlight-watcher service-account JSON, one line)
+#   wrangler secret put AGENT_TOKEN            (shared secret the Mac print agent sends)

@@ -7,6 +7,51 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-11 — booth/aplus-2026: conference booth BUILT (group selfie, one print per contact, Mac print queue)
+
+**What:** the APLUS+ Conference booth (Anaheim, Oct 21-23; A+ = table PC6 +
+Preferred Partner). Roman's design, locked in conversation: handheld group
+selfies, the print is the currency (each copy costs a name + email, first entry
+prints immediately, each further entry queues), conference logo + dates on the
+frame, school name on the bottom, no storybook print.
+
+- `booth/aplus-2026/public/index.html` — start, camera, burst of 3 + pick,
+  copies screen (rows with role chips; school from email domain against the
+  108-domain list, campus select for shared network domains, dropdown fallback,
+  group memory), live queue bar, done, hidden host view (queue table + reprint).
+  1200x1800 card: navy band with the APLUS+ logo, event name and dates, A+ mark;
+  school name + "Together in person" on the foot.
+- `booth/aplus-2026/worker.js` — `POST /group` (archive + Drive mirror into the
+  A+ Events shared drive folder `18dhJTAOSUnxOxkGJuQeUUyv2IH42r83w`),
+  `POST /copy` (HubSpot upsert with #AP032 tag merge, role persona on create,
+  `aplus_booth_photo_url`, timeline note with the school; JustCall MMS from the
+  SALES seat line 818-573-6258 when a cell is given; print job enqueued),
+  queue API for the Mac agent with `X-Agent-Token`, reprint, `/photos`,
+  `/drive-backfill`. 58 tests.
+- `booth/aplus-2026/print-agent/print_agent.py` — stdlib Mac agent: claims the
+  oldest queued job, `lp`s the 4x6 to the Selphy, marks done; pauses while
+  `lpstat` says the printer is stopped; failed jobs re-queue in place; `--dry-run`.
+- `ops/hubspot-schema/properties.yml` — `aplus_event_tag` option
+  `aplus_conference_2026` (additive sync).
+- Deployed: https://aplus-conference-booth.nameless-mountain-bafa.workers.dev,
+  KV `APLUS_2026_PHOTOS` 9331154493e840e5ab80640de9e04306. Secrets set:
+  HUBSPOT_TOKEN, JUSTCALL_API_KEY/SECRET, AGENT_TOKEN. `GOOGLE_SA_JSON` is on
+  Roman (classifier blocks piping the SA key), README has the command.
+
+**Why a Mac print agent:** iPad `window.print()` needs a tap per copy and blocks
+the page; a queue of five copies per group cannot ride on that. The Worker owns
+the queue; the Mac at the table drains it through CUPS with no dialogs.
+
+**Why the sales seat sends the texts:** conference contacts are teachers and
+admins, so the 2026-08-25 sender-routing rule puts the from-number on Danielle.
+
+**Printer decision (Roman, 2026-09-11):** keep the Selphy CP1500, add the Canon
+NB-CP2LI battery pack for outlet-less events (park 9/18). The Liene M100 that
+Danielle linked is a Selphy clone with no battery; the M200 is the battery one.
+No power station.
+
+**Files:** `booth/aplus-2026/{public/index.html,public/schools.json,public/*.png,worker.js,wrangler.toml,test-worker.mjs,print-agent/print_agent.py,README.md}`, `ops/hubspot-schema/properties.yml`, `docs/CHANGELOG.md`.
+
 ## 2026-09-11 — booth/aplus-2026: APLUS+ conference school list with staff email domains (dropdown source)
 
 **What:** Roman asked for every participant school at the APLUS+ Network 23rd
