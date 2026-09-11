@@ -191,6 +191,14 @@ low_balance:
   # ordinary inbox triage path. The private-pay upgrade code below stays
   # dormant until this is flipped.
   charter_only: true
+  # The Aug 1 → Sep 10 pool: PO sizes 0.75 to 6.5 hours (median 4) and
+  # Teachworks alerts at 4 the moment the package is created, so an alert on
+  # a PO with no attended lesson yet is "your package exists", not "running
+  # low". Such alerts are parked; the hourly sweep opens the case when the
+  # first lesson on that PO is attended. Parked longer than defer_max_days
+  # with no lesson → let go (the next alert starts fresh).
+  require_attended_lesson: true
+  defer_max_days: 30
   # A case opens only at this many unused hours or fewer (Roman 2026-09-09:
   # "4 hours or less"). Teachworks' own alert level is per package; alerts
   # that fire above this line are audited and skipped.

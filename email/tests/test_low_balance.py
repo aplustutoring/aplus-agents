@@ -74,9 +74,11 @@ DEAL = {"id": "64250037589", "properties": {
 CONTACT = {"id": "3167401", "properties": {"email": "jessicalujanbd@gmail.com", "firstname": "Jessica",
                                            "lastname": "Lujan", "mobilephone": "+19094548581"}}
 RECENT = {"tutor_first": "Sarah", "sessions": 6, "since": "2026-08-22", "subjects": ["Math"],
-          "notes": [], "notes_fields_seen": []}
+          "notes": [], "notes_fields_seen": [], "first_session": "2026-08-25", "ok": True}
+# Teachworks answered, nothing found: opens with flags (no PO to park against
+# when the deal is missing; tests that want the parked path pass a deal + ok)
 NO_RECENT = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
-             "notes_fields_seen": []}
+             "notes_fields_seen": [], "first_session": "", "ok": False}
 MSG = {"id": "m-alert-1", "text": ALERT, "subject": "Package Balance Alert"}
 
 
@@ -274,6 +276,50 @@ def test_private_pay_gets_one_upgrade_email_and_no_text(monkeypatch):
     assert subj == "Taylor's next tutoring package" and tpl.endswith("low_balance_private.html")
     assert ctx["upgrade_line"] == rec["upgrade_line"]
     assert not h.sms and not h.drafts
+
+
+def test_alert_on_an_untouched_po_is_parked_until_the_first_lesson(monkeypatch):
+    # Zie Rojas / Cooper Doyal: 4.0 unused on a 4-hour PO, nothing attended yet
+    fresh = {**NO_RECENT, "ok": True, "sessions": 0}
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=fresh)
+    rec = lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))
+    assert rec["action_taken"] == "low_balance_deferred" and rec["message_id"] == "m-alert-1"
+    assert rec["alert"]["student"] == "Taylor Rodriguez" and rec["po_hours"] == "5"
+    assert not h.tickets and not h.emails and not h.dms and not h.stamps
+    # the hourly sweep re-checks: first lesson attended → the case opens normally
+    monkeypatch.setattr(lb, "deferred_alerts", lambda: {rec["case_key"]: rec})
+    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent={**RECENT, "ok": True, "sessions": 1})
+    monkeypatch.setattr(lb, "deferred_alerts", lambda: {rec["case_key"]: rec})
+    lb._recheck_deferred(dt.datetime.now(dt.timezone.utc))
+    assert h2.tickets and any(r["action_taken"] == "low_balance_opened" for r in h2.recs)
+    # parked too long → let go, audited, nothing sent
+    stale = {**rec, "deferred_at": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=31)).isoformat()}
+    h3 = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent=fresh)
+    monkeypatch.setattr(lb, "deferred_alerts", lambda: {rec["case_key"]: stale})
+    lb._recheck_deferred(dt.datetime.now(dt.timezone.utc))
+    assert not h3.tickets and any(r["action_taken"] == "low_balance_defer_expired" for r in h3.recs)
+
+
+def test_no_deal_or_no_teachworks_answer_still_opens(monkeypatch):
+    # can't tell whether a lesson happened → do not park (a parked alert with no
+    # PO to watch would never wake up); the flags say so on the ticket
+    h = Harness(monkeypatch, _cfg(armed=True), deals=[], recent={**NO_RECENT, "ok": True})
+    assert lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))["action_taken"] == "low_balance_opened"
+    h2 = Harness(monkeypatch, _cfg(armed=True), deals=[DEAL], recent={**NO_RECENT, "ok": False})
+    assert lb.handle_alert("thr1", MSG, lb.parse_alert(ALERT))["action_taken"] == "low_balance_opened"
+    assert h.tickets and h2.tickets
+
+
+def test_deferred_alerts_folds_the_audit_log(monkeypatch):
+    recs = [
+        {"message_id": "m1", "action_taken": "low_balance_deferred", "case_key": "k:a", "alert": {"student": "A"}},
+        {"message_id": "m2", "action_taken": "low_balance_deferred", "case_key": "k:b", "alert": {"student": "B"}},
+        {"message_id": "k:b", "action_taken": "low_balance_opened", "case_key": "k:b"},
+        {"message_id": "m3", "action_taken": "low_balance_deferred", "case_key": "k:c", "alert": {"student": "C"}},
+        {"message_id": "k:c:defer-expired", "action_taken": "low_balance_defer_expired", "case_key": "k:c"},
+    ]
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs))
+    assert list(lb.deferred_alerts()) == ["k:a"]
 
 
 def test_charter_only_declines_private_pay_and_out_of_pocket(monkeypatch):

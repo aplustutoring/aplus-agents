@@ -346,7 +346,7 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
     from . import teachworks_client as tw
     lb = cfg().get("low_balance", {}) or {}
     out = {"tutor_first": "", "sessions": 0, "since": "", "subjects": [], "notes": [],
-           "notes_fields_seen": []}
+           "notes_fields_seen": [], "first_session": "", "ok": False}
     email = (alert.get("parent_email") or "").strip().lower()
     sf = (alert.get("student_first") or "").strip().lower()
     if not email or not sf:
@@ -381,9 +381,11 @@ def _tw_recent(alert: dict, deal: dict | None) -> dict:
         print(f"  ⚠️  low-balance Teachworks lookup failed (non-fatal): {e}")
         return out
     lessons.sort(key=lambda l: str(l.get("from_date") or ""), reverse=True)
+    out["ok"] = True                       # both accounts answered; a 0 below is a real 0
     out["sessions"] = len(lessons)
     if lessons:
         out["tutor_first"] = _first_name(lessons[0].get("employee_name") or "")
+        out["first_session"] = str(lessons[-1].get("from_date") or "")[:10]
     # notes only from the last notes_window_days (Roman 2026-09-09: derived
     # from lesson notes from the last month, never imagined)
     pc = lb.get("positivity") or {}
@@ -846,6 +848,23 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
     # what makes the note ours: the tutor, and (when the notes allow) one true
     # sentence from the last month of lesson notes
     recent = _tw_recent(alert, deal)
+    # The Aug 1 → Sep 10 pool (23 charter alerts): PO sizes are 0.75 to 6.5
+    # hours, median 4, and Teachworks alerts at 4 the moment the package is
+    # created. Zie Rojas and Cooper Doyal alerted at 4.0 unused on 4-hour
+    # POs with nothing used. So an alert on a PO with NO attended lesson yet
+    # is "your package exists", not "your hours are running low": park it,
+    # and the hourly sweep opens the case when the first lesson lands.
+    if (lb.get("require_attended_lesson", True) and deal and recent.get("ok")
+            and int(recent.get("sessions") or 0) == 0):
+        record.update(action_taken="low_balance_deferred", deal_id=deal.get("id"),
+                      po_hours=dp.get("number_of_hours_in_this_po"), po_created=(dp.get("createdate") or "")[:10],
+                      alert=alert, alert_text=(message.get("text") or "")[:1500],
+                      deferred_at=datetime.now(timezone.utc).isoformat())
+        audit.append(record)
+        print(f"  ⏸ {alert['student']}: {_fmt_hours(alert['hours'], alert['unit'])} unused but no lesson "
+              f"attended on PO {dp.get('po_number') or '?'} ({dp.get('number_of_hours_in_this_po') or '?'} h, "
+              f"{(dp.get('createdate') or '')[:10]}) yet; parked until the first lesson")
+        return record
     positivity = _positivity(alert.get("student_first", ""), recent.get("tutor_first", ""),
                              recent.get("notes") or [])
     ctx = _context(alert, deal, contact, seat, recent, positivity)
@@ -1486,18 +1505,66 @@ def _sweep(cases: dict, now, force: bool = False) -> None:
                     print(f"  ⚠️  escalation DM failed (non-fatal): {e}")
 
 
+def deferred_alerts() -> dict:
+    """Alerts parked for lack of an attended lesson, keyed by case key, minus
+    the ones since opened, expired, or superseded by a newer alert."""
+    parked: dict = {}
+    for r in audit._iter_records():
+        act = r.get("action_taken") or ""
+        if act == "low_balance_deferred" and r.get("case_key"):
+            parked[r["case_key"]] = r                     # newest alert for the key wins
+        elif act == "low_balance_opened" and r.get("case_key") in parked:
+            parked.pop(r["case_key"], None)
+        elif act == "low_balance_defer_expired":
+            parked.pop(r.get("case_key"), None)
+    return parked
+
+
+def _recheck_deferred(now_utc) -> None:
+    """Hourly: a parked alert whose student has now attended a lesson on the
+    PO opens its case through the normal path (same copy, same clock from
+    today). Parked longer than defer_max_days with still no lesson → let go,
+    audited; the next Teachworks alert starts fresh."""
+    lb = cfg().get("low_balance", {}) or {}
+    parked = deferred_alerts()
+    if not parked:
+        return
+    max_days = int(lb.get("defer_max_days", 30))
+    for key, r in parked.items():
+        alert = r.get("alert") or {}
+        if not alert:
+            continue
+        age = (now_utc - datetime.fromisoformat(r["deferred_at"])).days if r.get("deferred_at") else 0
+        if age > max_days:
+            audit.append({"message_id": f"{key}:defer-expired", "source": "low_balance",
+                          "action_taken": "low_balance_defer_expired", "case_key": key,
+                          "student": alert.get("student")})
+            print(f"  ⌛ {alert.get('student')}: parked {age} days with no lesson; let go")
+            continue
+        rec = handle_alert(r.get("thread_id") or "", {"id": r.get("message_id"), "text": r.get("alert_text") or ""},
+                           alert)
+        if rec and rec.get("action_taken") == "low_balance_opened":
+            print(f"  ▶ {alert.get('student')}: first lesson attended, case opened")
+
+
 def run_sweep(force: bool = False) -> None:
     """Called from deal_sync.run() every cycle; self-gates to every 15 min for
     the day-0 emails (they wait email_delay_minutes anyway) and once an hour
-    for everything else."""
+    for everything else (including re-checking parked alerts)."""
     lb = cfg().get("low_balance", {}) or {}
     if not lb.get("enabled", True):
         return
     now = now_la()
+    hourly = force or now.minute < 15
+    if hourly:
+        try:
+            _recheck_deferred(datetime.now(timezone.utc))
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  deferred re-check failed (non-fatal): {e}")
     cases = open_cases()
     if not cases:
         return
-    if not force and now.minute >= 15:
+    if not hourly:
         seat = staff(lb.get("owner", "charter_sales")) or {}
         armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
         _send_pending_emails(cases, now, seat, lb, armed, False)
@@ -1566,11 +1633,13 @@ def backfill(days: int) -> list[dict]:
                     open_now[key] = rec
                     opened_recs[key] = rec
                 out.append({"student": alert["student"], "action": rec.get("action_taken"),
-                            "hours": alert["hours"], "package": alert["package"], "alerted": created[:10]})
+                            "hours": alert["hours"], "package": alert["package"], "alerted": created[:10],
+                            "po_created": rec.get("po_created", ""), "po_hours": rec.get("po_hours", "")})
         after = ((page.get("paging") or {}).get("next") or {}).get("after")
         if not after:
             break
     print(f"backfill: {len(out)} alert(s) in the last {days} days, {len(opened_recs)} case(s) opened, "
+          f"{sum(1 for o in out if o.get('action') == 'low_balance_deferred')} parked (no lesson on the PO yet), "
           f"{sum(1 for o in out if o.get('skipped') == 'renewed')} already renewed, "
           f"{sum(1 for o in out if o.get('skipped') == 'not charter')} not charter (out of scope)")
     if opened_recs:
