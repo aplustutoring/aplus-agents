@@ -24,8 +24,8 @@ assert.ok(!/—|--/.test(STORYBOOK_PROMPT));
 const store = new Map();
 const kv = {
   put: async (k, v, o) => store.set(k, { v, o }),
-  get: async (k) => store.get(k)?.v ?? null,
-  list: async () => ({ keys: [...store.keys()].map((name) => ({ name, metadata: store.get(name).o.metadata })) }),
+  get: async (k, type) => { const v = store.get(k)?.v ?? null; return type === "json" && typeof v === "string" ? JSON.parse(v) : v; },
+  list: async ({ prefix = "" } = {}) => ({ keys: [...store.keys()].filter((n) => n.startsWith(prefix)).map((name) => ({ name, metadata: store.get(name).o?.metadata })) }),
 };
 const calls = [];
 const fakeStory = Buffer.from([0xff, 0xd8, 0xff, 0xd9]).toString("base64");
@@ -86,11 +86,22 @@ assert.ok(String(g.url).includes("gemini-3.1-flash-image"));
 assert.equal(g.body.contents[0].parts[0].inlineData.mimeType, "image/jpeg");
 assert.equal(g.body.contents[0].parts[1].text, STORYBOOK_PROMPT);
 assert.equal(g.body.generationConfig.imageConfig.aspectRatio, "4:5");
-// Storybook failure is a 502 the booth can skip past, never a crash
+// Storybook failure: the Worker retries Gemini once, then returns a 502 the
+// booth can skip past, AND records the failure where /errors can show it.
 globalThis.__geminiFail = true;
-res = await worker.fetch(new Request("https://w.dev/storybook", { method: "POST", body: JSON.stringify({ raw: tinyJpeg }) }), { ...env, PHOTOS: kv, GEMINI_API_KEY: "g" });
+const geminiBefore = calls.filter((c) => String(c.url).includes("generativelanguage")).length;
+res = await worker.fetch(new Request("https://w.dev/storybook", { method: "POST", body: JSON.stringify({ raw: tinyJpeg, name: "Roman and Anna" }) }), { ...env, PHOTOS: kv, GEMINI_API_KEY: "g" });
 assert.equal(res.status, 502);
 assert.match((await res.json()).error, /Gemini 429/);
+assert.equal(calls.filter((c) => String(c.url).includes("generativelanguage")).length - geminiBefore, 2, "two Gemini attempts per request");
+assert.ok([...store.keys()].some((k) => k.startsWith("err/")), "failure written to KV");
+res = await worker.fetch(new Request("https://w.dev/errors"), { ...env, PHOTOS: kv });
+out = await res.json();
+assert.equal(out.errors.length, 1);
+assert.equal(out.errors[0].name, "Roman and Anna");
+assert.match(out.errors[0].error, /Gemini 429/);
+res = await worker.fetch(new Request("https://w.dev/photos"), { ...env, PHOTOS: kv });
+assert.ok((await res.json()).photos.every((p) => !p.key.startsWith("err/")), "/photos hides error records");
 globalThis.__geminiFail = false;
 res = await worker.fetch(new Request("https://w.dev/storybook", { method: "POST", body: JSON.stringify({ raw: "nope" }) }), { ...env, PHOTOS: kv, GEMINI_API_KEY: "g" });
 assert.equal(res.status, 400);
