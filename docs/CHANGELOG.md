@@ -7,6 +7,32 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-11 — booth/aplus-2026: APLUS+ conference school list with staff email domains (dropdown source)
+
+**What:** Roman asked for every participant school at the APLUS+ Network 23rd
+Annual Conference (Anaheim, Oct 21-23, 2026; A+ is exhibitor PC6 + Preferred
+Partner) with domains pre-loaded for the booth's school dropdown. New
+`booth/aplus-2026/schools.yml` (95 member schools scraped from
+theaplus.org/member-schools, region, network, website, staff email domains,
+confidence) and `schools-dropdown.json` (flat picker source, 108 rows incl. 13
+A+ partner schools that are not APLUS+ members).
+
+**How:** four parallel web-research passes for domains, then a cross-reference
+against 1,084 HubSpot Teacher of Record contacts grouped by email domain and the
+`[Agent] School` stamp. 27 member schools already have our teachers in HubSpot
+(iLEAD, Compass, IEM x3, Springs x6, PCI x4, Sage Oak, Excel x2, Gorman x2,
+Granite Mountain, Forest, Cottonwood, Epic). 26 rows medium/low confidence
+(Learn4Life "II" campuses, OFY/OFL campus domains, Northern Summit); listed in
+the README to verify.
+
+**Finding from the Jeff Rice thread (45 logged emails):** nobody has asked APLUS+
+for the 2026 registered-school list. Jeff sent the full exhibitor table within
+hours when Roman asked in 2024 and tracks registrations "for planning purposes".
+The ask belongs to the sales seat (Danielle), email only. Roman also meets Jeff
+at the Upper South regional at iLEAD HQ on 2026-09-17.
+
+**Files:** `booth/aplus-2026/{schools.yml,schools-dropdown.json,README.md}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
