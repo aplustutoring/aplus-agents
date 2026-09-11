@@ -70,6 +70,22 @@ detectors:
     # In Teachworks these are TUTOR-attributable only when the per-student
     # status says so; the sweep counts per-tutor events.
     no_show_statuses: ["no_show", "missed", "no show"]
+
+    # OFF since 2026-09-10. A Teachworks participant status says THIS STUDENT
+    # did not attend. It does not say why, and cannot separate a student who
+    # flaked from a tutor who never showed. Every event that ever produced a
+    # ticket here was a student marked "missed", and 5 of the 12 tutors those
+    # tickets named are rated Highly Effective on every dimension of their real
+    # evaluation (Monday board 8900831153). Meanwhile the genuinely struggling
+    # tutors on that board have no tickets at all.
+    #
+    # The events are still collected and reported, for the per-tutor attendance
+    # rate and the repeat-pattern trigger that opens an evaluation. They just no
+    # longer assert fault. A missed lesson becomes a tutor issue when a FAMILY
+    # reports it, which the inbound leg handles.
+    #
+    # Turning this back on re-asserts blame the data cannot support.
+    sweep_auto_ticket: false
     # Events per tutor per week required to open a ticket. 1 = every missed
     # lesson is ticket-worthy (recurrence in the same week updates the one
     # ticket rather than spawning more).

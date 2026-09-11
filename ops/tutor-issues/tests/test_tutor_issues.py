@@ -148,3 +148,56 @@ def test_caps_abort_loudly_on_live_report_on_dry(cfg):
 def test_priority_mapping_covers_all_types(cfg):
     assert set(cfg["priority_by_type"]) == set(ti.ISSUE_TYPES)
     assert set(cfg["dedupe_period"]) == set(ti.ISSUE_TYPES)
+
+
+def test_closed_ticket_with_same_events_is_not_duplicated(cfg, monkeypatch):
+    """The 2026-09-10 duplication: 8 of 9 tutor-weeks got a second identical
+    ticket because a re-sweep of already-recorded events hit the closed branch.
+    A closed ticket that already names these events means nothing new happened."""
+    ev = _events(1, "2026-08-19")
+    monkeypatch.setattr(ti, "get_ticket", lambda tid: {
+        "properties": {"hs_pipeline_stage": cfg["hubspot"]["ticket"]["closed_stage"],
+                       "tutor_issue_occurrences": "2",
+                       "tutor_issue_source_ids": "\n".join(
+                           sorted({e["source_id"] for e in ev}))}})
+    idx = {"101:missed_lesson_or_late":
+           {"ticket_id": "T1", "period": ti.period_key(
+               "missed_lesson_or_late", "2026-08-18", cfg)}}
+    plan = ti.Plan()
+    ti.plan_ticket(plan, cfg, idx, TUTOR, "missed_lesson_or_late", ev,
+                   source="test", evidence="e")
+    assert plan.tickets == [], "a re-swept event must not resurrect a closed ticket"
+
+
+def test_closed_ticket_with_a_genuinely_new_event_still_creates(cfg, monkeypatch):
+    """The original intent survives: a NEW incident after resolution opens a
+    fresh ticket. Only re-raising the same events is suppressed."""
+    monkeypatch.setattr(ti, "get_ticket", lambda tid: {
+        "properties": {"hs_pipeline_stage": cfg["hubspot"]["ticket"]["closed_stage"],
+                       "tutor_issue_occurrences": "2",
+                       "tutor_issue_source_ids": "tw:online:SOMETHING_ELSE"}})
+    idx = {"101:missed_lesson_or_late":
+           {"ticket_id": "T1", "period": ti.period_key(
+               "missed_lesson_or_late", "2026-08-18", cfg)}}
+    plan = ti.Plan()
+    ti.plan_ticket(plan, cfg, idx, TUTOR, "missed_lesson_or_late",
+                   _events(1, "2026-08-19"), source="test", evidence="e")
+    assert plan.tickets[0]["action"] == "create"
+
+
+def test_student_no_show_does_not_create_a_tutor_ticket(cfg, monkeypatch):
+    """Every no-show event that ever produced a tutor ticket was a STUDENT
+    marked missed. Teachworks records that the student did not attend, never
+    why, so it cannot carry a claim about the tutor."""
+    lesson = {"_acct": "online", "id": 9001, "employee_id": 101,
+              "employee_name": "Jane Doe", "from_date": "2026-08-25",
+              "participants": [{"status": "missed", "student_name": "Edwards, Evrsen",
+                                "student_id": 55}]}
+    monkeypatch.setattr(ti, "fetch_week_lessons", lambda a, b: [lesson])
+    grouped, lessons, no_shows = ti.sweep_events(
+        cfg, date(2026, 8, 23), date(2026, 8, 29))
+    assert not [k for k in grouped if k[1] == "missed_lesson_or_late"], \
+        "a student absence must not be planned as a tutor issue"
+    assert len(no_shows) == 1, "but it must still be collected for the rate"
+    assert no_shows[0]["student"] == "Edwards, Evrsen"
+    assert no_shows[0]["tutor_name"] == "Jane Doe"

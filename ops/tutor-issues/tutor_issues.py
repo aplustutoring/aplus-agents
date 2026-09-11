@@ -455,6 +455,7 @@ def sweep_events(cfg, week_start, week_end):
     marked = set(d["notes_not_completed"]["marked_statuses"])
     lessons = fetch_week_lessons(week_start, week_end)
     grouped = defaultdict(lambda: {"events": [], "students": []})
+    no_show_events = []      # collected, never ticketed: see the branch below
 
     for lesson in lessons:
         acct = lesson["_acct"]
@@ -468,6 +469,26 @@ def sweep_events(cfg, week_start, week_end):
             student = (p.get("student_name") or "").strip()
             issue = None
             if status in no_show:
+                # A Teachworks participant status records that THIS STUDENT did
+                # not attend. It does not record why, and it cannot tell a
+                # student who flaked from a tutor who never showed. Every one of
+                # the 23 events that produced a tutor ticket before 2026-09-10
+                # was a student marked "missed", and 5 of the 12 tutors those
+                # tickets named are rated Highly Effective on every dimension of
+                # their actual evaluation. The README already required detection
+                # "only where system data proves it"; this leg never met that.
+                #
+                # So the events are still collected, for the attendance rate and
+                # the repeat-pattern trigger, but they no longer assert fault.
+                # A missed lesson becomes a tutor issue when a FAMILY reports it,
+                # which the inbound leg already handles.
+                no_show_events.append({
+                    "date": date, "student": student, "status": status,
+                    "tutor_name": (lesson.get("employee_name") or "").strip(),
+                    "tutor_key": f"{acct}:{emp_id}" if emp_id else f"name:{lesson.get('employee_name')}",
+                    "student_id": p.get("student_id"), "source_id": lesson_key})
+                if not d["missed_lesson_or_late"].get("sweep_auto_ticket", False):
+                    continue
                 issue = "missed_lesson_or_late"
             elif status not in marked:
                 issue = "notes_not_completed"
@@ -480,7 +501,7 @@ def sweep_events(cfg, week_start, week_end):
                                 "student": student, "status": status})
             g["students"].append(student)
             g["tutor_name"] = (lesson.get("employee_name") or "").strip()
-    return grouped, lessons
+    return grouped, lessons, no_show_events
 
 
 def probe_lateness(lessons):
@@ -510,6 +531,7 @@ class Plan:
         self.refusals = []       # {source, reason, detail}
         self.digest_lines = []
         self.processed_keys = []
+        self.no_show_events = []  # student absences: reported, never ticketed
 
 
 def period_key(issue_type, event_date, cfg):
@@ -558,6 +580,27 @@ def plan_ticket(plan, cfg, tickets_index, tutor, issue_type, events,
                                   event_date, cfg):
         live = get_ticket(existing["ticket_id"])
         closed = cfg["hubspot"]["ticket"]["closed_stage"]
+
+        # A closed in-period ticket SHOULD get a fresh one when the tutor does
+        # something new after the last one was resolved. That intent is kept.
+        # What is not kept is re-raising the SAME events: before 2026-09-10 any
+        # re-sweep of an already-recorded event hit this branch and produced an
+        # identical duplicate, because the only test was "is it closed". Result:
+        # 8 of 9 tutor-weeks duplicated, 29 tickets for 15 real findings, and a
+        # count that climbed the more diligently Mandy cleared her queue. These
+        # tickets are the per-tutor history people get judged on, so inflating
+        # them by how often a human tidies up is the worst failure available.
+        #
+        # So: compare the incoming events against what the closed ticket already
+        # records. Nothing new means nothing happened.
+        if live and str(live["properties"].get("hs_pipeline_stage")) == closed:
+            already = {x for x in (live["properties"].get("tutor_issue_source_ids")
+                                   or "").split("\n") if x}
+            if already and not (set(source_lines) - already):
+                log.info(f"    {idx_key}: closed ticket {existing['ticket_id']} "
+                         f"already records these events; not duplicating")
+                return
+
         if live and str(live["properties"].get("hs_pipeline_stage")) != closed:
             occurrences = int(live["properties"].get("tutor_issue_occurrences") or 1)
             old_sources = live["properties"].get("tutor_issue_source_ids") or ""
@@ -611,7 +654,19 @@ def plan_ticket(plan, cfg, tickets_index, tutor, issue_type, events,
 
 def run_sweep(plan, cfg, state, employees, baseline_mode):
     week_start, week_end = last_complete_week()
-    grouped, lessons = sweep_events(cfg, week_start, week_end)
+    grouped, lessons, no_show_events = sweep_events(cfg, week_start, week_end)
+    if no_show_events:
+        # Reported, not ticketed. This is the raw material for a per-tutor
+        # attendance rate and for the repeat-pattern trigger that opens an
+        # evaluation, which is the workflow that actually judges a tutor.
+        by_tutor = defaultdict(int)
+        for e in no_show_events:
+            by_tutor[e["tutor_name"] or e["tutor_key"]] += 1
+        log.info(f"  student no-shows this week (NOT ticketed): "
+                 f"{len(no_show_events)} across {len(by_tutor)} tutors")
+        for t, n in sorted(by_tutor.items(), key=lambda kv: -kv[1]):
+            log.info(f"    {n:>3}  {t}")
+    plan.no_show_events = no_show_events
     processed = set(state["processed"])
     d = cfg["detectors"]
     mins = {"missed_lesson_or_late": d["missed_lesson_or_late"]["min_events_per_week"],
