@@ -43,6 +43,26 @@ def test_earliest_attended_is_the_true_first_lesson(monkeypatch):
     assert fl.earliest_attended([]) == ""
 
 
+def test_split_name_handles_teachworks_last_comma_first():
+    # the 2026-09-10 preview: 0 of 164 students resolved until 'Fiore, Ariana' was read as Ariana Fiore
+    assert fl.split_name("Fiore, Ariana") == ("Ariana", "Fiore")
+    assert fl.split_name("DaVault, Kailyn Marie") == ("Kailyn Marie", "DaVault")
+    assert fl.split_name("Ariana Fiore") == ("Ariana", "Fiore")
+    assert fl.split_name("Murray-Fiore, Mateo") == ("Mateo", "Murray-Fiore")
+    assert fl.display_name("Fiore, Ariana") == "Ariana Fiore"
+    assert fl.split_name("") == ("", "")
+
+
+def test_last_comma_first_participant_resolves_and_stamps(monkeypatch):
+    w = Wire(monkeypatch, lessons=[_lesson("2026-09-05", ["Fiore, Ariana"])],
+             history=[{"from_date": "2026-09-01", "status": "Attended"}],
+             students=[STUDENT], customers=[CUSTOMER], deals=[DEAL1], contact=CONTACT)
+    out = fl.run(force=True)
+    assert out["stamped_deals"] == 1 and out["not_in_tw"] == 0
+    assert w.saved["online:fiore, ariana"]["name"] == "Ariana Fiore"
+    assert out["new_starts"] == ["Ariana Fiore (2026-09-01)"]
+
+
 def test_choose_deal_picks_the_seasons_earliest_and_skips_excluded_pipelines():
     deals = [{"id": "5", "properties": {"createdate": "2026-09-04T00:00:00Z", "pipeline": "907748", "dealname": "x 5"}},
              {"id": "1", "properties": {"createdate": "2026-08-20T00:00:00Z", "pipeline": "907748", "dealname": "x 1"}},
