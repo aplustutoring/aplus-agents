@@ -22,6 +22,9 @@ import requests
 from dotenv import load_dotenv
 import markdown
 
+# Same directory; this script is always run as a file, so its dir is on sys.path.
+import hubspot_preflight
+
 
 def dated_filename(local_path, bundle_path):
     """Return {stem}-{bundle-dir-name}.{ext}, unique per case study / weekly
@@ -489,6 +492,15 @@ def main():
         help="Validate inputs, parse meta, convert markdown — no HubSpot write calls",
     )
     parser.add_argument(
+        "--strict-preflight",
+        action="store_true",
+        help=(
+            "Abort instead of writing the draft when preflight finds a "
+            "fail-severity issue. Default is advisory: we still write the draft, "
+            "because a flagged draft a human can fix beats no draft at all."
+        ),
+    )
+    parser.add_argument(
         "--update-existing",
         default=None,
         metavar="POST_ID",
@@ -652,6 +664,25 @@ def main():
     html = markdown_to_html(blog_md)
     print(f"HTML body length: {len(html):,} chars")
 
+    def run_preflight(featured_url):
+        """Check the payload BEFORE handing it to HubSpot.
+
+        HubSpot accepts a draft write for a body it will later refuse to
+        render, so the draft write succeeding tells us nothing about whether a
+        human can publish it. Findings are printed, not fatal, unless
+        --strict-preflight is set.
+        """
+        issues = hubspot_preflight.run_checks(
+            post_body=html,
+            name=title,
+            slug=slug,
+            meta_description=description,
+            featured_image_url=featured_url,
+            use_featured_image=bool(featured_url),
+        )
+        hubspot_preflight.report(issues)
+        return issues
+
     if args.dry_run:
         print("\n=== DRY RUN — no HubSpot API calls will be made ===\n")
         print(
@@ -690,6 +721,8 @@ def main():
         print(html[:600])
         print("\n--- Last 400 chars of generated HTML body ---")
         print(html[-400:])
+        print()
+        run_preflight(None)  # no hero URL yet in dry-run; body + meta still check
         return 0
 
     print("\n=== EXECUTING ===")
@@ -706,6 +739,17 @@ def main():
     else:
         hero_url = None
         print("\nNo hero image — publishing without featured image.")
+
+    print()
+    preflight_issues = run_preflight(hero_url)
+    if args.strict_preflight and any(i.severity == "fail" for i in preflight_issues):
+        print(
+            "ERROR: preflight found fail-severity issues and --strict-preflight is set; "
+            "not writing the draft.",
+            file=sys.stderr,
+        )
+        log("preflight_blocked", 0, f"{len(preflight_issues)} issues")
+        return 1
 
     print("\nUpdating existing draft..." if args.update_existing else "\nCreating draft post...")
     post = create_draft(
