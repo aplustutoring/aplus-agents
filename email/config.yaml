@@ -261,11 +261,15 @@ low_balance:
   # presend.lines (Roman 2026-09-10: "make these texts go out from 6644", the
   # charter_sales line the family keeps talking to about the PO; replies land
   # with Paola). Empty = sms.justcall_number, the schedulers' support line.
-  sms_line: charter_sales
-  sms_template_with_tutor: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to. Reply here with any questions."
-  sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. To keep sessions going without a gap, please submit a new PO, or ask your teacher of record to, when you have a moment. Reply here with any questions."
+  # Roman 2026-09-11 (Paola's point: a PO reminder is billing, not her sales
+  # line): the text leaves from the SUPPORT line the family already uses,
+  # signed "A+ Tutoring"; Paola is an agent on that line and every reply is
+  # also posted on the ticket and DM'd to her by the sweep (_watch_replies).
+  sms_line: support
+  sms_template_with_tutor: "Hi {first_name}, this is A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to. Reply here with any questions."
+  sms_template: "Hi {first_name}, this is A+ Tutoring. {student} has {hours} left on the current PO. To keep sessions going without a gap, please submit a new PO, or ask your teacher of record to, when you have a moment. Reply here with any questions."
   # Siblings: ONE text per family naming every student ({students}; {tutor_first} = their tutors).
-  sms_template_multi: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {students} have been working with {tutor_first} and we want to keep that progress going. Each of them has {hours} left on their current PO. When you have a moment, please submit new POs, or ask your teacher of record to. Reply here with any questions."
+  sms_template_multi: "Hi {first_name}, this is A+ Tutoring. {students} have been working with {tutor_first} and we want to keep that progress going. Each of them has {hours} left on their current PO. When you have a moment, please submit new POs, or ask your teacher of record to. Reply here with any questions."
   # One warm sentence DERIVED from the tutor's lesson notes of the last
   # notes_window_days (Teachworks `public_notes`, confirmed live 2026-09-09),
   # written by Claude and validated before use (no numbers, no exclamation,
@@ -282,8 +286,8 @@ low_balance:
   family_email:
     mode: send                    # send (Resend, same rail as the What-to-Expect email) | off
     template: "templates/low_balance_charter.html"
-    from: "{sender_name}, A+ Tutoring <admin@wetutorathome.com>"   # verified sending address; the NAME is the seat's
-    reply_to: "{sender_email}"    # replies reach the seat directly
+    from: "A+ Tutoring <admin@wetutorathome.com>"   # the office writes (Roman 2026-09-11); verified sending address
+    reply_to: "{sender_email}"    # replies still reach the seat (Paola) directly
     subject: "{student}'s tutoring hours are running low"
     # siblings: one email naming every student
     subject_multi: "{students}: tutoring hours are running low"
