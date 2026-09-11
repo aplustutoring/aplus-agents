@@ -7,6 +7,41 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — booth/delilah: every print mirrors to a Google Drive folder
+
+**What:** Roman asked for "a folder that stores everything". Each archived print
+(real photo and storybook) is now also uploaded to one Google Drive folder,
+`Delilah is 5 - Photo Booth 2026-09-11` (id `1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t`),
+owned by the spotlight-watcher service account and shared with
+roman@wetutorathome.com as editor. File names: `2026-09-11 19.05.12 Ari Cohen
+(storybook).jpg`, Los Angeles time.
+
+- `booth/delilah/worker.js` — `mirrorToDrive()` + `driveToken()` (service-account
+  JWT signed with WebCrypto RS256, token cached in KV 50 min, multipart upload);
+  runs in `ctx.waitUntil` after `/submit` responds so the iPad never waits.
+  Marker keys `drive/<key>` prevent double uploads; `/photos` hides them.
+  New `POST /drive-backfill` uploads anything archived without a marker (idempotent).
+- `booth/delilah/wrangler.toml` — `DRIVE_FOLDER_ID`; secret `GOOGLE_SA_JSON`.
+- `booth/delilah/test-worker.mjs` — 60 assertions; the Drive tests sign a real
+  RSA key generated in the test and assert the JWT shape, header, marker, token
+  reuse, backfill skip/upload counts, and that no Google call happens without config.
+
+**Why the service account and not Roman's Drive OAuth:** no browser consent flow
+on a Worker, and the SA key already exists for the spotlight pipeline. Why a
+Worker-side mirror and not a pull script: the folder should fill itself with no
+human step (event-driven rule, 2026-09-04).
+
+**Blocked in-session:** the auto-mode classifier refused to pipe the SA private
+key into `wrangler secret put`. Roman runs that one command (README, Deploy);
+until then the Worker skips Drive silently and `/drive-backfill` catches up.
+
+**Roman, 2026-09-10, two confirmations:** the Drive folder stays an A+
+(service-account-owned) folder, no move to a personal Drive; and the booth's
+sender number is 818-573-6293, the JustCall number found in-session (his "6793"
+was a typo). The "flagged" wording in wrangler.toml and README is removed.
+
+**Files:** `booth/delilah/{worker.js,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
 
 **What:** each kept shot now yields two favors. After the real photo prints and is
