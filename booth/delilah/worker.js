@@ -43,7 +43,7 @@ export default {
       const list = await env.PHOTOS.list({ limit: 1000 });
       const report = { uploaded: [], skipped: 0, failed: [] };
       for (const k of list.keys) {
-        if (k.name.startsWith("drive/")) continue;
+        if (k.name.startsWith("drive/") || k.name.startsWith("err/")) continue;
         if (await env.PHOTOS.get(`drive/${k.name}`)) { report.skipped++; continue; }
         try {
           const id = await mirrorToDrive(env, k.name, k.metadata || {});
@@ -58,7 +58,7 @@ export default {
     if (request.method === "GET" && url.pathname === "/photos") {
       const list = await env.PHOTOS.list({ limit: 1000 });
       const photos = list.keys
-        .filter((k) => !k.name.startsWith("drive/"))
+        .filter((k) => !k.name.startsWith("drive/") && !k.name.startsWith("err/"))
         .map((k) => ({ key: k.name, name: k.metadata?.name || "", at: k.metadata?.at || "", kind: k.metadata?.kind || "photo", url: `${url.origin}/photo/${k.name}` }))
         .sort((a, b) => (a.at < b.at ? -1 : 1));
       return json({ photos }, 200, env);
@@ -70,12 +70,31 @@ export default {
       const raw = body.raw || "";
       const m = /^data:(image\/(?:jpeg|png));base64,(.+)$/s.exec(raw);
       if (!m) return json({ error: "raw (jpeg/png dataURL) required" }, 400, env);
-      try {
-        const image = await paintStorybook(env, { mimeType: m[1], base64: m[2] });
-        return json({ ok: true, image }, 200, env);
-      } catch (e) {
-        return json({ ok: false, error: String(e) }, 502, env);
+      // Two attempts inside the Worker: Gemini 429/5xx and empty responses are
+      // transient (2026-09-11: a shot failed once and replayed fine 30 min later).
+      let lastErr = null;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const image = await paintStorybook(env, { mimeType: m[1], base64: m[2] });
+          return json({ ok: true, image, attempt }, 200, env);
+        } catch (e) {
+          lastErr = String(e);
+          if (attempt === 1) await new Promise((r) => setTimeout(r, 1500));
+        }
       }
+      // Never silent: the failure is written where the host view can see it.
+      try {
+        await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), name: String(body.name || "").slice(0, 60), error: lastErr }), { expirationTtl: 60 * 60 * 24 * 30 });
+      } catch {}
+      console.error("storybook failed", body.name, lastErr);
+      return json({ ok: false, error: lastErr }, 502, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/errors") {
+      const list = await env.PHOTOS.list({ prefix: "err/", limit: 200 });
+      const errors = [];
+      for (const k of list.keys) { const v = await env.PHOTOS.get(k.name, "json"); if (v) errors.push(v); }
+      return json({ errors }, 200, env);
     }
 
     if (request.method !== "POST" || url.pathname !== "/submit") {

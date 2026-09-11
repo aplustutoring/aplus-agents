@@ -126,7 +126,8 @@ const CONFIG = {
   DATE_LABEL: "9.11.26",
   HEBREW_YEAR: "5787",
   AUTO_PRINT: true,       // every kept photo prints (party favor)
-  STORYBOOK: true,        // second print: guests repainted into a Rosh Hashanah storybook (Gemini)
+  STORYBOOK: true,        // guests repainted into a Rosh Hashanah storybook (Gemini), sent by TEXT
+  STORYBOOK_PRINT: false, // Roman 2026-09-11: the painting is never printed, it eats paper. Text only.
   STORYBOOK_BANNER: "Once upon a Shana Tova",
   IDLE_RESET_MS: 90000,
   DONE_RESET_MS: 8000
@@ -176,7 +177,7 @@ const CONFIG = {
     <div class="field"><label for="f-name">Your name (goes on the album)</label><input id="f-name" type="text" placeholder="Bubbe &amp; Zayde" maxlength="40"></div>
     <div class="field"><label for="f-phone">Cell number</label><input id="f-phone" type="tel" inputmode="tel" placeholder="(818) 555-0123"></div>
     <div id="form-error"></div>
-    <div class="form-note">Two prints are coming either way: your photo and a storybook version. The text is a bonus.</div>
+    <div class="form-note">Your print is coming either way. Add your cell and we text you the photo plus a storybook painting of it.</div>
     <div class="form-actions">
       <button class="btn btn-ghost" type="button" id="btn-skip">Just print it</button>
       <button class="btn btn-primary" type="submit">Print + text me</button>
@@ -195,7 +196,7 @@ const CONFIG = {
 <div class="screen" id="screen-painting">
   <div class="spinner"></div>
   <h2 class="display" style="font-size:38px;">Painting your storybook&hellip;</h2>
-  <div class="done-sub">Grab your first print. A second one is being painted for you, about 20 seconds.</div>
+  <div class="done-sub">Grab your print. A storybook painting of it is on its way to your phone, about 20 seconds.</div>
   <img id="painting-preview" alt="" style="height:38vh;border-radius:16px;margin-top:26px;box-shadow:0 16px 50px rgba(0,0,0,.35);">
 </div>
 
@@ -468,19 +469,27 @@ const CONFIG = {
     if(CONFIG.STORYBOOK && raw){
       $("painting-preview").src=photo;
       show("painting");
+      // Up to two tries from the iPad (the Worker retries Gemini once per try),
+      // so a dropped Wi-Fi request or one bad Gemini call does not lose the print.
+      let out=null;
+      for(let attempt=1; attempt<=2 && !(out && out.image); attempt++){
+        try{
+          const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),75000);
+          const res=await fetch(CONFIG.WORKER_URL+"/storybook",{
+            method:"POST", headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({ raw, name, attempt }), signal:ctl.signal
+          });
+          clearTimeout(t);
+          out=res.ok ? await res.json() : null;
+        }catch(e){ out=null; }
+        if(!(out && out.image) && attempt===1) await new Promise(r=>setTimeout(r,2000));
+      }
       try{
-        const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),75000);
-        const res=await fetch(CONFIG.WORKER_URL+"/storybook",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({ raw, name }), signal:ctl.signal
-        });
-        clearTimeout(t);
-        const out=res.ok ? await res.json() : null;
         if(out && out.image){
           const story=await frameStorybook(out.image);
           storyOk=true;
           state.album.push({ name, at:new Date().toISOString(), dataUrl:story, kind:"storybook" });
-          if(CONFIG.AUTO_PRINT) await printPhoto(story);
+          if(CONFIG.STORYBOOK_PRINT) await printPhoto(story);   // off: text only
           try{
             const o2=await postSubmit({ name, phone, photo:story, kind:"storybook" });
             storyTexted=!!(o2 && o2.text && o2.text.sent);
@@ -491,10 +500,12 @@ const CONFIG = {
 
     const first=(name||"").split(/\s+/)[0]||"friend";
     let msg;
-    if(storyOk) msg=`Two prints are coming out, ${first}: your photo and your storybook.`;
+    if(storyOk && phone && storyTexted) msg=`Your print is coming out, ${first}. Your storybook painting is on its way to your phone.`;
+    else if(storyOk && phone) msg=`Your print is coming out, ${first}. The storybook text did not go through, so ask Roman to resend it.`;
+    else if(storyOk) msg=`Your print is coming out, ${first}. Ask Roman to text you the storybook painting.`;
     else if(CONFIG.STORYBOOK) msg=`Your print is coming out, ${first}. The storybook painter was busy, so ask Roman for it later.`;
     else msg=`Enjoy your print, ${first}!`;
-    if(phone) msg+= (texted||storyTexted) ? " Check your phone too." : " The text did not go through, so ask Roman to resend it.";
+    if(phone && !texted) msg+=" The photo text did not go through either, so ask Roman to resend it.";
     $("done-msg").textContent=msg;
     show("done");
     setTimeout(fullReset, CONFIG.DONE_RESET_MS);
