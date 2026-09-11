@@ -682,6 +682,8 @@ properties:
           label: "EO LA Valley AI Agents 2026"
         - value: blue_ridge_btsc_2026
           label: "Blue Ridge BTSC 2026"
+        - value: aplus_conference_2026
+          label: "APLUS+ Conference 2026"   # Anaheim, Oct 21-23 2026, booth/aplus-2026
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events
