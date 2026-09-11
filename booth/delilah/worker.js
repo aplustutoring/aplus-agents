@@ -90,6 +90,17 @@ export default {
       return json({ ok: false, error: lastErr }, 502, env);
     }
 
+    // The iPad reports its own failures here (a request that never reached
+    // /submit is invisible to the Worker otherwise).
+    if (request.method === "POST" && url.pathname === "/log") {
+      let body = {};
+      try { body = await request.json(); } catch {}
+      const rec = { at: new Date().toISOString(), stage: String(body.stage || "client").slice(0, 40), name: String(body.name || "").slice(0, 60), error: String(body.error || "").slice(0, 300), ua: (request.headers.get("User-Agent") || "").slice(0, 120) };
+      console.error("client", JSON.stringify(rec));
+      try { await env.PHOTOS.put(`err/${rec.at}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify(rec), { expirationTtl: 60 * 60 * 24 * 30 }); } catch {}
+      return json({ ok: true }, 200, env);
+    }
+
     if (request.method === "GET" && url.pathname === "/errors") {
       const list = await env.PHOTOS.list({ prefix: "err/", limit: 200 });
       const errors = [];
@@ -110,6 +121,7 @@ export default {
       return json({ error: "Invalid JSON" }, 400, env);
     }
     const { name = "", phone = "", photo } = body;
+    console.log("submit", body.kind || "photo", JSON.stringify(name).slice(0, 40), "phone:", !!phone, "photo bytes:", String(photo || "").length);
     const kind = body.kind === "storybook" ? "storybook" : "photo";
     if (!photo || !/^data:image\/jpeg;base64,/.test(photo)) {
       return json({ error: "photo (jpeg dataURL) required" }, 400, env);
@@ -133,6 +145,8 @@ export default {
       }
     } catch (e) {
       results.archive = { error: String(e) };
+      console.error("archive failed", name, String(e));
+      try { await env.PHOTOS.put(`err/${new Date().toISOString()}-${crypto.randomUUID().slice(0, 8)}`, JSON.stringify({ at: new Date().toISOString(), stage: "archive", name, error: String(e) }), { expirationTtl: 60 * 60 * 24 * 30 }); } catch {}
     }
 
     // 2. Text (only if a phone was entered)
