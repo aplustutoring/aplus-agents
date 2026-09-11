@@ -772,9 +772,10 @@
     414286640,
     414292569,
     414308148,
-    414311185
+    414311185,
+    414320051
   ],
-  "last_run_utc": "2026-09-11T22:16:01.848383+00:00",
+  "last_run_utc": "2026-09-11T22:57:14.278633+00:00",
   "pending_digest": [
     {
       "call_id": 414134815,
@@ -1143,6 +1144,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 414320051,
+      "number": "18183881616",
+      "time_pt": "3:51 PM",
+      "matched": true,
+      "contact_label": "Mico Melkonian",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Yolanda from A+ placed an outbound follow-up call to Mico Melkonian regarding earlier voicemail and email about tutoring for his daughter Alik. Mico confirmed he received both the message and email but is still at work and hasn't had a chance to review them. He said he will look at them later today and follow up. Call ended cordially with no concrete next step scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Mico's callback later today after he reviews voicemail and email; if no response by tomorrow, follow up again about Algebra 1 in-person tutoring for Alik",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda reached Mico Melkonian on an outbound follow-up about tutoring for his 7th-grade daughter Alik (in-person Algebra 1, Tarzana). Mico was at work, confirmed he got both our voicemail and email, and said he'll review later today and get back to us. Tone was polite and receptive but non-committal. Note: Yolanda opened the call addressing him as 'Rico' and later 'Miguel' \u2014 his name is Mico, please use Mico going forward. If he hasn't called back by end of next business day, follow up. Suggested opener: 'Hi Mico, it's [name] from A+ Tutoring following up \u2014 wanted to see if you had a chance to review the info we sent about in-person Algebra 1 support for Alik.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family, spoke briefly with parent Mico; not charter, not diagnostic-based \u2014 remains We Connected.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Yolanda reached Mico on follow-up. He confirmed receiving our voicemail and email but was at work and hasn't reviewed yet \u2014 said he will look at them later today and get back to us.",
+          "what_we_can_do_to_help": "[outbound call] Await Mico's callback later today after he reviews our message and email. If no response by next business day, Yolanda to follow up again on in-person Algebra 1 tutoring for Alik in Tarzana.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Yolanda reached Mico on follow-up. He confirmed receiving our voicemail and email but was at work and hasn't reviewed yet \u2014 said he will look at them later today and get back to us."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Await Mico's callback later today after he reviews our message and email. If no response by next business day, Yolanda to follow up again on in-person Algebra 1 tutoring for Alik in Tarzana."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Mico's callback later today after he reviews voicemail and email; if no response by tomorrow, follow up again about Algebra 1 in-person tutoring for Alik",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
