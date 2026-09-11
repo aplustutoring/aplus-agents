@@ -752,9 +752,10 @@
     413889099,
     413888913,
     413900389,
-    413918223
+    413918223,
+    413920013
   ],
-  "last_run_utc": "2026-09-11T01:30:03.637856+00:00",
+  "last_run_utc": "2026-09-11T01:37:25.422707+00:00",
   "pending_digest": [
     {
       "call_id": 413694794,
@@ -1782,6 +1783,79 @@
           "Send SMS update to Gino with tutor match and confirmed trial schedule",
           80047202,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 413920013,
+      "number": "14082027768",
+      "time_pt": "6:30 PM",
+      "matched": true,
+      "contact_label": "Cindy Boyden",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call to Cindy Boyden regarding her 3rd-grade daughter's math tutoring through Ocean Grove charter. Reached her voicemail; no message content captured beyond her outgoing greeting. No new information obtained; need to try again to confirm PO status and next steps.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry outreach to Cindy Boyden to check on Ocean Grove EF meeting/PO status and move forward with scheduling a math tutor for her 3rd-grade daughter.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound call to Cindy Boyden (parent, Ocean Grove charter family) hit her voicemail \u2014 no message left in transcript. Prior call (2026-08-26) established her 3rd-grade daughter needs math tutoring (foundational add/sub facts, early multiplication, word-problem strategies); we quoted $60/45-min and $75/hour and recommended starting 1x/week on a monthly PO, with option to move to 2x/week 45-min. Cindy was meeting her Ocean Grove EF the next day to request a PO. Please try her again \u2014 suggested opener: 'Hi Cindy, it's ___ from A+ Tutoring following up on your daughter's math tutoring \u2014 just checking in to see how the meeting with your Ocean Grove EF went and whether the PO is in motion so we can get her matched with a math tutor.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Charter family (Ocean Grove instructional funds) \u2014 status remains QTL - Charter; call was voicemail so no change warranted.",
+        "student_or_school_names_mentioned": [
+          "Ocean Grove"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Reached Cindy's voicemail; no message content beyond her greeting. Still awaiting update on Ocean Grove EF meeting and PO request for 3rd-grade daughter's math tutoring.",
+          "what_we_can_do_to_help": "[outbound call] Retry Cindy in a day or two to confirm PO status; once PO is in hand, match with a math tutor and schedule first session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Reached Cindy's voicemail; no message content beyond her greeting. Still awaiting update on Ocean Grove EF meeting and PO request for 3rd-grade daughter's math tutoring."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Retry Cindy in a day or two to confirm PO status; once PO is in hand, match with a math tutor and schedule first session."
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry outreach to Cindy Boyden to check on Ocean Grove EF meeting/PO status and move forward with scheduling a math tutor for her 3rd-grade daughter.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
