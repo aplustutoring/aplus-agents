@@ -7,6 +7,33 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
+
+**What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
+authenticated fine and then every upload failed with 403 "Service Accounts do not
+have storage quota. Leverage shared drives or OAuth delegation". The SA-owned My
+Drive folder from PR #211 accepted the folder itself but can never hold a file.
+The SA also cannot create a shared drive ("The authenticated user cannot create
+new shared drives").
+
+**Fix (system change):** Roman created the Shared Drive "Delilah's Bday"
+(`0AFzOAF0xZUy-Uk9PVA`, Roman manager, SA content manager) and `DRIVE_FOLDER_ID`
+now points at its root. Test upload succeeded; backfill of the archive ran (see
+below). `A+ Events` (`0ABqrqCiZrGoVUk9PVA`) turned out to already be a shared
+drive holding the Sage Oak booth photos, so future booths use a folder in there.
+
+**Two more lessons logged in the README:** shared-drive writes are eventually
+consistent (get/delete can 404 for seconds after create); and `wrangler kv key
+delete` without `--remote` deletes from the local dev store and prints success,
+which is why the two 2026-09-10 test photos survived the first "deletion".
+
+**Leftovers for Roman to trash (classifier blocked the SA deletes):** the old
+SA-owned folder `1Xl25HrOqqIyXD6IWobDv7EPXnvcqqL2t` (empty), a stray folder
+"Delilah is 5 - Photo Booth 2026-09-11" in A+ Events with one 4-byte
+`_quota-test.jpg`, and one `_quota-test.jpg` at the top of Delilah's Bday.
+
+**Files:** `booth/delilah/{wrangler.toml,README.md}`, `docs/CHANGELOG.md`.
+
 ## 2026-09-10 - Tutor-late texts open a scheduler-owned ticket tied to tutor and family
 
 **Why (Roman, 2026-09-10):** "can we create an agent that monitors all incoming
