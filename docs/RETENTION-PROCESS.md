@@ -24,6 +24,25 @@ comes from (a school PO versus a package), and spotlights are charter only.
 | any | **Low balance**, 4 hours or fewer | See below. | | 1 (built) |
 | any | Deal moved to Stopped, or 21 days of silence after Retention Risk | Case closed as **Lost** with a reason (agent writes `no_response` or `stopped`; Paola picks moved on / cost / schedule / tutor fit / school funding when she knows). **Family enrolled in re-engagement** (the charter SMS round 2 and private-pay win-back campaigns). The journey does not stop. | Paola sets the reason when she knows it. | 5 |
 
+## Where the lists live (HubSpot saved deal views, Roman 2026-09-10)
+
+Monday is retired; the working lists are two shared deal views owned by Roman,
+Paola added by name. HubSpot has no API for saved views (every
+`/crm/v3/views` variant 404s), so they were built in the UI; change them there.
+
+| View | Id | What it shows | Filter |
+|---|---|---|---|
+| **Renewal Chase** | 72185740 | Every family that still owes a PO after a low-balance alert. A deal leaves on its own when the new PO lands (Renewed) or the deal stops (Not Renewing). | `[Agent] Retention stage` is any of Low Hours, Family Contacted, Teacher Contacted, Retention Risk. Columns: the five retention properties, PO number, student, teacher of record. |
+| **New Starts (Care Calls)** | 72186918 | Families whose tutoring started in the last 60 days, for the day-14 and day-45 calls. Sorted oldest first. All pipelines. | Charter: stage Post-Lesson or Invoice Submitted, date entered Post-Lesson under 60 days ago, deal name contains `1 - 26/27` (the season's first PO, so a family's 2nd to 5th pre-created deals do not repeat it). Gold Tutoring and In-Person: stage Post-Lesson, date entered Post-Lesson under 60 days ago. Columns add the three "date entered Post-Lesson" fields, Last Contacted, Next Activity Date. |
+
+**Known gaps of New Starts:** "date entered Post-Lesson" is when the deal was
+moved, not the Teachworks first-lesson date; a family's pre-created deals all
+move together and moves come in batches, so the date can lag the first lesson
+by days. Build step 2 (the lesson-one brief) stamps the real first-lesson date
+from Teachworks; switch the view to it then. Payment-link deals named "Charter
+Private Pay - ... via Payment Link" show up with no family name; the deal's
+contact carries it.
+
 ## Low balance (step 1, built 2026-09-08 to 10, `email/src/low_balance.py`)
 
 Trigger: Teachworks' Package Balance Alerts email ("...package balance for
