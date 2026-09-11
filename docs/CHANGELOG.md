@@ -7,6 +7,57 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-10 — Tutor issues: the ticket was pretending to be the judgment
+
+**Why:** Mandy flagged that Teachworks no-shows were creating tickets. They were,
+and the ranking they produced was wrong in both directions. Every one of the 23
+events behind a `missed_lesson_or_late` ticket was a STUDENT marked `missed`.
+Teachworks records that a student did not attend, never why, so it cannot tell a
+student who flaked from a tutor who never showed. The agent attributed all of
+them to the tutor, HIGH priority, on the tutor's contact record.
+
+Cross-checked against the real evaluations already on Monday board 8900831153
+(116 evals, 86 tutors, six rated dimensions, run by Mandy):
+
+- 5 of the 12 flagged tutors are rated **Highly Effective on every dimension**.
+  Kelly James was tied #1 on the ticket list; her file is two absences by one
+  student, Finn Goodings. Hannah Thorn was filed as a notes problem in the same
+  week her evaluation read "comprehensive and very detailed, great job."
+- The genuinely struggling tutors have **no tickets at all**: Gianna Centrella
+  and Micah Ybarra at 1.17, Ruth Dapkus at 1.50 with two Emergency evaluations.
+- 3 of the flagged tutors have **no evaluation on file** at all. That is the one
+  genuinely useful thing the ticket data surfaced.
+
+**Changed:**
+- `config.yml` — `missed_lesson_or_late.sweep_auto_ticket: false`. Events are
+  still collected and reported (attendance rate, repeat-pattern trigger); they
+  no longer assert fault. A missed lesson becomes a tutor issue when a FAMILY
+  reports it, which the inbound leg already handles.
+- `tutor_issues.py` — the duplication fix. A closed in-period ticket previously
+  fell through to "create" on the sole test of "is it closed", so any re-sweep
+  of already-recorded events produced an identical duplicate: 8 of 9 tutor-weeks
+  doubled, 29 tickets for 15 real findings, and a count that rose the more
+  diligently Mandy cleared her queue. Now the incoming events are compared
+  against what the closed ticket already records. The original intent is kept
+  and tested: a genuinely NEW incident after resolution still opens a fresh
+  ticket.
+- `README.md` — records why the auto-leg is off and what would be re-asserted by
+  switching it back on.
+- 3 new tests (14 passing).
+
+**The principle worth keeping:** a ticket is a tripwire, an evaluation is a
+judgment. This detector was doing both and was qualified for neither.
+
+**Still open:** the repeat-pattern to Emergency-eval trigger on Mandy's board
+(not built, needs her sign-off since it writes to her workflow); the per-tutor
+attendance rate (needs Teachworks, Actions-only); the 4 open tickets from the
+retired leg; only 8 tutors have a training quiz result on file out of 86
+evaluated.
+
+**Files:** `ops/tutor-issues/config.yml`, `ops/tutor-issues/tutor_issues.py`,
+`ops/tutor-issues/README.md`, `ops/tutor-issues/tests/test_tutor_issues.py`.
+
+---
 ## 2026-09-08 — Low-balance renewal agent: Teachworks alert → family + TOR outreach → self-closing case (BUILT, not armed)
 
 **Why:** Roman: "when a family hits a low balance alert on hours in Teachworks,
