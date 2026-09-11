@@ -39,6 +39,12 @@ the host view. No text was sent (no number on file for that entry).
 painting screen, form note and done messages now say the storybook goes to the
 phone. Same rule already applied to the APLUS+ conference booth.
 
+**Roman, 2026-09-11, second change:** print is not mandatory. The form now
+offers **Text me / Print it / Both**. Text needs a cell and sends the photo then
+the painting; Print needs nothing; Both does both. The painting is only
+generated when a text is going out (no Gemini call for print-only guests).
+Done and progress messages follow the choice.
+
 **Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs}`, `docs/CHANGELOG.md`.
 
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
