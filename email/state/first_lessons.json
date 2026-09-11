@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-11T14:42:46.709769+00:00",
+ "_last_run": "2026-09-11T21:20:46.811839+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-10",
   "contact_id": "1523951",
@@ -341,6 +341,15 @@
   "first": "2026-04-14",
   "name": "Kailyn Marie DaVault",
   "tw_student_id": "2225303"
+ },
+ "online:delgado sanchez, jesse": {
+  "checked": "2026-09-11",
+  "contact_id": "95860510517",
+  "deal_id": "32823338937",
+  "email": "sanchezvasquezyesenia42@gmail.com",
+  "first": "2025-02-06",
+  "name": "Jesse Delgado Sanchez",
+  "tw_student_id": "1974443"
  },
  "online:di nardo, giada": {
   "checked": "2026-09-10",
@@ -934,6 +943,15 @@
   "name": "Trey Payton",
   "tw_student_id": "2220218"
  },
+ "online:peachey, carl": {
+  "checked": "2026-09-11",
+  "contact_id": "162562694948",
+  "deal_id": "64887368511",
+  "email": "breann.cuilty91@gmail.com",
+  "first": "2026-09-11",
+  "name": "Carl Peachey",
+  "tw_student_id": "2350628"
+ },
  "online:perez, jonathan": {
   "checked": "2026-09-10",
   "contact_id": "100111469122",
@@ -1005,6 +1023,33 @@
   "first": "2025-12-09",
   "name": "Santiago Quintanilla",
   "tw_student_id": "2160900"
+ },
+ "online:radnia, benyamin": {
+  "checked": "2026-09-11",
+  "contact_id": "247101648950",
+  "deal_id": "64877359419",
+  "email": "y_shaghayegh@yahoo.com",
+  "first": "2026-09-11",
+  "name": "Benyamin Radnia",
+  "tw_student_id": "2349871"
+ },
+ "online:radnia, liya": {
+  "checked": "2026-09-11",
+  "contact_id": "247101648950",
+  "deal_id": "64877421209",
+  "email": "y_shaghayegh@yahoo.com",
+  "first": "2026-09-11",
+  "name": "Liya Radnia",
+  "tw_student_id": "2349869"
+ },
+ "online:radnia, yoel": {
+  "checked": "2026-09-11",
+  "contact_id": "247101648950",
+  "deal_id": "64877299125",
+  "email": "y_shaghayegh@yahoo.com",
+  "first": "2026-09-11",
+  "name": "Yoel Radnia",
+  "tw_student_id": "2349870"
  },
  "online:ramos, john": {
   "checked": "2026-09-11",
@@ -1329,6 +1374,15 @@
   "name": "Araceli Trejo",
   "no_deal_until": "2026-09-13",
   "tw_student_id": "2224700"
+ },
+ "online:van reuter, elias": {
+  "checked": "2026-09-11",
+  "contact_id": "239685829982",
+  "deal_id": "64257456497",
+  "email": "vanreuteraudrey@gmail.com",
+  "first": "2026-08-20",
+  "name": "Elias Van Reuter",
+  "tw_student_id": "2290260"
  },
  "online:villa, ezekiel": {
   "checked": "2026-09-10",
