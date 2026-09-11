@@ -257,6 +257,11 @@ low_balance:
   # {po_ref} = " (PO 3114143406)" or empty.
   # Framing for family AND teacher (Roman 2026-09-09): we want to keep the
   # progress going; no educating anyone about POs, vendor details or rates.
+  # The line the renewal text leaves from, as a ROLE resolved through
+  # presend.lines (Roman 2026-09-10: "make these texts go out from 6644", the
+  # charter_sales line the family keeps talking to about the PO; replies land
+  # with Paola). Empty = sms.justcall_number, the schedulers' support line.
+  sms_line: charter_sales
   sms_template_with_tutor: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to. Reply here with any questions."
   sms_template: "Hi {first_name}, it's {sender_first} with A+ Tutoring. {student} has {hours} left on the current PO. To keep sessions going without a gap, please submit a new PO, or ask your teacher of record to, when you have a moment. Reply here with any questions."
   # Siblings: ONE text per family naming every student ({students}; {tutor_first} = their tutors).

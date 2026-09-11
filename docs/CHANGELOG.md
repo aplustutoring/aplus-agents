@@ -79,6 +79,37 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-10 — low_balance: same-evening text (`day1_now`), texts from the charter_sales line, teacher email split to the next morning
+
+**What:** Roman, the evening the agent went live ("lets also do the text right
+now ... ive had good success at this time of day. make these texts go out
+from 6644"):
+- `email-triage.yml` gained a `day1_now` input → `low_balance.day1_now()`:
+  every open charter case gets its day-1 text NOW instead of the next business
+  morning. Same gates as the morning sweep (new PO closes the case, a reply by
+  email or by JustCall text skips the family, ticket must still be open, opted
+  out honoured, 8am-8pm PT window), only the business-morning wait is skipped.
+- The teacher email is NOT sent with the evening text. The day-1 record carries
+  `tor_pending`; the next business morning's sweep runs a teacher-only pass
+  (`_day1_outreach(texts=False)`, audit id `<case>:day1-teacher`) after the
+  same PO / reply / ticket checks, so a family that answers the evening text
+  never has their teacher emailed the next morning.
+- `low_balance.sms_line: charter_sales`: the renewal text leaves from Paola's
+  line (818-573-6644, resolved through `presend.lines`), the number the family
+  keeps talking to about the PO. `sms._jc_send` takes a `from_number` override;
+  every other engine still texts from `sms.justcall_number`.
+- Reply check note reads "texted us" (the family may have texted either line).
+
+**Why:** the day-0 emails went out at 6:28 PM PT; Roman wanted the text on top
+tonight because evening texts convert for him, and from the line whose replies
+land with the charter_sales seat. The teacher half stays a business-hours email.
+
+**Files:** email/src/low_balance.py (`_sms_line`, `day1_now`, `_sweep(texts_only)`,
+`_day1_outreach(texts, teachers, label)`, `open_cases` folds `tor_pending`),
+email/src/sms.py, email/src/main.py, email/config.yaml, .github/workflows/email-triage.yml,
+email/tests/test_low_balance.py (+6), docs/RETENTION-PROCESS.md.
+
+---
 ## 2026-09-10 (night) — Queued runs started from stale checkouts: 16 duplicate HubSpot items, the GitHub failure emails, and the fix
 
 **Roman:** "we have been getting a lot of github emails of actions failing" → investigated, then "go and delete".

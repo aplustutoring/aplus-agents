@@ -44,11 +44,12 @@ from .gmail_client import _scrub_outbound
 JC_BASE = "https://api.justcall.io"
 
 
-def _jc_send(to_number: str, body: str) -> dict:
+def _jc_send(to_number: str, body: str, from_number: str | None = None) -> dict:
     """One SMS via JustCall (the line schedulers already answer — replies land
-    in the same JustCall threads they handle today)."""
+    in the same JustCall threads they handle today). from_number overrides the
+    line for engines that text from a different seat (low_balance.sms_line)."""
     sc = cfg().get("sms", {})
-    payload = {"justcall_number": sc.get("justcall_number"),
+    payload = {"justcall_number": from_number or sc.get("justcall_number"),
                "contact_number": to_number, "body": body}
     if DRY_RUN:
         print(f"[DRY_RUN] justcall SMS -> {to_number}: {body[:100]}")
