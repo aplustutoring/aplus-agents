@@ -25,17 +25,22 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import audit, hubspot_client as hs, owner_assign, slack_client, teachworks_client as tw
-from .config import DRY_RUN, cfg
+from .config import DRY_RUN, cfg, staff
 
 CUR_PATH = Path(__file__).resolve().parent.parent / "state" / "sync_cursor.json"
 
 CONTACT_PROPS = ["email", "firstname", "lastname", "phone", "mobilephone",
-                 "address", "city", "state", "zip"]
+                 "address", "city", "state", "zip", "a_persona"]
 
 
 def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
     """The deal's FAMILY contact. Deals can carry several contacts (parent + TOR);
-    prefer the one whose name matches the deal-name parent, else the first."""
+    prefer the one whose name matches the deal-name parent, else the first
+    contact that is not the school's staff. A contact tagged Teacher of Record
+    and NOT Family is never the family: on a NEEDS PARENT deal it used to be
+    the fallback, and on 2026-09-10 iLEAD's ES got the family's schedule text,
+    the What-to-Expect email and a Teachworks family in her name (Keanu Hsu),
+    while the real parent, associated an hour later, got nothing."""
     try:
         assoc = hs._get(f"/crm/v3/objects/deals/{deal_id}/associations/contacts")
     except Exception:  # noqa: BLE001
@@ -49,9 +54,11 @@ def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
             c = hs._get(f"/crm/v3/objects/contacts/{cid}", {"properties": ",".join(CONTACT_PROPS)})
         except Exception:  # noqa: BLE001
             continue
-        first = first or c
-        if dealname and _contact_matches_dealname(c.get("properties") or {}, dealname):
+        props = c.get("properties") or {}
+        if dealname and _contact_matches_dealname(props, dealname):
             return c
+        if first is None and hs.is_family_contact(props):
+            first = c
     return first
 
 
@@ -165,12 +172,23 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     record = {"message_id": key, "source": "deal_sync", "deal_id": deal["id"],
               "deal_name": deal["properties"].get("dealname"), "tw_account": acct,
               "charter": is_charter, "owner": None}
-    if not email:
-        record.update({"action_taken": "sync_skipped", "reason": "no contact email on deal"})
-        audit.append(record)
+    dealname = deal["properties"].get("dealname", "")
+    if not email or dealname.startswith("NEEDS PARENT"):
+        # Not ready, not failed: the parent is unknown (po_inbox's NEEDS PARENT
+        # placeholder, or no family contact / email yet). Nothing is written
+        # and the deal is NOT marked processed, so the parent-chase resolution
+        # (or a human fix) can run the sync for real later. Before 2026-09-11
+        # this was a permanent sync_skipped, and a NEEDS PARENT deal with a
+        # TOR contact synced the school staffer as the family.
+        why = ("deal still NEEDS PARENT" if dealname.startswith("NEEDS PARENT")
+               else "no family contact with an email on the deal")
+        record.update({"message_id": f"deferred:{key}", "action_taken": "sync_deferred",
+                       "reason": why})
+        if not audit.already_processed(f"deferred:{key}"):
+            audit.append(record)
+        print(f"  \u23f8\ufe0f  {record['deal_name']} -> sync deferred: {why}")
         return record
 
-    dealname = deal["properties"].get("dealname", "")
     fields = _tw_fields(props)
     # Pipeline-specific customer settings ride along on create AND update, so an
     # existing family gets its settings adjusted too.
@@ -278,6 +296,31 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     return record
 
 
+def _alert_repeated_error(deal: dict, err: str) -> bool:
+    """A deal that errors run after run is stuck, not retrying. Hazel Barnett
+    (2026-09-08 to 09-11): 40 identical Teachworks 400s, nobody told, cursor
+    pinned. From the SECOND failure, one DM to the charter admin seat (config
+    deal_sync.error_alert, a role), once per deal (audit error-alert:deal:id)."""
+    did = str(deal.get("id") or "")
+    n = sum(1 for r in audit._iter_records() if r.get("message_id") == f"error:deal:{did}")
+    if n < 2 or audit.already_processed(f"error-alert:deal:{did}"):
+        return False
+    seat = staff(cfg().get("deal_sync", {}).get("error_alert", "charter_admin"))
+    if seat.get("slack_user_id"):
+        try:
+            slack_client.dm(seat["slack_user_id"],
+                            f"\u26a0\ufe0f Deal sync has failed {n}x on "
+                            f"'{deal['properties'].get('dealname', did)}' and will keep failing "
+                            f"until the record is fixed. Last error: {err[:160]}. "
+                            f"Check the deal's family contact in HubSpot, then re-run with "
+                            f"FORCE_DEAL_ID={did}.")
+        except Exception as e:  # noqa: BLE001 - the alert must never fail the sync
+            print(f"  \u26a0\ufe0f  error-alert DM failed (non-fatal): {e}")
+    audit.append({"message_id": f"error-alert:deal:{did}", "source": "deal_sync",
+                  "deal_id": did, "action_taken": "sync_error_alerted", "failures": n})
+    return True
+
+
 def run() -> None:
     ds = cfg().get("deal_sync", {})
     if not ds.get("enabled"):
@@ -364,7 +407,9 @@ def run() -> None:
             traceback.print_exc()
             # error: prefix never matches the deal: key → the deal retries next run
             audit.append({"message_id": f"error:deal:{d.get('id')}", "source": "deal_sync",
-                          "action_taken": "error", "error": str(e)[:200]})
+                          "deal_id": str(d.get("id")), "action_taken": "error",
+                          "error": str(e)[:200]})
+            _alert_repeated_error(d, str(e))
             cd = d["properties"].get("createdate")
             if cd:
                 ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)

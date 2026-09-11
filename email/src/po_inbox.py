@@ -403,6 +403,12 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
     t_email = (po.get("tor_email") or "").strip().lower()
     p_email = (po.get("parent_email") or "").strip().lower()
     t_name = f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
+    if t_email and _robot_tor_addr(t_email):
+        note_parts.append(f"\U0001f916 TOR email <{t_email}> is a portal/vendor mailbox, not a "
+                          f"teacher; NOT associated as Teacher of Record"
+                          + (f" (name '{t_name}' tried instead)." if t_name else "."))
+        t_email = ""
+        po["tor_email"] = ""
     if not deal_id or deal_id == "DRYRUN" or (t_email and t_email == p_email) \
             or not (t_email or t_name):
         return
@@ -793,6 +799,16 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str]) -> str:
 
 
 _NOREPLY_RE = re.compile(r"no-?reply|do-?not-?reply|notifications?@|@mailer\.", re.I)
+# Portal / vendor-desk mailboxes: a real inbox, but not a teacher. Never a TOR
+# contact (Visions "vendorsupport@viedu.org" was attached as Justin LaRue's
+# Teacher of Record on 2026-09-10 and linked to the family as their TOR).
+_ROBOT_TOR_RE = re.compile(r"vendor-?support|vendor-?desk|procurify|launchpad|"
+                           r"^(orders?|purchasing|procurement|billing|invoices?)@", re.I)
+
+
+def _robot_tor_addr(addr: str) -> bool:
+    a = (addr or "").strip().lower()
+    return bool(a) and (not _human_addr(a) or bool(_ROBOT_TOR_RE.search(a)))
 
 
 def _sender_addr(msg: dict) -> str:
@@ -1243,6 +1259,20 @@ def _deal_still_needs_parent(deal_id) -> bool:
     return "NEEDS PARENT" in ((d.get("properties") or {}).get("dealname") or "")
 
 
+def _sync_fixed_deal(deal_id) -> None:
+    """Teachworks sync for a deal a human un-NEEDS-PARENTed by hand."""
+    if not deal_id or deal_id == "DRYRUN":
+        return
+    try:
+        from . import deal_sync
+        live = hs._get(f"/crm/v3/objects/deals/{deal_id}",
+                       {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount"})
+        rec = deal_sync.sync_deal(live) or {}
+        print(f"  \U0001f504 human-fixed deal {deal_id}: TW sync {rec.get('action_taken', 'skipped')}")
+    except Exception as e:  # noqa: BLE001 - never breaks the sweep
+        print(f"  \u26a0\ufe0f  TW sync for human-fixed deal {deal_id} failed (non-fatal): {e}")
+
+
 def _sweep_chase_self_resolve() -> None:
     """Open chases re-check HubSpot each run: the family may have appeared on
     its own (called in, intake form) — the August Vouniozos case, where the
@@ -1261,11 +1291,15 @@ def _sweep_chase_self_resolve() -> None:
             continue
         if not _deal_still_needs_parent(r.get("deal_id")):
             # already fixed by a human (or resolved elsewhere) → close the
-            # chase so it stops being swept, but touch NOTHING on the deal
+            # chase so it stops being swept. Touch nothing on the deal's
+            # contacts, but DO run the Teachworks sync now: the creation-time
+            # sync was deferred (NEEDS PARENT) and the cursor has moved on, so
+            # nothing else would ever create the family.
             audit.append({"message_id": f"parent-chase-resolved:{r.get('deal_id')}",
                           "source": "po_inbox", "action_taken": "parent_chase_resolved",
                           "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id"),
                           "resolved_via": "deal no longer NEEDS PARENT (human fixed)"})
+            _sync_fixed_deal(r.get("deal_id"))
             continue
         try:
             parents = hs.find_family_contact(parts[0], " ".join(parts[1:]))

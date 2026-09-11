@@ -985,6 +985,43 @@ def test_school_reply_without_parent_info_asks_sales_for_assist(monkeypatch):
     assert len(dms) == 1
 
 
+def test_vendor_robot_mailbox_is_never_teacher_of_record(monkeypatch):
+    """Visions eVoucher, 2026-09-10: vendorsupport@viedu.org was created/linked
+    as Justin LaRue's TOR and as the family's Teacher of Record."""
+    assert po._robot_tor_addr("vendorsupport@viedu.org")
+    assert po._robot_tor_addr("notifications@mailer.procurify.com")
+    assert po._robot_tor_addr("orders@sageoak.education")
+    assert not po._robot_tor_addr("ap@heartlandcharterschool.com")
+    assert not po._robot_tor_addr("kwolven@sageoak.education")
+    created, associated, notes = [], [], []
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, **k: None)
+    monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
+    monkeypatch.setattr(po.hs, "create_contact", lambda *a, **k: created.append(a) or {"id": "T1"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: associated.append((d, c)))
+    monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [])
+    p = {"tor_email": "vendorsupport@viedu.org", "parent_email": "mom@x.com"}
+    po._associate_tor("D1", p, notes)
+    assert not created and not associated
+    assert p["tor_email"] == "" and any("vendor mailbox" in n for n in notes)
+    # a real teacher address still goes through
+    p2 = {"tor_email": "lindsey.williams@viedu.org", "parent_email": "mom@x.com",
+          "tor_first": "Lindsey", "tor_last": "Williams"}
+    po._associate_tor("D1", p2, notes)
+    assert created and associated == [("D1", "T1")]
+
+
+def test_human_fixed_needs_parent_deal_gets_synced(monkeypatch):
+    synced = []
+    monkeypatch.setattr(po.hs, "_get", lambda path, params=None: {
+        "id": "D5", "properties": {"dealname": "Ana Diaz - Kid - iLead 1 - 26/27",
+                                   "pipeline": "907748", "po_number": "P1"}})
+    monkeypatch.setattr(dsy_mod, "sync_deal", lambda d, **k: synced.append(d) or {"action_taken": "tw_synced"})
+    po._sync_fixed_deal("D5")
+    assert synced and synced[0]["properties"]["dealname"].startswith("Ana Diaz")
+    po._sync_fixed_deal("DRYRUN")
+    assert len(synced) == 1
+
+
 def test_norm_po_number():
     # Roman 2026-08-10: the number only, never a PO prefix
     assert po._norm_po_number("PO7514044381") == "7514044381"

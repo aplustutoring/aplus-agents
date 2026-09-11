@@ -12,9 +12,10 @@ def _deal(did, minutes_old, name="Lesly Elenes - Adrian"):
     return {"id": did, "properties": {"dealname": name, "createdate": cd}}
 
 
-def _wire(monkeypatch, cfg=None, seen=()):
+def _wire(monkeypatch, cfg=None, seen=(), records=()):
     calls = {"dm": [], "audit": []}
     monkeypatch.setattr(rw, "cfg", lambda: cfg or CFG)
+    monkeypatch.setattr(rw.audit, "_iter_records", lambda: iter(list(records)))
     monkeypatch.setattr(rw, "staff", lambda k: {"name": "Roman", "slack_user_id": "UROMAN"})
     monkeypatch.setattr(rw.audit, "already_processed", lambda k: k in seen)
     monkeypatch.setattr(rw.audit, "append", lambda r: calls["audit"].append(r))
@@ -50,3 +51,18 @@ def test_disabled_and_fresh_deals_are_quiet(monkeypatch):
     _wire(monkeypatch)
     assert rw.check([_deal("D1", 9)], event_name="schedule", now=NOW) == []
     assert calls["dm"] == []
+
+
+def test_deal_already_handled_by_deal_sync_is_not_a_relay_miss(monkeypatch):
+    """Hazel Barnett, 2026-09-10: a deal re-fetched only because an error holds
+    the cursor was flagged as a dead doorbell. Any deal_sync record (synced,
+    deferred, errored) means a run handled it."""
+    calls = _wire(monkeypatch, records=[
+        {"source": "deal_sync", "message_id": "error:deal:D1", "action_taken": "error"},
+        {"source": "deal_sync", "message_id": "deferred:deal:D2", "deal_id": "D2",
+         "action_taken": "sync_deferred"},
+        {"source": "sms", "message_id": "sms-sent:D3", "deal_id": "D3"}])
+    missed = rw.check([_deal("D1", 1684), _deal("D2", 90), _deal("D3", 40)],
+                      event_name="schedule", now=NOW)
+    assert [m["id"] for m in missed] == ["D3"]
+    assert len(calls["dm"]) == 1

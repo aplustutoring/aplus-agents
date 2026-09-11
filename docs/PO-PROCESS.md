@@ -79,7 +79,11 @@ Tried in order; the first hit wins:
    the send (unsent after 4 business hours → 🚩 nag), the reply auto-creates
    the contact, renames the deal, fires the Teachworks sync, and arms the
    family's SMS. Open chases also **self-resolve** if the family contact
-   appears on its own. No reply 2 business days after the SEND → escalation DM.
+   appears on its own, and a deal a human un-NEEDS-PARENTs by hand gets its
+   Teachworks sync run by the sweep (the creation-time sync is **deferred**
+   while the parent is unknown; nothing is ever synced or texted to the
+   school's staffer, 2026-09-11). No reply 2 business days after the SEND →
+   escalation DM.
    **Can't get the info** (the school replies without it, e.g. Heartland's
    "privacy laws, we cannot share it", or the window expires with no reply)
    → the **sales seat is asked to assist** (one DM per deal, audit

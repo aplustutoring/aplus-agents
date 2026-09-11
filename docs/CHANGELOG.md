@@ -27,19 +27,47 @@ parent info; the chase went to Heartland's AP mailbox; Cherri Crawford replied
 was filed as `po_inbox_other` and nobody who could help was told. The deal has
 sat as NEEDS PARENT since, with no Teachworks family, no text, no invoice.
 
-**Also found in the same check (not fixed here, awaiting Roman's go):**
-- `deal_sync._deal_contact` falls back to the first associated contact, so a
-  NEEDS PARENT deal texts + emails the TOR/ES (Keanu Hsu, Sept 10: iLEAD's
-  Courtney Gannon got "we received Keanu's PO"; parent Charlene Wetzell never
-  will, the deals are marked sent) and creates Teachworks families under the
-  school staffer (TW 2173071, 2165423), or loops on a 400 with no DM (Hazel).
-- Vendor robot mailboxes (vendorsupport@viedu.org) get attached as Teacher of
-  Record (LaRue, Sept 10).
-- presend is still shadow: 8 PO texts this week went from the support line
-  while Paola had an active charter_sales thread with the family.
+**Also fixed in the same session (Roman: "do what has to be done"):**
+- **NEEDS PARENT deals never reach the school staffer.** `deal_sync._deal_contact`
+  used to fall back to the FIRST associated contact, which on a NEEDS PARENT deal
+  is the TOR/ES. Keanu Hsu, Sept 10: iLEAD's Courtney Gannon got "we received
+  Keanu's PO", the What-to-Expect email and a Teachworks family in her name
+  (TW 2173071); parent Charlene Wetzell, associated an hour later, gets nothing
+  because the deals are marked sent. Same path on Sept 3 put Coyote Resch under
+  Sage Oak's Kristin Wolven (TW 2165423). Now: a contact tagged Teacher of
+  Record and NOT Family is never the family (`hs.is_family_contact`; a parent
+  who is also the EF keeps both labels and still qualifies); a deal-name match
+  still wins. No family → the SMS sweep skips without marking sent (retries
+  every sweep) and `sync_deal` records `sync_deferred` (`deferred:deal:<id>`)
+  instead of a permanent `sync_skipped`, so the parent-chase resolution's
+  immediate sync (or `_sync_fixed_deal`, new, on a human-fixed deal) creates
+  the family later. Hazel's Teachworks 400 loop ends the same way.
+- **Repeated sync errors are loud.** From the 2nd consecutive failure on one
+  deal, one DM to `deal_sync.error_alert` (charter_admin) with the error and
+  the FORCE_DEAL_ID re-run (audit `error-alert:deal:<id>`). Hazel: 40 silent 400s.
+- **Relay watchdog false alarm.** A deal deal_sync already touched (synced,
+  deferred, errored) is never a "doorbell dead" miss; it is only in the cron
+  window because an error holds the cursor.
+- **Vendor/portal mailboxes are never Teacher of Record** (`_robot_tor_addr`:
+  vendorsupport, procurify, launchpad, orders@/purchasing@/billing@, plus the
+  noreply set). The name-only lookup still runs when the PO names a teacher.
+- Owner DM wording: "in about 15 minutes" → "on the next deal-sync run
+  (usually within the hour)"; the cron is hourly since 09-09 (Delina waited 58 min).
 
-**Files:** email/src/po_inbox.py, email/config.yaml, email/tests/test_po_inbox.py
-(2 tests), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+**Deliberately NOT flipped: `presend.enabled`.** 8 of this week's PO welcome
+texts logged a shadow HOLD ("active thread on the charter_sales line, owned by
+Paola"). Every one was the family Paola had just pushed the PO for, i.e. the
+designed lead → scheduling handoff. Enforcing would hold every such family's
+schedule text and DM Paola instead. Roman's call, not a bug fix.
+
+**Manual follow-ups sent by Slack DM this session:** Danielle (Hazel assist,
+retroactive), Janelle (text Charlene Wetzell about Keanu by hand), Paola
+(quick note to Courtney Gannon), Kath (Teachworks families 2173071 and
+2165423 are under school staff emails).
+
+**Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms}.py, email/config.yaml,
+email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog}.py (8 tests, 468
+pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
 
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
 

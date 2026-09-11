@@ -309,6 +309,7 @@ deal_automation:
 # identifier; HubSpot contact info wins on update) and create the student. Account by
 # pipeline; charter students get billing_method=Package, private pay=Service List Cost.
 deal_sync:
+  error_alert: charter_admin   # DM'd once per deal from the 2nd consecutive sync failure (Hazel Barnett, 09-08: 40 silent 400s)
   enabled: true
   dry_run_first: false         # LIVE since 2026-08-03 (pilot ran 2026-07-22 → 2026-08-03)
   in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account

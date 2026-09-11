@@ -280,10 +280,11 @@ def run_sweep() -> None:
                     parent = (props[0].get('dealname') or '').split(' - ')[0]
                     slack_client.dm(target["slack_user_id"],
                                     f"📅 New PO for {names} (parent: {parent}). No lessons "
-                                    f"are on the calendar for them yet. In about 15 minutes "
-                                    f"the family will automatically get a text asking what "
-                                    f"days and times work. If you'd rather call them first, "
-                                    f"now is your window.")
+                                    f"are on the calendar for them yet. On the next deal-sync "
+                                    f"run (usually within the hour) the family will "
+                                    f"automatically get a text asking what days and times "
+                                    f"work. If you'd rather call them first, now is your "
+                                    f"window.")
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  sms staff alert failed (non-fatal): {e}")
             for d in unalerted:

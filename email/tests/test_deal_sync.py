@@ -119,8 +119,72 @@ def test_deal_contact_prefers_dealname_parent(monkeypatch):
     monkeypatch.setattr(dsy.hs, "_get", fake_get)
     c = dsy._deal_contact("D1", "Lara Perkins - Nomi")
     assert c["properties"]["email"] == "mom@x.com"
-    # no dealname match → falls back to the first associated contact
+    # no dealname match → falls back to the first associated contact that is
+    # not school staff (no persona = legacy family contact, still eligible)
     assert dsy._deal_contact("D1", "Zzz Qqq - Kid")["id"] == "1"
+
+
+def test_deal_contact_never_falls_back_to_school_staff(monkeypatch):
+    """Keanu Hsu, 2026-09-10: a NEEDS PARENT deal whose only contact is the
+    school's ES must yield NO family contact, not the ES."""
+    contacts = {"1": {"id": "1", "properties": {"firstname": "Courtney", "lastname": "Gannon",
+                                                "email": "courtney@ileadexploration.org",
+                                                "a_persona": "Teacher of Record/EF/ES"}},
+                "2": {"id": "2", "properties": {"firstname": "Kristy", "lastname": "Doyal",
+                                                "email": "kristy@x.com",
+                                                "a_persona": "Teacher of Record/EF/ES;Family"}}}
+    order = ["1"]
+    def fake_get(path, params=None):
+        if path.endswith("/associations/contacts"):
+            return {"results": [{"toObjectId": i} for i in order]}
+        return contacts[path.rsplit("/", 1)[1]]
+    monkeypatch.setattr(dsy.hs, "_get", fake_get)
+    assert dsy._deal_contact("D1", "NEEDS PARENT - Keanu Hsu - iLead 1 - 26/27") is None
+    # a parent who is ALSO the EF (both labels) is still the family
+    order[:] = ["1", "2"]
+    assert dsy._deal_contact("D1", "NEEDS PARENT - Keanu Hsu - iLead 1 - 26/27")["id"] == "2"
+    # a dealname match wins regardless of labels
+    assert dsy._deal_contact("D1", "Courtney Gannon - Kid")["id"] == "1"
+
+
+def test_needs_parent_deal_is_deferred_not_synced(monkeypatch):
+    """No family yet → nothing written, deal NOT marked processed, one audit row."""
+    calls = _wire(monkeypatch, contact={"email": "es@school.org", "firstname": "Es"})
+    appended = []
+    monkeypatch.setattr(dsy.audit, "append", lambda r: appended.append(r))
+    rec = dsy.sync_deal(_deal("907748", "NEEDS PARENT - Hazel Barnett - Heartland 1 - 26/27"))
+    assert rec["action_taken"] == "sync_deferred" and "NEEDS PARENT" in rec["reason"]
+    assert rec["message_id"] == "deferred:deal:D1"
+    assert not calls["created"] and not calls["updated"] and not calls["students"]
+    assert appended and appended[-1]["message_id"] == "deferred:deal:D1"
+    # no family contact at all → same deferral, never a permanent sync_skipped
+    monkeypatch.setattr(dsy, "_deal_contact", lambda d, n="": None)
+    rec = dsy.sync_deal(_deal("907748", "Lara Perkins - Nomi"))
+    assert rec["action_taken"] == "sync_deferred" and not calls["created"]
+
+
+def test_repeated_sync_error_alerts_once(monkeypatch):
+    dms, appended = [], []
+    recs = [{"message_id": "error:deal:D7", "source": "deal_sync", "action_taken": "error"}]
+    monkeypatch.setattr(dsy, "cfg", lambda: {"deal_sync": {"error_alert": "charter_admin"}})
+    monkeypatch.setattr(dsy, "staff", lambda k: {"name": "Kath", "slack_user_id": "UKATH"})
+    monkeypatch.setattr(dsy.audit, "_iter_records", lambda: iter(recs))
+    monkeypatch.setattr(dsy.audit, "already_processed",
+                        lambda k: any(r.get("message_id") == k for r in recs))
+    monkeypatch.setattr(dsy.audit, "append", lambda r: (appended.append(r), recs.append(r)))
+    monkeypatch.setattr(dsy.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    deal = {"id": "D7", "properties": {"dealname": "NEEDS PARENT - Hazel Barnett - Heartland 1"}}
+    # first failure: quiet
+    assert dsy._alert_repeated_error(deal, "400 Bad Request") is False
+    # second failure: one DM to the charter admin seat
+    recs.append({"message_id": "error:deal:D7", "source": "deal_sync", "action_taken": "error"})
+    assert dsy._alert_repeated_error(deal, "400 Bad Request") is True
+    assert dms == [("UKATH", dms[0][1])] and "failed 2x" in dms[0][1] and "FORCE_DEAL_ID=D7" in dms[0][1]
+    assert appended[-1]["action_taken"] == "sync_error_alerted"
+    # third failure: already alerted → quiet
+    recs.append({"message_id": "error:deal:D7", "source": "deal_sync", "action_taken": "error"})
+    assert dsy._alert_repeated_error(deal, "400 Bad Request") is False
+    assert len(dms) == 1
 
 
 def test_force_bypasses_pilot_and_audit(monkeypatch):
