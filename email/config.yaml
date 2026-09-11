@@ -489,6 +489,20 @@ deal_automation:
 # Every NEW HubSpot deal: upsert the family in Teachworks (match by EMAIL — the
 # identifier; HubSpot contact info wins on update) and create the student. Account by
 # pipeline; charter students get billing_method=Package, private pay=Service List Cost.
+# ── First-lesson stamp (retention step 2 foundation, email/src/first_lesson.py) ──
+# Reads attended lessons from Teachworks (both accounts), finds each student's
+# FIRST attended lesson ever and stamps it as [Agent] First lesson date on the
+# season's earliest deal and on the family contact. The "New Starts (Care
+# Calls)" deal view (72186918) filters on it. Runs from deal_sync every cycle,
+# self-gated to every_hours. Roman 2026-09-10: "lets work on the gap".
+first_lesson:
+  enabled: true
+  every_hours: 6
+  window_days: 10                  # bulk lessons window per run; new students cost a history call
+  new_start_days: 60               # first lesson within this = a "new start" (audit + summary line)
+  season_start: "2026-08-01"       # the season's earliest deal is the one that gets the stamp
+  retry_days: 3                    # student with no deal yet: look again after this many days
+
 deal_sync:
   error_alert: charter_admin   # DM'd once per deal from the 2nd consecutive sync failure (Hazel Barnett, 09-08: 40 silent 400s)
   enabled: true
