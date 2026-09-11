@@ -214,6 +214,23 @@ def _student_deals(first: str, last: str) -> list[dict]:
     return keep
 
 
+def _contact_deals(first: str, contact_id: str) -> list[dict]:
+    """The family contact's deals, for private-pay names that carry no
+    surname ('Boston Powers - Iuri': 13 of 37 new starts in the 2026-09-10
+    preview had no deal by the surname route). Deals naming the student's
+    first name win; a family with no such name gets all its deals."""
+    try:
+        raw = hs.get_contact_deals(contact_id)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  contact deals failed for {contact_id}: {e}")
+        return []
+    deals = [{"id": str(d.get("id")), "properties": {"dealname": d.get("name") or "", "pipeline": d.get("pipeline"),
+                                                     "createdate": d.get("createdate") or ""}} for d in raw]
+    fn = _norm(first)
+    named = [d for d in deals if re.search(r"\b" + re.escape(fn) + r"\b", _norm(d["properties"]["dealname"]))]
+    return named or deals
+
+
 def _stamp(obj: str, obj_id: str, value: str) -> None:
     hs._write("PATCH", f"/crm/v3/objects/{obj}/{obj_id}", {"properties": {PROP: value}})
 
@@ -279,23 +296,8 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
                 entry = {"name": display_name(rec["name"]), "first": first_date, "email": email,
                          "tw_student_id": str(s.get("id")), "checked": _today()}
                 entry.update({k: cur[k] for k in ("deal_id", "contact_id", "no_deal_until") if k in cur})
-                # deal: the season's earliest
-                if not entry.get("deal_id"):
-                    deal = choose_deal(_student_deals(first, last), season_start, exclude)
-                    if deal:
-                        dp = deal.get("properties") or {}
-                        if (dp.get(PROP) or "")[:10] != first_date:
-                            if DRY_RUN:
-                                print(f"[DRY_RUN] stamp deal {deal['id']} ({dp.get('dealname')}) {PROP}={first_date}")
-                            else:
-                                _stamp("deals", deal["id"], first_date)
-                            summary["stamped_deals"] += 1
-                        entry["deal_id"] = deal["id"]
-                        entry.pop("no_deal_until", None)
-                    else:
-                        summary["no_deal"] += 1
-                        entry["no_deal_until"] = (now_la().date() + timedelta(days=int(fc.get("retry_days", 3)))).isoformat()
-                # contact: the family, earliest sibling wins
+                # contact first: the family, earliest sibling wins; also the
+                # fallback route to private-pay deals named without a surname
                 if not entry.get("contact_id") and email:
                     c = None
                     try:
@@ -315,6 +317,25 @@ def run(force: bool = False, window_days: int | None = None) -> dict:
                         summary["no_contact"] += 1
                 elif not email:
                     summary["no_contact"] += 1
+                # deal: the season's earliest
+                if not entry.get("deal_id"):
+                    deals = _student_deals(first, last)
+                    if not deals and entry.get("contact_id"):
+                        deals = _contact_deals(first, entry["contact_id"])
+                    deal = choose_deal(deals, season_start, exclude)
+                    if deal:
+                        dp = deal.get("properties") or {}
+                        if (dp.get(PROP) or "")[:10] != first_date:
+                            if DRY_RUN:
+                                print(f"[DRY_RUN] stamp deal {deal['id']} ({dp.get('dealname')}) {PROP}={first_date}")
+                            else:
+                                _stamp("deals", deal["id"], first_date)
+                            summary["stamped_deals"] += 1
+                        entry["deal_id"] = deal["id"]
+                        entry.pop("no_deal_until", None)
+                    else:
+                        summary["no_deal"] += 1
+                        entry["no_deal_until"] = (now_la().date() + timedelta(days=int(fc.get("retry_days", 3)))).isoformat()
                 if is_new_start and not cur.get("first"):
                     summary["new_starts"].append(f"{display_name(rec['name'])} ({first_date})")
                     audit.append({"message_id": f"first-lesson:{skey}:{first_date}", "source": "first_lesson",
