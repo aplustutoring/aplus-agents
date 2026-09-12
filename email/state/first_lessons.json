@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-12T06:32:00.982615+00:00",
+ "_last_run": "2026-09-12T14:24:05.491265+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-10",
   "contact_id": "1523951",
@@ -801,6 +801,15 @@
   "no_deal_until": "2026-09-13",
   "tw_student_id": "1769679"
  },
+ "online:mavlan, aliye": {
+  "checked": "2026-09-12",
+  "contact_id": "246277547676",
+  "deal_id": "64627999889",
+  "email": "bilge306@hotmail.com",
+  "first": "2026-09-10",
+  "name": "Aliye Mavlan",
+  "tw_student_id": "2346845"
+ },
  "online:mcgraw, violet": {
   "checked": "2026-09-10",
   "contact_id": "161772952588",
@@ -820,7 +829,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-11",
+  "checked": "2026-09-12",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
