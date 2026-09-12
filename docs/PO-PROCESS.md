@@ -34,16 +34,32 @@ level-up flag, and a summary.
 
 | Decision | Rule |
 |---|---|
-| Is it a PO? | A new PO or funding authorization = yes. **Order agreements stamped "THIS IS NOT A PO" (OPS/iLEAD) = yes**, flagged `pending_approval` — confirm approved in the school's portal before service. **Portal approval takes ≥14 days** (Roman 2026-08-26), so the pending sweep nags only after `pending_portal_approval_days` (14 calendar days), not hours. Invoices, payment reminders, vendor admin = no → review ticket only, no deal. |
+| Is it a PO? | A new PO or funding authorization = yes. **Order agreements stamped "THIS IS NOT A PO" (OPS/iLEAD) = yes**, flagged `pending_approval` (confirm approved in the school's portal before service). The flag reaches the ticket, the deal note and the invoice task; **nothing nags** (Roman 2026-09-12 removed the pending-approval follow-up sweep: portal verification moves to ops with Kath). Invoices, payment reminders, vendor admin = no → review ticket only, no deal. |
 | Non-PO disposition | Every non-PO gets a `category_hint` that sets the ticket: **`vendor_compliance`** (unsigned agreements, invoicing-rule changes — these block or reshape POs) → **HIGH, owned by `po_inbox.compliance_owner` (sales seat)**; **`scam`** (advance-fee shape) → LOW, sender **never** captured as a parent contact; **`marketing_junk`** → LOW; `family_inquiry` / `other` → MEDIUM to Kath as before. (Roman 2026-08-26, after the Epic California C&CP signature request sat as a generic MEDIUM ticket.) |
 | PO number | Stored **bare** — any "PO"/"P.O.#" prefix is stripped. Letters that are part of the number (PF593736) are kept. |
 | Multiple POs in one email | One deal **per PO number** (schools issue one per service month). |
 | Hours | As stated in the PO — **always stored as HOURS**. Two offerings (Roman 2026-08-26): **$75/hour** (the 99% case) and **$60 per 45-minute session** (a 4-session PO stamps **3** hours). Rate + unit stated → computed (per-session rates convert ×0.75). **No rate stated → computed only when exactly ONE offering divides the amount cleanly** ($150 → 2 hrs; $60 → 1 session = 0.75 hrs). $300 fits both (4 hrs OR 5 sessions = 3.75) → hours stay **blank + 🚩 flagged**, never guessed. Offerings live in `po_inbox.service_offerings`. |
 | Cancellation | A school PO-cancellation notice (0 billable, or unstated) → the deal is moved to its pipeline's **Stopped** stage, **amount and hours zeroed**, a note pinned; DMs to Kath (+Roman via `missing_info_dms`) and the deal's owner; **HIGH task to Kath: void the TW invoice** (API can't). **Partial** cancellation (billable > 0 stated) → **nothing auto-changes**; Kath adjusts by hand off the alert. A cancelled PO number re-arriving is announced as a **re-issue**, not a duplicate. |
 
-**Duplicate check** (before anything else): the `po_number` property is
-searched; a match = no new deal + urgent DM to Kath. On a pending order
-agreement, this alert doubles as "the school approved and issued the real PO."
+**Duplicate check** (before anything else, and it FAILS CLOSED. Roman
+2026-09-12: "I just want the no duplicate po option being firm as possible").
+Three independent checks, any one of which stops the deal:
+
+1. **HubSpot**: the `po_number` property, tried as the bare number, the raw
+   string, `PO<number>`, and both cases (old deals still carry a "PO" prefix);
+   matches are confirmed on normalized equality. Deal-NAME CONTAINS is the
+   backstop for deals created before the property existed.
+2. **The audit ledger** (`po_deal_created`, and legacy `po_processed` rows in
+   category `new_po`). HubSpot's search index is eventually consistent, so a
+   deal created seconds ago is invisible to check 1.
+3. **The numbers created earlier in this run**, so a multi-PO email cannot create
+   two deals for one number.
+
+A hit = **no new deal** + urgent DM to Kath. So is a PO with **no readable
+number** (`require_po_number`: dedupe is impossible without one) and a lookup
+that **could not be completed** (`dedupe_fail_closed`); both are audited
+(`po_refused_no_number`, `po_refused_dedupe_unavailable`) and handed to a human.
+Both flags default to the safe value when absent from config.
 
 ## Stage 2 — Parent resolution (before naming — the deal name leads with the parent)
 
