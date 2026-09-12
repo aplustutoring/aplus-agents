@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-11T21:20:46.811839+00:00",
+ "_last_run": "2026-09-12T06:32:00.982615+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-10",
   "contact_id": "1523951",
@@ -278,6 +278,15 @@
   "first": "2026-07-27",
   "name": "Londyn Brixey",
   "tw_student_id": "2281131"
+ },
+ "online:cade, kynya": {
+  "checked": "2026-09-11",
+  "contact_id": "1585651",
+  "deal_id": "43542900588",
+  "email": "ihwang@firstplaceforyouth.org",
+  "first": "2025-09-18",
+  "name": "Kynya Cade",
+  "tw_student_id": "2098440"
  },
  "online:calof, sylvie": {
   "checked": "2026-09-11",
@@ -576,6 +585,15 @@
   "no_deal_until": "2026-09-13",
   "tw_student_id": "1512974"
  },
+ "online:holloway, rayven": {
+  "checked": "2026-09-11",
+  "contact_id": "106053146885",
+  "deal_id": "35457621077",
+  "email": "babbuba35@gmail.com",
+  "first": "2025-04-01",
+  "name": "Rayven Holloway",
+  "tw_student_id": "2000133"
+ },
  "online:hua, kaily": {
   "checked": "2026-09-10",
   "contact_id": "1085151",
@@ -602,6 +620,15 @@
   "first": "2026-05-07",
   "name": "Isaac Jaramillo",
   "tw_student_id": "2236189"
+ },
+ "online:johnson, la\u2019france": {
+  "checked": "2026-09-11",
+  "contact_id": "1585651",
+  "deal_id": "64338567051",
+  "email": "ihwang@firstplaceforyouth.org",
+  "first": "2026-09-11",
+  "name": "La\u2019France Johnson",
+  "tw_student_id": "2332778"
  },
  "online:kadotani, luke": {
   "checked": "2026-09-11",
@@ -1122,6 +1149,15 @@
   "first": "2026-03-03",
   "name": "Zie Rojas",
   "tw_student_id": "2207978"
+ },
+ "online:rose, matthew": {
+  "checked": "2026-09-11",
+  "contact_id": "187159056542",
+  "deal_id": "19912956256",
+  "email": "missmegan1230@yahoo.com",
+  "first": "2024-02-06",
+  "name": "Matthew Rose",
+  "tw_student_id": "1769836"
  },
  "online:saenz, raul": {
   "checked": "2026-09-10",
