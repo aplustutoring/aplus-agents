@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-12T14:24:05.491265+00:00",
+ "_last_run": "2026-09-12T21:41:32.566943+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-10",
   "contact_id": "1523951",
@@ -26,6 +26,15 @@
   "first": "2025-04-03",
   "name": "Rhys Catlin",
   "tw_student_id": "2005713"
+ },
+ "in_person:cervantes, xavier (xavi)": {
+  "checked": "2026-09-12",
+  "contact_id": "27993637533",
+  "deal_id": "20083831391",
+  "email": "cbabayans@gmail.com",
+  "first": "2024-06-20",
+  "name": "Xavier (Xavi) Cervantes",
+  "tw_student_id": "1839167"
  },
  "in_person:chi, lily": {
   "checked": "2026-09-11",
@@ -350,6 +359,15 @@
   "first": "2026-04-14",
   "name": "Kailyn Marie DaVault",
   "tw_student_id": "2225303"
+ },
+ "online:de la cruz ponce, leia": {
+  "checked": "2026-09-12",
+  "contact_id": "245892580213",
+  "deal_id": "64524554872",
+  "email": "emma.delacruz30@icloud.com",
+  "first": "2026-09-12",
+  "name": "Leia De La Cruz Ponce",
+  "tw_student_id": "2341248"
  },
  "online:delgado sanchez, jesse": {
   "checked": "2026-09-11",
@@ -1077,6 +1095,15 @@
   "first": "2026-09-11",
   "name": "Liya Radnia",
   "tw_student_id": "2349869"
+ },
+ "online:radnia, maytal": {
+  "checked": "2026-09-12",
+  "contact_id": "247101648950",
+  "deal_id": "64877482004",
+  "email": "y_shaghayegh@yahoo.com",
+  "first": "2026-09-11",
+  "name": "Maytal Radnia",
+  "tw_student_id": "2349851"
  },
  "online:radnia, yoel": {
   "checked": "2026-09-11",
