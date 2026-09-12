@@ -293,8 +293,11 @@ def search_deals_by_name(token: str, pipeline_id: str | None = None,
     if stage_id:
         filters.append({"propertyName": "dealstage", "operator": "EQ", "value": stage_id})
     body = {"filterGroups": [{"filters": filters}],
-            "properties": ["dealname", "pipeline", "dealstage", "amount"], "limit": 10}
-    res = _write("POST", "/crm/v3/objects/deals/search", body)
+            "properties": ["dealname", "pipeline", "dealstage", "amount", "po_number"],
+            "limit": 10}
+    # `_get_search`, not `_write`: a search is a READ, and `_write` blanks it in
+    # DRY_RUN, which silently disabled the duplicate-PO backstop (2026-09-12).
+    res = _get_search("/crm/v3/objects/deals/search", body)
     return res.get("results", []) if isinstance(res, dict) else []
 
 
@@ -342,17 +345,45 @@ def is_family_contact(props: dict, tor_email: str = "") -> bool:
     return not ("Teacher of Record" in persona and "Family" not in persona)
 
 
-def find_deals_by_po_number(po_number: str) -> list[dict]:
-    """Deals whose po_number PROPERTY matches exactly — the canonical PO lookup
-    (5k+ deals carry this field; far more reliable than deal-name matching)."""
+def po_number_variants(po_number: str, raw: str = "") -> list[str]:
+    """The stored spellings one PO number can have, in lookup order.
+
+    A single EQ on the bare number is not enough (Roman, 2026-09-12): deals
+    created before the bare-number rule (2026-08-10) still carry a "PO" prefix,
+    and alphanumeric numbers (Blue Ridge's PF252648-EzekielGarcia) can be stored
+    in a different case than the arriving PO states them.
+    """
+    out: list[str] = []
+    num = (po_number or "").strip()
+    for v in (num, (raw or "").strip(), f"PO{num}", num.upper(), num.lower()):
+        if v and v not in out:
+            out.append(v)
+    return out
+
+
+def find_deals_by_po_number(po_number: str, raw: str = "") -> list[dict]:
+    """Deals whose po_number PROPERTY matches: the canonical PO lookup
+    (5k+ deals carry this field; far more reliable than deal-name matching).
+
+    Every spelling from `po_number_variants` is tried in order and the FIRST
+    non-empty result wins (any hit already means the number is taken).
+    Reads through `_get_search`, NOT `_write`: `_write` short-circuits under
+    DRY_RUN and returns {"id": "DRYRUN"}, so this lookup answered "no deals"
+    on every dry run and the duplicate guard behind it was blind
+    (found 2026-09-12).
+    """
     if not po_number:
         return []
-    body = {"filterGroups": [{"filters": [
-        {"propertyName": "po_number", "operator": "EQ", "value": po_number.strip()}]}],
-        "properties": ["dealname", "po_number", "pipeline", "dealstage", "amount",
-                       "hubspot_owner_id", "invoice__"], "limit": 10}
-    res = _write("POST", "/crm/v3/objects/deals/search", body)
-    return res.get("results", []) if isinstance(res, dict) else []
+    for value in po_number_variants(po_number, raw):
+        body = {"filterGroups": [{"filters": [
+            {"propertyName": "po_number", "operator": "EQ", "value": value}]}],
+            "properties": ["dealname", "po_number", "pipeline", "dealstage", "amount",
+                           "hubspot_owner_id", "invoice__"], "limit": 10}
+        res = _get_search("/crm/v3/objects/deals/search", body)
+        hits = res.get("results", []) if isinstance(res, dict) else []
+        if hits:
+            return hits
+    return []
 
 
 def create_deal(name: str, pipeline_id: str, stage_id: str, amount: str | None = None,

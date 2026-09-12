@@ -700,6 +700,9 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
     tw_cache: dict = {}   # one Teachworks calendar lookup per family per email
     chase_queue: list = []  # (deal_id, deal_name, pipeline_id, po) needing a parent
     stu_seen: dict = {}   # multi-STUDENT certificates: one scheduling alert per student
+    # PO numbers already turned into deals: the ledger (one scan per email) plus
+    # every number this email itself claims. See _created_po_numbers.
+    seen_nums = _created_po_numbers()
     for sub in subs:
         if sub.get("_split_amount_unknown"):
             note_parts.append(f"⚠️ PO {sub['po_number']}: per-PO amount/hours not "
@@ -711,7 +714,8 @@ def _handle_deal(po: dict, note_parts: list[str], attachments: list[dict] | None
         # scheduling alert once per STUDENT, not once per PO month; 'School N'
         # numbering is handled by the run-scoped _RUN_SEQ counter in _deal_name
         rec = _handle_one_po(sub, note_parts, attachments, no_lessons_check=(off == 0),
-                             msg=msg, tw_cache=tw_cache, chase_queue=chase_queue)
+                             msg=msg, tw_cache=tw_cache, chase_queue=chase_queue,
+                             seen_po_numbers=seen_nums)
         if rec:
             created.append(rec)
     _open_parent_chases(chase_queue, msg, note_parts)
@@ -1324,44 +1328,6 @@ def _sweep_chase_self_resolve() -> None:
             print(f"  🔁 self-resolve: {n}")
 
 
-def _sweep_pending_pos() -> None:
-    """Pending order-agreement POs with no approval signal past the window →
-    one nag to Kath + Roman (the duplicate alert on the re-issued/approved PO
-    confirms them; portal-only approvals need the human check this prompts)."""
-    opened, confirmed, reminded = {}, set(), set()
-    for r in audit._iter_records():
-        act = r.get("action_taken")
-        if act == "pending_po_opened" and r.get("deal_id"):
-            opened[str(r["deal_id"])] = r
-        elif act == "pending_po_confirmed":
-            confirmed.add((r.get("po_number") or "").strip())
-        elif act == "pending_po_reminded":
-            reminded.add(str(r.get("deal_id")))
-    now = now_la()
-    pc = cfg()["po_inbox"]
-    for did, r in opened.items():
-        if did in reminded or (r.get("po_number") or "").strip() in confirmed:
-            continue
-        try:
-            due = datetime.fromisoformat(r["sla_due"])
-        except (KeyError, TypeError, ValueError):
-            continue
-        if now <= due:
-            continue
-        for key in pc.get("missing_info_dms", [pc.get("owner", "kath")]):
-            s = staff(key)
-            if s.get("slack_user_id"):
-                slack_client.dm(s["slack_user_id"],
-                                f"⏳ PO {r.get('po_number')} ('{r.get('deal_name')}') is "
-                                f"still PENDING school approval with no approval signal "
-                                f"since {(r.get('timestamp') or '')[:10]} — check the "
-                                f"school's ordering portal; no service or invoice until "
-                                f"it's approved.")
-        audit.append({"message_id": f"pending-po-reminder:{did}", "source": "po_inbox",
-                      "action_taken": "pending_po_reminded", "deal_id": did,
-                      "po_number": (r.get("po_number") or "").strip()})
-
-
 def _parent_from_student_deals(po: dict):
     """Resolve the parent from the DEAL student-name PROPERTIES (Roman 2026-08-26).
 
@@ -1456,10 +1422,77 @@ def _find_parent_via_deals(po: dict):
     return None
 
 
+def _created_po_numbers() -> set[str]:
+    """Every PO number the audit ledger says a deal was already created for.
+
+    HubSpot's search index is eventually consistent: a deal created seconds ago
+    is not findable yet, so two copies of one PO arriving back to back (the
+    mirror from admin@ plus the charter@ original, a school re-sending, two
+    polls overlapping) both passed a search-only guard. The append-only ledger
+    has no such lag, so it is checked as a SECOND, index-independent opinion.
+
+    Two action names count: `po_deal_created` (written per deal by the creation
+    path below) and, for everything logged before that record existed, the
+    per-message `po_processed` row whose category is `new_po`.
+    """
+    out: set[str] = set()
+    for r in audit._iter_records():
+        act = r.get("action_taken")
+        if act == "po_deal_created" or (act == "po_processed"
+                                        and r.get("category") == "new_po"):
+            n = _norm_po_number(r.get("po_number")).casefold()
+            if n:
+                out.add(n)
+    return out
+
+
+def _duplicate_deals(po_num: str, raw: str) -> list[dict]:
+    """Deals that already carry this PO number: the canonical po_number PROPERTY
+    first (every stored spelling, see hs.po_number_variants), then deal-NAME
+    CONTAINS as the backstop for deals created before the property existed.
+
+    Property hits are confirmed on NORMALIZED equality rather than trusting the
+    filter, so 'PO3114181734' and '3114181734' are one number. A hit whose
+    stored po_number is blank is KEPT: HubSpot returned it for this number and
+    we cannot disprove it, and this guard errs toward refusing.
+
+    Raises whatever the lookup raises: the caller must not read an exception
+    as "no duplicate".
+    """
+    want = po_num.casefold()
+    hits = []
+    for d in hs.find_deals_by_po_number(po_num, raw) or []:
+        stored = ((d.get("properties") or {}).get("po_number") or "").strip()
+        if not stored or _norm_po_number(stored).casefold() == want:
+            hits.append(d)
+    return hits or (hs.search_deals_by_name(po_num) or [])
+
+
+def _refuse_po(po: dict, note_parts: list[str], action: str, note: str, dm: str) -> None:
+    """No deal, a note on the ticket, and a DM to the PO seat. Used wherever the
+    duplicate guard cannot be satisfied (Roman, 2026-09-12: a PO we cannot
+    verify as new never becomes a deal; a human decides)."""
+    note_parts.append(note)
+    owner = staff(cfg()["po_inbox"].get("owner", "kath"))
+    if owner.get("slack_user_id"):
+        try:
+            slack_client.dm(owner["slack_user_id"], dm)
+        except Exception as e:  # noqa: BLE001 (alerting must not kill the run)
+            print(f"  ⚠️  refusal DM failed (non-fatal): {e}")
+    audit.append({"message_id": f"{action}:{_norm_po_number(po.get('po_number')) or 'nonumber'}"
+                                f":{(po.get('student_first') or '')}"
+                                f"{(po.get('student_last') or '')}",
+                  "source": "po_inbox", "action_taken": action,
+                  "po_number": _norm_po_number(po.get("po_number")),
+                  "school": po.get("school") or "",
+                  "student": f"{po.get('student_first', '')} {po.get('student_last', '')}".strip()})
+
+
 def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | None = None,
                    no_lessons_check: bool = True, msg: dict | None = None,
                    tw_cache: dict | None = None,
-                   chase_queue: list | None = None) -> dict | None:
+                   chase_queue: list | None = None,
+                   seen_po_numbers: set | None = None) -> dict | None:
     """Advance the matching Waiting-for-PO deal, or create one. Returns
     {name, pending} for a CREATED deal (drives the scheduler DM), else None."""
     pc = cfg()["po_inbox"]
@@ -1473,10 +1506,63 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
     # (Roman, 2026-08-11: "you might have to calculate; our rate will be in the PO").
     if not po.get("hours"):
         _compute_hours(po, note_parts)
-    # PO-number dedupe via the canonical po_number PROPERTY (then name as backstop).
-    po_num = _norm_po_number(po.get("po_number"))
+    # ── PO-number dedupe. Roman, 2026-09-12: "I just want the no duplicate po
+    # option being firm as possible." THREE independent checks, every one of
+    # them failing closed:
+    #   1. HubSpot, the canonical po_number PROPERTY (every stored spelling),
+    #      with deal-NAME CONTAINS as the backstop;
+    #   2. the audit ledger, immune to HubSpot's search-index lag;
+    #   3. the numbers already created in THIS run, immune to everything, so a
+    #      multi-PO email cannot create two deals for one number.
+    # A PO whose number is missing, or whose lookup could not be completed, is
+    # NOT a deal: it is a note, a DM to the PO seat, and a human decision.
+    raw_num = str(po.get("po_number") or "").strip()
+    po_num = _norm_po_number(raw_num)
+    seen = seen_po_numbers if seen_po_numbers is not None else _created_po_numbers()
+    if not po_num and pc.get("require_po_number", True):
+        _refuse_po(po, note_parts, "po_refused_no_number",
+                   "⛔ NO readable PO number on this PO, so we cannot tell it from one we "
+                   "already have. NO deal created. Find the number and create the deal "
+                   "manually, or re-send the document so the agent can read it.",
+                   f"⛔ PO from {po.get('school') or 'an unnamed school'} for "
+                   f"{(po.get('student_first') or '').strip() or 'a student'} has NO readable "
+                   f"PO number. A duplicate check is impossible without one, so no deal was "
+                   f"created. Read the PO, then create the deal by hand.")
+        return
     if po_num:
-        dup = hs.find_deals_by_po_number(po_num) or hs.search_deals_by_name(po_num)
+        try:
+            dup = _duplicate_deals(po_num, raw_num)
+        except Exception as e:  # noqa: BLE001 (an unverified number never becomes a deal)
+            if pc.get("dedupe_fail_closed", True):
+                _refuse_po(po, note_parts, "po_refused_dedupe_unavailable",
+                           f"⛔ Could not check PO {po_num} against existing deals "
+                           f"({str(e)[:120]}). NO deal created rather than risk a second "
+                           f"deal on the same PO. Check HubSpot and create it manually.",
+                           f"⛔ PO {po_num} ({po.get('school') or 'school n/a'}): the "
+                           f"duplicate lookup failed ({str(e)[:120]}). No deal was created. "
+                           f"Search HubSpot for that PO number and create the deal by hand "
+                           f"if it is genuinely new.")
+                return
+            print(f"  ⚠️  duplicate lookup failed, fail-closed disabled: {e}")
+            dup = []
+        if not dup and po_num.casefold() in seen:
+            # HubSpot has not indexed it yet (or never will, since the ledger row may
+            # predate the po_number property). The ledger is the older, slower,
+            # more reliable witness; it wins.
+            note_parts.append(f"⛔ DUPLICATE PO {po_num}: our own records already show a "
+                              f"deal created for this PO number (HubSpot search has not "
+                              f"caught up). No second deal; Kath alerted.")
+            owner = staff(pc.get("owner", "kath"))
+            if owner.get("slack_user_id"):
+                slack_client.dm(owner["slack_user_id"],
+                                f"🚨 URGENT, duplicate PO received: PO {po_num} was already "
+                                f"processed into a deal (our audit log says so; HubSpot's "
+                                f"search index is still catching up). No second deal was "
+                                f"created. Confirm the existing deal covers it.")
+            audit.append({"message_id": f"po_refused_ledger_duplicate:{po_num}",
+                          "source": "po_inbox", "action_taken": "po_refused_ledger_duplicate",
+                          "po_number": po_num, "school": po.get("school") or ""})
+            return
         if dup:
             dp = dup[0].get("properties") or {}
             dn = dp.get("dealname", "?")
@@ -1498,12 +1584,19 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                              f"🚨 URGENT — duplicate PO received: PO {po_num} already has "
                              f"deal '{dn}'. Check whether the school re-sent it or this is "
                              f"a second authorization before doing anything."))
-            # the approved PO re-arriving IS the approval signal — close the
-            # pending-approval sweep for this PO number
-            audit.append({"message_id": f"pending-po-confirmed:{po_num}",
-                          "source": "po_inbox", "action_taken": "pending_po_confirmed",
-                          "po_number": po_num, "deal_name": dn})
+            # Both branches refuse to create and hand the decision to a human;
+            # the row also feeds _created_po_numbers' successor runs.
+            audit.append({"message_id": f"po-refused-duplicate:{po_num}:{dup[0].get('id')}",
+                          "source": "po_inbox",
+                          "action_taken": "po_reissue_flagged" if reissued
+                          else "po_refused_duplicate",
+                          "po_number": po_num, "deal_id": dup[0].get("id"),
+                          "deal_name": dn, "school": po.get("school") or ""})
             return
+        # Cleared every check: claim the number for the rest of this run BEFORE
+        # any work, so a second copy of it in the same email (or a retry after a
+        # half-failed create) can never slip past while HubSpot is still cold.
+        seen.add(po_num.casefold())
     waiting = (hs.search_deals_by_name(token, pc["deal_pipeline_id"], pc["waiting_for_po_stage"])
                if pc.get("waiting_for_po_stage") else [])   # stage retired → always create
     if len(waiting) == 1:
@@ -1732,6 +1825,14 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         note_parts.append(f"💼 Created deal '{name}' in Charter pipeline (Pre-Lesson, "
                           f"{'Existing' if prior else 'New'} Business, owner {sched.get('name', sched_key)}, "
                           f"{contact_bit}id {d.get('id')}).")
+        if po_num:
+            # The ledger row the duplicate guard reads back (_created_po_numbers):
+            # written the instant the deal exists, so the NEXT arrival of this PO
+            # number is refused even while HubSpot's search index is still cold.
+            audit.append({"message_id": f"po-deal-created:{po_num}:{d.get('id')}",
+                          "source": "po_inbox", "action_taken": "po_deal_created",
+                          "po_number": po_num, "deal_id": d.get("id"), "deal_name": name,
+                          "school": po.get("school") or ""})
         if tw_note:
             note_parts.append(tw_note)
         _associate_tor(d.get("id"), po, note_parts, family_contact_id=contact_id)
@@ -1744,20 +1845,6 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             else:
                 _open_parent_chases([(d.get("id"), name, pipeline_id, po)],
                                     msg, note_parts)
-        if po.get("pending_approval") and d.get("id") and d.get("id") != "DRYRUN":
-            # pending-approval follow-up sweep: track the open pending PO; the
-            # duplicate alert (approved PO re-arriving) confirms it, the sweep
-            # nags after the window. Roman, 2026-08-26: portal approval takes
-            # AT LEAST 14 days from the original email — the old 16-business-hour
-            # window nagged Kath about approvals that could not exist yet
-            # (24 false reminders, Aug 21-25) and trains her to ignore the one
-            # that genuinely stalls.
-            audit.append({"message_id": f"pending-po:{d.get('id')}", "source": "po_inbox",
-                          "action_taken": "pending_po_opened", "deal_id": d.get("id"),
-                          "deal_name": name, "po_number": po_num,
-                          "sla_due": (now_la() + timedelta(
-                              days=int(pc.get("pending_portal_approval_days", 14))
-                          )).isoformat()})
         if no_lessons_check:
             _no_lessons_alert(po, name, note_parts, upcoming)
         # No waiting on the next cron: run the Teachworks sync for THIS deal now.
@@ -1790,8 +1877,9 @@ def _thread_already_handled(thread_id: str) -> bool:
 
 def _gap_notes(note_parts: list[str]) -> list[str]:
     """The notes that mean SOMETHING IS MISSING: fields the PO didn't state,
-    unmatched TOR/parent, failed uploads, any 'do it manually' follow-up."""
-    return [p for p in note_parts if p.startswith(("⚠️", "📨"))
+    unmatched TOR/parent, failed uploads, any 'do it manually' follow-up, and
+    ⛔ a PO the duplicate guard refused to turn into a deal (2026-09-12)."""
+    return [p for p in note_parts if p.startswith(("⚠️", "📨", "⛔"))
             or "manually" in p or "NEEDS PARENT" in p or "no shorthand" in p]
 
 
@@ -1809,7 +1897,7 @@ def _notify_gaps(subject: str, note_parts: list[str], ticket_id=None) -> None:
         if s.get("slack_user_id"):
             try:
                 slack_client.dm(s["slack_user_id"], msg)
-            except Exception as e:  # noqa: BLE001 — alerting must not kill the run
+            except Exception as e:  # noqa: BLE001 (alerting must not kill the run)
                 print(f"  ⚠️  gap DM to {key} failed (non-fatal): {e}")
 
 
@@ -2247,10 +2335,6 @@ def run() -> None:
         _sweep_parent_chases()
     except Exception as e:  # noqa: BLE001 — the sweep must never kill the run
         print(f"  ⚠️  parent-chase sweep failed (non-fatal): {e}")
-    try:
-        _sweep_pending_pos()
-    except Exception as e:  # noqa: BLE001
-        print(f"  ⚠️  pending-PO sweep failed (non-fatal): {e}")
     try:
         _sweep_chase_drafts()
     except Exception as e:  # noqa: BLE001

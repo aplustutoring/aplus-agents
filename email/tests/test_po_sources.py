@@ -163,7 +163,7 @@ def test_run_processes_rescued_ids_even_when_behind_cursor(monkeypatch, tmp_path
     monkeypatch.setattr(po.po_sources, "rescue_spam", lambda st: ["old-spam-id"])
     monkeypatch.setattr(po.gm, "list_messages", lambda q, **k: [{"id": "fresh"}])
     monkeypatch.setattr(po, "process_po_message", lambda i, force=False: processed.append(i) or {"ok": 1})
-    for name in ("_sweep_parent_chases", "_sweep_pending_pos", "_sweep_chase_drafts",
+    for name in ("_sweep_parent_chases", "_sweep_chase_drafts",
                  "_sweep_chase_self_resolve"):
         monkeypatch.setattr(po, name, lambda: None)
     monkeypatch.setattr(po.draft_feedback, "sweep", lambda: None)
@@ -180,7 +180,7 @@ def test_run_mirrors_before_polling_charter(monkeypatch, tmp_path):
     monkeypatch.setattr(po.po_sources, "mirror_sources", lambda st: order.append("mirror") or 0)
     monkeypatch.setattr(po.po_sources, "rescue_spam", lambda st: order.append("rescue") or [])
     monkeypatch.setattr(po.gm, "list_messages", lambda q, **k: order.append("poll") or [])
-    for name in ("_sweep_parent_chases", "_sweep_pending_pos", "_sweep_chase_drafts",
+    for name in ("_sweep_parent_chases", "_sweep_chase_drafts",
                  "_sweep_chase_self_resolve"):
         monkeypatch.setattr(po, name, lambda: None)
     monkeypatch.setattr(po.draft_feedback, "sweep", lambda: None)
