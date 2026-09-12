@@ -16,7 +16,12 @@
       "roman_take": "The ESSER-to-Title-III bridge is not a fundraising trick \u2014 it is what separates programs that survive from programs that quietly die in Q3 of SY 2025-26.",
       "danielle_take": "The 92% diagnostic-data figure is the tell: districts that instrumented HIT properly are the ones still running it. Here is what \"diagnostic data to target participation\" actually looks like inside a CARS/CALPADS workflow.",
       "redundancy_max_similarity": 0.598642904863762,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-12T11:12:15.719261-07:00",
+      "post_date": "2026-09-14",
+      "bundle_dir": "aplus-content/2026-09-14-post-esser-tutoring-braided-funding",
+      "hubspot_post_id": "221761632917"
     },
     {
       "slot": 2,
@@ -33,7 +38,12 @@
       "roman_take": "Conviction angle \u2014 LCAPs are where intervention strategy becomes real; if HIT tutoring isn't in your LCAP, it isn't your strategy, it's a line item somebody can cut in April.",
       "danielle_take": "Implementation angle \u2014 how a special programs coordinator actually operationalizes an LCAP action like this (screener selection, tier assignment, dosage tracking) without adding an extra full-time role.",
       "redundancy_max_similarity": 0.570165075975557,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-12T11:31:04.600970-07:00",
+      "post_date": "2026-09-16",
+      "bundle_dir": "aplus-content/2026-09-16-charter-lcap-high-impact-tutoring",
+      "hubspot_post_id": "221762031370"
     },
     {
       "slot": 3,
@@ -53,7 +63,12 @@
       "roman_take": "Conviction angle \u2014 the market didn't reject tutoring, it rejected undifferentiated tutoring; A+ built for the world where districts ask \"prove it\" instead of \"how fast can you scale.\"",
       "danielle_take": "Implementation angle \u2014 a practical checklist for charter directors whose Varsity/FEV/etc. contracts just evaporated 30 days before school starts, focused on Title I/III fund protection and continuity of service. ---",
       "redundancy_max_similarity": 0.5925318307431461,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-12T11:46:05.258430-07:00",
+      "post_date": "2026-09-18",
+      "bundle_dir": "aplus-content/2026-09-18-why-varsity-tutors-left-schools",
+      "hubspot_post_id": "221765338702"
     }
   ],
   "slack": {

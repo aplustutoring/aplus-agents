@@ -1538,6 +1538,57 @@
       "refresh_mode": false,
       "slack_channel": "C0B4K9K0162",
       "slack_ts": "1789098405.006819"
+    },
+    {
+      "ts": "2026-09-12T11:12:15.720538-07:00",
+      "kind": "content_build",
+      "week": "2026-09-10",
+      "slot": 1,
+      "post_date": "2026-09-14",
+      "headline": "The post-ESSER HIT cliff \u2014 NSSA data shows 40% of districts plan to shrink tutoring; braided funding is the only way to hold the line",
+      "bundle_dir": "aplus-content/2026-09-14-post-esser-tutoring-braided-funding",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "221761632917",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-09-12T11:31:04.602189-07:00",
+      "kind": "content_build",
+      "week": "2026-09-10",
+      "slot": 2,
+      "post_date": "2026-09-16",
+      "headline": "Heartland Charter's LCAP names high-impact 1:1 tutoring as its new 2025-26 intervention action",
+      "bundle_dir": "aplus-content/2026-09-16-charter-lcap-high-impact-tutoring",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "221762031370",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
+    },
+    {
+      "ts": "2026-09-12T11:46:05.259879-07:00",
+      "kind": "content_build",
+      "week": "2026-09-10",
+      "slot": 3,
+      "post_date": "2026-09-18",
+      "headline": "Varsity Tutors for Schools is gone \u2014 and experts blame the evidence gap, not just the funding cliff",
+      "bundle_dir": "aplus-content/2026-09-18-why-varsity-tutors-left-schools",
+      "publish_rc": 0,
+      "slack_rc": 0,
+      "hubspot_post_id": "221765338702",
+      "action": "created",
+      "fact_pass": true,
+      "brand_pass": true,
+      "seo_issues": 0,
+      "flags": []
     }
   ]
 }
