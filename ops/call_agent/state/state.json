@@ -778,9 +778,10 @@
     414322540,
     414323147,
     414319839,
-    414327654
+    414327654,
+    414331369
   ],
-  "last_run_utc": "2026-09-11T23:45:50.062986+00:00",
+  "last_run_utc": "2026-09-12T00:19:07.360812+00:00",
   "pending_digest": [
     {
       "call_id": 414134815,
@@ -1526,6 +1527,75 @@
           "Update contact record with parent name Angela Topcu and email wolftres@yahoo.com.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 414331369,
+      "number": "18182599622",
+      "time_pt": "5:11 PM",
+      "matched": true,
+      "contact_label": "Juan Carlos DaVault",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ called Juan Carlos DaVault regarding a new purchase order received for his daughter KailynMarie. She confirmed that the existing Thursday 1pm schedule still works for the family. Juan Carlos agreed, and Janelle said she would add more lessons and invited him to reach out if any schedule adjustments are needed. Friendly, quick confirmation call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add additional lessons to KailynMarie's schedule (Thursdays at 1pm) per the new purchase order",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; status owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "KailynMarie",
+          "iLEAD California Charters"
+        ],
+        "record_updates": {
+          "whats_going_on": "New purchase order received for KailynMarie; confirmed with dad that the existing Thursdays at 1pm schedule still works. Adding more lessons.",
+          "what_we_can_do_to_help": "Add lessons to KailynMarie's Thursday 1pm slot and remain flexible if the family needs schedule adjustments.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "New purchase order received for KailynMarie; confirmed with dad that the existing Thursdays at 1pm schedule still works. Adding more lessons."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Add lessons to KailynMarie's Thursday 1pm slot and remain flexible if the family needs schedule adjustments."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add additional lessons to KailynMarie's schedule (Thursdays at 1pm) per the new purchase order",
+          80047202,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
