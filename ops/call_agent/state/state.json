@@ -821,9 +821,11 @@
     414917657,
     414933240,
     414934517,
-    414936545
+    414936545,
+    414939206,
+    414940857
   ],
-  "last_run_utc": "2026-09-14T23:26:28.908298+00:00",
+  "last_run_utc": "2026-09-14T23:35:20.380064+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1881,6 +1883,165 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 414939206,
+      "number": "17605744135",
+      "time_pt": "4:28 PM",
+      "matched": true,
+      "contact_label": "Destyni Moore",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Destyni Moore, a past customer, to check in about continued tutoring for her kids (Leerah, Kaynumn, Blayze) this school year. The call went to voicemail; Paola left a message asking Destyni to reply and noted she is also sending an email follow-up. No response or next step was secured on the call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send follow-up email to Destyni Moore about continued tutoring for Leerah, Kaynumn, and Blayze this school year",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Attempt another call to Destyni if no email reply within a few days",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Destyni is a past customer; lead status is owned by the deal pipeline and should not be demoted.",
+        "student_or_school_names_mentioned": [
+          "Leerah",
+          "Kaynumn",
+          "Blayze"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola re: continuing tutoring this school year for Leerah, Kaynumn, and Blayze. Reached voicemail; left message and is sending a follow-up email.",
+          "what_we_can_do_to_help": "Re-engage Destyni about restarting tutoring for her three kids this school year; confirm schedule, subjects, and modality when she responds.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola re: continuing tutoring this school year for Leerah, Kaynumn, and Blayze. Reached voicemail; left message and is sending a follow-up email."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-engage Destyni about restarting tutoring for her three kids this school year; confirm schedule, subjects, and modality when she responds."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send follow-up email to Destyni Moore about continued tutoring for Leerah, Kaynumn, and Blayze this school year",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Attempt another call to Destyni if no email reply within a few days",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 414940857,
+      "number": "13232435273",
+      "time_pt": "4:30 PM",
+      "matched": true,
+      "contact_label": "Alex Shapirshteyn",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ scheduling called Alex Shapirshteyn to confirm that his son had lessons with tutor Brian last week and to flag that only 1.5 hours remain on the account. Alex clarified that Michael is Bryan's younger brother and authorized adding Michael to the account (siblings can use it interchangeably). Alex was surprised the recent sessions were 2 hours each (Oct 5 and 6) \u2014 Michael hadn't told him \u2014 and said he'll set up a sign-in sheet for accountability. Alex will renew hours after the next lesson and will call back then.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add younger brother Michael to Alex Shapirshteyn's account so siblings can use hours interchangeably",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Watch for Alex's callback after the next lesson to process an hours renewal",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Alex Shapirshteyn (parent, friendly and appreciative) was called by Yolanda to confirm his son's lessons with tutor Brian on 10/5 and 10/6 (2 hours each). Alex confirmed the lessons and clarified that Michael is Bryan's younger brother \u2014 please add Michael to Alex's account; siblings share hours interchangeably. Alex was surprised the sessions ran 2 hours (Michael hadn't told him) and now has only 1.5 hours left; he declined to renew today but promised to call back after the next lesson to renew. He also mentioned it's been hard to reach John. Expect his inbound call post-next-session \u2014 open with: 'Hi Alex, following up on renewing your hours after Michael's last session \u2014 how many hours would you like to add?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (open deal, ongoing tutoring). Status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Bryan",
+          "Michael"
+        ],
+        "record_updates": {
+          "whats_going_on": "Confirmed sibling Michael (Bryan's younger brother) is also using tutoring hours with tutor Brian \u2014 sessions on 10/5 and 10/6 were 2 hours each. Account is down to 1.5 hours remaining. Alex was unaware sessions were running 2 hours; plans to set up a sign-in sheet for accountability with Michael.",
+          "what_we_can_do_to_help": "Add Michael (Bryan's younger brother) to Alex's account so siblings can share hours interchangeably. Await Alex's callback after the next lesson to process an hours renewal. Note Alex mentioned difficulty reaching John.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Confirmed sibling Michael (Bryan's younger brother) is also using tutoring hours with tutor Brian \u2014 sessions on 10/5 and 10/6 were 2 hours each. Account is down to 1.5 hours remaining. Alex was unaware sessions were running 2 hours; plans to set up a sign-in sheet for accountability with Michael."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Add Michael (Bryan's younger brother) to Alex's account so siblings can share hours interchangeably. Await Alex's callback after the next lesson to process an hours renewal. Note Alex mentioned difficulty reaching John."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add younger brother Michael to Alex Shapirshteyn's account so siblings can use hours interchangeably",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Watch for Alex's callback after the next lesson to process an hours renewal",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
