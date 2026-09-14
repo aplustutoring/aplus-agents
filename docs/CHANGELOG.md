@@ -7,6 +7,52 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-14 — The unified outbound spine already exists (presend); it is half installed
+
+**What:** Roman, reading the lead-pipe trace: "All of the SMSes have to work the
+same way. This all has to be unified... One feature where agents know what the
+other one's doing." Audited what is actually shared across the fleet and wrote
+`docs/UNIFIED-OUTBOUND.md`.
+
+Finding: the thing he is asking for is `email/src/presend.py`, which he and
+Claude built on 2026-09-09 after the Gonzalez three-texts-from-two-lines
+incident. It already reads opt-out, quiet hours, the LOCKED audience-to-line
+rule, every other line's JustCall thread history, the shared inbox, open
+scheduling tickets, same-day frequency across all lines, and
+`agent_last_outbound_at` / `agent_last_outbound_seat` on the contact.
+`record_send` writes the HubSpot note + the two [Agent] properties + the audit
+line. That IS "agents know what the other one's doing", and the properties are
+already live in `ops/hubspot-schema/properties.yml`.
+
+It is installed on **2 of ~7 outbound paths**, and `presend.enabled` is still
+`false`, so even those two log `presend_shadow` and send anyway. The gate has
+never stopped anything since it shipped.
+
+Off the spine: `low_balance._send_sms` and its five Resend sites (newest engine,
+armed 09-10, texting families about money with no cross-line check), bulk
+`messenger.jc_send_sms`, the inbox reply path in `main.py`, and HubSpot flow
+50818589 (the online lead pipe), which cannot be put on the spine at all because
+it is a workflow, not Python.
+
+**Why:** the seven lead-pipe defects are not seven bugs, they are one
+architectural fact: the last six-year-old piece never learned to talk to the
+others. Three moves, in `docs/UNIFIED-OUTBOUND.md`: (1) flip `presend.enabled`
+after reading a week of shadow audit; (2) put low_balance, bulk messenger and
+the inbox path on the gate, two lines each; (3) retire flow 50818589 into
+`ops/lead_intake/`, a normal engine polling by `recent_conversion_date` cursor
+instead of 29 pinned form GUIDs, which structurally removes F7, F5, F4, F2 and
+F1.
+
+**Caveat carried deliberately:** move 3 is weeks and F7 costs money daily, so
+the HubSpot UI fixes (F7 goal, F2 delay, F1 default branch) go first and are not
+blocked on the rebuild.
+
+Nothing applied. No #AP number yet; this becomes one when Roman locks the
+sequence.
+
+**Files:** `docs/UNIFIED-OUTBOUND.md` (new), `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-14 — Online lead intake traced: the pipe tells families we called when nobody did
 
 **What:** read-only trace of `Lead Pipe Line - Online` (HubSpot flow 50818589),
