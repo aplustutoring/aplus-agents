@@ -818,9 +818,11 @@
     414871722,
     414877175,
     414890420,
-    414917657
+    414917657,
+    414933240,
+    414934517
   ],
-  "last_run_utc": "2026-09-14T22:19:11.305994+00:00",
+  "last_run_utc": "2026-09-14T23:15:57.259868+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1658,6 +1660,148 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 414933240,
+      "number": "13233338981",
+      "time_pt": "4:08 PM",
+      "matched": true,
+      "contact_label": "Kim Raznick",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Kim Raznick to follow up on her earlier inquiry about honors geometry tutoring for her 10th grader Kai at Providence. Kim said she is no longer interested and has gone with another option. The call ended cordially with no further action requested.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Mark Kim Raznick's lead as closed/lost \u2014 family declined and is no longer interested in tutoring for Kai.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Kim explicitly declined further interest on our outbound follow-up; lead is closed/lost. Existing status was 'Using Someone Else' \u2014 this call confirms she is not moving forward with A+.",
+        "student_or_school_names_mentioned": [
+          "Kai Raznick",
+          "Providence"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound follow-up] Paola called Kim to follow up on the honors geometry inquiry for Kai. Kim said she is no longer interested and declined further info.",
+          "what_we_can_do_to_help": "[outbound follow-up] No action needed \u2014 family declined. Close the lead; leave door open if she reaches back out.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound follow-up] Paola called Kim to follow up on the honors geometry inquiry for Kai. Kim said she is no longer interested and declined further info."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound follow-up] No action needed \u2014 family declined. Close the lead; leave door open if she reaches back out."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Mark Kim Raznick's lead as closed/lost \u2014 family declined and is no longer interested in tutoring for Kai.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 414934517,
+      "number": "18052067325",
+      "time_pt": "4:12 PM",
+      "matched": true,
+      "contact_label": "Selvi Aram",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Selvi Aram regarding Sofia's potential tutoring for Science Academy entrance exam prep. The call went to voicemail; Paola left a message referencing her prior email and letting Selvi know A+ is ready to help whenever the family is. No response or next step was secured on this call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Selvi's response to the voicemail/email; if no reply within a few days, attempt another follow-up contact about diagnostic and tutoring for Sofia.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Selvi Aram (mom of Sofia, 4th grade) following up on a prior email about Science Academy entrance exam prep tutoring. No callback time was set \u2014 Selvi has not yet responded. She is still in the QTL - Diagnostic Sent stage, waiting on her go-ahead to send the diagnostic. If she calls back, open with: 'Hi Selvi, this is [name] from A+ Tutoring following up on Paola's message \u2014 wanted to see if you're ready for us to send Sofia's diagnostic and get started on Science Academy prep.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound voicemail only; no contact made and no new information to change the existing 'We Connected' status.",
+        "student_or_school_names_mentioned": [
+          "Sofia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a follow-up voicemail for Selvi referencing her prior email about tutoring for Sofia. No response yet; family has not confirmed next step on Science Academy entrance exam prep.",
+          "what_we_can_do_to_help": "Continue gentle follow-up; be ready to send the diagnostic exam as soon as Selvi confirms.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a follow-up voicemail for Selvi referencing her prior email about tutoring for Sofia. No response yet; family has not confirmed next step on Science Academy entrance exam prep."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue gentle follow-up; be ready to send the diagnostic exam as soon as Selvi confirms."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Selvi's response to the voicemail/email; if no reply within a few days, attempt another follow-up contact about diagnostic and tutoring for Sofia.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
