@@ -820,9 +820,10 @@
     414890420,
     414917657,
     414933240,
-    414934517
+    414934517,
+    414936545
   ],
-  "last_run_utc": "2026-09-14T23:20:00.634459+00:00",
+  "last_run_utc": "2026-09-14T23:26:28.908298+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1802,6 +1803,84 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 414936545,
+      "number": "13103573964",
+      "time_pt": "4:11 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Ashley Arous called seeking tutoring for her 2nd-grade daughter Sofia Esparza in Palmdale. Sofia is homeschooled through iLEAD (online-only, not hybrid) and needs help catching up after vacation, primarily in English/reading (specifically blending sounded-out words). Janelle quoted online rates ($75/hr or $60/45min) and in-person ($95/hr for charter), and Ashley chose online 1-hour sessions on Fri/Sat/Sun mornings around 9-11am. Ashley will check with iLEAD about purchase order availability; otherwise she'll pay out of pocket. Janelle promised to send tutor profiles and find the best match.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Identify and send Ashley top-match tutor profile(s) for 2nd grade ELA/reading (blending skills), available Fri/Sat/Sun mornings 9-11am, for 1-hour online sessions",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Ashley on whether iLEAD online will issue a purchase order; if so, collect school teacher contact info to submit PO, otherwise proceed with out-of-pocket billing",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Schedule first online session for Sofia once tutor is matched and Ashley confirms",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ashley Arous (mom, friendly, was driving during call) called about her 2nd-grade daughter Sofia Esparza in Palmdale. Sofia is homeschooled through iLEAD ONLINE (not hybrid), fell behind after a family vacation, and needs help catching up \u2014 primarily English/reading, specifically blending sounds into whole words (she can sound letters out but not merge them). Some math possibly too, but mostly ELA. Both parents work full-time. Janelle quoted online rates: $75/hr or $60 for 45 min; Ashley picked 1-hour online sessions. In-person was quoted at $95/hr and she declined as too expensive but said she'd revisit if online doesn't show progress. Availability: Fri/Sat/Sun mornings around 9, 10, or 11am. Ashley will check whether iLEAD online offers purchase orders; if not, she'll pay out of pocket. She expects us to send tutor profile(s) \u2014 she specifically asked to see top tutors' schedules and backgrounds/reviews \u2014 and match her with a strong 2nd-grade reading tutor. Contact: 310-357-3964, arous.2203@gmail.com. Suggested opener: \"Hi Ashley, this is [name] from A+ Tutoring following up on your call with Janelle about Sofia \u2014 I've pulled a couple of tutor profiles who specialize in early elementary reading and have Friday/weekend morning availability. Want me to send those over now?\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; homeschooled through iLEAD online but PO/charter funding not confirmed and family may pay out of pocket, so not yet QTL-Charter. No test prep/diagnostic required.",
+        "student_or_school_names_mentioned": [
+          "Sofia Esparza",
+          "iLEAD (online)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Ashley called seeking online tutoring for her 2nd-grade daughter Sofia Esparza in Palmdale. Sofia is homeschooled through iLEAD online (not hybrid), fell behind after a family vacation, and needs ELA support \u2014 especially blending sounds into words (can sound out letters but struggles to merge them). Both parents work full-time.",
+          "what_we_can_do_to_help": "Send Ashley tutor profiles for a strong 2nd-grade reading tutor available Fri/Sat/Sun mornings (9-11am) for 1-hour online sessions at $75/hr. Ashley will check whether iLEAD online issues purchase orders; if yes, collect teacher info to submit PO, otherwise bill out of pocket. In-person ($95/hr) is a possible fallback if online doesn't show progress.",
+          "student_first_name": "Sofia",
+          "student_last_name": "Esparza",
+          "grade_level": "2",
+          "student_school": "iLEAD (online)",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Identify and send Ashley top-match tutor profile(s) for 2nd grade ELA/reading (blending skills), available Fri/Sat/Sun mornings 9-11am, for 1-hour online sessions",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Follow up with Ashley on whether iLEAD online will issue a purchase order; if so, collect school teacher contact info to submit PO, otherwise proceed with out-of-pocket billing",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Schedule first online session for Sofia once tutor is matched and Ashley confirms",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
