@@ -817,9 +817,10 @@
     414870373,
     414871722,
     414877175,
-    414890420
+    414890420,
+    414917657
   ],
-  "last_run_utc": "2026-09-14T21:09:48.705388+00:00",
+  "last_run_utc": "2026-09-14T22:19:11.305994+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1558,6 +1559,100 @@
           "Follow up with Ensieh after she reviews the pricing email to answer questions and book a first session for Farimah (7th grade math, gifted, taking 8th grade math)",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 414917657,
+      "number": "19173249694",
+      "time_pt": "3:06 PM",
+      "matched": true,
+      "contact_label": "Farnaz Partnow",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Farnaz Partnow, a returning A+ customer, called inbound inquiring about ongoing subject tutoring for her two daughters at Buckley: her 11th grader needs Honors Biology (and Honors Pre-Calc) and her 10th grader needs regular Chemistry (and Algebra 2). Roman walked her through hourly ($95) and prepaid packages (8/20/50/100 hours at $83/hr for 20) and confirmed hours can be split between both girls across all subjects. Scheduling will likely be weekday evenings until volleyball ends mid-October, then Wednesday afternoons; sessions would be on Zoom. Roman had already emailed the pricing graphic; Farnaz will review at home and get back to him.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Await Farnaz's reply to the pricing email; if no response in a few days, follow up to help her choose a package and get the girls started (biology honors for 11th grader, chemistry for 10th grader, plus potentially Honors Pre-Calc and Algebra 2).",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Farnaz confirms a package, match tutors familiar with Buckley for Honors Biology, Chemistry, Honors Pre-Calc, and Algebra 2, and schedule initial Zoom sessions around volleyball (evenings until mid-October, then Wednesday afternoons).",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Farnaz Partnell",
+            "correct": "Farnaz Partnow"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Farnaz Partnow is a warm returning customer (previously used us for test prep) who called in upbeat and ready to move \u2014 she recognized Roman on the call. She has two daughters at Buckley: an 11th grader needing Honors Biology (and Honors Pre-Calc), and a 10th grader (Ella on file) needing regular Chemistry (and Algebra 2). Roman quoted hourly $95 and the 20-hour prepaid package at $83/hr, mentioned 8/20/50/100-hour options, and confirmed hours can be split across both girls and all subjects. Sessions will be on Zoom; scheduling is tight until volleyball ends mid-October (evenings work), then Wednesday afternoons open up. Roman emailed the pricing graphic and she said she'd review at home and get back to us. She's also comparing against a precalc teacher she reached out to. Open with: 'Hi Farnaz, Roman passed along your call \u2014 wanted to check in on the pricing info he sent and help you pick the right package so we can get both girls set up with Buckley-savvy tutors before things get more stressful.' Confirm the younger daughter's name (record shows Ella) and get the older daughter's name.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Returning customer already in the deal pipeline \u2014 status is owned there; leaving 'We Connected' in place.",
+        "student_or_school_names_mentioned": [
+          "Ella",
+          "Buckley"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning customer Farnaz called for ongoing subject tutoring for both daughters at Buckley: 11th grader needs Honors Biology (and Honors Pre-Calc), 10th grader (Ella) needs regular Chemistry (and Algebra 2). Both play volleyball daily after school through mid-October, so evening Zoom sessions work until then, then Wednesday afternoons open up. She's also comparing a precalc teacher referral.",
+          "what_we_can_do_to_help": "Roman quoted hourly $95 and 20-hr prepaid at $83/hr (also mentioned 8/50/100-hr options) and emailed the pricing graphic. Confirmed hours can be split across both girls and all subjects. Next: follow up on her package decision, then match Buckley-familiar tutors for Bio Honors, Chem, Honors Pre-Calc, and Algebra 2, and schedule Zoom sessions around volleyball.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning customer Farnaz called for ongoing subject tutoring for both daughters at Buckley: 11th grader needs Honors Biology (and Honors Pre-Calc), 10th grader (Ella) needs regular Chemistry (and Algebra 2). Both play volleyball daily after school through mid-October, so evening Zoom sessions work until then, then Wednesday afternoons open up. She's also comparing a precalc teacher referral."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman quoted hourly $95 and 20-hr prepaid at $83/hr (also mentioned 8/50/100-hr options) and emailed the pricing graphic. Confirmed hours can be split across both girls and all subjects. Next: follow up on her package decision, then match Buckley-familiar tutors for Bio Honors, Chem, Honors Pre-Calc, and Algebra 2, and schedule Zoom sessions around volleyball."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Farnaz's reply to the pricing email; if no response in a few days, follow up to help her choose a package and get the girls started (biology honors for 11th grader, chemistry for 10th grader, plus potentially Honors Pre-Calc and Algebra 2).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Farnaz confirms a package, match tutors familiar with Buckley for Honors Biology, Chemistry, Honors Pre-Calc, and Algebra 2, and schedule initial Zoom sessions around volleyball (evenings until mid-October, then Wednesday afternoons).",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
