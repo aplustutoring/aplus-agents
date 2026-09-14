@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-14T15:16:12.281615+00:00",
+ "_last_run": "2026-09-14T22:38:25.636154+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -342,6 +342,15 @@
   "name": "Kathryn Chan",
   "tw_student_id": "2136105"
  },
+ "online:contreras, marissa": {
+  "checked": "2026-09-14",
+  "contact_id": "19246393765",
+  "deal_id": "19193597587",
+  "email": "mscassiemarie@gmail.com",
+  "first": "2024-05-09",
+  "name": "Marissa Contreras",
+  "tw_student_id": "1820491"
+ },
  "online:czaja, charlotte": {
   "checked": "2026-09-10",
   "contact_id": "198008137574",
@@ -431,6 +440,15 @@
   "first": "2022-05-18",
   "name": "Evrsen Edwards",
   "tw_student_id": "1380853"
+ },
+ "online:elenes, adrian": {
+  "checked": "2026-09-14",
+  "contact_id": "245864533780",
+  "deal_id": "64836186920",
+  "email": "leslyelenes@gmail.com",
+  "first": "2026-09-14",
+  "name": "Adrian Elenes",
+  "tw_student_id": "2349039"
  },
  "online:escandon, cali": {
   "checked": "2026-09-10",
@@ -620,6 +638,15 @@
   "first": "2025-04-01",
   "name": "Rayven Holloway",
   "tw_student_id": "2000133"
+ },
+ "online:hsu, keanu": {
+  "checked": "2026-09-14",
+  "contact_id": "244303768884",
+  "deal_id": "64879895457",
+  "email": "charhsu365@gmail.com",
+  "first": "2026-09-14",
+  "name": "Keanu Hsu",
+  "tw_student_id": "2350586"
  },
  "online:hua, kaily": {
   "checked": "2026-09-13",
@@ -1249,6 +1276,15 @@
   "name": "Roxane Salehi",
   "tw_student_id": "2329291"
  },
+ "online:salguero, emery": {
+  "checked": "2026-09-14",
+  "contact_id": "196768372530",
+  "deal_id": "64541156007",
+  "email": "emilyearroyo@icloud.com",
+  "first": "2026-02-03",
+  "name": "Emery Salguero",
+  "tw_student_id": "2186917"
+ },
  "online:sanchez, nathan": {
   "checked": "2026-09-10",
   "contact_id": "13692695654",
@@ -1493,12 +1529,12 @@
   "tw_student_id": "2237176"
  },
  "online:volodinsky, jacob": {
-  "checked": "2026-09-10",
+  "checked": "2026-09-14",
   "contact_id": "85201",
+  "deal_id": "30185487881",
   "email": "volodinsky@gmail.com",
   "first": "2024-12-09",
   "name": "Jacob Volodinsky",
-  "no_deal_until": "2026-09-13",
   "tw_student_id": "1932706"
  },
  "online:volodinsky, myron": {
