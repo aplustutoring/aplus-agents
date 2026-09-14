@@ -785,10 +785,23 @@
     414698829,
     414700504,
     414704119,
-    414704451
+    414704451,
+    414705842,
+    414704698
   ],
-  "last_run_utc": "2026-09-14T15:46:46.283254+00:00",
+  "last_run_utc": "2026-09-14T15:52:27.782903+00:00",
   "pending_digest": [],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18189247093",
+      "time_pt": "8:48 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18183047124",
+      "time_pt": "8:46 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
