@@ -4,6 +4,29 @@ routing, guardrails."""
 import datetime as dt
 
 from src import low_balance as lb
+from src.business_hours import LA
+
+# ── the pinned clock ─────────────────────────────────────────────────────
+# Day 1 only fires on a business day inside the 8am-8pm PT text window
+# (low_balance._day1_due), so a suite that reads the wall clock passes Monday
+# to Friday and fails every weekend. The harness pins one instant instead,
+# Friday 2026-09-11 at 9:03 AM PT, and every case is dated from it: the day-0
+# email went out Thursday morning, so day 1 is due. The gates themselves are
+# asserted directly, with explicit clocks, in
+# test_day1_waits_for_the_next_business_morning and
+# test_day1_held_on_the_weekend_and_outside_the_text_window.
+NOW_LA = dt.datetime(2026, 9, 11, 9, 3, tzinfo=LA)
+NOW_UTC = NOW_LA.astimezone(dt.timezone.utc)
+
+
+class FrozenDatetime(dt.datetime):
+    """datetime with now() pinned to NOW_UTC. Everything else is inherited, so
+    fromisoformat and arithmetic behave normally."""
+
+    @classmethod
+    def now(cls, tz=None):
+        return NOW_UTC.astimezone(tz) if tz else NOW_UTC.astimezone(LA).replace(tzinfo=None)
+
 
 ALERT = """Hi APlus Tutoring Inc,
 
@@ -143,6 +166,8 @@ class Harness:
         self.sms, self.emails, self.private, self.drafts, self.recs = [], [], [], [], []
         self.stage_updates, self.stamps = [], []
         monkeypatch.setattr(lb, "cfg", lambda: cfgv)
+        monkeypatch.setattr(lb, "now_la", lambda: NOW_LA)      # both clocks the sweep reads
+        monkeypatch.setattr(lb, "datetime", FrozenDatetime)
         monkeypatch.setattr(lb, "staff", lambda k: cfgv["staff"].get(cfgv["roles"].get(k, k), {}))
         monkeypatch.setattr(lb, "_student_deals", lambda f, l, after=None: list(deals or []))
         monkeypatch.setattr(lb, "_family_contact", lambda a: contact)
@@ -187,7 +212,7 @@ class Harness:
 
     def send_pending(self, cases, armed=True):
         """The day-0 email step, as the sweep runs it (forced past the sibling delay)."""
-        lb._send_pending_emails(cases, dt.datetime(2026, 9, 10, 9, 5), SEAT, lb.cfg()["low_balance"], armed, True)
+        lb._send_pending_emails(cases, NOW_LA, SEAT, lb.cfg()["low_balance"], armed, True)
 
 
 # ── day 0: the case ───────────────────────────────────────────────────────
@@ -292,13 +317,13 @@ def test_alert_on_an_untouched_po_is_parked_until_the_first_lesson(monkeypatch):
     monkeypatch.setattr(lb, "deferred_alerts", lambda: {rec["case_key"]: rec})
     h2 = Harness(monkeypatch, _cfg(armed=True), deals=[four], recent={**RECENT, "sessions": 1})
     monkeypatch.setattr(lb, "deferred_alerts", lambda: {rec["case_key"]: rec})
-    lb._recheck_deferred(dt.datetime.now(dt.timezone.utc))
+    lb._recheck_deferred(NOW_UTC)
     assert h2.tickets and any(r["action_taken"] == "low_balance_opened" for r in h2.recs)
     # parked too long → let go, audited, nothing sent
-    stale = {**rec, "deferred_at": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=31)).isoformat()}
+    stale = {**rec, "deferred_at": (NOW_UTC - dt.timedelta(days=31)).isoformat()}
     h3 = Harness(monkeypatch, _cfg(armed=True), deals=[four], recent=fresh)
     monkeypatch.setattr(lb, "deferred_alerts", lambda: {rec["case_key"]: stale})
-    lb._recheck_deferred(dt.datetime.now(dt.timezone.utc))
+    lb._recheck_deferred(NOW_UTC)
     assert not h3.tickets and any(r["action_taken"] == "low_balance_defer_expired" for r in h3.recs)
 
 
@@ -501,7 +526,7 @@ def _case(**over):
             "phone": "+1 909-454-8581", "sms_body": "Hi Jessica, text body.", "opted_out": False,
             "tor_email": "kylee@ileadexploration.org", "tor_subject": "New PO for Taylor (A+ Tutoring)",
             "tor_body": "Hi Kylee, body.", "tor_mailbox": "paola@wetutorathome.com", "tor_blocked": False,
-            "opened_at": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1, hours=2)).isoformat()}
+            "opened_at": (NOW_UTC - dt.timedelta(days=1, hours=2)).isoformat()}
     base.update(over)
     return base
 
@@ -534,7 +559,6 @@ def test_day1_teacher_email_sends_automatically_in_send_mode(monkeypatch):
     cfgv["low_balance"]["tor_email"]["mode"] = "send"
     h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 10, 9, 3))
     monkeypatch.setattr(lb, "_day1_due", lambda c, n, d: True)
     lb.run_sweep(force=True)
     assert h.tor_sent and h.tor_sent[0][0] == "kylee@ileadexploration.org"
@@ -678,6 +702,21 @@ def test_day1_waits_for_the_next_business_morning(monkeypatch):
     case_f = _case(opened_at=fri.isoformat())
     assert not lb._day1_due(case_f, dt.datetime(2026, 9, 12, 10, 0), 1)
     assert lb._day1_due(case_f, dt.datetime(2026, 9, 14, 9, 0), 1)
+
+
+def test_day1_held_on_the_weekend_and_outside_the_text_window(monkeypatch):
+    # The two clock gates the rest of the suite pins away, held here on an
+    # explicit clock: no text on a Saturday or a Sunday (the school it asks for
+    # a PO is closed), none before 8am or after 8pm PT.
+    opened = dt.datetime(2026, 9, 8, 16, 0, tzinfo=dt.timezone.utc)     # Tue 09:00 PT
+    case = _case(opened_at=opened.isoformat())
+    monkeypatch.setattr(lb, "cfg", lambda: _cfg(armed=True))
+    monkeypatch.setattr(lb, "_in_sms_window", lambda: True)
+    assert lb._day1_due(case, dt.datetime(2026, 9, 11, 9, 0), 1)        # Friday, long due
+    assert not lb._day1_due(case, dt.datetime(2026, 9, 12, 9, 0), 1)    # Saturday
+    assert not lb._day1_due(case, dt.datetime(2026, 9, 13, 9, 0), 1)    # Sunday
+    monkeypatch.setattr(lb, "_in_sms_window", lambda: False)
+    assert not lb._day1_due(case, dt.datetime(2026, 9, 11, 7, 0), 1)    # 7am PT, too early
 
 
 def test_day1_skipped_when_the_family_replied(monkeypatch):
@@ -824,7 +863,7 @@ def test_private_pay_case_renews_on_any_new_deal(monkeypatch):
 
 
 def test_day7_turns_the_ticket_into_a_retention_risk_once(monkeypatch):
-    case = _case(day1_done=True, opened_at=(dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=8)).isoformat())
+    case = _case(day1_done=True, opened_at=(NOW_UTC - dt.timedelta(days=8)).isoformat())
     h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
     lb.run_sweep(force=True)
@@ -842,7 +881,7 @@ def test_day7_turns_the_ticket_into_a_retention_risk_once(monkeypatch):
 
 def test_day28_closes_lost_and_queues_reengagement(monkeypatch):
     case = _case(day1_done=True, escalated=True,
-                 opened_at=(dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=29)).isoformat())
+                 opened_at=(NOW_UTC - dt.timedelta(days=29)).isoformat())
     h = Harness(monkeypatch, _cfg(armed=True, reengagement_list_id="3300"), deals=[],
                 open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
@@ -1026,7 +1065,6 @@ def test_morning_sweep_sends_the_owed_teacher_email_once(monkeypatch):
     cfgv["low_balance"]["tor_email"]["mode"] = "send"
     h = Harness(monkeypatch, cfgv, deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 11, 9, 3))
     lb.run_sweep(force=True)
     assert not h.sms                                  # never a second text
     assert h.tor_sent and h.tor_sent[0][0] == "kylee@ileadexploration.org"
@@ -1058,7 +1096,6 @@ def test_owed_teacher_email_skipped_when_the_family_replied_to_the_text(monkeypa
     _active_deal(monkeypatch)
     monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {
         "9094548581": {"texts": [{"direction": "incoming", "at": "2026-09-10 19:02"}], "calls": []}})
-    monkeypatch.setattr(lb, "now_la", lambda: dt.datetime(2026, 9, 11, 9, 3))
     lb.run_sweep(force=True)
     assert not h.tor_sent and not h.sms
     assert any(r["action_taken"] == "low_balance_family_replied" and r["channel"] == "text" for r in h.recs)

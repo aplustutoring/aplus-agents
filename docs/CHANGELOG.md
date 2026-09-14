@@ -5559,3 +5559,37 @@ Nathan / 5, as Danielle typed them 90 s before the workflow fired) 2026-09-10.
 **Files:** email/src/student_stamp.py, email/src/deal_sync.py, email/config.yaml,
 email/tests/test_student_stamp.py, ops/hubspot-schema/properties.yml,
 ops/fleet-health/audit/retire_contact_to_deal_workflows.py, docs/PO-PROCESS.md.
+
+## 2026-09-14: Low-balance tests pinned to their own clock (weekend-green suite)
+
+**Why:** seven tests in `email/tests/test_low_balance.py` passed Monday to
+Friday and failed every Saturday and Sunday. The day-1 step is gated on
+`low_balance._day1_due()`, which ends in
+`now.date() >= d and _is_business_day(now.date()) and _in_sms_window()`: a real
+business-day check plus the 8am-8pm PT text window. The tests read the wall
+clock, so on a weekend the text and teacher-draft path never ran and the
+assertions that it did failed. Same root cause, second symptom: the fixtures
+dated cases from `datetime.now()` while pinning `now_la` to hard-coded
+September dates, so two of those tests (the owed-teacher-email pair) had
+already drifted into failing on weekdays too, and
+`test_charter_sales_notified_24h_after_sent_email` in `test_po_inbox.py` was
+set to break for real on 2026-09-20, when the wall clock passes its `sla_due`.
+
+**The rule is right, the tests were wrong.** No agent should text a family or
+ask a school for a PO on a Saturday or at 6am, so `_day1_due` is unchanged.
+The tests now pin their own instant: `NOW_LA` = Friday 2026-09-11, 9:03 AM PT,
+with `FrozenDatetime` patched over `low_balance.datetime` and `now_la` patched
+in the `Harness`, and every case dated back from `NOW_UTC` instead of the wall
+clock. The gates keep real coverage:
+`test_day1_waits_for_the_next_business_morning` (unchanged) plus a new
+`test_day1_held_on_the_weekend_and_outside_the_text_window`, which calls
+`_day1_due` on an explicit clock and asserts it holds on Saturday, on Sunday,
+and at 7am PT.
+
+**Verified:** `python3 -m pytest email -q` is 557 passed, 0 failed. Re-run with
+the process clock shifted to every weekday and weekend, at 3am, 11am and 11pm,
+and a year out: 557 passed each time. The seven reported failures reproduce
+exactly on the pre-fix file under a faked Saturday clock.
+
+**Files:** email/tests/test_low_balance.py, email/tests/test_po_inbox.py.
+No production code changed.
