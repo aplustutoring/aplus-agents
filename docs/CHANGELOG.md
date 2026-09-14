@@ -7,6 +7,55 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-14 — Online lead intake traced: the pipe tells families we called when nobody did
+
+**What:** read-only trace of `Lead Pipe Line - Online` (HubSpot flow 50818589),
+the single workflow behind every web form lead, from submit to first human
+contact. Nothing was changed in HubSpot. Full write-up with record-level
+evidence: `docs/investigations/2026-09-14-online-lead-intake.md`.
+
+Six findings, three of them customer-facing:
+
+- **The "we could not leave a voicemail" email fires on the DEFAULT branch.**
+  Branch 35 reads call disposition; a lead with no call has no disposition and
+  falls to the default, which sends `1st Phone Call - Unable To Leave VM`.
+  Verified on contacts 247575268403, 247775390480, 246483479164: zero associated
+  CALL records, all three carry that email. The record is then stamped
+  `ATTEMPTED_TO_CONTACT` at 17:25, so the CRM shows outreach that never
+  happened and the lead leaves the New (Inbox) queue untouched. All 17
+  "Attempting to Contact" web leads since 2026-08-01 are suspect on this basis.
+- **Speed-to-lead is up to 23 hours.** Action 17 is a delay-until-15:30 sitting
+  in front of the task creation, so every `New Lead Alert` task in the portal is
+  stamped 3:30 PM PT. Measured: Lincoln Campbell 23h20m, Vishta Granados 23h40m,
+  Rudy A Gonzalez 21h24m. The automated email goes out in 25 seconds.
+- **Branch 18's "Connected" test counts our own email.** It matches any
+  associated engagement including EMAIL and NOTE, and the Connected branch has
+  no next action, so a lead can exit the workflow at `NEW` forever. Vishta
+  Granados at New (Inbox) since 09-09, Satpal Sidhu since 08-31, no calls.
+- The nurture SMS body says "My name is {{ enrolled_object.hubspot_owner_id }}"
+  (a numeric owner ID). No SMS channel is configured in the conversations inbox
+  and no SMS activity surfaced for any September lead, so it may be failing
+  silently instead. Needs one manual timeline check.
+- Enrollment is 29 pinned form GUIDs, so any new site form is silent.
+- `Lead Pipe Line - Ads - Free Lesson` (149937308) still needs the Meeting
+  Booked exit goal added by hand; the 2026-08-17 API PUT 500'd and nothing
+  since records it as done.
+
+Outcome so far: 42 Main Intake Form leads 08-01 to 09-14, 20 parked in
+New/Attempting, 2 reached Open deal. 57 `New Lead Alert` tasks, 17 Not Started,
+12 of the last 14 untouched.
+
+**Why:** Roman 2026-09-14, "new leads submitting forms online, can we trace that
+workflow and figure out where its going wrong." Per the investigation rule the
+failure class to close is "a lead can leave the pipe without a human, and the
+CRM will say otherwise". The seven proposed fixes are in the investigation doc.
+They change what families receive, so **none are applied and they need Roman's
+go.** Not yet a locked decision, so no #AP number.
+
+**Files:** `docs/investigations/2026-09-14-online-lead-intake.md` (new),
+`docs/CHANGELOG.md`.
+
+---
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
