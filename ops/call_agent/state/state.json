@@ -823,9 +823,10 @@
     414934517,
     414936545,
     414939206,
-    414940857
+    414940857,
+    414943523
   ],
-  "last_run_utc": "2026-09-14T23:40:54.677858+00:00",
+  "last_run_utc": "2026-09-14T23:49:57.236079+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -2042,6 +2043,77 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 414943523,
+      "number": "13232435273",
+      "time_pt": "4:39 PM",
+      "matched": true,
+      "contact_label": "Alex Shapirshteyn",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Alex Shapirshteyn (existing customer) called to reconcile hours for his son Michael's sessions with tutor John. Yolanda confirmed via John's message that the September 5 and 6 sessions were 1 hour each (2 hours total), not 2 hours each as previously logged. Alex was relieved, apologized for the confusion, and said he'll create a sign-in sheet for Michael and Brian/John to track time going forward. No further action requested beyond correcting the hours record.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Correct hours ledger: Michael's sessions with John on 9/5 and 9/6 were 1 hour each (2 hours total), not 2 hours each as previously recorded. Adjust remaining hours balance accordingly.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Alex (parent, existing customer, friendly and apologetic) called to clarify Michael's session hours with tutor John. Prior record said 9/5 and 9/6 were 2 hours each; Yolanda pulled up John's text confirming it was 1 hour each day (2 hours total). Please correct the hours ledger \u2014 Michael's remaining balance should be higher than the prior note reflected. Alex is building a sign-in sheet for Michael and Brian to track time going forward, so future logging should be cleaner. No callback needed from us unless the hours correction surfaces anything else.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with active deal; lead status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Michael",
+          "Bryan",
+          "John",
+          "Brian"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Alex called to reconcile Michael's session hours with tutor John. Confirmed via John's text that 9/5 and 9/6 sessions were 1 hour each (2 hours total), not 2 hours each as previously logged. Alex is creating a sign-in sheet for Michael and Brian to track session time going forward.",
+          "what_we_can_do_to_help": "[call] Correct the hours ledger \u2014 Michael's 9/5 and 9/6 sessions were 1 hour each (2 total), so remaining hours balance needs to be adjusted upward from the prior 1.5 hour figure. Encourage Alex to contact us directly (not just the tutor) when scheduling to avoid future confusion.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Alex called to reconcile Michael's session hours with tutor John. Confirmed via John's text that 9/5 and 9/6 sessions were 1 hour each (2 hours total), not 2 hours each as previously logged. Alex is creating a sign-in sheet for Michael and Brian to track session time going forward."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Correct the hours ledger \u2014 Michael's 9/5 and 9/6 sessions were 1 hour each (2 total), so remaining hours balance needs to be adjusted upward from the prior 1.5 hour figure. Encourage Alex to contact us directly (not just the tutor) when scheduling to avoid future confusion."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Correct hours ledger: Michael's sessions with John on 9/5 and 9/6 were 1 hour each (2 hours total), not 2 hours each as previously recorded. Adjust remaining hours balance accordingly.",
+          86868539,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
