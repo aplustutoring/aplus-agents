@@ -790,10 +790,138 @@
     414704698,
     414708929,
     414715936,
-    414721340
+    414721340,
+    414726613,
+    414728337,
+    414728367
   ],
-  "last_run_utc": "2026-09-14T16:19:24.621550+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-14T16:25:29.338931+00:00",
+  "pending_digest": [
+    {
+      "call_id": 414726613,
+      "number": "13108096228",
+      "time_pt": "9:15 AM",
+      "matched": true,
+      "contact_label": "Joyce Ulstrup",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Joyce (who introduced herself as Julie) Ulstrup called looking for a chemistry tutor for her daughter Abby, a junior taking chemistry at community college. She's an iLead Exploration charter family and wants to use school funds; availability is Monday mornings/afternoons and Wednesday mornings. Paola will email current rates and info, and Joyce will reply with the teacher's name for the PO request. Joyce mentioned she's used A+ before (a math tutor whose name started with W who has since left).",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Joyce/Julie current rates and program info at julie.ulstrup@gmail.com so she can reply with her daughter's teacher/TOR info for the PO request",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check chemistry tutor availability for Monday mornings/afternoons and Wednesday mornings for Abby (community college chemistry)",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Once teacher/TOR info is received from Joyce, initiate PO request with iLead Exploration",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Joyce Ulstrup (introduced herself as 'Julie' on the call) is a returning A+ family and an iLead Exploration charter family who wants to use school funds. She's looking for an experienced chemistry tutor for her daughter Abby (Abigail) Ulstrup \u2014 technically an 11th grader but likely graduating this year; the chemistry course is at a community college, so she needs upper-level/college chemistry experience. Availability: Monday mornings (afternoons okay) and Wednesday mornings. Paola told her we have two strong chemistry tutors and promised to email current rates + info to julie.ulstrup@gmail.com; Joyce will reply with her daughter's teacher/TOR name (one teacher is on maternity leave, so she has to ask Abby) so we can submit the PO to iLead. She also mentioned previously working with a math tutor whose name started with 'W' who has since left. Suggested opener: 'Hi Joyce, this is ___ from A+ following up on the chemistry tutoring for Abby \u2014 did you get a chance to grab your teacher's info at iLead so we can start the PO?'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Returning family explicitly plans to pay via iLead Exploration charter school instructional funds.",
+        "student_or_school_names_mentioned": [
+          "Abigail (Abby) Ulstrup",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning family; Joyce (goes by Julie on the phone) called seeking a chemistry tutor for her daughter Abby, an 11th grader likely graduating this year who is taking chemistry at a community college. Family is enrolled at iLead Exploration and wants to pay with charter funds. Availability: Monday mornings/afternoons and Wednesday mornings. Previously worked with an A+ math tutor (name starting with W) who has since left.",
+          "what_we_can_do_to_help": "Match Abby with one of our experienced upper-level chemistry tutors; email Joyce current rates and info at julie.ulstrup@gmail.com; collect the iLead teacher/TOR name from her reply and submit the PO request so sessions can be funded through the charter.",
+          "student_first_name": "Abby",
+          "student_last_name": "Ulstrup",
+          "grade_level": "11",
+          "student_school": "iLead Exploration",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": "I'm a returning customer",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family; Joyce (goes by Julie on the phone) called seeking a chemistry tutor for her daughter Abby, an 11th grader likely graduating this year who is taking chemistry at a community college. Family is enrolled at iLead Exploration and wants to pay with charter funds. Availability: Monday mornings/afternoons and Wednesday mornings. Previously worked with an A+ math tutor (name starting with W) who has since left."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Abby with one of our experienced upper-level chemistry tutors; email Joyce current rates and info at julie.ulstrup@gmail.com; collect the iLead teacher/TOR name from her reply and submit the PO request so sessions can be funded through the charter."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Abby"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Ulstrup"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "11"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "iLead Exploration"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "I'm a returning customer"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Joyce/Julie current rates and program info at julie.ulstrup@gmail.com so she can reply with her daughter's teacher/TOR info for the PO request",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check chemistry tutor availability for Monday mornings/afternoons and Wednesday mornings for Abby (community college chemistry)",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Once teacher/TOR info is received from Joyce, initiate PO request with iLead Exploration",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18189247093",
