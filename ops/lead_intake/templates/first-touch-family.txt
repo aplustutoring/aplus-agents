@@ -1,0 +1,1 @@
+Hi {{firstname}}, this is {{seat_first}} with A+ Tutoring. Thanks for reaching out about tutoring. I would love to hear what is going on and find the right fit. When is a good time for a quick call? Reply STOP to opt out.

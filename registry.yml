@@ -62,6 +62,37 @@
 # ("America/Los_Angeles") when an explicit zone is needed (DST-aware).
 
 agents:
+  # ───────────────────────── Lead intake (stage 01) ─────────────────────
+  - id: lead-intake
+    runtime: github-actions
+    engine: Lead intake
+    name: Lead intake — stage 01 first touch
+    owner: roman@wetutorathome.com
+    status: active
+    probation: draft   # knowledge/journey 00 + 01 are DRAFT; config.yml send:false
+    trigger:
+      type: cron
+      schedule: ["*/15 14-23 * * * (07:00-16:59 PT)", "*/15 0-6 * * * (17:00-23:59 PT)"]
+      workflow: .github/workflows/lead-intake.yml
+    entrypoint: ops/lead_intake/lead_intake.py
+    reads:
+      - HubSpot:contacts          # recent_conversion_date cursor, NOT a form-GUID list
+      - HubSpot:deals             # returning-customer detection
+      - JustCall                  # via presend: threads on every other line
+      - ops/lead_intake/state/cursor.json
+    writes:
+      - HubSpot:tasks             # the seat's alert, due in the audience SLA
+      - HubSpot:notes             # [Agent] first-touch note
+      - ops/lead_intake/state/    # cursor + processed, committed back
+    depends_on:
+      - email/src/presend.py      # the one pre-send gate
+      - email/src/hubspot_client.py
+      - email/config.yaml         # presend.purposes.lead_first_touch, roles, staff
+      - knowledge/journey/01-first-touch.md
+    # Replaces HubSpot flow 50818589 "Lead Pipe Line - Online". That flow stays
+    # ON until this engine has run live for a week; see
+    # docs/investigations/2026-09-14-online-lead-intake.md.
+
   # ───────────────────────── B2B content engine ─────────────────────────
   - id: topic-gen
     runtime: github-actions

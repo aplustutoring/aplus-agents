@@ -412,6 +412,10 @@ presend:
     tor_confirm:   { audience: lead,       line: charter_sales }
     tor_email_ask: { audience: lead,       line: charter_sales }
     lead_relay:    { audience: lead,       line: charter_sales }   # per-go, always
+    # stage 01 first touch (ops/lead_intake). Deliberately NOT in standing_go:
+    # knowledge/journey/01-first-touch.md puts the first reply at "draft", not
+    # "alone", so every one of these needs a human go.
+    lead_first_touch: { audience: lead, line: charter_sales }
     tutor_ask:     { audience: tutor,      line: support }
   approvers: [visionary, scheduling_lead]
   proposal_ttl_hours: 24

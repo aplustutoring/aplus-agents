@@ -7,6 +7,56 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-14 — `ops/lead_intake`: stage 01 built as a real engine (BUILT, draft-only, not armed)
+
+**What:** Roman: "wanted it built the right way, can we first focus on the
+customer's initial journey with us, they submit a form." So: stage 01 only,
+built to fleet convention, not another plan. New engine `ops/lead_intake/`
+(entrypoint + config.yml + templates + 15 unit tests + README),
+`.github/workflows/lead-intake.yml`, `registry.yml` entry (`probation: draft`),
+`presend.purposes.lead_first_touch` in `email/config.yaml`, FLEET.md regenerated.
+
+Each poll: select by cursor, classify, read prior deals, run
+`email/src/presend.check()`, create the seat's alert task due in the audience
+SLA (90 min for a family), stamp an `[Agent]` note. The alert carries the gate
+verdict, the NAME of whoever owns an active thread on another line, a
+returning-family header, and a drafted first touch.
+
+**Two things it deliberately does NOT do:**
+
+1. **It does not send.** `knowledge/journey/01-first-touch.md` puts the first
+   reply at "draft, for the owning seat to send", and only classify / ticket /
+   note at "alone". The old flow auto-sent an email and an SMS with no human,
+   which is above our own playbook's ceiling. `config.yml send: false` is that
+   ceiling in code and the entrypoint refuses to run if it is flipped.
+2. **It never writes a lead status.** New (Inbox) stays true until a real call
+   moves it. A HubSpot branch cannot tell a call from a clock; that is the whole
+   of F1.
+
+**The cursor is the design.** Selection is `recent_conversion_date > cursor`,
+not 29 pinned form GUIDs and not an exit goal. That one choice removes F5 (a new
+landing page is covered on day one) and F7 (a past customer is just a newer row;
+the old goal locked every one of them out permanently) structurally rather than
+by patch. F2 goes with the delay-until-15:30; F3 and F4 have nowhere to live.
+
+**Blocked on, and this is the real gate:** every journey stage including
+`00-pre-send-checklist.md` is still `status: DRAFT` / `agent_readable: false`,
+and the playbook's own rule is that 00 must be REVIEWED before any stage is
+readable. **Roman + Paola signing off 00 and 01 is what unblocks first-touch
+copy going out.** Until then the engine plans, alerts and drafts, which is
+already more than flow 50818589 does for a returning customer.
+
+Flow 50818589 stays ON. Cutover only after this runs live for a week.
+
+**Why:** seven defects in one six-year-old workflow were never seven bugs; they
+were one engine living outside the fleet. See
+`docs/investigations/2026-09-14-online-lead-intake.md` and
+`docs/UNIFIED-OUTBOUND.md`.
+
+**Files:** `ops/lead_intake/` (new), `.github/workflows/lead-intake.yml` (new),
+`registry.yml`, `email/config.yaml`, `docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-14 — The unified outbound spine already exists (presend); it is half installed
 
 **What:** Roman, reading the lead-pipe trace: "All of the SMSes have to work the

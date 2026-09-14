@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**51 registered agents** — 36 active · 12 manual · 3 deprecated · across 12 engines.
+**52 registered agents** — 37 active · 12 manual · 3 deprecated · across 13 engines.
 
 ## What this is
 
@@ -47,6 +47,7 @@ outranks those two. HubSpot is where humans act.
 | Charter analysis | 7 | 1 |
 | Events | 2 | 2 |
 | Email ops | 1 | 1 |
+| Lead intake | 1 | 1 |
 | Tutor issues | 1 | 1 |
 
 ## Autonomy — what acts without asking
@@ -55,7 +56,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (21):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `email-low-balance`, `email-first-lesson`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`.
 
-**Reports, drafts, or waits for a human (15):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
+**Reports, drafts, or waits for a human (16):** `lead-intake`, `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`.
 
 **Manual dispatch only (12):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `hubspot-archive`, `bulk-messenger`.
 
@@ -208,6 +209,12 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
 | **deal-sync-relay**<br>Deal-sync webhook relay | event<br>*cloudflare-worker* | active | — | GitHub Actions API: workflow_dispatch on email-deal-sync.yml (defaults) |
+
+### Lead intake
+
+| Agent | Runs | Status | Reads | Writes |
+|---|---|---|---|---|
+| **lead-intake**<br>Lead intake — stage 01 first touch | 07:00-16:59 PT | active (draft) | HubSpot:contacts, HubSpot:deals, JustCall, ops/lead_intake/state/cursor.json | HubSpot:tasks, HubSpot:notes, ops/lead_intake/state/ |
 
 ### Tutor issues
 

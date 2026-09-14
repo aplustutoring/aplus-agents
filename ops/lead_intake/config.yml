@@ -1,0 +1,54 @@
+# ops/lead_intake — stage 01 (first touch) engine config.
+#
+# Ceiling comes from knowledge/journey/01-first-touch.md, not from this file:
+#   alone : classify, create the alert task with the routing owner + SLA,
+#           stamp an [Agent] note
+#   draft : the reply, for the owning seat to send
+#   ask   : nothing outbound on a channel the contact did not use
+# `send: false` below is that ceiling in code. Flipping it needs stages 00 and
+# 01 REVIEWED + agent_readable, and Roman's go.
+
+send: false                  # LOCKED off until knowledge/journey 00 + 01 are REVIEWED
+
+# How far back a first run may look when no cursor exists yet. The first run
+# baseline-stamps instead of acting (fleet guard), so this only bounds the
+# stamp.
+baseline_lookback_hours: 24
+
+# Conversion events that mean "a person asked us for tutoring". Matched
+# case-insensitively as substrings of recent_conversion_event_name, so a new
+# landing page carrying the same form is covered the day it ships. This is the
+# replacement for the 29 pinned form GUIDs in HubSpot flow 50818589.
+intake_events:
+  - "main intake form"
+  - "get started now full length"
+  - "request a free consultation"
+
+# Events that are NOT a tutoring lead, checked first.
+not_a_lead:
+  - "become a tutor"
+  - "tutor compliance"
+  - "tutor referral program"
+  - "teacher scholarship"
+  - "student-diagnostic-test-upload"
+
+# audience -> seat, line, SLA. Seats are role keys (email/config.yaml roles:).
+# Lines are presend.lines keys. Mirrors the identity map in
+# knowledge/journey/README.md and the 2026-08-25 sender routing rule.
+routing:
+  family:        { seat: charter_sales, line: charter_sales, sla_hours: 1.5, purpose: lead_first_touch }
+  tor:           { seat: charter_sales, line: charter_sales, sla_hours: 8,   purpose: lead_first_touch }
+  decision_maker: { seat: sales,         line: charter_sales, sla_hours: 8,   purpose: lead_first_touch }
+  tutor:         { seat: scheduling_lead, line: support,     sla_hours: 8,   purpose: lead_first_touch }
+
+# Spam fingerprints seen in the Aug/Sep intake (3 of 42 leads). A spam hit
+# creates no task and no note; it is counted in the run report only.
+spam:
+  # a phone whose country code is not +1 after normalisation
+  non_us_phone: true
+  # the same phone across more than this many contacts in the window
+  shared_phone_max: 2
+  email_domains: []
+
+# Cap per run. A number above this aborts BEFORE any write (fleet guard).
+max_leads_per_run: 25
