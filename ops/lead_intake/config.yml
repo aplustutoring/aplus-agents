@@ -50,5 +50,14 @@ spam:
   shared_phone_max: 2
   email_domains: []
 
+# The seat's working window, Pacific. An SLA clock that expires at 02:33 is
+# noise that teaches the seat to ignore due dates, so a due time outside the
+# window is pushed to the next window open. The replay of 2026-08-15..09-14
+# produced four of these (Deepak Amarnani 01:03 -> due 02:33, Sarah Adams
+# 02:32 -> 04:02, Vaani Arora 23:57 -> 01:27, Namit Joshi 18:21 -> 19:51).
+work_window:
+  open_hour: 8
+  close_hour: 18
+
 # Cap per run. A number above this aborts BEFORE any write (fleet guard).
 max_leads_per_run: 25

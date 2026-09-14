@@ -192,6 +192,24 @@ def select(rows: list[dict], cursor_iso: str, processed: set, c: dict) -> list[d
     return sorted(out, key=lambda r: (r.get("properties") or {}).get("recent_conversion_date") or "")
 
 
+def due_at(submitted, sla_hours: float, c: dict):
+    """now + SLA, clamped into the seat's working window (Pacific).
+
+    A form that lands at 23:57 gets a due time of 01:27 if you just add 90
+    minutes, and a queue full of due-in-the-night tasks is a queue nobody
+    trusts. Before open: due at open + SLA. After close: next day's open + SLA.
+    """
+    w = c.get("work_window") or {}
+    o, cl = int(w.get("open_hour") or 8), int(w.get("close_hour") or 18)
+    due = submitted + timedelta(hours=float(sla_hours))
+    if due.hour < o:
+        return due.replace(hour=o, minute=0, second=0, microsecond=0) + timedelta(hours=float(sla_hours))
+    if due.hour >= cl:
+        nxt = (due + timedelta(days=1)).replace(hour=o, minute=0, second=0, microsecond=0)
+        return nxt + timedelta(hours=float(sla_hours))
+    return due
+
+
 def alert_task(contact: dict, audience: str, seat_name: str, gate, returning: str,
                draft: str) -> tuple[str, str]:
     """(subject, body) for the seat's task. Everything needed to make the call
@@ -292,7 +310,7 @@ def run(live: bool, since: str = "", only_contact: str = "", report_path: str = 
                              phone=p.get("phone") or "", contact=r, body=draft)
 
         subject, body = alert_task(r, audience, seat.get("name") or seat_key, gate, returning, draft)
-        due = datetime.now(timezone.utc) + timedelta(hours=float(r_cfg.get("sla_hours") or 1.5))
+        due = due_at(datetime.now(timezone.utc), float(r_cfg.get("sla_hours") or 1.5), c)
         row = {"contact": cid, "audience": audience, "seat": seat_key,
                "verdict": gate.verdict, "reasons": gate.reasons, "returning": bool(returning),
                "due": due.isoformat(), "subject": subject}

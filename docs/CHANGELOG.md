@@ -7,6 +7,47 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-14 — lead_intake replayed against 30 days of real conversions; SLA clamp added
+
+**What:** replayed 2026-08-15..09-14 through the real `ops/lead_intake` core
+(112 live conversions). Result: **44 selected as tutoring leads, 40 alerts, 4
+spam suppressed, 5 with prior deals.**
+
+The 68 non-leads it correctly ignored are tutor applications, meetings links,
+payment links, diagnostic uploads and teacher-scholarship forms; the old flow's
+29 pinned GUIDs and this engine's `intake_events` agree on every one.
+
+**The lockout count, verified per contact:** of the 5 returning families, **2
+were provably locked out of flow 50818589** because they had a prior deal with
+`start_of_tutoring_for_this_deal` set at the moment they resubmitted:
+David Reich (09-10, prior deal started 2023-10-19) and Farnaz Partnow (09-14,
+prior deals started 2023-08-10 and 2023-11-22). The other three (Boston Powers,
+Inna Garcia, Sivan Radnia) had their first dated deal created AFTER the
+resubmit, so they enrolled normally. Two in thirty days, on the warmest lead
+type we have.
+
+**Defect found in our own build and fixed:** due times were `now + SLA` with no
+business-hours clamp, so overnight form fills produced tasks due at 01:27
+(Vaani Arora), 02:33 (Deepak Amarnani) and 04:02 (Sarah Adams). A queue full of
+due-in-the-night tasks is a queue nobody trusts. Added `due_at()` with a
+`work_window` (08:00-18:00 PT): before open, due at open + SLA; after close,
+next day's open + SLA. Four new tests, each named for the record that exposed
+it. 19 tests green.
+
+**Second finding, not fixed in code on purpose:** the drafted first touch for
+David Reich reads "Hi Reich" because his 2023 intake stored firstname "Reich" /
+lastname "David". The engine renders the record faithfully; a human reading a
+draft catches it in one second. That is the argument for the
+knowledge/journey 01 ceiling (draft, not send) stated better than any doc could.
+His record still needs the name swapped and the owner moved off Danielle.
+
+**Why:** Roman asked to see what the engine would actually have done before
+arming anything. It should always be cheaper to replay than to find out live.
+
+**Files:** `ops/lead_intake/lead_intake.py`, `ops/lead_intake/config.yml`,
+`ops/lead_intake/tests/test_lead_intake.py`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-14 — `ops/lead_intake`: stage 01 built as a real engine (BUILT, draft-only, not armed)
 
 **What:** Roman: "wanted it built the right way, can we first focus on the

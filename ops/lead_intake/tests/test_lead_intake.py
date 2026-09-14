@@ -140,3 +140,31 @@ def test_alert_carries_the_gate_verdict_and_the_thread_owner():
     assert "HOLD" in body and "Yolanda" in body
     assert "Talk to them before you reach out" in body
     assert "Has anyone at A+ already been in touch with you?" in body
+
+
+# ── SLA clamp (found by replaying 2026-08-15..09-14) ───────────────
+from datetime import datetime, timezone  # noqa: E402
+
+
+def _at(h, m=0):
+    return datetime(2026, 9, 10, h, m, tzinfo=timezone.utc)
+
+
+def test_due_inside_the_window_is_just_now_plus_sla():
+    assert li.due_at(_at(10), 1.5, C).hour == 11
+
+
+def test_overnight_submit_is_not_due_at_two_in_the_morning():
+    """Vaani Arora submitted 23:57; naive maths made it due 01:27."""
+    due = li.due_at(_at(23, 57), 1.5, C)
+    assert due.hour == 9 and due.day == 11        # next open (08:00) + 90 min
+
+
+def test_before_open_waits_for_open():
+    """Sarah Adams submitted 02:32; naive maths made it due 04:02."""
+    due = li.due_at(_at(2, 32), 1.5, C)
+    assert due.hour == 9 and due.day == 10
+
+
+def test_evening_submit_rolls_to_the_next_morning():
+    assert li.due_at(_at(18, 21), 1.5, C).day == 11
