@@ -794,9 +794,10 @@
     414726613,
     414728337,
     414728367,
-    414743067
+    414743067,
+    414783201
   ],
-  "last_run_utc": "2026-09-14T16:53:46.636080+00:00",
+  "last_run_utc": "2026-09-14T18:01:30.054593+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -916,6 +917,102 @@
           "Once teacher/TOR info is received from Joyce, initiate PO request with iLead Exploration",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 414783201,
+      "number": "16195082704",
+      "time_pt": "10:51 AM",
+      "matched": true,
+      "contact_label": "Reich David",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Returning customer David Reich called to re-engage A+ Tutoring for his son Nicholas (Nika), a 5th grader at Third Street Elementary, to prep for the Science Academy STEM Magnet entrance exam \u2014 the same test we previously prepped his daughter Julian for. Roman confirmed details, sent a 5th-grade end-of-year math diagnostic to dmr7us@yahoo.com (confirmed received on the call), and skipped ELA since they're only applying to Science Academy. David will have Nicholas complete the diagnostic tonight and book a results/kickoff meeting via the link. Positive, easy re-engagement.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Grade Nicholas's returned math diagnostic and prepare results discussion for the booked meeting",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Confirm Nicholas's diagnostic-review / kickoff meeting once David books via the link",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "David Reich (returning customer \u2014 we previously tutored his daughter Julian) called to start Science Academy STEM Magnet entrance exam prep for his son Nicholas 'Nika,' 5th grade at Third Street Elementary. Same program as before. Roman emailed the 5th-grade end-of-year math diagnostic to dmr7us@yahoo.com (confirmed received); no ELA since Science Academy is the only target school. David said he'll have Nicholas complete it tonight and book a time via the link to review results and start. When his booking comes through, confirm it and get the graded diagnostic ready. Open with: 'Hi David \u2014 Roman passed along that Nika is doing the math diagnostic tonight; wanted to confirm your meeting time and make sure you have everything you need.' Tone: warm, familiar, returning family.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family engagement for a specific entrance-exam prep where A+ is evaluating the student via diagnostic before proposing a plan.",
+        "student_or_school_names_mentioned": [
+          "Nicholas 'Nika' Reich",
+          "Julian Reich",
+          "Third Street Elementary",
+          "Science Academy STEM Magnet"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning family (previously tutored daughter Julian). Now enrolling son Nicholas 'Nika,' 5th grade at Third Street Elementary, to prep for the Science Academy STEM Magnet entrance exam. Only applying to Science Academy.",
+          "what_we_can_do_to_help": "Roman sent the 5th-grade end-of-year math diagnostic (no ELA needed) to dmr7us@yahoo.com; David confirmed receipt and will have Nicholas complete it tonight and book a review/kickoff meeting via the included link. Grade the diagnostic on return and use results to launch Science Academy prep.",
+          "student_first_name": "Nicholas",
+          "student_last_name": "Reich",
+          "grade_level": "5",
+          "student_school": "Third Street Elementary School",
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": "I'm a returning customer",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family (previously tutored daughter Julian). Now enrolling son Nicholas 'Nika,' 5th grade at Third Street Elementary, to prep for the Science Academy STEM Magnet entrance exam. Only applying to Science Academy."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman sent the 5th-grade end-of-year math diagnostic (no ELA needed) to dmr7us@yahoo.com; David confirmed receipt and will have Nicholas complete it tonight and book a review/kickoff meeting via the included link. Grade the diagnostic on return and use results to launch Science Academy prep."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Reich"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "lead_status",
+          "QTL - Diagnostic Sent",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Grade Nicholas's returned math diagnostic and prepare results discussion for the booked meeting",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Confirm Nicholas's diagnostic-review / kickoff meeting once David books via the link",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
