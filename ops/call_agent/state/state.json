@@ -799,9 +799,10 @@
     414788412,
     414788182,
     414793644,
-    414795565
+    414795565,
+    414801511
   ],
-  "last_run_utc": "2026-09-14T18:22:14.726771+00:00",
+  "last_run_utc": "2026-09-14T18:32:41.106975+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1215,6 +1216,73 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 414801511,
+      "number": "12135776475",
+      "time_pt": "11:23 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Brittany Song called A+ Tutoring to ask about pricing for SAT prep and general tutoring (math and reading) for her student George. Paola explained that SAT prep is online only, and the current rate is $95/hour with discounted packages for larger hour commitments, and confirmed rates are the same across subjects and grade levels. Brittany asked Paola to email the packages to brittany.sjy@gmail.com so she can review. No next step was scheduled beyond sending pricing.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Brittany Song the current rates and available tutoring packages at brittany.sjy@gmail.com",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Brittany after sending pricing to see if she wants to move forward with SAT prep / tutoring for George",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Brittany Song called in asking about pricing for SAT prep and general tutoring (math/reading) for her student George \u2014 grade level not confirmed but she asked whether middle school vs high school pricing differed, so George is likely middle/high school. Tone was friendly and low-pressure, just gathering info. Paola quoted $95/hr with better rates on larger packages, and confirmed SAT prep is online-only and rates are the same across subjects and grades. Paola promised to email the rates and packages to brittany.sjy@gmail.com. Brittany now expects that email; after it goes out, follow up to see if she wants to move forward and to nail down George's grade, subject priorities, and whether the main focus is SAT prep or subject tutoring (or both). Suggested opener: 'Hi Brittany, this is ___ from A+ Tutoring following up on the pricing Paola sent over for George \u2014 did you have a chance to look it over, and can you tell me a little more about what George is working on?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; inquiry includes SAT test prep but also general subject tutoring, and no diagnostic was requested on the call \u2014 treating as a standard connected lead. (Note: if ops prefers Diagnostic Sent for any test-prep mention, revisit.)",
+        "student_or_school_names_mentioned": [
+          "George Song"
+        ],
+        "record_updates": {
+          "whats_going_on": "Parent Brittany Song called asking about pricing for SAT prep and general tutoring (math and reading) for her student George. She was gathering info on rates and packages and comparing pricing across test prep vs subject tutoring and middle vs high school.",
+          "what_we_can_do_to_help": "Paola emailed our current $95/hr rate and package options to brittany.sjy@gmail.com (SAT prep is online-only; subject tutoring rates are the same). Next step is to follow up after she reviews to confirm George's grade, subject focus, and whether she wants to move forward.",
+          "student_first_name": "George",
+          "student_last_name": "Song",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Brittany Song the current rates and available tutoring packages at brittany.sjy@gmail.com",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Brittany after sending pricing to see if she wants to move forward with SAT prep / tutoring for George",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
