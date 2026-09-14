@@ -28485,3 +28485,5 @@
 {"ticket_id": "48570169480", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-14T23:23:46.746622+00:00"}
 {"ticket_id": "48571290722", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-14T23:23:48.965946+00:00"}
 {"message_id": "error:deal:64931925913", "source": "deal_sync", "deal_id": "64931925913", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-14T23:31:09.240370+00:00"}
+{"message_id": "error:deal:64931925913", "source": "deal_sync", "deal_id": "64931925913", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-14T23:46:07.255976+00:00"}
+{"message_id": "error-alert:deal:64931925913", "source": "deal_sync", "deal_id": "64931925913", "action_taken": "sync_error_alerted", "failures": 2, "timestamp": "2026-09-14T23:46:07.621191+00:00"}
