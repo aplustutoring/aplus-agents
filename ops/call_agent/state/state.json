@@ -795,9 +795,11 @@
     414728337,
     414728367,
     414743067,
-    414783201
+    414783201,
+    414788412,
+    414788182
   ],
-  "last_run_utc": "2026-09-14T18:01:30.054593+00:00",
+  "last_run_utc": "2026-09-14T18:10:09.664864+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1018,6 +1020,199 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 414788412,
+      "number": "18183143520",
+      "time_pt": "10:53 AM",
+      "matched": true,
+      "contact_label": "Matt Weinberg",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Matt Weinberg called seeking a new tutor for his 11th-grade son Jediah, who attends LAUSD in Granada Hills. Their current tutor (based in Chicago) gave two weeks' notice due to time zone issues. They need Zoom tutoring 3-4x/week (1-2 hour sessions), evenings around 6:45pm and weekends, covering math, English, test prep, study skills, and portal monitoring. Paola explained the tutor-matching process and packages, and will text to confirm his email (tcalchamp@yahoo.com) then send pricing.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Text Matt at 818-314-3520 to confirm his email address is tcalchamp@yahoo.com",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Email Matt current rates and package options once email is confirmed",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Begin tutor matching for Jediah \u2014 11th grade, math/English/overall academic coaching, Zoom, evenings ~6:45pm weekdays and Sunday, ideally an active teacher, competitive rate for 3-4x/week frequency",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Matt Weinberg (friendly, engaged, price-conscious) called for tutoring for his 11th-grade son Jediah in Granada Hills (LAUSD, not charter). Current Chicago-based tutor is ending in ~2 weeks due to time zone conflicts. He needs Zoom tutoring 3-4x/week, 1-2 hour sessions, mostly evenings starting ~6:45pm after 6:15pm sports practice, plus Sunday prep sessions and occasional mornings/afternoons on non-practice days. Scope: math + English, test/quiz prep, study skills (note-taking, flashcards), and logging into his school portal to track assignments. He values active teachers (not a dealbreaker) and expects a better per-hour rate given the high frequency \u2014 he pushed back on $100/session pricing he's seen elsewhere. Paola promised to (1) text to confirm his email tcalchamp@yahoo.com, then (2) email packages/rates. Open with: 'Hi Matt, confirming your email is tcalchamp@yahoo.com \u2014 once you confirm I'll send over our package options that give you a better hourly rate at 3-4 sessions/week.' Then follow up on tutor matching timing given his current tutor's two-week notice.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with, not charter-funded (LAUSD), no diagnostic/test-prep evaluation needed \u2014 general academic support.",
+        "student_or_school_names_mentioned": [
+          "Jediah Weinberg",
+          "LAUSD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Matt called seeking a replacement tutor for his 11th-grade son Jediah (LAUSD, Granada Hills). Current tutor is based in Chicago and gave two weeks' notice due to time zone conflicts. Needs Zoom sessions 3-4x/week, 1-2 hours, evenings ~6:45pm after 6:15pm sports practice, plus Sunday prep and occasional mornings. Scope is math, English, test/quiz prep, study skills, and portal monitoring for assignments. Price-sensitive \u2014 pushed back on $100/session rates, wants a frequency discount.",
+          "what_we_can_do_to_help": "Text to confirm email tcalchamp@yahoo.com, then send package pricing highlighting the better per-hour rate for higher frequency. Begin matching an active-teacher tutor (preferred, not required) who can do Zoom evenings ~6:45pm weekdays plus Sunday, and is comfortable logging into the school portal to track assignments.",
+          "student_first_name": "Jediah",
+          "student_last_name": "Weinberg",
+          "grade_level": "11",
+          "student_school": "LAUSD (Granada Hills area)",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Matt called seeking a replacement tutor for his 11th-grade son Jediah (LAUSD, Granada Hills). Current tutor is based in Chicago and gave two weeks' notice due to time zone conflicts. Needs Zoom sessions 3-4x/week, 1-2 hours, evenings ~6:45pm after 6:15pm sports practice, plus Sunday prep and occasional mornings. Scope is math, English, test/quiz prep, study skills, and portal monitoring for assignments. Price-sensitive \u2014 pushed back on $100/session rates, wants a frequency discount."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Text to confirm email tcalchamp@yahoo.com, then send package pricing highlighting the better per-hour rate for higher frequency. Begin matching an active-teacher tutor (preferred, not required) who can do Zoom evenings ~6:45pm weekdays plus Sunday, and is comfortable logging into the school portal to track assignments."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Jediah"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Weinberg"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "11"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "LAUSD (Granada Hills area)"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Matt at 818-314-3520 to confirm his email address is tcalchamp@yahoo.com",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email Matt current rates and package options once email is confirmed",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Begin tutor matching for Jediah \u2014 11th grade, math/English/overall academic coaching, Zoom, evenings ~6:45pm weekdays and Sunday, ideally an active teacher, competitive rate for 3-4x/week frequency",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 414788182,
+      "number": "18317475108",
+      "time_pt": "11:02 AM",
+      "matched": true,
+      "contact_label": "Pamela Richardson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring placed an outbound call to Pamela Richardson to confirm scheduling preferences for Eli's tutoring sessions. Pamela did not answer; Yolanda reached voicemail and left a message asking Pamela to reply to the text she sent about day/time preference. A+ has Eli's PO in hand for 2x/week, 45-minute sessions and just needs the schedule locked in.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for Pamela's text reply with schedule preference for Eli's 2x/week, 45-min sessions; if no response, call back later today (~6 PM per prior plan) to lock in day/time.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal (PO received for Eli's sessions); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Eli",
+          "Pamela Richardson"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Pamela to confirm schedule preference for Eli's tutoring. Reached voicemail; Yolanda left a message asking Pamela to reply to the earlier text. PO is in hand for 2x/week, 45-min sessions \u2014 just need day/time confirmation.",
+          "what_we_can_do_to_help": "Yolanda left voicemail and is awaiting Pamela's text reply with day/time preference; will follow up with another call if no response comes in today.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Pamela to confirm schedule preference for Eli's tutoring. Reached voicemail; Yolanda left a message asking Pamela to reply to the earlier text. PO is in hand for 2x/week, 45-min sessions \u2014 just need day/time confirmation."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda left voicemail and is awaiting Pamela's text reply with day/time preference; will follow up with another call if no response comes in today."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Pamela's text reply with schedule preference for Eli's 2x/week, 45-min sessions; if no response, call back later today (~6 PM per prior plan) to lock in day/time.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
