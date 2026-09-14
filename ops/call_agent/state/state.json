@@ -805,9 +805,11 @@
     414812198,
     414819756,
     414821183,
-    414826341
+    414826341,
+    414830923,
+    414832249
   ],
-  "last_run_utc": "2026-09-14T19:15:33.890008+00:00",
+  "last_run_utc": "2026-09-14T19:23:34.396909+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1288,6 +1290,180 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 414830923,
+      "number": "17735208255",
+      "time_pt": "12:14 PM",
+      "matched": true,
+      "contact_label": "Shanes,Robert N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Robert Shanes called asking about tutoring rates for his 12-year-old daughter, a 7th grader at a private school on the West Side (family lives in Studio City). Paola quoted $130/hour in-person, and Robert said this was far outside his budget \u2014 he's a single parent of two and currently pays a high school student $20/hour for his son. He politely declined and ended the call cordially, with no next step.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Caller's budget (~$20/hr) is far below A+'s $130/hr in-person rate; he declined and does not want to proceed.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Robert called asking about tutoring for his 12-year-old daughter (7th grade) at a private school on the West Side; family lives in Studio City. He is a single parent of two and our $130/hr in-person rate is far beyond his budget \u2014 he currently pays a high schooler $20/hr for his son. He declined to move forward.",
+          "what_we_can_do_to_help": "Not a fit at this time due to budget. Paola suggested he look for an independent (non-agency) tutor. No follow-up requested.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "7",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Robert called asking about tutoring for his 12-year-old daughter (7th grade) at a private school on the West Side; family lives in Studio City. He is a single parent of two and our $130/hr in-person rate is far beyond his budget \u2014 he currently pays a high schooler $20/hr for his son. He declined to move forward."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Not a fit at this time due to budget. Paola suggested he look for an independent (non-agency) tutor. No follow-up requested."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "7"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 414832249,
+      "number": "18184623808",
+      "time_pt": "12:03 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Roman from A+ called Inna Volodinsky on an emergency basis to talk through her ninth-grader Myron's stress at Granada Hills HS (geometry C, AP Physics A). Roman advised keeping both classes, reassured her Myron is on the accelerated track, and encouraged joining 1-2 clubs and continuing baseball for balance. Inna also confirmed she wants to expand tutoring (20+ lessons, possibly 50) and discussed plans to exit her other son Jacob from Compass Charter next spring while maximizing remaining charter funds (Mon 11am / Wed 9am, ~$75/hr charter rate) \u2014 she asked A+ not to send lesson notes/reports to the charter. Warm, trusting tone; she wants a larger tutoring package booked.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Inna on purchasing the larger tutoring package for Myron (20+ lessons, possibly stepping up to ~50) and confirm cadence (2-3x/week).",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "For Jacob: plan to burn down remaining charter hours before spring exit from Compass; schedule sessions Mondays 11am and Wednesdays 9am at charter rate ($75/hr) once Inna submits new PO days.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Internal note to tutors/ops: do NOT send lesson notes or reports to Compass Charter for Jacob \u2014 Inna is quietly preparing to exit and does not want the charter to see usage.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Confirm Myron's continued geometry/physics tutoring schedule with Calvin (physics) and coordinate any added geometry sessions.",
+            "owner_hint": "Calvin",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Inna Volodinsky (parent, existing customer, very warm/trusting relationship with Roman) called on an 'emergency' basis stressed about her 9th grader Myron at Granada Hills HS \u2014 high C in Geometry, A in AP Physics, worried he'll crack. Roman coached her to keep both classes, keep baseball, and have Myron join 1-2 clubs; reassured her Myron is on the accelerated track and Calvin (physics tutor) is helping. She committed to buying a bigger tutoring package (20 lessons, possibly up to ~50) \u2014 needs someone to follow up and get that block sold/scheduled, likely 2-3x/week. Separately, for her other son Jacob (Compass Charter, autism): she plans to exit Compass to brick-and-mortar next spring and wants to drain remaining charter funds first at Mon 11am & Wed 9am, charter rate confirmed at $75/hr. CRITICAL: do NOT send any lesson notes or reports to Compass \u2014 she'll get in trouble; keep sessions on our calendar only. Open with: 'Hi Inna, Roman filled me in on your call \u2014 sounds like Myron's holding steady and you're ready to lock in a bigger package. Want to get that set up and also line up Jacob's Monday 11 / Wednesday 9 slots?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Jacob",
+          "Granada Hills High School",
+          "Balboa Magnet",
+          "Compass Charter",
+          "Valley School",
+          "Notre Dame",
+          "Calvin (tutor)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Emergency call from Inna re: Myron (9th, Granada Hills HS) \u2014 stressed about high C in Geometry and A in AP Physics; worried algebra gap from Valley School (only 1 semester) will catch up to him. Also plans to exit younger son Jacob from Compass Charter to brick-and-mortar in spring, wants to burn remaining charter funds first (Mon 11am, Wed 9am) and asks that A+ not send any lesson notes/reports to the charter. Wants to buy a larger tutoring package (20 lessons, potentially up to ~50).",
+          "what_we_can_do_to_help": "Sell/schedule the larger tutoring block for Myron (2-3x/week, geometry + AP Physics with Calvin). For Jacob: schedule Mon 11am & Wed 9am at charter rate ($75/hr) and internally flag \u2014 do NOT send lesson notes or reports to Compass Charter. Continue coaching Inna on high school strategy (keep classes, join 1-2 clubs, keep baseball, pursue volunteer/leadership opportunities tied to autistic-sibling nonprofit).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Emergency call from Inna re: Myron (9th, Granada Hills HS) \u2014 stressed about high C in Geometry and A in AP Physics; worried algebra gap from Valley School (only 1 semester) will catch up to him. Also plans to exit younger son Jacob from Compass Charter to brick-and-mortar in spring, wants to burn remaining charter funds first (Mon 11am, Wed 9am) and asks that A+ not send any lesson notes/reports to the charter. Wants to buy a larger tutoring package (20 lessons, potentially up to ~50)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Sell/schedule the larger tutoring block for Myron (2-3x/week, geometry + AP Physics with Calvin). For Jacob: schedule Mon 11am & Wed 9am at charter rate ($75/hr) and internally flag \u2014 do NOT send lesson notes or reports to Compass Charter. Continue coaching Inna on high school strategy (keep classes, join 1-2 clubs, keep baseball, pursue volunteer/leadership opportunities tied to autistic-sibling nonprofit)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Inna on purchasing the larger tutoring package for Myron (20+ lessons, possibly stepping up to ~50) and confirm cadence (2-3x/week).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "For Jacob: plan to burn down remaining charter hours before spring exit from Compass; schedule sessions Mondays 11am and Wednesdays 9am at charter rate ($75/hr) once Inna submits new PO days.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Internal note to tutors/ops: do NOT send lesson notes or reports to Compass Charter for Jacob \u2014 Inna is quietly preparing to exit and does not want the charter to see usage.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Confirm Myron's continued geometry/physics tutoring schedule with Calvin (physics) and coordinate any added geometry sessions.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
