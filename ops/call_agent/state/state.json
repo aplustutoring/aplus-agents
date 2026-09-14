@@ -814,9 +814,10 @@
     414860671,
     414868565,
     414870376,
-    414870373
+    414870373,
+    414871722
   ],
-  "last_run_utc": "2026-09-14T20:27:23.795879+00:00",
+  "last_run_utc": "2026-09-14T20:32:21.334361+00:00",
   "pending_digest": [
     {
       "call_id": 414726613,
@@ -1471,6 +1472,95 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 414871722,
+      "number": "18182923589",
+      "time_pt": "1:21 PM",
+      "matched": true,
+      "contact_label": "Ensieh Zarezadeh",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Ensieh Zarezadeh called seeking a math tutor for her 7th-grade gifted daughter Farimah, who attends Portola Middle School's gifted program and is taking 8th-grade math this year. She wants extra support because the pace is challenging. Ensieh preferred in-person but accepted that A+ only offers online for middle school. Roman collected her info and emailed pricing; Ensieh will review and follow up.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Ensieh after she reviews the pricing email to answer questions and book a first session for Farimah (7th grade math, gifted, taking 8th grade math)",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Karima",
+            "correct": "Farimah"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ensieh Zarezadeh (warm, engaged, some phone audio issues) called for math tutoring for her 7th-grade daughter Farimah at Portola Middle School's gifted program. Farimah is taking 8th-grade math as a gifted student and is struggling to keep pace \u2014 teacher confirmed she needs extra support. Mom initially wanted in-person; Roman explained we only offer online for middle school and she accepted. Roman emailed pricing (hourly and prepaid packages) and mentioned Stanford recognition. Ensieh said she'd review and reach back out. Open with: \"Hi Ensieh, this is [name] from A+ Tutoring following up on the pricing Roman sent for Farimah \u2014 wanted to see if you had any questions and help you get her matched with a math tutor.\" Note: daughter's name is Farimah (F-A-R-I-M-A-H), not Farimah.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective family; not charter-funded and no diagnostic needed \u2014 standard math support inquiry.",
+        "student_or_school_names_mentioned": [
+          "Farimah",
+          "Portola Middle School"
+        ],
+        "record_updates": {
+          "whats_going_on": "7th-grade daughter Farimah is in Portola Middle School's gifted program and is taking 8th-grade math this year. She was strong until this year but is now struggling with the pace; teacher confirmed she needs more support outside class.",
+          "what_we_can_do_to_help": "Provide 1:1 online math tutoring (mom wanted in-person but accepted online since we don't offer in-person for middle school). Roman emailed pricing (hourly + prepaid packages); awaiting mom's decision to schedule.",
+          "student_first_name": "Farimah",
+          "student_last_name": null,
+          "grade_level": "7",
+          "student_school": "Portola Middle School",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "7th-grade daughter Farimah is in Portola Middle School's gifted program and is taking 8th-grade math this year. She was strong until this year but is now struggling with the pace; teacher confirmed she needs more support outside class."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide 1:1 online math tutoring (mom wanted in-person but accepted online since we don't offer in-person for middle school). Roman emailed pricing (hourly + prepaid packages); awaiting mom's decision to schedule."
+        ],
+        [
+          "student_school",
+          "Portola",
+          "Portola Middle School"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Ensieh after she reviews the pricing email to answer questions and book a first session for Farimah (7th grade math, gifted, taking 8th grade math)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
