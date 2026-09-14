@@ -1,9 +1,11 @@
 """PO-inbox deal handling: advance Waiting-for-PO, create when none, surface on multi."""
 import base64
+import datetime as dt
 
 import pytest
 
 from src import deal_sync as dsy_mod, gmail_client as gmc, po_inbox as po
+from src.business_hours import LA
 
 
 @pytest.fixture(autouse=True)
@@ -1985,8 +1987,11 @@ def test_charter_sales_notified_24h_after_sent_email(monkeypatch):
     monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    # pinned: the sweep reads the wall clock, and the assertion below is about
+    # a chase whose escalation window has not opened yet
+    monkeypatch.setattr(po, "now_la", lambda: dt.datetime(2026, 9, 11, 9, 3, tzinfo=LA))
     po._sweep_parent_chases()
-    # >24h since send, escalation window (Sep) not yet reached → ONLY Paola
+    # >24h since send, escalation window (Sep 20) not yet reached → ONLY Paola
     assert len(dms) == 1
     assert dms[0][0] == po.cfg()["staff"][po.cfg()["roles"]["charter_sales"]]["slack_user_id"]
     assert "STILL MISSING 24h" in dms[0][1] and "Kruz Vouniozos" in dms[0][1]
