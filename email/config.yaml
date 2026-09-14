@@ -691,11 +691,11 @@ po_inbox:
     draft_unsent_nag_business_hours: 4 # draft still in Gmail Drafts → 🚩 nag
     notify_charter_sales_after_hours: 24  # info still missing 24h after the email → charter sales
     assist_seat: charter_sales         # can't get parent info (school declines, or no reply past the window) → ONE DM per deal to this seat, folded into the 24h ping (Roman 2026-09-11: teacher about a specific student = charter_sales; not Danielle)
-  # Pending order-agreement POs with no approval signal (duplicate alert =
-  # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
-  # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
-  # original email (Roman, 2026-08-26) — nagging earlier is pure false alarm.
-  pending_portal_approval_days: 14
+  # ── Duplicate-PO guard (Roman, 2026-09-12: "I just want the no duplicate po
+  # option being firm as possible"). Both default to the SAFE value when absent,
+  # so an old config file still refuses rather than creates.
+  require_po_number: true       # no PO number means dedupe is impossible, so never auto-create
+  dedupe_fail_closed: true      # a lookup we could not complete blocks creation, never allows it
   # Gmail poll re-reads this many seconds BEFORE the cursor (the Lia Beck miss,
   # 2026-08-28: a message landing behind the cursor was invisible forever).
   # Re-listed mail is deduped by the audit log, so a wide window is free.

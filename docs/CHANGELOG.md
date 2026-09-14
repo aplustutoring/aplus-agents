@@ -7,6 +7,80 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-12 — PO duplicate guard fails closed; pending-approval follow-up removed
+
+**Why.** Roman: "Let's get rid of the approval checks, we will work on Kath
+verifying in ops later. For now I just want the no duplicate po option being
+firm as possible."
+
+And the finding that made the second half urgent: **the duplicate lookup was
+blind in every dry run.** `hubspot_client.find_deals_by_po_number` and
+`search_deals_by_name` both went through `_write`, which short-circuits under
+`DRY_RUN` and returns `{"id": "DRYRUN"}`. `res.get("results", [])` was therefore
+always `[]`, so the guard concluded "no duplicate" every single time. Every dry
+run to date showed the agent creating deals it would in fact have refused, which
+means the dry-run transcripts were never evidence that the guard works.
+`_get_search` exists for exactly this ("Separate from `_write` so DRY_RUN cannot
+short-circuit a read") and both functions now use it.
+
+**What. Five holes in the duplicate guard, all closed, all failing closed.**
+
+1. **Blind in DRY_RUN** (above). Both lookups moved to `_get_search`.
+2. **No PO number disabled dedupe entirely.** `if po_num:` meant a PO the
+   extractor could not pull a number from skipped the check and created a deal
+   unconditionally, so two copies of one numberless PO made two deals. Now:
+   no deal, a ⛔ note, a DM to the `po_inbox.owner` seat, audit
+   `po_refused_no_number`.
+3. **Exact EQ missed real variants.** The property lookup now tries the
+   normalized number, the raw string, `PO<number>`, and both cases (deals
+   predating the bare-number rule of 2026-08-10 still carry the prefix;
+   alphanumerics like `PF252648-EzekielGarcia` differ in case), and confirms
+   each hit on normalized equality instead of trusting the filter. The
+   deal-name CONTAINS backstop stays.
+4. **HubSpot search is eventually consistent.** Two copies of a PO seconds apart
+   both passed. Two index-independent checks were added: the audit ledger (new
+   `po_deal_created` row per created deal, plus legacy `po_processed`/`new_po`
+   rows) and an in-run set of claimed numbers, so one `_split_pos` email can
+   never create two deals for one number.
+5. **A failed lookup fell through to creation.** Confirmed what happens today:
+   the exception propagates out of `process_po_message`, `run()` catches it and
+   writes an audit row keyed `gmail:<id>` with `action_taken: "error"`, the
+   same key `already_processed()` reads, so the message is marked handled and
+   **never retried**. A transient HubSpot error silently dropped the PO
+   entirely. Now the guard catches it: no deal, ⛔ note, DM, audit
+   `po_refused_dedupe_unavailable`, and the ticket still gets created.
+
+Two config flags, both read with `.get(..., True)` so an older config file
+inherits the safe behaviour: `po_inbox.require_po_number` and
+`po_inbox.dedupe_fail_closed`. New audit actions: `po_deal_created`,
+`po_refused_duplicate`, `po_reissue_flagged`, `po_refused_ledger_duplicate`,
+`po_refused_no_number`, `po_refused_dedupe_unavailable`. The STOPPED/cancelled
+re-issue wording is unchanged, and both branches still refuse to create.
+
+**Removed:** `_sweep_pending_pos()` and its call site, the `pending_po_opened`
+row on order-agreement deals, the `pending_po_confirmed` row in the duplicate
+branch, and the now-unreferenced `po_inbox.pending_portal_approval_days`. The
+extractor's `pending_approval` flag stays: the ticket, the deal note, the
+invoice task and the scheduler DM still say a PO is pending school approval.
+
+**Not done, deliberately.** Kath's ops-side verification of portal approvals is
+deferred per Roman, so **nothing nags any more when a portal approval stalls**.
+a pending order agreement now sits unchased until a human looks at it. That is
+the accepted trade for this session; the follow-up belongs in ops, not in the
+PO agent.
+
+**Also noticed, not fixed (pre-existing on `main`):** seven
+`email/tests/test_low_balance.py` tests fail on weekends. `_day1_due()` ends in
+`_is_business_day(now.date())`, so the day-1 text path is unreachable on a
+Saturday and the tests assert it fires. They fail identically on `origin/main`
+with this branch stashed.
+
+**Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_dedupe.py` (new, 24 tests),
+`email/tests/test_po_inbox.py`, `email/tests/test_po_sources.py`,
+`docs/PO-PROCESS.md`, `knowledge/journey/04-qualified-to-deal.md`.
+
+---
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`

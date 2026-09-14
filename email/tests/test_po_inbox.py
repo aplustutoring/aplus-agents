@@ -43,9 +43,38 @@ def _stub_contact_associations(monkeypatch):
     monkeypatch.setattr(po.hs, "get_deal_contacts", lambda did: [])
 
 
+@pytest.fixture(autouse=True)
+def _empty_audit_ledger(monkeypatch):
+    # The duplicate guard reads the audit ledger (_created_po_numbers). Unstubbed
+    # that is the repo's checked-in 8 MB state/audit_log.jsonl, which would make
+    # every test depend on live history. Empty by default; ledger tests override.
+    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(()))
+
+
+@pytest.fixture(autouse=True)
+def _default_po_number_lookup(monkeypatch):
+    # find_deals_by_po_number is a REAL read now (it was blanked by DRY_RUN until
+    # 2026-09-12), so the conftest HTTP block would raise inside the guard and the
+    # guard fails closed. Default it to "no duplicate"; dedupe tests override it.
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number",
+                        lambda n, raw="": [], raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _legacy_allow_missing_po_number(monkeypatch):
+    # Roman 2026-09-12: a PO with no number is refused (require_po_number). Most
+    # tests in this file predate that and pass po_number="" only because the
+    # number is irrelevant to what they assert. Default them to the old
+    # behaviour. The refusal has its own tests, which set the flag explicitly.
+    real = po.cfg
+    monkeypatch.setattr(po, "cfg", lambda: {
+        **real(), "po_inbox": {**real().get("po_inbox", {}), "require_po_number": False}})
+
+
 def _mock_po_prop(monkeypatch, result=None):
     po.hs.find_deals_by_po_number  # ensure attr exists
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: result or [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number",
+                        lambda n, raw="": result or [])
 
 
 def _po(**kw):
@@ -604,7 +633,7 @@ def test_tor_matched_via_secondary_email(monkeypatch):
 def test_multi_po_email_creates_deal_per_po(monkeypatch):
     created = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, contact_id=None, dealtype=None,
                         owner_id=None, closedate_ms=None, extra_props=None:
@@ -630,7 +659,7 @@ def test_comma_jammed_po_numbers_split_with_flag(monkeypatch):
     # amounts flagged for manual fill (never one mashed deal).
     created = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, contact_id=None, dealtype=None,
                         owner_id=None, closedate_ms=None, extra_props=None:
@@ -645,7 +674,7 @@ def test_comma_jammed_po_numbers_split_with_flag(monkeypatch):
 def test_multi_po_scheduling_alert_fires_once(monkeypatch):
     posts = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
@@ -792,7 +821,7 @@ def test_multi_po_email_seq_staggers(monkeypatch):
     # 3 POs in one email → iLead 1 / 2 / 3 (search can't see sibling deals yet)
     created = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C1", "properties":
                                                     {"firstname": "Maria", "lastname": "Diaz"}})
@@ -1039,7 +1068,7 @@ def test_norm_po_number():
 
 def test_po_prefix_stripped_before_dedupe_and_deal(monkeypatch):
     searched, created = [], []
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: searched.append(n) or [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": searched.append(n) or [])
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, extra_props=None, **k:
@@ -1061,7 +1090,7 @@ def test_prompt_treats_order_agreements_as_pos():
 def test_pending_approval_flagged_on_deal_and_task(monkeypatch):
     created, tasks = [], []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C1", "properties":
                                                     {"firstname": "Maria", "lastname": "Diaz"}})
@@ -1132,7 +1161,7 @@ def test_slack_routing_flag_set_on_created_deal(monkeypatch):
 def test_scheduler_dm_once_per_email_with_pending_flag(monkeypatch):
     dms = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D"})
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
     notes = []
@@ -1301,7 +1330,7 @@ def test_multi_po_email_every_deal_gets_true_value(monkeypatch):
     # so a lying sibling could skip the staff alert. Every deal carries truth.
     captured = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
                         lambda e, sf, lookback_days=30, **kw: {"found": True, "recent": 0, "upcoming": 0})
@@ -1463,7 +1492,7 @@ def test_currently_tutored_uses_prior_deal_parent_email(monkeypatch):
 def test_tw_calendar_checked_once_per_multi_po_email(monkeypatch):
     calls = []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C1"})
     monkeypatch.setattr(po.tw, "student_lesson_activity",
                         lambda e, sf, lookback_days=30, **kw:
@@ -1672,7 +1701,7 @@ def test_multi_po_seq_base_counted_once(monkeypatch):
         return {"id": "D"}
     monkeypatch.setattr(po.hs, "search_deals_by_student", live_index)
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C1", "properties":
                                                     {"firstname": "Mari", "lastname": "Barajas"}})
@@ -1754,7 +1783,7 @@ def test_healthy_tor_not_patched(monkeypatch):
 def test_multi_student_certificate_per_student_deals(monkeypatch):
     created, drafts, appended = [], [], []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_family_contact", lambda sf, ln: [])
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, **k:
@@ -1825,34 +1854,30 @@ def test_chase_resolution_arms_parent_sms(monkeypatch):
     assert any("Scheduling-text workflow armed" in n for n in notes)
 
 
-def test_pending_sweep_nags_then_stays_quiet(monkeypatch):
-    dms, appended = [], []
-    recs = [{"action_taken": "pending_po_opened", "deal_id": "D1",
-             "deal_name": "X - Y - iLead 1 - 26/27", "po_number": "111",
-             "sla_due": "2026-08-01T10:00:00-07:00",
-             "timestamp": "2026-07-31T10:00:00+00:00"}]
-    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
+def test_pending_approval_followup_machinery_is_gone(monkeypatch):
+    """Roman, 2026-09-12: "Let's get rid of the approval checks, we will work on
+    Kath verifying in ops later." The sweep, its call site and its three audit
+    actions are removed; the extractor flag and the ticket/task wording stay."""
+    import inspect
+    assert not hasattr(po, "_sweep_pending_pos")
+    src = inspect.getsource(po)
+    for gone in ("_sweep_pending_pos", "pending_po_opened", "pending_po_confirmed",
+                 "pending_po_reminded", "pending_portal_approval_days"):
+        assert gone not in src, f"{gone} still referenced in po_inbox"
+    assert "pending_approval" in src              # the flag itself survives
+
+
+def test_no_pending_audit_rows_when_a_pending_po_creates_a_deal(monkeypatch):
+    appended = []
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
-    monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
-    po._sweep_pending_pos()
-    assert len(dms) == 2                       # kath + roman
-    assert all("PENDING school approval" in t for _u, t in dms)
-    assert appended and appended[0]["action_taken"] == "pending_po_reminded"
-    # already reminded → silent
-    recs.append(appended[0]); dms.clear()
-    po._sweep_pending_pos()
-    assert dms == []
-
-
-def test_pending_sweep_confirmed_by_duplicate_is_silent(monkeypatch):
-    recs = [{"action_taken": "pending_po_opened", "deal_id": "D1",
-             "deal_name": "X", "po_number": "111",
-             "sla_due": "2026-08-01T10:00:00-07:00"},
-            {"action_taken": "pending_po_confirmed", "po_number": "111"}]
-    monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
-    monkeypatch.setattr(po.slack_client, "dm",
-                        lambda u, t: (_ for _ in ()).throw(AssertionError("confirmed → no nag")))
-    po._sweep_pending_pos()
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D1"})
+    monkeypatch.setattr(po.hs, "create_task",
+                        lambda *a, **k: {"id": "T1"})
+    po._handle_deal(_po(po_number="9001", pending_approval=True), [])
+    acts = [r.get("action_taken") for r in appended]
+    assert "po_deal_created" in acts              # the dedupe ledger row
+    assert not [a for a in acts if str(a).startswith("pending_po")]
 
 
 def test_sla_sweep_sees_po_tickets(monkeypatch):
@@ -2206,7 +2231,7 @@ def test_seq_continues_across_emails_same_run(monkeypatch):
     # counter must keep counting 3, 4 instead of restarting at 1
     monkeypatch.setattr(po.hs, "search_deals_by_student", lambda f, l=None: [])
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C1", "properties":
                                                     {"firstname": "Maria", "lastname": "Diaz"}})
@@ -2238,7 +2263,7 @@ def _stopped_pipeline(monkeypatch):
 
 def test_cancellation_zeroes_and_stops_deal(monkeypatch):
     patched, notes_added, dms, tasks = [], [], [], []
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [
         {"id": "D9", "properties": {"dealname": "P - S - OG 1 - 26/27",
                                     "pipeline": "907748", "dealstage": "907749",
                                     "amount": "90", "hubspot_owner_id": "80047202",
@@ -2264,7 +2289,7 @@ def test_cancellation_zeroes_and_stops_deal(monkeypatch):
 
 def test_partial_cancellation_touches_nothing(monkeypatch):
     patched, dms = [], []
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [
         {"id": "D9", "properties": {"dealname": "P - S - OG 1 - 26/27",
                                     "pipeline": "907748", "dealstage": "907749",
                                     "amount": "300", "hubspot_owner_id": ""}}])
@@ -2280,7 +2305,7 @@ def test_partial_cancellation_touches_nothing(monkeypatch):
 
 
 def test_cancellation_without_matching_deal_flags(monkeypatch):
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     notes = []
     po._handle_cancellation(_cancel_po(), notes)
     assert any(n.startswith("⚠️") and "NO deal" in n for n in notes)
@@ -2408,7 +2433,7 @@ def test_deal_description_carries_the_summary(monkeypatch):
 
 def test_cancellation_closes_the_convert_task(monkeypatch):
     closed = []
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [
         {"id": "D9", "properties": {"dealname": "P - S - OG 1", "pipeline": "907748",
                                     "dealstage": "907749", "amount": "90",
                                     "hubspot_owner_id": ""}}])
@@ -2461,7 +2486,7 @@ def test_three_sibling_po_stamps_each_deals_own_student(monkeypatch):
     associated deal 80 s later — see docs/CHANGELOG.md 2026-09-10.)"""
     created, patches = [], []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
-    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n: [])
+    monkeypatch.setattr(po.hs, "find_deals_by_po_number", lambda n, raw="": [])
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: {"id": "C-mom", "properties": {
                             "firstname": "Mayra", "lastname": "Aguilar"}})
