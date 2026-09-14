@@ -141,6 +141,39 @@ converting on `Student Diagnostic Test Upload` and `Get Started Now Full Length`
 are not consistently landing on Paola, which is the signature of a form that is
 not in the list.
 
+### F7 (new, worst yet) — past customers are permanently locked out of the pipe
+
+The exit goal is "associated deal with `start_of_tutoring_for_this_deal` known".
+HubSpot evaluates a goal at enrollment: a contact who already meets it is never
+enrolled. So **any family who has ever started tutoring can never re-enter the
+online lead pipe.** They resubmit the form and get nothing: no email, no text,
+no owner, no status change, no New Lead Alert task. The 2026-08-17 second goal
+("lead status = Meeting Booked") adds the same lockout for anyone ever booked.
+
+Worked example, contact 3495701 (stored as firstname "Reich" / lastname "David",
+i.e. David Reich, a 2023 customer):
+
+| When (PT) | What |
+|---|---|
+| 2023-10-08 | First conversion, same Main Intake Form |
+| 2023-10-09 12:26 | Danielle calls him back, 8m45s |
+| 2023-10-12 | Deal `David Reich - Juliana` ($680), tutoring starts 2023-10-19 |
+| 2023-11-13 | Renewal deal ($340), both closed |
+| **2026-09-10 07:36** | **Resubmits the Main Intake Form. Nothing happens.** |
+| 2026-09-10 to 09-14 | Silence. Zero emails (last send was the 08-31 NSSA badge), zero calls, zero tasks, no owner change, no lead-status change |
+| 2026-09-14 10:51 | **He calls us**, 3m34s, for his son Nicholas and the Science Academy STEM Magnet exam |
+| 2026-09-14 10:53 | Call agent logs the summary, a 4.1/5 quality eval, and three follow-up tasks to Paola; Roman notes "@Paola did you have a chance to connect with them" |
+
+Four days and three hours of silence on the warmest lead type there is, closed
+only because the parent chased us. This is the failure class the investigation
+rule points at: the goal was written to mean "stop chasing once they start" and
+it silently also means "never chase again, ever".
+
+Two smaller things on the same record: his name is stored reversed (firstname
+"Reich"), so every templated greeting reads "Hi Reich"; and his contact owner is
+still Danielle from 2023 while the live tasks sit with Paola, against the
+2026-08-25 routing rule that families go to the charter_sales seat.
+
 ### F6 — open loop from 2026-08-17
 
 `Lead Pipe Line - Ads - Free Lesson` (149937308) still needs the Meeting Booked
@@ -169,6 +202,15 @@ they need Roman's go.
    (`recent_conversion_event_name` contains the intake form name), so a new form
    cannot silently fall out of the pipe.
 7. **F6** Add the Meeting Booked goal to 149937308 in the UI.
+8. **F7** Split the goal from the lockout. The exit goal should be scoped to the
+   *current* re-engagement (a deal created after this enrollment, or lead status
+   Meeting Booked set after this enrollment), not to any deal in the contact's
+   history. Simplest safe version: replace the deal-based goal with
+   "lead status is Meeting Booked OR Open deal", which a dormant past customer
+   does not satisfy on resubmit. Until that lands, a returning family that
+   resubmits the form is invisible, so a second trigger is worth adding: notify
+   the charter_sales seat whenever `recent_conversion_date` updates on a contact
+   with `lifecyclestage = customer`.
 
 Per the investigation rule, the failure class to close is "a lead can leave the
 pipe without a human, and the CRM will say otherwise". Fixes 1, 2 and 4 make

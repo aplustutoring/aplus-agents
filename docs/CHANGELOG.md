@@ -14,7 +14,7 @@ the single workflow behind every web form lead, from submit to first human
 contact. Nothing was changed in HubSpot. Full write-up with record-level
 evidence: `docs/investigations/2026-09-14-online-lead-intake.md`.
 
-Six findings, three of them customer-facing:
+Seven findings, four of them customer-facing:
 
 - **The "we could not leave a voicemail" email fires on the DEFAULT branch.**
   Branch 35 reads call disposition; a lead with no call has no disposition and
@@ -36,6 +36,15 @@ Six findings, three of them customer-facing:
   (a numeric owner ID). No SMS channel is configured in the conversations inbox
   and no SMS activity surfaced for any September lead, so it may be failing
   silently instead. Needs one manual timeline check.
+- **Past customers are permanently locked out.** The exit goal is "associated
+  deal with `start_of_tutoring_for_this_deal` known", and HubSpot never enrolls
+  a contact who already meets the goal. So any family that has ever started
+  tutoring can never re-enter the pipe. Worked example: David Reich
+  (contact 3495701, a 2023 customer) resubmitted the Main Intake Form
+  2026-09-10 07:36 PT and got nothing at all. Four days of silence, then HE
+  called US on 09-14 10:51 for his son Nicholas. The call agent handled the
+  inbound well (summary, 4.1/5 eval, three tasks to Paola), but the pipe never
+  knew he was back.
 - Enrollment is 29 pinned form GUIDs, so any new site form is silent.
 - `Lead Pipe Line - Ads - Free Lesson` (149937308) still needs the Meeting
   Booked exit goal added by hand; the 2026-08-17 API PUT 500'd and nothing
@@ -50,7 +59,7 @@ workflow and figure out where its going wrong." Per the investigation rule the
 failure class to close is "a lead can leave the pipe without a human, and the
 CRM will say otherwise". The seven proposed fixes are in the investigation doc.
 They change what families receive, so **none are applied and they need Roman's
-go.** Not yet a locked decision, so no #AP number.
+go.** F7 (the past-customer lockout) is the one to fix first. Not yet a locked decision, so no #AP number.
 
 **Files:** `docs/investigations/2026-09-14-online-lead-intake.md` (new),
 `docs/CHANGELOG.md`.
