@@ -133,6 +133,38 @@ late_reports:
   # "Student FIRST Name" in ops/hubspot-schema/properties.yml, so routing on
   # it would split the schedulers by first initial.
 
+# Slack did not reach the tutor, so we texted them (Roman 2026-09-14: "the
+# tutors that don't respond in Slack need a ticket created, we resorted to
+# text messages but we need to know about that so we can sort them out").
+#
+# Detection is deliberately literal. We only count an outbound text that
+# ITSELF mentions Slack, because that text is us saying, in our own words,
+# that Slack did not work. Inferring "this looks like a chase" would put a
+# quality ticket on a tutor's record from a hunch.
+#
+# The fuller detector (asked in the tutor's channel, no reply in N hours)
+# needs the bot invited to the private #first-last channels; it is not, so
+# conversations.history cannot see them. Invite the bot and that leg becomes
+# buildable. Until then this catches the fallback itself, which is the part
+# Roman asked to know about.
+slack_fallback:
+  enabled: true
+  lookback_minutes: 1440     # overlap window; idempotency comes from state, not the window
+  markers: ["slack"]         # substring, case-insensitive, matched on the body we sent
+  # Bulk/auto templates that can mention Slack without being a chase.
+  ignore_bodies_starting:
+    - "hi, this is a+ tutoring. we saw your call"
+    - "hi, this is a+ tutoring. we were assisting"
+    - "hey"                  # applicant confirmations open "Hey <name>, ... application"
+  # Tutors who have no Slack by policy (Roman 2026-09-08): texting them is the
+  # normal channel, not a failure. Numbers, because the SMS-only tutors are
+  # exactly the ones with thin contact records (Christa has two).
+  sms_only_tutors: ["+18183395667"]
+  # Only ticket tutors who are actually on the roster. "Not found" and
+  # "Inactive" are applicants and leavers; chasing them is not a quality
+  # signal. Prefix match against the tutor_roster_status LABEL.
+  roster_status_prefixes: ["active"]
+
 # Priority defaulted by type (stated in the PR; hs_ticket_priority values).
 priority_by_type:
   missed_lesson_or_late: HIGH        # family was stood up — retention risk now
@@ -140,6 +172,7 @@ priority_by_type:
   tech_issue_unreported: MEDIUM      # process breach, not yet a family-facing failure
   scheduling_flip_flop: MEDIUM       # churn pattern — needs a conversation, not a fire drill
   notes_not_completed: LOW           # compliance lag; the scorecard already tracks the aggregate
+  unresponsive_in_slack: MEDIUM      # a student went unplaced while we chased; pattern matters more than one instance
 
 # Dedupe periods — ONE open ticket per tutor per issue type per period;
 # recurrence updates the existing ticket. Weekly for the Teachworks
@@ -151,6 +184,9 @@ dedupe_period:
   tutor_change_requested: rolling_30d
   scheduling_flip_flop: rolling_30d
   tech_issue_unreported: rolling_30d
+  # Rolling 30 days: three chases in a month is the signal, and it should land
+  # on ONE ticket that shows all three rather than three separate ones.
+  unresponsive_in_slack: rolling_30d
 
 # NOTIFICATION GUARDS (non-negotiable — the aging-sweep near-miss of
 # 2026-08-25 fired 80 DMs in a dry run; this engine must refuse to act

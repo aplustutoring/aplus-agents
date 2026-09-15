@@ -7,6 +7,52 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
+
+**Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
+have a ticket created, we resorted to text messages but we need to know about
+that so we can sort them out." Scheduling had been texting tutors to ask them
+to go read Slack, and nothing recorded it. Separately, Georgianne Leong told us
+by text on 2026-09-14 that she sees no Slack messages from us at all, so a
+silent tutor is not evidence of an unwilling tutor.
+
+**What changed:** new issue type `unresponsive_in_slack` and a
+`--mode slack-fallback` leg. It scans outbound JustCall texts, resolves the
+number to a contact with the Tutors persona, and opens a ticket when the text
+we sent itself mentions Slack. The marker IS the evidence: no reasoning pass,
+no guessing at intent. Dedupe is rolling 30 days, so three chases in a month
+land on one ticket showing all three. Unlike every other type this ticket is
+not a silent log; it carries an ACTION line, because the point is that someone
+sorts the tutor out.
+
+Excluded by config: tutors with no Slack by policy (Christa, per Roman
+2026-09-08), anyone off the active roster, and the missed-call and applicant
+auto-replies.
+
+**Two JustCall paging traps fixed here, both of which return the wrong rows
+silently rather than erroring.** Paging is zero-indexed, so `page=1` skips the
+newest 100 texts and a short window comes back empty; and with `order=asc` the
+first page is the OLDEST 100 in the window, so one unpaginated call returns
+week-old traffic and misses everything recent. The first trap is what made this
+session's own SMS monitor report "0 inbound" for roughly ten hours on
+2026-09-12 while six families were writing in. `fetch_outbound_sms` now starts
+at page 0 and walks `next_page_link`, with a page cap and tests pinning both.
+
+**Not built, and why:** the stronger signal is "asked in the tutor's channel,
+no reply in N hours". That needs `conversations.history` on the private
+`#first-last` channels. The bot is not a member of them, and no file maps a
+tutor to a channel (`knowledge/journey/11-tutor.md`, Known gaps). Invite the
+bot and add the map and that leg becomes buildable.
+
+**Dry run against 7 days of live traffic:** 2 tickets, both correct. Jon Bax
+(chased 2026-09-08 and 2026-09-09, merged onto one ticket) and Arthur
+Rekechenetskiy (2026-09-14). Nothing else in 1,953 texts matched.
+
+**Files:** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
+`ops/tutor-issues/README.md`, `ops/tutor-issues/tests/test_tutor_issues.py`
+(44 pass).
+
+---
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
