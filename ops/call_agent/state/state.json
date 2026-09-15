@@ -872,9 +872,10 @@
     415418874,
     415423427,
     415423262,
-    415423415
+    415423415,
+    415425547
   ],
-  "last_run_utc": "2026-09-15T23:18:45.430553+00:00",
+  "last_run_utc": "2026-09-15T23:25:47.655426+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1919,6 +1920,87 @@
         ],
         [
           "Aim to start Jiselle end of this week / beginning of next week once funding is confirmed.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415425547,
+      "number": "14242242278",
+      "time_pt": "4:17 PM",
+      "matched": true,
+      "contact_label": "Roseanna Ortiz",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Danielle (A+) called Roseanna Ortiz to gather her preference on session format for Jiselle: 45-min sessions 2-3x/week ($60 each) or 1-hour sessions 2x/week ($75 each). Danielle recommended three 45-min high-impact sessions per week. Roseanna leaned toward the 45-min format but was unsure between 2x or 3x/week due to iLEAD funding limits. Danielle will email Desiree at iLEAD to confirm available funding and then finalize frequency.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Email Desiree at iLEAD to confirm Jiselle's remaining funding and whether it covers 2x or 3x per week of 45-minute sessions ($60 each), then circle back to Roseanna with the answer.",
+            "owner_hint": "Danielle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once funding is confirmed, submit order for 45-minute sessions (2x or 3x/week per funding) and schedule Jiselle with a female 6th grade math tutor plus Katie Holiday (or alternate female tutor) for ELA.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roseanna (mom of Jiselle, 6th grade at iLEAD) was pleasant but a bit unsure. On this call Danielle walked her through session options: 45-min at $60 or 1-hour at $75, and recommended three 45-min high-impact sessions per week. Roseanna prefers 45-min sessions but is torn between 2x and 3x/week because she doesn't know how much iLEAD funding remains. Danielle promised to email Desiree at iLEAD to confirm funding and come back with a recommendation. Roseanna now expects Danielle to follow up with the funding answer and a proposed schedule. Suggested opener: \"Hi Roseanna, it's Danielle \u2014 I heard back from Desiree at iLEAD on Jiselle's funding, and here's what we can do...\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Roseanna is a past customer restarting service; lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Jiselle Ortiz",
+          "iLEAD",
+          "Desiree",
+          "Katie Holiday"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roseanna returned Danielle's call to discuss session format for Jiselle. Danielle presented 45-min sessions at $60 (2x or 3x/week) vs. 1-hour sessions at $75 (2x/week) and recommended three 45-min high-impact sessions per week. Roseanna prefers the 45-min format but is unsure whether iLEAD funding will cover 2x or 3x/week.",
+          "what_we_can_do_to_help": "Danielle to email Desiree at iLEAD to confirm Jiselle's remaining funding, then follow up with Roseanna to lock in 2x or 3x/week of 45-min sessions. Scheduling to place the order and match Jiselle with a female 6th grade math tutor and Katie Holiday (or alternate female) for ELA once frequency is confirmed.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roseanna returned Danielle's call to discuss session format for Jiselle. Danielle presented 45-min sessions at $60 (2x or 3x/week) vs. 1-hour sessions at $75 (2x/week) and recommended three 45-min high-impact sessions per week. Roseanna prefers the 45-min format but is unsure whether iLEAD funding will cover 2x or 3x/week."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Danielle to email Desiree at iLEAD to confirm Jiselle's remaining funding, then follow up with Roseanna to lock in 2x or 3x/week of 45-min sessions. Scheduling to place the order and match Jiselle with a female 6th grade math tutor and Katie Holiday (or alternate female) for ELA once frequency is confirmed."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Desiree at iLEAD to confirm Jiselle's remaining funding and whether it covers 2x or 3x per week of 45-minute sessions ($60 each), then circle back to Roseanna with the answer.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once funding is confirmed, submit order for 45-minute sessions (2x or 3x/week per funding) and schedule Jiselle with a female 6th grade math tutor plus Katie Holiday (or alternate female tutor) for ELA.",
           81494333,
           "scheduling"
         ]
