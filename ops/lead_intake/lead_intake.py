@@ -217,6 +217,58 @@ def due_at(submitted, sla_hours: float, c: dict):
     return due.astimezone(tz_in)
 
 
+def exited(state: dict, c: dict) -> str:
+    """Has this family left the ladder? Returns the reason, or "".
+
+    `state` is the facts gathered for this contact at fire time:
+      meetings_after, calls, deals_after (counts), replied_at (iso or ""),
+      lead_status.
+
+    Checked before EVERY step. Nudging a family who already booked is the worst
+    thing this ladder can do, so `meeting_booked` reads real MEETING objects
+    rather than the Meeting Booked lead status: HubSpot flow 1868302723 only
+    sets that status when the meeting title contains "Tutoring Call w/", and 1
+    of the 4 real bookings in 2026-08-15..09-14 was titled "A+ Tutoring Initial
+    Call, Annalee w Paola" and so was never detected.
+    """
+    e = c.get("exit_signals") or {}
+    if e.get("meeting_booked") and int(state.get("meetings_after") or 0) > 0:
+        return "meeting booked"
+    if e.get("replied") and state.get("replied_at"):
+        return f"family replied at {state['replied_at']}"
+    if e.get("call_logged") and int(state.get("calls") or 0) > 0:
+        return "a call is logged on the record"
+    if e.get("deal_created") and int(state.get("deals_after") or 0) > 0:
+        return "a deal was created"
+    status = state.get("lead_status") or ""
+    if status and status in (e.get("lead_status_any_of") or []):
+        return f"lead status is {status}"
+    return ""
+
+
+def next_steps(submitted, now, done: set, state: dict, c: dict) -> list[dict]:
+    """The cadence steps to fire right now. Empty when the family has exited,
+    when nothing is due, or when the ladder is finished.
+
+    Returns a GROUP, not one step: the acknowledgement is a text and an email
+    at offset 0 that are meant to arrive together (Roman, 2026-09-15). Steps
+    sharing an offset are one rung of the ladder.
+
+    Only the LATEST due rung fires. If a run is late, the skipped rungs are
+    dropped, never queued and released in a burst, because three messages
+    landing at once is the Gonzalez failure in a different costume.
+    """
+    if exited(state, c):
+        return []
+    due = [s for s in (c.get("cadence") or [])
+           if s["key"] not in done
+           and now >= submitted + timedelta(minutes=int(s.get("after_minutes") or 0))]
+    if not due:
+        return []
+    latest = max(int(s.get("after_minutes") or 0) for s in due)
+    return [s for s in due if int(s.get("after_minutes") or 0) == latest]
+
+
 def alert_task(contact: dict, audience: str, seat_name: str, gate, returning: str,
                draft: str) -> tuple[str, str]:
     """(subject, body) for the seat's task. Everything needed to make the call

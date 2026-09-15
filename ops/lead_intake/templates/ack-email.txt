@@ -1,0 +1,14 @@
+Subject: Thanks for reaching out to A+ Tutoring
+
+Hi {{firstname}},
+
+Thanks for submitting your request. I am {{seat_first}}, and I help families find the right tutor.
+
+The fastest next step is a short call. Here is my calendar, grab any time that works for you:
+{{booking_link}}
+
+If none of those work, just reply to this email and tell me what is going on, what grade, and which subject. I will find a time that fits.
+
+Talk soon,
+{{seat_first}}
+A+ Tutoring

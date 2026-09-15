@@ -1,0 +1,1 @@
+Hi {{firstname}}, {{seat_first}} with A+ Tutoring again. I have not seen a time booked yet, so I wanted to make sure the link reached you: {{booking_link}}. If it is easier, reply here with a couple of times that work and I will set it up. Reply STOP to opt out.

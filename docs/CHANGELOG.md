@@ -7,6 +7,56 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-15 — The lead chase ladder, and the booking rate that reframes it (10%)
+
+**What:** Roman described the cadence he actually wants: "thanks for reaching
+out, I just sent you a link with my calendar" by text AND email immediately;
+then if they book, stop; if 12 hours later they have not booked, nudge; keep
+working them to the meeting; a held meeting makes them a QTL. Built as
+`cadence` + `exit_signals` in `ops/lead_intake/config.yml` with four copy
+templates and the `exited()` / `next_steps()` logic. Still `send: false`.
+
+**The number that reframes the funnel: 4 of 40 leads booked a consult (10%)**
+in 2026-08-15..09-14. Time to book was 1, 1, 2 and 13 days. Everything upstream
+(speed, routing, the lockout) matters because this number is small; the ladder
+exists to move it.
+
+Two things the real data settled:
+
+- **The ladder must outlast day 1.** Roni Beck submitted 08-19 and booked
+  09-01, thirteen days later. A two-day sequence would have written her off.
+  There is a test asserting the last rung is at least 24h out.
+- **The booking detector misses 1 in 4.** HubSpot flow 1868302723 sets
+  Meeting Booked only when the meeting TITLE contains "Tutoring Call w/", and
+  one of the four real bookings was titled "A+ Tutoring Initial Call, Annalee w
+  Paola". So Annalee booked and her status never moved. Nudging a family who
+  already booked is the worst thing this ladder can do, so `exited()` reads real
+  MEETING objects rather than trusting the status. Same move as the cursor:
+  don't patch the detector, stop depending on it.
+
+**Bug found by a test, in our own design:** `next_step()` returned the single
+latest due step, so the ack SMS and the ack email, both at offset 0, competed
+and the text was silently dropped. The ack is one rung of two messages. Now
+`next_steps()` returns the whole rung, and a late run fires only the latest
+rung rather than replaying skipped ones, because three messages landing at once
+is the Gonzalez failure in a different costume. 30 tests green.
+
+**Still open, Roman's words: "then there's steps there that we have to review
+still."** Stages 02 (attempting to contact), 03 (discovery) and 04 (qualified to
+deal) are DRAFT. The ladder above stops at a handoff task on day 4; what
+happens between the booked meeting and QTL is not yet specified anywhere an
+agent may read.
+
+**Why:** the acknowledgement is a receipt and carries no judgment, which is why
+it can be deterministic; the first-touch opener is a sales message, which is why
+stage 01 keeps it at draft. The cadence file now makes that split reviewable
+instead of implicit.
+
+**Files:** `ops/lead_intake/config.yml`, `ops/lead_intake/lead_intake.py`,
+`ops/lead_intake/templates/` (+4), `ops/lead_intake/tests/test_lead_intake.py`,
+`docs/CHANGELOG.md`.
+
+---
 ## 2026-09-14 — lead_intake replayed against 30 days of real conversions; SLA clamp added
 
 **What:** replayed 2026-08-15..09-14 through the real `ops/lead_intake` core

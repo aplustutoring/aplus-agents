@@ -145,7 +145,7 @@ def test_alert_carries_the_gate_verdict_and_the_thread_owner():
 # ── SLA clamp (found by replaying 2026-08-15..09-14) ───────────────
 # The work window is PACIFIC; the engine computes in UTC. These cases are
 # written in PT, the way a person reads them, and converted at the boundary.
-from datetime import datetime, timezone  # noqa: E402
+from datetime import datetime, timedelta, timezone  # noqa: E402
 from zoneinfo import ZoneInfo  # noqa: E402
 
 PT = ZoneInfo("America/Los_Angeles")
@@ -196,3 +196,67 @@ def test_clamp_is_computed_in_pacific_not_utc():
     d = _due_pt(7, 30)
     assert (d.hour, d.minute) == (9, 0)
     assert li.due_at(_pt(10), 1.5, C).tzinfo == timezone.utc   # caller's tz back
+
+
+# ── the chase ladder ───────────────────────────────────────────────
+SUB = _pt(8, 0)          # submitted 08:00 PT
+
+
+def _state(**kw):
+    base = {"meetings_after": 0, "calls": 0, "deals_after": 0, "replied_at": "", "lead_status": "NEW"}
+    base.update(kw)
+    return base
+
+
+def test_ack_is_a_text_AND_an_email_together():
+    """Roman, 2026-09-15: a text saying the calendar is coming, and the email
+    with the calendar. One rung, two messages."""
+    keys = [s["key"] for s in li.next_steps(SUB, SUB, set(), _state(), C)]
+    assert keys == ["ack_sms", "ack_email"]
+
+
+def test_nothing_more_is_due_before_twelve_hours():
+    assert li.next_steps(SUB, SUB + timedelta(hours=6), {"ack_sms", "ack_email"}, _state(), C) == []
+
+
+def test_the_nudge_fires_at_twelve_hours():
+    s = li.next_steps(SUB, SUB + timedelta(hours=12), {"ack_sms", "ack_email"}, _state(), C)
+    assert [x["key"] for x in s] == ["nudge_1"]
+
+
+def test_booking_stops_the_ladder():
+    """The whole point. 4 of 40 leads booked; none of them may be nudged."""
+    assert li.next_steps(SUB, SUB + timedelta(hours=12), {"ack_sms", "ack_email"},
+                         _state(meetings_after=1), C) == []
+
+
+def test_booking_is_detected_even_when_the_title_misses_the_status_rule():
+    """Annalee Baroni's real meeting was 'A+ Tutoring Initial Call, Annalee w
+    Paola', which flow 1868302723 never matches, so her lead status stayed put.
+    Reading MEETING objects catches her anyway."""
+    assert li.exited(_state(meetings_after=1, lead_status="NEW"), C) == "meeting booked"
+
+
+def test_every_other_exit_signal_stops_the_ladder():
+    assert li.exited(_state(replied_at="2026-09-10T18:00:00Z"), C).startswith("family replied")
+    assert li.exited(_state(calls=1), C) == "a call is logged on the record"
+    assert li.exited(_state(deals_after=1), C) == "a deal was created"
+    assert li.exited(_state(lead_status="Meeting Booked"), C) == "lead status is Meeting Booked"
+    assert li.exited(_state(lead_status="Using Someone Else"), C)   # Check Back Quarterly
+    assert li.exited(_state(), C) == ""
+
+
+def test_a_late_run_sends_one_step_not_a_burst():
+    """Three texts arriving together is the Gonzalez failure in a new costume."""
+    s = li.next_steps(SUB, SUB + timedelta(days=5), {"ack_sms", "ack_email"}, _state(), C)
+    assert [x["key"] for x in s] == ["handoff"], "a late run must not replay nudge_1 and nudge_2"
+
+
+def test_the_ladder_ends():
+    done = {s["key"] for s in C["cadence"]}
+    assert li.next_steps(SUB, SUB + timedelta(days=30), done, _state(), C) == []
+
+
+def test_roni_beck_booked_on_day_13_so_the_ladder_must_outlast_day_one():
+    last = max(int(s["after_minutes"]) for s in C["cadence"])
+    assert last >= 1440, "a ladder that ends inside 24h misses the day-13 bookers"

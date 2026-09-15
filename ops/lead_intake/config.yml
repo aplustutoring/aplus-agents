@@ -59,5 +59,67 @@ work_window:
   open_hour: 8
   close_hour: 18
 
+# ── The chase ladder (Roman, 2026-09-15) ──────────────────────────
+# "Thanks for reaching out, I just sent you a link with my calendar, let me
+# know when we can connect" + the same by email. Then if they book, stop. If
+# 12 hours later they have not booked, nudge. Then keep working to get them to
+# the meeting, and a held meeting makes them a QTL.
+#
+# Measured on the 40 real leads of 2026-08-15..09-14: 4 booked (10%). Time to
+# book was 1, 1, 2 and 13 days. So step 2 at 12h is right (it lands before the
+# 1-day bookings would have happened anyway for most), and the ladder must run
+# past day 1 or it misses people like Roni Beck who booked on day 13.
+#
+# Every step re-runs presend.check() at fire time. A step is skipped, not
+# queued, if the family has exited.
+cadence:
+  - key: ack_sms
+    after_minutes: 0
+    channel: sms
+    template: ack-sms.txt
+    purpose: lead_first_touch
+  - key: ack_email
+    after_minutes: 0
+    channel: email
+    template: ack-email.txt
+    purpose: lead_first_touch
+  - key: nudge_1
+    after_minutes: 720          # 12 hours
+    channel: sms
+    template: nudge-1-sms.txt
+    purpose: lead_first_touch
+  - key: nudge_2
+    after_minutes: 2880         # day 2
+    channel: email
+    template: nudge-2-email.txt
+    purpose: lead_first_touch
+  - key: handoff
+    after_minutes: 5760         # day 4: stop automating, hand the seat a task
+    channel: task
+    purpose: lead_first_touch
+
+# Anything here means STOP the ladder. Checked before every step.
+#
+# `meeting_booked` deliberately reads real MEETING objects, not the lead
+# status. HubSpot flow 1868302723 sets Meeting Booked only when the meeting
+# TITLE contains "Tutoring Call w/", and 1 of the 4 real bookings in the
+# window was titled "A+ Tutoring Initial Call, Annalee w Paola" and so was
+# never detected. Nudging a family who already booked is the worst thing this
+# ladder can do, so the exit check does not depend on a title match.
+exit_signals:
+  meeting_booked: true          # any MEETING created after the conversion
+  replied: true                 # presend.has_replied_since: inbox or any line
+  call_logged: true             # a real CALL engagement exists
+  deal_created: true            # a deal created after the conversion
+  lead_status_any_of:
+    - "Meeting Booked"
+    - "We Connected"            # QTL - NEW
+    - "CAP"
+    - "QTL - Diagnostic Sent"
+    - "QTL - Charter"
+    - "OPEN_DEAL"
+    - "UNQUALIFIED"
+    - "Using Someone Else"
+
 # Cap per run. A number above this aborts BEFORE any write (fleet guard).
 max_leads_per_run: 25

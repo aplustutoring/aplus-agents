@@ -1,0 +1,1 @@
+Hi {{firstname}}, this is {{seat_first}} with A+ Tutoring. Thanks for reaching out. I just sent you an email with a link to my calendar so you can grab a time that works. Or just reply here and tell me what is going on with {{student_or_child}}. Reply STOP to opt out.

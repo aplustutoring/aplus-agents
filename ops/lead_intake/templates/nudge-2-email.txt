@@ -1,0 +1,14 @@
+Subject: Still happy to help with {{student_or_child}}
+
+Hi {{firstname}},
+
+I have not managed to get time with you yet, so I wanted to check in once more.
+
+Most families tell us the hardest part is knowing where to start. That is what the call is for. Fifteen minutes, no pressure, and you leave knowing what we would actually do.
+
+{{booking_link}}
+
+If now is not the right time, just reply "not now" and I will stop reaching out.
+
+{{seat_first}}
+A+ Tutoring
