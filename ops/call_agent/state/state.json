@@ -869,9 +869,12 @@
     415413261,
     415413694,
     415415550,
-    415418874
+    415418874,
+    415423427,
+    415423262,
+    415423415
   ],
-  "last_run_utc": "2026-09-15T23:01:57.583007+00:00",
+  "last_run_utc": "2026-09-15T23:13:57.389680+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1673,6 +1676,256 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415423262,
+      "number": "12817771990",
+      "time_pt": "4:01 PM",
+      "matched": true,
+      "contact_label": "Regina Gatdula",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Regina Gatdula for her booked meeting to discuss her daughter Philippa (nickname Pepa), a 3rd grader at Rio Vista Elementary, who is struggling with math and scored 'needs improvement' on her I-Ready diagnostic. Regina wants a once-a-week online private math tutor to fill gaps from 1st/2nd grade and explain concepts thoroughly. Paola quoted $95/hour with flexible session lengths and explained the next steps: send package pricing and diagnostic exam, then book a results meeting with a specialist. Regina agreed to start with the diagnostic and will also share her I-Ready results.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Regina current pricing/package options and diagnostic exam link for Pepa",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "After Regina uploads the completed diagnostic, coordinate booking of the results meeting with a specialist",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Collect Regina's I-Ready results to share with the assigned tutor alongside the diagnostic",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Pepa",
+            "correct": "Philippa Gatdula (nickname Pepa)"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Regina Gatdula was warm and engaged on our meeting-booked call. Her daughter Philippa (nickname Pepa), age 8, 3rd grade at Rio Vista Elementary, needs online 1:1 math tutoring once a week to fill gaps from 1st/2nd grade \u2014 I-Ready shows 'needs improvement' in algebraic thinking and measurement/data, approaching grade level in numbers/operations and geometry. Reading is a strength; issue is math comprehension (regrouping, tens, applying knowledge). Paola quoted $95/hr with flexible 30/45/60-min session options and promised to send package pricing plus the free diagnostic exam link. Regina agreed to have Pepa take the diagnostic and will also share her I-Ready results. Next step after diagnostic upload = book results meeting with a specialist. Regina wants a tutor who is a strong explainer of math concepts. Open with: 'Hi Regina, following up on your call with Paola \u2014 sending over the pricing packages and Pepa's diagnostic link now.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family we connected with; not charter-funded and A+ needs to run a diagnostic before recommending a plan, so QTL - Diagnostic Sent.",
+        "student_or_school_names_mentioned": [
+          "Philippa Gatdula",
+          "Pepa",
+          "Regina Gatdula",
+          "Rio Vista Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Pepa (Philippa) is a 3rd grader at Rio Vista Elementary struggling with math since 1st grade. I-Ready shows needs improvement in algebraic thinking and measurement/data, approaching grade level in numbers/operations and geometry. Reading is a strength; the challenge is math comprehension \u2014 regrouping, tens, applying concepts. Mom wants once-a-week online 1:1 tutoring with a tutor who is a strong explainer.",
+          "what_we_can_do_to_help": "Send pricing packages and the free diagnostic exam; have Pepa complete it and upload, plus collect mom's I-Ready results. Then book the results meeting with a specialist to recommend a session cadence and match her with an online math tutor skilled at explaining concepts clearly.",
+          "student_first_name": "Philippa",
+          "student_last_name": "Gatdula",
+          "grade_level": "3",
+          "student_school": "Rio Vista Elementary",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Pepa (Philippa) is a 3rd grader at Rio Vista Elementary struggling with math since 1st grade. I-Ready shows needs improvement in algebraic thinking and measurement/data, approaching grade level in numbers/operations and geometry. Reading is a strength; the challenge is math comprehension \u2014 regrouping, tens, applying concepts. Mom wants once-a-week online 1:1 tutoring with a tutor who is a strong explainer."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send pricing packages and the free diagnostic exam; have Pepa complete it and upload, plus collect mom's I-Ready results. Then book the results meeting with a specialist to recommend a session cadence and match her with an online math tutor skilled at explaining concepts clearly."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Gatdula"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Rio Vista Elementary"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "student_first_name",
+          "Pepa",
+          "Philippa",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send Regina current pricing/package options and diagnostic exam link for Pepa",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "After Regina uploads the completed diagnostic, coordinate booking of the results meeting with a specialist",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Collect Regina's I-Ready results to share with the assigned tutor alongside the diagnostic",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415423415,
+      "number": "14242242278",
+      "time_pt": "4:03 PM",
+      "matched": true,
+      "contact_label": "Roseanna Ortiz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Danielle (A+) called Roseanna Ortiz to follow up on Desiree's (iLEAD teacher) email about Jiselle's (6th grade) low math and reading scores. Roseanna wants tutoring restarted \u2014 twice a week for math, once a week for ELA \u2014 and prefers female tutors, ideally continuing with Katie Holiday for ELA if available. Roseanna is unsure of her available iLEAD funding, so Danielle will loop her and Desiree into an email to confirm funding and submit the order. Warm, positive call; Roseanna is ready to move forward once funding/order is confirmed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Desiree (iLEAD teacher) and Roseanna together to confirm Jiselle's available instructional funding and submit the order for 2x/week math + 1x/week ELA tutoring.",
+            "owner_hint": "Danielle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once order is in, match Jiselle with a female math tutor (6th grade math, focus on geometry and fractions) and check if Katie Holiday is available to continue ELA support; if not, pair with another female ELA tutor.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Share diagnostic focus areas with the tutor(s): math \u2014 geometry, algebraic thinking, statistics/probability, fractions; ELA \u2014 informational text, vocabulary, literary text.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Aim to start Jiselle end of this week / beginning of next week once funding is confirmed.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roseanna Ortiz (mom, returning iLEAD family) is ready to restart tutoring for Jiselle (6th grade, iLEAD) after teacher Desiree flagged low math and reading diagnostic scores (red zone). Danielle promised to loop Roseanna and Desiree into an email today to confirm Jiselle's remaining instructional funds and submit the order. Plan discussed: 2x/week math, 1x/week ELA, with flexibility to rebalance. Roseanna wants female tutors only; prefers Katie Holiday to continue ELA if she's back from maternity leave, but understands Katie can't do 6th grade math. Focus areas: math \u2014 geometry, fractions, algebraic thinking, stats/probability; ELA \u2014 informational text, vocabulary, literary text. Roseanna expects the funding/order email next and then scheduling to reach out to book. Open with: 'Hi Roseanna, following up on the email with Desiree \u2014 here's what your funding covers and here's the plan we'd like to start with\u2026' Confirm tutor preferences (female, Katie if available for ELA) when scheduling calls.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Roseanna is a past customer restarting service for Jiselle; deal pipeline owns her status, so lead status stays as-is.",
+        "student_or_school_names_mentioned": [
+          "Jiselle Ortiz",
+          "Roseanna Ortiz",
+          "Desiree",
+          "Katie Holiday",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roseanna returned Danielle's outreach after teacher Desiree flagged Jiselle's (6th grade, iLEAD) diagnostic scores as low/red-zone in both math and reading. Math focus areas: geometry, fractions, algebraic thinking, statistics/probability. ELA focus areas: informational text, vocabulary, literary text. Roseanna wants to restart tutoring and prefers female tutors; would like Katie Holiday back for ELA if available (Katie can't do 6th grade math). Roseanna is unsure how much iLEAD funding remains.",
+          "what_we_can_do_to_help": "Danielle to loop Roseanna and Desiree into an email to confirm available iLEAD funding and submit an order for 2x/week math + 1x/week ELA (adjustable based on progress). Scheduling to match Jiselle with a female 6th grade math tutor and check Katie Holiday's availability for ELA; target start end of this week / beginning of next week.",
+          "student_first_name": "Jiselle",
+          "student_last_name": "Ortiz",
+          "grade_level": "6",
+          "student_school": "iLEAD",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roseanna returned Danielle's outreach after teacher Desiree flagged Jiselle's (6th grade, iLEAD) diagnostic scores as low/red-zone in both math and reading. Math focus areas: geometry, fractions, algebraic thinking, statistics/probability. ELA focus areas: informational text, vocabulary, literary text. Roseanna wants to restart tutoring and prefers female tutors; would like Katie Holiday back for ELA if available (Katie can't do 6th grade math). Roseanna is unsure how much iLEAD funding remains."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Danielle to loop Roseanna and Desiree into an email to confirm available iLEAD funding and submit an order for 2x/week math + 1x/week ELA (adjustable based on progress). Scheduling to match Jiselle with a female 6th grade math tutor and check Katie Holiday's availability for ELA; target start end of this week / beginning of next week."
+        ],
+        [
+          "grade_level",
+          "5",
+          "6"
+        ],
+        [
+          "student_school",
+          "ilead",
+          "iLEAD"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Desiree (iLEAD teacher) and Roseanna together to confirm Jiselle's available instructional funding and submit the order for 2x/week math + 1x/week ELA tutoring.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once order is in, match Jiselle with a female math tutor (6th grade math, focus on geometry and fractions) and check if Katie Holiday is available to continue ELA support; if not, pair with another female ELA tutor.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Share diagnostic focus areas with the tutor(s): math \u2014 geometry, algebraic thinking, statistics/probability, fractions; ELA \u2014 informational text, vocabulary, literary text.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Aim to start Jiselle end of this week / beginning of next week once funding is confirmed.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
