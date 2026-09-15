@@ -863,9 +863,11 @@
     415407320,
     415407724,
     415408873,
-    415409593
+    415409593,
+    415411485,
+    415412436
   ],
-  "last_run_utc": "2026-09-15T22:24:49.517441+00:00",
+  "last_run_utc": "2026-09-15T22:31:41.782147+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1449,6 +1451,153 @@
           "Text Nolan directly with tutor availability updates and coordinate the schedule with him (not Annie).",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415411485,
+      "number": "18317475108",
+      "time_pt": "3:24 PM",
+      "matched": true,
+      "contact_label": "Pamela Richardson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Yolanda at A+ Tutoring to Pamela Richardson to confirm scheduling for Eli's twice-weekly 45-minute tutoring sessions. Reached voicemail; Yolanda left a message asking Pamela to confirm scheduling so sessions can start this week or next, and said she'd call back in about an hour.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Pamela back in about an hour to confirm day/time preference for Eli's 2x/week 45-minute sessions",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Get Eli's tutoring sessions on the calendar (start this week or next) once Pamela confirms availability",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda called Pamela Richardson (mom of Eli, 9th grade, Ocean Grove) to lock in scheduling for Eli's approved 2x/week, 45-min Algebra IEP intervention sessions. Reached voicemail; Yolanda left a message saying she wants to start this week or next and would call back in about an hour. Pamela now expects a callback from Yolanda within the hour. Open with: 'Hi Pamela, it's Yolanda from A+ following up on my voicemail \u2014 I'd love to get Eli's two 45-minute sessions on the calendar this week or next. What days and times work best for you?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal/PO in hand for Eli's tutoring; scheduling call does not change lead status.",
+        "student_or_school_names_mentioned": [
+          "Eli",
+          "Ocean Grove"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Pamela to confirm scheduling for Eli's 2x/week 45-min tutoring. Reached voicemail; Yolanda left a message asking to start sessions this week or next and said she'd call back in about an hour.",
+          "what_we_can_do_to_help": "Yolanda will call Pamela back in about an hour to lock in day/time preference so Eli's sessions can start this week or next.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Pamela to confirm scheduling for Eli's 2x/week 45-min tutoring. Reached voicemail; Yolanda left a message asking to start sessions this week or next and said she'd call back in about an hour."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda will call Pamela back in about an hour to lock in day/time preference so Eli's sessions can start this week or next."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Pamela back in about an hour to confirm day/time preference for Eli's 2x/week 45-minute sessions",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Get Eli's tutoring sessions on the calendar (start this week or next) once Pamela confirms availability",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415412436,
+      "number": "18183881616",
+      "time_pt": "3:28 PM",
+      "matched": true,
+      "contact_label": "Mico Melkonian",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Yolanda placed an outbound follow-up call to Mico Melkonian regarding in-person Algebra 1 tutoring for his 7th-grade daughter Alik. The call went to voicemail; Yolanda left a message asking whether Mico had been able to discuss Alik's tutoring schedule with his wife Maria, and stated she would call back around 6 PM. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Mico back around 6 PM today to check if he has discussed Alik's tutoring schedule with his wife Maria.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda called Mico (parent, Tarzana) as follow-up on in-person Algebra 1 tutoring for his 7th-grade daughter Alik. Reached voicemail; Yolanda left a message asking if he'd been able to talk with his wife Maria about Alik's tutoring schedule, and promised a callback around 6 PM. Mico now expects a call back this evening. Open with: 'Hi Mico, this is Yolanda from A+ Tutoring calling back as promised \u2014 wanted to see if you had a chance to talk with Maria about Alik's schedule for Algebra 1 tutoring.' Availability on file is Mon-Thu after 3:30 PM, best 4-5 PM.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail only; no live contact. Existing 'We Connected' status remains appropriate.",
+        "student_or_school_names_mentioned": [
+          "Alik Melkonian"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Yolanda called Mico for follow-up; reached voicemail. Left a message asking if he had been able to speak with his wife Maria about setting Alik's tutoring schedule. No new info gathered.",
+          "what_we_can_do_to_help": "Yolanda to call Mico back around 6 PM today as promised in the voicemail to confirm whether he and Maria have aligned on a schedule for Alik's in-person Algebra 1 tutoring, then hand off to scheduling for tutor match.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Yolanda called Mico for follow-up; reached voicemail. Left a message asking if he had been able to speak with his wife Maria about setting Alik's tutoring schedule. No new info gathered."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to call Mico back around 6 PM today as promised in the voicemail to confirm whether he and Maria have aligned on a schedule for Alik's in-person Algebra 1 tutoring, then hand off to scheduling for tutor match."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Mico back around 6 PM today to check if he has discussed Alik's tutoring schedule with his wife Maria.",
+          86868539,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
