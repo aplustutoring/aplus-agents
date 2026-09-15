@@ -836,10 +836,128 @@
     415218827,
     415221939,
     415235363,
-    415281267
+    415281267,
+    415282626
   ],
-  "last_run_utc": "2026-09-15T18:10:41.086740+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-15T18:15:34.280038+00:00",
+  "pending_digest": [
+    {
+      "call_id": 415282626,
+      "number": "18184718591",
+      "time_pt": "11:01 AM",
+      "matched": true,
+      "contact_label": "Fabiola Mort",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Fabiola Mort, a homeschool parent, called seeking urgent tutoring for her 7th-grade daughter Angeline who has an IEP and attends Antelope Valley Academy (Learn4Life charter). She needs help understanding weekly homework packages, one of which is due tomorrow. Roman quoted pricing ($75/hr or $60/45min), confirmed online 1:1 tutoring, and asked her to scan and email the package. Fabiola will pay out of pocket while checking whether the charter covers it; scheduling team was asked to set up a session ASAP, ideally today.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Schedule an urgent online tutoring session for Angeline (7th grade, IEP) today if possible to help complete homework package due tomorrow",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Watch for Fabiola's reply email with the scanned homework package and acknowledge receipt",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Fabiola on whether Antelope Valley Academy / Learn4Life charter will cover tutoring funds",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Fabiola Mort (parent, warm and eager) called needing urgent 1:1 online tutoring for her 7th grade daughter Angeline, who has an IEP and homeschools through Antelope Valley Academy (a Learn4Life charter). Angeline has a homework package due tomorrow she hasn't started, and Fabiola wants a session TODAY if at all possible. Roman quoted $75/hr or $60/45-min and told her online-only for her grade level. She will pay out of pocket now and pursue charter funding in parallel. Roman told her to reply to his pricing email with a scan of the package so we can prep. Open with: 'Hi Fabiola, this is [name] from A+ Tutoring \u2014 Roman looped me in to get Angeline set up right away for today. Did you get the homework package scanned over?' Confirm a specific time today, match her with a tutor comfortable with IEP support, and remind her we'll help her explore Antelope Valley Academy charter funding once things are underway.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; paying out of pocket for now (charter funding TBD), so standard connected lead \u2014 not yet confirmed as a charter-funded QTL.",
+        "student_or_school_names_mentioned": [
+          "Angeline Mort",
+          "Fabiola Mort",
+          "Antelope Valley Academy",
+          "Learn4Life"
+        ],
+        "record_updates": {
+          "whats_going_on": "Fabiola called urgently for her 7th grade daughter Angeline (IEP), who homeschools through Antelope Valley Academy (Learn4Life charter). Angeline gets weekly homework packages the family can't help her navigate; one is due tomorrow and not started. Family lives in Winnetka.",
+          "what_we_can_do_to_help": "Provide 1:1 online tutoring ASAP (ideally today) to walk Angeline through her homework package. Quoted $75/hr or $60/45-min. Fabiola will pay out of pocket while checking whether Antelope Valley Academy / Learn4Life will cover tutoring; scan of package to be emailed in reply to Roman's pricing email.",
+          "student_first_name": "Angeline",
+          "student_last_name": "Mort",
+          "grade_level": "7",
+          "student_school": "Antelope Valley Academy (Learn4Life)",
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Fabiola called urgently for her 7th grade daughter Angeline (IEP), who homeschools through Antelope Valley Academy (Learn4Life charter). Angeline gets weekly homework packages the family can't help her navigate; one is due tomorrow and not started. Family lives in Winnetka."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide 1:1 online tutoring ASAP (ideally today) to walk Angeline through her homework package. Quoted $75/hr or $60/45-min. Fabiola will pay out of pocket while checking whether Antelope Valley Academy / Learn4Life will cover tutoring; scan of package to be emailed in reply to Roman's pricing email."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Mort"
+        ],
+        [
+          "student_school",
+          "Learn4life charter",
+          "Antelope Valley Academy (Learn4Life)"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Open deal",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Schedule an urgent online tutoring session for Angeline (7th grade, IEP) today if possible to help complete homework package due tomorrow",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Watch for Fabiola's reply email with the scanned homework package and acknowledge receipt",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Fabiola on whether Antelope Valley Academy / Learn4Life charter will cover tutoring funds",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18188388483",
