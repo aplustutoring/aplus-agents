@@ -467,3 +467,36 @@ def test_find_tutor_by_phone_returns_roster_status(monkeypatch):
     t = ti.find_tutor_by_phone("+18185551212")
     assert t["contact_id"] == "7" and t["name"] == "Arthur R"
     assert t["roster_status"] == "Active (online)"
+
+
+# ── the Hannah Thorn gate: a tutor in a lesson is not a tutor ignoring us ────
+
+def _urg(cfg):
+    return [m.lower() for m in cfg["slack_fallback"]["urgency_markers"]]
+
+
+def test_urgency_recognises_a_real_follow_up(cfg):
+    u = _urg(cfg)
+    # verbatim, sent 2026-09-08 and 2026-09-09
+    assert ti.shows_urgency(
+        "Hi Olsjon, can you kindly confirm in slack your availability for the "
+        "students and your times available? I need to know today.", u)
+    assert ti.shows_urgency(
+        "Hi Olsjon, I'm gently following up on your availability for the "
+        "students we sent in Slack.", u)
+
+
+def test_urgency_rejects_a_first_unhurried_referral(cfg):
+    u = _urg(cfg)
+    # Hannah Thorn 2026-09-15: Slack 12:12, text 12:21, she was mid-lesson.
+    # This wording must NOT by itself open a ticket.
+    assert not ti.shows_urgency(
+        "Hi Arthur. I sent you a student in slack if you can kindly check it "
+        "out. It's for today.", u)
+    assert not ti.shows_urgency("", u)
+    assert not ti.shows_urgency(None, u)
+
+
+def test_gate_is_on_in_shipped_config(cfg):
+    assert cfg["slack_fallback"]["require_urgency_or_repeat"] is True
+    assert cfg["slack_fallback"]["urgency_markers"]

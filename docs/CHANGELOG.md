@@ -48,6 +48,18 @@ bot and add the map and that leg becomes buildable.
 (chased 2026-09-08 and 2026-09-09, merged onto one ticket) and Arthur
 Rekechenetskiy (2026-09-14). Nothing else in 1,953 texts matched.
 
+**Amended same day, before merge.** Hannah Thorn told us by text on 2026-09-15:
+"you messaged me on slack at 12:12 and texted at 12:21 (both eastern time), but
+I was in the session." The first version of this detector would have opened a
+ticket on her. Nine minutes is not going quiet, and blaming a tutor for being
+mid-lesson is worse than missing the signal. Because the bot cannot read the
+private tutor channels it cannot measure the real gap, so the gate is now
+`require_urgency_or_repeat`: ticket only when the chase itself uses follow-up
+wording ("gently following up", "I need to know today"), or when the same tutor
+was chased more than once in the window. A single unhurried referral to Slack is
+recorded as seen and refused with a reason. Re-run over the same 7 days: 1
+ticket (Jon Bax, 2 chases) and 1 refusal (Arthur, one calm text). 47 tests pass.
+
 **Files:** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
 `ops/tutor-issues/README.md`, `ops/tutor-issues/tests/test_tutor_issues.py`
 (44 pass).

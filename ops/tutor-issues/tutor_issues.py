@@ -1101,7 +1101,7 @@ def slack_fallback_cfg(cfg, key, default=None):
 
 
 def is_slack_fallback_text(body, markers, ignore_prefixes):
-    """True when an outbound text is us chasing a tutor who went quiet in Slack.
+    """True when an outbound text refers a tutor to Slack at all.
 
     The marker IS the evidence: we only count texts that themselves say Slack.
     A guess about intent would put a quality ticket on a tutor's record from a
@@ -1113,6 +1113,19 @@ def is_slack_fallback_text(body, markers, ignore_prefixes):
     if any(low.startswith(p) for p in ignore_prefixes):
         return False
     return any(m in low for m in markers)
+
+
+def shows_urgency(body, urgency_markers):
+    """Did the chase itself say we had waited and needed an answer?
+
+    Hannah Thorn, 2026-09-15: Slack at 12:12, text at 12:21, and she was in a
+    lesson the whole time. Nine minutes is not silence. Because the bot cannot
+    read the private tutor channels it cannot measure the real gap, so the
+    only honest proxy is whether the text we sent sounds like a follow-up.
+    One unhurried "I sent you a student in Slack" is not evidence.
+    """
+    low = (body or "").strip().lower()
+    return any(m in low for m in urgency_markers)
 
 
 def run_slack_fallback(plan, cfg, state, employees, baseline_mode):
@@ -1136,9 +1149,14 @@ def run_slack_fallback(plan, cfg, state, employees, baseline_mode):
     sms_only.discard("")
     roster_prefixes = tuple(s.lower() for s in
                             (slack_fallback_cfg(cfg, "roster_status_prefixes") or []))
+    urgency = [m.lower() for m in (slack_fallback_cfg(cfg, "urgency_markers") or [])]
+    gate = bool(slack_fallback_cfg(cfg, "require_urgency_or_repeat", True))
     lookback = int(slack_fallback_cfg(cfg, "lookback_minutes", 1440))
     processed = set(state["processed"])
 
+    # Pass 1: collect every candidate chase, grouped by tutor. Grouping is what
+    # makes "chased twice" visible; a per-text loop cannot see a repeat.
+    by_tutor = defaultdict(list)
     for t in fetch_outbound_sms(lookback):
         key = f"jcout:{t.get('id')}"
         if key in processed:
@@ -1163,23 +1181,44 @@ def run_slack_fallback(plan, cfg, state, employees, baseline_mode):
             state["processed"].append(key)
             continue
 
-        state["processed"].append(key)
-        if baseline_mode:
-            continue
-
         info = t.get("sms_info") or {}
         sent = " ".join(x for x in [t.get("sms_date") or info.get("sms_date") or "",
                                     t.get("sms_time") or info.get("sms_time") or ""]
                         if x).strip() or t.get("datetime") or ""
-        event_date = (sent[:10] or datetime.now().date().isoformat())
+        by_tutor[tutor["contact_id"]].append({
+            "key": key, "tutor": tutor, "body": body.strip(), "sent": sent,
+            "line": t.get("justcall_number") or "",
+            "urgent": shows_urgency(body, urgency)})
+
+    # Pass 2: ticket a tutor only when the chase sounds like a follow-up, or
+    # when we chased the same tutor more than once in the window. A single
+    # unhurried referral to Slack is filed as seen and left alone.
+    for _cid, hits in by_tutor.items():
+        for h in hits:
+            state["processed"].append(h["key"])
+        if baseline_mode:
+            continue
+        if gate and not (len(hits) > 1 or any(h["urgent"] for h in hits)):
+            plan.refusals.append({
+                "source": "slack fallback",
+                "reason": (f"{hits[0]['tutor']['name']}: one unhurried text "
+                           "referring to Slack, no follow-up wording and no "
+                           "repeat. Not evidence the tutor went quiet."),
+                "detail": hits[0]["body"][:160]})
+            continue
+
+        tutor = hits[0]["tutor"]
+        events = [{"date": (h["sent"][:10] or datetime.now().date().isoformat()),
+                   "source_id": h["key"]} for h in hits]
+        newest = hits[-1]
         plan_ticket(
-            plan, cfg, state["tickets"], tutor, "unresponsive_in_slack",
-            [{"date": event_date, "source_id": key}],
-            source=f"outbound text on {t.get('justcall_number') or 'an A+ line'}",
-            evidence=("Slack did not reach this tutor, so scheduling chased "
-                      "them by text."),
-            quote={"text": body.strip(), "outbound": True,
-                   "line": t.get("justcall_number") or "", "received": sent})
+            plan, cfg, state["tickets"], tutor, "unresponsive_in_slack", events,
+            source=f"outbound text on {newest['line'] or 'an A+ line'}",
+            evidence=(f"Chased by text {len(hits)} time(s) after Slack. "
+                      if len(hits) > 1 else
+                      "Chased by text after Slack, wording says we were waiting. "),
+            quote={"text": newest["body"], "outbound": True,
+                   "line": newest["line"], "received": newest["sent"]})
 
 
 INTAKE_RE = re.compile(r"^\s*tutor-issue\s+(\S+)\s*\|\s*([^|]+?)\s*\|\s*(.+)$",

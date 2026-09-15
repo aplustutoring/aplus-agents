@@ -151,6 +151,27 @@ slack_fallback:
   enabled: true
   lookback_minutes: 1440     # overlap window; idempotency comes from state, not the window
   markers: ["slack"]         # substring, case-insensitive, matched on the body we sent
+  # A tutor in a lesson is not a tutor ignoring us. Hannah Thorn, 2026-09-15:
+  # "you messaged me on slack at 12:12 and texted at 12:21, but I was in the
+  # session." Nine minutes is not going quiet, and a ticket there blames a
+  # tutor for teaching. The engine cannot read the private tutor channels, so
+  # it cannot measure the real gap between the Slack ask and the text; it can
+  # only require that the CHASE ITSELF names an urgent deadline, or that the
+  # same tutor was chased more than once. A single unhurried text is not
+  # evidence of silence and is skipped.
+  require_urgency_or_repeat: true
+  # Phrases that show the sender had already waited and needed an answer.
+  urgency_markers:
+    - "following up"
+    - "follow up"
+    - "gently"
+    - "i need to know"
+    - "need to know today"
+    - "by today"
+    - "still waiting"
+    - "haven't heard"
+    - "have not heard"
+    - "second time"
   # Bulk/auto templates that can mention Slack without being a chase.
   ignore_bodies_starting:
     - "hi, this is a+ tutoring. we saw your call"
