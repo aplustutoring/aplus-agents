@@ -1674,6 +1674,11 @@
    "seq": "310844702",
    "date": "2026-09-11",
    "email": "marie.verner@theblueridgeacademy.com"
+  },
+  "1003351": {
+   "seq": "310844702",
+   "date": "2026-09-15",
+   "email": "communityproviders@sageoak.education"
   }
  },
  "runs": [
@@ -1772,6 +1777,26 @@
      "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
      "batch": 0,
      "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    }
+   ]
+  },
+  {
+   "date": "2026-09-15",
+   "at": "2026-09-15T12:32:15.384387-07:00",
+   "summary": [
+    {
+     "sequence": "Teacher Outreach 26/27 - 1 Worked With Us",
+     "batch": 0,
+     "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    },
+    {
+     "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
+     "batch": 1,
+     "enrolled": 1,
      "failed": 0,
      "remaining": 0
     }
