@@ -846,9 +846,10 @@
     415311596,
     415315725,
     415330045,
-    415336121
+    415336121,
+    415338322
   ],
-  "last_run_utc": "2026-09-15T19:43:13.995919+00:00",
+  "last_run_utc": "2026-09-15T19:48:04.060994+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1022,6 +1023,49 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 415338322,
+      "number": "18052884206",
+      "time_pt": "12:44 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inbound solicitation call from a vendor in Oxnard, CA asking to speak to whoever handles printers, copiers, and other technology. Paola explained A+ is online-based and does not use printers. Vendor thanked her and ended the call.",
+        "caller_type": "vendor",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Vendor cold call soliciting printer/copier services; not a family, school, or tutor lead.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
