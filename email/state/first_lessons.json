@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-14T22:38:25.636154+00:00",
+ "_last_run": "2026-09-15T05:26:06.606897+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -1042,6 +1042,15 @@
   "name": "Carl Peachey",
   "tw_student_id": "2350628"
  },
+ "online:perez, alannah": {
+  "checked": "2026-09-14",
+  "contact_id": "100111469122",
+  "deal_id": "64532855991",
+  "email": "s.m.p010186@gmail.com",
+  "first": "2025-02-25",
+  "name": "Alannah Perez",
+  "tw_student_id": "1988384"
+ },
  "online:perez, jonathan": {
   "checked": "2026-09-10",
   "contact_id": "100111469122",
@@ -1194,6 +1203,15 @@
   "first": "2020-09-17",
   "name": "Amelia \"Milly\" Rivas",
   "tw_student_id": "1121849"
+ },
+ "online:rivera, sophia": {
+  "checked": "2026-09-14",
+  "contact_id": "69169343815",
+  "deal_id": "28219828576",
+  "email": "marciafurey1@gmail.com",
+  "first": "2024-10-24",
+  "name": "Sophia Rivera",
+  "tw_student_id": "1916750"
  },
  "online:rodriguez, mariah": {
   "checked": "2026-09-10",
@@ -1464,6 +1482,15 @@
   "first": "2026-04-10",
   "name": "Weston Swing",
   "tw_student_id": "2228854"
+ },
+ "online:taheri, milana": {
+  "checked": "2026-09-14",
+  "contact_id": "241880736364",
+  "deal_id": "64627937348",
+  "email": "anyamehtary@gmail.com",
+  "first": "2026-09-13",
+  "name": "Milana Taheri",
+  "tw_student_id": "2346824"
  },
  "online:taylor, kieran": {
   "checked": "2026-09-10",
