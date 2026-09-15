@@ -842,9 +842,10 @@
     415296763,
     415297201,
     415297666,
-    415302527
+    415302527,
+    415311596
   ],
-  "last_run_utc": "2026-09-15T18:49:59.487672+00:00",
+  "last_run_utc": "2026-09-15T19:04:58.498887+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -961,6 +962,63 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415311596,
+      "number": "13104564963",
+      "time_pt": "11:57 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Emily at A+ Tutoring to Maddy Zamany went to voicemail. Emily left a message informing Maddy that Roman has a conflict for today's session and asked Maddy to call back to discuss rescheduling.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Maddy Zamany regarding Roman's session conflict today; if no callback, follow up to reschedule.",
+            "owner_hint": "Emily",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Emily left a voicemail for Maddy Zamany letting her know that Roman (her student) has a conflict for today's scheduled session and asked Maddy to call back. Maddy now expects a callback opportunity to reschedule. If she calls in, open with: 'Hi Maddy, thanks for calling back \u2014 Emily let me know Roman had a conflict for today's session, and we want to get him rescheduled. What day/time works best for you this week?' Be ready to offer alternative slots.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer family (Roman is an active student with a scheduled session); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Roman"
+        ],
+        "record_updates": {
+          "whats_going_on": "Called Maddy Zamany to let her know Roman has a scheduling conflict for today's session. Left a voicemail asking her to call back.",
+          "what_we_can_do_to_help": "Reschedule Roman's session as soon as Maddy calls back with her availability.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Maddy Zamany regarding Roman's session conflict today; if no callback, follow up to reschedule.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
