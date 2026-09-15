@@ -873,9 +873,10 @@
     415423427,
     415423262,
     415423415,
-    415425547
+    415425547,
+    415427872
   ],
-  "last_run_utc": "2026-09-15T23:25:47.655426+00:00",
+  "last_run_utc": "2026-09-15T23:33:43.046748+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -2008,6 +2009,109 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 415427872,
+      "number": "13104675237",
+      "time_pt": "4:22 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Jonas Agin called seeking a private math tutor for his 8th-grade daughter Cadence at Larchmont Charter. Paola explained online-only charter pricing ($75/hr, $60/45min) and offered a free trial, which Jonas accepted for next Wednesday around 3pm. Jonas will send homework materials via email. He requested a younger female tutor who can engage his shy but playful daughter.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send welcome/info email to Jonas at Jonas.Agin@gmail.com",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Schedule free trial session for Cadence next Wednesday around 3pm with a younger female tutor who can engage a shy but playful 8th-grader",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Begin tutor match process and send tutor profile to Jonas for confirmation before booking",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Watch for homework/materials screenshot from Jonas and forward to matched tutor",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "If family moves forward after trial, follow up to request TOR/EF contact for PO",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Kaden",
+            "correct": "Cadence"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Warm, engaged dad Jonas Agin called about 8th-grade daughter Cadence (Larchmont Charter) needing math tutoring. He initially wanted in-home but agreed to try online after Paola offered a free trial. Quoted charter pricing: $75/hr and $60/45min. Trial tentatively targeted for next Wednesday ~3pm \u2014 needs to be firmed up. Jonas will email homework/materials to share with the tutor. Tutor preferences: younger female who can engage a shy but playful student. He declined to share TOR info yet \u2014 wants to see how trial goes first. Next: match tutor, send profile for approval, then confirm the Wed 3pm slot. Open with: 'Hi Jonas, this is [name] from A+ Tutoring following up on Cadence's trial \u2014 I have a tutor in mind I'd love to share with you before we lock in next Wednesday at 3.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Larchmont Charter instructional funds; Jonas mentioned potential PO/TOR process.",
+        "student_or_school_names_mentioned": [
+          "Cadence Agin",
+          "Larchmont Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Dad Jonas Agin called seeking a private math tutor for 8th-grade daughter Cadence at Larchmont Charter. Initially wanted in-home; agreed to try online via a free trial. Cadence is shy but playful; dad prefers a younger female tutor. Targeting next Wednesday ~3pm for trial.",
+          "what_we_can_do_to_help": "Offer online charter-rate tutoring ($75/hr or $60/45min). Match a younger female math tutor suited to a shy 8th-grader, send profile for approval, and schedule the free trial. Collect homework materials from dad to share with tutor. If they move forward, request TOR/EF contact for PO.",
+          "student_first_name": "Cadence",
+          "student_last_name": "Agin",
+          "grade_level": "8",
+          "student_school": "Larchmont Charter",
+          "subject_need": "Math",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send welcome/info email to Jonas at Jonas.Agin@gmail.com",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Schedule free trial session for Cadence next Wednesday around 3pm with a younger female tutor who can engage a shy but playful 8th-grader",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Begin tutor match process and send tutor profile to Jonas for confirmation before booking",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Watch for homework/materials screenshot from Jonas and forward to matched tutor",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "If family moves forward after trial, follow up to request TOR/EF contact for PO",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
