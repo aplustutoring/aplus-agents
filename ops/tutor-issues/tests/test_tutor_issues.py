@@ -346,3 +346,157 @@ def test_missing_late_reports_block_reproduces_todays_behavior(cfg):
 def test_config_ships_the_flags_on(cfg):
     lr = cfg["late_reports"]
     assert lr["enabled"] and lr["route_to_scheduler"] and lr["associate_family"]
+
+
+# ── Slack fallback: we texted a tutor because Slack did not reach them ───────
+
+def _markers(cfg):
+    fb = cfg["slack_fallback"]
+    return ([m.lower() for m in fb["markers"]],
+            [p.lower() for p in fb["ignore_bodies_starting"]])
+
+
+def test_slack_fallback_matches_a_real_chase(cfg):
+    m, ig = _markers(cfg)
+    # verbatim, sent 2026-09-14 and 2026-09-08
+    assert ti.is_slack_fallback_text(
+        "Hi Arthur. I sent you a student in slack if you can kindly check it "
+        "out. It's for today.", m, ig)
+    assert ti.is_slack_fallback_text(
+        "Hi Olsjon, can you kindly confirm in slack your availability for the "
+        "students and your times available? I need to know today.", m, ig)
+
+
+def test_slack_fallback_ignores_missed_call_autoreplies(cfg):
+    m, ig = _markers(cfg)
+    assert not ti.is_slack_fallback_text(
+        "Hi, this is A+ Tutoring. We saw your call didn't go through. You can "
+        "reply by text with your question.", m, ig)
+    assert not ti.is_slack_fallback_text(
+        "Hi, this is A+ Tutoring. We were assisting another learner when you "
+        "called.", m, ig)
+
+
+def test_slack_fallback_ignores_texts_that_never_mention_slack(cfg):
+    m, ig = _markers(cfg)
+    assert not ti.is_slack_fallback_text(
+        "Hi Kelly, confirming Legend on Thursdays at 2 pm for 1 hour.", m, ig)
+    assert not ti.is_slack_fallback_text("", m, ig)
+    assert not ti.is_slack_fallback_text(None, m, ig)
+
+
+def test_slack_fallback_type_is_configured_everywhere(cfg):
+    assert "unresponsive_in_slack" in ti.ISSUE_TYPES
+    assert "unresponsive_in_slack" in ti.TYPE_LABELS
+    assert cfg["priority_by_type"]["unresponsive_in_slack"]
+    assert cfg["dedupe_period"]["unresponsive_in_slack"] == "rolling_30d"
+
+
+def test_sms_only_tutors_are_excluded_by_number(cfg):
+    # Christa has no Slack by policy, so texting her is the normal channel.
+    sms_only = {ti.phone_digits(p) for p in cfg["slack_fallback"]["sms_only_tutors"]}
+    assert ti.phone_digits("+18183395667") in sms_only
+    assert ti.phone_digits("(818) 339-5667") in sms_only
+
+
+def test_outbound_fetch_filters_direction(monkeypatch):
+    rows = [{"id": 1, "direction": "Outgoing"}, {"id": 2, "direction": "Incoming"},
+            {"id": 3, "direction": "outgoing"}]
+    monkeypatch.setattr(ti, "jc_get", lambda path, params=None: {"data": rows})
+    got = ti.fetch_outbound_sms(60)
+    assert [r["id"] for r in got] == [1, 3]
+
+
+def test_outbound_fetch_starts_at_page_zero(monkeypatch):
+    """JustCall pages from 0. Starting at 1 skips the newest 100 rows."""
+    seen = []
+
+    def fake(path, params=None):
+        seen.append((params or {}).get("page"))
+        return {"data": []}
+
+    monkeypatch.setattr(ti, "jc_get", fake)
+    ti.fetch_outbound_sms(60)
+    assert seen[0] == 0
+
+
+def test_outbound_fetch_walks_every_page(monkeypatch):
+    """order=asc means page 0 is the OLDEST 100 in the window. Taking one page
+    returns stale traffic and misses everything recent, so we must paginate."""
+    pages = {
+        0: {"data": [{"id": 1, "direction": "Outgoing"}] * 100,
+            "next_page_link": "https://api.justcall.io/v2.1/texts?page=1"},
+        1: {"data": [{"id": 2, "direction": "Outgoing"}], "next_page_link": ""},
+    }
+    monkeypatch.setattr(ti, "jc_get",
+                        lambda path, params=None: pages[(params or {}).get("page", 0)])
+    got = ti.fetch_outbound_sms(60)
+    assert len(got) == 101
+    assert got[-1]["id"] == 2
+
+
+def test_outbound_fetch_respects_the_page_cap(monkeypatch):
+    """A window that never stops paging must not loop forever."""
+    monkeypatch.setattr(ti, "jc_get", lambda path, params=None: {
+        "data": [{"id": 1, "direction": "Outgoing"}],
+        "next_page_link": "https://api.justcall.io/v2.1/texts?page=99"})
+    got = ti.fetch_outbound_sms(60, max_pages=3)
+    assert len(got) == 3
+
+
+def test_find_tutor_by_phone_refuses_a_family(monkeypatch):
+    monkeypatch.setattr(ti, "search_contacts_by_phone", lambda n: [
+        {"id": "1", "properties": {"a_persona": "Family", "firstname": "Mom"}}])
+    assert ti.find_tutor_by_phone("+18185551212") is None
+
+
+def test_find_tutor_by_phone_refuses_ambiguity(monkeypatch):
+    monkeypatch.setattr(ti, "search_contacts_by_phone", lambda n: [
+        {"id": "1", "properties": {"a_persona": "Tutors", "firstname": "A"}},
+        {"id": "2", "properties": {"a_persona": "Tutors", "firstname": "B"}}])
+    plan = ti.Plan()
+    assert ti.find_tutor_by_phone("+18185551212", plan) is None
+    assert plan.refusals and "2 tutor contacts" in plan.refusals[0]["reason"]
+
+
+def test_find_tutor_by_phone_returns_roster_status(monkeypatch):
+    monkeypatch.setattr(ti, "search_contacts_by_phone", lambda n: [
+        {"id": "7", "properties": {"a_persona": "Tutors", "firstname": "Arthur",
+                                   "lastname": "R", "email": "a@x.com",
+                                   "tutor_roster_status": "Active (online)"}}])
+    t = ti.find_tutor_by_phone("+18185551212")
+    assert t["contact_id"] == "7" and t["name"] == "Arthur R"
+    assert t["roster_status"] == "Active (online)"
+
+
+# ── the Hannah Thorn gate: a tutor in a lesson is not a tutor ignoring us ────
+
+def _urg(cfg):
+    return [m.lower() for m in cfg["slack_fallback"]["urgency_markers"]]
+
+
+def test_urgency_recognises_a_real_follow_up(cfg):
+    u = _urg(cfg)
+    # verbatim, sent 2026-09-08 and 2026-09-09
+    assert ti.shows_urgency(
+        "Hi Olsjon, can you kindly confirm in slack your availability for the "
+        "students and your times available? I need to know today.", u)
+    assert ti.shows_urgency(
+        "Hi Olsjon, I'm gently following up on your availability for the "
+        "students we sent in Slack.", u)
+
+
+def test_urgency_rejects_a_first_unhurried_referral(cfg):
+    u = _urg(cfg)
+    # Hannah Thorn 2026-09-15: Slack 12:12, text 12:21, she was mid-lesson.
+    # This wording must NOT by itself open a ticket.
+    assert not ti.shows_urgency(
+        "Hi Arthur. I sent you a student in slack if you can kindly check it "
+        "out. It's for today.", u)
+    assert not ti.shows_urgency("", u)
+    assert not ti.shows_urgency(None, u)
+
+
+def test_gate_is_on_in_shipped_config(cfg):
+    assert cfg["slack_fallback"]["require_urgency_or_repeat"] is True
+    assert cfg["slack_fallback"]["urgency_markers"]

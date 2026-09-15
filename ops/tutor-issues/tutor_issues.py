@@ -76,13 +76,14 @@ log = logging.getLogger("tutor-issues")
 
 ISSUE_TYPES = ["missed_lesson_or_late", "tutor_change_requested",
                "notes_not_completed", "scheduling_flip_flop",
-               "tech_issue_unreported"]
+               "tech_issue_unreported", "unresponsive_in_slack"]
 TYPE_LABELS = {
     "missed_lesson_or_late": "Missed lesson / late",
     "tutor_change_requested": "Tutor change requested",
     "notes_not_completed": "Lesson notes not completed",
     "scheduling_flip_flop": "Scheduling flip-flop",
     "tech_issue_unreported": "Tech issue not reported",
+    "unresponsive_in_slack": "Unresponsive in Slack (chased by text)",
 }
 
 
@@ -261,7 +262,7 @@ GENERIC_CNAM_NAMES = ("wireless caller", "toll free", "unavailable",
 
 FAMILY_LOOKUP_PROPS = ["firstname", "lastname", "a_persona", "email",
                        "student_last_name", "student_last_name_if_diff_from_parent",
-                       "hs_object_source_detail_1"]
+                       "hs_object_source_detail_1", "tutor_roster_status"]
 
 
 def phone_digits(number):
@@ -396,6 +397,41 @@ def find_family_by_phone(number, plan=None):
     }
 
 
+def find_tutor_by_phone(number, plan=None):
+    """The TUTOR contact behind a number we texted, or None.
+
+    Mirror of find_family_by_phone, opposite persona. None (never a guess)
+    when nothing matches, when the survivors are ambiguous, or when the only
+    matches are families: texting a parent about their tutor is not evidence
+    about the tutor. Ambiguity lands on the plan so it reaches the report.
+    """
+    hits = [c for c in search_contacts_by_phone(number)
+            if not _is_callrail_junk_contact(c)]
+    pool = [c for c in hits if "Tutors" in _personas(c)]
+    if not pool:
+        return None
+    if len(pool) > 1:
+        if plan is not None:
+            plan.refusals.append({
+                "source": "tutor lookup (outbound SMS)",
+                "reason": (f"{len(pool)} tutor contacts share {number} "
+                           "(ids: " + ", ".join(c.get("id", "?") for c in pool)
+                           + "). Not opening a ticket."),
+                "detail": "",
+            })
+        return None
+    c = pool[0]
+    p = c.get("properties") or {}
+    name = f"{p.get('firstname') or ''} {p.get('lastname') or ''}".strip()
+    return {
+        "contact_id": c.get("id"),
+        "name": name or (p.get("email") or number),
+        "email": (p.get("email") or "").strip(),
+        "tw": None,
+        "roster_status": (p.get("tutor_roster_status") or "").strip(),
+    }
+
+
 def family_routing_surname(family):
     """Surname the A-L / M-Z scheduler split keys on for a family contact."""
     if not family:
@@ -501,6 +537,38 @@ def fetch_inbound_sms(lookback_minutes):
     texts = data.get("data", []) if isinstance(data, dict) else []
     return [t for t in texts
             if str(t.get("direction", "")).lower().startswith("in")]
+
+
+def fetch_outbound_sms(lookback_minutes, max_pages=40):
+    """Every text WE sent in the window, across every line.
+
+    Two JustCall traps, both verified live on 2026-09-14, both of which
+    silently return the WRONG rows rather than an error:
+
+      1. Paging is ZERO-indexed. `page=1` is the SECOND page, so it skips the
+         newest 100 texts and a short window comes back empty.
+      2. With `order=asc` the first page is the OLDEST 100 in the window, not
+         the newest. One unpaginated call therefore returns week-old traffic
+         and misses everything recent.
+
+    So this walks `next_page_link` from page 0 instead of taking one page.
+    """
+    since = datetime.now() - timedelta(minutes=lookback_minutes)
+    out, page = [], 0
+    while page < max_pages:
+        data = jc_get("/v2.1/texts", params={
+            "from_datetime": since.strftime("%Y-%m-%d %H:%M:%S"),
+            "sort": "datetime", "order": "asc", "per_page": 100, "page": page,
+        })
+        if not isinstance(data, dict):
+            break
+        rows = data.get("data") or []
+        out += rows
+        if not rows or not data.get("next_page_link"):   # NOT next_page_url
+            break
+        page += 1
+    return [t for t in out
+            if str(t.get("direction", "")).lower().startswith("out")]
 
 
 # ─── Slack ───────────────────────────────────────────────────────────────────
@@ -740,14 +808,17 @@ def format_inbound_quote(quote):
     """The reporter's own words on the ticket, verbatim. A scheduler should
     need nothing but this block to act."""
     text = " ".join((quote.get("text") or "").split())[:500]
-    lines = ["[Tutor Issue] Family's own words (inbound text, verbatim):",
-             f'"{text}"']
-    if quote.get("sender"):
+    outbound = bool(quote.get("outbound"))
+    header = ("[Tutor Issue] What WE sent the tutor (verbatim):" if outbound
+              else "[Tutor Issue] Family's own words (inbound text, verbatim):")
+    lines = [header, f'"{text}"']
+    if quote.get("sender") and not outbound:
         lines.append(f"Sent from: {quote['sender']}")
     if quote.get("line"):
-        lines.append(f"Arrived on line: {quote['line']}")
+        lines.append(f"{'Sent on line' if outbound else 'Arrived on line'}: "
+                     f"{quote['line']}")
     if quote.get("received"):
-        lines.append(f"Received: {quote['received']}")
+        lines.append(f"{'Sent' if outbound else 'Received'}: {quote['received']}")
     return "\n".join(lines)
 
 
@@ -810,7 +881,14 @@ def plan_ticket(plan, cfg, tickets_index, tutor, issue_type, events,
         content.append(f"Reasoning: {reasoning}")
     if quote:
         content.append(format_inbound_quote(quote))
-    content.append("Silent internal log (v1) — do not contact the tutor from this ticket.")
+    # Every other type is a silent internal log (v1). This one is not: Roman
+    # asked for these specifically so somebody sorts the tutor out, which
+    # means the owner is expected to talk to them.
+    if issue_type == "unresponsive_in_slack":
+        content.append("ACTION: work out with this tutor how we reach them. "
+                       "Repeat entries on this ticket are repeat chases.")
+    else:
+        content.append("Silent internal log (v1) — do not contact the tutor from this ticket.")
 
     owner_role = late_report_owner_role(cfg, issue_type, family) \
         or cfg["hubspot"]["roles"]["operations"]
@@ -1018,6 +1096,131 @@ def run_inbound_sms(plan, cfg, state, employees, baseline_mode):
                               "received": received})
 
 
+def slack_fallback_cfg(cfg, key, default=None):
+    return ((cfg.get("slack_fallback") or {}).get(key, default))
+
+
+def is_slack_fallback_text(body, markers, ignore_prefixes):
+    """True when an outbound text refers a tutor to Slack at all.
+
+    The marker IS the evidence: we only count texts that themselves say Slack.
+    A guess about intent would put a quality ticket on a tutor's record from a
+    hunch, which is the one thing this engine refuses to do.
+    """
+    low = (body or "").strip().lower()
+    if not low:
+        return False
+    if any(low.startswith(p) for p in ignore_prefixes):
+        return False
+    return any(m in low for m in markers)
+
+
+def shows_urgency(body, urgency_markers):
+    """Did the chase itself say we had waited and needed an answer?
+
+    Hannah Thorn, 2026-09-15: Slack at 12:12, text at 12:21, and she was in a
+    lesson the whole time. Nine minutes is not silence. Because the bot cannot
+    read the private tutor channels it cannot measure the real gap, so the
+    only honest proxy is whether the text we sent sounds like a follow-up.
+    One unhurried "I sent you a student in Slack" is not evidence.
+    """
+    low = (body or "").strip().lower()
+    return any(m in low for m in urgency_markers)
+
+
+def run_slack_fallback(plan, cfg, state, employees, baseline_mode):
+    """Roman 2026-09-14: when Slack does not reach a tutor and we fall back to
+    texting, that has to leave a record so the tutor can be sorted out.
+
+    Detection uses only what we already have: an outbound text, on any line,
+    to a contact with the Tutors persona, whose body refers to Slack. No
+    reasoning pass, no Slack channel read (the bot is not in the private
+    tutor channels), so this works today and gets sharper if it ever is.
+    """
+    if not slack_fallback_cfg(cfg, "enabled"):
+        return
+    if not (JUSTCALL_API_KEY and JUSTCALL_API_SECRET):
+        log.warning("JustCall creds missing — Slack-fallback leg skipped")
+        return
+
+    markers = [m.lower() for m in (slack_fallback_cfg(cfg, "markers") or [])]
+    ignores = [p.lower() for p in (slack_fallback_cfg(cfg, "ignore_bodies_starting") or [])]
+    sms_only = {phone_digits(p) for p in (slack_fallback_cfg(cfg, "sms_only_tutors") or [])}
+    sms_only.discard("")
+    roster_prefixes = tuple(s.lower() for s in
+                            (slack_fallback_cfg(cfg, "roster_status_prefixes") or []))
+    urgency = [m.lower() for m in (slack_fallback_cfg(cfg, "urgency_markers") or [])]
+    gate = bool(slack_fallback_cfg(cfg, "require_urgency_or_repeat", True))
+    lookback = int(slack_fallback_cfg(cfg, "lookback_minutes", 1440))
+    processed = set(state["processed"])
+
+    # Pass 1: collect every candidate chase, grouped by tutor. Grouping is what
+    # makes "chased twice" visible; a per-text loop cannot see a repeat.
+    by_tutor = defaultdict(list)
+    for t in fetch_outbound_sms(lookback):
+        key = f"jcout:{t.get('id')}"
+        if key in processed:
+            continue
+        body = ((t.get("sms_info") or {}).get("body") or t.get("body") or "")
+        if not is_slack_fallback_text(body, markers, ignores):
+            continue
+
+        number = t.get("contact_number") or ""
+        # SMS-only tutors have no Slack by policy (Roman 2026-09-08), so a
+        # text to them is the normal channel, not a failure to reach them.
+        if phone_digits(number) in sms_only:
+            state["processed"].append(key)
+            continue
+
+        tutor = find_tutor_by_phone(number, plan)
+        if not tutor:
+            continue
+
+        status = (tutor.get("roster_status") or "").lower()
+        if roster_prefixes and not status.startswith(roster_prefixes):
+            state["processed"].append(key)
+            continue
+
+        info = t.get("sms_info") or {}
+        sent = " ".join(x for x in [t.get("sms_date") or info.get("sms_date") or "",
+                                    t.get("sms_time") or info.get("sms_time") or ""]
+                        if x).strip() or t.get("datetime") or ""
+        by_tutor[tutor["contact_id"]].append({
+            "key": key, "tutor": tutor, "body": body.strip(), "sent": sent,
+            "line": t.get("justcall_number") or "",
+            "urgent": shows_urgency(body, urgency)})
+
+    # Pass 2: ticket a tutor only when the chase sounds like a follow-up, or
+    # when we chased the same tutor more than once in the window. A single
+    # unhurried referral to Slack is filed as seen and left alone.
+    for _cid, hits in by_tutor.items():
+        for h in hits:
+            state["processed"].append(h["key"])
+        if baseline_mode:
+            continue
+        if gate and not (len(hits) > 1 or any(h["urgent"] for h in hits)):
+            plan.refusals.append({
+                "source": "slack fallback",
+                "reason": (f"{hits[0]['tutor']['name']}: one unhurried text "
+                           "referring to Slack, no follow-up wording and no "
+                           "repeat. Not evidence the tutor went quiet."),
+                "detail": hits[0]["body"][:160]})
+            continue
+
+        tutor = hits[0]["tutor"]
+        events = [{"date": (h["sent"][:10] or datetime.now().date().isoformat()),
+                   "source_id": h["key"]} for h in hits]
+        newest = hits[-1]
+        plan_ticket(
+            plan, cfg, state["tickets"], tutor, "unresponsive_in_slack", events,
+            source=f"outbound text on {newest['line'] or 'an A+ line'}",
+            evidence=(f"Chased by text {len(hits)} time(s) after Slack. "
+                      if len(hits) > 1 else
+                      "Chased by text after Slack, wording says we were waiting. "),
+            quote={"text": newest["body"], "outbound": True,
+                   "line": newest["line"], "received": newest["sent"]})
+
+
 INTAKE_RE = re.compile(r"^\s*tutor-issue\s+(\S+)\s*\|\s*([^|]+?)\s*\|\s*(.+)$",
                        re.IGNORECASE | re.DOTALL)
 
@@ -1196,7 +1399,8 @@ def report(plan, extra=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", default="all",
-                    choices=["all", "sweep", "inbound", "intake"])
+                    choices=["all", "sweep", "inbound", "intake",
+                             "slack-fallback"])
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force-sweep", action="store_true",
                     help="run the weekly sweep on a non-Monday")
@@ -1286,6 +1490,8 @@ def main():
         if args.mode in ("all", "inbound"):
             run_inbound_email(plan, cfg, state, employees, baseline_mode)
             run_inbound_sms(plan, cfg, state, employees, baseline_mode)
+        if args.mode in ("all", "slack-fallback"):
+            run_slack_fallback(plan, cfg, state, employees, baseline_mode)
         if args.mode in ("all", "intake"):
             run_intake(plan, cfg, state, employees, baseline_mode, args.dry_run)
 
