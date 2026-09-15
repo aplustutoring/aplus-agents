@@ -860,9 +860,11 @@
     415395629,
     415398817,
     415407533,
-    415407320
+    415407320,
+    415407724,
+    415408873
   ],
-  "last_run_utc": "2026-09-15T22:12:44.578766+00:00",
+  "last_run_utc": "2026-09-15T22:18:16.442214+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1204,6 +1206,148 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415407724,
+      "number": "17125229020",
+      "time_pt": "3:11 PM",
+      "matched": true,
+      "contact_label": "Sarah Fiore",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring placed an outbound call to Sarah Fiore (existing customer with kids at iLEAD). The call was intercepted by a call-screening service; Janelle stated her name and company, but Sarah was not available to take the call. No substantive conversation occurred.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry outbound call to Sarah Fiore to reconnect about tutoring support for her kids (Antonio, Eliana, Ariana, Mateo at iLEAD)",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Janelle tried to reach Sarah Fiore (existing family, kids Antonio, Eliana, Ariana, Mateo at iLEAD) but got her call-screening service and Sarah wasn't available. No conversation happened. Please try her again \u2014 open with: 'Hi Sarah, this is [name] from A+ Tutoring following up on our earlier call \u2014 wanted to check in on tutoring support for the kids.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal; status is owned by the deal pipeline and the call didn't connect anyway.",
+        "student_or_school_names_mentioned": [
+          "Antonio",
+          "Eliana",
+          "Ariana",
+          "Mateo",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound attempt by Janelle \u2014 reached Sarah's call-screening service, Sarah was not available. No conversation took place.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound attempt by Janelle \u2014 reached Sarah's call-screening service, Sarah was not available. No conversation took place."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry outbound call to Sarah Fiore to reconnect about tutoring support for her kids (Antonio, Eliana, Ariana, Mateo at iLEAD)",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415408873,
+      "number": "14422412514",
+      "time_pt": "3:15 PM",
+      "matched": true,
+      "contact_label": "Marissa Escandon",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Marissa Escandon to confirm scheduling after receiving a new purchase order for her daughter Cali (referred to as 'Cali' on the call). Marissa confirmed that Thursdays at 2:00 PM with tutor Ashley still works. Janelle will add the additional lessons to the schedule. Call was brief, positive, and confirmatory.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add more lessons for Cali with tutor Ashley on Thursdays at 2:00 PM per the new purchase order received.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Kelly",
+            "correct": "Cali"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Marissa Escandon (mom of Cali, 6th grade, iLEAD) confirmed on an outbound call with Janelle that the existing schedule \u2014 Thursdays at 2:00 PM with Ashley \u2014 works for the new purchase order just received. Note: Janelle referred to the student as 'Cali' on the call; the student's name is Cali. Please add the additional lessons in the system per the PO and confirm to Marissa once loaded. Marissa expects sessions to simply continue on Thursdays at 2 PM with Ashley. Suggested opener if you need to re-contact: 'Hi Marissa, just following up to confirm Cali's additional Thursday 2 PM sessions with Ashley are all loaded in.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/active customer with an open deal and ongoing tutoring; scheduling confirmation call, status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Cali",
+          "Ashley",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Janelle called Marissa to confirm scheduling for the new purchase order received for Cali. Marissa confirmed Thursdays at 2:00 PM with tutor Ashley still works. Note: student was referred to as 'Cali' on the call \u2014 correct name is Cali.",
+          "what_we_can_do_to_help": "[Outbound call] Add the additional lessons under the new PO to Cali's schedule on Thursdays at 2:00 PM with Ashley and confirm once loaded.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Janelle called Marissa to confirm scheduling for the new purchase order received for Cali. Marissa confirmed Thursdays at 2:00 PM with tutor Ashley still works. Note: student was referred to as 'Cali' on the call \u2014 correct name is Cali."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Outbound call] Add the additional lessons under the new PO to Cali's schedule on Thursdays at 2:00 PM with Ashley and confirm once loaded."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add more lessons for Cali with tutor Ashley on Thursdays at 2:00 PM per the new purchase order received.",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
