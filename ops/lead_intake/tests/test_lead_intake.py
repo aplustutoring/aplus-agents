@@ -143,28 +143,56 @@ def test_alert_carries_the_gate_verdict_and_the_thread_owner():
 
 
 # ── SLA clamp (found by replaying 2026-08-15..09-14) ───────────────
+# The work window is PACIFIC; the engine computes in UTC. These cases are
+# written in PT, the way a person reads them, and converted at the boundary.
 from datetime import datetime, timezone  # noqa: E402
+from zoneinfo import ZoneInfo  # noqa: E402
+
+PT = ZoneInfo("America/Los_Angeles")
 
 
-def _at(h, m=0):
-    return datetime(2026, 9, 10, h, m, tzinfo=timezone.utc)
+def _pt(h, m=0, day=10):
+    """A moment in Pacific time, handed to the engine as UTC."""
+    return datetime(2026, 9, day, h, m, tzinfo=PT).astimezone(timezone.utc)
+
+
+def _due_pt(h, m=0, day=10, sla=1.5):
+    return li.due_at(_pt(h, m, day), sla, C).astimezone(PT)
 
 
 def test_due_inside_the_window_is_just_now_plus_sla():
-    assert li.due_at(_at(10), 1.5, C).hour == 11
+    d = _due_pt(10)
+    assert (d.hour, d.minute, d.day) == (11, 30, 10)
+
+
+def test_david_reich_submitted_0736_pt_is_due_the_same_morning():
+    """The real record: 2026-09-10 07:36 PT. He called us four days later."""
+    d = _due_pt(7, 36)
+    assert (d.hour, d.minute, d.day) == (9, 6, 10)
 
 
 def test_overnight_submit_is_not_due_at_two_in_the_morning():
-    """Vaani Arora submitted 23:57; naive maths made it due 01:27."""
-    due = li.due_at(_at(23, 57), 1.5, C)
-    assert due.hour == 9 and due.day == 11        # next open (08:00) + 90 min
+    """Vaani Arora submitted 23:57 PT; naive maths made it due 01:27 PT."""
+    d = _due_pt(23, 57)
+    assert (d.hour, d.day) == (9, 11)        # next open (08:00 PT) + 90 min
 
 
 def test_before_open_waits_for_open():
-    """Sarah Adams submitted 02:32; naive maths made it due 04:02."""
-    due = li.due_at(_at(2, 32), 1.5, C)
-    assert due.hour == 9 and due.day == 10
+    """Sarah Adams submitted 02:32 PT; naive maths made it due 04:02 PT."""
+    d = _due_pt(2, 32)
+    assert (d.hour, d.day) == (9, 10)
 
 
 def test_evening_submit_rolls_to_the_next_morning():
-    assert li.due_at(_at(18, 21), 1.5, C).day == 11
+    """Namit Joshi submitted 18:21 PT."""
+    d = _due_pt(18, 21)
+    assert (d.hour, d.day) == (9, 11)
+
+
+def test_clamp_is_computed_in_pacific_not_utc():
+    """The regression this file exists for: 08:00 PT is 15:00 UTC, so a clamp
+    that reads .hour on a UTC datetime is wrong by the offset. 09:00 PT is a
+    working hour and must pass through untouched."""
+    d = _due_pt(7, 30)
+    assert (d.hour, d.minute) == (9, 0)
+    assert li.due_at(_pt(10), 1.5, C).tzinfo == timezone.utc   # caller's tz back

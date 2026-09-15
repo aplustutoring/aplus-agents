@@ -44,6 +44,13 @@ His record still needs the name swapped and the owner moved off Danielle.
 **Why:** Roman asked to see what the engine would actually have done before
 arming anything. It should always be cheaper to replay than to find out live.
 
+**Bug in yesterday's clamp, fixed 09-15:** `due_at()` compared `.hour` on a UTC
+datetime against a PACIFIC window, so it was wrong by the offset (08:00 PT is
+15:00 UTC) and clamped at the wrong times. Now converts to PT, clamps, and
+returns the caller's tz. The original four tests encoded the same mistake, so
+they passed while the code was wrong; rewritten in PT with a named regression
+test, plus a case for David Reich's real 07:36 PT submit. 21 green.
+
 **Files:** `ops/lead_intake/lead_intake.py`, `ops/lead_intake/config.yml`,
 `ops/lead_intake/tests/test_lead_intake.py`, `docs/CHANGELOG.md`.
 

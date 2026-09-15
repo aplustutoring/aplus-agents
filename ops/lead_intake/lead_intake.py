@@ -59,6 +59,7 @@ import sys
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import yaml
 
@@ -66,6 +67,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 STATE = HERE / "state"
 sys.path.insert(0, str(ROOT / "email"))
+
+PT = ZoneInfo("America/Los_Angeles")
 
 CURSOR_FILE = STATE / "cursor.json"
 PROCESSED_FILE = STATE / "processed.json"
@@ -201,13 +204,17 @@ def due_at(submitted, sla_hours: float, c: dict):
     """
     w = c.get("work_window") or {}
     o, cl = int(w.get("open_hour") or 8), int(w.get("close_hour") or 18)
-    due = submitted + timedelta(hours=float(sla_hours))
+    # The window is Pacific and the engine thinks in UTC (fleet convention), so
+    # the comparison has to happen in PT or it is wrong by the offset. Returns
+    # the caller's own tzinfo.
+    tz_in = submitted.tzinfo or timezone.utc
+    due = (submitted + timedelta(hours=float(sla_hours))).astimezone(PT)
     if due.hour < o:
-        return due.replace(hour=o, minute=0, second=0, microsecond=0) + timedelta(hours=float(sla_hours))
-    if due.hour >= cl:
-        nxt = (due + timedelta(days=1)).replace(hour=o, minute=0, second=0, microsecond=0)
-        return nxt + timedelta(hours=float(sla_hours))
-    return due
+        due = due.replace(hour=o, minute=0, second=0, microsecond=0) + timedelta(hours=float(sla_hours))
+    elif due.hour >= cl:
+        due = ((due + timedelta(days=1)).replace(hour=o, minute=0, second=0, microsecond=0)
+               + timedelta(hours=float(sla_hours)))
+    return due.astimezone(tz_in)
 
 
 def alert_task(contact: dict, audience: str, seat_name: str, gate, returning: str,
