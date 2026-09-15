@@ -862,9 +862,10 @@
     415407533,
     415407320,
     415407724,
-    415408873
+    415408873,
+    415409593
   ],
-  "last_run_utc": "2026-09-15T22:18:16.442214+00:00",
+  "last_run_utc": "2026-09-15T22:23:03.597218+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1342,6 +1343,111 @@
         [
           "Add more lessons for Cali with tutor Ashley on Thursdays at 2:00 PM per the new purchase order received.",
           80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415409593,
+      "number": "16619043139",
+      "time_pt": "3:15 PM",
+      "matched": true,
+      "contact_label": "Annie  Wolfstein",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Annie Wolfstein about in-person tutoring for her son Bradley, a senior needing help in Algebra 2 and Physics. Annie confirmed her address (14301 Addison #11) and asked that scheduling coordinate directly with Nolan, noting Wednesday nights work best. She requested Truman (a previous tutor Bradley loved) if possible, and prefers a male tutor. Paola will hand off to scheduling to check tutor availability and text Nolan with updates.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check tutor availability for Bradley (Algebra 2 and Physics, senior, in-person at 14301 Addison #11, Wednesday nights); prioritize Truman if available, otherwise a male tutor \u2014 not the previous female tutor Bradley had.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Nolan directly with tutor availability updates and coordinate the schedule with him (not Annie).",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Annie Wolfstein (warm, appreciative) confirmed she wants to move forward with in-person tutoring for her son Bradley, a high school senior, in Algebra 2 and Physics. Address is 14301 Addison #11 (park in space 22/23 or by the trash can). Wednesday nights are her preferred time. She asked that all scheduling coordination go directly to Nolan via text, not to her. Strong preference: rebook Truman if at all possible \u2014 Bradley loved him and made huge progress. If Truman is unavailable, she wants a male tutor; do NOT rematch with the previous female tutor (name she couldn't recall) \u2014 Bradley wasn't enthusiastic about her. Annie now expects scheduling to check availability and text Nolan with options. Suggested opener (text to Nolan): \"Hi Nolan, this is [name] from A+ Tutoring following up on Bradley's Algebra 2 & Physics tutoring \u2014 checking Truman's availability first for Wednesday evenings at the house and will let you know ASAP.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer family (Bradley previously worked with Truman and another A+ tutor); lead status is owned by the deal pipeline, not this call.",
+        "student_or_school_names_mentioned": [
+          "Bradley Wolfstein",
+          "Nolan Wolfstein",
+          "Truman (prior A+ tutor)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reached Annie live on follow-up. Confirmed she wants to resume in-person tutoring for her son Bradley (senior) in Algebra 2 and Physics at their home, 14301 Addison #11, Wednesday nights. She asked that scheduling coordinate directly with Nolan via text, not with her.",
+          "what_we_can_do_to_help": "Check tutor availability for Wednesday evenings \u2014 try to rebook Truman first (Bradley loved him); if unavailable, source a male tutor (do not rematch the previous female tutor Bradley wasn't enthusiastic about). Text Nolan with options once we have availability.",
+          "student_first_name": "Bradley",
+          "student_last_name": "Wolfstein",
+          "grade_level": "12",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": "I'm a returning customer",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reached Annie live on follow-up. Confirmed she wants to resume in-person tutoring for her son Bradley (senior) in Algebra 2 and Physics at their home, 14301 Addison #11, Wednesday nights. She asked that scheduling coordinate directly with Nolan via text, not with her."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check tutor availability for Wednesday evenings \u2014 try to rebook Truman first (Bradley loved him); if unavailable, source a male tutor (do not rematch the previous female tutor Bradley wasn't enthusiastic about). Text Nolan with options once we have availability."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Wolfstein"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "12"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "I'm a returning customer"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check tutor availability for Bradley (Algebra 2 and Physics, senior, in-person at 14301 Addison #11, Wednesday nights); prioritize Truman if available, otherwise a male tutor \u2014 not the previous female tutor Bradley had.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Text Nolan directly with tutor availability updates and coordinate the schedule with him (not Annie).",
+          81494333,
           "scheduling"
         ]
       ],
