@@ -7,6 +7,53 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-15 — Review pass on journey 00 and 01: not signable as written, and the gap is small
+
+**What:** read `00-pre-send-checklist.md` and `01-first-touch.md` line by line
+against the code that implements them. Result in
+`knowledge/journey/REVIEW-2026-09-15.md`. No file was changed; the review
+proposes edits and names who rules on each.
+
+Verified correct and signable as is: quiet hours (8-20 PT transactional, 9-20
+bulk) match `email/config.yaml` and `ops/messenger/config.yml` exactly; the
+14-day thread window matches `presend.thread_window_days`.
+
+Six places where 00 and `presend.py` disagree:
+
+- **Item 3 contradicts itself, live.** A standing go is defined as one "for a
+  stage that is REVIEWED". No stage is REVIEWED, yet `standing_go` carries
+  po_welcome and low_balance_family, and low_balance is armed and texting
+  families about money. Roman must rule: drop the REVIEWED requirement,
+  grandfather those two by name, or pause them.
+- **Item 2's line rule is not the code's.** Doc: "any deal at Pre-Lesson or
+  later this season". Code (`presend._audience`): any deal created since
+  season_start, any stage. This decides which number texts a family.
+- **Item 5's frequency is not the code's.** Doc fails a new touch at 1 prior
+  outbound in 24h; config allows 1 and holds at 2 (`max_sms_per_day: 2`,
+  `min_gap_hours: 20`).
+- **Item 1 names six sources; three have code.** danielle@/paola@ sequences,
+  charter@, and Gmail sent are unreadable by any agent today.
+- **Item 4 has no code at all** (tutor offers) - a human-only check.
+- **Item 6 omits the five STOP-line exemptions** the config carries.
+
+For 01, one decision and three updates. The decision is the one that unblocks
+`ops/lead_intake` from sending: split the ACKNOWLEDGEMENT (a receipt, identical
+for everyone, no judgment - agent alone) from the FIRST TOUCH OPENER
+(personalised, asks for time - stays draft). Proposed wording is in the review.
+The updates: "Channel and identity" still describes flow 50818589; two of four
+Known gaps have moved (the owner-id text is traced as F4, the
+`hs_email_last_reply_date` gap is closed by `presend.has_replied_since`); and
+the flow-1868302723 title-match gap belongs in the file because a booked family
+who still gets nudged is this stage's worst failure.
+
+**Why:** Roman asked for a review pass so the sign-off with Paola is short. The
+checklist was written 2026-09-09 as prose and the code was written after it;
+nobody had diffed them. An `agent_readable: true` on a file whose rules the
+agent cannot actually run is worse than a DRAFT.
+
+**Files:** `knowledge/journey/REVIEW-2026-09-15.md` (new), `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-15 — The lead chase ladder, and the booking rate that reframes it (10%)
 
 **What:** Roman described the cadence he actually wants: "thanks for reaching
