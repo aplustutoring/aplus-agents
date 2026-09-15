@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-15T15:17:09.557532+00:00",
+ "_last_run": "2026-09-15T22:27:04.497929+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -323,6 +323,15 @@
   "name": "Joseph Canada",
   "no_deal_until": "2026-09-16",
   "tw_student_id": "1820555"
+ },
+ "online:canales, eileen": {
+  "checked": "2026-09-15",
+  "contact_id": "50464837529",
+  "deal_id": "52087579227",
+  "email": "canales48@yahoo.com",
+  "first": "2026-01-21",
+  "name": "Eileen Canales",
+  "tw_student_id": "2166369"
  },
  "online:castro, kayla": {
   "checked": "2026-09-11",
@@ -854,6 +863,15 @@
   "first": "2024-01-30",
   "name": "Kingston Marcano",
   "tw_student_id": "1769679"
+ },
+ "online:martinez, christian": {
+  "checked": "2026-09-15",
+  "contact_id": "183686330023",
+  "deal_id": "51633583502",
+  "email": "sagua.carla@yahoo.com",
+  "first": "2026-01-14",
+  "name": "Christian Martinez",
+  "tw_student_id": "2165592"
  },
  "online:mavlan, aliye": {
   "checked": "2026-09-12",
@@ -1626,6 +1644,15 @@
   "first": "2026-09-08",
   "name": "Graham Williams",
   "tw_student_id": "2342318"
+ },
+ "online:williams, heaven": {
+  "checked": "2026-09-15",
+  "contact_id": "11045661328",
+  "deal_id": "18542555826",
+  "email": "iamtamarra@gmail.com",
+  "first": "2024-04-15",
+  "name": "Heaven Williams",
+  "tw_student_id": "1808841"
  },
  "online:wu, jonathan": {
   "checked": "2026-09-11",
