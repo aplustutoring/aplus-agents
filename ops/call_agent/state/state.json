@@ -847,9 +847,10 @@
     415315725,
     415330045,
     415336121,
-    415338322
+    415338322,
+    415347598
   ],
-  "last_run_utc": "2026-09-15T19:52:04.372451+00:00",
+  "last_run_utc": "2026-09-15T20:08:11.920629+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1063,6 +1064,131 @@
       "record_applied": [],
       "record_skipped": [],
       "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 415347598,
+      "number": "13236363579",
+      "time_pt": "12:47 PM",
+      "matched": true,
+      "contact_label": "Karen Chung",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Karen Chung called in to move forward with tutoring for her 6-year-old daughter Yura, a homeschooled Blue Ridge Academy charter student who needs English language support (English is not her first language). Paola did the consultation on the spot: quoted the Blue Ridge rate ($75/hr or $60/45min), explained the online-only model, Lessonspace platform, and PO process via her charter teacher Angela Webb (angela.webb@blueridgeacademy.com). Karen has ~$2,000 in funds for the first semester and wants to maximize sessions. Karen was initially expecting in-person but agreed to try online with a free 1-hour trial booked for Friday at 11 AM.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to reach out to Karen today via text to coordinate the free online trial session on Friday at 11 AM with a tutor matched for early-elementary ESL/English support",
+            "owner_hint": "Scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Karen a follow-up email recapping the Blue Ridge rate ($75/hr or $60/45min), online-only model, trial session details, and a proposed plan for using ~$2,000 in first-semester funds (maximizing sessions, option of 2x30min splits)",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Email Angela Webb (angela.webb@blueridgeacademy.com), Yura's Blue Ridge Academy teacher, to request a PO once Karen confirms she wants to move forward after the trial",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Match a tutor experienced in teaching English to a young ESL learner (6 y/o, first grade level) and share the tutor's profile with Karen before the trial",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Karen Chung (warm, engaged, ready to start) called in and completed the consultation with Paola. Her daughter Yura (6 y/o, homeschooled at Blue Ridge Academy, first-grade level) needs English tutoring \u2014 English is not Yura's first language, so match a tutor with early-elementary ESL experience. Karen was expecting in-person and was mildly surprised we're online-only, but agreed to a free 1-hour online trial booked for Friday at 11 AM. Paola quoted Blue Ridge rates: $75/hr or $60/45min, and explained we'll request a monthly PO from her charter teacher Angela Webb (angela.webb@blueridgeacademy.com). Karen has ~$2,000 in first-semester instructional funds and wants 'more the better' \u2014 build a plan that maximizes sessions (Paola floated 2x30min/week as an option). Karen expects: (1) a text from scheduling today to confirm Friday 11 AM trial, (2) a recap email from Paola with the plan and pricing, (3) tutor profile shared before the trial, (4) PO request sent to Angela once she confirms post-trial. Suggested opener for scheduling: 'Hi Karen, this is [name] from A+ Tutoring following up on Yura's free trial Friday at 11 AM \u2014 I want to confirm the details and share her tutor's profile.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Karen is a Blue Ridge Academy charter family paying with instructional funds; already QTL - Charter and confirmed on this call.",
+        "student_or_school_names_mentioned": [
+          "Yura Chung",
+          "Blue Ridge Academy",
+          "Angela Webb"
+        ],
+        "record_updates": {
+          "whats_going_on": "Karen called back to move forward with tutoring for her 6-year-old daughter Yura at Blue Ridge Academy (homeschool charter, first-grade level). Yura needs English language support since English is not her first language. Karen has ~$2,000 in first-semester instructional funds and wants to maximize weekly sessions.",
+          "what_we_can_do_to_help": "Paola completed the consultation, quoted Blue Ridge rates ($75/hr or $60/45min, online-only), and booked a free 1-hour online trial for Friday at 11 AM. Scheduling to text Karen today to confirm and share tutor profile; match a tutor with early-elementary ESL experience. After the trial, Paola to email Angela Webb (angela.webb@blueridgeacademy.com) to request the PO and build a plan maximizing the ~$2,000 in funds (consider 2x30min sessions/week).",
+          "student_first_name": "Yura",
+          "student_last_name": "Chung",
+          "grade_level": "1",
+          "student_school": "Blue Ridge Academy",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Karen called back to move forward with tutoring for her 6-year-old daughter Yura at Blue Ridge Academy (homeschool charter, first-grade level). Yura needs English language support since English is not her first language. Karen has ~$2,000 in first-semester instructional funds and wants to maximize weekly sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola completed the consultation, quoted Blue Ridge rates ($75/hr or $60/45min, online-only), and booked a free 1-hour online trial for Friday at 11 AM. Scheduling to text Karen today to confirm and share tutor profile; match a tutor with early-elementary ESL experience. After the trial, Paola to email Angela Webb (angela.webb@blueridgeacademy.com) to request the PO and build a plan maximizing the ~$2,000 in funds (consider 2x30min sessions/week)."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Yura"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Chung"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Blue Ridge Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Scheduling team to reach out to Karen today via text to coordinate the free online trial session on Friday at 11 AM with a tutor matched for early-elementary ESL/English support",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Karen a follow-up email recapping the Blue Ridge rate ($75/hr or $60/45min), online-only model, trial session details, and a proposed plan for using ~$2,000 in first-semester funds (maximizing sessions, option of 2x30min splits)",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email Angela Webb (angela.webb@blueridgeacademy.com), Yura's Blue Ridge Academy teacher, to request a PO once Karen confirms she wants to move forward after the trial",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Match a tutor experienced in teaching English to a young ESL learner (6 y/o, first grade level) and share the tutor's profile with Karen before the trial",
+          81494333,
+          "scheduling"
+        ]
+      ],
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
