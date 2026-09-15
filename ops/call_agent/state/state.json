@@ -867,9 +867,10 @@
     415411485,
     415412436,
     415413261,
-    415413694
+    415413694,
+    415415550
   ],
-  "last_run_utc": "2026-09-15T22:40:17.409447+00:00",
+  "last_run_utc": "2026-09-15T22:47:51.877786+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -1605,6 +1606,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 415415550,
+      "number": "14242242278",
+      "time_pt": "3:40 PM",
+      "matched": true,
+      "contact_label": "Roseanna Ortiz",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Roseanna Ortiz, a past customer, called in asking for Danielle, saying Danielle had emailed her about her daughter's tutoring. Mandy took the message and said Danielle would call her back. No details about the student or program were discussed on this call.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Danielle to call Roseanna Ortiz back regarding her daughter's tutoring (returning Danielle's prior email outreach).",
+            "owner_hint": "Danielle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Danielle \u2014 Roseanna Ortiz (past customer, daughters Jiselle and Jocelyn, iLEAD) called back in response to your email about her daughter's tutoring. Tone was neutral/brief; she didn't share details with Mandy and just asked for you. She now expects a callback from you directly. Open with: 'Hi Roseanna, it's Danielle at A+ \u2014 thanks for calling me back about your daughter's tutoring, I wanted to follow up on the email I sent you...' and confirm which daughter and what she's looking for this time.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer calling about ongoing service \u2014 status is owned by the deal pipeline, not this intake step.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Roseanna called in returning Danielle's email outreach about her daughter's tutoring. Spoke only with Mandy; no details discussed. Asked for a callback from Danielle.",
+          "what_we_can_do_to_help": "Danielle to call Roseanna back to reconnect on her daughter's tutoring needs and pick up where the email left off.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roseanna called in returning Danielle's email outreach about her daughter's tutoring. Spoke only with Mandy; no details discussed. Asked for a callback from Danielle."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Danielle to call Roseanna back to reconnect on her daughter's tutoring needs and pick up where the email left off."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Danielle to call Roseanna Ortiz back regarding her daughter's tutoring (returning Danielle's prior email outreach).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
