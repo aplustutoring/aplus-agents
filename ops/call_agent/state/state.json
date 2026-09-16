@@ -892,10 +892,80 @@
     415711100,
     415724472,
     415763370,
-    415768875
+    415768875,
+    415774625,
+    415776377
   ],
-  "last_run_utc": "2026-09-16T18:24:59.869072+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-16T18:34:33.721042+00:00",
+  "pending_digest": [
+    {
+      "call_id": 415776377,
+      "number": "17125229020",
+      "time_pt": "11:30 AM",
+      "matched": true,
+      "contact_label": "Sarah Fiore",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound call by Janelle to Sarah Fiore, an existing/returning customer with multiple children (Antonio, Eliana, Ariana, Mateo) at iLEAD. Janelle reached Sarah's call-screening service and identified herself, but Sarah was not available and no conversation took place. Janelle will need to try again.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Janelle to attempt another outbound call to Sarah Fiore to discuss tutoring support for her four children (Antonio, Eliana, Ariana, Mateo)",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Sarah is a returning customer with an open deal; status is owned by the deal pipeline and no substantive conversation occurred on this call.",
+        "student_or_school_names_mentioned": [
+          "Antonio",
+          "Eliana",
+          "Ariana",
+          "Mateo",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound attempt by Janelle \u2014 reached Sarah's call-screening service and left name/company, but Sarah was not available. No conversation took place; another attempt is needed.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound attempt by Janelle \u2014 reached Sarah's call-screening service and left name/company, but Sarah was not available. No conversation took place; another attempt is needed."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Janelle to attempt another outbound call to Sarah Fiore to discuss tutoring support for her four children (Antonio, Eliana, Ariana, Mateo)",
+          80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "18185314409",
@@ -905,6 +975,11 @@
     {
       "number": "18187216225",
       "time_pt": "11:17 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "13104675237",
+      "time_pt": "11:27 AM",
       "reason": "hang-up"
     }
   ],
