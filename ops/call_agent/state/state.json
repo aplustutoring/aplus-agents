@@ -927,9 +927,10 @@
     415893476,
     415895452,
     415895005,
-    415904689
+    415904689,
+    415911487
   ],
-  "last_run_utc": "2026-09-16T23:21:06.699176+00:00",
+  "last_run_utc": "2026-09-16T23:44:14.065195+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1957,6 +1958,61 @@
           "Reach out to Jacob's tutor to route scheduling/lesson communication back through A+ so billing and approvals stay visible to Barry and Richard.",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 415911487,
+      "number": "18189296676",
+      "time_pt": "4:37 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Inbound call from an unidentified caller asking whether A+ has physics tutors and same-day availability. Roman confirmed we tutor physics, said he'd try but couldn't promise same-day, and quoted $95/hour (also mentioned prepaid packages exist). The caller said thanks and would call back. No names, student details, or contact info were captured.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "If caller calls back, capture parent/student name, grade, school, and confirm physics topic/level; check same-day tutor availability for physics.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Anonymous inbound caller (wireless, no name given) asked if we have physics tutors and same-day availability. Roman quoted $95/hr hourly and mentioned prepaid packages exist; no package pricing was quoted. Caller said they'd call back \u2014 tone was polite but noncommittal, likely price-shopping. No student name, grade, school, or contact details captured. If they call back, open with: 'Thanks for calling back \u2014 happy to help with physics. Can I get your name and your student's grade so I can check who's available?' Then qualify (grade/course, in-person vs online, timing) before re-quoting.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family inquiry we spoke with; not charter, not test prep/diagnostic-driven, so default We Connected.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Anonymous inbound caller asked if we have physics tutors and same-day availability. No student name, grade, school, or contact info shared.",
+          "what_we_can_do_to_help": "Confirmed we tutor physics and quoted $95/hr (also noted prepaid packages available). Caller said they would call back; if they do, qualify student details and check same-day physics availability.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "If caller calls back, capture parent/student name, grade, school, and confirm physics topic/level; check same-day tutor availability for physics.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
