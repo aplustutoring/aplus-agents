@@ -921,9 +921,10 @@
     415871656,
     415872189,
     415877037,
-    415877418
+    415877418,
+    415888283
   ],
-  "last_run_utc": "2026-09-16T21:46:13.672962+00:00",
+  "last_run_utc": "2026-09-16T22:19:02.321141+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1574,6 +1575,134 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 415888283,
+      "number": "16268299555",
+      "time_pt": "3:06 PM",
+      "matched": true,
+      "contact_label": "Xu N/A",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Judy Xu called seeking one-on-one tutoring for her 8th-grade daughter Susan Shao in both math and English. She initially requested a trial today at 6:00-6:30 PM but declined online-only availability, preferring in-person tutoring in the Pasadena/Arcadia area (ZIP 91007). Paola quoted $95/hr online and $130/hr in-person and said she'd check tutor availability and follow up by email/text. Judy found the pricing expensive but remained open to in-person options this week.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Check in-person tutor availability in Pasadena/Arcadia (ZIP 91007) for 8th-grade math and English tutoring for Susan Shao this week",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Email Judy the current rates ($95/hr online, $130/hr in-person), package options, and program information",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Judy by email and text to confirm in-person tutor availability and propose a trial session time this week",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Xu N/A",
+            "correct": "Judy Xu"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Judy Xu (mom) called looking for 1:1 tutoring for her 8th-grade daughter Susan Shao in both math and English. She originally wanted a trial today 6:00-6:30 PM but we only had online available, and she said online isn't a good fit \u2014 she wants in-person. Family is in ZIP 91007 (Pasadena/Arcadia area). Paola quoted $95/hr online and $130/hr in-person; Judy reacted that pricing is expensive but is open to in-person this week. Judy expects an email with our rates/info plus confirmation (email or text) of whether we have an in-person tutor in her area, then to book a trial this week. Email: judyxu9555@gmail.com; phone on file 626-829-9555. Suggested opener: 'Hi Judy, this is [name] from A+ Tutoring following up on your call with Paola about in-person tutoring for Susan \u2014 I checked our tutors in the Arcadia/Pasadena area and\u2026'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; not a charter family and no diagnostic/test-prep need indicated \u2014 standard general subject tutoring inquiry.",
+        "student_or_school_names_mentioned": [
+          "Susan Shao"
+        ],
+        "record_updates": {
+          "whats_going_on": "Judy Xu called seeking 1:1 tutoring for her 8th-grade daughter Susan Shao in math and English. Wanted a trial today 6-6:30 PM but declined online-only; prefers in-person in Pasadena/Arcadia (ZIP 91007). Reacted that $95/hr online and $130/hr in-person felt expensive but remained open.",
+          "what_we_can_do_to_help": "Check in-person tutor availability in the 91007 area for 8th-grade math and English, email Judy our rates and package options, then follow up by email/text to schedule an in-person trial this week.",
+          "student_first_name": "Susan",
+          "student_last_name": "Shao",
+          "grade_level": "8",
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": "Google Search",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Judy Xu called seeking 1:1 tutoring for her 8th-grade daughter Susan Shao in math and English. Wanted a trial today 6-6:30 PM but declined online-only; prefers in-person in Pasadena/Arcadia (ZIP 91007). Reacted that $95/hr online and $130/hr in-person felt expensive but remained open."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check in-person tutor availability in the 91007 area for 8th-grade math and English, email Judy our rates and package options, then follow up by email/text to schedule an in-person trial this week."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Susan"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Shao"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "8"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "Google Search"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in-person tutor availability in Pasadena/Arcadia (ZIP 91007) for 8th-grade math and English tutoring for Susan Shao this week",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Email Judy the current rates ($95/hr online, $130/hr in-person), package options, and program information",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Judy by email and text to confirm in-person tutor availability and propose a trial session time this week",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
