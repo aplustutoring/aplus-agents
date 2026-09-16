@@ -138,18 +138,23 @@ def resolve_cohort(cohort_start_cell: str) -> Cohort:
 
 
 def parse_slot(raw: str) -> Slot:
-    """'Mon 10:00 AM' / 'Monday 10am' / 'Wed 3 PM' → Slot. Only the three
-    locked slots are accepted."""
+    """'Mon 10:00 AM' / 'Monday 10am' / 'Wed 3 PM' / 'Wed 3:00' → Slot. Only
+    the three locked slots are accepted. Danielle's sheet writes them without
+    AM/PM ('Mon 10:00', 'Wed 3:00', verified on the first live dry run
+    2026-09-16); the program slots make that unambiguous, so a missing
+    meridian is resolved against them rather than refused."""
     s = re.sub(r"\s+", " ", (raw or "").strip().lower())
-    m = re.match(r"([a-z]+)\.?,?\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)", s)
+    m = re.match(r"([a-z]+)\.?,?\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?", s)
     if not m or m.group(1) not in WEEKDAYS:
         raise CohortError(f"unparseable slot {raw!r}")
     hour, minute, ampm = int(m.group(2)), int(m.group(3) or 0), m.group(4)
-    key = f"{m.group(1)[:3]} {hour}:{minute:02d} {ampm}"
-    if key not in SLOT_HOUR:
+    day3 = m.group(1)[:3]
+    candidates = [ampm] if ampm else ["am", "pm"]
+    keys = [k for k in (f"{day3} {hour}:{minute:02d} {x}" for x in candidates) if k in SLOT_HOUR]
+    if len(keys) != 1:
         raise CohortError(f"slot {raw!r} is not one of the program slots "
                           f"(Mon 10:00 AM, Wed 11:00 AM, Wed 3:00 PM)")
-    day_name, time_label = SLOT_HOUR[key]
+    day_name, time_label = SLOT_HOUR[keys[0]]
     return Slot(WEEKDAYS[m.group(1)], day_name, time_label)
 
 

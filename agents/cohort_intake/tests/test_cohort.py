@@ -39,9 +39,17 @@ def test_unknown_start_is_refused():
     ("Mon 10:00 AM", "Monday 10:00 AM"), ("Monday 10am", "Monday 10:00 AM"),
     ("Wed 11:00 AM", "Wednesday 11:00 AM"), ("Wed 3 PM", "Wednesday 3:00 PM"),
     ("Wednesday, 3:00pm", "Wednesday 3:00 PM"),
+    # the sheet's own format (no AM/PM), verified live 2026-09-16
+    ("Mon 10:00", "Monday 10:00 AM"), ("Wed 11:00", "Wednesday 11:00 AM"),
+    ("Wed 3:00", "Wednesday 3:00 PM"),
 ])
 def test_program_slots_parse(raw, label):
     assert c.parse_slot(raw).label == label
+
+
+def test_missing_meridian_is_refused_when_it_is_not_a_program_slot():
+    with pytest.raises(c.CohortError, match="not one of the program slots"):
+        c.parse_slot("Mon 3:00")          # neither Mon 3 AM nor Mon 3 PM is a slot
 
 
 def test_off_program_slot_is_refused():
