@@ -918,9 +918,10 @@
     415856009,
     415856872,
     415861837,
-    415871656
+    415871656,
+    415872189
   ],
-  "last_run_utc": "2026-09-16T21:27:09.840813+00:00",
+  "last_run_utc": "2026-09-16T21:32:05.927858+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1432,6 +1433,70 @@
         [
           "Watch for Mary's October PO to come through near end of September and process once received.",
           80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415872189,
+      "number": "13109386211",
+      "time_pt": "2:26 PM",
+      "matched": true,
+      "contact_label": "Shelby Perezselsky",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Shelby Perezselsky regarding tutoring sessions for her daughter Amelia. The call went to voicemail and Paola left a brief message asking Shelby to confirm if she is still interested. No callback time was set.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Shelby's callback regarding interest in tutoring for Amelia; if no response in a few days, attempt another follow-up contact.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Shelby Perezselsky following up on tutoring interest for her daughter Amelia (Pre-K, homeschooling via Blue Ridge Academy charter). No response yet. Shelby previously expressed interest but hasn't confirmed next steps. If she calls back, open with: 'Hi Shelby, thanks for getting back to us \u2014 we'd love to help set up support for Amelia with her homeschool reading and math. Do you have a few minutes to talk about scheduling and what would work best?' If no callback in a few days, try another outreach attempt.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound voicemail with no contact made; existing record status should not be changed based on a one-way voicemail.",
+        "student_or_school_names_mentioned": [
+          "Amelia",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola left a voicemail for Shelby following up on tutoring interest for Amelia; awaiting callback.",
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola left a voicemail for Shelby following up on tutoring interest for Amelia; awaiting callback."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Shelby's callback regarding interest in tutoring for Amelia; if no response in a few days, attempt another follow-up contact.",
+          81494333,
           "follow_up"
         ]
       ],
