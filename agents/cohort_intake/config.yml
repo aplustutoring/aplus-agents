@@ -1,0 +1,35 @@
+# cohort_intake — IEM HSA cohort onboarding (docs/specs/cohort-intake-spec.md).
+# Roles, never names (Roman 2026-08-14); people resolve through email/config.yaml.
+
+sheet:
+  id_env: HSA_INTAKE_SHEET_ID
+  default_id: "1zM7INlOeRhYEWG_lWNHEgR8cK4ANCweQJ5Iwgrh1fe4"   # "HSA 26/27 Intake (A+)"
+  intake_tab: Intake
+  log_tab: Log
+  # IEM's own sheet. Listed so nobody wires it in by accident: the agent
+  # refuses to open it (spec §3, LOCKED: never read or write IEM's sheet).
+  forbidden_ids: ["1SoJ34Lnplz3HIGRwmC71U-ZTaR5lmffDf78jasmYZ5E"]
+
+hubspot:
+  pipeline: "5119061"            # IEM Inc.
+  pre_lesson_stage: "5119062"    # label must contain "pre-lesson" (sms sweep qualifier); checked at run time
+  term: "26/27"
+  tor_owner: sales               # Danielle owns every ES contact
+  charter_school_teacher_label: "IEM Inc South Sutter/Ocean Grove/Sky Mountain"   # master-list option
+  group_parity: { odd: scheduler_a_l, even: scheduler_m_z }   # LOCKED Roman 9/15
+
+slack:
+  summary_to: [visionary, sales]   # dry-run summary + run summary DMs (Roman, Danielle)
+  channel: "C0BL05MCJ4B"           # #agent-feedback: the stop-window post lives here
+  wait_minutes: 15                 # auto-continue unless someone replies "stop" (DRAFT: 0 once trusted)
+
+es_email:
+  purpose: cohort_welcome
+  from_line: email
+
+program:
+  school_contacts:                 # spec §2; attendance reports go here, never to ESs
+    - "Jamie Hetrick <jhetrick@ieminc.org>"
+    - "Monica Presby <mpresby@ieminc.org>"
+    - "Angie Covil <acovil@ieminc.org>"
+  support_line: "818-869-1627"

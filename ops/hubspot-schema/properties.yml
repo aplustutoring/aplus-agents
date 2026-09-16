@@ -1013,6 +1013,42 @@ properties:
       group: charter
       type: string
       fieldType: text
+    # ── IEM HSA cohorts (agents/cohort_intake, 2026-09-15; spec
+    # docs/specs/cohort-intake-spec.md §5.4/§7). Written on deal create by the
+    # intake agent; owner_assign reads hsa_group (parity), sms reads all five
+    # for the welcome email tokens, hsa_sync keys the group invoice on
+    # hsa_group and verifies the lesson series against hsa_sessions/hsa_start.
+    # Portal automation must never overwrite them (#AP049).
+    - name: hsa_cohort
+      label: "[Agent] HSA Cohort"
+      group: charter
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by agents/cohort_intake. IEM HSA cohort number (1 to 6), derived from the cohort start date in the intake sheet. Never edit by hand; correct the sheet and re-run."
+    - name: hsa_group
+      label: "[Agent] HSA Group"
+      group: charter
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by agents/cohort_intake. Group key within the cohort, e.g. C1-G4 (cohort 1, group 4). Drives scheduler ownership (odd group A-L seat, even group M-Z seat) and the one flat group invoice."
+    - name: hsa_sessions
+      label: "[Agent] HSA Sessions"
+      group: charter
+      type: number
+      fieldType: number
+      description: "AGENT PROPERTY — written by agents/cohort_intake. One-hour group sessions in the cohort (= Teachworks hours per student at $0/hr). deal_sync treats a deal carrying this as an HSA cohort deal."
+    - name: hsa_start
+      label: "[Agent] HSA Start"
+      group: charter
+      type: date
+      fieldType: date
+      description: "AGENT PROPERTY — written by agents/cohort_intake. First session date for this student's group (first slot weekday on or after the cohort start)."
+    - name: hsa_slot
+      label: "[Agent] HSA Slot"
+      group: charter
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by agents/cohort_intake. Weekly slot fixed by IEM, e.g. 'Monday 10:00 AM' (PT). Families cannot change it; requests go to the ES."
     - name: student_first_name
       label: "[Agent] Student First Name"
       group: dealinformation

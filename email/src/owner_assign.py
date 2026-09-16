@@ -18,9 +18,35 @@ write is a plain owner PATCH, so a replay is harmless.
 """
 from __future__ import annotations
 
+import re
+
 from . import audit, hubspot_client as hs
 from .config import cfg, staff
 from .router import scheduler_for_last_name
+
+
+def group_number(raw) -> int | None:
+    """'C1-G4' → 4, '4' → 4, '' → None: the trailing integer of the deal's
+    [Agent] HSA Group value."""
+    m = re.search(r"(\d+)\s*$", str(raw or ""))
+    return int(m.group(1)) if m else None
+
+
+def _parity_owner(deal: dict, props: dict, gp: dict) -> tuple[str | None, str, list[str]]:
+    """(staff_key, group text, notes) for a group-parity pipeline (IEM HSA:
+    odd group → scheduler_a_l, even → scheduler_m_z, LOCKED Roman 2026-09-15).
+    The group comes from the deal property; when the search that found the
+    deal did not carry it, one GET fills it in."""
+    prop = gp.get("property", "hsa_group")
+    raw = props.get(prop)
+    if raw in (None, ""):
+        got = hs._get(f"/crm/v3/objects/deals/{deal['id']}", {"properties": prop})
+        raw = ((got or {}).get("properties") or {}).get(prop) if isinstance(got, dict) else None
+    n = group_number(raw)
+    if n is None:
+        return None, str(raw or ""), [f"no group number in {prop}; owner left as is, retried next run"]
+    key = gp["odd"] if n % 2 else gp["even"]
+    return key, str(raw), [f"group {n} is {'odd' if n % 2 else 'even'} → {key}"]
 
 
 def _parent_last_from_dealname(dealname: str) -> str | None:
@@ -50,14 +76,22 @@ def maybe_assign(deal: dict, contact: dict | None = None) -> dict | None:
         return None
     props = deal.get("properties") or {}
     pid = props.get("pipeline")
-    if pid not in set(oa.get("pipelines") or []):
+    gp = (oa.get("group_parity") or {}).get(pid)
+    if pid not in set(oa.get("pipelines") or []) and not gp:
         return None
     key = f"owner:{deal['id']}"
     if audit.already_processed(key):
         return None
 
-    last, source = family_last_name(deal, contact)
-    staff_key, notes = scheduler_for_last_name(last)
+    if gp:
+        staff_key, last, notes = _parity_owner(deal, props, gp)
+        source = gp.get("property", "hsa_group")
+        if not staff_key:
+            print(f"  👤 deal {deal['id']} ({props.get('dealname')}): {notes[0]}")
+            return None   # not marked: the agent stamps the group, a replay assigns
+    else:
+        last, source = family_last_name(deal, contact)
+        staff_key, notes = scheduler_for_last_name(last)
     target = staff(staff_key)
     target_id = str(target["hubspot_owner_id"])
     current = str(props.get("hubspot_owner_id") or "")

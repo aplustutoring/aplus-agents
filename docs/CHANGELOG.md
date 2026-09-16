@@ -7,6 +7,103 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-15 — cohort_intake: IEM HSA cohort onboarding agent (spec v1) + rail changes
+
+**Spec:** `docs/specs/cohort-intake-spec.md`, saved verbatim first (fb60a857).
+Roman's build prompt (spec §10) delivered as ONE PR.
+
+**The agent (`agents/cohort_intake/`, `python -m agents.cohort_intake`):**
+Intake tab of the A+-owned sheet "HSA 26/27 Intake (A+)" → rows with A+
+Status = Ready → parse + hard-stop validation (every blank required field
+named at once; unknown school spelling refused, never guessed; student email
+equal to parent email dropped without a flag) → groups by cohort + group # +
+slot + subject, cap 4 → cohort from the START DATE (never the group number),
+session calendar from the locked table + no-class weeks (Wednesday groups
+skip Mar 10 / Mar 31 / Apr 28 and still get 25), amounts split to the cent
+with remainder on the first deal → plan DM (visionary, sales) → `--execute`
+after a Slack stop window that FAILS CLOSED when replies cannot be read →
+Family + ES contacts (fill-only; persona added, never replaced), one deal per
+student in IEM Inc. (5119061, stage 5119062 verified by label), associations,
+the full §5.4 prop set with enum values looked up by LABEL at run time (a
+missing option is skipped and reported, never fatal) → agent columns written
+on the same sheet row, one Log line per run → ES group email (one per ES per
+group) through `one_to_few --channel email` → scheduler handoff DM with the
+skip dates spelled out. Idempotent on school + student id + subject + term:
+re-runs update and re-split; a late add gets the remaining sessions and every
+sibling deal gets the new amount + a note. `--refresh` reads the rails back
+(Teachworks ID, Text Sent, Welcome Sent) and DMs the deal owner once when a
+cohort text was skipped (the one silent path in the SMS rail, spec §5.6 d).
+
+**Rails (nothing new built that a rail already did):**
+- `email/config.yaml`: `sms.pipelines["5119061"]` (template hsa, welcome
+  template + tokenised subject), `hsa_*` copy (the ask keys ARE the confirm
+  copy: LOCKED, a cohort family is never asked for a time), presend purpose
+  `cohort_welcome` with a standing go + `email_from`/`email_reply_to`,
+  `owner_assign.group_parity` for 5119061, new `hsa:` block.
+- `email/src/sms.py`: `_send_welcome(..., deal_props)` fills
+  `__STUDENT__ __SUBJECT__ __COHORT__ __START__ __END__ __SLOT__ __ES__
+  __SESSIONS__ __CALENDAR__ __NO_CLASS__` from the deal's [Agent] HSA props +
+  description lines; subject is scrubbed too; every other pipeline keeps the
+  `__FIRST_NAME__`-only behaviour. `templates/welcome_hsa.html` new.
+- `email/src/owner_assign.py`: group-parity branch (odd → scheduler_a_l,
+  even → scheduler_m_z) reading [Agent] HSA Group ("C1-G4" → 4); a deal
+  without a group number is left and not marked, so a replay assigns it.
+- `email/src/deal_sync.py`: a deal carrying `hsa_sessions` is exempt from the
+  charter needs-review guard (agent-made, parent associated on purpose);
+  after the family/student write it calls `hsa_sync.after_sync`; the run
+  ends with `hsa_sync.verify_lessons`. Search props carry hsa_sessions/group.
+- `email/src/hsa_sync.py` (new): (1) ES as additional contact via the
+  Teachworks SPIKE `tw.add_additional_contact` (POST
+  customers/{id}/additional_contacts); any failure → ONE task to the deal
+  owner. The first live outcome answers the spike; record it here. (2) ONE
+  flat group invoice task to charter_admin per [Agent] HSA Group, summed from
+  the sibling deals, with the $0/hr service + allocation instructions (the
+  API cannot create invoices, po_inbox has said so since August). (3) Lesson
+  series verification: count must equal HSA Sessions and no lesson on a
+  no-class date (LOCKED); mismatch DMs the deal owner + sales once a day.
+- `email/src/invoice_sweep.py`: $0 invoices never reach the overdue nag.
+- `email/src/teachworks_client.py`: `add_additional_contact` + the 400
+  wrapper knows `additional_contact`.
+- `ops/messenger/one_to_few.py`: `--channel email` (recipient = contact
+  email, subject rendered + scrubbed, gate on the email channel, Resend
+  sender as `presend.email_from`, record channel=email). `check`/`record`
+  defaults now resolve at call time.
+- `ops/hubspot-schema/properties.yml`: `[Agent] HSA Cohort / Group /
+  Sessions / Start / Slot` (deal, group charter). Schema dry run 2026-09-15:
+  `5 would be created, 0 would be updated, 124 already in sync` (hsa_cohort,
+  hsa_group, hsa_sessions, hsa_start, hsa_slot). Not applied yet.
+- `ops/hubspot-schema/school-aliases.yml`: OG / SM / SS aliases (the three
+  schools already existed under their long canonical names).
+- `registry.yml` `cohort-intake` + `.github/workflows/cohort-intake.yml`
+  (workflow_dispatch: execute, only_row, group_label, sheet_id, wait_minutes,
+  refresh; checks out the dispatched ref so a branch can be test-run);
+  `docs/FLEET.md` regenerated; `knowledge/journey/01-first-touch.md` gains a
+  charter-cohort paragraph (DRAFT).
+
+**Tests:** agents 85, email 572 (+ test_hsa_rails.py: cohort text never asks,
+welcome tokens + subject scrub, one family two kids = one text + one welcome,
+parity, guard exemption, spike fallback task, one invoice task per group,
+lesson verification, $0 nag), messenger 11 (email channel, subject scrub,
+CLI refusals), presend cohort_welcome standing go. Not fixed here: two
+`test_low_balance.py` tests (owed teacher email) fail on this branch with
+low_balance.py and its test untouched; fixtures are pinned to 2026-09-11
+against a real `datetime.now` (date drift since #227).
+
+**Written no-fix lines:** (a) Slack `/cohort <group>` trigger: no slash-command
+receiver exists anywhere in the fleet; the Apps Script `repository_dispatch`
+doorbell is the pattern, and it is a separate build, so the trigger is
+`workflow_dispatch` only. (b) `RETENTION_SA_JSON` has no local copy, so every
+run goes through the workflow; local runs need `GOOGLE_SHEETS_CREDS`.
+
+**Still human:** apply the schema sync (`create_properties.py` without
+--dry-run) BEFORE the first execute (the deal create writes hsa_* props);
+Roman reviews the TEST-001 text / welcome / ES email / deal, then deletes the
+test deal + contact + Teachworks entry and sets the row to `Test - done`;
+Danielle confirms the `charter_school_teacher` label and the grade / subject
+option labels exist (the agent reports any it skipped); decision-log entries
+per spec §9.4; the seven first-touch questions (spec §8 stays DRAFT).
+
+---
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
