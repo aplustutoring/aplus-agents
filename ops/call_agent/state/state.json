@@ -906,9 +906,11 @@
     415812471,
     415813412,
     415814658,
-    415830052
+    415830052,
+    415838270,
+    415836284
   ],
-  "last_run_utc": "2026-09-16T20:11:37.801953+00:00",
+  "last_run_utc": "2026-09-16T20:21:17.606057+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1124,6 +1126,51 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415836284,
+      "number": "18187201508",
+      "time_pt": "1:15 PM",
+      "matched": true,
+      "contact_label": "Diana Donnell",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ called Diana Donnell believing Diana had left us a message. Diana confirmed she had not called in. Janelle noted Diana's daughter has a lesson scheduled today at 3:30 with Joseph, apologized for the confusion, and ended the call cordially.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": true,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Diana is an existing customer with an active lesson scheduled today; deal-pipeline status should not be altered by this misdial callback.",
+        "student_or_school_names_mentioned": [
+          "Sonia Donnell"
+        ],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
