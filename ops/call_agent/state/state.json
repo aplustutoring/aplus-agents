@@ -924,9 +924,11 @@
     415877418,
     415888283,
     415891747,
-    415893476
+    415893476,
+    415895452,
+    415895005
   ],
-  "last_run_utc": "2026-09-16T22:37:55.328028+00:00",
+  "last_run_utc": "2026-09-16T22:43:44.517384+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1882,6 +1884,83 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 415895452,
+      "number": "13107352000",
+      "time_pt": "3:30 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Richard David, CFO for Barry Tarrant (Jacob Gavin's grandfather who funds the tutoring), called to get a clear picture of what's outstanding on Jacob's account and what's planned going forward. Janelle confirmed an open invoice of $5,700 for a 60-hour prepaid package not yet used, and noted the tutor and Jacob's mom have been coordinating lessons directly rather than through A+. Richard asked that all future tutoring needs be communicated to Barry in advance for approval. He requested a single email recap of what's paid, unpaid, and upcoming, sent to rdavid@magnadyne.com.",
+        "caller_type": "other",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Email Richard David (rdavid@magnadyne.com) a single consolidated recap: outstanding balance, the $5,700 / 60-hour prepaid package status (used vs. remaining), lessons delivered to date, and what is planned going forward for Jacob Gavin.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          },
+          {
+            "item": "Establish a process so Barry (grandfather/payer) is notified in advance of upcoming tutoring needs/renewals for Jacob, rather than lessons being coordinated only between the tutor and Jacob's mom.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Reach out to Jacob's tutor to route scheduling/lesson communication back through A+ so billing and approvals stay visible to Barry and Richard.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Richard David, CFO of Barry Tarrant's company (Magnadyne), called on behalf of Barry, who is Jacob Gavin's grandfather and the payer for Jacob's tutoring. Tone was calm and businesslike \u2014 he wants clean financial visibility, not a complaint. Janelle promised to email Richard at rdavid@magnadyne.com ONE consolidated recap covering: the open $5,700 invoice, the 60-hour prepaid package (confirmed not yet used), lessons delivered so far, and what's planned going forward. Richard also flagged that Jacob's mom and the tutor have been arranging lessons directly, and Barry wants advance notice of any future tutoring needs before they happen so he can approve payment. Please send that recap today \u2014 Richard said he'd review it in real time. Suggested opener: 'Hi Richard, per your call with Janelle, here's the full picture on Jacob's account\u2026' Also loop in the tutor so scheduling flows back through A+ and Barry gets pre-approval visibility.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Caller is the CFO for the payer of an existing/active customer account (Jacob Gavin). Lead status is owned by the deal pipeline; do not demote.",
+        "student_or_school_names_mentioned": [
+          "Jacob Gavin"
+        ],
+        "record_updates": {
+          "whats_going_on": "Richard David, CFO for Barry Tarrant's company (Magnadyne), called on behalf of Barry \u2014 Jacob Gavin's grandfather and the payer \u2014 to get a full accounting of Jacob's tutoring. Open invoice is $5,700 for a 60-hour prepaid package not yet used. Lessons have been coordinating directly between the tutor and Jacob's mom, bypassing A+ office visibility.",
+          "what_we_can_do_to_help": "Send Richard (rdavid@magnadyne.com) one consolidated recap of paid, unpaid, prepaid-remaining, and planned lessons for Jacob. Set up a process to notify Barry in advance of upcoming tutoring needs/renewals for approval, and route tutor\u2013family scheduling back through A+ so billing stays transparent.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Richard David (rdavid@magnadyne.com) a single consolidated recap: outstanding balance, the $5,700 / 60-hour prepaid package status (used vs. remaining), lessons delivered to date, and what is planned going forward for Jacob Gavin.",
+          80047202,
+          "follow_up"
+        ],
+        [
+          "Establish a process so Barry (grandfather/payer) is notified in advance of upcoming tutoring needs/renewals for Jacob, rather than lessons being coordinated only between the tutor and Jacob's mom.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Reach out to Jacob's tutor to route scheduling/lesson communication back through A+ so billing and approvals stay visible to Barry and Richard.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
@@ -1918,6 +1997,11 @@
     {
       "number": "12132476111",
       "time_pt": "1:40 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "14807091882",
+      "time_pt": "3:36 PM",
       "reason": "hang-up"
     }
   ],
