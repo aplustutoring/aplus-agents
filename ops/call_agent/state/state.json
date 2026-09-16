@@ -883,9 +883,10 @@
     415447663,
     415449064,
     415450410,
-    415451528
+    415451528,
+    415453424
   ],
-  "last_run_utc": "2026-09-16T01:03:37.373611+00:00",
+  "last_run_utc": "2026-09-16T01:11:16.246546+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -2514,6 +2515,76 @@
           "Watch for a return text from Mico and respond promptly if he reaches out before tomorrow's callback.",
           86868539,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415453424,
+      "number": "15627728284",
+      "time_pt": "6:03 PM",
+      "matched": true,
+      "contact_label": "Tajah Enge",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Tajah Enge to confirm the schedule for her son Zayne. Tajah confirmed she wants twice-a-week sessions on Tuesdays and Thursdays at 8:00, starting next week on the 22nd with tutor Sonia. Scheduling was confirmed and the call ended warmly.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add recurring lessons for Zayne with Sonia on Tuesdays and Thursdays at 8:00, starting the 22nd (twice per week).",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Tajah (mom of Zayne, iLEAD charter family) confirmed she wants twice-weekly sessions, Tuesdays and Thursdays at 8:00, starting the week of the 22nd with tutor Sonia. Janelle promised to add the lessons to the calendar. Tajah expects the sessions to appear on schedule starting the 22nd \u2014 please make sure they are booked with Sonia and confirmed. No further outreach needed unless there's a scheduling issue.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an open deal \u2014 scheduling confirmation call, status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Zayne",
+          "iLEAD California Charters",
+          "Sonia (tutor)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Tajah confirmed schedule for Zayne: twice a week, Tuesdays and Thursdays at 8:00 with tutor Sonia, starting the 22nd.",
+          "what_we_can_do_to_help": "Add the recurring Tues/Thurs 8:00 sessions with Sonia starting the 22nd and ensure Zayne's tutoring plan runs smoothly.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Tajah confirmed schedule for Zayne: twice a week, Tuesdays and Thursdays at 8:00 with tutor Sonia, starting the 22nd."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Add the recurring Tues/Thurs 8:00 sessions with Sonia starting the 22nd and ensure Zayne's tutoring plan runs smoothly."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add recurring lessons for Zayne with Sonia on Tuesdays and Thursdays at 8:00, starting the 22nd (twice per week).",
+          80047202,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
