@@ -7,6 +7,32 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — Blue Ridge booth DEPLOYED (PR #238 build live on Worker + Pages)
+
+**What changed:** production deploy from Roman's laptop (wrangler OAuth,
+account `Info@wetutorathome.com`), after `git pull` to the #238 merge commit
+and a green gate (`node test-worker.mjs` -> 43 passed).
+
+- Worker `blue-ridge-booth` version `734d5ae9-e8c1-48b7-99e3-5082c898a126`,
+  100% of traffic, `HUBSPOT_TOKEN` secret still present.
+- Pages deployment `8f8d1d8b` -> https://blue-ridge-booth.pages.dev (production
+  bytes identical to the deployment URL).
+- Verified live: page carries "Stickers", "We will not spam you", all four
+  prizes and the three email chips; Worker OPTIONS -> 200 with CORS for the
+  Pages origin, empty POST -> 400 "Valid email required" (not 404). No real
+  contact submitted.
+
+**Open (not worked around, per Roman's instruction):** `.assetsignore` is NOT
+honored by `wrangler pages deploy`. `worker.js`, `test-worker.mjs`,
+`wrangler.toml` and `DEPLOY.md` are served at 200 from the Pages site. No
+credentials in any of them (token is a Cloudflare secret), but the Worker
+logic, HubSpot property names and owner ids are public. `booth-deploy.yml`
+deploys the same `.` so it has the same exposure. Fix candidate: deploy from a
+staging dir holding only the HTML and `_redirects`.
+
+**Files touched:** `docs/CHANGELOG.md` only.
+
+---
 ## 2026-09-16 — Blue Ridge booth: a claim is captured wherever the page is opened, and a deploy that needs no laptop
 
 **What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
