@@ -1382,3 +1382,46 @@ agents:
       first run, one open ticket per tutor/type/period, one digest per run,
       hard caps abort loudly, idempotent reruns. Unresolvable tutor = NO
       ticket, flagged (refusal is a signal, a guess is a landmine).
+
+  # ───────────────────────── Cohort intake (IEM HSA) ─────────────────────────
+  - id: cohort-intake
+    runtime: github-actions
+    engine: Cohort intake
+    name: Cohort intake — IEM HSA (sheet → HubSpot deals → first touch → scheduler)
+    owner: roman@wetutorathome.com
+    status: active           # BUILT 2026-09-15 (spec docs/specs/cohort-intake-spec.md); first live run = TEST-001, then the Ready rows 9/16
+    trigger:
+      type: event
+      events: [workflow_dispatch]   # inputs: execute (default FALSE = dry run), only_row, group_label, sheet_id, wait_minutes, refresh
+      workflow: .github/workflows/cohort-intake.yml
+    entrypoint: agents/cohort_intake/__main__.py
+    reads:
+      - Sheets                               # "HSA 26/27 Intake (A+)" Intake tab, A+ Status = Ready rows only (never IEM's sheet)
+      - HubSpot                              # contacts by email, deals by iem_student_id (idempotency), enum option labels
+      - email/state/audit_log.jsonl          # refresh: deal_sync tw_customer_id, sms_sent / sms_skipped per deal
+      - ops/hubspot-schema/school-aliases.yml
+    writes:
+      - HubSpot                              # Family + TOR contacts (fill-only), one deal per student in pipeline 5119061, associations
+      - Sheets                               # agent columns on the same Intake row + one Log line per run
+      - Slack                                # plan DM (visionary, sales), stop-window post, scheduler handoff DM, run summary
+      - email                                # ONE ES group email per ES per group via ops/messenger/one_to_few --channel email (presend cohort_welcome)
+      - email/state/audit_log.jsonl
+      - ops/messenger/state/sends/
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, SLACK_BOT_TOKEN, RESEND_API_KEY, RETENTION_SA_JSON (as GOOGLE_SHEETS_CREDS)"
+      - agents/cohort_intake/config.yml
+      - email/config.yaml                    # sms.pipelines["5119061"], hsa_* copy, presend cohort_welcome, owner_assign.group_parity, hsa
+      - email/templates/welcome_hsa.html
+      - ops/hubspot-schema/properties.yml    # [Agent] HSA Cohort/Group/Sessions/Start/Slot
+    notes: >
+      Turns a Ready group on the A+ intake sheet into HubSpot contacts + one
+      deal per student (IEM Inc. pipeline, Pre-Lesson), then lets the
+      existing rails do the first touch: deal_sync makes the Teachworks
+      family/student and the ES-contact + group-invoice tasks (hsa_sync), the
+      SMS sweep sends one text + one welcome email per family, this agent
+      sends the ES group email and the scheduler handoff. Cohort number from
+      the start date (never the group number); group parity owns the deal
+      (odd A-L, even M-Z); cap 4 per group; hard-stops on any blank required
+      field or unknown school spelling; idempotent on school + student id +
+      subject + term (re-runs update and re-split, never duplicate). Dry run
+      by default; --execute waits a Slack stop window that fails closed.

@@ -191,7 +191,7 @@ def test_welcome_email_sent_with_the_text(wired, monkeypatch):
                                    "email": "maria@x.com"}})
     emails = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda to, first, pconf=None: emails.append((to, first, pconf)))
+                        lambda to, first, pconf=None, **kw: emails.append((to, first, pconf)))
     wired["deals"].append(_deal("D20"))
     sms.run_sweep()
     assert len(wired["sent"]) == 1
@@ -204,7 +204,7 @@ def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
     monkeypatch.setattr(sms.hs, "_get", lambda p, params=None: {
         "id": "C1", "properties": {"firstname": "Maria", "phone": "+15551234567",
                                    "email": "maria@x.com"}})
-    def boom(to, first, pconf=None):
+    def boom(to, first, pconf=None, **kw):
         raise RuntimeError("resend down")
     monkeypatch.setattr(sms, "_send_welcome", boom)
     wired["deals"].append(_deal("D21"))
@@ -220,7 +220,7 @@ def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
 def test_no_welcome_id_means_text_only(wired, monkeypatch):
     emails = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda to, first, pconf=None: emails.append((to, first, pconf)))
+                        lambda to, first, pconf=None, **kw: emails.append((to, first, pconf)))
     wired["deals"].append(_deal("D22"))
     sms.run_sweep()
     assert len(wired["sent"]) == 1 and emails == []
@@ -240,7 +240,7 @@ def test_pipeline_welcome_override_reaches_send(wired, monkeypatch):
                                    "email": "maria@x.com"}})
     got = []
     monkeypatch.setattr(sms, "_send_welcome",
-                        lambda to, first, pconf=None: got.append(pconf))
+                        lambda to, first, pconf=None, **kw: got.append(pconf))
     wired["deals"].append(_deal("D23"))
     sms.run_sweep()
     assert got and got[0]["welcome_template"] == "templates/welcome_trial.html"

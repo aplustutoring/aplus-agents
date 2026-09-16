@@ -84,7 +84,9 @@ def tw_write(method: str, endpoint: str, payload: dict, token: str) -> dict:
             continue
         break
     if r.status_code == 400:
-        wrapper = "student" if endpoint.startswith("students") else "customer"
+        wrapper = ("student" if endpoint.startswith("students")
+                   else "additional_contact" if "additional_contacts" in endpoint
+                   else "customer")
         r = requests.request(method, f"{TW_BASE}/{endpoint}", headers=headers,
                              json={wrapper: payload}, timeout=30)
     r.raise_for_status()
@@ -93,6 +95,24 @@ def tw_write(method: str, endpoint: str, payload: dict, token: str) -> dict:
 
 def create_family(fields: dict, token: str) -> dict:
     return tw_write("POST", "customers/family", fields, token)
+
+
+def add_additional_contact(customer_id, fields: dict, token: str) -> tuple[bool, str]:
+    """SPIKE (spec §5.5): put the ES on the family as an additional contact so
+    she receives session notes. Teachworks documents additional contacts in
+    the UI; whether /v1 accepts them is exactly what this call finds out. The
+    outcome is returned, never raised, so the caller can fall back to a task
+    for the deal owner: (True, detail) on 2xx, (False, why) on anything else.
+    First live result gets written into the CHANGELOG as the spike answer."""
+    try:
+        res = tw_write("POST", f"customers/{customer_id}/additional_contacts", fields, token)
+        return True, f"additional contact {res.get('id', '?')}"
+    except requests.HTTPError as e:
+        code = getattr(e.response, "status_code", "?")
+        body = (getattr(e.response, "text", "") or "")[:120]
+        return False, f"HTTP {code}: {body or 'no body'}"
+    except Exception as e:  # noqa: BLE001 — a spike never breaks the sync
+        return False, str(e)[:160]
 
 
 def update_customer(customer_id, fields: dict, token: str) -> dict:

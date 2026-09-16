@@ -46,16 +46,41 @@ sys.path.insert(0, str(ROOT / "email"))
 
 import messenger as m  # noqa: E402  (bulk engine: render, normalize_phone, jc_send_sms, hs)
 from src import presend  # noqa: E402
-from src.config import cfg as email_cfg  # noqa: E402
+from src.config import DRY_RUN, RESEND_API_KEY, cfg as email_cfg  # noqa: E402
 from src.gmail_client import _scrub_outbound  # noqa: E402
 
 EXTRA_PROPS = ["a_persona", "sms_opt_out", "hs_email_optout", "mobilephone",
                "agent_last_outbound_at", "agent_last_outbound_seat", "student_names",
                "student_count"]
+CHANNELS = ("sms", "email")
+EMAIL_LINE = "email"   # the from-line name presend accepts for email sends
 
 
 def _pc() -> dict:
     return email_cfg().get("presend") or {}
+
+
+def send_email(from_addr: str, to_addr: str, body: str, subject: str) -> tuple[bool, str]:
+    """Email leg of the rail (added 2026-09-15 for the IEM HSA ES email): the
+    same Resend identity the welcome emails use, plain text, reply-to admin@,
+    HubSpot BCC stamp. Subject AND body are customer-facing copy, so both are
+    scrubbed before this is called (build_rows). Returns (ok, detail) like
+    jc_send_sms so send_rows treats the two legs alike."""
+    payload = {"from": from_addr, "to": [to_addr],
+               "reply_to": _pc().get("email_reply_to") or "admin@wetutorathome.com",
+               "subject": subject, "text": body}
+    bcc = (email_cfg().get("hubspot") or {}).get("bcc_log_address")
+    if bcc:
+        payload["bcc"] = [bcc]
+    if DRY_RUN:
+        return True, "dry run"
+    import requests
+    r = requests.post("https://api.resend.com/emails",
+                      headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                      json=payload, timeout=30)
+    if r.status_code >= 300:
+        return False, f"HTTP {r.status_code}: {r.text[:120]}"
+    return True, f"resend {r.json().get('id', 'ok')}"
 
 
 def fetch_contacts(ids: list[str]) -> list[dict]:
@@ -74,8 +99,15 @@ def fetch_contacts(ids: list[str]) -> list[dict]:
 
 def build_rows(contacts: list[dict], *, purpose: str, from_line: str, template: str = "",
                bodies: dict | None = None, confirmed: bool = False, go_token: str = "",
-               check=presend.check) -> list[dict]:
-    """One row per contact: render, scrub, gate. Pure; no sends."""
+               check=None, channel: str = "sms", subject: str = "",
+               subjects: dict | None = None) -> list[dict]:
+    """One row per contact: render, scrub, gate. Pure; no sends.
+    channel="email": the recipient is the contact's email, `subject` (or
+    per-contact `subjects`) is rendered and scrubbed like the body, and the
+    gate runs on the email channel (no quiet hours, no STOP line)."""
+    if channel not in CHANNELS:
+        raise ValueError(f"channel must be one of {CHANNELS}")
+    check = check or presend.check          # resolved at call time (tests patch presend.check)
     rows = []
     for c in contacts:
         cid = c["id"]
@@ -93,6 +125,24 @@ def build_rows(contacts: list[dict], *, purpose: str, from_line: str, template: 
         if not body:
             rows.append({"contact": c, "verdict": "skip", "reasons": ["no body"], "body": ""})
             continue
+        if channel == "email":
+            to = (c.get("email") or "").strip().lower()
+            if "@" not in to:
+                rows.append({"contact": c, "verdict": "skip", "reasons": [f"unusable email {to!r}"],
+                             "body": body, "channel": channel})
+                continue
+            raw_subject = (subjects or {}).get(cid, subject) if subjects is not None else subject
+            subj = _scrub_outbound(m.render(raw_subject, c) if "{{" in (raw_subject or "") else raw_subject)
+            if not subj:
+                rows.append({"contact": c, "verdict": "skip", "reasons": ["no subject"],
+                             "body": body, "channel": channel})
+                continue
+            d = check(cid, "email", from_line, purpose, phone="", body=body,
+                      contact={"id": cid, "properties": c}, confirmed=confirmed, go_token=go_token)
+            rows.append({"contact": c, "verdict": d.verdict, "reasons": d.reasons, "body": body,
+                         "subject": subj, "to": to, "owner": d.owner, "audience": d.audience,
+                         "in_thread": d.in_thread, "channel": channel})
+            continue
         phone = c.get("mobilephone") or c.get("phone") or ""
         e164 = m.normalize_phone(phone)
         if not e164:
@@ -102,7 +152,8 @@ def build_rows(contacts: list[dict], *, purpose: str, from_line: str, template: 
         d = check(cid, "sms", from_line, purpose, phone=e164, body=body,
                   contact={"id": cid, "properties": c}, confirmed=confirmed, go_token=go_token)
         rows.append({"contact": c, "verdict": d.verdict, "reasons": d.reasons, "body": body,
-                     "to": e164, "owner": d.owner, "audience": d.audience, "in_thread": d.in_thread})
+                     "to": e164, "owner": d.owner, "audience": d.audience, "in_thread": d.in_thread,
+                     "channel": "sms"})
     return rows
 
 
@@ -120,11 +171,21 @@ def print_rows(rows: list[dict], from_line: str) -> None:
 
 
 def send_rows(rows: list[dict], *, purpose: str, from_line: str, approved_by: str = "",
-              sender=m.jc_send_sms, record=presend.record_send, delay: float | None = None) -> dict:
-    """Live path: ALLOW rows only. Returns counts."""
-    from_number = (_pc().get("lines") or {}).get(from_line, "")
-    if not from_number:
-        sys.exit(f"no number configured for line {from_line!r} (email/config.yaml presend.lines)")
+              sender=None, record=None, delay: float | None = None,
+              channel: str = "sms") -> dict:
+    """Live path: ALLOW rows only. Returns counts. channel="email" sends each
+    row's scrubbed subject + body through send_email as the configured
+    presend.email_from identity instead of a JustCall line."""
+    record = record or presend.record_send
+    if channel == "email":
+        from_id = (_pc().get("email_from")
+                   or "A+ Tutoring Success Team <admin@wetutorathome.com>")
+        sender = sender or send_email
+    else:
+        from_id = (_pc().get("lines") or {}).get(from_line, "")
+        if not from_id:
+            sys.exit(f"no number configured for line {from_line!r} (email/config.yaml presend.lines)")
+        sender = sender or m.jc_send_sms
     if delay is None:
         delay = float(m.CFG["sms"].get("per_send_delay_s", 0.5))
     log_dir = HERE / "state" / "sends"
@@ -137,13 +198,17 @@ def send_rows(rows: list[dict], *, purpose: str, from_line: str, approved_by: st
             if r["verdict"] != "allow":
                 counts[{"hold": "held", "block": "blocked"}.get(r["verdict"], "skipped")] += 1
                 continue
-            ok, detail = sender(from_number, r["to"], r["body"])
+            if channel == "email":
+                ok, detail = sender(from_id, r["to"], r["body"], r.get("subject", ""))
+            else:
+                ok, detail = sender(from_id, r["to"], r["body"])
             counts["sent" if ok else "failed"] += 1
-            record(r["contact"]["id"], "sms", from_line, purpose, r["to"], r["body"],
+            record(r["contact"]["id"], channel, from_line, purpose, r["to"], r["body"],
                    "one_to_few", ok, detail, approved_by)
             log.write(json.dumps({"contact_id": r["contact"]["id"], "email": r["contact"].get("email"),
                                   "to": r["to"], "ok": ok, "detail": str(detail)[:160],
-                                  "body": r["body"], "purpose": purpose, "from_line": from_line,
+                                  "body": r["body"], "subject": r.get("subject", ""),
+                                  "channel": channel, "purpose": purpose, "from_line": from_line,
                                   "approved_by": approved_by,
                                   "ts": datetime.utcnow().isoformat()}) + "\n")
             time.sleep(delay)
@@ -164,12 +229,20 @@ def main(argv=None):
     ap.add_argument("--live", action="store_true", help="default is dry-run")
     ap.add_argument("--confirm", default="", help='type SEND to allow a live run')
     ap.add_argument("--approved-by", default="", help="who said go (Slack id or name)")
+    ap.add_argument("--channel", choices=CHANNELS, default="sms",
+                    help="email = plain-text email via Resend to the contact's address; --from email")
+    ap.add_argument("--subject", default="", help="email channel: subject ({{token}} merge, scrubbed)")
     args = ap.parse_args(argv)
 
     pc = _pc()
     if args.purpose not in (pc.get("purposes") or {}):
         sys.exit(f"unknown purpose {args.purpose!r}; declare it in email/config.yaml presend.purposes")
-    if args.from_line not in (pc.get("lines") or {}):
+    if args.channel == "email":
+        if args.from_line != EMAIL_LINE:
+            sys.exit(f"--channel email sends from the {EMAIL_LINE!r} line (presend.email_from)")
+        if not args.subject:
+            sys.exit("--channel email requires --subject")
+    elif args.from_line not in (pc.get("lines") or {}):
         sys.exit(f"unknown line {args.from_line!r}; one of {sorted((pc.get('lines') or {}).keys())}")
     live = args.live and args.confirm == "SEND"
     if args.live and not live:
@@ -197,15 +270,15 @@ def main(argv=None):
         bodies = json.loads(Path(args.bodies).read_text())
 
     rows = build_rows(contacts, purpose=args.purpose, from_line=args.from_line, template=template,
-                      bodies=bodies, confirmed=live)
+                      bodies=bodies, confirmed=live, channel=args.channel, subject=args.subject)
     print(f"one_to_few: {len(rows)} contacts, purpose={args.purpose}, from={args.from_line}, "
-          f"{'LIVE' if live else 'DRY RUN'}")
+          f"channel={args.channel}, {'LIVE' if live else 'DRY RUN'}")
     print_rows(rows, args.from_line)
     if not live:
         print("DRY RUN, nothing sent.")
         return 0
     counts = send_rows(rows, purpose=args.purpose, from_line=args.from_line,
-                       approved_by=args.approved_by)
+                       approved_by=args.approved_by, channel=args.channel)
     print(f"done: {counts}")
     return 0
 
