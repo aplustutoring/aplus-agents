@@ -7,6 +7,49 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — Blue Ridge booth: Pages deploys from an allowlist, staff domain button moved below the family chips
+
+**What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
+
+- **Pages upload is an allowlist now.** `pages-dist.sh` copies only
+  `spin-back-to-school.html` and `_redirects` into `.pages-dist/`, and both
+  deploy paths (laptop command in `DEPLOY.md`, the GitHub workflow) upload
+  that directory instead of `.`. `.assetsignore` deleted: it is a Workers
+  static-assets feature and `wrangler pages deploy` never read it, which is
+  why the 2026-09-16 deploy served `worker.js`, `test-worker.mjs`,
+  `wrangler.toml` and `DEPLOY.md` at 200. The workflow's verify step now
+  fails the run if any of those answers 200 on the live site.
+- **Email block reordered for iPad.** Email input is full width, the three
+  family chips (`@gmail.com`, `@outlook.com`, `@yahoo.com`) share the row
+  under it as equal-width 52px tap targets, and the Blue Ridge staff domain
+  is a full-width navy bar at the bottom labeled "Blue Ridge staff: +
+  @theblueridgeacademy.com". Hint text shortened to match. JS and ids are
+  unchanged.
+
+**Why:** Roman, 2026-09-16. The exposure was found while verifying the
+first production deploy (no credentials in the served files, but no reason
+to publish the Worker logic and HubSpot owner ids). The reorder: families
+are most of the booth traffic, so their providers come first; the form has
+to work on the booth iPad.
+
+**Deployed:** Pages production `b5d712ef` (built from `.pages-dist`, branch
+`main`). Verified at the origin with a cache-busting query: root carries the
+new staff bar, "Stickers" and "We will not spam you"; `worker.js`,
+`wrangler.toml`, `DEPLOY.md` return 404. Worker untouched (still
+`734d5ae9`). Tap-tested in the in-app browser at 768x1024 and 1024x768:
+staff bar appends `@theblueridgeacademy.com`, gmail chip replaces it, no
+console errors. `node test-worker.mjs` -> 43 passed.
+
+**Gotcha learned:** `wrangler pages deploy` infers the branch from git, so a
+deploy from a worktree lands on a PREVIEW alias, not production. Pass
+`--branch main` from anywhere that is not the main checkout.
+
+**Files touched:** `booth/blue-ridge/pages-dist.sh` (new),
+`booth/blue-ridge/.assetsignore` (deleted), `booth/blue-ridge/DEPLOY.md`,
+`booth/blue-ridge/spin-back-to-school.html`,
+`.github/workflows/booth-deploy.yml`, `.gitignore`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-16 — Blue Ridge booth DEPLOYED (PR #238 build live on Worker + Pages)
 
 **What changed:** production deploy from Roman's laptop (wrangler OAuth,
