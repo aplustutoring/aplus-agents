@@ -61,6 +61,16 @@ def test_dry_run_plans_and_writes_nothing(monkeypatch):
     assert {u for u, _ in dms} == {"UR", "UD"} and "$1,250.00 → deal create" in dms[0][1]
 
 
+def test_list_prints_every_row_with_status_and_writes_nothing(monkeypatch, capsys):
+    fake = H.FakeHS()
+    dms, sends = _wire(monkeypatch, fake)
+    assert CLI.main(["--list"]) == 0
+    out = capsys.readouterr().out
+    assert "IEM-1001" in out and "Diego Reyna" in out and "Ready" in out
+    assert "reyna.family@gmail.com" not in out                    # no parent contact details
+    assert fake.created_deals == [] and dms == [] and sends == []
+
+
 def test_only_row_narrows_to_one_student(monkeypatch):
     fake = H.FakeHS()
     dms, _ = _wire(monkeypatch, fake)
