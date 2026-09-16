@@ -28,6 +28,8 @@ def main(argv=None) -> int:
                     help="stop window before writing (config default 15; 0 = none)")
     ap.add_argument("--refresh", action="store_true",
                     help="only read the rails back into the sheet (Teachworks ID, Text/Welcome Sent)")
+    ap.add_argument("--list", action="store_true",
+                    help="print every Intake row (id, student, subject, cohort, group, status) and exit")
     ap.add_argument("--by", default=os.getenv("GITHUB_ACTOR", "local"), help="who ran it (Log)")
     args = ap.parse_args(argv)
 
@@ -47,6 +49,21 @@ def main(argv=None) -> int:
     idx = R.header_map(headers)
     resolve = school_resolver()
     today = date.today()
+
+    if args.list:
+        # Every row, whatever its status: the sheet is the source of record
+        # and "is the new kid on it?" must be answerable without a person
+        # opening it. Names and status only; no parent contact details.
+        print(f"{'row':>4}  {'Student ID':12} {'Student':26} {'Subject':14} {'Cohort/Start':14} "
+              f"{'Grp':>3}  {'Status':12} {'Deal':>12}")
+        for row_number, cells in body:
+            g = lambda k: R._cell(cells, idx, k)  # noqa: E731
+            deal = R._cell(cells, idx, "out:HubSpot Deal ID")
+            print(f"{row_number:>4}  {g('student_id'):12} "
+                  f"{(g('student_first') + ' ' + g('student_last')).strip():26} "
+                  f"{g('subject'):14} {g('cohort_start'):14} {g('group'):>3}  "
+                  f"{g('status') or '(blank)':12} {deal:>12}")
+        return 0
 
     # ── parse Ready rows; every hard-stop is reported, none is guessed ──
     parsed: list[R.Row] = []

@@ -37,6 +37,10 @@ on:
         description: "Only read the rails back into the sheet (Teachworks ID, Text/Welcome Sent)"
         type: boolean
         default: false
+      list:
+        description: "Only print every Intake row with its status (no writes)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write   # audit_log + messenger send-log commit-back
@@ -75,6 +79,7 @@ jobs:
           FLAGS=""
           if [ "${{ inputs.execute }}" = "true" ]; then FLAGS="$FLAGS --execute"; fi
           if [ "${{ inputs.refresh }}" = "true" ]; then FLAGS="$FLAGS --refresh"; fi
+          if [ "${{ inputs.list }}" = "true" ]; then FLAGS="$FLAGS --list"; fi
           if [ -n "${{ inputs.only_row }}" ]; then FLAGS="$FLAGS --only-row '${{ inputs.only_row }}'"; fi
           if [ -n "${{ inputs.group_label }}" ]; then FLAGS="$FLAGS --group-label '${{ inputs.group_label }}'"; fi
           if [ -n "${{ inputs.wait_minutes }}" ]; then FLAGS="$FLAGS --wait-minutes ${{ inputs.wait_minutes }}"; fi
