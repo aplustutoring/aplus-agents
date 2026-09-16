@@ -45,7 +45,10 @@ jobs:
   run:
     runs-on: ubuntu-latest
     concurrency:
-      group: aplus-email-state   # shares email/state/audit_log.jsonl with the email agents
+      # Own group: the agent keeps its own state file (agents/cohort_intake/state),
+      # so it never queues behind the relay-fired deal-sync runs. On 2026-09-16
+      # the group-3 execute was evicted from the shared queue and never ran.
+      group: aplus-cohort-intake
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +86,7 @@ jobs:
         run: |
           git config user.name "aplus-agents[bot]"
           git config user.email "agents@wetutorathome.com"
-          git add email/state/audit_log.jsonl ops/messenger/state 2>/dev/null || true
+          git add agents/cohort_intake/state ops/messenger/state 2>/dev/null || true
           if git diff --cached --quiet; then echo "no state changes"; exit 0; fi
           git commit -m "cohort-intake: persist state for $(date -u +%Y-%m-%dT%H:%M)"
           for i in 1 2 3; do

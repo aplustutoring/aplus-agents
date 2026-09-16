@@ -47,10 +47,6 @@ def _wire(monkeypatch, fake_hs):
         return {"sent": len(rows), "failed": 0, "held": 0, "blocked": 0, "skipped": 0}
     monkeypatch.setattr(B.otf, "send_rows", send_rows)
     monkeypatch.setattr(B, "staff", lambda k: H.STAFF.get(k, {}))
-    seen = set()
-    monkeypatch.setattr(B.audit, "already_processed", lambda k: k in seen)
-    real_append = W.audit.append
-    monkeypatch.setattr(B.audit, "append", lambda r: seen.add(r.get("message_id")) or real_append(r))
     return dms, sends
 
 

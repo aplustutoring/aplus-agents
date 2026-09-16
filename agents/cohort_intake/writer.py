@@ -14,9 +14,9 @@ from decimal import Decimal
 from functools import lru_cache
 from zoneinfo import ZoneInfo
 
-from . import cohort as C, messages as M
+from . import cohort as C, messages as M, state as ST
 from .rows import Group, Row
-from ._bootstrap import agent_cfg, audit, email_cfg, hs, staff
+from ._bootstrap import agent_cfg, email_cfg, hs, staff
 
 PT = ZoneInfo("America/Los_Angeles")
 
@@ -99,6 +99,26 @@ def _window_value(prop: str, slot: C.Slot) -> str | None:
     return None
 
 
+_MATH_WORDS = ("math", "algebra", "geometry", "calculus", "statistics", "trig", "precalc")
+_ELA_WORDS = ("english", "ela", "language arts", "reading", "writing", "literature")
+
+
+def _subject_value(subject: str) -> str | None:
+    """The contact's subject_need is a family of options (English Language
+    Arts / Math / Both / Other, read live 2026-09-16), not a course name.
+    'Geometry' and 'Pre-Algebra' are Math; 'English 9' is English Language
+    Arts. Anything else tries a label match and otherwise is skipped."""
+    s = (subject or "").strip().lower()
+    if not s:
+        return None
+    if any(w in s for w in _MATH_WORDS):
+        return enum_value("contacts", "subject_need", "Math")
+    if any(w in s for w in _ELA_WORDS):
+        return enum_value("contacts", "subject_need", "English Language Arts") or \
+            enum_value("contacts", "subject_need", "English")
+    return enum_value("contacts", "subject_need", s.split()[0])
+
+
 def _grade_value(grade: str) -> str | None:
     """'9' → the option labelled '9th', '9th Grade', 'Grade 9' or '9'."""
     g = (grade or "").strip()
@@ -144,7 +164,7 @@ def family_props(row: Row, owner_id: str, existing: dict | None, skipped: list[s
     grade = _grade_value(row.grade)
     if row.grade and not grade:
         skipped.append(f"grade '{row.grade}' has no option on what_is_your_child_s_current_grade_level_")
-    subj = enum_value("contacts", "subject_need", row.subject.split()[0] if row.subject else "")
+    subj = _subject_value(row.subject)
     if row.subject and not subj:
         skipped.append(f"subject '{row.subject}' has no option on subject_need")
     props = {
@@ -359,7 +379,7 @@ def execute_group(group: Group, plan: dict, today: date, dry_run: bool) -> list[
                 out.deal_id = str(made.get("id"))
                 if out.tor_id != "DRYRUN":
                     hs.associate_contact_to_deal(out.deal_id, out.tor_id)
-        audit.append({"message_id": f"cohort:{r.idempotency_key}", "source": "cohort_intake",
+        ST.append({"message_id": f"cohort:{r.idempotency_key}", "source": "cohort_intake",
                       "action_taken": "cohort_deal_created" if out.deal_created else "cohort_deal_updated",
                       "deal_id": out.deal_id, "contact_id": out.contact_id, "tor_id": out.tor_id,
                       "group": props.get("hsa_group"), "amount": str(out.amount),

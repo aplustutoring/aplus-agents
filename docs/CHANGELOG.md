@@ -7,6 +7,55 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — cohort_intake LIVE: cohort 1 enrolled (7 students); what the first runs taught
+
+**Merged:** #233 (build), #234 (slot cells carry no AM/PM: "Mon 10:00"),
+#235 (dry-run searches read HubSpot for real), #236 (workflow passes the
+JustCall secrets the pre-send gate needs before ANY send, email included;
+Monday/Wednesday schedule preference props are WINDOWS "9AM-12PM" /
+"12PM-3PM", the slot maps to the one containing it; ES email + scheduler
+handoff sent once per roster). Schema sync applied: 5 `[Agent] HSA *` props.
+
+**TEST-001 (Roman's row):** deal 65074382964 created, owner Yolanda (group 4,
+even), text at 10:39 PT to Roman's line via the SMS sweep one minute after
+the deal landed (the deal-sync relay IS wired), welcome email to roman@,
+ES email to danielle@ on the second execute, handoff DM to Yolanda. Roman
+reviewed and deleted the deal. Note: the test rode Roman's REAL contact
+(persona Family, lifecycle Customer, parent_* fields added fill-only).
+
+**Cohort 1, 9:56 to 10:02 PT, one execute per group label:** 7 deals.
+G1 English 9 Mon 10 (Avendano 65074362458, Young 65074227815, Espinoza
+65074683727; ES Kathy Paré; Janelle). G2 Geometry Wed 11 (Lebeouf
+65074701917, Riddell 65074724482; ES Munir + Paré; Yolanda). G3 Pre-Algebra
+Wed 3 (Gallegos 65074404751, Daoud 65074665052; ES Ari Taub; Janelle). Every
+family texted + welcome-emailed by the sweep within minutes; Teachworks
+families + students created by deal_sync; ONE group invoice task per group
+to Kath ($3,750 each); ES emails sent to Paré (x2) and Taub.
+
+**Spike answered (spec §5.5):** Teachworks /v1 has NO additional-contact
+endpoint. `POST customers/{id}/additional_contacts` → HTTP 404 (HTML). The
+ES stays a task on the deal owner, one per deal. No fix exists because the
+API does not expose it; the task IS the system.
+
+**Blocked, human:** Melanie Munir's ES email: her HubSpot contact has
+`hs_email_optout` set, the gate BLOCKS. Email her by hand or clear the
+opt-out and re-run `--group-label C1-G2` (once-per-roster guard skips Paré).
+
+**Fixed after the run (this entry's PR):** (1) the group-3 execute was
+CANCELLED in the queue: the workflow shared `aplus-email-state` with the
+relay-fired deal-sync runs, and GitHub evicts an older pending run when a
+newer one queues. The agent now keeps its own state file
+(`agents/cohort_intake/state/audit.jsonl`, `state.py`; the shared log is
+still read for sms/deal_sync markers and for keys written before the split)
+and its own concurrency group. (2) `subject_need` is a family of options
+(English Language Arts / Math / Both / Other): Geometry and Pre-Algebra now
+map to Math, English 9 to English Language Arts (G2/G3 contacts got no
+subject_need; the deals are complete).
+
+**Decision-log entries still due (spec §9.4):** group-parity ownership,
+per-student deal + group invoice, max group 4, zaps retired.
+
+---
 ## 2026-09-15 — cohort_intake: IEM HSA cohort onboarding agent (spec v1) + rail changes
 
 **Spec:** `docs/specs/cohort-intake-spec.md`, saved verbatim first (fb60a857).

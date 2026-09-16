@@ -156,6 +156,14 @@ def test_missing_enum_option_is_skipped_and_reported_not_fatal(monkeypatch):
     assert any("no window option covering 10:00 AM" in s for s in outs[0].skipped_props)
 
 
+def test_course_names_map_to_the_subject_need_family(monkeypatch):
+    H.wire(monkeypatch, H.FakeHS())
+    assert W._subject_value("Geometry") == "Math"
+    assert W._subject_value("Pre-Algebra") == "Math"
+    assert W._subject_value("English 9") == "English Language Arts"
+    assert W._subject_value("Chemistry") is None
+
+
 def test_slot_maps_to_the_portal_window_options(monkeypatch):
     H.wire(monkeypatch, H.FakeHS())
     from agents.cohort_intake import cohort as C
