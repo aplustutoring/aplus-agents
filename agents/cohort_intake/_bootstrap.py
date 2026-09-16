@@ -29,6 +29,12 @@ from src.config import DRY_RUN, cfg as email_cfg, google_creds_dict, staff  # no
 from src.gmail_client import _scrub_outbound as scrub  # noqa: E402
 import one_to_few as otf  # noqa: E402
 
+# A dry run must still SEE HubSpot: the plan says create vs update per contact
+# and deal, which is a search. The client blanks every POST under DRY_RUN
+# unless this flag lets /search through (first live dry run 2026-09-16 called
+# Roman's and Danielle's existing contacts "create").
+hs.SEARCH_PASSTHROUGH = True
+
 __all__ = ["audit", "hs", "presend", "slack_client", "DRY_RUN", "email_cfg", "google_creds_dict",
            "staff", "scrub", "otf", "agent_cfg", "school_resolver", "ROOT", "EMAIL_DIR"]
 
