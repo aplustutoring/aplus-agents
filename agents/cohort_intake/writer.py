@@ -73,6 +73,32 @@ def enum_value(obj: str, prop: str, wanted: str) -> str | None:
     return None
 
 
+_WINDOW = __import__("re").compile(r"(\d{1,2})\s*(am|pm)\s*-\s*(\d{1,2})\s*(am|pm)", __import__("re").I)
+
+
+def _hour24(h: int, ampm: str) -> int:
+    h = h % 12
+    return h + (12 if ampm.lower() == "pm" else 0)
+
+
+def _window_value(prop: str, slot: C.Slot) -> str | None:
+    """The portal's per-day schedule preference is a WINDOW ('9AM-12PM',
+    '12PM-3PM', read live 2026-09-16), not a time. Pick the option whose
+    window contains the slot hour (end inclusive: 3:00 PM → 12PM-3PM)."""
+    m = __import__("re").match(r"(\d{1,2}):(\d{2}) (AM|PM)", slot.time_label)
+    if not m:
+        return None
+    hour = _hour24(int(m.group(1)), m.group(3))
+    for label, value in _options("deals", prop):
+        w = _WINDOW.search(label)
+        if not w:
+            continue
+        lo, hi = _hour24(int(w.group(1)), w.group(2)), _hour24(int(w.group(3)), w.group(4))
+        if lo <= hour <= hi:
+            return value
+    return None
+
+
 def _grade_value(grade: str) -> str | None:
     """'9' → the option labelled '9th', '9th Grade', 'Grade 9' or '9'."""
     g = (grade or "").strip()
@@ -211,9 +237,9 @@ def deal_props(row: Row, group: Group, dates: list[date], amount: Decimal, sessi
     if not charter:
         skipped.append("online__inperson__charter has no 'Charter' option")
     slot_prop = "monday_schedule_preference" if group.slot.weekday == 0 else "wednesday_schedule_preference"
-    slot_val = enum_value("deals", slot_prop, group.slot.time_label)
+    slot_val = _window_value(slot_prop, group.slot)
     if not slot_val:
-        skipped.append(f"{slot_prop} has no option for {group.slot.time_label}")
+        skipped.append(f"{slot_prop} has no window option covering {group.slot.time_label}")
     start, end = dates[0], dates[-1]
     props = {
         "dealname": M.deal_name(row),

@@ -4,13 +4,17 @@ from __future__ import annotations
 
 from agents.cohort_intake import writer as W
 
+# the portal's real labels, read live 2026-09-16
 OPTIONS = {
-    ("contacts", "what_is_your_child_s_current_grade_level_"): [("9th Grade", "9th"), ("10th Grade", "10th")],
-    ("contacts", "subject_need"): [("English", "English"), ("Math", "Math")],
+    ("contacts", "what_is_your_child_s_current_grade_level_"): [("8", "8"), ("9", "9"), ("10", "10")],
+    ("contacts", "subject_need"): [("English Language Arts", "English Language Arts"), ("Math", "Math"),
+                                   ("Both", "Both"), ("Other", "Other")],
     ("contacts", "charter_school_teacher"): [("IEM Inc South Sutter/Ocean Grove/Sky Mountain", "IEM Inc SS/OG/SM")],
-    ("deals", "online__inperson__charter"): [("Online", "Online"), ("Charter", "Charter")],
-    ("deals", "monday_schedule_preference"): [("10:00 AM", "10:00 AM")],
-    ("deals", "wednesday_schedule_preference"): [("11:00 AM", "11:00 AM"), ("3:00 PM", "3:00 PM")],
+    ("deals", "online__inperson__charter"): [("ONLINE PRIVATE PAY", "ONLINE PRIVATE PAY"),
+                                             ("IN-PERSON PRIVATE PAY", "IN-PERSON PRIVATE PAY"),
+                                             ("ONLINE CHARTER", "ONLINE CHARTER"), ("ONLINE OTHER", "ONLINE OTHER")],
+    ("deals", "monday_schedule_preference"): [("9AM-12PM", "9AM-12PM"), ("12PM-3PM", "12PM-3PM")],
+    ("deals", "wednesday_schedule_preference"): [("9AM-12PM", "9AM-12PM"), ("12PM-3PM", "12PM-3PM")],
 }
 STAFF = {"scheduler_a_l": {"name": "Janelle", "hubspot_owner_id": "80047202", "slack_user_id": "UJ"},
          "scheduler_m_z": {"name": "Yolanda", "hubspot_owner_id": "86868539", "slack_user_id": "UY"},

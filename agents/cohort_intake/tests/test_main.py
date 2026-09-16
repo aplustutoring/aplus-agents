@@ -47,6 +47,10 @@ def _wire(monkeypatch, fake_hs):
         return {"sent": len(rows), "failed": 0, "held": 0, "blocked": 0, "skipped": 0}
     monkeypatch.setattr(B.otf, "send_rows", send_rows)
     monkeypatch.setattr(B, "staff", lambda k: H.STAFF.get(k, {}))
+    seen = set()
+    monkeypatch.setattr(B.audit, "already_processed", lambda k: k in seen)
+    real_append = W.audit.append
+    monkeypatch.setattr(B.audit, "append", lambda r: seen.add(r.get("message_id")) or real_append(r))
     return dms, sends
 
 
@@ -91,6 +95,18 @@ def test_execute_writes_deals_one_es_email_per_group_and_one_handoff(monkeypatch
     assert set(stamped) == {2, 3, 4} and stamped[2]["Cohort"] == "1" and stamped[2]["Sessions"] == "25"
     assert sum(1 for _r, v in sheet.outputs if "ES Email Sent" in v) == 3
     assert sheet.logs[-1][0] == "execute" and "deal" in sheet.logs[-1][2]
+
+
+def test_rerun_never_repeats_the_es_email_or_the_handoff(monkeypatch):
+    fake = H.FakeHS()
+    dms, sends = _wire(monkeypatch, fake)
+    assert CLI.main(["--execute", "--wait-minutes", "0"]) == 0
+    fake.deals = list(fake.created_deals)                  # the deals now exist
+    fake.created_deals = []
+    assert CLI.main(["--execute", "--wait-minutes", "0"]) == 0
+    assert len(sends) == 1                                 # ES email once per roster
+    assert len([t for u, t in dms if u == "UJ"]) == 1      # handoff once per roster
+    assert fake.created_deals == [] and len(fake.patched_deals) == 3
 
 
 def test_a_refused_row_never_blocks_the_valid_group(monkeypatch):

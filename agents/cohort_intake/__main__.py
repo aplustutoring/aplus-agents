@@ -128,9 +128,17 @@ def main(argv=None) -> int:
             did_lines.append(f"{r.student_id} deal {o.deal_id} "
                              f"{'created' if o.deal_created else 'updated'} ${o.amount}"
                              + (f" (skipped props: {', '.join(o.skipped_props)})" if o.skipped_props else ""))
-        # ES group email (one per ES per group) through the one_to_few rail
+        # ES group email (one per ES per group) through the one_to_few rail.
+        # Sent ONCE per roster: a retry never repeats it, a late add (new
+        # roster) sends the updated group.
         dates = plans[g.label]["dates"]
+        group_key = f"C{g.cohort.number}-G{g.number}"
+        roster = ",".join(sorted(r.student_id for r in g.rows))
         for es in g.es_emails:
+            es_key = f"cohort-es:{group_key}:{es}:{roster}"
+            if audit.already_processed(es_key):
+                did_lines.append(f"ES email to {es} ({g.label}): already sent for this roster")
+                continue
             tor_id = next((o.tor_id for r, o in zip(g.rows, outcomes) if r.es_email == es), "")
             subject, bodytext = M.es_email(g, es, dates)
             contacts = otf.fetch_contacts([tor_id]) if tor_id and tor_id != "DRYRUN" else []
@@ -145,15 +153,26 @@ def main(argv=None) -> int:
                                    approved_by=args.by, channel="email", delay=0)
             status = "sent" if counts["sent"] else f"NOT sent ({rws[0]['verdict']}: {'; '.join(rws[0]['reasons'])[:120]})"
             did_lines.append(f"ES email to {es} ({g.label}): {status}")
-            for r in g.rows:
-                if r.es_email == es and counts["sent"]:
-                    sheet.write_outputs(headers, r.sheet_row, {"ES Email Sent": S.now_stamp()})
-        # scheduler handoff
+            if counts["sent"]:
+                audit.append({"message_id": es_key, "source": "cohort_intake",
+                              "action_taken": "cohort_es_email_sent", "group": group_key,
+                              "es": es, "roster": roster, "subject": subject})
+                for r in g.rows:
+                    if r.es_email == es:
+                        sheet.write_outputs(headers, r.sheet_row, {"ES Email Sent": S.now_stamp()})
+        # scheduler handoff, once per roster too
         owner = W.group_owner(g.number)
-        handoff = M.scheduler_handoff(g, dates, urls, owner.get("name", "scheduler"))
-        if owner.get("slack_user_id"):
-            slack_client.dm(owner["slack_user_id"], handoff)
-        did_lines.append(f"handoff DM → {owner.get('name', '?')} for {g.label}")
+        handoff_key = f"cohort-handoff:{group_key}:{roster}"
+        if audit.already_processed(handoff_key):
+            did_lines.append(f"handoff DM → {owner.get('name', '?')} for {g.label}: already sent for this roster")
+        else:
+            handoff = M.scheduler_handoff(g, dates, urls, owner.get("name", "scheduler"))
+            if owner.get("slack_user_id"):
+                slack_client.dm(owner["slack_user_id"], handoff)
+            audit.append({"message_id": handoff_key, "source": "cohort_intake",
+                          "action_taken": "cohort_handoff_sent", "group": group_key, "roster": roster,
+                          "owner": owner.get("name")})
+            did_lines.append(f"handoff DM → {owner.get('name', '?')} for {g.label}")
         audit.append({"message_id": f"cohort-run:{g.label}:{today.isoformat()}", "source": "cohort_intake",
                       "action_taken": "cohort_group_processed", "group": f"C{g.cohort.number}-G{g.number}",
                       "deals": [o.deal_id for o in outcomes], "es": g.es_emails,
