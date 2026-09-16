@@ -919,9 +919,11 @@
     415856872,
     415861837,
     415871656,
-    415872189
+    415872189,
+    415877037,
+    415877418
   ],
-  "last_run_utc": "2026-09-16T21:37:35.573608+00:00",
+  "last_run_utc": "2026-09-16T21:45:14.784337+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1496,6 +1498,75 @@
       "tasks_created": [
         [
           "Await Shelby's callback regarding interest in tutoring for Amelia; if no response in a few days, attempt another follow-up contact.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415877418,
+      "number": "17143537555",
+      "time_pt": "2:38 PM",
+      "matched": true,
+      "contact_label": "Mayra Aguilar",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound check-in call from Paola at A+ Tutoring to Mayra Aguilar, an existing customer whose son Mario is receiving Number Sense intervention tutoring. The call went to voicemail; Paola left a friendly message asking how the sessions are going and requesting a callback at Mayra's convenience.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Mayra's callback regarding how Mario's tutoring sessions are going; if no response in a few days, try again.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Paola left a voicemail for Mayra Aguilar (existing customer, son Mario \u2014 9th grade at Sky Mountain, currently in a Number Sense Intervention program) doing a friendly check-in on how sessions are going. No callback time was set. Mayra now expects a warm follow-up whenever she calls back. If she calls in, open with: 'Hi Mayra, thanks for calling us back \u2014 Paola wanted to check in on how Mario's tutoring sessions have been going and see if there's anything we can adjust.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active deal (Mario's Number Sense Intervention); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Mario",
+          "Sky Mountain"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound check-in call from Paola to Mayra regarding Mario's ongoing tutoring. Reached voicemail; left a message asking how sessions are going and requesting a callback.",
+          "what_we_can_do_to_help": "Continue Mario's Number Sense Intervention and follow up with Mayra to confirm the program is meeting his needs; adjust plan based on her feedback once she calls back.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound check-in call from Paola to Mayra regarding Mario's ongoing tutoring. Reached voicemail; left a message asking how sessions are going and requesting a callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue Mario's Number Sense Intervention and follow up with Mayra to confirm the program is meeting his needs; adjust plan based on her feedback once she calls back."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Mayra's callback regarding how Mario's tutoring sessions are going; if no response in a few days, try again.",
           81494333,
           "follow_up"
         ]
