@@ -879,9 +879,11 @@
     415435449,
     415444295,
     415444441,
-    415445358
+    415445358,
+    415447663,
+    415449064
   ],
-  "last_run_utc": "2026-09-16T00:38:13.724260+00:00",
+  "last_run_utc": "2026-09-16T00:47:41.245334+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -2216,6 +2218,149 @@
         ],
         [
           "After diagnostic review, follow up with Justin to propose a tutoring plan (tutor match, schedule, pricing) for Max's Science Academy / IHP prep.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415447663,
+      "number": "16265323220",
+      "time_pt": "5:40 PM",
+      "matched": true,
+      "contact_label": "Christine Nierras",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made a third outbound follow-up call to Christine Nierras about tutoring for her freshman son Matthew. The call went to voicemail; Paola left a message asking Christine to confirm whether she is still interested. No response or new information was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Continue multi-channel outreach to Christine (try email and/or text in addition to phone) to confirm interest and obtain her iLEAD teacher's contact info so we can start the PO for Matthew's online freshman math tutoring.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Christine Nierras (mom of freshman Matthew at iLEAD Exploration, Orange County, online-only, charter-funded math support at $75/hr) has now been left three voicemails by Paola with no callback. She originally inquired 8/21 and we're waiting on her iLEAD teacher's name/email to kick off the PO and start tutor matching. Suggest switching channels \u2014 send a short friendly email and/or SMS referencing the voicemails, restating we just need her iLEAD teacher's contact to move forward. Open with: \"Hi Christine, Paola from A+ Tutoring \u2014 I left you a voicemail today following up on Matthew's math tutoring. Whenever you have a moment, just reply with your iLEAD teacher's name and email and we'll get the PO started.\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "placeholder",
+        "student_or_school_names_mentioned": [
+          "Matthew Nierras",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Follow-up call] Paola placed a third follow-up call to Christine regarding Matthew's tutoring; reached voicemail and left a message asking her to confirm whether she's still interested.",
+          "what_we_can_do_to_help": "[Follow-up call] Shift to multi-channel outreach \u2014 send Christine an email and/or text in addition to calls, restating that we just need her iLEAD teacher's name/email to start the PO and begin tutor matching for Matthew's online freshman math support.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Follow-up call] Paola placed a third follow-up call to Christine regarding Matthew's tutoring; reached voicemail and left a message asking her to confirm whether she's still interested."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Follow-up call] Shift to multi-channel outreach \u2014 send Christine an email and/or text in addition to calls, restating that we just need her iLEAD teacher's name/email to start the PO and begin tutor matching for Matthew's online freshman math support."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Continue multi-channel outreach to Christine (try email and/or text in addition to phone) to confirm interest and obtain her iLEAD teacher's contact info so we can start the PO for Matthew's online freshman math tutoring.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415449064,
+      "number": "18182168970",
+      "time_pt": "5:46 PM",
+      "matched": true,
+      "contact_label": "Erika Villarroel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Erika Villarroel regarding tutoring for her daughter Amalia. Call went to voicemail; Paola left a message asking Erika to confirm if she is still interested in tutoring sessions. No new information gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "If no response from Erika in a few days, attempt another follow-up contact regarding Amalia's ELA tutoring interest.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Erika Villarroel did not answer \u2014 Paola left a voicemail following up on tutoring interest for her daughter Amalia (3rd grade, Vaughn Next Century Learning Center, ELA focus: reading, phonics, blending; goal is closing learning gaps and prepping for private school admission). Prior outreach included texting tutor Gavina's profile with 4/4:30/5 PM options. Erika now expects to hear from us again if she doesn't reply. Suggested opener: 'Hi Erika, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 just checking if you're still interested in getting Amalia started with our ELA tutor Gavina.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only; no contact made and no new information to change status. Existing record already reflects prior engagement.",
+        "student_or_school_names_mentioned": [
+          "Amalia",
+          "Vaughn Next Century Learning Center"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola left Erika a voicemail following up on her interest in tutoring for Amalia. No connection made.",
+          "what_we_can_do_to_help": "[Outbound call] Await Erika's reply; if no response in a few days, attempt another follow-up to confirm interest and lock in a start with Gavina or rematch.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola left Erika a voicemail following up on her interest in tutoring for Amalia. No connection made."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Outbound call] Await Erika's reply; if no response in a few days, attempt another follow-up to confirm interest and lock in a start with Gavina or rematch."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "If no response from Erika in a few days, attempt another follow-up contact regarding Amalia's ELA tutoring interest.",
           81494333,
           "follow_up"
         ]
