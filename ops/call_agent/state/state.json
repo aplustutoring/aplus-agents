@@ -902,9 +902,10 @@
     415788722,
     415787779,
     415802991,
-    415809400
+    415809400,
+    415812471
   ],
-  "last_run_utc": "2026-09-16T19:30:17.477184+00:00",
+  "last_run_utc": "2026-09-16T19:35:14.794451+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1051,6 +1052,75 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 415812471,
+      "number": "13104977863",
+      "time_pt": "12:29 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Jacqueline McLean called seeking online tutoring for her 5th-grade son Prince in math and writing. She was referred by her friend Lindsay Falk, whose daughter works with tutor Aisha, and Jacqueline specifically wants Aisha as the tutor \u2014 she won't proceed if Aisha is unavailable. She wants once-a-week, one-hour lessons; schedule is open except 11:00\u201312:30. Yolanda collected her info and said a success team member would follow up.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check Aisha's availability for a weekly 1-hour online session (avoiding 11:00\u201312:30) for 5th grader Prince McLean in math and writing; if Aisha has no availability, let Jacqueline know as she only wants to proceed with Aisha.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Have a success team member follow up with Jacqueline McLean to confirm next steps, pricing, and book a trial with Aisha if available.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jacqueline McLean (warm, friendly) called after a referral from her friend Lindsay Falk, whose daughter tutors with Aisha. She wants online tutoring for her 5th-grade son Prince McLean in math and writing \u2014 once/week, 1-hour sessions, schedule open except 11:00\u201312:30. She specifically requested Aisha and said if Aisha isn't available, she doesn't want to move forward (personality fit matters to her). Yolanda promised a success team member would reach out. First step: check Aisha's availability, then call Jacqueline. Suggested opener: 'Hi Jacqueline, this is [name] from A+ Tutoring following up on your call \u2014 Lindsay Falk sent you our way for Prince. I checked with Aisha on her availability for a weekly online session in math and writing\u2026'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with; standard tutoring inquiry (not charter, not test prep/diagnostic).",
+        "student_or_school_names_mentioned": [
+          "Prince McLean",
+          "Aisha (tutor)",
+          "Lindsay Falk (referrer)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Jacqueline McLean called seeking online tutoring for her 5th-grade son Prince in math and writing. Referred by friend Lindsay Falk, whose daughter tutors with Aisha. Jacqueline specifically wants Aisha and won't proceed if Aisha is unavailable, citing personality fit. Wants once-weekly 1-hour online sessions; open schedule except 11:00\u201312:30.",
+          "what_we_can_do_to_help": "Check Aisha's availability for a weekly online 1-hour slot and, if open, book a trial for Prince in math/writing. If Aisha is unavailable, let Jacqueline know since she has indicated she'd only move forward with Aisha.",
+          "student_first_name": "Prince",
+          "student_last_name": "McLean",
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": "From a Friend",
+          "referral_name": "Lindsay Falk",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check Aisha's availability for a weekly 1-hour online session (avoiding 11:00\u201312:30) for 5th grader Prince McLean in math and writing; if Aisha has no availability, let Jacqueline know as she only wants to proceed with Aisha.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Have a success team member follow up with Jacqueline McLean to confirm next steps, pricing, and book a trial with Aisha if available.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
