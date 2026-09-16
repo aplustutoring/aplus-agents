@@ -35,6 +35,35 @@ import one_to_few as otf  # noqa: E402
 # Roman's and Danielle's existing contacts "create").
 hs.SEARCH_PASSTHROUGH = True
 
+
+def _retry_429(fn, tries: int = 6):
+    """HubSpot's search API is throttled portal-wide (4/s) and other agents
+    share it; a dry run died on a 429 on 2026-09-16 while planning one late
+    add. A 429 means the call was not processed, so retrying a POST is safe.
+    Honours Retry-After, else 1, 2, 4, 8, 16 s."""
+    import time
+
+    import requests
+
+    def wrapped(*a, **k):
+        for i in range(tries):
+            try:
+                return fn(*a, **k)
+            except requests.HTTPError as e:
+                resp = getattr(e, "response", None)
+                if resp is None or resp.status_code != 429 or i == tries - 1:
+                    raise
+                wait = float((resp.headers or {}).get("Retry-After") or 2 ** i)
+                print(f"  ⏳ HubSpot 429, retry {i + 1}/{tries - 1} in {wait:g}s")
+                time.sleep(wait)
+    wrapped.__name__ = getattr(fn, "__name__", "wrapped")
+    return wrapped
+
+
+hs._get_search = _retry_429(hs._get_search)
+hs._write = _retry_429(hs._write)
+hs._get = _retry_429(hs._get)
+
 __all__ = ["audit", "hs", "presend", "slack_client", "DRY_RUN", "email_cfg", "google_creds_dict",
            "staff", "scrub", "otf", "agent_cfg", "school_resolver", "ROOT", "EMAIL_DIR"]
 
