@@ -922,9 +922,10 @@
     415872189,
     415877037,
     415877418,
-    415888283
+    415888283,
+    415891747
   ],
-  "last_run_utc": "2026-09-16T22:19:02.321141+00:00",
+  "last_run_utc": "2026-09-16T22:31:19.743307+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1698,6 +1699,117 @@
           "Follow up with Judy by email and text to confirm in-person tutor availability and propose a trial session time this week",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 415891747,
+      "number": "19166124712",
+      "time_pt": "3:15 PM",
+      "matched": true,
+      "contact_label": "Judy Bernacchi",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Judy Bernacchi called about SAT tutoring for her 11th-grade daughter Gia, referred by college counselor Terry Sullivan. Gia scored 1110 as a sophomore in March, is currently in AP Lang and Pre-Calc, and is a varsity golfer whose season ends in October. Roman explained the College Board practice test process and advised taking it within two weeks of starting tutoring (so October). Judy will have Gia take the practice test after golf season and text Roman when done to book. Roman confirmed her email was misspelled on file (azededo \u2192 azevedo) and corrected it live via text.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Judy the full-length SAT practice test instructions/links via email once she is ready in October",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Await Judy's text when Gia has completed the practice test, then help book a session on the 2-week rolling calendar",
+            "owner_hint": "Roman",
+            "route": "scheduling"
+          },
+          {
+            "item": "Correct email on file from judyazevedo@hotmail.com spelling confirmation \u2014 ensure record reflects azevedo (z, not c) \u2014 already confirmed working via text",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Judy Bernacchi (warm, engaged parent) called for SAT tutoring for her 11th-grade daughter Gia, referred by college counselor Terry Sullivan. Gia scored 1110 on SAT as a sophomore (March), is in AP Lang + Pre-Calc, is a varsity golfer through October, and also works. Plan agreed: Gia will take a College Board full-length practice test in late September/early October (within 2 weeks of starting tutoring), then Judy will text Roman to book sessions on the 2-week rolling calendar. Roman quoted ~15% average score improvement and set expectations that results depend on independent practice. Email on file was corrected live: it's judyazevedo@hotmail.com (a-z-e-v-e-d-o, with a Z not a C) \u2014 confirmed working via text. Judy expects Roman to send the practice test instructions when she reaches out in October. Suggested opener: 'Hi Judy, checking in \u2014 is Gia wrapping up golf season? Whenever you're ready, I'll send over the College Board practice test links so we can get her scheduled.'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "SAT test prep inquiry \u2014 A+ needs a diagnostic (College Board practice test) before proposing a plan; matches existing QTL - Diagnostic Sent status.",
+        "student_or_school_names_mentioned": [
+          "Gia Bernacchi",
+          "Terry Sullivan (college counselor)"
+        ],
+        "record_updates": {
+          "whats_going_on": "Judy called re: SAT tutoring for 11th-grade daughter Gia (scored 1110 on SAT March of sophomore year). Currently in AP Lang and Pre-Calc. Varsity golfer through October and also works, so wants tutoring to start after golf season ends. Referred by college counselor Terry Sullivan.",
+          "what_we_can_do_to_help": "Have Gia take a College Board full-length practice test in late September/early October (within 2 weeks of starting tutoring) to establish a fresh baseline. Judy will text Roman when Gia completes it, then we book sessions on the 2-week rolling calendar. Roman set expectation of ~15% average score improvement.",
+          "student_first_name": "Gia",
+          "student_last_name": "Bernacchi",
+          "grade_level": "11",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my School",
+          "referral_name": "Terry Sullivan (college counselor)",
+          "email_correction": "judyazevedo@hotmail.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Judy called re: SAT tutoring for 11th-grade daughter Gia (scored 1110 on SAT March of sophomore year). Currently in AP Lang and Pre-Calc. Varsity golfer through October and also works, so wants tutoring to start after golf season ends. Referred by college counselor Terry Sullivan."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Have Gia take a College Board full-length practice test in late September/early October (within 2 weeks of starting tutoring) to establish a fresh baseline. Judy will text Roman when Gia completes it, then we book sessions on the 2-week rolling calendar. Roman set expectation of ~15% average score improvement."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Bernacchi"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Terry Sullivan (college counselor)"
+        ]
+      ],
+      "record_skipped": [
+        [
+          "how_did_you_hear",
+          "From a Friend",
+          "From my School",
+          "existing value kept (fill-only)"
+        ]
+      ],
+      "tasks_created": [
+        [
+          "Send Judy the full-length SAT practice test instructions/links via email once she is ready in October",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Await Judy's text when Gia has completed the practice test, then help book a session on the 2-week rolling calendar",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Correct email on file from judyazevedo@hotmail.com spelling confirmation \u2014 ensure record reflects azevedo (z, not c) \u2014 already confirmed working via text",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
