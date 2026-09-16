@@ -62,6 +62,10 @@ jobs:
           HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          # the pre-send gate verifies JustCall thread history before ANY send,
+          # email included; without these it HOLDS (first live run 2026-09-16)
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
           GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}   # aplus-retention@ service account, Editor on the sheet
           HSA_INTAKE_SHEET_ID: ${{ inputs.sheet_id }}
         run: |

@@ -46,22 +46,22 @@ def test_execute_writes_contacts_deals_and_associations(monkeypatch):
     assert fam["charter_school_family_"] == "true" and fam["hubspot_owner_id"] == "80047202"
     assert fam["student_last_name"] == "Diego"                                  # label "Student FIRST Name"
     assert fam["student_last_name_if_diff_from_parent"] == "Reyna"
-    assert fam["what_is_your_child_s_current_grade_level_"] == "9th"
-    assert fam["subject_need"] == "English" and fam["student_email_address"] == "diego@ieminc.org"
+    assert fam["what_is_your_child_s_current_grade_level_"] == "9"
+    assert fam["subject_need"] == "English Language Arts" and fam["student_email_address"] == "diego@ieminc.org"
     assert fam["teacher_of_record_email_address"] == "kortiz@ieminc.org"
     # three deals, correct props
     assert len(fake.created_deals) == 3 and all(o.deal_created for o in outs)
     d = fake.created_deals[0]["properties"]
     assert d["dealname"] == "Reyna - Diego Reyna - Ocean Grove Charter School - IEM HSA English 9"
     assert d["pipeline"] == "5119061" and d["dealstage"] == "5119062" and d["amount"] == "1250.00"
-    assert d["hubspot_owner_id"] == "80047202" and d["online__inperson__charter"] == "Charter"
+    assert d["hubspot_owner_id"] == "80047202" and d["online__inperson__charter"] == "ONLINE CHARTER"
     assert d["iem_student_id"] == "IEM-1001" and d["hsa_group"] == "C1-G1" and d["hsa_cohort"] == "1"
     assert d["hsa_sessions"] == "25" and d["hsa_start"] == "2026-09-21" and d["hsa_slot"] == "Monday 10:00 AM"
     assert d["number_of_hours_in_this_po"] == "25"
     assert d["start_of_tutoring_for_this_deal"] == "2026-09-21"
     assert d["date_of_last_lesson_in_this_deal"] == "2027-05-10" == d["lessons_fulfilled_date"]
     assert d["schedule_preferences"] == "Monday 10:00 AM PT weekly from Sep 21, 2026"
-    assert d["monday_schedule_preference"] == "10:00 AM"
+    assert d["monday_schedule_preference"] == "9AM-12PM"           # portal windows, not times
     assert d["tor_first_name"] == "Karen" and d["tor_last_name"] == "Ortiz"
     desc = d["description"]
     assert desc.startswith("IEM High School Academy English 9 Intervention, Cohort 1 (Group 1)")
@@ -153,6 +153,15 @@ def test_missing_enum_option_is_skipped_and_reported_not_fatal(monkeypatch):
     assert "online__inperson__charter" not in d and "monday_schedule_preference" not in d
     assert any("no 'Charter' option" in s for s in outs[0].skipped_props)
     assert any("grade '9'" in s for s in outs[0].skipped_props)
+    assert any("no window option covering 10:00 AM" in s for s in outs[0].skipped_props)
+
+
+def test_slot_maps_to_the_portal_window_options(monkeypatch):
+    H.wire(monkeypatch, H.FakeHS())
+    from agents.cohort_intake import cohort as C
+    assert W._window_value("monday_schedule_preference", C.parse_slot("Mon 10:00")) == "9AM-12PM"
+    assert W._window_value("wednesday_schedule_preference", C.parse_slot("Wed 11:00")) == "9AM-12PM"
+    assert W._window_value("wednesday_schedule_preference", C.parse_slot("Wed 3:00")) == "12PM-3PM"
 
 
 def test_wrong_stage_label_refuses_to_write(monkeypatch):
