@@ -76,7 +76,22 @@ Two things this build fixes relative to Sage Oak:
 - Staff may fill the form in on a visitor's behalf. Tap targets are sized for
   that; the `@theblueridgeacademy.com` button exists because both `nikki@` and
   `firstname.lastname@` formats are already in HubSpot, so staff type the local
-  part and tap to append.
+  part and tap to append. `@gmail.com`, `@outlook.com` and `@yahoo.com` sit
+  below it as chips for families. Any of them replaces whatever follows the
+  `@`, so a wrong pick is one more tap, not a backspace.
+- Phone is optional by design. A visitor with no phone still claims the prize.
+- The email field carries a no-spam line and the phone field a matching hint.
+  If the promise there ever stops matching what we actually send, change the
+  sending, not the line.
+
+## The prize list
+
+`categories` in `spin-back-to-school.html` and `PRIZES` in `worker.js` must
+hold the same four names: **Bookmark Scratcher, Pop-it, Squishy Pen, Stickers**.
+The wheel repeats them so the 8 segments alternate color. A name on the wheel
+but not in `PRIZES` is dropped at write time and the visitor's prize never
+reaches `aplus_booth_prize`, silently. `test-worker.mjs` compares the two
+lists, so changing prizes means changing both files and rerunning the tests.
 
 ## Not used here
 

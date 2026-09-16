@@ -412,7 +412,29 @@
     cursor:pointer; letter-spacing:0.02em; white-space:nowrap;
   }
   .domain-btn:active{transform:scale(0.97);}
+  /* Quick-append domain chips. Most visitors use one of three providers, so
+     typing the local part and tapping a chip beats typing it all on a tablet. */
+  .domain-chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .domain-chip{
+    flex:0 1 auto;
+    min-height:44px; padding:0 14px;
+    border-radius:12px;
+    border:2px solid rgba(18,60,98,0.22);
+    background:rgba(18,60,98,0.06); color:var(--navy-deep);
+    font-family:'Space Mono', monospace; font-size:13px; font-weight:700;
+    cursor:pointer; white-space:nowrap;
+  }
+  .domain-chip:active{transform:scale(0.97);}
   .hint-sm{font-size:12px; color:rgba(8,23,38,0.55); margin:6px 0 0;}
+  .no-spam{
+    display:flex; align-items:center; gap:10px;
+    margin:10px 0 0; padding:11px 13px;
+    border-radius:12px;
+    background:rgba(18,60,98,0.06);
+    border:1px dashed rgba(18,60,98,0.28);
+    font-size:13px; line-height:1.35; color:var(--navy-deep);
+  }
+  .no-spam strong{font-weight:800;}
 
   /* Consent: a whole tappable row, never a bare 16px checkbox */
   .consent{
@@ -574,12 +596,23 @@ const CONFIG = {
                  enterkeyhint="next" required>
           <button type="button" class="domain-btn" id="btn-domain">+ @theblueridgeacademy.com</button>
         </div>
-        <p class="hint-sm">Blue Ridge staff: type the part before the @ and tap the button.</p>
+        <div class="domain-chips" id="domain-chips">
+          <button type="button" class="domain-chip" data-domain="@gmail.com">+ @gmail.com</button>
+          <button type="button" class="domain-chip" data-domain="@outlook.com">+ @outlook.com</button>
+          <button type="button" class="domain-chip" data-domain="@yahoo.com">+ @yahoo.com</button>
+        </div>
+        <p class="hint-sm">Type the part before the @ and tap your provider. Blue Ridge staff, use the navy button.</p>
+        <p class="no-spam">
+          <span aria-hidden="true">&#128274;</span>
+          <span><strong>We will not spam you.</strong> We use your email only to send the A+ Tutoring info you asked for. We never sell or share your info, and you can unsubscribe any time.</span>
+        </p>
       </div>
 
       <div class="field">
-        <label for="f-phone">Phone <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input id="f-phone" type="tel" autocomplete="tel" inputmode="tel" enterkeyhint="done">
+        <label for="f-phone">Phone number <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input id="f-phone" type="tel" autocomplete="tel" inputmode="tel"
+               placeholder="(555) 555-5555" enterkeyhint="done">
+        <p class="hint-sm">Only used if we need to reach you about tutoring. No spam texts.</p>
       </div>
 
       <label class="consent" for="f-consent">
@@ -606,16 +639,18 @@ const CONFIG = {
   </div>
 
 <script>
-  // ---- Categories (placeholders — swap these labels once finalized) ----
+  // ---- Prizes. Each one appears twice so the 8 segments alternate colors.
+  // This list is the contract with worker.js PRIZES: an off-list name is
+  // dropped rather than written to aplus_booth_prize. ----
   const categories = [
-    "Tic-Tac-Toe",
     "Bookmark Scratcher",
     "Pop-it",
     "Squishy Pen",
-    "Tic-Tac-Toe",
+    "Stickers",
     "Bookmark Scratcher",
     "Pop-it",
-    "Squishy Pen"
+    "Squishy Pen",
+    "Stickers"
   ];
 
   const navy = "#123c62";
@@ -769,15 +804,23 @@ const CONFIG = {
     setTimeout(() => $("f-role").focus({ preventScroll: true }), 250);
   });
 
-  // ---------- One-tap staff domain ----------
-  $("btn-domain").addEventListener('click', () => {
+  // ---------- One-tap domains ----------
+  // Replaces whatever follows the @ so a visitor who typed the wrong provider
+  // can just tap the right chip instead of backspacing on a tablet.
+  function appendDomain(domain){
     const el = $("f-email");
     const v = el.value.trim();
     if(!v) { el.focus(); return; }
-    el.value = v.includes("@") ? v.split("@")[0] + CONFIG.STAFF_DOMAIN
-                               : v + CONFIG.STAFF_DOMAIN;
+    el.value = (v.includes("@") ? v.split("@")[0] : v) + domain;
     el.focus();
-  });
+  }
+
+  $("btn-domain").addEventListener('click', () => appendDomain(CONFIG.STAFF_DOMAIN));
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll("#domain-chips .domain-chip"),
+    (chip) => chip.addEventListener('click', () => appendDomain(chip.dataset.domain))
+  );
 
   $("btn-back").addEventListener('click', fullReset);
 

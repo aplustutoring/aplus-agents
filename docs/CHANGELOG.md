@@ -7,6 +7,41 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — Blue Ridge booth: final prize set, email domain chips, no-spam line, phone field
+
+**What changed** (`booth/blue-ridge/`, branch `claude/blue-ridge-booth-updates-g3sxhi`):
+
+- **Wheel prizes finalized.** Tic-Tac-Toe is out, Stickers is in. The wheel now
+  offers Bookmark Scratcher, Pop-it, Squishy Pen, Stickers (each twice, so the
+  8 segments still alternate navy/orange). `worker.js` `PRIZES` updated to
+  match, because an off-list label is silently dropped at write time and the
+  visitor's prize would never reach `aplus_booth_prize`. A new test compares
+  the two lists directly so they cannot drift again.
+- **One-tap email domains.** `@gmail.com`, `@outlook.com`, `@yahoo.com` chips
+  under the email field, alongside the existing `@theblueridgeacademy.com`
+  staff button. Tapping a chip replaces whatever follows the `@`, so a visitor
+  who picked the wrong provider re-taps instead of backspacing on a tablet.
+- **No-spam disclaimer** on the email field: what the address is used for, no
+  selling or sharing, unsubscribe any time. Asked for by Roman; a booth tablet
+  asking for an email with no promise attached is the moment people bail.
+- **Phone number field** kept optional but made visible: clearer label, a
+  placeholder, and a hint that it is only used to reach them about tutoring.
+  Left optional on purpose so a missing phone never blocks a prize claim.
+
+**Why:** Roman, 2026-09-16, ahead of the Blue Ridge BTSC booth. The prize list
+was still carrying placeholders, and the capture form asked for an email with
+no reassurance and buried the phone line.
+
+**Files touched:** `booth/blue-ridge/spin-back-to-school.html`,
+`booth/blue-ridge/worker.js`, `booth/blue-ridge/test-worker.mjs`,
+`booth/blue-ridge/DEPLOY.md`, `docs/CHANGELOG.md`.
+
+**Verified:** `node booth/blue-ridge/test-worker.mjs` -> 40 passed (7 new).
+Rendered headless and walked the flow: spin lands a prize, each chip rewrites
+the domain correctly, no console errors. No schema change needed
+(`aplus_booth_prize` is free text, not an enum).
+
+---
 ## 2026-09-16 — cohort_intake LIVE: cohort 1 enrolled (7 students); what the first runs taught
 
 **Merged:** #233 (build), #234 (slot cells carry no AM/PM: "Mon 10:00"),
