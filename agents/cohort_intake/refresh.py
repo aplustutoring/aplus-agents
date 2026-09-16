@@ -10,6 +10,7 @@ Sources, all in email/state/audit_log.jsonl:
 """
 from __future__ import annotations
 
+from . import state as ST
 from ._bootstrap import audit, email_cfg, hs, slack_client
 from .writer import deal_url
 
@@ -37,6 +38,9 @@ def _records_for(deal_ids: set[str]) -> dict[str, dict]:
         elif act in ("sms_skipped_unverified", "sms_error", "sms_held"):
             slot["skipped"].append(f"{act}: {r.get('reason') or r.get('error') or r.get('verdict') or ''}")
         elif mid == f"hsa-sms-skip-dm:{did}":
+            slot["dm_sent"] = True
+    for did, slot in out.items():
+        if ST.already_processed(f"hsa-sms-skip-dm:{did}"):
             slot["dm_sent"] = True
     return out
 
@@ -76,7 +80,7 @@ def refresh(sheet, headers: list[str], row_deals: dict[int, str], dry_run: bool)
             else:
                 if uid:
                     slack_client.dm(uid, text)
-                audit.append({"message_id": f"hsa-sms-skip-dm:{did}", "source": "cohort_intake",
+                ST.append({"message_id": f"hsa-sms-skip-dm:{did}", "source": "cohort_intake",
                               "action_taken": "cohort_sms_skip_dm", "deal_id": did,
                               "notified": uid, "reasons": rec["skipped"][-2:]})
     return recs

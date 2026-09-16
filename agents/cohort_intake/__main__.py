@@ -34,8 +34,8 @@ def main(argv=None) -> int:
     # DRY_RUN must be settled before the email package loads.
     os.environ["DRY_RUN"] = "false" if args.execute else "true"
     from . import cohort as C, messages as M, refresh as RF, rows as R, stop_window, writer as W
-    from . import sheet as S
-    from ._bootstrap import agent_cfg, audit, otf, school_resolver, slack_client, staff
+    from . import sheet as S, state as ST
+    from ._bootstrap import agent_cfg, otf, school_resolver, slack_client, staff
 
     dry = not args.execute
     mode = "execute" if args.execute else "dry-run"
@@ -136,7 +136,7 @@ def main(argv=None) -> int:
         roster = ",".join(sorted(r.student_id for r in g.rows))
         for es in g.es_emails:
             es_key = f"cohort-es:{group_key}:{es}:{roster}"
-            if audit.already_processed(es_key):
+            if ST.already_processed(es_key):
                 did_lines.append(f"ES email to {es} ({g.label}): already sent for this roster")
                 continue
             tor_id = next((o.tor_id for r, o in zip(g.rows, outcomes) if r.es_email == es), "")
@@ -154,7 +154,7 @@ def main(argv=None) -> int:
             status = "sent" if counts["sent"] else f"NOT sent ({rws[0]['verdict']}: {'; '.join(rws[0]['reasons'])[:120]})"
             did_lines.append(f"ES email to {es} ({g.label}): {status}")
             if counts["sent"]:
-                audit.append({"message_id": es_key, "source": "cohort_intake",
+                ST.append({"message_id":es_key, "source": "cohort_intake",
                               "action_taken": "cohort_es_email_sent", "group": group_key,
                               "es": es, "roster": roster, "subject": subject})
                 for r in g.rows:
@@ -163,17 +163,17 @@ def main(argv=None) -> int:
         # scheduler handoff, once per roster too
         owner = W.group_owner(g.number)
         handoff_key = f"cohort-handoff:{group_key}:{roster}"
-        if audit.already_processed(handoff_key):
+        if ST.already_processed(handoff_key):
             did_lines.append(f"handoff DM → {owner.get('name', '?')} for {g.label}: already sent for this roster")
         else:
             handoff = M.scheduler_handoff(g, dates, urls, owner.get("name", "scheduler"))
             if owner.get("slack_user_id"):
                 slack_client.dm(owner["slack_user_id"], handoff)
-            audit.append({"message_id": handoff_key, "source": "cohort_intake",
+            ST.append({"message_id":handoff_key, "source": "cohort_intake",
                           "action_taken": "cohort_handoff_sent", "group": group_key, "roster": roster,
                           "owner": owner.get("name")})
             did_lines.append(f"handoff DM → {owner.get('name', '?')} for {g.label}")
-        audit.append({"message_id": f"cohort-run:{g.label}:{today.isoformat()}", "source": "cohort_intake",
+        ST.append({"message_id": f"cohort-run:{g.label}:{today.isoformat()}", "source": "cohort_intake",
                       "action_taken": "cohort_group_processed", "group": f"C{g.cohort.number}-G{g.number}",
                       "deals": [o.deal_id for o in outcomes], "es": g.es_emails,
                       "owner": owner.get("name")})

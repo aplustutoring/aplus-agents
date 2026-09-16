@@ -101,7 +101,8 @@ def wire(monkeypatch, fake: FakeHS):
     monkeypatch.setattr(W, "hs", fake)
     monkeypatch.setattr(W, "staff", lambda k: STAFF.get(k, {}))
     recorded = []
-    monkeypatch.setattr(W.audit, "append", lambda r: recorded.append(r))
+    monkeypatch.setattr(W.ST, "append", lambda r: recorded.append(r))
+    monkeypatch.setattr(W.ST, "already_processed", lambda k: any(r.get("message_id") == k for r in recorded))
     return recorded
 
 

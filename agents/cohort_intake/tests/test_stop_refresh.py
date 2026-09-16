@@ -71,8 +71,10 @@ class FakeSheet:
 
 def _wire(monkeypatch, records):
     dms, appended = [], []
-    monkeypatch.setattr(RF.audit, "_iter_records", lambda: iter(records + appended))
-    monkeypatch.setattr(RF.audit, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(RF.audit, "_iter_records", lambda: iter(records))
+    monkeypatch.setattr(RF.ST, "append", lambda r: appended.append(r))
+    monkeypatch.setattr(RF.ST, "already_processed",
+                        lambda k: any(r.get("message_id") == k for r in appended))
     monkeypatch.setattr(RF.slack_client, "dm", lambda u, t: dms.append((u, t)))
     monkeypatch.setattr(RF.hs, "_get", lambda p, params=None: {"properties": {"hubspot_owner_id": "80047202",
                                                                               "dealname": "Reyna - Diego"}})
