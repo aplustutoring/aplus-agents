@@ -29089,3 +29089,12 @@
 {"message_id": "pending-po-reminder:64597262000", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64597262000", "po_number": "3114205604", "timestamp": "2026-09-16T22:55:19.232519+00:00"}
 {"message_id": "pending-po-reminder:64606267980", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64606267980", "po_number": "3114205605", "timestamp": "2026-09-16T22:55:19.751758+00:00"}
 {"message_id": "pending-po-reminder:64587351375", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64587351375", "po_number": "3114205606", "timestamp": "2026-09-16T22:55:20.273641+00:00"}
+{"ticket_id": "48554535963", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T23:12:19.497672+00:00"}
+{"ticket_id": "48562595256", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T23:12:20.754794+00:00"}
+{"ticket_id": "48585871509", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T23:12:24.457430+00:00"}
+{"ticket_id": "48551496821", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-16T23:12:30.646334+00:00"}
+{"ticket_id": "48590929751", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T23:12:35.634944+00:00"}
+{"ticket_id": "48573328150", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T23:12:36.724739+00:00"}
+{"ticket_id": "48578946703", "category": "recruitment", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T23:12:40.229753+00:00"}
+{"ticket_id": "48625327769", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-16T23:12:41.028309+00:00"}
+{"ticket_id": "48625327769", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-16T23:12:41.295608+00:00"}
