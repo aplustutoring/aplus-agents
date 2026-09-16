@@ -30,12 +30,29 @@ contact is still captured. You lose the prize/role stamp, not the person.
 
 ## Deploy
 
+Two ways, same result. Prefer the workflow: it runs the tests first, so a
+wheel label the Worker does not accept never reaches the booth.
+
+**From GitHub (no laptop needed).** Actions -> "Blue Ridge booth deploy
+(manual)" -> Run workflow. Leave `dry_run` on for the plan, then run it again
+with `dry_run` off. It deploys the Worker and Pages and then fetches
+`blue-ridge-booth.pages.dev` to confirm the live page really carries the
+build. One-time setup: add repository secrets `CLOUDFLARE_API_TOKEN` (scoped
+to Workers Scripts:Edit and Pages:Edit) and `CLOUDFLARE_ACCOUNT_ID`.
+
+**From a laptop.**
+
 ```bash
 cd booth/blue-ridge
+node test-worker.mjs                                           # gate
 npx wrangler deploy                                            # Worker
-npx wrangler secret put HUBSPOT_TOKEN                          # private app token
+npx wrangler secret put HUBSPOT_TOKEN                          # private app token, once
 npx wrangler pages deploy . --project-name blue-ridge-booth    # Pages
 ```
+
+Deploy BOTH whenever the prize list changes. The wheel labels live in the
+HTML and the whitelist lives in the Worker, so a Pages-only deploy ships a
+prize the Worker then drops.
 
 Chicken-and-egg on first deploy, same as Sage Oak: deploy the Worker, create the
 Pages project, then set `ALLOWED_ORIGIN` in `wrangler.toml` and
@@ -65,6 +82,26 @@ Two things this build fixes relative to Sage Oak:
   current value and unions. A teacher who came to Sage Oak ends up carrying
   both tags.
 
+## Where a claim goes
+
+The page picks its capture route at load, by feature detection, never by
+hostname. The same file ships to both places.
+
+| Opened from | Route | Notes |
+| --- | --- | --- |
+| `blue-ridge-booth.pages.dev` (the booth) | `POST` to the Worker, HubSpot upsert | unchanged behavior |
+| a claude.ai artifact link (preview / backup tablet) | the artifact's own store | the Worker refuses cross-origin calls, so claims are kept with the page and pushed to HubSpot afterwards |
+
+Either way a claim that cannot be sent is written to `localStorage` under
+`blueridge_pending` and retried on the next successful send.
+
+**Booth staff panel:** five taps on the footer line of the wheel screen. It
+shows the capture route, every claim captured on that device, and a Download
+CSV button. Use it to confirm claims are landing without leaving the table,
+and to carry the day home if the route was the artifact store. It closes on
+the idle reset like every other screen, so it never sits open in front of a
+visitor.
+
 ## Booth-staff behavior
 
 - Idle reset returns to the attract screen after `IDLE_RESET_MS`, and the claim
@@ -76,7 +113,22 @@ Two things this build fixes relative to Sage Oak:
 - Staff may fill the form in on a visitor's behalf. Tap targets are sized for
   that; the `@theblueridgeacademy.com` button exists because both `nikki@` and
   `firstname.lastname@` formats are already in HubSpot, so staff type the local
-  part and tap to append.
+  part and tap to append. `@gmail.com`, `@outlook.com` and `@yahoo.com` sit
+  below it as chips for families. Any of them replaces whatever follows the
+  `@`, so a wrong pick is one more tap, not a backspace.
+- Phone is optional by design. A visitor with no phone still claims the prize.
+- The email field carries a no-spam line and the phone field a matching hint.
+  If the promise there ever stops matching what we actually send, change the
+  sending, not the line.
+
+## The prize list
+
+`categories` in `spin-back-to-school.html` and `PRIZES` in `worker.js` must
+hold the same four names: **Bookmark Scratcher, Pop-it, Squishy Pen, Stickers**.
+The wheel repeats them so the 8 segments alternate color. A name on the wheel
+but not in `PRIZES` is dropped at write time and the visitor's prize never
+reaches `aplus_booth_prize`, silently. `test-worker.mjs` compares the two
+lists, so changing prizes means changing both files and rerunning the tests.
 
 ## Not used here
 

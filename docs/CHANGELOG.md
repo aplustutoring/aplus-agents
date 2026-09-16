@@ -7,6 +7,89 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — Blue Ridge booth: a claim is captured wherever the page is opened, and a deploy that needs no laptop
+
+**What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
+
+- **Capture route is chosen by feature detection, not hostname.** The same
+  file ships to Cloudflare Pages and to a claude.ai artifact link. On Pages
+  there is no artifact runtime, so the booth posts to the Worker exactly as
+  before. Opened as an artifact, the Worker refuses the cross-origin call, so
+  the claim is written to the artifact's own store and pushed to HubSpot
+  afterwards. A claim that cannot be sent either way still lands in
+  `localStorage` and retries on the next send.
+- **Booth staff panel:** five taps on the footer of the wheel screen. Shows the
+  capture route, every claim captured on that device, and a Download CSV
+  button. Closes on the idle reset, so it never sits open in front of a
+  visitor.
+- **`booth-deploy.yml`:** manual workflow that runs `test-worker.mjs` as the
+  gate, deploys the Worker and Pages, then fetches
+  `blue-ridge-booth.pages.dev` and fails if the live page does not carry the
+  build. Needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repo
+  secrets, added once.
+
+**Why:** Roman asked for a link that actually works. The repo had no path to
+Cloudflare at all: deploying the booth meant a human with wrangler and
+credentials on a laptop, and nothing in CI could do it or check that it
+happened. Per the investigation rule, the answer to "what would the agent need
+so no human ever does this again" is the workflow, not a reminder to run two
+commands. The artifact-store route is the other half: a booth page that is
+opened anywhere else still captures the visitor rather than dropping them.
+
+**Known limit, stated rather than papered over:** this session cannot deploy.
+The container has no Cloudflare credentials and the network policy blocks
+`api.cloudflare.com` and `blue-ridge-booth.pages.dev` (403 on CONNECT). So
+`blue-ridge-booth.pages.dev` still serves the old build until the workflow runs
+with the secrets in place, or someone runs wrangler. There is no system fix
+available from inside this session; the system fix that IS available is the
+workflow, and it is committed.
+
+**Files touched:** `booth/blue-ridge/spin-back-to-school.html`,
+`booth/blue-ridge/test-worker.mjs`, `booth/blue-ridge/DEPLOY.md`,
+`.github/workflows/booth-deploy.yml`, `docs/CHANGELOG.md`.
+
+**Verified:** `node booth/blue-ridge/test-worker.mjs` -> 43 passed. Both
+capture routes driven headless: with a stubbed artifact runtime the claim
+lands in the store, the staff panel reads it back and the CSV exports; with
+the Worker unreachable and no runtime, the claim queues locally and the panel
+shows it as not yet sent. No console errors in either.
+
+---
+## 2026-09-16 — Blue Ridge booth: final prize set, email domain chips, no-spam line, phone field
+
+**What changed** (`booth/blue-ridge/`, branch `claude/blue-ridge-booth-updates-g3sxhi`):
+
+- **Wheel prizes finalized.** Tic-Tac-Toe is out, Stickers is in. The wheel now
+  offers Bookmark Scratcher, Pop-it, Squishy Pen, Stickers (each twice, so the
+  8 segments still alternate navy/orange). `worker.js` `PRIZES` updated to
+  match, because an off-list label is silently dropped at write time and the
+  visitor's prize would never reach `aplus_booth_prize`. A new test compares
+  the two lists directly so they cannot drift again.
+- **One-tap email domains.** `@gmail.com`, `@outlook.com`, `@yahoo.com` chips
+  under the email field, alongside the existing `@theblueridgeacademy.com`
+  staff button. Tapping a chip replaces whatever follows the `@`, so a visitor
+  who picked the wrong provider re-taps instead of backspacing on a tablet.
+- **No-spam disclaimer** on the email field: what the address is used for, no
+  selling or sharing, unsubscribe any time. Asked for by Roman; a booth tablet
+  asking for an email with no promise attached is the moment people bail.
+- **Phone number field** kept optional but made visible: clearer label, a
+  placeholder, and a hint that it is only used to reach them about tutoring.
+  Left optional on purpose so a missing phone never blocks a prize claim.
+
+**Why:** Roman, 2026-09-16, ahead of the Blue Ridge BTSC booth. The prize list
+was still carrying placeholders, and the capture form asked for an email with
+no reassurance and buried the phone line.
+
+**Files touched:** `booth/blue-ridge/spin-back-to-school.html`,
+`booth/blue-ridge/worker.js`, `booth/blue-ridge/test-worker.mjs`,
+`booth/blue-ridge/DEPLOY.md`, `docs/CHANGELOG.md`.
+
+**Verified:** `node booth/blue-ridge/test-worker.mjs` -> 40 passed (7 new).
+Rendered headless and walked the flow: spin lands a prize, each chip rewrites
+the domain correctly, no console errors. No schema change needed
+(`aplus_booth_prize` is free text, not an enum).
+
+---
 ## 2026-09-16 — cohort_intake LIVE: cohort 1 enrolled (7 students); what the first runs taught
 
 **Merged:** #233 (build), #234 (slot cells carry no AM/PM: "Mon 10:00"),
