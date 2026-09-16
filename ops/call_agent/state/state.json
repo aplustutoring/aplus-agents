@@ -897,9 +897,10 @@
     415776377,
     415779052,
     415781053,
-    415782974
+    415782974,
+    415785654
   ],
-  "last_run_utc": "2026-09-16T18:45:47.406331+00:00",
+  "last_run_utc": "2026-09-16T18:49:12.596607+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -962,6 +963,85 @@
           "Janelle to attempt another outbound call to Sarah Fiore to discuss tutoring support for her four children (Antonio, Eliana, Ariana, Mateo)",
           80047202,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415785654,
+      "number": "12138408656",
+      "time_pt": "11:46 AM",
+      "matched": true,
+      "contact_label": "Kristen Murphy",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring placed an outbound check-in call to Kristen Murphy and reached voicemail. She left a message asking how Sam is doing now that school has started, reminded Kristen that Sam has 14 tutoring hours available to use, and provided the callback number. Yolanda said she would follow up with a text in about 10 minutes.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Kristen the promised follow-up text within ~10 minutes referencing Sam's 14 available tutoring hours and offering to schedule",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "If no response to voicemail/text, attempt another outreach to Kristen to re-engage Sam's tutoring",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Yolanda left a voicemail for Kristen Murphy (mom of Sam, 11th grade at Cleveland, previously flagged for AP Bio support) letting her know Sam has 14 hours on his account available to use now that school has started. Yolanda promised a follow-up text within ~10 minutes with the callback number (818-850-6284). Kristen now expects that text and the option to reach out when ready to schedule. If she responds, open with: \"Hi Kristen, following up on Yolanda's message \u2014 we'd love to get Sam set up with a tutor for AP Bio using the 14 hours you have on file. What days/times work best?\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Kristen is an existing/returning customer with hours on account and an open deal; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Sam",
+          "Cleveland"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound check-in call from Yolanda; reached Kristen's voicemail. Left message noting school has started and Sam has 14 tutoring hours available to use whenever they're ready.",
+          "what_we_can_do_to_help": "Send promised follow-up text with callback info; stand ready to schedule sessions for Sam (previously AP Bio support) using his 14 remaining hours.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound check-in call from Yolanda; reached Kristen's voicemail. Left message noting school has started and Sam has 14 tutoring hours available to use whenever they're ready."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send promised follow-up text with callback info; stand ready to schedule sessions for Sam (previously AP Bio support) using his 14 remaining hours."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Kristen the promised follow-up text within ~10 minutes referencing Sam's 14 available tutoring hours and offering to schedule",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "If no response to voicemail/text, attempt another outreach to Kristen to re-engage Sam's tutoring",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
