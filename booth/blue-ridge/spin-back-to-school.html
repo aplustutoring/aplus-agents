@@ -403,38 +403,35 @@
   }
   .field .row{display:flex; gap:10px;}
   .field .row input{flex:1; min-width:0;}
+  /* Blue Ridge staff domain. Sits BELOW the family chips (Roman 2026-09-16):
+     families are most of the traffic, so their providers come first and the
+     staff button is a full-width navy bar at the bottom of the email block. */
   .domain-btn{
-    flex:0 0 auto;
-    min-height:58px; padding:0 16px;
+    display:block; width:100%;
+    min-height:52px; margin-top:10px; padding:0 16px;
     border-radius:14px; border:none;
     background:var(--navy); color:var(--cream);
-    font-family:'Space Mono', monospace; font-size:12px; font-weight:700;
+    font-family:'Space Mono', monospace; font-size:13px; font-weight:700;
     cursor:pointer; letter-spacing:0.02em; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
   }
   .domain-btn:active{transform:scale(0.97);}
   /* Quick-append domain chips. Most visitors use one of three providers, so
-     typing the local part and tapping a chip beats typing it all on a tablet. */
+     typing the local part and tapping a chip beats typing it all on a tablet.
+     Chips share the row equally so each is a wide iPad tap target; they wrap
+     on a phone. */
   .domain-chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
   .domain-chip{
-    flex:0 1 auto;
-    min-height:44px; padding:0 14px;
+    flex:1 1 130px;
+    min-height:52px; padding:0 14px;
     border-radius:12px;
     border:2px solid rgba(18,60,98,0.22);
     background:rgba(18,60,98,0.06); color:var(--navy-deep);
-    font-family:'Space Mono', monospace; font-size:13px; font-weight:700;
+    font-family:'Space Mono', monospace; font-size:14px; font-weight:700;
     cursor:pointer; white-space:nowrap;
   }
   .domain-chip:active{transform:scale(0.97);}
   .hint-sm{font-size:12px; color:rgba(8,23,38,0.55); margin:6px 0 0;}
-  .no-spam{
-    display:flex; align-items:center; gap:10px;
-    margin:10px 0 0; padding:11px 13px;
-    border-radius:12px;
-    background:rgba(18,60,98,0.06);
-    border:1px dashed rgba(18,60,98,0.28);
-    font-size:13px; line-height:1.35; color:var(--navy-deep);
-  }
-  .no-spam strong{font-weight:800;}
 
   /* Consent: a whole tappable row, never a bare 16px checkbox */
   .consent{
@@ -629,22 +626,16 @@ const CONFIG = {
 
       <div class="field">
         <label for="f-email">Email</label>
-        <div class="row">
-          <input id="f-email" type="email" autocomplete="email"
-                 inputmode="email" autocapitalize="off" spellcheck="false"
-                 enterkeyhint="next" required>
-          <button type="button" class="domain-btn" id="btn-domain">+ @theblueridgeacademy.com</button>
-        </div>
+        <input id="f-email" type="email" autocomplete="email"
+               inputmode="email" autocapitalize="off" spellcheck="false"
+               enterkeyhint="next" required>
         <div class="domain-chips" id="domain-chips">
           <button type="button" class="domain-chip" data-domain="@gmail.com">+ @gmail.com</button>
           <button type="button" class="domain-chip" data-domain="@outlook.com">+ @outlook.com</button>
           <button type="button" class="domain-chip" data-domain="@yahoo.com">+ @yahoo.com</button>
         </div>
-        <p class="hint-sm">Type the part before the @ and tap your provider. Blue Ridge staff, use the navy button.</p>
-        <p class="no-spam">
-          <span aria-hidden="true">&#128274;</span>
-          <span><strong>We will not spam you.</strong> We use your email only to send the A+ Tutoring info you asked for. We never sell or share your info, and you can unsubscribe any time.</span>
-        </p>
+        <p class="hint-sm">Type the part before the @ and tap your provider.</p>
+        <button type="button" class="domain-btn" id="btn-domain">Blue Ridge staff: + @theblueridgeacademy.com</button>
       </div>
 
       <div class="field">
@@ -656,7 +647,7 @@ const CONFIG = {
 
       <label class="consent" for="f-consent">
         <input type="checkbox" id="f-consent">
-        <span>I agree to receive tutoring info from A+ Tutoring.</span>
+        <span><strong>We will not spam you.</strong> We will email you once to say hi.</span>
       </label>
 
       <p class="form-error" id="form-error"></p>

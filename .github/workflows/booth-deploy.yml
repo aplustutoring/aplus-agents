@@ -71,7 +71,11 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@3 pages deploy . --project-name blue-ridge-booth --commit-dirty=true
+        # pages-dist.sh copies ONLY the HTML and _redirects into .pages-dist.
+        # Deploying "." would publish worker.js, wrangler.toml and DEPLOY.md.
+        run: |
+          sh pages-dist.sh
+          npx --yes wrangler@3 pages deploy .pages-dist --project-name blue-ridge-booth --commit-dirty=true
 
       - name: Verify the live page carries this build
         if: ${{ !inputs.dry_run && (inputs.target == 'both' || inputs.target == 'pages') }}
@@ -80,7 +84,14 @@ jobs:
           for i in 1 2 3 4 5; do
             body=$(curl -sS --max-time 20 https://blue-ridge-booth.pages.dev/ || true)
             if echo "$body" | grep -q "Stickers" && echo "$body" | grep -q "We will not spam you"; then
-              echo "live page carries the current prize list and disclaimer"; exit 0
+              echo "live page carries the current prize list and disclaimer"
+              for f in worker.js wrangler.toml DEPLOY.md test-worker.mjs; do
+                code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 20 "https://blue-ridge-booth.pages.dev/$f" || true)
+                if [ "$code" = "200" ]; then
+                  echo "$f is served from the public site; the Pages deploy did not use .pages-dist" >&2; exit 1
+                fi
+              done
+              echo "source files are not served"; exit 0
             fi
             echo "not live yet, retry $i"; sleep 10
           done

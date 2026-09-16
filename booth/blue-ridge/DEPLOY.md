@@ -12,6 +12,7 @@ prize is physical and handed over at the table.
 | `worker.js` | Worker `blue-ridge-booth` — `POST /submit`, HubSpot upsert only | Cloudflare Workers |
 | `spin-back-to-school.html` | Booth front end; posts to `CONFIG.WORKER_URL` | Cloudflare Pages |
 | `wrangler.toml` | `ALLOWED_ORIGIN` (the Pages URL) | — |
+| `pages-dist.sh` | builds `.pages-dist/` = HTML + `_redirects`, the ONLY files Pages uploads | local / CI |
 | `test-worker.mjs` | `node booth/blue-ridge/test-worker.mjs` | local / CI |
 
 ## Order of operations (the schema gate)
@@ -47,8 +48,17 @@ cd booth/blue-ridge
 node test-worker.mjs                                           # gate
 npx wrangler deploy                                            # Worker
 npx wrangler secret put HUBSPOT_TOKEN                          # private app token, once
-npx wrangler pages deploy . --project-name blue-ridge-booth    # Pages
+sh pages-dist.sh                                               # HTML + _redirects only
+npx wrangler pages deploy .pages-dist --project-name blue-ridge-booth --branch main   # Pages (production)
 ```
+
+Never `pages deploy .` from this directory. Pages uploads every file it is
+given and ignores `.assetsignore` (a Workers static-assets feature, not a
+Pages one), so a `.` deploy publishes `worker.js`, `wrangler.toml` and this
+file. `pages-dist.sh` builds the upload from an allowlist instead, and the
+workflow's verify step fails the run if any source file answers 200.
+`--branch main` matters: wrangler infers the branch from git, so a deploy
+from a worktree or feature branch lands on a preview alias, not production.
 
 Deploy BOTH whenever the prize list changes. The wheel labels live in the
 HTML and the whitelist lives in the Worker, so a Pages-only deploy ships a
@@ -114,12 +124,18 @@ visitor.
   that; the `@theblueridgeacademy.com` button exists because both `nikki@` and
   `firstname.lastname@` formats are already in HubSpot, so staff type the local
   part and tap to append. `@gmail.com`, `@outlook.com` and `@yahoo.com` sit
-  below it as chips for families. Any of them replaces whatever follows the
-  `@`, so a wrong pick is one more tap, not a backspace.
+  directly under the email field as three equal-width chips for families; the
+  staff button is the full-width navy bar BELOW them (Roman 2026-09-16:
+  families are most of the traffic, staff know where their button is). Any of
+  them replaces whatever follows the `@`, so a wrong pick is one more tap, not
+  a backspace. Laid out and tap-tested at iPad portrait (768x1024) and
+  landscape (1024x768).
 - Phone is optional by design. A visitor with no phone still claims the prize.
-- The email field carries a no-spam line and the phone field a matching hint.
-  If the promise there ever stops matching what we actually send, change the
-  sending, not the line.
+- The consent checkbox carries the one promise on the form: "We will not
+  spam you. We will email you once to say hi." The phone field has a matching
+  hint. If that promise ever stops matching what we actually send, change the
+  sending, not the line. (Roman 2026-09-16: one disclaimer, not two; the
+  separate no-spam paragraph under the email field was removed.)
 
 ## The prize list
 

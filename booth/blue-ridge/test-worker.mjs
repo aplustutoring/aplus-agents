@@ -177,7 +177,7 @@ t("the staff domain button survives alongside them", () => {
   assert.ok(HTML.includes('id="btn-domain"'));
   assert.ok(HTML.includes("@theblueridgeacademy.com"));
 });
-t("the email field carries a no-spam disclaimer", () => {
+t("the consent acknowledgment carries the no-spam promise", () => {
   assert.ok(/We will not spam you/.test(HTML));
 });
 t("there is a phone number field, and it is submitted", () => {
