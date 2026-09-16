@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-16T06:49:31.139992+00:00",
+ "_last_run": "2026-09-16T12:50:51.293925+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -973,7 +973,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-15",
+  "checked": "2026-09-16",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -981,7 +981,7 @@
   "tw_student_id": "2209726"
  },
  "online:mejia, velena": {
-  "checked": "2026-09-15",
+  "checked": "2026-09-16",
   "deal_id": "64201523521",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-11",
@@ -1502,12 +1502,12 @@
   "tw_student_id": "1950861"
  },
  "online:slavinsky, delilah": {
-  "checked": "2026-09-13",
+  "checked": "2026-09-16",
   "contact_id": "102951",
   "email": "anna.azovskaya@gmail.com",
   "first": "2026-08-17",
   "name": "Delilah Slavinsky",
-  "no_deal_until": "2026-09-16",
+  "no_deal_until": "2026-09-19",
   "tw_student_id": "2290459"
  },
  "online:slavinsky, jake": {
