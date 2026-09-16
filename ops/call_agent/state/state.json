@@ -913,9 +913,10 @@
     415845832,
     415849045,
     415850400,
-    415850163
+    415850163,
+    415850800
   ],
-  "last_run_utc": "2026-09-16T20:42:56.566937+00:00",
+  "last_run_utc": "2026-09-16T20:48:32.395711+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1173,6 +1174,75 @@
       "record_applied": [],
       "record_skipped": [],
       "tasks_created": [],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415850800,
+      "number": "16614862261",
+      "time_pt": "1:41 PM",
+      "matched": true,
+      "contact_label": "Emily Arroyo",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Janelle at A+ Tutoring to Emily Arroyo, an existing customer with an open deal for her 1st grader Emery (iLEAD charter). The call was intercepted by a call-screening service and Emily was not available; Janelle identified herself but did not leave a message before the call ended. No substantive conversation occurred.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Retry outbound call to Emily Arroyo regarding Emery's tutoring; consider leaving a voicemail or sending a text since her line uses a call screener.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Janelle tried Emily Arroyo (existing customer, open deal for 1st grader Emery at iLEAD charter). Call was answered by a screening service and Emily wasn't available; no message left. Emily doesn't know we called. Please retry \u2014 a text may land better than another cold call given the screener. Open with: 'Hi Emily, this is [name] from A+ Tutoring following up on Emery \u2014 when's a good time to connect?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Emily is an existing customer with an open deal; lead status is owned by the deal pipeline and the call never actually connected.",
+        "student_or_school_names_mentioned": [
+          "Emery",
+          "iLEAD California Charters"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound attempt to reach Emily re: Emery's tutoring \u2014 call was intercepted by a screening service and Emily was unavailable. No message left; needs another attempt.",
+          "what_we_can_do_to_help": "Retry contact via call and/or text to re-engage on Emery's open tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound attempt to reach Emily re: Emery's tutoring \u2014 call was intercepted by a screening service and Emily was unavailable. No message left; needs another attempt."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Retry contact via call and/or text to re-engage on Emery's open tutoring plan."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Retry outbound call to Emily Arroyo regarding Emery's tutoring; consider leaving a voicemail or sending a text since her line uses a call screener.",
+          80047202,
+          "follow_up"
+        ]
+      ],
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
