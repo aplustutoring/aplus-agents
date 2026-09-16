@@ -875,9 +875,10 @@
     415423415,
     415425547,
     415427872,
-    415429777
+    415429777,
+    415435449
   ],
-  "last_run_utc": "2026-09-15T23:40:07.599959+00:00",
+  "last_run_utc": "2026-09-15T23:59:46.149793+00:00",
   "pending_digest": [
     {
       "call_id": 415282626,
@@ -2113,6 +2114,112 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415435449,
+      "number": "18186311517",
+      "time_pt": "4:48 PM",
+      "matched": true,
+      "contact_label": "Justin Radell",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman from A+ called Justin Radell to follow up on his inquiry about tutoring for his 5th-grade son Max at Kester Avenue Elementary. Justin wants prep for the IHP and Science Academy middle school entrance exams, with science being the main weak area (math and writing are stronger). Roman explained that math underpins science content and asked Justin to have Max complete the math diagnostic so tutors can customize the science curriculum. Justin also asked about pairing Max with another magnet-program family's child; Roman said that's possible only if both kids have similar strength/weakness profiles, so the second child would need the same diagnostic. Justin agreed to have Max take the diagnostic and send it over.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for Max's completed math diagnostic to come back; once received, review it and use results to determine which science sections (astronomy, biology, chemistry, physics) tutors should prioritize.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "If the other magnet-program family reaches out, send them the same math diagnostic so we can compare profiles and evaluate whether pairing with Max is viable.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "After diagnostic review, follow up with Justin to propose a tutoring plan (tutor match, schedule, pricing) for Max's Science Academy / IHP prep.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Justin Radell (dad, warm and engaged) is prepping his 5th-grader Max at Kester Ave Elementary magnet for middle school entrance exams \u2014 specifically IHP and the Science Academy test. Science is the priority weak area; math and writing are already solid. Roman explained our approach: math skills gate science understanding (fractions\u2192Punnett squares, ratios, percents\u2192atomic mass, etc.), so Max needs to complete our math diagnostic before we scope the science plan. Justin has the diagnostic link and committed to having Max take it and send it back. Justin also asked about semi-private pairing with another magnet family's child; Roman said yes in principle but that child must take the same diagnostic first so we can confirm aligned strengths/weaknesses. No pricing quoted, no session booked yet. Next step is on Justin (return diagnostic). Suggested opener if reaching back out: 'Hi Justin, checking in on Max's math diagnostic \u2014 once we have it we can map out the science prep plan for IHP and Science Academy.'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family; Roman is having Max complete the math diagnostic before scoping a plan for Science Academy / IHP prep \u2014 diagnostic-first workflow.",
+        "student_or_school_names_mentioned": [
+          "Max Radell",
+          "Kester Avenue Elementary School",
+          "IHP",
+          "Science Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Dad Justin called to discuss tutoring for 5th-grader Max (Kester Ave magnet) to prep for IHP and Science Academy middle school entrance exams. Science is the main gap \u2014 elementary curriculum hasn't gone deep enough \u2014 while math and writing are stronger. Justin also asked about potentially pairing Max with another magnet-program family's child for semi-private sessions.",
+          "what_we_can_do_to_help": "Have Max complete the math diagnostic so Roman can identify which science domains (astronomy, biology, chemistry, physics) to prioritize and match a tutor who can build science understanding with parallel math scaffolding. If the other magnet family wants to pair up, have that child take the same diagnostic so we can confirm aligned strengths/weaknesses before combining them.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": "Kester Avenue Elementary",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Dad Justin called to discuss tutoring for 5th-grader Max (Kester Ave magnet) to prep for IHP and Science Academy middle school entrance exams. Science is the main gap \u2014 elementary curriculum hasn't gone deep enough \u2014 while math and writing are stronger. Justin also asked about potentially pairing Max with another magnet-program family's child for semi-private sessions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Have Max complete the math diagnostic so Roman can identify which science domains (astronomy, biology, chemistry, physics) to prioritize and match a tutor who can build science understanding with parallel math scaffolding. If the other magnet family wants to pair up, have that child take the same diagnostic so we can confirm aligned strengths/weaknesses before combining them."
+        ],
+        [
+          "student_school",
+          "Kester",
+          "Kester Avenue Elementary"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Max's completed math diagnostic to come back; once received, review it and use results to determine which science sections (astronomy, biology, chemistry, physics) tutors should prioritize.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "If the other magnet-program family reaches out, send them the same math diagnostic so we can compare profiles and evaluate whether pairing with Max is viable.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "After diagnostic review, follow up with Justin to propose a tutoring plan (tutor match, schedule, pricing) for Max's Science Academy / IHP prep.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [

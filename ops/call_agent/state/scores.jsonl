@@ -397,3 +397,4 @@
 {"call_id": 415423415, "date_pt": "2026-09-15", "agent": "Emily Shulman", "direction": "outgoing", "overall": 3.2, "scores": {"U1": 2, "U2": 5, "U3": 3, "U5": 3, "S1": 4, "S2": 4, "S3": 2, "S4": 3}}
 {"call_id": 415425547, "date_pt": "2026-09-15", "agent": "Emily Shulman", "direction": "outgoing", "overall": 2.9, "scores": {"U1": 3, "U2": 3, "U3": 2, "U5": 3, "S3": 4, "V1": 3, "V2": 2}}
 {"call_id": 415427872, "date_pt": "2026-09-15", "agent": "Paola Sarmiento", "direction": "incoming", "overall": 3.8, "scores": {"U1": 4, "U2": 4, "U3": 4, "U4": 5, "U5": 4, "S1": 2, "S2": 2, "S3": 5, "S4": 4}}
+{"call_id": 415435449, "date_pt": "2026-09-15", "agent": "Roman Slavinsky", "direction": "outgoing", "overall": 3.9, "scores": {"U1": 4, "U2": 4, "U3": 4, "U5": 4, "S1": 3, "S2": 5, "S4": 3}}
