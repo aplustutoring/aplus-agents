@@ -29010,3 +29010,4 @@
 {"ticket_id": "48570546298", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-16T20:20:37.168291+00:00"}
 {"ticket_id": "48570546298", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-16T20:20:37.470651+00:00"}
 {"ticket_id": "48578946703", "category": "recruitment", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-16T20:20:37.986237+00:00"}
+{"message_id": "error:deal:65027703332", "source": "deal_sync", "deal_id": "65027703332", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-16T20:27:54.673160+00:00"}
