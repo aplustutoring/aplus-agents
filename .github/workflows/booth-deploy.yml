@@ -1,0 +1,88 @@
+name: Blue Ridge booth deploy (manual)
+
+# Fleet convention: agents think in Pacific Time (see registry.yml header).
+env:
+  TZ: America/Los_Angeles
+
+# Deploys booth/blue-ridge to Cloudflare: the Worker (blue-ridge-booth) and
+# the Pages project (blue-ridge-booth.pages.dev). Manual by design, same as
+# the schema sync: a booth goes live when a human says so.
+#
+# Before the first run, add two repository secrets:
+#   CLOUDFLARE_API_TOKEN   scoped to Workers Scripts:Edit + Pages:Edit
+#   CLOUDFLARE_ACCOUNT_ID
+# The Worker's own HUBSPOT_TOKEN is a Worker secret, set once with
+# `npx wrangler secret put HUBSPOT_TOKEN`, and is NOT set from here.
+#
+# Order matters when the prize list changes: the Worker whitelist and the
+# wheel labels have to go live together, so this deploys both by default.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "What to deploy"
+        type: choice
+        options: [both, worker, pages]
+        default: both
+      dry_run:
+        description: "Run the tests and print the plan, deploy nothing"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: booth/blue-ridge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # The tests are the gate: they assert the wheel labels and the Worker
+      # prize whitelist still agree, so a mismatch never reaches the booth.
+      - name: Test
+        run: node test-worker.mjs
+
+      - name: Plan
+        run: |
+          echo "target:  ${{ inputs.target }}"
+          echo "dry_run: ${{ inputs.dry_run }}"
+          echo "worker:  blue-ridge-booth"
+          echo "pages:   blue-ridge-booth (blue-ridge-booth.pages.dev)"
+          grep -n "ALLOWED_ORIGIN" wrangler.toml
+          grep -n "WORKER_URL" spin-back-to-school.html | head -1
+
+      - name: Deploy Worker
+        if: ${{ !inputs.dry_run && (inputs.target == 'both' || inputs.target == 'worker') }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@3 deploy
+
+      - name: Deploy Pages
+        if: ${{ !inputs.dry_run && (inputs.target == 'both' || inputs.target == 'pages') }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@3 pages deploy . --project-name blue-ridge-booth --commit-dirty=true
+
+      - name: Verify the live page carries this build
+        if: ${{ !inputs.dry_run && (inputs.target == 'both' || inputs.target == 'pages') }}
+        run: |
+          sleep 15
+          for i in 1 2 3 4 5; do
+            body=$(curl -sS --max-time 20 https://blue-ridge-booth.pages.dev/ || true)
+            if echo "$body" | grep -q "Stickers" && echo "$body" | grep -q "We will not spam you"; then
+              echo "live page carries the current prize list and disclaimer"; exit 0
+            fi
+            echo "not live yet, retry $i"; sleep 10
+          done
+          echo "Pages deploy did not show the current build. Check the Cloudflare dashboard." >&2
+          exit 1

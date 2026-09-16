@@ -184,6 +184,24 @@ t("there is a phone number field, and it is submitted", () => {
   assert.ok(HTML.includes('id="f-phone"'));
   assert.ok(/phone: \$\("f-phone"\)\.value\.trim\(\)/.test(HTML));
 });
+t("the capture route falls back to the Worker when there is no artifact runtime", () => {
+  // On Pages there is no window.claude, so cloudDb stays null and the booth
+  // posts to the Worker exactly as before. Guard the feature-detect, not the
+  // hostname: the same file ships to both.
+  assert.ok(/window\.claude && typeof window\.claude\.use === "function"/.test(HTML));
+  assert.ok(/claude\.use\("db"\)/.test(HTML));
+  assert.ok(/if\(cloudDb\)/.test(HTML), "the db branch has to be conditional");
+});
+t("a claim that cannot be sent is still kept locally", () => {
+  assert.ok(/queuePending\(payload\)/.test(HTML));
+  assert.ok(/blueridge_pending/.test(HTML));
+});
+t("the staff panel exists and can export the day", () => {
+  for (const id of ["footer-tap", "staff-overlay", "staff-csv", "staff-list"]) {
+    assert.ok(HTML.includes(`id="${id}"`), `missing #${id}`);
+  }
+  assert.ok(/blue-ridge-claims-/.test(HTML));
+});
 t("no em dashes or double hyphens in the visitor-facing copy", () => {
   // Roman 2026-08-24, locked: never in customer-facing communication.
   const visible = HTML.split("<body>")[1].replace(/<script[\s\S]*?<\/script>/g, "");
