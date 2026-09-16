@@ -916,9 +916,10 @@
     415850163,
     415850800,
     415856009,
-    415856872
+    415856872,
+    415861837
   ],
-  "last_run_utc": "2026-09-16T20:59:47.715219+00:00",
+  "last_run_utc": "2026-09-16T21:09:44.373429+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1364,6 +1365,72 @@
         [
           "Follow up with Excel Academy teacher/EF to request the purchase order once Lorena submits her request",
           81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415861837,
+      "number": "18187216225",
+      "time_pt": "2:01 PM",
+      "matched": true,
+      "contact_label": "Mary Gonzalez",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ called Mary Gonzalez (existing customer) and Mary asked to confirm tomorrow's session times for her boys. Janelle confirmed the sessions are at 11:00 and 12:00. Janelle also let Mary know the low-balance auto-message can be disregarded; Mary confirmed she's covered for September and will have a PO sent for October near month-end. Friendly, quick check-in call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for Mary's October PO to come through near end of September and process once received.",
+            "owner_hint": "Janelle",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Mary Gonzalez (existing customer, rate locked at $70/hr, coordinates only with Janelle) called to confirm tomorrow's session times for her boys \u2014 confirmed 11:00 AM and 12:00 PM. She was told to disregard the automated low-balance message; she confirmed she's covered for September and will have her charter send a PO for October toward the end of this month. Mary expects the October PO to be processed smoothly when it arrives. Open any follow-up with: 'Hi Mary, just checking in on the October PO from your charter \u2014 let me know once it's sent and I'll get it logged.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer actively receiving tutoring; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "[call] Mary called to confirm tomorrow's session times for her boys; Janelle confirmed 11:00 AM and 12:00 PM. Janelle noted the automated low-balance message could be disregarded. Mary confirmed she is covered for September and will have the charter send an October PO toward the end of September.",
+          "what_we_can_do_to_help": "[call] Continue routing all scheduling through Janelle. Watch for the October PO from Mary's charter near end of September and process on arrival. Keep the $70/hr rate lock flagged on the account.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Mary called to confirm tomorrow's session times for her boys; Janelle confirmed 11:00 AM and 12:00 PM. Janelle noted the automated low-balance message could be disregarded. Mary confirmed she is covered for September and will have the charter send an October PO toward the end of September."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Continue routing all scheduling through Janelle. Watch for the October PO from Mary's charter near end of September and process on arrival. Keep the $70/hr rate lock flagged on the account."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Mary's October PO to come through near end of September and process once received.",
+          80047202,
           "follow_up"
         ]
       ],
