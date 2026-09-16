@@ -923,9 +923,10 @@
     415877037,
     415877418,
     415888283,
-    415891747
+    415891747,
+    415893476
   ],
-  "last_run_utc": "2026-09-16T22:31:19.743307+00:00",
+  "last_run_utc": "2026-09-16T22:37:55.328028+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1815,6 +1816,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415893476,
+      "number": "14807091882",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Nadia Stahl",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound call to Nadia Stahl to follow up on a meeting booked for today. The call went to Nadia's voicemail and Paola left a message asking Nadia to call back with a good time to connect. No new information was exchanged.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Nadia's callback regarding the meeting booked for today; if no response, try again to reconfirm the meeting.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Nadia Stahl to reconfirm a meeting that was already booked for today. Nadia has not called back yet. If she calls in, open with: 'Hi Nadia, this is [name] from A+ Tutoring returning Paola's message \u2014 we just wanted to reconfirm our meeting today, is now still a good time?' Be ready to reschedule if she can no longer make it. No student details are on file yet, so use the reconnect as a chance to capture student name, grade, school, and subject needs.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is already in the deal pipeline as 'Meeting Booked'; this was just a voicemail with no new info to change status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola called Nadia to reconfirm today's booked meeting and reached voicemail; left a message asking Nadia to call back with a good time to connect.",
+          "what_we_can_do_to_help": "Wait for Nadia's callback and reconfirm the meeting time; if no response, attempt another outreach before the scheduled meeting time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Nadia to reconfirm today's booked meeting and reached voicemail; left a message asking Nadia to call back with a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Wait for Nadia's callback and reconfirm the meeting time; if no response, attempt another outreach before the scheduled meeting time."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Nadia's callback regarding the meeting booked for today; if no response, try again to reconfirm the meeting.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
