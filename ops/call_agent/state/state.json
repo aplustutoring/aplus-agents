@@ -914,9 +914,10 @@
     415849045,
     415850400,
     415850163,
-    415850800
+    415850800,
+    415856009
   ],
-  "last_run_utc": "2026-09-16T20:48:32.395711+00:00",
+  "last_run_utc": "2026-09-16T20:53:15.776964+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -1240,6 +1241,128 @@
         [
           "Retry outbound call to Emily Arroyo regarding Emery's tutoring; consider leaving a voicemail or sending a text since her line uses a call screener.",
           80047202,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415856009,
+      "number": "16614090544",
+      "time_pt": "1:41 PM",
+      "matched": true,
+      "contact_label": "Lorena Pereyda",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Lorena Pereyda back after a missed call. Lorena, a single homeschooling mom with three kids at Excel Academy charter school, wants to enroll all three in English/reading tutoring online (math is being handled by Mathnasium). She confirmed charter funds will cover it, wants 1-hour sessions three times a week (Mon/Wed/Fri, mornings ~11am M/F and 3pm Wed), ideally all three kids at the same time on their own devices. Paola quoted $75/hr and promised to email vendor info so Lorena can submit the purchase order through the charter portal tonight.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Lorena A+ Tutoring's vendor info and $75/hr rate so she can submit the PO through the Excel Academy portal tonight",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Schedule three concurrent 1-hour online English sessions (6th, 5th, 3rd graders) Mon/Fri ~11am and Wed 3pm once PO is approved",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Excel Academy teacher/EF to request the purchase order once Lorena submits her request",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Lorena Pereyda (warm, motivated single mom) is enrolling all THREE of her kids at Excel Academy charter \u2014 Sikhlali (6th), Ezequiel (5th), and Alexander (3rd) \u2014 in ONLINE English/reading support. Math is being handled by Mathnasium, so we are English only. She wants 1-hr sessions 3x/week, ideally all three kids at the same time on their own devices: Mon & Fri around 11am (kids finish school by 10), Wed at 3pm. Paola quoted $75/hr (=$225/wk) and is emailing vendor info to razohomeschool@gmail.com so Lorena can submit the PO through the charter portal tonight; she wants to start next month. Kids are behind grade level per recent iReady; goal is steady catch-up. Open with: 'Hi Lorena, following up on your call with Paola \u2014 just confirming we sent the vendor info for Excel Academy and letting you know we're ready to line up tutors for Sikhlali, Ezequiel and Alexander as soon as the PO comes through.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Charter-school family (Excel Academy) paying via instructional funds; actively moving to submit PO.",
+        "student_or_school_names_mentioned": [
+          "Sikhlali Pereyda",
+          "Ezequiel Pereyda",
+          "Alexander Pereyda",
+          "Excel Academy",
+          "Mathnasium"
+        ],
+        "record_updates": {
+          "whats_going_on": "Lorena wants to enroll all 3 of her kids at Excel Academy charter in online English/reading tutoring \u2014 Sikhlali (6th), Ezequiel (5th), Alexander (3rd). Kids are behind grade level per recent iReady; math is being handled separately by Mathnasium. Single mom, homeschooling, motivated to start next month.",
+          "what_we_can_do_to_help": "Online 1-hr English sessions 3x/week (Mon & Fri ~11am, Wed 3pm), ideally all three siblings concurrently on their own devices. Quoted $75/hr; sending vendor info so Lorena can submit PO through Excel Academy portal tonight.",
+          "student_first_name": "Ezequiel",
+          "student_last_name": "Pereyda",
+          "grade_level": "5",
+          "student_school": "Excel Academy",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": null,
+          "email_correction": "razohomeschool@gmail.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Lorena wants to enroll all 3 of her kids at Excel Academy charter in online English/reading tutoring \u2014 Sikhlali (6th), Ezequiel (5th), Alexander (3rd). Kids are behind grade level per recent iReady; math is being handled separately by Mathnasium. Single mom, homeschooling, motivated to start next month."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Online 1-hr English sessions 3x/week (Mon & Fri ~11am, Wed 3pm), ideally all three siblings concurrently on their own devices. Quoted $75/hr; sending vendor info so Lorena can submit PO through Excel Academy portal tonight."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Pereyda"
+        ],
+        [
+          "student_school",
+          "Excel Acdemy",
+          "Excel Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "email_correction",
+          "pereydalorenaphp@gmail.com",
+          "razohomeschool@gmail.com"
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Lorena A+ Tutoring's vendor info and $75/hr rate so she can submit the PO through the Excel Academy portal tonight",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Schedule three concurrent 1-hour online English sessions (6th, 5th, 3rd graders) Mon/Fri ~11am and Wed 3pm once PO is approved",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Excel Academy teacher/EF to request the purchase order once Lorena submits her request",
+          81494333,
           "follow_up"
         ]
       ],
