@@ -25,6 +25,12 @@ Newest entries first.
   is a full-width navy bar at the bottom labeled "Blue Ridge staff: +
   @theblueridgeacademy.com". Hint text shortened to match. JS and ids are
   unchanged.
+- **One disclaimer, not two** (Roman 2026-09-16: "just the acknowledgment
+  should stay"). The no-spam paragraph under the email field is gone. The
+  consent checkbox now reads "We will not spam you. We will email you once to
+  say hi." The phone hint stays (it is a field hint, not a disclaimer). The
+  whole claim form now fits one iPad portrait screen without scrolling.
+  Pages production `858311fb`.
 
 **Why:** Roman, 2026-09-16. The exposure was found while verifying the
 first production deploy (no credentials in the served files, but no reason

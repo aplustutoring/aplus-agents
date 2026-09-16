@@ -432,15 +432,6 @@
   }
   .domain-chip:active{transform:scale(0.97);}
   .hint-sm{font-size:12px; color:rgba(8,23,38,0.55); margin:6px 0 0;}
-  .no-spam{
-    display:flex; align-items:center; gap:10px;
-    margin:10px 0 0; padding:11px 13px;
-    border-radius:12px;
-    background:rgba(18,60,98,0.06);
-    border:1px dashed rgba(18,60,98,0.28);
-    font-size:13px; line-height:1.35; color:var(--navy-deep);
-  }
-  .no-spam strong{font-weight:800;}
 
   /* Consent: a whole tappable row, never a bare 16px checkbox */
   .consent{
@@ -645,10 +636,6 @@ const CONFIG = {
         </div>
         <p class="hint-sm">Type the part before the @ and tap your provider.</p>
         <button type="button" class="domain-btn" id="btn-domain">Blue Ridge staff: + @theblueridgeacademy.com</button>
-        <p class="no-spam">
-          <span aria-hidden="true">&#128274;</span>
-          <span><strong>We will not spam you.</strong> We use your email only to send the A+ Tutoring info you asked for. We never sell or share your info, and you can unsubscribe any time.</span>
-        </p>
       </div>
 
       <div class="field">
@@ -660,7 +647,7 @@ const CONFIG = {
 
       <label class="consent" for="f-consent">
         <input type="checkbox" id="f-consent">
-        <span>I agree to receive tutoring info from A+ Tutoring.</span>
+        <span><strong>We will not spam you.</strong> We will email you once to say hi.</span>
       </label>
 
       <p class="form-error" id="form-error"></p>

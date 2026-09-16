@@ -131,9 +131,11 @@ visitor.
   a backspace. Laid out and tap-tested at iPad portrait (768x1024) and
   landscape (1024x768).
 - Phone is optional by design. A visitor with no phone still claims the prize.
-- The email field carries a no-spam line and the phone field a matching hint.
-  If the promise there ever stops matching what we actually send, change the
-  sending, not the line.
+- The consent checkbox carries the one promise on the form: "We will not
+  spam you. We will email you once to say hi." The phone field has a matching
+  hint. If that promise ever stops matching what we actually send, change the
+  sending, not the line. (Roman 2026-09-16: one disclaimer, not two; the
+  separate no-spam paragraph under the email field was removed.)
 
 ## The prize list
 
