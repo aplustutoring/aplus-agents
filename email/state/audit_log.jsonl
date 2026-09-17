@@ -29283,3 +29283,65 @@
 {"ticket_id": "48608480363", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T18:30:50.545327+00:00"}
 {"ticket_id": "48626107916", "category": "payment_dispute", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T18:30:51.142579+00:00"}
 {"ticket_id": "48619115267", "category": "cancellation", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T18:30:51.906454+00:00"}
+{"message_id": "task-autoclosed:117028340558", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117028340558", "po_number": "7014230392", "invoice": "54729", "subject": "Convert PO to TW invoice \u2014 Joseph Cruz (Elite Academic Academy, PO 7014230392, $300.0)", "timestamp": "2026-09-17T18:49:27.673103+00:00"}
+{"message_id": "task-autoclosed:117005671309", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117005671309", "po_number": "7014228156", "invoice": "54721", "subject": "Convert PO to TW invoice \u2014 Legend Tofa (Elite Academic Academy, PO 7014228156, $480.0)", "timestamp": "2026-09-17T18:49:27.954707+00:00"}
+{"message_id": "task-autoclosed:117006437710", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117006437710", "po_number": "635502", "invoice": "54722", "subject": "Convert PO to TW invoice \u2014 Justin LaRue (Visions In Education, PO 635502, $65.0)", "timestamp": "2026-09-17T18:49:28.249218+00:00"}
+{"message_id": "task-autoclosed:117027410997", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117027410997", "po_number": "635503", "invoice": "54723", "subject": "Convert PO to TW invoice \u2014 Justin LaRue (Visions In Education, PO 635503, $65.0)", "timestamp": "2026-09-17T18:49:28.528528+00:00"}
+{"message_id": "task-autoclosed:117015215189", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117015215189", "po_number": "635504", "invoice": "54724", "subject": "Convert PO to TW invoice \u2014 Justin LaRue (Visions In Education, PO 635504, $65.0)", "timestamp": "2026-09-17T18:49:28.831362+00:00"}
+{"message_id": "task-autoclosed:117006934697", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117006934697", "po_number": "635505", "invoice": "54725", "subject": "Convert PO to TW invoice \u2014 Justin LaRue (Visions In Education, PO 635505, $65.0)", "timestamp": "2026-09-17T18:49:29.112827+00:00"}
+{"message_id": "task-autoclosed:116998438751", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "116998438751", "po_number": "PF256910-LondynBrixey", "invoice": "54726", "subject": "Convert PO to TW invoice \u2014 Londyn Brixey (Heartland Charter School, PO PF256910-LondynBrixey, $300.0)", "timestamp": "2026-09-17T18:49:29.909919+00:00"}
+{"message_id": "task-autoclosed:117000163960", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117000163960", "po_number": "6614252513", "invoice": "54727", "subject": "Convert PO to TW invoice \u2014 Xena Chacon (iLEAD California Charters for iLEAD Hybrid at Acton Studios, PO 6614252513, $120", "timestamp": "2026-09-17T18:49:30.410395+00:00"}
+{"message_id": "task-autoclosed:117039334802", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117039334802", "po_number": "6614252514", "invoice": "54728", "subject": "Convert PO to TW invoice \u2014 Xena Chacon (iLEAD California Charters for iLEAD Hybrid at Acton Studios, PO 6614252514, $240", "timestamp": "2026-09-17T18:49:30.664199+00:00"}
+{"message_id": "task-autoclosed:117009740594", "source": "task_sweep", "action_taken": "task_autoclosed", "task_id": "117009740594", "po_number": "5714246044", "invoice": "54730", "subject": "Convert PO to TW invoice \u2014 Johnny Aguila (Compass Charter Schools, PO 5714246044, $480.0)", "timestamp": "2026-09-17T18:49:30.970269+00:00"}
+{"task_id": "116905860727", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:49:40.292145+00:00"}
+{"task_id": "116860334246", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:49:40.292433+00:00"}
+{"task_id": "116834604957", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:49:40.292474+00:00"}
+{"task_id": "116643971741", "owner": "roman", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:49:41.809216+00:00"}
+{"task_id": "116903253157", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.980630+00:00"}
+{"task_id": "116903153775", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.980909+00:00"}
+{"task_id": "116893165885", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.980949+00:00"}
+{"task_id": "116889213005", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.980979+00:00"}
+{"task_id": "116894965843", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981007+00:00"}
+{"task_id": "116710154558", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981034+00:00"}
+{"task_id": "116903644757", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981060+00:00"}
+{"task_id": "116903029028", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981086+00:00"}
+{"task_id": "116811574094", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981111+00:00"}
+{"task_id": "116810708069", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981136+00:00"}
+{"task_id": "116837664951", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981162+00:00"}
+{"task_id": "116830351913", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981187+00:00"}
+{"task_id": "116829553925", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981212+00:00"}
+{"task_id": "116821868687", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981237+00:00"}
+{"task_id": "116792491019", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981262+00:00"}
+{"task_id": "116847826330", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981287+00:00"}
+{"task_id": "116532246364", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981313+00:00"}
+{"task_id": "116585493432", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981338+00:00"}
+{"task_id": "116905440079", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981363+00:00"}
+{"task_id": "116905023890", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981404+00:00"}
+{"task_id": "116903606329", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981429+00:00"}
+{"task_id": "116892919104", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981454+00:00"}
+{"task_id": "116889116475", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981479+00:00"}
+{"task_id": "116894537142", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981505+00:00"}
+{"task_id": "116896554278", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981542+00:00"}
+{"task_id": "116889880330", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981568+00:00"}
+{"task_id": "116905538173", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981592+00:00"}
+{"task_id": "116890005558", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981616+00:00"}
+{"task_id": "116889453445", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981640+00:00"}
+{"task_id": "116895483711", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981663+00:00"}
+{"task_id": "116883923767", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981687+00:00"}
+{"task_id": "116893330085", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981711+00:00"}
+{"task_id": "116907038006", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981734+00:00"}
+{"task_id": "116881516193", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981758+00:00"}
+{"task_id": "116910721870", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981781+00:00"}
+{"task_id": "116893080207", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981804+00:00"}
+{"task_id": "116898314108", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981828+00:00"}
+{"task_id": "116897682099", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981851+00:00"}
+{"task_id": "116881303573", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981875+00:00"}
+{"task_id": "116879401125", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981898+00:00"}
+{"task_id": "116881174115", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981922+00:00"}
+{"task_id": "116878362885", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981945+00:00"}
+{"task_id": "116905837114", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981969+00:00"}
+{"task_id": "116903254852", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.981992+00:00"}
+{"task_id": "116896635045", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.982016+00:00"}
+{"task_id": "116906015380", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.982040+00:00"}
+{"task_id": "116889880335", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.982063+00:00"}
+{"task_id": "116902888846", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-17T18:50:36.982087+00:00"}
