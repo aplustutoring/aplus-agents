@@ -982,9 +982,10 @@
     416370902,
     416376943,
     416377381,
-    416377642
+    416377642,
+    416380456
   ],
-  "last_run_utc": "2026-09-17T22:50:10.028862+00:00",
+  "last_run_utc": "2026-09-17T23:03:08.055425+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2297,6 +2298,74 @@
       "tasks_created": [
         [
           "Call Pamela back around 5:30 PM to confirm Jonathan as tutor and Mon/Thu 11 AM schedule for Eli",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416380456,
+      "number": "13107407849",
+      "time_pt": "3:55 PM",
+      "matched": true,
+      "contact_label": "Sivan Radnia",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed an outbound follow-up call to Sivan Radnia to check in on how the four children's trial lessons went and to confirm whether Maytal would like to book with Teresa on Thursday at 6 PM. The call went to Sivan's automated voicemail system, so Yolanda left a message stating she would call back tomorrow around 10 AM. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Sivan back tomorrow around 10 AM to follow up on trial feedback and confirm Maytal's Thursday 6 PM session with Teresa",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda (A+) tried Sivan Radnia to follow up on her four kids' trial lessons (Maytal 7th, Liya 5th, twins Yoel & Benyamin 4th) and to see if Maytal wants to book with tutor Teresa on Thursday at 6 PM. Call went to Sivan's AI voicemail \u2014 no live contact. Yolanda promised in the voicemail to call back around 10 AM tomorrow. Before calling, pull Teresa's session notes on Maytal and confirm all four tutor write-ups were emailed to Sivan. Suggested opener: 'Hi Sivan, it's Yolanda from A+ Tutoring following up as promised \u2014 wanted to hear how the kids felt about their trials and see if Thursday at 6 works to get Maytal started with Teresa.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family in an open deal; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Maytal"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda called Sivan to follow up on the four kids' trials and to ask about booking Maytal with Teresa on Thursday at 6 PM. Reached Sivan's automated voicemail rather than Sivan; left a brief message.",
+          "what_we_can_do_to_help": "[call] Yolanda to call Sivan back tomorrow ~10 AM to get trial feedback and confirm Maytal's Thursday 6 PM session with Teresa. Pull Teresa's notes on Maytal and confirm all four tutor write-ups have been emailed to Sivan beforehand.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda called Sivan to follow up on the four kids' trials and to ask about booking Maytal with Teresa on Thursday at 6 PM. Reached Sivan's automated voicemail rather than Sivan; left a brief message."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to call Sivan back tomorrow ~10 AM to get trial feedback and confirm Maytal's Thursday 6 PM session with Teresa. Pull Teresa's notes on Maytal and confirm all four tutor write-ups have been emailed to Sivan beforehand."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Sivan back tomorrow around 10 AM to follow up on trial feedback and confirm Maytal's Thursday 6 PM session with Teresa",
           86868539,
           "scheduling"
         ]
