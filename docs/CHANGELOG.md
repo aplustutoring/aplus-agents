@@ -7,6 +7,44 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-17 — Sage Oak Park Day booth DEPLOYED (PR #253 merged, Worker version 50c54de4)
+
+**What happened** (`booth/`): PR #253 squash-merged to main as `404ed506`
+(Roman: "Merge"). From the main checkout: `node test-worker.mjs` 35 passed;
+`npx wrangler deploy` uploaded 4 assets (`sage-oak-park/index.html`,
+`logo.png`, `logo-white.png`, `sageoak.webp`) and the Worker.
+Version `50c54de4-a977-447d-aec6-0c78c71c1311`. Bindings unchanged: PHOTOS
+KV `38b24fd5`, ASSETS, RESEND_FROM, ALLOWED_ORIGIN (two origins),
+JUSTCALL_FROM, OWNER_SALES, OWNER_CHARTER_SALES.
+
+**Verified at the origin (cache-busting query):** `/` answers 302 to
+`/sage-oak-park/`; the page answers 200 with the "Snap your park day photo"
+heading, the "Tap to start" button and both logos (Sage Oak, A+); `worker.js`,
+`wrangler.toml` and `test-worker.mjs` all answer 404. Opened in the in-app
+browser, no contact submitted.
+
+**Schema gate:** `sage_oak_park_2026` is live on `aplus_event_tag` (portal
+6312752). Two `hubspot-schema.yml` runs on main landed right after the merge
+and were not this session's: dry run 35266738147 at 19:45 UTC ("ADD
+sage_oak_park_2026", 2 would be updated) and live run 35266814328 at 19:46
+("2 were updated"). This session's dry run 35266905715 at 19:46:56 then
+reported 137 in sync, which is the correct reading once the live run has
+applied.
+
+**Drift noticed, not fixed:** the portal also carries
+`aplus_conference_2026` on `aplus_event_tag`, and `properties.yml` on main
+does not declare it (it lives in unmerged PR #228). Additive sync never
+removes options, so nothing breaks, but the registry is behind the portal
+until #228 merges.
+
+**Still human:** on the iPad, Settings > Safari > Camera > Allow for the
+Worker host; add `/sage-oak-park/` to the Home Screen; one 4x6 test print to
+the Selphy over AirPrint before the first family.
+
+**Files touched:** `docs/CHANGELOG.md` only (deploy record; the code merged in #253).
+
+---
+
 ## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
 
 **Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
