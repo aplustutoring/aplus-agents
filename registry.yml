@@ -23,7 +23,7 @@
 # Fields:
 #   id          stable slug
 #   runtime     WHERE it runs: github-actions | cloudflare-worker | apps-script |
-#               zapier. Defaults to nothing — set it. Only github-actions agents
+#               zapier | local (a laptop-run script). Defaults to nothing — set it. Only github-actions agents
 #               can be auto-discovered (they have a workflow file); everything
 #               else is found by the source-file heuristics in registry_check.py,
 #               so a non-Actions agent that ships without an entry here can hide
@@ -902,6 +902,7 @@ agents:
 
   - id: teacher-outreach-2026-09
     runtime: local
+    source: scripts/teacher_outreach_lists.py
     engine: Charter analysis
     name: Teacher outreach 26/27 (lists, drafts, workflows, roster)
     owner: roman@wetutorathome.com
@@ -1477,3 +1478,273 @@ agents:
       field or unknown school spelling; idempotent on school + student id +
       subject + term (re-runs update and re-split, never duplicate). Dry run
       by default; --execute waits a Slack stop window that fails closed.
+
+  # ───────────────────────── Registry catch-up 2026-09-16 ─────────────────
+  # Ten agents found live on disk with no entry (registry_check.py ran in
+  # advisory --warn mode, so nothing blocked them). One of them,
+  # tw-invoice-due-sync, writes HubSpot on a weekday cron. Registered as-is;
+  # nothing about how they run was changed.
+  - id: tw-invoice-due-sync
+    runtime: github-actions
+    engine: Charter analysis
+    name: TW invoice due-date sync
+    owner: roman@wetutorathome.com
+    status: active           # scheduled runs pass --apply; dispatch is dry-run unless apply=true
+    trigger:
+      type: cron
+      schedule: ["0 13 * * 1-5 (06:00 PDT / 05:00 PST weekdays — queue ready before anyone opens it)"]
+      events: [workflow_dispatch]   # inputs: apply (default false = dry run), since (default 2026-08-01), debug
+      workflow: .github/workflows/tw-invoice-due-sync.yml
+    entrypoint: scripts/tw_invoice_due_sync.py
+    reads:
+      - "Teachworks:invoices (both accounts; due dates)"
+      - "HubSpot:deals (charter PO deals since --since with an invoice number)"
+    writes:
+      - "HubSpot:deals — invoice_due_date only (scheduled runs apply; dispatch runs apply only with apply=true)"
+    depends_on:
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"
+    notes: >
+      Makes "what should Kath submit today?" a plain HubSpot view (Invoice #
+      known, Invoice Submitted Date empty, Invoice Due Date before today).
+      Built 2026-09-02; feeds the overdue-submission nag (2026-09-08).
+
+  - id: ticket-reasoner
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Ticket reasoning sweep
+    owner: roman@wetutorathome.com
+    status: manual           # dispatch only; dry_run defaults to true
+    trigger:
+      type: event
+      events: [workflow_dispatch]   # inputs: dry_run (default true), limit
+      workflow: .github/workflows/ticket-reasoner.yml
+    entrypoint: email/src/ticket_reasoner.py
+    reads:
+      - "HubSpot:tickets (every OPEN ticket) + associated contacts/deals"
+      - "Gmail:charter@ (the ticket's thread)"
+      - JustCall
+    writes:
+      - "HubSpot:tickets — pester comments on the 24/48/96h ladder; CLOSE only when reasoner.allow_close in email/config.yaml AND confidence >= reasoner.close_min_confidence"
+    depends_on:
+      - email/config.yaml
+      - "secrets: HUBSPOT_API_KEY, ANTHROPIC_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET"
+    notes: >
+      Claude reasoning over cross-system evidence (#AP-pending, 2026-08-26
+      "Reasoning sweep + the 24-hour pester policy"). Closing is double-gated.
+      Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md.
+
+  - id: email-backfill-deal-props
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Email — backfill deal props (one-off, dispatch only)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]   # input: dry_run (default true)
+      workflow: .github/workflows/email-backfill-deal-props.yml
+    entrypoint: email/src/backfill_deal_props.py
+    reads: [HubSpot:deals, HubSpot:contacts]
+    writes:
+      - "HubSpot:deals — ONLY with dry_run=false: parent_email / parent_phone from associated contacts + missing iLEAD hours on August 2026 charter PO deals"
+    depends_on: ["secrets: HUBSPOT_API_KEY"]
+    notes: One-off from the 2026-09-03 property audit. Kept for dispatch.
+
+  - id: tutor-roster-check
+    runtime: github-actions
+    engine: Charter analysis
+    name: Tutor roster check (TW ground truth)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]   # input: write_props (default false = read-only report)
+      workflow: .github/workflows/tutor-roster-check.yml
+    entrypoint: scripts/tutor_roster_check.py
+    reads:
+      - "Teachworks:employees (both accounts)"
+      - "HubSpot:contacts (Tutors persona)"
+    writes:
+      - "HubSpot:contacts — ONLY with write_props=true: [Agent] Tutor Roster Status, UPDATE-only import"
+    depends_on: ["secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"]
+    notes: Sibling of tw-tutor-active-check; roster status is the ground truth for "is this tutor still with us".
+
+  - id: campaign-revenue-report
+    runtime: github-actions
+    engine: Charter analysis
+    name: Campaign revenue report (invoice-validated, read-only)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]   # input: since (default 2026-08-18)
+      workflow: .github/workflows/campaign-revenue-report.yml
+    entrypoint: scripts/campaign_revenue_report.py
+    reads:
+      - "HubSpot:lists (every campaign queue list)"
+      - HubSpot:deals
+      - "Teachworks:invoices (both accounts, paid status)"
+    writes: []
+    depends_on: ["secrets: HUBSPOT_PRIVATE_APP_TOKEN, TEACHWORKS_TOKEN, TEACHWORKS_TOKEN_INPERSON"]
+    notes: Attribution chain campaign email -> reply -> 26/27 deal -> Teachworks invoice -> paid. Results in the run log only.
+
+  - id: automation-audit
+    runtime: github-actions
+    engine: Fleet health
+    name: Automation audit (read-only census)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]   # input: accept_write_scoped_token
+      workflow: .github/workflows/automation-audit.yml
+    entrypoint: ops/fleet-health/audit/audit_hubspot_workflows.py
+    reads:
+      - "HubSpot:workflows (v3 + v4 automation APIs, merged by name)"
+    writes:
+      - "GitHub: run artifact — HTML report + decision-log draft + run summary"
+    depends_on: ["secrets: HUBSPOT_API_KEY"]
+    notes: >
+      A census, not a monitor, so deliberately unscheduled. Refuses tokens
+      carrying write scopes unless told otherwise, and blocks every non-GET
+      request regardless. Output lives in ops/fleet-health/audit/.
+
+  - id: claude-code-action
+    runtime: github-actions
+    engine: Fleet health
+    name: Claude Code
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [issue_comment, pull_request_review_comment, pull_request_review, issues]   # only when the body mentions @claude
+      workflow: .github/workflows/claude.yml
+    entrypoint: anthropics/claude-code-action@v1
+    reads:
+      - "GitHub: the issue or PR thread + the repo"
+    writes:
+      - "GitHub: branch + PR, or PR updates (never merges)"
+    depends_on:
+      - "Claude GitHub App installed on the repo"
+      - "secrets: ANTHROPIC_API_KEY"
+    notes: >
+      @claude in an issue or PR comment hands the thread to Claude Code. The
+      paid coding-agent path alongside feedback-fix; fleet-retry never
+      re-runs either blindly.
+
+  - id: booth-deploy
+    runtime: github-actions
+    engine: Events
+    name: Blue Ridge booth deploy (manual)
+    owner: roman@wetutorathome.com
+    status: manual
+    trigger:
+      type: event
+      events: [workflow_dispatch]
+      workflow: .github/workflows/booth-deploy.yml
+    entrypoint: booth/blue-ridge/pages-dist.sh
+    reads:
+      - booth/blue-ridge/
+    writes:
+      - "Cloudflare: Worker blue-ridge-booth (wrangler deploy) + Pages project blue-ridge-booth (allowlisted .pages-dist upload, --branch main)"
+    depends_on:
+      - "secrets: CLOUDFLARE_API_TOKEN (Workers Scripts:Edit + Pages:Edit), CLOUDFLARE_ACCOUNT_ID"
+      - booth/blue-ridge/test-worker.mjs    # 43 tests gate the deploy
+    notes: >
+      Deploys both halves together because the prize whitelist (Worker) and
+      the wheel labels (Pages) must change in lockstep. Verify step fails the
+      run if worker.js / wrangler.toml / DEPLOY.md answer 200 on the live site
+      (the 2026-09-16 exposure). A booth goes live when a human says so.
+
+  - id: blue-ridge-booth
+    runtime: cloudflare-worker
+    engine: Events
+    name: Blue Ridge BTSC 2026 "Spin Back to School" booth
+    owner: roman@wetutorathome.com
+    status: active           # DEPLOYED 2026-09-16 (Worker 734d5ae9; Pages via booth-deploy)
+    trigger:
+      type: event
+      events: [http_post]
+      source: >
+        The Pages front-end (booth/blue-ridge/spin-back-to-school.html) posts a
+        claim to the Worker; a claim is captured wherever the page is opened
+        (booth iPad or a visitor's own phone).
+    source: booth/blue-ridge/worker.js
+    entrypoint: booth/blue-ridge/worker.js
+    reads:
+      - "HubSpot:contacts (search by email — find-or-create)"
+    writes:
+      - "HubSpot:contacts — upsert; aplus_event_tag += blue_ridge_btsc_2026 (append-only, #AP032), prize + consent props; owner by SEAT: teachers/school staff -> sales, families -> charter_sales (Roman 2026-09-01)"
+    depends_on:
+      - booth/blue-ridge/wrangler.toml       # ALLOWED_ORIGIN, OWNER_SALES / OWNER_CHARTER_SALES (seat ids)
+      - "Worker secret HUBSPOT_TOKEN (wrangler secret put)"
+      - ops/hubspot-schema/properties.yml    # events-group props
+    notes: >
+      v1 is a HubSpot upsert only — no KV, no Resend, no JustCall, because the
+      prize is handed over at the table. No [triggers] crons, so no SUNSET
+      needed (booth/README.md rule). Deployed by booth-deploy, never by hand
+      from a worktree (Pages infers the branch from git).
+
+  - id: delilah-booth
+    runtime: cloudflare-worker
+    engine: Events
+    name: Delilah's 5th birthday + Rosh Hashanah 5787 photo booth (personal, 2026-09-11)
+    owner: roman@wetutorathome.com
+    status: active           # EVENT-TEMP, personal; event over 2026-09-11 — flip to deprecated when the Worker is removed
+    trigger:
+      type: event
+      events: [http_post]
+      source: The Worker serves public/index.html itself (assets binding); the page posts each photo to the same origin.
+    source: booth/delilah/worker.js
+    entrypoint: booth/delilah/worker.js
+    reads:
+      - "Cloudflare KV (PHOTOS binding)"
+      - "Google Gemini API (storybook repaint, gemini-3.1-flash-image)"
+    writes:
+      - "JustCall MMS from 818-573-6293 (Roman's line, MMS-capable — confirmed by Roman 2026-09-10): the photo, then the storybook"
+      - "Google Drive: every print mirrored to the top of the Shared Drive 'Delilah's Bday' (0AFzOAF0xZUy-Uk9PVA; must be a shared drive — service accounts have no My Drive quota)"
+      - "Cloudflare KV"
+    depends_on:
+      - booth/delilah/wrangler.toml
+      - "Worker secrets: JUSTCALL_API_KEY / SECRET, GEMINI_API_KEY, GOOGLE_SA_JSON (spotlight-watcher SA as Drive content manager)"
+    notes: >
+      No HubSpot, no email, no cron (so no SUNSET). Storybook is TEXT-ONLY,
+      never printed (Roman 2026-09-11; PR #229 open adds paint retries +
+      /errors). Registered so the fleet map shows every Worker that can send
+      from an A+ number.
+
+  # Found unregistered while merging the 2026-09-16 catch-up (PR #245): it
+  # merged in PR #249 the same day, past the --warn check. Registered here.
+  - id: unanswered-asks
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: unanswered-asks — somebody asked for a person and nobody got back to them
+    owner: roman@wetutorathome.com
+    status: active           # BUILT 2026-09-16 (PR #249)
+    trigger:
+      type: cron
+      schedule: ["5,25,45 14-23 * * *", "5,25,45 0-4 * * * (every 20 min, 7 AM-9 PM PT — families text late)"]
+      events: [workflow_dispatch]   # input: dry_run (default true = plan only)
+      workflow: .github/workflows/unanswered-asks.yml
+    entrypoint: ops/unanswered/unanswered.py
+    reads:
+      - "JustCall:inbound SMS across every line (paging from 0)"
+      - "HubSpot:contacts (match by phone; notes_last_contacted decides whether anyone got back to them)"
+      - ops/unanswered/state/
+    writes:
+      - "HubSpot:tasks — same-day HIGH call-back task on the contact when a text asks to be called or names a staff member (literal match only)"
+      - "Slack — alert per open ask; self-closing once notes_last_contacted moves past the ask"
+      - ops/unanswered/state/
+      - "GitHub: run artifact unanswered-report.json"
+    depends_on:
+      - ops/unanswered/config.yml
+      - "secrets: HUBSPOT_PRIVATE_APP_TOKEN, JUSTCALL_API_KEY, JUSTCALL_API_SECRET, SLACK_BOT_TOKEN"
+    notes: >
+      Cron is justified (Roman 2026-09-04 rule): the agent must come back later
+      to see whether the grace window elapsed and whether anyone replied, and
+      the closing sweep is periodic by nature. Detection is literal, never
+      inferred; resolution is cross-channel via HubSpot's aggregate
+      last-contacted, so a false positive interrupts nobody. Shape copied from
+      the call agent's missed-call path. Once the inbound-SMS relay (PR #221)
+      deploys, a text can dispatch it directly and the cron shrinks to the
+      closing sweep. Checkout pinned to main (stale-checkout rule 2026-09-10).
