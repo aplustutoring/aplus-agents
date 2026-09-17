@@ -626,7 +626,10 @@ hsa:
   pre_lesson_stage: "5119062"
   sessions_prop: hsa_sessions
   group_prop: hsa_group
-  invoice_owner: charter_admin
+  # Roman 2026-09-16: the SCHEDULERS create the Teachworks invoices for HSA
+  # groups, so the invoice + late-add tasks go to the deal owner (the group's
+  # scheduler by parity). A staff/role key here routes them to one seat instead.
+  invoice_owner: deal_owner
   flag_to: [sales]              # Danielle sees every lesson-series mismatch
   lesson_check_days: 60         # verify deals whose start is within this many days
 
