@@ -203,7 +203,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
 | **eo-booth-agent**<br>EO LA Valley "Minion | event<br>*cloudflare-worker* | active | HubSpot:contacts, Cloudflare KV, Anthropic API, Google Gemini API | HubSpot:contacts, Resend, JustCall, Cloudflare KV, Zapier catch-hook -> Google Sheet "EO Agent Ideas — Aug 20", Google Drive, HubSpot:notes |
-| **sage-oak-booth**<br>Sage Oak BTSC 2026 photo booth | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create), Cloudflare KV (PHOTOS binding — serves GET /photo/<key>) | HubSpot:contacts, HubSpot:contacts persona stamp, CREATE-ONLY, HubSpot:emails, HubSpot:notes, Resend, JustCall, Cloudflare KV |
+| **sage-oak-booth**<br>A+ photo booth (Sage Oak BTSC 2026, Sage Oak Park Day 2026) | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create; aplus_event_tag read back so the merge appends,, Cloudflare KV (PHOTOS binding — serves GET /photo/<key>) | HubSpot:contacts, HubSpot:contacts persona stamp, CREATE-ONLY, HubSpot:contacts hubspot_owner_id, CREATE-ONLY, HubSpot:emails, HubSpot:notes, Resend, JustCall, Cloudflare KV |
 
 - **sage-oak-booth** — HAND-DEPLOYED, two pieces: `npx wrangler deploy` for the Worker and `npx wrangler pages deploy` for the front-end
 - **eo-booth-agent** — EVENT-TEMP, one night only: EO LA Valley "Build Your First AI Agent", 2026-08-20
