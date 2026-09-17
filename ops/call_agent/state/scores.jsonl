@@ -429,3 +429,4 @@
 {"call_id": 416262452, "date_pt": "2026-09-17", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 3.0, "scores": {"U1": 4, "U3": 4, "U5": 2, "S4": 2}}
 {"call_id": 416280654, "date_pt": "2026-09-17", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.2, "scores": {"U1": 2, "U3": 3, "U5": 2, "S4": 2}}
 {"call_id": 416289999, "date_pt": "2026-09-17", "agent": "Paola Sarmiento", "direction": "outgoing", "overall": 2.8, "scores": {"U1": 4, "U3": 3, "U5": 2, "S4": 2}}
+{"call_id": 416299656, "date_pt": "2026-09-17", "agent": "Emily Shulman", "direction": "incoming", "overall": 2.9, "scores": {"U1": 4, "U2": 2, "U3": 2, "U4": 3, "U5": 3, "S1": 3, "S2": 3, "S4": 3}}

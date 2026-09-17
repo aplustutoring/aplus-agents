@@ -963,9 +963,11 @@
     416273562,
     416280654,
     416289999,
-    416295606
+    416295606,
+    416299656,
+    416300464
   ],
-  "last_run_utc": "2026-09-17T19:40:17.697711+00:00",
+  "last_run_utc": "2026-09-17T19:47:18.001253+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1721,6 +1723,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416299656,
+      "number": "12134589888",
+      "time_pt": "12:36 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Charmaine Dominguez, a teacher/EF with Pacific Charter Institute, called to verify details before submitting a PO for tutoring services for one of her students. The PO covers Oct 1 \u2013 December, $75/week, two 30-minute sessions on Wednesdays and Thursdays, with Sonia as the requested tutor. Emily confirmed a semester PO works, asked Charmaine to include parent contact info, attendance, subjects, and Sonia's name on the PO, and said scheduling will book sessions through end of semester once the PO is received. Outcome: Charmaine will submit the semester PO; A+ scheduling team will watch for it and then contact the parent to schedule.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for incoming PO from Charmaine Dominguez / Pacific Charter Institute (Oct 1\u2013Dec, $75/week, 2x30 min Wed/Thu, tutor Sonia) and process once received",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once PO is received, contact the parent (info to be included on PO) to schedule weekly sessions through end of semester, accounting for holidays",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Paula Sarimento",
+            "correct": "Sonia"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Charmaine Dominguez, a teacher/EF at Pacific Charter Institute (A+ is an approved vendor), called to confirm PO details before submitting. She's submitting a semester PO: Oct 1 through December, $75/week, two 30-minute sessions Wed & Thu, tutor requested is Sonia (she initially said Sonia but corrected to Sonia \u2014 we only have one Sonia). Emily told her to include parent contact info, attendance, subjects, and Sonia's name on the PO, and that scheduling will book weekly sessions through end of semester (minus holidays) once the PO arrives. Charmaine expects the scheduling team to look out for the PO email and then reach out to the parent to schedule. Open with: 'Hi Charmaine, following up on the PO you're submitting for your PCI student with Sonia \u2014 we've got it flagged and will reach out to the parent to schedule as soon as it lands.'",
+        "lead_status": "Charter School Teacher TOR/EF",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [
+          "Pacific Charter Institute"
+        ],
+        "record_updates": {
+          "whats_going_on": "Charmaine Dominguez, a teacher/EF at Pacific Charter Institute, called to verify details before submitting a semester PO (Oct 1\u2013Dec) for one of her students: $75/week, two 30-minute sessions Wed/Thu, requesting tutor Sonia.",
+          "what_we_can_do_to_help": "Watch for the incoming PO, then have scheduling contact the parent (info will be on PO) to book weekly sessions through end of semester, accounting for holidays. Confirm Sonia as the assigned tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Pacific Charter Institute",
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for incoming PO from Charmaine Dominguez / Pacific Charter Institute (Oct 1\u2013Dec, $75/week, 2x30 min Wed/Thu, tutor Sonia) and process once received",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Once PO is received, contact the parent (info to be included on PO) to schedule weekly sessions through end of semester, accounting for holidays",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
@@ -1742,6 +1816,11 @@
     {
       "number": "19092134868",
       "time_pt": "11:31 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "13103573964",
+      "time_pt": "12:42 PM",
       "reason": "hang-up"
     }
   ],
