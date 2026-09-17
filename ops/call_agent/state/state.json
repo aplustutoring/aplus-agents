@@ -947,9 +947,12 @@
     416200031,
     416199989,
     416201322,
-    416208161
+    416208161,
+    416213006,
+    416213309,
+    416213691
   ],
-  "last_run_utc": "2026-09-17T17:11:33.755147+00:00",
+  "last_run_utc": "2026-09-17T17:20:04.979709+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1183,12 +1186,77 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416213006,
+      "number": "18188561090",
+      "time_pt": "10:12 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound call to a North Hollywood, CA number to follow up on a missed call from this contact. The call went to a Google Voice voicemail with no personalized greeting, so no identifying information was captured. Paola left a brief, friendly voicemail asking the person to call back at a good time.",
+        "caller_type": "other",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from North Hollywood number; if no response in a couple of days, attempt another outreach (call or text) to identify the caller and their tutoring need.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "We called back a North Hollywood number that had left us a missed call \u2014 no name, no CRM record, and it went to a generic Google Voice voicemail. Paola left a friendly message asking them to call back when convenient. The contact now expects a callback opportunity from us, but we have zero context on who they are or what they need. If they call in, open with: 'Hi, this is [name] from A+ Tutoring returning your call \u2014 thanks for getting back to us. Can I get your name and tell me a bit about what you're looking for?' If we don't hear back in ~2 days, try one more outreach (call + text) before letting it go cold.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no contact reached and no information gathered to classify this caller. Leaving status untouched until we actually connect.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound callback attempt to a North Hollywood number that had left us a missed call. Reached Google Voice voicemail with no personalized greeting \u2014 no name or context available.",
+          "what_we_can_do_to_help": "Paola left a voicemail inviting them to call back at a good time. Await callback; if none, attempt one more outreach before closing out.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from North Hollywood number; if no response in a couple of days, attempt another outreach (call or text) to identify the caller and their tutoring need.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
     {
       "number": "18314615305",
       "time_pt": "10:04 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "16502470804",
+      "time_pt": "10:14 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18188733963",
+      "time_pt": "10:14 AM",
       "reason": "hang-up"
     }
   ],
