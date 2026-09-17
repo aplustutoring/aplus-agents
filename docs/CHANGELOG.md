@@ -210,6 +210,18 @@ and its own concurrency group. (2) `subject_need` is a family of options
 map to Math, English 9 to English Language Arts (G2/G3 contacts got no
 subject_need; the deals are complete).
 
+**Late add, 18:18 PT (first real re-split):** Aster White (86888) added to
+G2 Geometry on the sheet as Ready. `--group-label C1-G2` execute: new deal
+65101190710 $1,250 (full 25 sessions, group starts 9/23), Lebeouf + Riddell
+re-split $1,875 → $1,250 with a note on each deal, ES emails to Holbrook
+(new) + Paré (updated roster), Munir still blocked, fresh handoff to Yolanda;
+Aster's family texted + welcome-emailed within a minute (relay). Two more
+fixes from it: #240 HubSpot 429s retried with backoff (a dry run died on
+one), #241 `--list` prints every Intake row with status (the "is the new kid
+on the sheet?" question), #244 `hsa_sync.late_add_sweep` raises ONE task to
+the invoice owner when a deal joins a group after its invoice task (Kath's
+G2 task listed two students; nothing told her about the third).
+
 **Decision-log entries still due (spec §9.4):** group-parity ownership,
 per-student deal + group invoice, max group 4, zaps retired.
 
