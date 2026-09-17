@@ -2,21 +2,41 @@ name = "sage-oak-booth"
 main = "worker.js"
 compatibility_date = "2026-08-11"
 
-[vars]
-# Sender domain must be verified in Resend — wetutorathome.com is (aplustutoring.com is not)
-RESEND_FROM = "A+ Tutoring <photos@wetutorathome.com>"
-# Set to the deployed Pages URL after `wrangler pages project create sage-oak-booth`
-ALLOWED_ORIGIN = "https://sage-oak-booth.pages.dev"
+# The A+ photo booth Worker. Named for the first event it served (Sage Oak
+# BTSC 2026) and kept that name on purpose: secrets and the KV archive live
+# with the name, so a new event is a row in worker.js EVENTS plus a folder
+# under public/, never a new Worker with four secrets to re-enter.
 
-# JustCall MMS delivery: photos land in KV (7-day TTL) and are served
-# publicly at <worker>/photo/<uuid>.jpg for the media_url.
+[vars]
+# Sender domain must be verified in Resend (wetutorathome.com is; aplustutoring.com is not)
+RESEND_FROM = "A+ Tutoring <photos@wetutorathome.com>"
+# Comma-separated. The park day page is served by this Worker (same origin, no
+# CORS needed); the BTSC page lives on its own Pages project.
+ALLOWED_ORIGIN = "https://sage-oak-booth.nameless-mountain-bafa.workers.dev,https://sage-oak-booth.pages.dev"
+
+# JustCall MMS delivery: the permanent archive object in KV is served publicly
+# at <worker>/photo/<key> and used as the media_url.
 JUSTCALL_FROM = "+18188506284"   # Main A+ line (MMS-capable, verified 2026-08-11)
+
+# Lead routing (Roman 2026-09-01): teachers and school staff to the SALES seat,
+# families to the CHARTER SALES seat. Keys name the SEAT, not the person, per the
+# accountability-chart rule. Same ids as booth/blue-ridge/wrangler.toml.
+#   sales         = Danielle Brodetsky
+#   charter_sales = Paola Sarmiento
+OWNER_SALES = "227538487"
+OWNER_CHARTER_SALES = "81494333"
+
+# Event pages served by this Worker: public/<event>/index.html at /<event>/.
+# GET / redirects to the current event (see worker.js).
+[assets]
+directory = "./public"
+binding = "ASSETS"
 
 [[kv_namespaces]]
 binding = "PHOTOS"
 id = "38b24fd52f064143a0273d9f43a85a3c"
 
-# Secrets (never in this file — set via CLI):
+# Secrets (never in this file; already set on the deployed Worker):
 #   wrangler secret put HUBSPOT_TOKEN
 #   wrangler secret put RESEND_API_KEY
 #   wrangler secret put JUSTCALL_API_KEY

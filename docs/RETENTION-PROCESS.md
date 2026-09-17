@@ -24,6 +24,16 @@ comes from (a school PO versus a package), and spotlights are charter only.
 | any | **Low balance**, 4 hours or fewer | See below. | | 1 (built) |
 | any | Deal moved to Stopped, or 21 days of silence after Retention Risk | Case closed as **Lost** with a reason (agent writes `no_response` or `stopped`; Paola picks moved on / cost / schedule / tutor fit / school funding when she knows). **Family enrolled in re-engagement** (the charter SMS round 2 and private-pay win-back campaigns). The journey does not stop. | Paola sets the reason when she knows it. | 5 |
 
+## The queues (2026-09-16): tickets live in the Renewals pipeline
+
+Every low-balance case is a ticket in the **Renewals** pipeline (see
+docs/CASE-ENGINE.md): Waiting on family -> Needs scheduler (a reply) ->
+Needs invoice (PO in) -> Renewed, or Not renewing / No response. Owner =
+the scheduler by family surname split (trial = charter_sales). Retention
+risk is a flag + priority High, not a stage. The Renewal Chase deal view
+below still works (the deal properties are still stamped); the ticket board
+is the working queue.
+
 ## Where the lists live (HubSpot saved deal views, Roman 2026-09-10)
 
 Monday is retired; the working lists are two shared deal views owned by Roman,

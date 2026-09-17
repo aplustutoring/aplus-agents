@@ -139,6 +139,11 @@ class Row:
         return f"{self.student_first} {self.student_last}".strip()
 
     @property
+    def student_short(self) -> str:
+        """'Diego R.' for logs that any repo collaborator can read."""
+        return f"{self.student_first} {self.student_last[:1]}.".strip() if self.student_last else self.student_first
+
+    @property
     def parent_name(self) -> str:
         """The parent as the sheet names them ('Reyna' stays 'Reyna' in the
         deal name and description; the contact record gets the student's
@@ -183,18 +188,20 @@ def parse_row(sheet_row: int, cells: list[str], idx: dict[str, int],
         if not get(key):
             problems.append(f"{key.replace('_', ' ')} is blank")
 
+    # Problems never echo a parent's phone or email: this text lands in the
+    # Actions log and the Slack summary (FERPA pass, Roman 2026-09-16).
     phone = normalize_phone(get("parent_phone"))
     if get("parent_phone") and not phone:
-        problems.append(f"parent phone {get('parent_phone')!r} is not a 10-digit US number")
+        problems.append("parent phone is not a 10-digit US number")
     grade = normalize_grade(get("grade"))
     if get("grade") and not grade:
         problems.append(f"grade {get('grade')!r} is unparseable")
     parent_email = get("parent_email").lower()
     if parent_email and "@" not in parent_email:
-        problems.append(f"parent email {parent_email!r} is not an address")
+        problems.append("parent email is not an address")
     es_email = get("es_email").lower()
     if es_email and "@" not in es_email:
-        problems.append(f"ES email {es_email!r} is not an address")
+        problems.append("ES email is not an address")
 
     cohort = slot = None
     if get("cohort_start"):

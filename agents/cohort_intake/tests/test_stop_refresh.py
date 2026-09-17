@@ -92,7 +92,7 @@ def test_refresh_writes_teachworks_id_text_and_welcome(monkeypatch):
     sheet = FakeSheet()
     RF.refresh(sheet, ["x"], {9: "D1"}, dry_run=False)
     assert sheet.writes == [(9, {"Teachworks ID": "4321", "Text Sent": "2026-09-15 17:05",
-                                 "Welcome Sent": "reyna.family@gmail.com"})]
+                                 "Welcome Sent": "2026-09-15 17:05"})]
     assert dms == []
 
 

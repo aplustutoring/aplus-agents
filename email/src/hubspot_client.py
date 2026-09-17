@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import requests
 
-from .config import DRY_RUN, HUBSPOT_PRIVATE_APP_TOKEN, cfg
+from .config import DRY_RUN, HUBSPOT_PRIVATE_APP_TOKEN, cfg, staff
 
 HS_BASE = "https://api.hubapi.com"
 
@@ -30,9 +30,31 @@ def _headers() -> dict:
     }
 
 
-def _get(path: str, params: dict | None = None) -> dict:
-    r = requests.get(f"{HS_BASE}{path}", headers=_headers(), params=params or {}, timeout=30)
+RATE_LIMIT_TRIES = 6   # 1, 2, 4, 8, 16 s between tries, or HubSpot's Retry-After
+
+
+def _request(method: str, url: str, **kw) -> requests.Response:
+    """Every HubSpot call goes through here so a 429 is RETRIED, not raised.
+    The search API is throttled portal-wide (4/s) and shared by every agent;
+    on 2026-09-16 a deal-sync run of 37 deals took the HSA late-add sweep
+    down with 'Too Many Requests', and a cohort_intake dry run died the same
+    way an hour earlier. A 429 means nothing was processed, so retrying any
+    verb is safe."""
+    import time
+    r = None
+    for i in range(RATE_LIMIT_TRIES):
+        r = requests.request(method, url, timeout=30, **kw)
+        if r.status_code != 429 or i == RATE_LIMIT_TRIES - 1:
+            break
+        wait = float(r.headers.get("Retry-After") or 2 ** i)
+        print(f"  ⏳ HubSpot 429 on {method} {url.split('.com', 1)[-1][:60]}: retry {i + 1} in {wait:g}s")
+        time.sleep(wait)
     r.raise_for_status()
+    return r
+
+
+def _get(path: str, params: dict | None = None) -> dict:
+    r = _request("GET", f"{HS_BASE}{path}", headers=_headers(), params=params or {})
     return r.json()
 
 
@@ -51,8 +73,7 @@ def _write(method: str, path: str, payload: dict | None = None):
     if DRY_RUN and not (SEARCH_PASSTHROUGH and path.endswith("/search")):
         print(f"[DRY_RUN] hubspot {method} {path} {payload if payload else ''}")
         return {"id": "DRYRUN", "dry_run": True}
-    r = requests.request(method, f"{HS_BASE}{path}", headers=_headers(), json=payload, timeout=30)
-    r.raise_for_status()
+    r = _request(method, f"{HS_BASE}{path}", headers=_headers(), json=payload)
     return r.json() if r.text else {}
 
 
@@ -652,11 +673,57 @@ def create_ticket(subject: str, owner_id: str | None, stage_id: str,
         raise
 
 
+def _under_task_ceiling(owner_id: str, subject: str) -> bool:
+    """False when the owner already has `tasks.daily_ceiling_per_owner` tasks
+    created today (PT). Side effects on a breach: one audit record and one DM
+    to tasks.ceiling_notify naming the task that was not created."""
+    tc = cfg().get("tasks") or {}
+    ceiling = int(tc.get("daily_ceiling_per_owner") or 0)
+    if ceiling <= 0 or DRY_RUN:
+        return True
+    from datetime import datetime as _dt, time as _time
+    from .business_hours import now_la
+    start = _dt.combine(now_la().date(), _time.min, tzinfo=now_la().tzinfo)
+    try:
+        res = _write("POST", "/crm/v3/objects/tasks/search", {
+            "filterGroups": [{"filters": [
+                {"propertyName": "hubspot_owner_id", "operator": "EQ", "value": str(owner_id)},
+                {"propertyName": "hs_createdate", "operator": "GTE", "value": str(int(start.timestamp() * 1000))}]}],
+            "properties": ["hs_task_subject"], "limit": 1})
+        today = int(res.get("total") or 0) if isinstance(res, dict) else 0
+    except Exception as e:  # noqa: BLE001 — never block a task on a count failure
+        print(f"  ⚠️  task ceiling count failed (creating anyway): {e}")
+        return True
+    if today < ceiling:
+        return True
+    from . import audit as _audit, slack_client as _slack
+    _audit.append({"message_id": f"task-ceiling:{owner_id}:{start.date().isoformat()}:{subject[:60]}",
+                   "source": "hubspot_client", "action_taken": "task_ceiling_hit", "owner_id": str(owner_id),
+                   "subject": subject, "today": today, "ceiling": ceiling})
+    who = staff(tc.get("ceiling_notify") or "operations") or {}
+    if who.get("slack_user_id"):
+        try:
+            _slack.dm(who["slack_user_id"], f"🧱 Task ceiling: owner {owner_id} already has {today} tasks today "
+                                            f"(ceiling {ceiling}). Not created: \"{subject}\". If it matters, make it a ticket.")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  ceiling DM failed (non-fatal): {e}")
+    print(f"  🧱 task ceiling hit for owner {owner_id} ({today}/{ceiling}); not creating: {subject}")
+    return False
+
+
 def create_task(subject: str, body: str, owner_id: str | None, due_ms: int,
                 priority: str = "MEDIUM", contact_id: str | None = None) -> dict:
-    """Create a HubSpot Task (owner to-do with a due date + reminders)."""
+    """Create a HubSpot Task (owner to-do with a due date + reminders).
+
+    Roman's rule (2026-09-16): a task is one person, one thing, one date, and
+    machines create one only when they cannot do the thing themselves. The
+    ceiling (config tasks.daily_ceiling_per_owner) is enforced here, once, for
+    every machine path: past it the task is NOT created, the seat lead is DM'd
+    with what would have been created, and the audit log says so."""
     if priority == "URGENT":
         priority = "HIGH"  # tasks support LOW/MEDIUM/HIGH only
+    if owner_id and owner_id != "REPLACE" and not _under_task_ceiling(owner_id, subject):
+        return {"id": "CEILING", "properties": {"hs_task_subject": subject}}
     props = {
         "hs_task_subject": subject,
         "hs_task_body": body,
@@ -909,8 +976,7 @@ def invoiced_po_numbers() -> set[str]:
 def _get_search(path: str, body: dict) -> dict:
     """POST to a /search endpoint. Separate from _write so DRY_RUN cannot
     short-circuit a read (search is a POST but changes nothing)."""
-    r = requests.post(f"{HS_BASE}{path}", headers=_headers(), json=body, timeout=30)
-    r.raise_for_status()
+    r = _request("POST", f"{HS_BASE}{path}", headers=_headers(), json=body)
     return r.json()
 
 

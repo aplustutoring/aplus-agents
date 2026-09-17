@@ -34,7 +34,7 @@ def _records_for(deal_ids: set[str]) -> dict[str, dict]:
         elif act == "sms_sent":
             slot["text_sent"] = (r.get("timestamp") or "")[:16].replace("T", " ")
             if r.get("welcome_email_to"):
-                slot["welcome_to"] = r["welcome_email_to"]
+                slot["welcome_to"] = slot["text_sent"]     # when it went, not the (masked) address
         elif act in ("sms_skipped_unverified", "sms_error", "sms_held"):
             slot["skipped"].append(f"{act}: {r.get('reason') or r.get('error') or r.get('verdict') or ''}")
         elif mid == f"hsa-sms-skip-dm:{did}":

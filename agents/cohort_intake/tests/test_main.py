@@ -66,7 +66,8 @@ def test_list_prints_every_row_with_status_and_writes_nothing(monkeypatch, capsy
     dms, sends = _wire(monkeypatch, fake)
     assert CLI.main(["--list"]) == 0
     out = capsys.readouterr().out
-    assert "IEM-1001" in out and "Diego Reyna" in out and "Ready" in out
+    assert "IEM-1001" in out and "Diego R." in out and "Ready" in out
+    assert "Diego Reyna" not in out                               # last initial only in logs
     assert "reyna.family@gmail.com" not in out                    # no parent contact details
     assert fake.created_deals == [] and dms == [] and sends == []
 
@@ -75,7 +76,15 @@ def test_only_row_narrows_to_one_student(monkeypatch):
     fake = H.FakeHS()
     dms, _ = _wire(monkeypatch, fake)
     assert CLI.main(["--only-row", "IEM-1002"]) == 0
-    assert "1 student(s)" in dms[0][1] and "Maya Chen" in dms[0][1]
+    assert "1 student(s)" in dms[0][1] and "Maya C." in dms[0][1]     # dry run: redacted everywhere
+
+
+def test_dry_run_log_never_carries_full_student_names(monkeypatch, capsys):
+    fake = H.FakeHS()
+    _wire(monkeypatch, fake)
+    assert CLI.main([]) == 0
+    out = capsys.readouterr().out
+    assert "Diego R. (IEM-1001)" in out and "Diego Reyna" not in out
     assert CLI.main(["--only-row", "NOPE-1"]) == 1
 
 

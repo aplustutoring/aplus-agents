@@ -45,7 +45,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / "email"))
 
 import messenger as m  # noqa: E402  (bulk engine: render, normalize_phone, jc_send_sms, hs)
-from src import presend  # noqa: E402
+from src import audit, presend  # noqa: E402
 from src.config import DRY_RUN, RESEND_API_KEY, cfg as email_cfg  # noqa: E402
 from src.gmail_client import _scrub_outbound  # noqa: E402
 
@@ -205,8 +205,9 @@ def send_rows(rows: list[dict], *, purpose: str, from_line: str, approved_by: st
             counts["sent" if ok else "failed"] += 1
             record(r["contact"]["id"], channel, from_line, purpose, r["to"], r["body"],
                    "one_to_few", ok, detail, approved_by)
-            log.write(json.dumps({"contact_id": r["contact"]["id"], "email": r["contact"].get("email"),
-                                  "to": r["to"], "ok": ok, "detail": str(detail)[:160],
+            log.write(json.dumps({"contact_id": r["contact"]["id"],
+                                  "email": audit.redact(r["contact"].get("email")),
+                                  "to": audit.redact(r["to"]), "ok": ok, "detail": str(detail)[:160],
                                   "body": r["body"], "subject": r.get("subject", ""),
                                   "channel": channel, "purpose": purpose, "from_line": from_line,
                                   "approved_by": approved_by,

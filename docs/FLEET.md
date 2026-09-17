@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**62 registered agents** — 41 active · 18 manual · 3 deprecated · across 13 engines.
+**65 registered agents** — 44 active · 18 manual · 3 deprecated · across 13 engines.
 
 ## What this is
 
@@ -38,12 +38,12 @@ outranks those two. HubSpot is where humans act.
 |---|---|---|
 | B2B blogs | 6 | 3 |
 | B2C spotlights | 5 | 2 |
-| Email / inbox ops | 14 | 12 |
+| Email / inbox ops | 16 | 14 |
 | Data sync | 3 | 3 |
 | Call agent | 2 | 2 |
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
-| Fleet health | 9 | 6 |
+| Fleet health | 10 | 7 |
 | Charter analysis | 10 | 2 |
 | Events | 5 | 4 |
 | Cohort intake | 1 | 1 |
@@ -54,9 +54,9 @@ outranks those two. HubSpot is where humans act.
 
 The distinction that matters most, and it does not follow engine lines.
 
-**Writes to live systems on its own (25):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `email-low-balance`, `email-first-lesson`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`, `cohort-intake`, `tw-invoice-due-sync`, `claude-code-action`, `blue-ridge-booth`.
+**Writes to live systems on its own (27):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `case-engine`, `email-low-balance`, `email-first-lesson`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`, `cohort-intake`, `tw-invoice-due-sync`, `claude-code-action`, `blue-ridge-booth`, `unanswered-asks`.
 
-**Reports, drafts, or waits for a human (16):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`, `delilah-booth`.
+**Reports, drafts, or waits for a human (17):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `queue-digests`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`, `delilah-booth`.
 
 **Manual dispatch only (18):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `hubspot-archive`, `bulk-messenger`, `ticket-reasoner`, `email-backfill-deal-props`, `tutor-roster-check`, `campaign-revenue-report`, `automation-audit`, `booth-deploy`.
 
@@ -91,6 +91,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
+| **case-engine**<br>Case engine (Tasks / Tickets / Pipelines rule; Renewals, Support, Tutor Accountability pipelines) | library | active | HubSpot:tickets (by case_key; open per pipeline for sweeps and digests), HubSpot:deals (hsa_group for IEM parity; invoice__ for the Needs invoice / PO watch closers), HubSpot:contacts (open Tutor Accountability tickets on the family) | HubSpot:tickets (open / move / close in the three pipelines; case_key, case_client, funding_type, retention_risk, support_category, linked_tutor_ticket_id, sla_due_at), email/state/audit_log.jsonl (case_opened / case_moved), Slack (DM to the case owner role only) |
 | **email-daily-summary**<br>Daily summary (6 PM PT DM) | daily 6 PM PT | active | email/state/audit_log.jsonl, HubSpot:tickets | Slack |
 | **email-deal-sync**<br>Deal sync (HubSpot → Teachworks) + invoice sweep | every 15 min during business hours + hourly | active | HubSpot:deals, HubSpot:contacts, Teachworks:customers/students/lessons | Teachworks:customers+students (family upsert by email; per-pipeline billing; guards: charter contact must match deal-name parent, internal domains skipped), Slack (needs-review flags; invoice-sweep submit prompts to Kath) |
 | **email-draft-feedback**<br>Draft feedback weekly (Fri 4 PM PT) | 16:00 PDT Fri / 15:00 PST | active | Gmail:drafts, email/state/draft_registry.jsonl | corrections/email-drafts/, email/state/, Slack |
@@ -103,18 +104,21 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **email-triage**<br>Inbox triage | every 15 min during business hours + hourly | active | HubSpot:conversations, HubSpot:contacts, Teachworks | HubSpot:tickets, HubSpot:conversations(comment), Slack |
 | **email-weekly-digest**<br>Weekly digest | Mon 8 AM PT | active | HubSpot:tickets, email/state/audit_log.jsonl | Slack |
 | **task-completion-sweep**<br>Task-completion sweep (team HubSpot tasks) | weekdays 8 AM PT | active | HubSpot:tasks, email/state/audit_log.jsonl | Slack, email/state/audit_log.jsonl |
+| **unanswered-asks**<br>unanswered-asks — somebody asked for a person and nobody got back to them | 5,25,45 14-23 * * * | active | JustCall:inbound SMS across every line (paging from 0), HubSpot:contacts (match by phone; notes_last_contacted decides whether anyone got back to them), ops/unanswered/state/ | HubSpot:tasks — same-day HIGH call-back task on the contact when a text asks to be called or names a staff member, Slack — alert per open ask; self-closing once notes_last_contacted moves past the ask, ops/unanswered/state/, GitHub: run artifact unanswered-report.json |
 | **email-backfill-deal-props**<br>Email — backfill deal props (one-off, dispatch only) | manual | manual | HubSpot:deals, HubSpot:contacts | HubSpot:deals — ONLY with dry_run=false: parent_email / parent_phone from associated contacts + missing iLEAD hours on August 2026 charter PO deals |
 | **ticket-reasoner**<br>Ticket reasoning sweep | manual | manual | HubSpot:tickets (every OPEN ticket) + associated contacts/deals, Gmail:charter@ (the ticket's thread), JustCall | HubSpot:tickets — pester comments on the 24/48/96h ladder; CLOSE only when reasoner.allow_close in email/config.yaml AND confidence >= reasoner.close_min_confidence |
 
 - **task-completion-sweep** — First agent to READ HubSpot Tasks back (two agents create them; nothing checked completion)
 - **email-po-inbox** — Chains deal_sync.sync_deal for the new deal in the SAME run (no cron lag).
 - **email-deal-sync** — Invoice sweep (daily 9 AM PT inside this workflow): active charter PO deals — attended TW hours >= PO hours → prompt Kath to submit to the school's ops system now, else prompt at end of PO month (lessons_fulfilled_date)
+- **case-engine** — Retention risk = priority High + retention_risk flag, no stage
 - **email-low-balance** — Replaces the Monday board "A+ Charter Low Balance Alerts" (8802830977) and the HubSpot flow "Low Balance Alerts - Charter" (552811839, off since 2025-10-01) that Paola fed by hand
 - **email-first-lesson** — The "New Starts (Care Calls)" deal view (72186918) and the day-14 / day-45 care calls key off this date instead of HubSpot's batched "date entered Post-Lesson"
 - **email-po-daily-report** — Read-only + one DM
 - **email-draft-feedback** — The team's edits ARE the training signal (#AP008 corrections path)
 - **ticket-reasoner** — Claude reasoning over cross-system evidence (#AP-pending, 2026-08-26 "Reasoning sweep + the 24-hour pester policy")
 - **email-backfill-deal-props** — One-off from the 2026-09-03 property audit
+- **unanswered-asks** — Cron is justified (Roman 2026-09-04 rule): the agent must come back later to see whether the grace window elapsed and whether anyone replied, and the closing sweep is periodic by nature
 
 ### Data sync
 
@@ -170,11 +174,13 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **fleet-docs**<br>Fleet — registry check + FLEET.md | event | active | registry.yml, .github/workflows/, docs/FLEET.md | docs/FLEET.md |
 | **fleet-retry**<br>Fleet retry sweeper (every 20 min) | every 20 min, offset from agent crons | active | GitHub:actions_runs, ops/feedback-agent/config.yml | GitHub:actions_runs, Slack |
 | **pr-merge-nudge**<br>PR merge nudge (green fixes) | manual | active | GitHub: open PRs + check-run state, ops/feedback-agent/config.yml | Slack: one digest to |
+| **queue-digests**<br>Monday queue digest + daily fleet recap (Leadership team channel) | schedule | active | HubSpot:tickets (open / closed per pipeline), HubSpot:tasks (overdue, machine-created), GitHub (merged PRs, failed runs) via gh | Slack |
 | **automation-audit**<br>Automation audit (read-only census) | manual | manual | HubSpot:workflows (v3 + v4 automation APIs, merged by name) | GitHub: run artifact — HTML report + decision-log draft + run summary |
 | **hubspot-archive**<br>HubSpot archive objects by id (manual) | manual | manual | HubSpot | HubSpot |
 | **hubspot-schema**<br>HubSpot schema sync (manual) | manual | manual | ops/hubspot-schema/properties.yml, registry.yml, HubSpot | HubSpot |
 
 - **fleet-retry** — Excludes itself and the approved-fix executor (paid coding-agent runs are never blindly retried)
+- **queue-digests** — Renewals adds the trailing 4-week renewal rate per family and the fleet-health defect line (charter / private-pay renewal owned by charter_sales).
 - **credential-expiry** — NEVER REMEDIATES
 - **hubspot-schema** — Idempotent + additive only
 - **fleet-docs** — ROLLOUT: PR runs use --warn, so an unregistered workflow annotates the PR without blocking the merge
@@ -215,7 +221,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | **blue-ridge-booth**<br>Blue Ridge BTSC 2026 "Spin Back to School" booth | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create) | HubSpot:contacts — upsert; aplus_event_tag += blue_ridge_btsc_2026 (append-only, |
 | **delilah-booth**<br>Delilah's 5th birthday + Rosh Hashanah 5787 photo booth (personal, 2026-09-11) | event<br>*cloudflare-worker* | active | Cloudflare KV (PHOTOS binding), Google Gemini API (storybook repaint, gemini-3.1-flash-image) | JustCall MMS from 818-573-6293, Google Drive: every print mirrored to the top of the Shared Drive 'Delilah's Bday', Cloudflare KV |
 | **eo-booth-agent**<br>EO LA Valley "Minion | event<br>*cloudflare-worker* | active | HubSpot:contacts, Cloudflare KV, Anthropic API, Google Gemini API | HubSpot:contacts, Resend, JustCall, Cloudflare KV, Zapier catch-hook -> Google Sheet "EO Agent Ideas — Aug 20", Google Drive, HubSpot:notes |
-| **sage-oak-booth**<br>Sage Oak BTSC 2026 photo booth | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create), Cloudflare KV (PHOTOS binding — serves GET /photo/<key>) | HubSpot:contacts, HubSpot:contacts persona stamp, CREATE-ONLY, HubSpot:emails, HubSpot:notes, Resend, JustCall, Cloudflare KV |
+| **sage-oak-booth**<br>A+ photo booth (Sage Oak BTSC 2026, Sage Oak Park Day 2026) | event<br>*cloudflare-worker* | active | HubSpot:contacts (search by email — find-or-create; aplus_event_tag read back so the merge appends,, Cloudflare KV (PHOTOS binding — serves GET /photo/<key>) | HubSpot:contacts, HubSpot:contacts persona stamp, CREATE-ONLY, HubSpot:contacts hubspot_owner_id, CREATE-ONLY, HubSpot:emails, HubSpot:notes, Resend, JustCall, Cloudflare KV |
 | **booth-deploy**<br>Blue Ridge booth deploy (manual) | manual | manual | booth/blue-ridge/ | Cloudflare: Worker blue-ridge-booth (wrangler deploy) + Pages project blue-ridge-booth (allowlisted .pages-dist upload, --branch main) |
 
 - **sage-oak-booth** — HAND-DEPLOYED, two pieces: `npx wrangler deploy` for the Worker and `npx wrangler pages deploy` for the front-end

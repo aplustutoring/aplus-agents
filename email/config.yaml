@@ -184,6 +184,71 @@ sms:
     hsa_multi_confirm: "Hi {first_name}, it's A+ Tutoring! {students} are set for IEM's HSA tutoring groups. Schedules and tutor intros come by email before the first session. Reply here with any questions."
     hsa_multi_ask: "Hi {first_name}, it's A+ Tutoring! {students} are set for IEM's HSA tutoring groups. Schedules and tutor intros come by email before the first session. Reply here with any questions."
 
+# ── Tasks (Roman 2026-09-16): ceiling per seat per day, enforced in hubspot_client.create_task ──
+tasks:
+  daily_ceiling_per_owner: 10          # beyond this the task is NOT created; the seat lead is DM'd instead
+  ceiling_notify: operations
+
+# ── Case engine (Roman 2026-09-16: Tasks / Tickets / Pipelines rule) ───────
+# email/src/case_engine.py. Three ticket pipelines; stage ids from the portal
+# (created 2026-09-16 by the STEP 1 script). Owner rules are ROLES or the
+# token "split" (family surname A-L / M-Z). Service levels in business days.
+case_engine:
+  pipelines:
+    renewals:
+      id: "935649887"
+      stages:
+        waiting_on_family: "1439476614"
+        needs_scheduler: "1439476615"
+        needs_invoice: "1439476616"
+        renewed: "1439476617"
+        not_renewing: "1439476618"
+        no_response: "1439476619"
+      closed: [renewed, not_renewing, no_response]
+    support:
+      id: "0"
+      stages:
+        new: "1378066770"
+        waiting_on_us: "131537027"
+        waiting_on_tutor: "3"
+        waiting_on_family: "2"
+        resolved: "4"
+        wont_fix: "1439476620"
+      closed: [resolved, wont_fix]
+    tutor:
+      id: "935648438"
+      stages:
+        new: "1439554384"
+        debrief: "1439554385"
+        probation: "1439554386"
+        evaluated: "1439554387"
+        resolved: "1439554388"
+      closed: [resolved]
+  owner_rules:
+    renewals:
+      trial: charter_sales                 # the only owner override in Renewals
+      hsa_pipelines: ["5119061"]           # IEM HSA: group-number parity from the deal's hsa_group (C1-G4)
+      hsa_parity: { odd: scheduler_a_l, even: scheduler_m_z }
+      split: { a_l: scheduler_a_l, m_z: scheduler_m_z }
+    support:                               # by support_category; "split" = family surname split
+      po_watch: charter_admin
+      po_exception: charter_admin
+      billing: charter_admin
+      scheduling: split
+      default: operations
+    tutor: operations
+  # Working draft (Roman 2026-09-16), business days per stage. Missing = no clock.
+  service_levels:
+    renewals: { waiting_on_family: 3, needs_scheduler: 1, needs_invoice: 1 }
+    support: { new: 1, waiting_on_us: 1, waiting_on_tutor: 2, waiting_on_family: 3 }
+    tutor: { new: 5, debrief: 5, probation: 30, evaluated: 5 }
+  tutor_accountability:
+    armed: false                           # spec'd from the Escalation Procedure p.1; p.2 unread. Counting only.
+    window_days: 30
+    probation_days: 30
+  digest:
+    channel: "C0AL86J4Y9Y"                 # Leadership team
+
 # ── Low-balance renewal agent (Roman 2026-09-08) ─────────────────
 # A Teachworks "package balance ... has reached the level of N hours" email
 # (the Package Balance Alerts add-on, arriving at admin@ via info@) opens ONE
@@ -208,7 +273,12 @@ low_balance:
   # Pocket) is not this agent's: no case, no email; the alert takes the
   # ordinary inbox triage path. The private-pay upgrade code below stays
   # dormant until this is flipped.
-  charter_only: true
+  # 2026-09-16 (case engine): EVERY Teachworks alert opens a Renewals case:
+  # charter and private pay owned by the scheduler split, trial (0.0 hours on
+  # a trial package) owned by charter_sales. charter_only is retired.
+  charter_only: false
+  trial_packages: ["trial"]            # package name token (case-insensitive) = funding_type trial
+  tor_owner: charter_sales             # the teacher email keeps this seat whoever owns the case
   # The Aug 1 → Sep 10 pool: PO sizes 0.75 to 6.5 hours (median 4) and
   # Teachworks alerts at 4 the moment the package is created, so an alert on
   # a PO with no attended lesson yet is "your package exists", not "running
@@ -242,6 +312,8 @@ low_balance:
   text_reply_window_days: 14      # JustCall lookback for "did the family text us since the case opened" (day-1 gate)
   family_text_after_days: 1       # business days after the day-0 email
   retention_risk_days: 7
+  retention_risk_hours: 1              # risk = later of day 7 AND balance at this many hours or fewer
+  # 2026-09-16: no visionary DM; the case owner (scheduler / charter_sales) gets it
   lost_after_days: 21             # after the risk flag
   reengagement_list_id: ""        # HubSpot static list the Lost family joins (empty = skip)
   draft_unsent_nag_hours: 24      # teacher draft still in Drafts → one nag
@@ -312,6 +384,8 @@ low_balance:
   # teacher, one email from the seat offering the next package up. Tiers from
   # the 2026 pricing sheets; the email does the math for the family.
   private_pay:
+    armed: false                       # 2026-09-16: STEP 8 arms it last; needs payment_links below
+    payment_links: {}                  # tier name -> checkout URL; the email carries {payment_link}
     template: "templates/low_balance_private.html"
     subject: "{student}'s next tutoring package"
     # The upgrade email quotes the tiers below, which are the 2026 pricing
@@ -439,7 +513,8 @@ presend:
 
 roles:
   visionary: roman          # Director / owner
-  operations: emily         # ops; last-resort escalation
+  operations: mandy         # ops seat (Roman 2026-09-16: operations = Mandy; tutor accountability, support default)
+  escalation: emily         # last-resort escalation (was the operations key before 2026-09-16)
   scheduling_lead: mandy    # watches the schedulers; Stuck queue
   scheduler_a_l: janelle
   scheduler_m_z: yolanda
@@ -626,7 +701,10 @@ hsa:
   pre_lesson_stage: "5119062"
   sessions_prop: hsa_sessions
   group_prop: hsa_group
-  invoice_owner: charter_admin
+  # Roman 2026-09-16: the SCHEDULERS create the Teachworks invoices for HSA
+  # groups, so the invoice + late-add tasks go to the deal owner (the group's
+  # scheduler by parity). A staff/role key here routes them to one seat instead.
+  invoice_owner: deal_owner
   flag_to: [sales]              # Danielle sees every lesson-series mismatch
   lesson_check_days: 60         # verify deals whose start is within this many days
 
@@ -844,6 +922,7 @@ po_inbox:
   # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.
   invoice_task:
     enabled: true
+    mode: ticket                       # ticket = Support po_watch case (2026-09-16); task = the old per-PO task
     owner: charter_admin
     due_business_hours: 8    # STEP 1 is same-day: convert the PO to a TW invoice on receipt
     # STEP 2 (submitting to the school's ops system) is due at the END of the PO's

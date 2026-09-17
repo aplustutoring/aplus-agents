@@ -119,8 +119,11 @@ def _skipped_weekdays(group: Group) -> list[date]:
     return out
 
 
-def plan_summary(groups: list[Group], plans: dict, refused: list[str], mode: str) -> str:
-    """The dry-run table DM'd to Roman + Danielle (spec §5.2)."""
+def plan_summary(groups: list[Group], plans: dict, refused: list[str], mode: str,
+                 redact: bool = False) -> str:
+    """The dry-run table DM'd to Roman + Danielle (spec §5.2). redact=True is
+    the version that goes to stdout (the Actions log): first name + last
+    initial + IEM id, nothing else about the student."""
     lines = [f"🗂 *cohort_intake {mode}*: {len(groups)} group(s), "
              f"{sum(len(g.rows) for g in groups)} student(s)"]
     for g in groups:
@@ -129,7 +132,8 @@ def plan_summary(groups: list[Group], plans: dict, refused: list[str], mode: str
                      f"{_money(g.cohort.group_total)}, first {g.dates[0]:%b %-d} last {g.dates[-1]:%b %-d}; "
                      f"owner {p['owner_name']}")
         for r, amt, action in zip(g.rows, p["amounts"], p["deal_actions"]):
-            lines.append(f"  • {r.student_name} ({r.student_id}) {_money(amt)} → deal {action}; "
+            who = r.student_short if redact else r.student_name
+            lines.append(f"  • {who} ({r.student_id}) {_money(amt)} → deal {action}; "
                          f"family {p['family_actions'][r.student_id]}; "
                          f"ES {r.es_name} {p['tor_actions'][r.es_email]}"
                          + (" ⚠️ parent last name = student's" if r.parent_name_flagged else ""))
