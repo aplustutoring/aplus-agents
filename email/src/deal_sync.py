@@ -484,6 +484,7 @@ def run() -> None:
         _tb.print_exc()
     try:
         from . import hsa_sync
+        hsa_sync.late_add_sweep()
         hsa_sync.verify_lessons()
     except Exception as e:  # noqa: BLE001 — the cohort check must never fail the sync
         import traceback as _tb
