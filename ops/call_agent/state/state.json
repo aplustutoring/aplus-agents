@@ -979,9 +979,12 @@
     416343393,
     416361283,
     416368644,
-    416370902
+    416370902,
+    416376943,
+    416377381,
+    416377642
   ],
-  "last_run_utc": "2026-09-17T22:23:32.631365+00:00",
+  "last_run_utc": "2026-09-17T22:47:18.286497+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2141,6 +2144,166 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 416377381,
+      "number": "17143718613",
+      "time_pt": "3:41 PM",
+      "matched": true,
+      "contact_label": "Mario Aguilar",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Mario Aguilar to confirm PO changes for his sons' tutoring. Mario confirmed Vincent is dropping out of A+ tutoring (approved for another school program), while Ezekiel and Mario Jr. will continue with tutor Frederick. Mario confirmed the new $600 PO is correct and covers only Ezekiel and Mario Jr. He'll revisit POs monthly. Call was warm and productive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Cancel/close out Vincent's tutoring with Frederick \u2014 he is discontinuing A+ services (approved for another school tutoring program)",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Schedule ongoing sessions for Ezekiel and Mario Jr. with Frederick under the new $600 PO",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Note that POs will be revisited monthly \u2014 plan to check in with Mario each month",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Mario Aguilar (dad, returning family, upbeat and easy) confirmed the new $600 PO is correct and covers ONLY Ezekiel and Mario Jr., both continuing with Frederick. Vincent is OUT \u2014 he got approved for a different tutoring program through his school, so drop him from Frederick's schedule. Mario expects us to now schedule the next sessions for Ezekiel and Mario Jr. with Frederick. He also said POs will be revisited monthly, so expect a fresh PO conversation each month. Open with: 'Hi Mario, following up on our call with Paola \u2014 we've got Ezekiel and Mario Jr. set to continue with Frederick on the new PO. Here are the next session times\u2026'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (active tutoring family) \u2014 status owned by deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Vincent",
+          "Ezekiel",
+          "Mario (Jr.)",
+          "Frederick"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mario confirmed PO changes: Vincent is discontinuing A+ (approved for a different tutoring program through his school). Ezekiel and Mario Jr. will continue with tutor Frederick under the new $600 PO. Mario noted POs will be revisited monthly.",
+          "what_we_can_do_to_help": "Scheduling to remove Vincent from Frederick's schedule and book ongoing sessions for Ezekiel and Mario Jr. with Frederick under the new $600 PO. Plan a monthly PO check-in with Mario.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mario confirmed PO changes: Vincent is discontinuing A+ (approved for a different tutoring program through his school). Ezekiel and Mario Jr. will continue with tutor Frederick under the new $600 PO. Mario noted POs will be revisited monthly."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling to remove Vincent from Frederick's schedule and book ongoing sessions for Ezekiel and Mario Jr. with Frederick under the new $600 PO. Plan a monthly PO check-in with Mario."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Cancel/close out Vincent's tutoring with Frederick \u2014 he is discontinuing A+ services (approved for another school tutoring program)",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Schedule ongoing sessions for Ezekiel and Mario Jr. with Frederick under the new $600 PO",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Note that POs will be revisited monthly \u2014 plan to check in with Mario each month",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416377642,
+      "number": "18317475108",
+      "time_pt": "3:42 PM",
+      "matched": true,
+      "contact_label": "Pamela Richardson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Yolanda to Pamela Richardson to confirm scheduling for Eli's tutoring. Reached voicemail; Yolanda left a message referencing tutor Jonathan's profile sent via text and proposed Mondays and Thursdays at 11 AM. Yolanda said she'd try again around 5:30 PM.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Pamela back around 5:30 PM to confirm Jonathan as tutor and Mon/Thu 11 AM schedule for Eli",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda is handling this \u2014 outbound to Pamela Richardson (mom of Eli, 8th grade IEP algebra intervention, PO in hand for 2x/week 45-min). Reached voicemail again. Yolanda already texted Jonathan's tutor profile and proposed Mondays and Thursdays at 11 AM. Yolanda told Pamela she'd call back around 5:30 PM today. Pamela now expects that callback and to confirm whether Jonathan + Mon/Thu 11 AM works. Opener: 'Hi Pamela, Yolanda from A+ Tutoring following up on Jonathan's profile and the Mon/Thu 11 AM slots for Eli \u2014 wanted to see if that works so we can get him started this week or next.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with active deal (PO in hand); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Eli",
+          "Jonathan"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Outbound call to Pamela to confirm scheduling for Eli. Reached voicemail; Yolanda left a message referencing Jonathan's tutor profile (sent via text) and proposing Mondays and Thursdays at 11 AM.",
+          "what_we_can_do_to_help": "[call] Yolanda will call Pamela back around 5:30 PM to confirm whether Jonathan and the Mon/Thu 11 AM slots work so Eli's 2x/week 45-min sessions can start.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Outbound call to Pamela to confirm scheduling for Eli. Reached voicemail; Yolanda left a message referencing Jonathan's tutor profile (sent via text) and proposing Mondays and Thursdays at 11 AM."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda will call Pamela back around 5:30 PM to confirm whether Jonathan and the Mon/Thu 11 AM slots work so Eli's 2x/week 45-min sessions can start."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Pamela back around 5:30 PM to confirm Jonathan as tutor and Mon/Thu 11 AM schedule for Eli",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -2172,6 +2335,11 @@
     {
       "number": "19493553715",
       "time_pt": "2:00 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "17143537555",
+      "time_pt": "3:40 PM",
       "reason": "hang-up"
     }
   ],
