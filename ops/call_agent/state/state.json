@@ -969,9 +969,10 @@
     416305066,
     416306649,
     416310914,
-    416311007
+    416311007,
+    416312528
   ],
-  "last_run_utc": "2026-09-17T20:02:17.637796+00:00",
+  "last_run_utc": "2026-09-17T20:07:22.119429+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1878,6 +1879,96 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 416312528,
+      "number": "18189748119",
+      "time_pt": "12:56 PM",
+      "matched": true,
+      "contact_label": "Michele Archer",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ made an outbound scheduling call to Michele Archer (grandmother of student Kade Hutchinson) to lock in the temporary schedule changes while Michele is out of town. They confirmed: week of 9/21 = Mon/Tue/Thu at 4:30pm (regular); weeks of 9/29 and 10/6 = Tue/Thu at 6:00pm with Andrew; week of 10/13 = Tue/Thu at 4:30pm; week of 10/19 resumes regular 3x/week (Mon/Tue/Thu) at 4:30pm. Michele also confirmed Andrew missed the 9/15 Monday session, so she should only be billed for Tue/Thu that week. Michele confirmed auto-renewal of the package on her credit card on file is fine.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Coordinate the confirmed schedule with Andrew: 9/21, 9/22, 9/24 at 4:30pm; 9/29 and 10/1 at 6:00pm; 10/6 and 10/8 at 6:00pm; 10/13 and 10/15 at 4:30pm; then resume regular 3x/week (Mon/Tue/Thu) at 4:30pm starting 10/19.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Verify with Andrew that the 9/15 Monday session did not occur and adjust billing so Michele is only charged for Tue 9/16 and Thu 9/18 that week.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Confirm Andrew is aware of and agrees to the 6:00pm sessions on 9/29, 10/1, 10/6, and 10/8 (Michele said he agreed but Janelle should verify directly).",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Michele (grandmother of Kade Hutchinson, 1st grade at Carpenter Charter) is a happy active customer working with tutor Andrew. On this outbound call Janelle locked in a temporary schedule while Michele is out of town: 9/21, 9/22, 9/24 at 4:30pm (normal); 9/29 & 10/1 at 6:00pm (Tue/Thu only); 10/6 & 10/8 at 6:00pm (Tue/Thu only); 10/13 & 10/15 at 4:30pm (Tue/Thu); then back to regular 3x/week Mon/Tue/Thu at 4:30pm starting 10/19. Michele also confirmed Andrew missed the 9/15 Monday session \u2014 she should only be billed for 9/16 and 9/18 that week. Michele confirmed she's fine with the package auto-renewing on the card on file while she's away. She expects Janelle to coordinate all of this with Andrew and adjust the invoice. Open with: 'Hi Michele, just confirming Andrew is all set with the temporary 6pm Tue/Thu schedule and that we've corrected last week's billing.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Michele is an existing active customer (Kade is already receiving tutoring with Andrew); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kade Hutchinson",
+          "Andrew",
+          "Carpenter Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Janelle reached Michele on outbound to finalize the temporary schedule while she's out of town. Confirmed: week of 9/21 runs normal 3x/week (Mon/Tue/Thu) at 4:30pm; weeks of 9/29 and 10/6 shift to Tue/Thu at 6:00pm with Andrew (Michele says Andrew already agreed); week of 10/13 is Tue/Thu at 4:30pm; regular 3x/week at 4:30pm resumes 10/19. Michele reconfirmed Andrew missed the 9/15 Monday session and asked to only be billed for 9/16 and 9/18 that week. Michele is fine with the package auto-renewing on the card on file while she's away.",
+          "what_we_can_do_to_help": "[call] Janelle to coordinate the confirmed dates/times directly with Andrew and verify he's aware of the 6:00pm Tue/Thu sessions on 9/29, 10/1, 10/6, and 10/8. Confirm with Andrew that the 9/15 Monday session did not happen and remove that charge from Michele's invoice. No further action needed on payment method \u2014 auto-renewal on card on file is approved.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Janelle reached Michele on outbound to finalize the temporary schedule while she's out of town. Confirmed: week of 9/21 runs normal 3x/week (Mon/Tue/Thu) at 4:30pm; weeks of 9/29 and 10/6 shift to Tue/Thu at 6:00pm with Andrew (Michele says Andrew already agreed); week of 10/13 is Tue/Thu at 4:30pm; regular 3x/week at 4:30pm resumes 10/19. Michele reconfirmed Andrew missed the 9/15 Monday session and asked to only be billed for 9/16 and 9/18 that week. Michele is fine with the package auto-renewing on the card on file while she's away."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Janelle to coordinate the confirmed dates/times directly with Andrew and verify he's aware of the 6:00pm Tue/Thu sessions on 9/29, 10/1, 10/6, and 10/8. Confirm with Andrew that the 9/15 Monday session did not happen and remove that charge from Michele's invoice. No further action needed on payment method \u2014 auto-renewal on card on file is approved."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Coordinate the confirmed schedule with Andrew: 9/21, 9/22, 9/24 at 4:30pm; 9/29 and 10/1 at 6:00pm; 10/6 and 10/8 at 6:00pm; 10/13 and 10/15 at 4:30pm; then resume regular 3x/week (Mon/Tue/Thu) at 4:30pm starting 10/19.",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Verify with Andrew that the 9/15 Monday session did not occur and adjust billing so Michele is only charged for Tue 9/16 and Thu 9/18 that week.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Confirm Andrew is aware of and agrees to the 6:00pm sessions on 9/29, 10/1, 10/6, and 10/8 (Michele said he agreed but Janelle should verify directly).",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
