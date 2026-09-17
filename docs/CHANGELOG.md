@@ -7,6 +7,63 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
+
+**Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
+have a ticket created, we resorted to text messages but we need to know about
+that so we can sort them out." Scheduling had been texting tutors to ask them
+to go read Slack, and nothing recorded it. Separately, Georgianne Leong told us
+by text on 2026-09-14 that she sees no Slack messages from us at all, so a
+silent tutor is not evidence of an unwilling tutor.
+
+**What changed:** new issue type `unresponsive_in_slack` and a
+`--mode slack-fallback` leg. It scans outbound JustCall texts, resolves the
+number to a contact with the Tutors persona, and opens a ticket when the text
+we sent itself mentions Slack. The marker IS the evidence: no reasoning pass,
+no guessing at intent. Dedupe is rolling 30 days, so three chases in a month
+land on one ticket showing all three. Unlike every other type this ticket is
+not a silent log; it carries an ACTION line, because the point is that someone
+sorts the tutor out.
+
+Excluded by config: tutors with no Slack by policy (Christa, per Roman
+2026-09-08), anyone off the active roster, and the missed-call and applicant
+auto-replies.
+
+**Two JustCall paging traps fixed here, both of which return the wrong rows
+silently rather than erroring.** Paging is zero-indexed, so `page=1` skips the
+newest 100 texts and a short window comes back empty; and with `order=asc` the
+first page is the OLDEST 100 in the window, so one unpaginated call returns
+week-old traffic and misses everything recent. The first trap is what made this
+session's own SMS monitor report "0 inbound" for roughly ten hours on
+2026-09-12 while six families were writing in. `fetch_outbound_sms` now starts
+at page 0 and walks `next_page_link`, with a page cap and tests pinning both.
+
+**Not built, and why:** the stronger signal is "asked in the tutor's channel,
+no reply in N hours". That needs `conversations.history` on the private
+`#first-last` channels. The bot is not a member of them, and no file maps a
+tutor to a channel (`knowledge/journey/11-tutor.md`, Known gaps). Invite the
+bot and add the map and that leg becomes buildable.
+
+**Dry run against 7 days of live traffic:** 2 tickets, both correct. Jon Bax
+(chased 2026-09-08 and 2026-09-09, merged onto one ticket) and Arthur
+Rekechenetskiy (2026-09-14). Nothing else in 1,953 texts matched.
+
+**Amended same day, before merge.** Hannah Thorn told us by text on 2026-09-15:
+"you messaged me on slack at 12:12 and texted at 12:21 (both eastern time), but
+I was in the session." The first version of this detector would have opened a
+ticket on her. Nine minutes is not going quiet, and blaming a tutor for being
+mid-lesson is worse than missing the signal. Because the bot cannot read the
+private tutor channels it cannot measure the real gap, so the gate is now
+`require_urgency_or_repeat`: ticket only when the chase itself uses follow-up
+wording ("gently following up", "I need to know today"), or when the same tutor
+was chased more than once in the window. A single unhurried referral to Slack is
+recorded as seen and refused with a reason. Re-run over the same 7 days: 1
+ticket (Jon Bax, 2 chases) and 1 refusal (Arthur, one calm text). 47 tests pass.
+
+**Files:** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
+`ops/tutor-issues/README.md`, `ops/tutor-issues/tests/test_tutor_issues.py`
+(44 pass).
+
 ## 2026-09-16 — phone resolution: use HubSpot's own normalised index, stop guessing formats
 
 **Why:** on 2026-09-16 a check for "who is waiting on us" could not resolve
