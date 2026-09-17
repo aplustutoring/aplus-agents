@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-17T12:48:02.525972+00:00",
+ "_last_run": "2026-09-17T19:12:52.582304+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -647,6 +647,15 @@
   "first": "2026-08-31",
   "name": "Maximilian Garcia",
   "tw_student_id": "2337244"
+ },
+ "online:gavin, jacob": {
+  "checked": "2026-09-17",
+  "contact_id": "56794767005",
+  "deal_id": "22200057246",
+  "email": "robertgavin@mac.com",
+  "first": "2024-09-12",
+  "name": "Jacob Gavin",
+  "tw_student_id": "1884124"
  },
  "online:gemberling, arthur": {
   "checked": "2026-09-13",
@@ -1501,6 +1510,15 @@
   "name": "Ellie Schnurstein",
   "tw_student_id": "2213150"
  },
+ "online:schwartz, roslyn": {
+  "checked": "2026-09-17",
+  "contact_id": "199699140690",
+  "email": "brooklyn77@mac.com",
+  "first": "2026-09-15",
+  "name": "Roslyn Schwartz",
+  "no_deal_until": "2026-09-20",
+  "tw_student_id": "2348247"
+ },
  "online:seeley, ember": {
   "checked": "2026-09-10",
   "contact_id": "243333671074",
@@ -1672,6 +1690,15 @@
   "name": "Nomi Tokunow",
   "tw_student_id": "1971769"
  },
+ "online:topcu, cody": {
+  "checked": "2026-09-17",
+  "contact_id": "248000503959",
+  "deal_id": "64986008067",
+  "email": "wolftres@yahoo.com",
+  "first": "2026-09-17",
+  "name": "Cody Topcu",
+  "tw_student_id": "2351526"
+ },
  "online:trejo, araceli": {
   "checked": "2026-09-13",
   "contact_id": "212516157058",
@@ -1824,6 +1851,24 @@
   "first": "2024-10-17",
   "name": "Jo Yi",
   "tw_student_id": "1907816"
+ },
+ "online:zamora, mia": {
+  "checked": "2026-09-17",
+  "contact_id": "195028956442",
+  "deal_id": "65035077940",
+  "email": "yamilemvdriver@outlook.com",
+  "first": "2026-09-16",
+  "name": "Mia Zamora",
+  "tw_student_id": "2353110"
+ },
+ "online:zamora, valentina": {
+  "checked": "2026-09-17",
+  "contact_id": "195028956442",
+  "deal_id": "54321336128",
+  "email": "yamilemvdriver@outlook.com",
+  "first": "2026-02-03",
+  "name": "Valentina Zamora",
+  "tw_student_id": "2183173"
  },
  "online:zavaleta, amir": {
   "checked": "2026-09-11",
