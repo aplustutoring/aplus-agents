@@ -952,9 +952,10 @@
     416213309,
     416213691,
     416218547,
-    416221604
+    416221604,
+    416236565
   ],
-  "last_run_utc": "2026-09-17T17:40:06.716787+00:00",
+  "last_run_utc": "2026-09-17T18:00:18.088940+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1315,6 +1316,107 @@
           "Verify email address sloanefamemail@gmail.com is correct (spelled during call as 's-l-o-m-e-f-a-m-email' \u2014 likely Sloane)",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416236565,
+      "number": "15305595178",
+      "time_pt": "10:45 AM",
+      "matched": true,
+      "contact_label": "Ashley Clay",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Ashley Clay to follow up on her charter inquiry for her son Trace (3rd grade, Arete Charter Academy). Trace recently started homeschooling and scored slightly below benchmark on DIBELS in reading (common words, fluency, comprehension) and was close on math. Paola quoted the charter rate ($75/hr or $60/45min) and they agreed on one hour per week split into two 30-minute sessions (reading + math). Ashley provided her charter teacher Sarah Schwartz's contact info (schwartz@prsd.us, 530-268-2805) to request a PO. Paola will send a recap email to Ashley and Sarah; scheduling will text once PO is received.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send recap email to Ashley and Sarah Schwartz (sschwartz@prsd.us) outlining rates and the agreed plan of 1 hour/week split into two 30-minute sessions (reading + math) so Sarah can issue a PO through Arete Charter Academy.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is received from Arete Charter Academy, scheduling team texts Ashley to confirm receipt and book the two 30-minute weekly sessions (reading + math) for Trace.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ashley Clay (warm, engaged) is a charter family through Arete Charter Academy for her son Trace Clay, 3rd grade, first year homeschooling. DIBELS showed Trace slightly below benchmark in reading (common words, fluency, comprehension) and close on math \u2014 roughly one semester behind. Paola quoted the charter rate ($75/hr, or $60/45min) and they agreed on 1 hour/week split into two 30-minute sessions, one reading and one math, online 1:1. Ashley's charter teacher is Sarah Schwartz, sschwartz@prsd.us, 530-268-2805 \u2014 Paola promised to email Ashley and Sarah with the plan and rates so Sarah can issue a PO. Next: send that recap email today; once PO arrives, scheduling texts Ashley to book. Suggested opener when following up: 'Hi Ashley, just confirming we've sent the plan over to Sarah at Arete for the PO \u2014 as soon as it comes in we'll text you to get Trace's reading and math sessions on the calendar.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Charter family (Arete Charter Academy) using instructional funds; connected and agreed on plan pending PO.",
+        "student_or_school_names_mentioned": [
+          "Trace Clay",
+          "Ashley Clay",
+          "Sarah Schwartz",
+          "Arete Charter Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Trace (3rd grade, first year homeschooling through Arete Charter Academy) scored below benchmark on DIBELS in reading common words, fluency, and comprehension, and was close to benchmark in math \u2014 roughly a semester behind. Mom Ashley wants to reinforce reading and add some math support alongside her homeschooling.",
+          "what_we_can_do_to_help": "Set Trace up with online 1:1 tutoring at the charter rate ($75/hr), 1 hour per week split into two 30-minute sessions \u2014 one reading, one math. Paola to email Ashley and charter teacher Sarah Schwartz (sschwartz@prsd.us, 530-268-2805) with the plan/rates so Arete can issue a PO; scheduling will text Ashley once PO is received.",
+          "student_first_name": "Trace",
+          "student_last_name": "Clay",
+          "grade_level": "3",
+          "student_school": "Arete Charter Academy",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Trace (3rd grade, first year homeschooling through Arete Charter Academy) scored below benchmark on DIBELS in reading common words, fluency, and comprehension, and was close to benchmark in math \u2014 roughly a semester behind. Mom Ashley wants to reinforce reading and add some math support alongside her homeschooling."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Set Trace up with online 1:1 tutoring at the charter rate ($75/hr), 1 hour per week split into two 30-minute sessions \u2014 one reading, one math. Paola to email Ashley and charter teacher Sarah Schwartz (sschwartz@prsd.us, 530-268-2805) with the plan/rates so Arete can issue a PO; scheduling will text Ashley once PO is received."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Clay"
+        ],
+        [
+          "student_school",
+          "Arete Charter School",
+          "Arete Charter Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send recap email to Ashley and Sarah Schwartz (sschwartz@prsd.us) outlining rates and the agreed plan of 1 hour/week split into two 30-minute sessions (reading + math) so Sarah can issue a PO through Arete Charter Academy.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once PO is received from Arete Charter Academy, scheduling team texts Ashley to confirm receipt and book the two 30-minute weekly sessions (reading + math) for Trace.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
