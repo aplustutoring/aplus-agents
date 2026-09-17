@@ -134,6 +134,16 @@ sms:
     "19120821": { template: trial, welcome: true,
                   welcome_template: "templates/welcome_trial.html",
                   welcome_subject: "Ready to Launch: Free Trial Session: Next Steps" }  # Free Trial
+    # IEM HSA cohorts (agents/cohort_intake, spec docs/specs/cohort-intake-spec.md
+    # §5.6, 2026-09-15). The intake agent writes schedule_preferences on every
+    # cohort deal, so the confirm variant always fires; the ask keys point at
+    # the same copy because a cohort family is never asked for a time (LOCKED
+    # Roman 9/15: the slot is IEM's, not ours). The welcome subject and body
+    # carry __STUDENT__/__SLOT__/__START__/__ES__/__NO_CLASS__ tokens filled
+    # from the deal's [Agent] HSA props by _send_welcome.
+    "5119061":  { template: hsa, welcome: true,
+                  welcome_template: "templates/welcome_hsa.html",
+                  welcome_subject: "__STUDENT__'s tutoring starts __START__: __SUBJECT__, __SLOT__" }  # IEM Inc (HSA)
   # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
   # gender), brand voice (no personal sign-off). Variant chosen by what we
   # KNOW: schedule on file means confirm; none means ask (the old flow pasted
@@ -167,6 +177,12 @@ sms:
     trial_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for {student}'s free trial session. What days and times work best? Reply here and we will get it booked."
     trial_multi_confirm: "Hi {first_name}, it's A+ Tutoring! Free trial sessions for {students} are coming up. Want to confirm their schedules work? Reply here to confirm or change them."
     trial_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for free trial sessions with {students}. What days and times work best? Reply here and we will get them booked."
+    # IEM HSA cohorts (spec §8, Danielle-approved copy). NEVER asks for or offers
+    # to change the schedule; the ask variants are the confirm copy on purpose.
+    hsa_confirm: "Hi {first_name}, it's A+ Tutoring! {student} is set for IEM's HSA tutoring group: {schedule}. Their tutor and session link come by email before the first session. Reply here with any questions."
+    hsa_ask: "Hi {first_name}, it's A+ Tutoring! {student} is set for IEM's HSA tutoring group: {schedule}. Their tutor and session link come by email before the first session. Reply here with any questions."
+    hsa_multi_confirm: "Hi {first_name}, it's A+ Tutoring! {students} are set for IEM's HSA tutoring groups. Schedules and tutor intros come by email before the first session. Reply here with any questions."
+    hsa_multi_ask: "Hi {first_name}, it's A+ Tutoring! {students} are set for IEM's HSA tutoring groups. Schedules and tutor intros come by email before the first session. Reply here with any questions."
 
 # ── Low-balance renewal agent (Roman 2026-09-08) ─────────────────
 # A Teachworks "package balance ... has reached the level of N hours" email
@@ -402,12 +418,17 @@ presend:
     sales: sales
     support: scheduler_split        # by student last name (scheduler_split below)
     conference: sales
-  standing_go: [po_welcome, low_balance_family]   # tor_confirm, tor_email_ask, tutor_ask join
+  standing_go: [po_welcome, low_balance_family, cohort_welcome]   # tor_confirm, tor_email_ask, tutor_ask join
                                                   # only when their journey stage is REVIEWED
   stop_line_exempt: [po_welcome, po_push, tor_confirm, tor_email_ask, tutor_ask]  # in-conversation
+  # Email sends through one_to_few --channel email (the ES cohort email) go
+  # out as this identity; replies land in admin@, the triage agent's inbox.
+  email_from: "A+ Tutoring Success Team <admin@wetutorathome.com>"
+  email_reply_to: "admin@wetutorathome.com"
   purposes:
     po_welcome:    { audience: scheduling, line: support }
     low_balance_family: { audience: scheduling, line: support }
+    cohort_welcome: { audience: tor,       line: email }   # ES group email, agents/cohort_intake (spec §5.6)
     po_push:       { audience: lead,       line: charter_sales }
     tor_confirm:   { audience: lead,       line: charter_sales }
     tor_email_ask: { audience: lead,       line: charter_sales }
@@ -582,6 +603,35 @@ owner_assign:
     - "16547180"   # Gold Tutoring - Renewal
     - "3067397"    # In-Person
     - "16858643"   # In-Person - Renewal
+  # Group-parity ownership (LOCKED Roman 2026-09-15): IEM HSA cohort deals are
+  # owned by the GROUP number within the cohort, not the family last name.
+  # Odd group → scheduler_a_l, even → scheduler_m_z. The number is read from
+  # the deal's [Agent] HSA Group ("C1-G4" → 4); numbering restarts each cohort.
+  group_parity:
+    "5119061": { property: hsa_group, odd: scheduler_a_l, even: scheduler_m_z }   # IEM Inc
+
+# ── IEM HSA cohorts in Teachworks (agents/cohort_intake, 2026-09-15) ──
+# deal_sync creates the family + student as usual (Package billing via
+# charter_pipelines). What the Teachworks API cannot do is covered by ONE
+# task per gap: the ES as an additional contact on the student (API spike;
+# task to the deal owner when it fails) and the flat group invoice + $0/hr
+# service + per-student allocation (the API cannot create invoices; task to
+# charter_admin, one per group, summed from the sibling deals' amounts).
+# verify_lessons: once the scheduler books the series, the lesson count must
+# equal [Agent] HSA Sessions and no lesson may fall on a no-class date
+# (LOCKED Roman 9/15); a mismatch DMs the deal owner + sales once a day.
+hsa:
+  enabled: true
+  pipeline: "5119061"
+  pre_lesson_stage: "5119062"
+  sessions_prop: hsa_sessions
+  group_prop: hsa_group
+  # Roman 2026-09-16: the SCHEDULERS create the Teachworks invoices for HSA
+  # groups, so the invoice + late-add tasks go to the deal owner (the group's
+  # scheduler by parity). A staff/role key here routes them to one seat instead.
+  invoice_owner: deal_owner
+  flag_to: [sales]              # Danielle sees every lesson-series mismatch
+  lesson_check_days: 60         # verify deals whose start is within this many days
 
 # ── Fill-only student/parent stamp (Roman 2026-09-10) ──
 # Replaces HubSpot workflow 34950163 "Contact to Deal Properties" (OFF

@@ -206,10 +206,12 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     if email.endswith(f"@{internal_domain}"):
         review = ("sync_skipped", f"internal contact (@{internal_domain}) — not a family")
     elif (is_charter and not po_num and not contact_override
+          and not (deal["properties"].get("hsa_sessions") or "").strip()
           and not _contact_matches_dealname(props, dealname)):
         # Charter deals not born from a PO often carry the school ES as the contact;
         # PO-created deals get the parent associated deliberately (po_inbox), so the
-        # po_number property exempts them.
+        # po_number property exempts them. IEM HSA cohort deals ([Agent] HSA
+        # Sessions set) are agent-made with the parent associated on purpose.
         review = ("sync_needs_review",
                   f"contact '{props.get('firstname', '')} {props.get('lastname', '')}' "
                   f"({email}) doesn't match the deal name — likely school staff, not the parent")
@@ -273,6 +275,15 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
             made.append(sf)
         if made:
             record["tw_student_created"] = ", ".join(made)
+    # IEM HSA cohort deals: ES as additional contact (API spike, task fallback)
+    # and the one flat group invoice task the API cannot make (hsa_sync).
+    if (deal["properties"].get("hsa_sessions") or "").strip():
+        try:
+            from . import hsa_sync
+            hsa_sync.after_sync(deal, record, contact, token)
+        except Exception as e:  # noqa: BLE001 — the family/student sync stands on its own
+            print(f"  ⚠️  hsa after-sync failed (non-fatal): {e}")
+            record["hsa_error"] = str(e)[:160]
     # Gold deals arrive without an amount — the family's most CURRENT Teachworks
     # invoice is the price of record (Roman, 2026-09-03). Free Trial stays $0.
     amt_raw = (deal["properties"].get("amount") or "").strip()
@@ -334,7 +345,8 @@ def run() -> None:
     if force_id:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
-                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount,hubspot_owner_id"})
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount,"
+                                   "hubspot_owner_id,hsa_sessions,hsa_group"})
         # Optional trace-by-contact-email: fetch the contact, fix the missing
         # association on the HubSpot deal, and sync with that contact.
         contact = None
@@ -377,7 +389,7 @@ def run() -> None:
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
         "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount",
-                       "hubspot_owner_id"],
+                       "hubspot_owner_id", "hsa_sessions", "hsa_group"],
         "limit": 50}
     deals: list = []
     while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
@@ -469,6 +481,14 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001 — the stamp must never fail the sync
         import traceback as _tb
         print(f"⚠️  first_lesson error: {e}")
+        _tb.print_exc()
+    try:
+        from . import hsa_sync
+        hsa_sync.late_add_sweep()
+        hsa_sync.verify_lessons()
+    except Exception as e:  # noqa: BLE001 — the cohort check must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  hsa verify_lessons error: {e}")
         _tb.print_exc()
 
 

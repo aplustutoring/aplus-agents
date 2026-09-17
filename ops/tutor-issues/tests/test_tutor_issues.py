@@ -500,3 +500,59 @@ def test_urgency_rejects_a_first_unhurried_referral(cfg):
 def test_gate_is_on_in_shipped_config(cfg):
     assert cfg["slack_fallback"]["require_urgency_or_repeat"] is True
     assert cfg["slack_fallback"]["urgency_markers"]
+
+# ── phone resolution: HubSpot's normalised index beats guessing formats ─────
+
+def test_phone_lookup_tries_the_calculated_index_first(monkeypatch):
+    """Maddy Zamany is stored "(310)456-4963" with no space after the paren,
+    a shape the variant list did not have, so she resolved to nobody on
+    2026-09-16. HubSpot's own normalised index holds the bare digits."""
+    seen = []
+
+    def fake(method, path, payload=None, params=None):
+        seen.append(payload)
+        if len(seen) == 1:
+            return {"results": [{"id": "C9", "properties": {"a_persona": "Family"}}]}
+        return {"results": []}
+
+    monkeypatch.setattr(ti, "hs_req", fake)
+    hits = ti.search_contacts_by_phone("(310)456-4963")
+    assert [h["id"] for h in hits] == ["C9"]
+    first = seen[0]["filterGroups"]
+    names = {f["propertyName"] for g in first for f in g["filters"]}
+    assert names == {"hs_searchable_calculated_phone_number",
+                     "hs_searchable_calculated_mobile_number"}
+    values = {f["value"] for g in first for f in g["filters"]}
+    assert values == {"3104564963"}
+
+
+def test_phone_lookup_falls_back_to_variants(monkeypatch):
+    """The calculated field is HubSpot-maintained, so a contact edited seconds
+    ago may not be indexed. The old tiers stay as a safety net."""
+    seen = []
+
+    def fake(method, path, payload=None, params=None):
+        seen.append(payload)
+        if len(seen) == 1:
+            return {"results": []}              # not indexed yet
+        return {"results": [{"id": "C4", "properties": {"a_persona": "Family"}}]}
+
+    monkeypatch.setattr(ti, "hs_req", fake)
+    hits = ti.search_contacts_by_phone("818-540-5237")
+    assert [h["id"] for h in hits] == ["C4"]
+    assert len(seen) >= 2
+    second = {f["propertyName"] for g in seen[1]["filterGroups"] for f in g["filters"]}
+    assert second == {"phone", "mobilephone"}
+
+
+def test_phone_lookup_skips_the_index_when_not_ten_digits(monkeypatch):
+    seen = []
+
+    def fake(method, path, payload=None, params=None):
+        seen.append(payload)
+        return {"results": []}
+
+    monkeypatch.setattr(ti, "hs_req", fake)
+    ti.search_contacts_by_phone("12345")
+    names = {f["propertyName"] for g in seen[0]["filterGroups"] for f in g["filters"]}
+    assert names == {"phone", "mobilephone"}

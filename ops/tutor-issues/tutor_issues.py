@@ -316,7 +316,35 @@ def _personas(contact):
 
 
 def search_contacts_by_phone(number):
-    """Raw HubSpot hits for a number (tier 1 exact, then tier 2 token)."""
+    """Raw HubSpot hits for a number.
+
+    Tier 0 is HubSpot's own normalised phone index. It stores the bare digits
+    regardless of how the number was typed, which is the whole point of it,
+    and it finds contacts that variant-guessing misses: Maddy Zamany's number
+    is stored "(310)456-4963" with no space after the paren, a shape the
+    variant list did not have, so she resolved to nobody on 2026-09-16.
+    Guessing formats will always be one punctuation style behind reality.
+
+    Tiers 1 and 2 (exact variants, then token) stay as a fallback, because the
+    calculated field is HubSpot-maintained and a contact edited seconds ago may
+    not be indexed yet.
+    """
+    digits = phone_digits(number)
+    if digits:
+        res = hs_req("POST", "crm/v3/objects/contacts/search", {
+            "filterGroups": [
+                {"filters": [{"propertyName": "hs_searchable_calculated_phone_number",
+                              "operator": "EQ", "value": digits}]},
+                {"filters": [{"propertyName": "hs_searchable_calculated_mobile_number",
+                              "operator": "EQ", "value": digits}]},
+            ],
+            "properties": FAMILY_LOOKUP_PROPS,
+            "limit": 5,
+        })
+        hits = res.get("results") or []
+        if hits:
+            return hits
+
     variants = phone_variants(number)
     if not variants:
         return []

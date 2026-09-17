@@ -1,0 +1,75 @@
+name: unanswered-asks
+
+# Somebody asked for a PERSON and nobody got back to them.
+#
+# Cron is justified here rather than event-driven (Roman 2026-09-04): the work
+# is inherently scheduled. The agent must come back LATER to check whether the
+# grace window elapsed and whether anyone has since replied, and the
+# self-healing pass that closes answered alerts is periodic by nature.
+#
+# The detection half does not have to be. Once the JustCall inbound-SMS relay
+# (PR #221) is deployed, a text can dispatch this directly and the cron shrinks
+# to the closing sweep alone.
+
+on:
+  schedule:
+    # every 20 minutes, 7am-9pm PT (14:00-04:00 UTC). Families text late.
+    - cron: "5,25,45 14-23 * * *"
+    - cron: "5,25,45 0-4 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Plan only, write nothing"
+        type: boolean
+        default: true
+
+concurrency:
+  group: aplus-state-write
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Pin to main. A queued run that checks out the dispatch-time SHA
+          # replays stale state and duplicates HubSpot items (2026-09-10).
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install requests pyyaml
+
+      - name: Run
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          python3 ops/unanswered/unanswered.py \
+            ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }} \
+            --report-json /tmp/unanswered-report.json
+
+      - name: Commit state
+        if: github.event_name != 'workflow_dispatch' || !inputs.dry_run
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ops/unanswered/state || true
+          git diff --staged --quiet || git commit -m "unanswered-asks: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+          git push || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unanswered-report
+          path: /tmp/unanswered-report.json
+          if-no-files-found: ignore
