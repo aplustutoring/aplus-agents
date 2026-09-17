@@ -7,6 +7,55 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
+
+**Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and
+37s about their son's PSAT prep, then texted 18 days later opening "Hey
+Roman". There was no HubSpot record of any of it. Inbound calls on Roman's
+line were not monitored, both calls were ANSWERED so the missed-call safety
+net did not apply, and nothing creates a contact for an unrecognised caller.
+Over 30 days that blind spot covered 41 answered inbound calls, 25 of them on
+the SALES line.
+
+Roman 2026-09-16: "i want all of our lines transcribed... we get a bunch of
+spam, you gotta be able to filter numbers some how."
+
+**What changed:**
+
+1. `monitored_numbers` now lists all six company lines. Recording disclosure
+   on the added lines is Roman's call and he has made it; `require_recording`
+   still means an unrecorded call is never transcribed, on any line.
+
+2. New `spam_gate`, applied to answered inbound calls BEFORE transcription so
+   junk costs nothing. Built from 30 days of live traffic, not guessed: of 362
+   inbound calls 166 were "abandoned" (the robocall signature, already
+   excluded by process_call_types), and among the 132 answered ones junk has
+   one shape — short and no caller-ID name. All THREE conditions must hold to
+   drop a call (under 20s AND caller-ID not human-looking AND unknown to
+   HubSpot), so a short call from a known family survives and a long call from
+   a blank caller-ID survives.
+
+3. `auto_create_contacts` flipped on, but only for calls that clear the spam
+   gate AND produce a real transcript. The contact is named by its phone
+   number, never by the telco caller-ID — naming from caller-ID is exactly how
+   838 CallRail shells got created in July 2026.
+
+**Measured against 30 days of live calls, using the shipped function:**
+132 answered inbound, 114 kept, 18 dropped. Every dropped call was under 20
+seconds with a blank caller-ID, longest 18s. About 10 new contacts a month,
+0.3/day. The PSAT parent's calls are both KEPT, which is the case the gate
+exists to protect.
+
+**Already true, worth recording:** the support line was already monitored and
+already coached. Since 2026-09-01 the rubric has scored 169 calls — Paola 67,
+Janelle 32, Yolanda 29, Roman 19, Emily 17, Mandy 5 — across 47 incoming and
+122 outgoing. Outbound on every line was already covered by `monitor_outbound`.
+The gap was only inbound on unmonitored lines.
+
+**Files:** `ops/call_agent/{call_agent.py,config.yml}`,
+`ops/call_agent/tests/test_spam_gate.py` (54 pass).
+
+---
 ## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
 
 **Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
