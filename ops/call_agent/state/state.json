@@ -951,9 +951,10 @@
     416213006,
     416213309,
     416213691,
-    416218547
+    416218547,
+    416221604
   ],
-  "last_run_utc": "2026-09-17T17:29:48.606493+00:00",
+  "last_run_utc": "2026-09-17T17:35:07.953339+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1235,6 +1236,83 @@
       "tasks_created": [
         [
           "Await callback from North Hollywood number; if no response in a couple of days, attempt another outreach (call or text) to identify the caller and their tutoring need.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416221604,
+      "number": "17143083450",
+      "time_pt": "10:26 AM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring returned a missed call from Rebecca Sloane, who is seeking in-person Algebra 2 tutoring for her daughter Zoe. Rebecca asked about pricing (quoted $130/hr with package discounts) and requested a session TONIGHT at 8:30 PM in ZIP 91604. She declined online tutoring. Paola collected her email (sloanefamemail@gmail.com) and said she'd check tutor availability and follow up via email or text.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check tutor availability for in-person Algebra 2 in ZIP 91604 for tonight at 8:30 PM for student Zoe Sloane",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Rebecca Sloane via email/text about tutor availability and next steps",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Verify email address sloanefamemail@gmail.com is correct (spelled during call as 's-l-o-m-e-f-a-m-email' \u2014 likely Sloane)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Rebecca Sloane (mom, friendly/eager) called about in-person Algebra 2 tutoring for her daughter Zoe in ZIP 91604. She asked for a session TONIGHT at 8:30 PM and declined online. Paola quoted $130/hr with package discounts for weekly sessions. Rebecca expects a text or email ASAP confirming whether we have a tutor available for tonight. Her phone is 714-308-3450 and she spelled her email as sloanefamemail@gmail.com (worth double-checking \u2014 she said 's-l-o-m-e' which is likely 'Sloane'). Open with: 'Hi Rebecca, this is [name] from A+ Tutoring following up on your call with Paola about Algebra 2 tutoring for Zoe tonight \u2014 here's what we found on tutor availability...'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with prospective family about standard in-person tutoring; not charter-funded and no diagnostic required.",
+        "student_or_school_names_mentioned": [
+          "Zoe Sloane"
+        ],
+        "record_updates": {
+          "whats_going_on": "Rebecca Sloane called seeking in-person Algebra 2 tutoring for her daughter Zoe in ZIP 91604. She asked whether we could send someone tonight at 8:30 PM and declined online tutoring.",
+          "what_we_can_do_to_help": "Quoted $130/hr with package discounts for weekly sessions. Checking tutor availability for in-person Algebra 2 in 91604 for tonight; will follow up with Rebecca via email or text once we know.",
+          "student_first_name": "Zoe",
+          "student_last_name": "Sloane",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check tutor availability for in-person Algebra 2 in ZIP 91604 for tonight at 8:30 PM for student Zoe Sloane",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Rebecca Sloane via email/text about tutor availability and next steps",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Verify email address sloanefamemail@gmail.com is correct (spelled during call as 's-l-o-m-e-f-a-m-email' \u2014 likely Sloane)",
           81494333,
           "follow_up"
         ]
