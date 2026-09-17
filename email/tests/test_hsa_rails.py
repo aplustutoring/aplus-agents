@@ -189,7 +189,7 @@ def _ds_wire(monkeypatch):
                       "charter_pipelines": ["5119061"], "exclude_pipelines": [],
                       "charter_student_billing": "Package", "private_student_billing": "Service List Cost"},
         "internal": {"domain": "wetutorathome.com"}, "slack": {"digest_channel": "CTEST"},
-        "hsa": {"enabled": True, "pipeline": "5119061", "invoice_owner": "kath", "flag_to": ["danielle"]},
+        "hsa": {"enabled": True, "pipeline": "5119061", "invoice_owner": "deal_owner", "flag_to": ["danielle"]},
         "hubspot": {"portal_id": "6312752"},
         "staff": {"kath": {"name": "Kath", "hubspot_owner_id": "513215050"}}})
     monkeypatch.setattr(hsa_sync, "cfg", dsy.cfg)
@@ -246,10 +246,20 @@ def test_group_invoice_task_is_one_per_group_summed_over_siblings(monkeypatch):
     inv = [t for t in calls["tasks"] if t[0].startswith("HSA group invoice")]
     assert len(inv) == 1                                       # second sibling reuses it
     assert inv[0][0] == "HSA group invoice — C1-G4 ($3,750.00, 3 students)"
-    assert inv[0][1] == "513215050"                            # charter_admin
+    assert inv[0][1] == "227538487"                            # the deal owner (scheduler), Roman 9/16
     assert "$0/hr" in inv[0][2] and "ONE invoice to IEM for $3,750.00" in inv[0][2]
     assert any(r["action_taken"] == "hsa_group_invoice_task" and r["total"] == 3750.0
                for r in calls["audit"])
+
+
+def test_invoice_owner_can_still_be_pinned_to_a_seat(monkeypatch):
+    calls = _ds_wire(monkeypatch)
+    base = dsy.cfg()
+    monkeypatch.setattr(dsy, "cfg", lambda: {**base, "hsa": {**base["hsa"], "invoice_owner": "kath"}})
+    monkeypatch.setattr(hsa_sync, "cfg", dsy.cfg)
+    dsy.sync_deal(_hsa_deal("H1", "Diego"))
+    inv = [t for t in calls["tasks"] if t[0].startswith("HSA group invoice")]
+    assert inv[0][1] == "513215050"
 
 
 def test_es_contact_api_success_makes_no_task(monkeypatch):
@@ -267,9 +277,9 @@ def test_late_add_gets_one_task_for_the_invoice_owner(monkeypatch):
         {"message_id": "hsa-invoice:C1-G2", "action_taken": "hsa_group_invoice_task",
          "group": "C1-G2", "deal_ids": ["H1", "H2"], "total": 3750.0}]}
     monkeypatch.setattr(hsa_sync, "cfg", lambda: {"hsa": {"enabled": True, "pipeline": "5119061",
-                                                          "invoice_owner": "kath"},
+                                                          "invoice_owner": "deal_owner"},
                                                   "hubspot": {"portal_id": "6312752"}})
-    monkeypatch.setattr(hsa_sync, "staff", lambda k: {"kath": {"hubspot_owner_id": "513215050"}}[k])
+    monkeypatch.setattr(hsa_sync, "staff", lambda k: {}[k])
     monkeypatch.setattr(hsa_sync.audit, "_iter_records", lambda: iter(list(calls["audit"])))
     monkeypatch.setattr(hsa_sync.audit, "already_processed",
                         lambda k: any(r["message_id"] == k for r in calls["audit"]))
@@ -284,7 +294,7 @@ def test_late_add_gets_one_task_for_the_invoice_owner(monkeypatch):
     assert len(calls["tasks"]) == 1
     subject, owner_id, body = calls["tasks"][0]
     assert subject == "HSA late add — Aster joined C1-G2: set up service + allocation"
-    assert owner_id == "513215050" and "25 hours" in body and "$3,750.00" in body
+    assert owner_id == "227538487" and "25 hours" in body and "$3,750.00" in body   # Aster's deal owner
     hsa_sync.late_add_sweep()                                  # idempotent
     assert len(calls["tasks"]) == 1
 
