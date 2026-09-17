@@ -960,9 +960,10 @@
     416259989,
     416262452,
     416267295,
-    416273562
+    416273562,
+    416280654
   ],
-  "last_run_utc": "2026-09-17T19:02:11.646464+00:00",
+  "last_run_utc": "2026-09-17T19:14:21.835329+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1566,6 +1567,82 @@
       "tasks_created": [
         [
           "Attempt to reach Mabel again if no callback within a few days to gather student details and discuss tutoring fit.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416280654,
+      "number": "15627250152",
+      "time_pt": "12:07 PM",
+      "matched": true,
+      "contact_label": "Kaati Coppel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Kaati Coppel about her earlier interest in tutoring for her three children at Taylion (Lofi, Niua, and Bo). The call went to voicemail; Paola left a brief message asking Kaati to share the best time to reach her. No new information was gathered and no next step was locked in.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait a few days for Kaati's callback; if no response, try another follow-up call/text to schedule the free online trial for Lofi, Niua, and Bo",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Kaati Coppel following up on her earlier inquiry about tutoring for her three kids at Taylion charter (Lofi \u2013 5th, math & writing; Niua \u2013 2nd, math facts & writing; Bo \u2013 K, phonics/sight words). Kaati was previously quoted the $75/hr charter rate ($37.50/30 min) and offered a free 1-hour online trial splittable across the students; she was still waiting on in-person options in San Pedro before committing. She now expects a callback to set a time to talk and potentially book the free trial. If following up, open with: 'Hi Kaati, this is ___ from A+ Tutoring following up on Paola's message \u2014 wanted to see if you'd like to go ahead and set up that free online trial for Lofi, Niua, and Bo, or if in-person in San Pedro is still what you're hoping for.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Voicemail on outbound follow-up to a prospective family; no live conversation, but she remains an active prospect. Using 'We Connected' as the closest active-prospect status since no diagnostic/charter change applies.",
+        "student_or_school_names_mentioned": [
+          "Lofi",
+          "Niua",
+          "Bo",
+          "Taylion"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola left a voicemail following up on Kaati's interest in tutoring for Lofi, Niua, and Bo. Awaiting callback with a good time to reach her.",
+          "what_we_can_do_to_help": "[outbound call] Continue follow-up cadence \u2014 try again in a few days if no callback, and be ready to book the previously offered free 1-hour online trial split across the three students.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola left a voicemail following up on Kaati's interest in tutoring for Lofi, Niua, and Bo. Awaiting callback with a good time to reach her."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Continue follow-up cadence \u2014 try again in a few days if no callback, and be ready to book the previously offered free 1-hour online trial split across the three students."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait a few days for Kaati's callback; if no response, try another follow-up call/text to schedule the free online trial for Lofi, Niua, and Bo",
           81494333,
           "follow_up"
         ]
