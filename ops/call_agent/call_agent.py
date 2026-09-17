@@ -1306,16 +1306,37 @@ def _first_real_contact(results):
 
 def find_contact_by_phone(caller_number):
     """
-    HubSpot contact by phone. Tier 1: exact IN-match on phone/mobilephone
-    variants. Tier 2: CONTAINS_TOKEN on the wildcarded 10-digit number.
-    CallRail caller-ID shell contacts are skipped (see _is_callrail_junk_contact),
-    so a number whose only match is a shell counts as unknown.
-    Returns contact dict or None.
+    HubSpot contact by phone. Tier 0: HubSpot's own normalised phone index,
+    which holds the bare digits however the number was typed. Tier 1: exact
+    IN-match on phone/mobilephone variants. Tier 2: CONTAINS_TOKEN on the
+    wildcarded 10-digit number. CallRail caller-ID shell contacts are skipped
+    (see _is_callrail_junk_contact), so a number whose only match is a shell
+    counts as unknown. Returns contact dict or None.
+
+    Tier 0 added 2026-09-16: variant guessing missed Maddy Zamany, whose
+    number is stored "(310)456-4963" with no space after the paren. Guessing
+    formats is always one punctuation style behind whoever typed it.
     """
     e164, variants = phone_variants(caller_number)
     if not variants:
         return None
     props = KEY_PROPERTIES + ["hs_object_source_detail_1"]
+
+    norm = re.sub(r"\D", "", e164)[-10:]
+    if len(norm) == 10:
+        res = hs_post("crm/v3/objects/contacts/search", {
+            "filterGroups": [
+                {"filters": [{"propertyName": "hs_searchable_calculated_phone_number",
+                              "operator": "EQ", "value": norm}]},
+                {"filters": [{"propertyName": "hs_searchable_calculated_mobile_number",
+                              "operator": "EQ", "value": norm}]},
+            ],
+            "properties": props,
+            "limit": 5,
+        })
+        contact = _first_real_contact(res.get("results") or [])
+        if contact:
+            return contact
 
     payload = {
         "filterGroups": [
