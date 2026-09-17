@@ -30,9 +30,31 @@ def _headers() -> dict:
     }
 
 
-def _get(path: str, params: dict | None = None) -> dict:
-    r = requests.get(f"{HS_BASE}{path}", headers=_headers(), params=params or {}, timeout=30)
+RATE_LIMIT_TRIES = 6   # 1, 2, 4, 8, 16 s between tries, or HubSpot's Retry-After
+
+
+def _request(method: str, url: str, **kw) -> requests.Response:
+    """Every HubSpot call goes through here so a 429 is RETRIED, not raised.
+    The search API is throttled portal-wide (4/s) and shared by every agent;
+    on 2026-09-16 a deal-sync run of 37 deals took the HSA late-add sweep
+    down with 'Too Many Requests', and a cohort_intake dry run died the same
+    way an hour earlier. A 429 means nothing was processed, so retrying any
+    verb is safe."""
+    import time
+    r = None
+    for i in range(RATE_LIMIT_TRIES):
+        r = requests.request(method, url, timeout=30, **kw)
+        if r.status_code != 429 or i == RATE_LIMIT_TRIES - 1:
+            break
+        wait = float(r.headers.get("Retry-After") or 2 ** i)
+        print(f"  ⏳ HubSpot 429 on {method} {url.split('.com', 1)[-1][:60]}: retry {i + 1} in {wait:g}s")
+        time.sleep(wait)
     r.raise_for_status()
+    return r
+
+
+def _get(path: str, params: dict | None = None) -> dict:
+    r = _request("GET", f"{HS_BASE}{path}", headers=_headers(), params=params or {})
     return r.json()
 
 
@@ -51,8 +73,7 @@ def _write(method: str, path: str, payload: dict | None = None):
     if DRY_RUN and not (SEARCH_PASSTHROUGH and path.endswith("/search")):
         print(f"[DRY_RUN] hubspot {method} {path} {payload if payload else ''}")
         return {"id": "DRYRUN", "dry_run": True}
-    r = requests.request(method, f"{HS_BASE}{path}", headers=_headers(), json=payload, timeout=30)
-    r.raise_for_status()
+    r = _request(method, f"{HS_BASE}{path}", headers=_headers(), json=payload)
     return r.json() if r.text else {}
 
 
@@ -909,8 +930,7 @@ def invoiced_po_numbers() -> set[str]:
 def _get_search(path: str, body: dict) -> dict:
     """POST to a /search endpoint. Separate from _write so DRY_RUN cannot
     short-circuit a read (search is a POST but changes nothing)."""
-    r = requests.post(f"{HS_BASE}{path}", headers=_headers(), json=body, timeout=30)
-    r.raise_for_status()
+    r = _request("POST", f"{HS_BASE}{path}", headers=_headers(), json=body)
     return r.json()
 
 
