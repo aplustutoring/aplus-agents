@@ -983,9 +983,11 @@
     416376943,
     416377381,
     416377642,
-    416380456
+    416380456,
+    416387533,
+    416387587
   ],
-  "last_run_utc": "2026-09-17T23:03:08.055425+00:00",
+  "last_run_utc": "2026-09-17T23:23:48.940098+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2368,6 +2370,82 @@
           "Call Sivan back tomorrow around 10 AM to follow up on trial feedback and confirm Maytal's Thursday 6 PM session with Teresa",
           86868539,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416387587,
+      "number": "18182841020",
+      "time_pt": "4:21 PM",
+      "matched": true,
+      "contact_label": "Nancy Geroso",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Nancy Geroso to follow up on a request from Rebecca (charter school contact) about how many months of weekly 30-minute tutoring sessions to authorize for Sophia. Nancy confirmed she has enough charter funds to cover at least September through October and will revisit later. Paola will email Rebecca with that timeframe. Call was brief and positive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Rebecca to confirm authorization for weekly 30-minute sessions for Sophia from September through October",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Nancy Geroso (parent of Sophia, 10th grade at ILEAD) is a returning charter family, warm and cooperative. On this call she confirmed she has enough charter funds to cover weekly 30-minute math tutoring sessions from September through October, and will revisit total duration later. Paola committed to emailing Rebecca (charter contact) with that Sept\u2013Oct authorization window so sessions can start next week. Nancy expects that email to go out and sessions to begin the following week. If following up with Nancy, open with: 'Hi Nancy, just confirming we sent Rebecca the Sept\u2013Oct authorization for Sophia's weekly sessions.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an open deal \u2014 status is owned by the deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Sophia",
+          "ILEAD",
+          "Rebecca",
+          "Nancy Geroso"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning charter family confirming session cadence for Sophia (10th, ILEAD). Nancy confirmed charter funds cover weekly 30-minute math sessions from September through October; will revisit further months later.",
+          "what_we_can_do_to_help": "Paola to email Rebecca (charter contact) confirming Sept\u2013Oct authorization for weekly 30-min sessions so tutoring can begin next week.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning charter family confirming session cadence for Sophia (10th, ILEAD). Nancy confirmed charter funds cover weekly 30-minute math sessions from September through October; will revisit further months later."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to email Rebecca (charter contact) confirming Sept\u2013Oct authorization for weekly 30-min sessions so tutoring can begin next week."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Rebecca to confirm authorization for weekly 30-minute sessions for Sophia from September through October",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
