@@ -59,8 +59,8 @@ def main(argv=None) -> int:
         for row_number, cells in body:
             g = lambda k: R._cell(cells, idx, k)  # noqa: E731
             deal = R._cell(cells, idx, "out:HubSpot Deal ID")
-            print(f"{row_number:>4}  {g('student_id'):12} "
-                  f"{(g('student_first') + ' ' + g('student_last')).strip():26} "
+            short = (g("student_first") + " " + g("student_last")[:1] + ("." if g("student_last") else "")).strip()
+            print(f"{row_number:>4}  {g('student_id'):12} {short:26} "
                   f"{g('subject'):14} {g('cohort_start'):14} {g('group'):>3}  "
                   f"{g('status') or '(blank)':12} {deal:>12}")
         return 0
@@ -111,11 +111,14 @@ def main(argv=None) -> int:
     # ── plan ──
     plans = {g.label: W.plan_group(g, today) for g in groups}
     summary = M.plan_summary(groups, plans, refused, mode)
-    print(summary)
+    # The Actions log gets the redacted plan (first name, last initial, IEM
+    # id); the Slack DM to the seats gets full names. Under DRY_RUN the Slack
+    # client prints instead of sending, so it gets the redacted text too.
+    print(M.plan_summary(groups, plans, refused, mode, redact=True))
     for seat in agent_cfg()["slack"]["summary_to"]:
         uid = (staff(seat) or {}).get("slack_user_id")
         if uid:
-            slack_client.dm(uid, summary)
+            slack_client.dm(uid, M.plan_summary(groups, plans, refused, mode, redact=dry))
     if dry:
         sheet.append_log(mode, sum(len(g.rows) for g in groups), "plan only (see DM)",
                          "; ".join(refused), args.by)

@@ -196,7 +196,7 @@ def test_welcome_email_sent_with_the_text(wired, monkeypatch):
     sms.run_sweep()
     assert len(wired["sent"]) == 1
     assert emails and emails[0][:2] == ("maria@x.com", "Maria")
-    assert any(r.get("welcome_email_to") == "maria@x.com" for r in wired["recorded"])
+    assert any(r.get("welcome_email_to") == "maria@x.com" for r in wired["recorded"])   # append is mocked here; audit.redact masks it live
 
 
 def test_welcome_failure_never_voids_the_text(wired, monkeypatch):
