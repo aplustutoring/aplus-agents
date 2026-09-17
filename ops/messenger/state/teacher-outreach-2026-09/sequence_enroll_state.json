@@ -1684,6 +1684,16 @@
    "seq": "310844702",
    "date": "2026-09-16",
    "email": "rlawson@sageoak.education"
+  },
+  "244056548489": {
+   "seq": "310844702",
+   "date": "2026-09-17",
+   "email": "nikki@theblueridgeacademy.com"
+  },
+  "244298725725": {
+   "seq": "310844702",
+   "date": "2026-09-17",
+   "email": "keri.lawson@theblueridgeacademy.com"
   }
  },
  "runs": [
@@ -1822,6 +1832,26 @@
      "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
      "batch": 1,
      "enrolled": 1,
+     "failed": 0,
+     "remaining": 0
+    }
+   ]
+  },
+  {
+   "date": "2026-09-17",
+   "at": "2026-09-17T12:34:35.862952-07:00",
+   "summary": [
+    {
+     "sequence": "Teacher Outreach 26/27 - 1 Worked With Us",
+     "batch": 0,
+     "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    },
+    {
+     "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
+     "batch": 2,
+     "enrolled": 2,
      "failed": 0,
      "remaining": 0
     }
