@@ -978,9 +978,10 @@
     416340474,
     416343393,
     416361283,
-    416368644
+    416368644,
+    416370902
   ],
-  "last_run_utc": "2026-09-17T22:14:57.348651+00:00",
+  "last_run_utc": "2026-09-17T22:23:32.631365+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2066,6 +2067,80 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416370902,
+      "number": "13233090968",
+      "time_pt": "3:12 PM",
+      "matched": true,
+      "contact_label": "Michelle Saber",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Michelle Saber, a past customer, called in asking to speak with Debbie Allen about getting her two boys back on track with in-person tutoring. Janelle took her callback number (323-309-0968) and quoted current in-person pricing: $130/hr single, $115/hr (8-hr), $108/hr (20-hr, $2,021.60), $103/hr (50-hr, $5,150). Michelle said she'll know more about scheduling in about a month and wants Debbie to call her back.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Debbie Allen to call Michelle Saber back at 323-309-0968 to reconnect about restarting in-person tutoring for her two boys (James and Jesse).",
+            "owner_hint": "Debbie Allen",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Debbie \u2014 Michelle Saber (past customer, mom of James and Jesse) called asking specifically for you; she says you two have history. She wants to talk about getting the boys back on track with in-person tutoring. Janelle quoted her current in-person pricing: $130/hr single, 8-hr package $115/hr, 20-hr $108/hr ($2,021.60), 50-hr $103/hr ($5,150). Michelle doesn't have day/time preferences yet \u2014 says she'll know more in about a month. She's expecting a callback from you at 323-309-0968. Suggested opener: \"Hi Michelle, it's Debbie from A+ \u2014 so good to hear from you again. Janelle told me you're thinking about getting James and Jesse back into tutoring. Tell me what's going on with the boys right now.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Michelle is a past customer; her status is owned by the deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "James",
+          "Jesse"
+        ],
+        "record_updates": {
+          "whats_going_on": "Michelle called asking for Debbie Allen \u2014 wants to restart in-person tutoring for both boys (James and Jesse). Not ready to commit to a schedule yet; expects to know more in about a month. Janelle quoted current in-person pricing.",
+          "what_we_can_do_to_help": "Debbie to call Michelle back to reconnect. When she's ready (~1 month), rebuild an in-person plan for both boys \u2014 likely 2x/week, one sibling per day, continuing prior focus areas (James: algebra + ELA reading; Jesse: math + ELA writing). Offer package options: 20-hr $108/hr ($2,021.60) or 50-hr $103/hr ($5,150).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Michelle called asking for Debbie Allen \u2014 wants to restart in-person tutoring for both boys (James and Jesse). Not ready to commit to a schedule yet; expects to know more in about a month. Janelle quoted current in-person pricing."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Debbie to call Michelle back to reconnect. When she's ready (~1 month), rebuild an in-person plan for both boys \u2014 likely 2x/week, one sibling per day, continuing prior focus areas (James: algebra + ELA reading; Jesse: math + ELA writing). Offer package options: 20-hr $108/hr ($2,021.60) or 50-hr $103/hr ($5,150)."
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Debbie Allen to call Michelle Saber back at 323-309-0968 to reconnect about restarting in-person tutoring for her two boys (James and Jesse).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
