@@ -7,6 +7,54 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-17 — ops/checkin: the quality check-in, measured first, then rebuilt
+
+**Measured before touching it.** Seven days of live traffic through HubSpot
+workflow "Quality - 2.0" (1680794394 -> Zapier hook): 9 sends, 8 replies (89%),
+7 within the hour, 5 substantive, 1 collision (11% landed within an hour of a
+human message). In one week it surfaced a family leaving over price (Judy
+Goldzweig), two service gaps nobody had reported (Miran Mavlan, "no homework or
+book to follow"; Albee Li, "we just do not know the plan"), and an unprompted
+testimonial.
+
+So the campaign was NOT the problem, which is the opposite of what the earlier
+notes in this file assumed. Three narrow things were.
+
+**1. The gate.** Albee Li got the robot fifteen minutes after a scheduler had
+apologised to her about the very lesson she was complaining about. Now: skip if
+messaged within 48h, skip if a ticket is open, business hours on weekdays only,
+one per family per day. And one per FAMILY, not per deal — the first dry run
+planned six identical texts to one parent, because charter families carry a
+deal per PO slice.
+
+**2. The copy.** The old text named nobody. The new one names the student and
+the tutor and asks what they want focused on NEXT, which is the question that
+produced the two service gaps above. "How is it going" gets "fine".
+
+**3. Triage.** Nothing caught what it found. Judy said she was leaving over
+cost and was answered with "let me know if there's any other way I can assist".
+A reply matching a churn or gap phrase now opens a HIGH ticket for the
+student's scheduler with the family's own words on it.
+
+**A third instance of the Last, First bug.** `schedule_preferences` holds both
+shapes at once: "with Seifeldin, Youssef" and "with Sonya". Taking the token
+after "with" yields the SURNAME on the first, the same mistake that told Nikita
+Brixey her tutor was "Karl". The extractor now captures the pair, applies
+first_name(), and validates the result against real tutor first names. The
+first dry run said "sessions with Siddiqui" before that check existed.
+
+**Data gap worth fixing upstream:** 11 of the 12 Post-Lesson families in the
+dry run have NO tutor on the deal, most still reading "we don't have your
+schedule on file yet".
+
+**Ships armed:false.** Does not replace the Zap by itself; until "Quality -
+2.0" is paused both would send. Order: read a dry run, flip armed, pause the
+workflow, delete the Zap.
+
+**Files:** `ops/checkin/{checkin.py,config.yml,README.md}`,
+`ops/checkin/tests/` (22 pass).
+
+---
 ## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
 
 **What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`,
