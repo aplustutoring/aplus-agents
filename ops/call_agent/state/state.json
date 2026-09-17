@@ -966,9 +966,10 @@
     416295606,
     416299656,
     416300464,
-    416305066
+    416305066,
+    416306649
   ],
-  "last_run_utc": "2026-09-17T19:52:03.095760+00:00",
+  "last_run_utc": "2026-09-17T19:56:53.891942+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1791,6 +1792,85 @@
           "Once PO is received, contact the parent (info to be included on PO) to schedule weekly sessions through end of semester, accounting for holidays",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 416306649,
+      "number": "18189748119",
+      "time_pt": "12:50 PM",
+      "matched": true,
+      "contact_label": "Michele Archer",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Michele Archer (grandmother) called in and was transferred from Yolanda to Paola. She wanted to adjust the tutoring schedule with Andrew \u2014 for the next two weeks she can only do 2 sessions/week at different times (she'll be out of town), then return to the regular 3x/week schedule. She also said Andrew missed the first Monday and asked not to be charged for it. Paola explained Janelle on the scheduling team is her point of contact and will call her back to take the schedule changes.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Janelle to call Michele back to collect the two-week temporary schedule change (2x/week at different times while she's out of town) and confirm return to regular 3x/week schedule after.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Verify with tutor Andrew that the first Monday session did not occur and ensure Michele is not billed for that session.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Janelle \u2014 Michele Archer (grandmother of Kade) called in warm and cheerful asking for YOU specifically to handle a temporary schedule change. She's an active customer with tutor Andrew. For the next two weeks she'll be out of town and can only do 2 sessions/week at different times (Andrew already OK'd this); after that she wants to return to the regular 3x/week schedule. She also flagged that Andrew missed the first Monday and asked not to be charged for that session \u2014 please verify with Andrew and adjust billing if confirmed. Open with: 'Hi Michele, it's Janelle from A+ \u2014 Paola let me know you'd like to walk me through the next two weeks' schedule for Kade with Andrew. I've got a pen ready \u2014 what dates and times work?' Then confirm the missed-Monday billing correction before hanging up.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/active customer (currently OPEN_DEAL with tutor Andrew already assigned); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kade Hutchinson",
+          "Andrew"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Michele called in and was transferred to Paola. She wants to temporarily reduce Kade's sessions with Andrew from 3x/week to 2x/week at different times for the next two weeks because she'll be out of town (Andrew already agreed), then return to the regular 3x/week schedule. She also said Andrew missed the first Monday session and asked not to be charged for it. Paola redirected her to Janelle on scheduling for the specifics.",
+          "what_we_can_do_to_help": "[call] Janelle to call Michele back to capture the two-week temporary schedule (2x/week, new times) and confirm the return-to-normal date for 3x/week. Separately, verify with Andrew that the first Monday session did not happen and remove that charge from Michele's invoice if confirmed.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Michele called in and was transferred to Paola. She wants to temporarily reduce Kade's sessions with Andrew from 3x/week to 2x/week at different times for the next two weeks because she'll be out of town (Andrew already agreed), then return to the regular 3x/week schedule. She also said Andrew missed the first Monday session and asked not to be charged for it. Paola redirected her to Janelle on scheduling for the specifics."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Janelle to call Michele back to capture the two-week temporary schedule (2x/week, new times) and confirm the return-to-normal date for 3x/week. Separately, verify with Andrew that the first Monday session did not happen and remove that charge from Michele's invoice if confirmed."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Janelle to call Michele back to collect the two-week temporary schedule change (2x/week at different times while she's out of town) and confirm return to regular 3x/week schedule after.",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Verify with tutor Andrew that the first Monday session did not occur and ensure Michele is not billed for that session.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
