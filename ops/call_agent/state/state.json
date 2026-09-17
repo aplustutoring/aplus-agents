@@ -931,9 +931,10 @@
     415911487,
     415913553,
     415913858,
-    415916539
+    415916539,
+    415930335
   ],
-  "last_run_utc": "2026-09-17T00:02:43.023234+00:00",
+  "last_run_utc": "2026-09-17T00:55:30.570395+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -2069,6 +2070,75 @@
       "tasks_created": [
         [
           "Watch for a return call or text from 310-633-9955 and connect them with the right team once they share what they need.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 415930335,
+      "number": "18182996116",
+      "time_pt": "5:48 PM",
+      "matched": true,
+      "contact_label": "Ana Espinoza",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Ana Espinoza to check if she's still interested in tutoring for her daughter Rose. The call went to voicemail; Paola left a message asking Ana to call back with a good time to connect. No new information was gathered and no next step was scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Ana's callback; if no response in a few days, follow up again about Rose's tutoring interest",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Ana Espinoza following up on her earlier inquiry about in-person tutoring for her 3rd-grade daughter Rose (ADHD, homework help + English comprehension, ZIP 91406, AES). Pricing already sent ($130/hr, flexible non-expiring packages) and Ana was going to discuss with her husband. Ana now expects a callback opportunity \u2014 she may return the call or we may need to try again in a few days. Suggested opener: \"Hi Ana, this is [name] from A+ Tutoring following up on Paola's message \u2014 wanted to see if you and your husband had a chance to talk through the tutoring plan for Rose and answer any questions.\"",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Voicemail on outbound follow-up; no live conversation and no new info, so prior 'We Connected' status stands.",
+        "student_or_school_names_mentioned": [
+          "Rose",
+          "AES"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Paola called Ana to check if she's still interested in tutoring for Rose; reached voicemail and left a message asking Ana to call back with a good time to connect.",
+          "what_we_can_do_to_help": "[Outbound call] Await Ana's callback re: Rose's tutoring; if no response, try again in a few days to answer any remaining questions on pricing/packages already sent.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Paola called Ana to check if she's still interested in tutoring for Rose; reached voicemail and left a message asking Ana to call back with a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Outbound call] Await Ana's callback re: Rose's tutoring; if no response, try again in a few days to answer any remaining questions on pricing/packages already sent."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Ana's callback; if no response in a few days, follow up again about Rose's tutoring interest",
           81494333,
           "follow_up"
         ]
