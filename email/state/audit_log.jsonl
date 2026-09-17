@@ -29174,3 +29174,10 @@
 {"message_id": "first-lesson:online:elenes, nathan:2026-09-16", "source": "first_lesson", "action_taken": "first_lesson_stamped", "student": "Nathan Elenes", "first_lesson": "2026-09-16", "account": "online", "deal_id": "64837038724", "contact_id": "245864533780", "timestamp": "2026-09-17T01:26:05.615478+00:00"}
 {"message_id": "first-lesson:online:erfan, elhaan:2026-09-15", "source": "first_lesson", "action_taken": "first_lesson_stamped", "student": "Elhaan Erfan", "first_lesson": "2026-09-15", "account": "online", "deal_id": "64880988458", "contact_id": "1706301", "timestamp": "2026-09-17T01:26:06.836269+00:00"}
 {"message_id": "hsa-invoice-late:C1-G2:65101190710", "source": "hsa_sync", "action_taken": "hsa_late_add_task", "group": "C1-G2", "deal_id": "65101190710", "student": "Aster", "owner": "charter_admin", "timestamp": "2026-09-17T01:26:10.347703+00:00"}
+{"ticket_id": "48625327769", "thread_id": "11194592675", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-17T01:37:14.847598+00:00"}
+{"ticket_id": "48590009948", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T01:42:26.805690+00:00"}
+{"ticket_id": "48568537258", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T01:42:27.553563+00:00"}
+{"ticket_id": "48573021349", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T01:42:28.068731+00:00"}
+{"ticket_id": "48585453611", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T01:42:28.895848+00:00"}
+{"ticket_id": "48564389246", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T01:42:30.607925+00:00"}
+{"ticket_id": "48623624491", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-17T01:42:32.751757+00:00"}
