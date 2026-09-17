@@ -946,9 +946,10 @@
     416192519,
     416200031,
     416199989,
-    416201322
+    416201322,
+    416208161
   ],
-  "last_run_utc": "2026-09-17T17:00:12.408695+00:00",
+  "last_run_utc": "2026-09-17T17:11:33.755147+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1184,6 +1185,12 @@
       "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "18314615305",
+      "time_pt": "10:04 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
