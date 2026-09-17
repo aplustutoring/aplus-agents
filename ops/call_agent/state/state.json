@@ -943,9 +943,11 @@
     416183091,
     416182438,
     416188350,
-    416192519
+    416192519,
+    416200031,
+    416199989
   ],
-  "last_run_utc": "2026-09-17T16:45:27.840344+00:00",
+  "last_run_utc": "2026-09-17T16:53:13.502290+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1014,6 +1016,97 @@
           "Follow up with Krista Camacho to discuss Maddie's tutoring needs and Krista's suggestions",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416199989,
+      "number": "18184718591",
+      "time_pt": "9:49 AM",
+      "matched": true,
+      "contact_label": "Fabiola Mort",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Fabiola Mort to follow up on her request for tutoring support for her 7th grade daughter Angeline. Fabiola confirmed she wants to move forward and asked for tutoring today around 3-4pm to work on a homework packet Angeline just received. Tutor Sonia is fully booked today but available tomorrow (Friday) at 3 or 4pm, which Fabiola accepted. Yolanda will text the CC/purchase link and the email address to send the homework packet scan.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Book Angeline's first session with tutor Sonia tomorrow (Friday) at 3 or 4pm and confirm exact time with Fabiola.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Fabiola the CC/purchase link to buy hours.",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Text Fabiola the email address where she should send the scanned homework packet for Angeline.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Fabiola (warm, ready to move forward) confirmed she wants to start tutoring for her 7th grade daughter Angeline (homeschooled through Antelope Valley Academy/Learn4Life) to work through her weekly homework packets. First session booked with Sonia tomorrow (Friday) at 3 or 4pm online \u2014 Yolanda to confirm exact time. Fabiola expects a text with (1) the CC/purchase link to buy hours, and (2) the email address to send the scanned homework packet. Open with: \"Hi Fabiola, following up on our call \u2014 here's the link to purchase hours and the email to send Angeline's packet to, and confirming Sonia at [3/4]pm tomorrow.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family already in the We Connected stage moving into a first session; status is owned by the deal pipeline from here.",
+        "student_or_school_names_mentioned": [
+          "Angeline Mort",
+          "Antelope Valley Academy",
+          "Learn4Life",
+          "Sonia"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Yolanda reached Fabiola to follow up. Fabiola confirmed she wants to move forward with tutoring for Angeline (7th grade, homeschooled through Antelope Valley Academy/Learn4Life) to help her work through her weekly homework packets \u2014 a new packet came in yesterday.",
+          "what_we_can_do_to_help": "[Outbound call] Booked first online session with tutor Sonia for tomorrow (Friday) at 3 or 4pm to work on Angeline's homework packet. Yolanda to text Fabiola the CC/purchase link to buy hours and the email address to send the scanned packet.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Yolanda reached Fabiola to follow up. Fabiola confirmed she wants to move forward with tutoring for Angeline (7th grade, homeschooled through Antelope Valley Academy/Learn4Life) to help her work through her weekly homework packets \u2014 a new packet came in yesterday."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Outbound call] Booked first online session with tutor Sonia for tomorrow (Friday) at 3 or 4pm to work on Angeline's homework packet. Yolanda to text Fabiola the CC/purchase link to buy hours and the email address to send the scanned packet."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Book Angeline's first session with tutor Sonia tomorrow (Friday) at 3 or 4pm and confirm exact time with Fabiola.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Text Fabiola the CC/purchase link to buy hours.",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Text Fabiola the email address where she should send the scanned homework packet for Angeline.",
+          86868539,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
