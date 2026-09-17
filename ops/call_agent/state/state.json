@@ -961,9 +961,10 @@
     416262452,
     416267295,
     416273562,
-    416280654
+    416280654,
+    416289999
   ],
-  "last_run_utc": "2026-09-17T19:14:21.835329+00:00",
+  "last_run_utc": "2026-09-17T19:30:37.141103+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1643,6 +1644,75 @@
       "tasks_created": [
         [
           "Wait a few days for Kaati's callback; if no response, try another follow-up call/text to schedule the free online trial for Lofi, Niua, and Bo",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416289999,
+      "number": "18183914724",
+      "time_pt": "12:23 PM",
+      "matched": true,
+      "contact_label": "Daniella Stein",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Daniella Stein regarding tutoring for her 10th grader Lily. The call went to Daniella's voicemail (her professional greeting as a school psychologist/educational therapist in Calabasas). Paola left a brief message inviting Daniella to connect about tutoring for Lily. No callback time was set.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Daniella again in a few weeks to re-offer the free trial for Lily (geometry & chemistry), per prior note that pricing was out of budget",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound follow-up to Daniella Stein (mom of 10th grader Lily at Louisville, needs help in geometry and regular chemistry) went to voicemail \u2014 Daniella's greeting identifies her as a school psychologist/educational therapist in Calabasas. Paola left a brief message inviting her to connect. Prior call notes: pricing was sent and Daniella said it was out of budget; plan was to revisit in a few weeks and re-offer the free trial. Open with something like: 'Hi Daniella, Paola from A+ Tutoring following up on Lily \u2014 wanted to check in on how geometry and chem are going this term and offer a free trial session so you can see the fit before committing.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation; existing 'We Connected' status remains appropriate.",
+        "student_or_school_names_mentioned": [
+          "Lily",
+          "Louisville"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to Daniella's voicemail (her professional greeting identifies her as a school psychologist/educational therapist in Calabasas). Left a message inviting her to reconnect about tutoring for Lily.",
+          "what_we_can_do_to_help": "Try Daniella again in a couple weeks to re-offer the free trial for Lily in geometry and chemistry, since pricing was previously out of budget.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to Daniella's voicemail (her professional greeting identifies her as a school psychologist/educational therapist in Calabasas). Left a message inviting her to reconnect about tutoring for Lily."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Try Daniella again in a couple weeks to re-offer the free trial for Lily in geometry and chemistry, since pricing was previously out of budget."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Daniella again in a few weeks to re-offer the free trial for Lily (geometry & chemistry), per prior note that pricing was out of budget",
           81494333,
           "follow_up"
         ]
