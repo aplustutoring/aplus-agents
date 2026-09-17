@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Ceja Park Day Photo Booth</title>
+<title>Sage Oak Park Day Photo Booth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -234,12 +234,12 @@
 <script>
 const CONFIG = {
   WORKER_URL: "/submit",                 // same origin: the Worker serves this page
-  EVENT_TAG: "ceja_park_2026",           // must be a row in booth/worker.js EVENTS
-  EVENT_NAME: "Ceja Park Day 2026",
-  ATTRACT_EYEBROW: "Ceja · Park Day 2026",
-  CARD_EYEBROW: "CEJA · PARK DAY",           // printed on the card, top line
+  EVENT_TAG: "sage_oak_park_2026",       // must be a row in booth/worker.js EVENTS
+  EVENT_NAME: "Sage Oak Park Day 2026",
+  ATTRACT_EYEBROW: "Sage Oak · Park Day 2026",
+  CARD_EYEBROW: "SAGE OAK · PARK DAY",       // printed on the card, top line
   CARD_SUB: "2026 · with A+ Tutoring",       // printed on the card, second line
-  PARTNER_LOGO: "",                      // e.g. "/ceja/partner.png"; blank = A+ logo only
+  PARTNER_LOGO: "/sageoak.webp",         // drawn on the card and the attract screen; blank = A+ only
   GOALS: [
     "Best day at the park ☀️",
     "Learning looks good on us 🌳",
@@ -375,7 +375,7 @@ const CONFIG = {
 <div class="screen" id="screen-done">
   <h2>You're <em>all set!</em></h2>
   <div class="done-sub" id="done-msg"></div>
-  <div class="done-sub" style="margin-top:26px;font-size:17px;">Stop by the A+ Tutoring table to learn about one-on-one tutoring for your student, often at no cost through your school's enrichment funds.</div>
+  <div class="done-sub" style="margin-top:26px;font-size:17px;">Stop by the A+ Tutoring table to learn about one-on-one tutoring for your student, often at no cost through Sage Oak enrichment funds.</div>
   <div class="done-reset">Resetting for the next family&hellip;</div>
 </div>
 

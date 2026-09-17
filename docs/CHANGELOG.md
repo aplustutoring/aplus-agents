@@ -249,7 +249,7 @@ staging dir holding only the HTML and `_redirects`.
 **Files touched:** `docs/CHANGELOG.md` only.
 
 ---
-## 2026-09-17 — Ceja Park Day photo booth: the Sage Oak Worker becomes the A+ photo booth, one row per event
+## 2026-09-17 — Sage Oak Park Day photo booth (Ceja): the Sage Oak Worker becomes the A+ photo booth, one row per event
 
 **What changed** (`booth/`, `ops/hubspot-schema/properties.yml`, `registry.yml`):
 
@@ -263,27 +263,28 @@ staging dir holding only the HTML and `_redirects`.
   not-yet-synced enum option so a new event's tag can never cost the lead.
   `ALLOWED_ORIGIN` is a comma-separated list, echoed exactly. The MMS fallback
   photo URL uses the request origin instead of a hardcoded host.
-- **`booth/public/ceja/index.html`**: fork of the Sage Oak page for a park
-  event where parents outnumber teachers. Role pills Parent / Teacher /
+- **`booth/public/sage-oak-park/index.html`**: fork of the BTSC page for the
+  Sage Oak family park day where parents outnumber teachers. Role pills Parent / Teacher /
   Student, one-tap `@gmail.com` / `@outlook.com` / `@yahoo.com` chips, a
   no-spam line, an optional phone field that says what it is for, print as
   the first delivery card, parent-facing consent copy, no em dashes in
   anything a family reads. Every event-naming string sits in one `CONFIG`
-  block, including an optional partner logo slot.
-- **Served by the Worker via `[assets]`**, at `/ceja/`, with `GET /` redirecting
+  block; the Sage Oak logo is drawn on the card and the attract screen.
+- **Served by the Worker via `[assets]`**, at `/sage-oak-park/`, with `GET /` redirecting
   there. Same origin as `/submit`, so no CORS. This follows the Delilah lesson:
   a Pages project and a Worker of the same name collide on current wrangler.
-- **Schema:** `aplus_event_tag` gains `ceja_park_2026`. Additive.
+- **Schema:** `aplus_event_tag` gains `sage_oak_park_2026`. Additive.
 - **Registry:** the Sage Oak entry is now "A+ photo booth (Sage Oak BTSC 2026,
-  Ceja Park Day 2026)" with the new writes listed.
+  Sage Oak Park Day 2026)" with the new writes listed.
 - **Tests:** `booth/test-worker.mjs` grows from 7 to 35: #AP032 append across
-  events, every `EVENTS` key is a declared schema option, the Ceja page's tag
+  events, every `EVENTS` key is a declared schema option, the park day page's tag
   and roles are Worker values, copy follows the event, persona and owner are
   create-only, the tag rejection still captures the contact, CORS list, the
   root redirect, and the no-em-dash rule over the visible copy.
 
-**Why:** Roman, 2026-09-17: a park booth for Ceja tomorrow, with the printer,
-like the Sage Oak conference, but parent-heavy and with the email chips. The
+**Why:** Roman, 2026-09-17: a Sage Oak booth at the park (Ceja) tomorrow, with
+the printer, like the BTSC conference booth, but parent-heavy and with the
+email chips. The
 Worker kept its name because renaming it means re-entering four secrets the
 morning of an event, and the call-relay incident (2026-09-09) showed what
 "secrets never set" looks like in production. One row per event makes the
@@ -293,20 +294,21 @@ next booth a copy of a folder and a row, not a new deploy surface.
 && npx wrangler deploy`. Then merge and run the schema sync (dry run first,
 expect one option add). Full notes in `booth/README.md`.
 
-**Verified:** 35 tests pass; Blue Ridge suite still 43. The Ceja page driven
+**Verified:** 35 tests pass; Blue Ridge suite still 43. The park day page driven
 headless with a fake camera: attract, banner, capture, review, chips rewrite
 the domain, parent role, consent, "All 3" delivery; the POST carries
-`eventTag: ceja_park_2026`, `role: parent`, the framed JPEG, and the done
+`eventTag: sage_oak_park_2026`, `role: parent`, the framed JPEG, and the done
 screen shows the right message. No console errors.
 
-**Open for Roman:** the event is named "Ceja Park Day 2026" on the card, the
-email and the HubSpot option. If the school or event has a different proper
-name, or a logo, it is the `CONFIG` block in `public/ceja/index.html` plus the
-`ceja_park_2026` row in `worker.js` (and the option label in properties.yml).
+**Naming:** first cut said "Ceja Park Day"; Roman clarified it is a Sage Oak
+event at the park, so the tag, card, email, text and HubSpot option all say
+"Sage Oak Park Day 2026". To rename again: the `CONFIG` block in
+`public/sage-oak-park/index.html`, the `sage_oak_park_2026` row in `worker.js`,
+and the option label in properties.yml.
 
 **Files touched:** `booth/worker.js`, `booth/wrangler.toml`,
-`booth/test-worker.mjs`, `booth/README.md`, `booth/public/ceja/index.html`,
-`booth/public/logo.png`, `booth/public/logo-white.png`,
+`booth/test-worker.mjs`, `booth/README.md`, `booth/public/sage-oak-park/index.html`,
+`booth/public/logo.png`, `booth/public/logo-white.png`, `booth/public/sageoak.webp`,
 `ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/CHANGELOG.md`.
 
 ---

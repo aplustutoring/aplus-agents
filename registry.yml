@@ -1091,7 +1091,7 @@ agents:
   - id: sage-oak-booth
     engine: Events
     runtime: cloudflare-worker
-    name: A+ photo booth (Sage Oak BTSC 2026, Ceja Park Day 2026)
+    name: A+ photo booth (Sage Oak BTSC 2026, Sage Oak Park Day 2026)
     owner: roman@wetutorathome.com
     status: active
     trigger:
@@ -1099,8 +1099,8 @@ agents:
       events: [http_post]
       source: >
         Attendee submits the booth form -> POST /submit on the Worker. The
-        Sage Oak page (booth/index.html) lives on Cloudflare Pages; the Ceja
-        page (booth/public/ceja/) is served by the Worker itself via [assets].
+        BTSC page (booth/index.html) lives on Cloudflare Pages; the park day
+        page (booth/public/sage-oak-park/) is served by the Worker via [assets].
         One Worker, one event row per event in worker.js EVENTS. Always-on
         HTTP, no cron: it runs whenever someone uses a booth.
     source: booth/worker.js
@@ -1109,7 +1109,7 @@ agents:
       - "HubSpot:contacts (search by email — find-or-create; aplus_event_tag read back so the merge appends, #AP032)"
       - "Cloudflare KV (PHOTOS binding — serves GET /photo/<key>)"
     writes:
-      - "HubSpot:contacts (upsert by email; firstname/lastname/email/phone, aplus_event_tag APPENDED (sage_oak_btsc_2026 | ceja_park_2026), aplus_booth_goal, aplus_booth_delivery, aplus_marketing_consent, aplus_event_role)"
+      - "HubSpot:contacts (upsert by email; firstname/lastname/email/phone, aplus_event_tag APPENDED (sage_oak_btsc_2026 | sage_oak_park_2026), aplus_booth_goal, aplus_booth_delivery, aplus_marketing_consent, aplus_event_role)"
       - "HubSpot:contacts persona stamp, CREATE-ONLY (teacher -> Teacher of Record/EF/ES + lead status Charter School Teacher TOR/EF; administrator -> Decision Maker/Director; parent -> Family; student -> Student; support_staff -> none). Existing contacts are never overwritten — po_inbox doctrine."
       - "HubSpot:contacts hubspot_owner_id, CREATE-ONLY (teacher/administrator/support_staff -> OWNER_SALES seat; parent/student -> OWNER_CHARTER_SALES seat; ids in booth/wrangler.toml)"
       - "HubSpot:emails (engagement logged for the photo send)"

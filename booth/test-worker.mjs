@@ -80,18 +80,18 @@ async function submit(payload, { existingTag = null, found = false, fail = null,
 const SAGE = { firstName: "Ann", lastName: "Lee", email: "ann@example.com",
                role: "teacher", marketingConsent: true, goal: "Best. Year. Ever.",
                eventTag: "sage_oak_btsc_2026" };
-const CEJA = { firstName: "Dana", lastName: "Reyes", email: "Dana@Outlook.com", phone: "(555) 213-8890",
+const PARK = { firstName: "Dana", lastName: "Reyes", email: "Dana@Outlook.com", phone: "(555) 213-8890",
                role: "parent", marketingConsent: true, goal: "Family first",
-               delivery: "print", eventTag: "ceja_park_2026", photo: PHOTO };
+               delivery: "print", eventTag: "sage_oak_park_2026", photo: PHOTO };
 
 console.log("\n#AP032: the event tag is appended, never replaced");
 await ta("a Blue Ridge attendee returning to Sage Oak keeps BOTH tags", async () => {
   const { props } = await submit(SAGE, { found: true, existingTag: "blue_ridge_btsc_2026" });
   assert.equal(props.aplus_event_tag, "blue_ridge_btsc_2026;sage_oak_btsc_2026");
 });
-await ta("a Sage Oak teacher who comes to Ceja carries both", async () => {
-  const { props } = await submit({ ...CEJA, role: "teacher" }, { found: true, existingTag: "sage_oak_btsc_2026" });
-  assert.equal(props.aplus_event_tag, "sage_oak_btsc_2026;ceja_park_2026");
+await ta("a BTSC teacher who comes to the park day carries both", async () => {
+  const { props } = await submit({ ...PARK, role: "teacher" }, { found: true, existingTag: "sage_oak_btsc_2026" });
+  assert.equal(props.aplus_event_tag, "sage_oak_btsc_2026;sage_oak_park_2026");
 });
 await ta("the search asks for the tag, or the merge has nothing to merge", async () => {
   const { sent } = await submit(SAGE, { found: true, existingTag: "blue_ridge_btsc_2026" });
@@ -99,8 +99,8 @@ await ta("the search asks for the tag, or the merge has nothing to merge", async
   assert.ok(search.body.properties.includes("aplus_event_tag"));
 });
 await ta("a brand-new contact gets the event's tag", async () => {
-  const { props } = await submit(CEJA);
-  assert.equal(props.aplus_event_tag, "ceja_park_2026");
+  const { props } = await submit(PARK);
+  assert.equal(props.aplus_event_tag, "sage_oak_park_2026");
 });
 await ta("re-submitting does not duplicate the tag", async () => {
   const { props } = await submit(SAGE, { found: true, existingTag: "sage_oak_btsc_2026" });
@@ -116,18 +116,18 @@ const tagOptions = (() => {
 t("every event the Worker knows is a declared aplus_event_tag option", () => {
   for (const tag of Object.keys(EVENTS)) assert.ok(tagOptions.includes(tag), `${tag} missing from properties.yml`);
 });
-const CEJA_HTML = readFileSync(join(HERE, "public/ceja/index.html"), "utf8");
-t("the Ceja page sends a tag the Worker knows", () => {
-  const tag = CEJA_HTML.match(/EVENT_TAG:\s*"([^"]+)"/)[1];
+const PARK_HTML = readFileSync(join(HERE, "public/sage-oak-park/index.html"), "utf8");
+t("the park day page sends a tag the Worker knows", () => {
+  const tag = PARK_HTML.match(/EVENT_TAG:\s*"([^"]+)"/)[1];
   assert.ok(EVENTS[tag], `${tag} is not a row in EVENTS`);
-  assert.equal(tag, "ceja_park_2026");
+  assert.equal(tag, "sage_oak_park_2026");
 });
-t("the Ceja page posts same-origin and its roles are Worker values", () => {
-  assert.ok(CEJA_HTML.includes('WORKER_URL: "/submit"'));
-  for (const m of CEJA_HTML.matchAll(/data-role="([^"]+)"/g)) {
+t("the park day page posts same-origin and its roles are Worker values", () => {
+  assert.ok(PARK_HTML.includes('WORKER_URL: "/submit"'));
+  for (const m of PARK_HTML.matchAll(/data-role="([^"]+)"/g)) {
     assert.ok(VALID_ROLES.includes(m[1]), `role ${m[1]} is not a Worker value`);
   }
-  assert.ok(CEJA_HTML.includes('data-role="parent"'), "parents first at a park");
+  assert.ok(PARK_HTML.includes('data-role="parent"'), "parents first at a park");
 });
 await ta("an unknown tag falls back to Sage Oak rather than writing garbage", async () => {
   const { props, out } = await submit({ ...SAGE, eventTag: "made_up_2027" });
@@ -135,59 +135,61 @@ await ta("an unknown tag falls back to Sage Oak rather than writing garbage", as
   assert.equal(out.results.eventTag, "sage_oak_btsc_2026");
 });
 await ta("email copy follows the event", async () => {
-  const { sent } = await submit({ ...CEJA, sendEmail: true });
+  const { sent } = await submit({ ...PARK, sendEmail: true });
   const resend = sent.find((s) => s.url.includes("api.resend.com"));
-  assert.equal(resend.body.subject, EVENTS.ceja_park_2026.emailSubject);
-  assert.equal(resend.body.attachments[0].filename, "ceja-park-day-2026.jpg");
-  assert.ok(!resend.body.html.includes("Sage Oak"), "Sage Oak copy leaked into the Ceja email");
+  assert.equal(resend.body.subject, EVENTS.sage_oak_park_2026.emailSubject);
+  assert.equal(resend.body.attachments[0].filename, "sage-oak-park-day-2026.jpg");
+  assert.ok(/park day/i.test(resend.body.html), "park day copy expected in the email body");
+  assert.ok(!resend.body.html.includes("Back to School"), "BTSC copy leaked into the park day email");
 });
 await ta("MMS copy follows the event and uses the request origin for the photo", async () => {
-  const { sent } = await submit({ ...CEJA, sendText: true });
+  const { sent } = await submit({ ...PARK, sendText: true });
   const jc = sent.find((s) => s.url.includes("justcall"));
   assert.ok(jc.body.body.startsWith("Hi Dana!"));
-  assert.ok(!jc.body.body.includes("Sage Oak"));
+  assert.ok(jc.body.body.includes("Park Day"));
+  assert.ok(!jc.body.body.includes("Back to School"));
   assert.ok(jc.body.media_url.startsWith("https://sage-oak-booth.nameless-mountain-bafa.workers.dev/photo/"));
 });
 await ta("the timeline note names the event", async () => {
-  const { sent } = await submit(CEJA);
+  const { sent } = await submit(PARK);
   const note = sent.find((s) => s.url.includes("/objects/notes"));
-  assert.ok(note.body.properties.hs_note_body.includes("Ceja Park Day 2026"));
+  assert.ok(note.body.properties.hs_note_body.includes("Sage Oak Park Day 2026"));
 });
 
 console.log("\nenum values, never labels");
 await ta("role and delivery reach HubSpot as internal values", async () => {
-  const { props } = await submit(CEJA);
+  const { props } = await submit(PARK);
   assert.equal(props.aplus_event_role, "parent");
   assert.equal(props.aplus_booth_delivery, "print");
   assert.equal(props.aplus_marketing_consent, "true");
 });
 await ta("a label sent as a role is replaced by the event default, not written raw", async () => {
-  const { props } = await submit({ ...CEJA, role: "Parent" });
+  const { props } = await submit({ ...PARK, role: "Parent" });
   assert.equal(props.aplus_event_role, "parent");
 });
 await ta("email is lowercased so the search-by-email matches next time", async () => {
-  const { props } = await submit(CEJA);
+  const { props } = await submit(PARK);
   assert.equal(props.email, "dana@outlook.com");
 });
 
 console.log("\npersona and owner are CREATE-ONLY");
 await ta("a new parent gets the Family persona and the charter sales seat", async () => {
-  const { props } = await submit(CEJA);
+  const { props } = await submit(PARK);
   assert.equal(props.a_persona, "Family");
   assert.equal(props.hubspot_owner_id, "81494333");
 });
 await ta("a new teacher gets the TOR persona and the sales seat", async () => {
-  const { props } = await submit({ ...CEJA, role: "teacher" });
+  const { props } = await submit({ ...PARK, role: "teacher" });
   assert.equal(props.a_persona, "Teacher of Record/EF/ES");
   assert.equal(props.hubspot_owner_id, "227538487");
 });
 await ta("an existing contact is never re-personaed or reassigned", async () => {
-  const { props } = await submit(CEJA, { found: true, existingTag: "" });
+  const { props } = await submit(PARK, { found: true, existingTag: "" });
   assert.ok(!("a_persona" in props));
   assert.ok(!("hubspot_owner_id" in props));
 });
 await ta("an update never blanks a field with an empty string", async () => {
-  const { props } = await submit({ ...CEJA, phone: "", goal: "" }, { found: true });
+  const { props } = await submit({ ...PARK, phone: "", goal: "" }, { found: true });
   assert.ok(!("phone" in props));
   assert.ok(!("aplus_booth_goal" in props));
 });
@@ -197,7 +199,7 @@ t("a missing seat var yields no owner, never a literal seat name", () => {
 
 console.log("\nresilience");
 t("an unsynced enum option is dropped, not fatal", () => {
-  const r = withoutUnsyncedProps({ email: "a@b.com", aplus_event_tag: "ceja_park_2026" }, 400,
+  const r = withoutUnsyncedProps({ email: "a@b.com", aplus_event_tag: "sage_oak_park_2026" }, 400,
     '{"message":"Property values were not valid: ... aplus_event_tag ... is not one of the allowed options"}');
   assert.deepEqual(r.dropped, ["aplus_event_tag"]);
   assert.ok(!("aplus_event_tag" in r.props));
@@ -206,14 +208,14 @@ t("a non-schema 400 is NOT swallowed", () => {
   assert.equal(withoutUnsyncedProps({ email: "a@b.com" }, 400, '{"message":"rate limited"}'), null);
 });
 await ta("HubSpot rejecting the tag still captures the contact", async () => {
-  const { out } = await submit(CEJA, {
+  const { out } = await submit(PARK, {
     fail: { match: (u, o) => /\/contacts$/.test(u) && o.method === "POST", status: 400,
             body: '{"message":"aplus_event_tag is not one of the allowed options"}' } });
   assert.equal(out.ok, true);
   assert.deepEqual(out.results.hubspot.dropped, ["aplus_event_tag"]);
 });
 await ta("text delivery without a usable phone is a 400 before anything is sent", async () => {
-  const { res, sent } = await submit({ ...CEJA, phone: "555", sendText: true });
+  const { res, sent } = await submit({ ...PARK, phone: "555", sendText: true });
   assert.equal(res.status, 400);
   assert.equal(sent.length, 0);
 });
@@ -239,26 +241,26 @@ t("wrangler.toml lists both origins", () => {
   assert.ok(line.includes("sage-oak-booth.nameless-mountain-bafa.workers.dev"));
   assert.ok(/\[assets\]\s*\ndirectory = "\.\/public"/.test(toml), "assets block serves public/");
 });
-await ta("GET / redirects to the Ceja page", async () => {
+await ta("GET / redirects to the park day page", async () => {
   const res = await worker.fetch(new Request("https://sage-oak-booth.nameless-mountain-bafa.workers.dev/"), ENV);
   assert.equal(res.status, 302);
-  assert.equal(res.headers.get("Location"), "https://sage-oak-booth.nameless-mountain-bafa.workers.dev/ceja/");
+  assert.equal(res.headers.get("Location"), "https://sage-oak-booth.nameless-mountain-bafa.workers.dev/sage-oak-park/");
 });
 
-console.log("\nCeja page copy");
+console.log("\npark day page copy");
 t("one-tap chips for the three consumer domains", () => {
-  for (const d of ["@gmail.com", "@outlook.com", "@yahoo.com"]) assert.ok(CEJA_HTML.includes(`data-domain="${d}"`));
+  for (const d of ["@gmail.com", "@outlook.com", "@yahoo.com"]) assert.ok(PARK_HTML.includes(`data-domain="${d}"`));
 });
 t("no-spam line and a phone field", () => {
-  assert.ok(/We will not spam you/.test(CEJA_HTML));
-  assert.ok(CEJA_HTML.includes('id="f-phone"'));
+  assert.ok(/We will not spam you/.test(PARK_HTML));
+  assert.ok(PARK_HTML.includes('id="f-phone"'));
 });
 t("no em dashes or double hyphens in the family-facing copy", () => {
   // Roman 2026-08-24, locked: never in customer-facing communication.
-  const visible = CEJA_HTML.split("<body>")[1]
+  const visible = PARK_HTML.split("<body>")[1]
     .replace(/<script[\s\S]*?<\/script>/g, "").replace(/<!--[\s\S]*?-->/g, "");
   assert.ok(!/—|--/.test(visible));
-  const strings = [...CEJA_HTML.matchAll(/`[^`]*`/g)].map((m) => m[0]).join("");
+  const strings = [...PARK_HTML.matchAll(/`[^`]*`/g)].map((m) => m[0]).join("");
   assert.ok(!/—/.test(strings), "em dash inside a JS message string");
   for (const e of Object.values(EVENTS)) {
     for (const v of [e.emailSubject, e.emailIntro, e.emailPitch, e.smsBody]) assert.ok(!/—|--/.test(v), v);

@@ -7,7 +7,7 @@
  * in EVENTS below; the front end says which one it is with `eventTag`.
  *
  *   sage_oak_btsc_2026   booth/index.html, on Cloudflare Pages (historical)
- *   ceja_park_2026       booth/public/ceja/, served by this Worker via [assets]
+ *   sage_oak_park_2026   booth/public/sage-oak-park/, served by this Worker via [assets]
  *
  * POST /submit
  *   { firstName, lastName, email, phone, role, marketingConsent,
@@ -49,15 +49,16 @@ export const EVENTS = {
     logoUrl: "https://sage-oak-booth.pages.dev/logo.png",
     defaultRole: "teacher",
   },
-  ceja_park_2026: {
-    name: "Ceja Park Day 2026",
-    eyebrow: "CEJA · PARK DAY 2026",
-    emailSubject: "Your park day photo is here! 📸",
-    filename: "ceja-park-day-2026.jpg",
-    emailIntro: "Thanks for stopping by the A+ Tutoring booth today. We hope the rest of your park day is a great one.",
-    emailPitch: "A+ Tutoring provides one-on-one tutoring for homeschool and charter families, often at no cost to you through your school's enrichment funds.",
-    smsBody: "Hi {name}! Here's your park day photo from the A+ Tutoring booth. Ask us about one-on-one tutoring for your student: " + LEARN_URL,
-    noteLabel: "Ceja Park Day 2026",
+  // Sage Oak family park day (Ceja), 2026-09-18. Parents outnumber teachers.
+  sage_oak_park_2026: {
+    name: "Sage Oak Park Day 2026",
+    eyebrow: "SAGE OAK · PARK DAY 2026",
+    emailSubject: "Your Sage Oak Park Day photo is here! 📸",
+    filename: "sage-oak-park-day-2026.jpg",
+    emailIntro: "Thanks for stopping by the A+ Tutoring booth at the park. We hope the rest of your day is a great one.",
+    emailPitch: "A+ Tutoring partners with Sage Oak to provide one-on-one tutoring for your student, often at no cost to you through enrichment funds.",
+    smsBody: "Hi {name}! Here's your Sage Oak Park Day photo from the A+ Tutoring booth. Ask us about one-on-one tutoring for your student: " + LEARN_URL,
+    noteLabel: "Sage Oak Park Day 2026",
     logoUrl: "https://sage-oak-booth.nameless-mountain-bafa.workers.dev/logo.png",
     defaultRole: "parent",
   },
@@ -66,8 +67,8 @@ const DEFAULT_EVENT = "sage_oak_btsc_2026";
 export const VALID_ROLES = ["administrator", "teacher", "support_staff", "parent", "student"];
 const VALID_DELIVERY = ["email", "print", "both", "text", "all"];
 
-// ALLOWED_ORIGIN is a comma-separated list. The Ceja page is served by this
-// Worker (same origin, no CORS at all); the Sage Oak page lives on Pages.
+// ALLOWED_ORIGIN is a comma-separated list. The park day page is served by
+// this Worker (same origin, no CORS at all); the BTSC page lives on Pages.
 export function corsOrigin(env, requestOrigin) {
   const allowed = String(env.ALLOWED_ORIGIN || "*").split(",").map((s) => s.trim()).filter(Boolean);
   if (allowed.includes("*")) return "*";
@@ -88,9 +89,9 @@ export default {
     }
     const url = new URL(request.url);
 
-    // The Ceja tablet opens the bare Worker URL; send it to the booth page.
+    // The booth tablet opens the bare Worker URL; send it to the current event.
     if (request.method === "GET" && url.pathname === "/") {
-      return Response.redirect(`${url.origin}/ceja/`, 302);
+      return Response.redirect(`${url.origin}/sage-oak-park/`, 302);
     }
 
     // Public photo host for MMS media_url and the archive links on HubSpot
@@ -231,8 +232,8 @@ export function mergeEventTags(existing, newTag) {
 
 // Create-only persona stamp by self-identified role. Existing contacts are
 // never overwritten (a_persona is multi-select; po_inbox doctrine). The
-// family-side roles arrived with Blue Ridge; Ceja is the first photo booth
-// where parents outnumber teachers.
+// family-side roles arrived with Blue Ridge; the Sage Oak park day is the
+// first photo booth where parents outnumber teachers.
 const ROLE_CREATE_PROPS = {
   teacher: { a_persona: "Teacher of Record/EF/ES", hs_lead_status: "Charter School Teacher TOR/EF" },
   administrator: { a_persona: "Decision Maker/Director" },

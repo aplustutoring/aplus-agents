@@ -1,4 +1,4 @@
-# booth — the A+ photo booth (Sage Oak BTSC 2026, Ceja Park Day 2026)
+# booth — the A+ photo booth (Sage Oak BTSC 2026, Sage Oak Park Day 2026)
 
 Event capture for the A+ photo booth: attendees pick a photo banner, take a
 framed photo, choose delivery (print / email / text), and opt in or out of A+
@@ -16,9 +16,9 @@ never a new Worker with secrets to re-enter the morning of the event.
 | Event | Tag | Page | Served from |
 | --- | --- | --- | --- |
 | Sage Oak BTSC 2026 | `sage_oak_btsc_2026` | `index.html` | Cloudflare Pages `sage-oak-booth` (historical) |
-| Ceja Park Day 2026 | `ceja_park_2026` | `public/ceja/index.html` | the Worker itself via `[assets]`: https://sage-oak-booth.nameless-mountain-bafa.workers.dev/ceja/ |
+| Sage Oak Park Day 2026 (Ceja) | `sage_oak_park_2026` | `public/sage-oak-park/index.html` | the Worker itself via `[assets]`: https://sage-oak-booth.nameless-mountain-bafa.workers.dev/sage-oak-park/ |
 
-`GET /` on the Worker redirects to `/ceja/`, so the tablet can open the bare
+`GET /` on the Worker redirects to `/sage-oak-park/`, so the tablet can open the bare
 Worker URL. The page posts to `/submit` same-origin, so CORS never enters into
 it. (Delilah lesson, 2026-09-10: a Pages project and a Worker of the same name
 collide on current wrangler; serve new event pages from the Worker.)
@@ -28,8 +28,8 @@ collide on current wrangler; serve new event pages from the Worker.)
 | File | What | Where it runs |
 | --- | --- | --- |
 | `worker.js` | Cloudflare Worker `sage-oak-booth`: `POST /submit` upserts the HubSpot contact (append-only event tag, #AP032), archives the photo in KV, sends email and/or MMS. `GET /photo/<key>` serves the archive. | Cloudflare Workers |
-| `public/ceja/index.html` | Ceja booth front end; everything that names the event is in its `CONFIG` block | served by the Worker |
-| `index.html` | Sage Oak booth front end (historical) | Cloudflare Pages |
+| `public/sage-oak-park/index.html` | Park day booth front end; everything that names the event is in its `CONFIG` block | served by the Worker |
+| `index.html` | Sage Oak BTSC booth front end (historical) | Cloudflare Pages |
 | `wrangler.toml` | `ALLOWED_ORIGIN` (comma-separated), `RESEND_FROM`, `JUSTCALL_FROM`, owner seats, `[assets]` | — |
 | `test-worker.mjs` | `node booth/test-worker.mjs` | local / CI |
 
@@ -47,7 +47,7 @@ tag and the Worker retries the write without it, so the contact is still
 captured; the response carries `dropped: ["aplus_event_tag"]` so it shows in
 `wrangler tail`.
 
-## Ceja Park Day 2026: what is different from Sage Oak
+## Sage Oak Park Day 2026: what is different from the BTSC booth
 
 More parents than teachers, so: the role pills are Parent, Teacher, Student
 with Parent first; `@gmail.com` / `@outlook.com` / `@yahoo.com` are one-tap
@@ -56,13 +56,14 @@ field carries a no-spam line; the phone field is optional and says it is only
 for texting the photo. Print is the first delivery card. Consent copy speaks
 to a parent about their student. No em dashes anywhere a family reads.
 
-The event name, card header, banner choices and an optional partner logo are
-all in `public/ceja/index.html` `CONFIG`. To rename the event or drop in a
-partner logo, edit that block only.
+The event name, card header, banner choices and the partner logo (Sage Oak,
+drawn on the card and the attract screen) are all in
+`public/sage-oak-park/index.html` `CONFIG`. To rename the event or swap the
+logo, edit that block only.
 
 ## Deploy
 
-The Worker is already deployed with its secrets and KV. Shipping Ceja is one
+The Worker is already deployed with its secrets and KV. Shipping the park day is one
 command from a machine where wrangler is logged in (Roman's Mac):
 
 ```bash
@@ -72,20 +73,20 @@ npx wrangler deploy           # Worker + the public/ pages together
 ```
 
 Then open https://sage-oak-booth.nameless-mountain-bafa.workers.dev/ on the
-iPad; it lands on `/ceja/`. Before the schema sync has run, submissions still
+iPad; it lands on `/sage-oak-park/`. Before the schema sync has run, submissions still
 capture (see above); after it, the event tag lands too.
 
 **Schema gate:** `ops/hubspot-schema/properties.yml` gains the
-`ceja_park_2026` option on `aplus_event_tag`. Merge, then run
+`sage_oak_park_2026` option on `aplus_event_tag`. Merge, then run
 `.github/workflows/hubspot-schema.yml` (dry run first: expect exactly one
 option add).
 
 **Day-of on the iPad:** Settings > Safari > Camera > Allow for the Worker
-host. Add `/ceja/` to the Home Screen so it runs full screen. Printing goes
+host. Add `/sage-oak-park/` to the Home Screen so it runs full screen. Printing goes
 through the iPad print dialog to the Selphy over AirPrint, 4x6 (the card is
 2:3, 1200x1800). One test print before the first family.
 
-### First-time deploy of a NEW Worker (not needed for Ceja)
+### First-time deploy of a NEW Worker (not needed for the park day)
 
 ```bash
 npx wrangler deploy

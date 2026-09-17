@@ -10,8 +10,8 @@ compatibility_date = "2026-08-11"
 [vars]
 # Sender domain must be verified in Resend (wetutorathome.com is; aplustutoring.com is not)
 RESEND_FROM = "A+ Tutoring <photos@wetutorathome.com>"
-# Comma-separated. The Ceja page is served by this Worker (same origin, no CORS
-# needed); the Sage Oak page lives on its own Pages project.
+# Comma-separated. The park day page is served by this Worker (same origin, no
+# CORS needed); the BTSC page lives on its own Pages project.
 ALLOWED_ORIGIN = "https://sage-oak-booth.nameless-mountain-bafa.workers.dev,https://sage-oak-booth.pages.dev"
 
 # JustCall MMS delivery: the permanent archive object in KV is served publicly
