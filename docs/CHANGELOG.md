@@ -5897,3 +5897,44 @@ exactly on the pre-fix file under a faked Saturday clock.
 
 **Files:** email/tests/test_low_balance.py, email/tests/test_po_inbox.py.
 No production code changed.
+
+## 2026-09-16: Monday writes that get refused now fail the run instead of reporting success
+
+**Why:** Roman asked whether the weekly L10 data worker still works. It runs
+(`scorecard-weekly.yml`, Mondays 10:00 AM PT, 10 straight green runs), but five
+CSM scorecard rows have been broken since the 2026-09-07 run and every run
+still reported success. Two symptoms on items 11487307910, 12005709448,
+11760102894, 12504179404 and 11760067895 (csm_meeting_requested,
+csm_meeting_scheduled, csm_proposal_out, csm_active_proposals,
+csm_program_won): `create_update` returns 403 USER_UNAUTHORIZED, and reading
+the row returns an empty item list, so `fetch_target_value` cannot read the
+goal and the On Track / Off Track colour is computed against the hardcoded
+default. The 9/14 run printed `csm_meeting_requested: 2 → Off Track (vs
+default 5)`. Clean on every run from 7/13 through 8/31, both symptoms from 9/7,
+which lines up with the Monday capacity problem around 9/4.
+
+**The system fix (not a human workaround):** Monday reports a refused call as
+HTTP 200 with the reason in an `errors` array. All three copies of the client
+(`ops/scorecard/aplus_weekly_sync.py`, `ops/scorecard/aplus_missed_lessons_sync.py`,
+`email/src/monday_client.py`, the last one writing two more rows to the same
+board from the weekly digest) returned `r.json()` without reading it, so a
+thrown-away write was indistinguishable from one that landed. Now
+`monday_query` raises `MondayError` on any refusal, retrying only the throttle
+cases (complexity budget, rate limit). In the weekly sync a refusal is recorded
+in `MONDAY_FAILURES` by `monday_write()` rather than aborting, so the rest of
+the board still updates and `main()` exits 1 at the end with every refused call
+named. Unreadable targets and prior-week values are recorded too, because a
+status colour computed against a default is a wrong number on the L10, not a
+warning. `digest._write_monday` prints and re-raises so the digest workflow
+goes red instead of leaving a stale row.
+
+**Expect the next scorecard run to be RED.** That is the fix working: the log
+will name which calls Monday refuses, which answers the open question of
+whether the five CSM numbers are landing at all.
+
+**Still human:** restore the API user's access to those five items (or move the
+L10 feed to HubSpot per the 2026-09-10 Monday-retired decision, Roman's call).
+
+**Files:** ops/scorecard/aplus_weekly_sync.py,
+ops/scorecard/aplus_missed_lessons_sync.py, email/src/monday_client.py,
+email/src/digest.py, email/tests/test_monday_client.py (new, 6 tests).

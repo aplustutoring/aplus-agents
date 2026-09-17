@@ -16,6 +16,30 @@ from .config import MONDAY_TOKEN
 MONDAY_URL = "https://api.monday.com/v2"
 
 
+class MondayError(RuntimeError):
+    """Monday answered HTTP 200 with the refusal in the body. NOT a write that landed."""
+
+
+# Monday reports a refused call (no access to the item, bad column, complexity
+# budget) as HTTP 200 with an `errors` array, so a caller reading only ["data"]
+# cannot tell a write that landed from one that was thrown away. The weekly
+# scorecard sync stayed green for two weeks over exactly that (2026-09-16), so
+# a refusal raises here and the caller decides.
+RETRYABLE_ERRORS = ("complexity", "rate limit", "too many requests",
+                    "budget exhausted", "throttled")
+
+
+def monday_errors(body: dict) -> list[str]:
+    """Every error string in a Monday response body; [] when the call succeeded."""
+    out = []
+    for e in (body.get("errors") or []):
+        out.append(str(e.get("message") if isinstance(e, dict) else e))
+    for key in ("error_message", "error_code"):
+        if body.get(key):
+            out.append(str(body[key]))
+    return out
+
+
 def monday_query(query: str, variables: dict | None = None) -> dict:
     headers = {"Authorization": MONDAY_TOKEN, "Content-Type": "application/json"}
     payload = {"query": query, "variables": variables or {}}
@@ -23,7 +47,15 @@ def monday_query(query: str, variables: dict | None = None) -> dict:
         try:
             r = requests.post(MONDAY_URL, headers=headers, json=payload, timeout=60)
             r.raise_for_status()
-            return r.json()
+            body = r.json()
+            errs = monday_errors(body)
+            if errs:
+                joined = "; ".join(errs)
+                if attempt < 2 and any(k in joined.lower() for k in RETRYABLE_ERRORS):
+                    time.sleep(5 * (attempt + 1))
+                    continue
+                raise MondayError(joined)
+            return body
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
             if attempt < 2:
                 time.sleep(5 * (attempt + 1))

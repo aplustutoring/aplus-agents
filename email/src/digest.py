@@ -166,9 +166,15 @@ def _write_monday(m: dict, start: date, end: date) -> None:
     if DRY_RUN or str(items["sla_breaches_item_id"]).startswith("REPLACE"):
         print(f"[DRY_RUN/skip] monday scorecard: breaches={m['sla_breaches']} median={m['median_response_hrs']}")
         return
-    col = mon.get_or_create_scorecard_week_col(board, start, end)
-    mon.update_item(board, items["sla_breaches_item_id"], {col: m["sla_breaches"]})
-    mon.update_item(board, items["median_response_hrs_item_id"], {col: m["median_response_hrs"]})
+    try:
+        col = mon.get_or_create_scorecard_week_col(board, start, end)
+        mon.update_item(board, items["sla_breaches_item_id"], {col: m["sla_breaches"]})
+        mon.update_item(board, items["median_response_hrs_item_id"], {col: m["median_response_hrs"]})
+    except mon.MondayError as e:
+        # Loud and red: a refused write leaves the L10 row showing last week's
+        # number, which reads as "nothing happened" rather than "not measured".
+        print(f"❌ Monday refused the scorecard write, the L10 rows are STALE: {e}")
+        raise
 
 
 def run() -> None:
