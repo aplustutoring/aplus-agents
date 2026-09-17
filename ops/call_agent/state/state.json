@@ -972,9 +972,10 @@
     416311007,
     416312528,
     416315624,
-    416316985
+    416316985,
+    416318905
   ],
-  "last_run_utc": "2026-09-17T20:13:14.958622+00:00",
+  "last_run_utc": "2026-09-17T20:18:02.392312+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1966,6 +1967,95 @@
           "Confirm Andrew is aware of and agrees to the 6:00pm sessions on 9/29, 10/1, 10/6, and 10/8 (Michele said he agreed but Janelle should verify directly).",
           80047202,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416318905,
+      "number": "13108096228",
+      "time_pt": "1:12 PM",
+      "matched": true,
+      "contact_label": "Julie Ulstrup",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Julie Ulstrup back after leaving a message offering a complimentary trial session for her daughter Abby (11th grade, chemistry at community college, iLead Exploration charter family). Julie was enthusiastic \u2014 she has charter funds ready and wants to order multiple sessions if the tutor is a strong fit, since Abby is busy and hesitant about tutoring. They agreed on Mondays at 10am for the trial. Paola told Julie the scheduling team will text her to confirm the time and share the tutor's profile.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Text Julie to confirm Monday 10am trial session and send the chemistry tutor's profile for her to review",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Match Abby with an upper-level chemistry tutor available Mondays at 10am",
+            "owner_hint": "scheduling team",
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow through on submitting the iLead PO request so sessions can be funded through the charter once the trial is booked",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Julie Ulstrup (returning charter family, iLead Exploration) is expecting a text from scheduling to lock in a complimentary trial chemistry session for her 11th-grade daughter Abby on Monday at 10am, along with the tutor's profile/bio to review beforehand. She's warm and motivated \u2014 she has charter funds ready and plans to order multiple sessions if the tutor is a good fit, but Abby is busy and independent so tutor quality really matters to her. Please match a strong upper-level chemistry tutor (Abby is taking chem at a community college) available Mondays at 10am. Open with: 'Hi Julie, this is [name] from A+ scheduling following up on your call with Paola \u2014 I'd love to confirm Monday at 10am for Abby's trial and send over the tutor we have in mind.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Returning customer / existing charter family already in QTL - Charter; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Abby Ulstrup",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola reached Julie on callback. Julie is eager to use the complimentary trial to evaluate fit for Abby (11th grade, chemistry at community college) and, if it goes well, plans to order multiple sessions with charter funds. Abby is independent and busy, so tutor quality is critical \u2014 a weak fit will frustrate her.",
+          "what_we_can_do_to_help": "Scheduling to text Julie to confirm the Monday 10am trial and send the chemistry tutor's profile in advance so she can vet fit before the session. Prioritize matching a strong, experienced upper-level chemistry tutor available Mondays at 10am.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola reached Julie on callback. Julie is eager to use the complimentary trial to evaluate fit for Abby (11th grade, chemistry at community college) and, if it goes well, plans to order multiple sessions with charter funds. Abby is independent and busy, so tutor quality is critical \u2014 a weak fit will frustrate her."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling to text Julie to confirm the Monday 10am trial and send the chemistry tutor's profile in advance so she can vet fit before the session. Prioritize matching a strong, experienced upper-level chemistry tutor available Mondays at 10am."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Julie to confirm Monday 10am trial session and send the chemistry tutor's profile for her to review",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Match Abby with an upper-level chemistry tutor available Mondays at 10am",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow through on submitting the iLead PO request so sessions can be funded through the charter once the trial is booked",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
