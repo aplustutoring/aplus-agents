@@ -251,6 +251,15 @@ console.log("\npark day page copy");
 t("one-tap chips for the three consumer domains", () => {
   for (const d of ["@gmail.com", "@outlook.com", "@yahoo.com"]) assert.ok(PARK_HTML.includes(`data-domain="${d}"`));
 });
+t("Sage Oak staff domain button sits below the family chips", () => {
+  const btn = PARK_HTML.indexOf('id="btn-domain"');
+  const lastChip = PARK_HTML.indexOf('data-domain="@yahoo.com"');
+  assert.ok(btn > 0 && lastChip > 0 && btn > lastChip, "staff button after the family chips");
+  assert.ok(PARK_HTML.includes('data-domain="@sageoak.education"'));
+  // The domain must be the verified one for Sage Oak in the school aliases file.
+  const aliases = readFileSync(join(ROOT, "ops/hubspot-schema/school-aliases.yml"), "utf8");
+  assert.ok(/^\s*sageoak\.education:\s*Sage Oak/m.test(aliases), "sageoak.education is Sage Oak's verified domain");
+});
 t("no-spam line and a phone field", () => {
   assert.ok(/We will not spam you/.test(PARK_HTML));
   assert.ok(PARK_HTML.includes('id="f-phone"'));

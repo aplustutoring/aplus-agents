@@ -7,6 +7,32 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-17 — Park Day page: Sage Oak staff domain button under the family chips
+
+**What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`):
+a full-width oak bar labeled "Sage Oak staff: + @sageoak.education" below the
+three family chips in the email block. Same placement Roman chose for the
+Blue Ridge staff button on 2026-09-16: families are most of the traffic, so
+their providers come first. Tapping it replaces whatever follows the @, the
+same as the chips. One new test pins the button below the chips and checks
+the domain against `ops/hubspot-schema/school-aliases.yml`, where
+`sageoak.education` is the verified Sage Oak domain. 36 tests pass.
+
+**Why:** Roman, 2026-09-17: "we need to have a .Sageoak.education button."
+Teachers at the park day should not have to type the school domain on an
+iPad. Role routing is untouched: the button fills the email only, and the
+Teacher pill still decides the persona and the sales seat.
+
+**Not built, proposed separately:** group photos with more than one contact
+per capture (see the same-day proposal in the session handoff; the
+conference booth in PR #228 already carries the one-capture, one-print-per-
+person pattern this would reuse).
+
+**Files touched:** `booth/public/sage-oak-park/index.html`,
+`booth/test-worker.mjs`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-16 — Fleet map catch-up: ten unregistered agents registered, docs regenerated, checkout synced
 
 **What changed** (`registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
