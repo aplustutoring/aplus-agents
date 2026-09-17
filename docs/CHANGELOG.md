@@ -249,6 +249,69 @@ staging dir holding only the HTML and `_redirects`.
 **Files touched:** `docs/CHANGELOG.md` only.
 
 ---
+## 2026-09-17 — Sage Oak Park Day photo booth: the Sage Oak Worker becomes the A+ photo booth, one row per event
+
+**What changed** (`booth/`, `ops/hubspot-schema/properties.yml`, `registry.yml`):
+
+- **`booth/worker.js` is now multi-event.** An `EVENTS` map holds every string
+  that names an event (email subject and body, SMS body, attachment name,
+  timeline note, default role). The front end sends `eventTag`; an unknown tag
+  falls back to Sage Oak rather than writing garbage. Ported from Blue Ridge:
+  create-only owner routing by seat (teachers to sales, families to charter
+  sales), Family/Student personas, never blanking an existing value with an
+  empty string, and the unsynced-property retry, widened to cover a
+  not-yet-synced enum option so a new event's tag can never cost the lead.
+  `ALLOWED_ORIGIN` is a comma-separated list, echoed exactly. The MMS fallback
+  photo URL uses the request origin instead of a hardcoded host.
+- **`booth/public/sage-oak-park/index.html`**: fork of the BTSC page for the
+  Sage Oak family park day where parents outnumber teachers. Role pills Parent / Teacher /
+  Student, one-tap `@gmail.com` / `@outlook.com` / `@yahoo.com` chips, a
+  no-spam line, an optional phone field that says what it is for, print as
+  the first delivery card, parent-facing consent copy, no em dashes in
+  anything a family reads. Every event-naming string sits in one `CONFIG`
+  block; the Sage Oak logo is drawn on the card and the attract screen.
+- **Served by the Worker via `[assets]`**, at `/sage-oak-park/`, with `GET /` redirecting
+  there. Same origin as `/submit`, so no CORS. This follows the Delilah lesson:
+  a Pages project and a Worker of the same name collide on current wrangler.
+- **Schema:** `aplus_event_tag` gains `sage_oak_park_2026`. Additive.
+- **Registry:** the Sage Oak entry is now "A+ photo booth (Sage Oak BTSC 2026,
+  Sage Oak Park Day 2026)" with the new writes listed.
+- **Tests:** `booth/test-worker.mjs` grows from 7 to 35: #AP032 append across
+  events, every `EVENTS` key is a declared schema option, the park day page's tag
+  and roles are Worker values, copy follows the event, persona and owner are
+  create-only, the tag rejection still captures the contact, CORS list, the
+  root redirect, and the no-em-dash rule over the visible copy.
+
+**Why:** Roman, 2026-09-17: a Sage Oak booth at the park tomorrow, with
+the printer, like the BTSC conference booth, but parent-heavy and with the
+email chips. The
+Worker kept its name because renaming it means re-entering four secrets the
+morning of an event, and the call-relay incident (2026-09-09) showed what
+"secrets never set" looks like in production. One row per event makes the
+next booth a copy of a folder and a row, not a new deploy surface.
+
+**Deploy (Roman's Mac, wrangler logged in):** `cd booth && node test-worker.mjs
+&& npx wrangler deploy`. Then merge and run the schema sync (dry run first,
+expect one option add). Full notes in `booth/README.md`.
+
+**Verified:** 35 tests pass; Blue Ridge suite still 43. The park day page driven
+headless with a fake camera: attract, banner, capture, review, chips rewrite
+the domain, parent role, consent, "All 3" delivery; the POST carries
+`eventTag: sage_oak_park_2026`, `role: parent`, the framed JPEG, and the done
+screen shows the right message. No console errors.
+
+**Naming:** the first cut carried a name from a typo in the ask; Roman
+clarified it is a Sage Oak event at the park, so the tag, card, email, text
+and HubSpot option all say "Sage Oak Park Day 2026". To rename again: the `CONFIG` block in
+`public/sage-oak-park/index.html`, the `sage_oak_park_2026` row in `worker.js`,
+and the option label in properties.yml.
+
+**Files touched:** `booth/worker.js`, `booth/wrangler.toml`,
+`booth/test-worker.mjs`, `booth/README.md`, `booth/public/sage-oak-park/index.html`,
+`booth/public/logo.png`, `booth/public/logo-white.png`, `booth/public/sageoak.webp`,
+`ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-16 — Blue Ridge booth: a claim is captured wherever the page is opened, and a deploy that needs no laptop
 
 **What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
