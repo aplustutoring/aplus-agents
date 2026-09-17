@@ -166,6 +166,67 @@ def after_sync(deal: dict, record: dict, contact: dict | None, token: str) -> No
     _group_invoice_task(deal, p, record)
 
 
+# ── 2b. Late adds: the group's invoice task was written before this deal ──
+
+def _invoiced_deal_ids(group: str) -> set[str] | None:
+    """Deal ids the group's invoice task covered, or None when no task yet."""
+    found = None
+    for r in audit._iter_records():
+        if r.get("action_taken") == "hsa_group_invoice_task" and r.get("group") == group:
+            found = set(str(x) for x in (r.get("deal_ids") or []))
+        elif r.get("action_taken") == "hsa_late_add_task" and r.get("group") == group and found is not None:
+            found.add(str(r.get("deal_id")))
+    return found
+
+
+def late_add_sweep() -> None:
+    """A cohort deal created AFTER its group's invoice task (Aster White,
+    2026-09-16 18:18 PT) is invisible to Kath: the task lists the students it
+    was written with. Every run, any HSA deal missing from its group's
+    invoice record gets ONE late-add task to the invoice owner (service +
+    allocation for that student; the flat total does not change)."""
+    hc = _hc()
+    if not hc.get("enabled", True):
+        return
+    deals = hs._search_all("/crm/v3/objects/deals/search", [
+        {"propertyName": "pipeline", "operator": "EQ", "value": hc.get("pipeline", "5119061")},
+        {"propertyName": hc.get("group_prop", "hsa_group"), "operator": "HAS_PROPERTY"},
+    ], DEAL_PROPS)
+    covered: dict[str, set[str] | None] = {}
+    owner = staff(hc.get("invoice_owner", "charter_admin"))
+    made = 0
+    for d in deals:
+        did = str(d["id"])
+        p = d.get("properties") or {}
+        group = (p.get("hsa_group") or "").strip()
+        if not group:
+            continue
+        key = f"hsa-invoice-late:{group}:{did}"
+        if audit.already_processed(key):
+            continue
+        if group not in covered:
+            covered[group] = _invoiced_deal_ids(group)
+        ids = covered[group]
+        if ids is None or did in ids:
+            continue                  # no invoice task yet (after_sync makes it), or already listed
+        student = (p.get("student_first_name") or "").strip() or p.get("dealname") or did
+        body = (f"Late add to IEM HSA group {group}: {student} joined after the group invoice task "
+                f"was written. In Teachworks: service 'IEM HSA group' at $0/hr and a package "
+                f"allocation of {p.get('hsa_sessions') or '?'} hours for this student. The flat "
+                f"group invoice total does not change (${150 * int(float(p.get('hsa_sessions') or 0)):,.2f} "
+                f"for the group); the sibling deals were re-split.\n"
+                f"Slot: {p.get('hsa_slot') or '?'} from {p.get('hsa_start') or '?'}. "
+                f"ES: {p.get('teacher_of_record_name') or '?'}.\n{_deal_url(did)}")
+        hs.create_task(f"HSA late add — {student} joined {group}: set up service + allocation",
+                       body, owner.get("hubspot_owner_id"), _due_ms(8), priority="HIGH")
+        audit.append({"message_id": key, "source": "hsa_sync", "action_taken": "hsa_late_add_task",
+                      "group": group, "deal_id": did, "student": student,
+                      "owner": hc.get("invoice_owner", "charter_admin")})
+        made += 1
+    if made:
+        print(f"hsa late_add_sweep: {made} late-add task(s)")
+
+
 # ── 3. Lesson-series verification ────────────────────────────────────────────
 
 def _student_lessons(parent_email: str, student_first: str, start: date) -> list[date]:

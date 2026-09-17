@@ -260,6 +260,35 @@ def test_es_contact_api_success_makes_no_task(monkeypatch):
     assert not [t for t in calls["tasks"] if t[0].startswith("Add ES")]
 
 
+# ─── late add: a deal created after its group's invoice task ─────────────────
+
+def test_late_add_gets_one_task_for_the_invoice_owner(monkeypatch):
+    calls = {"tasks": [], "audit": [
+        {"message_id": "hsa-invoice:C1-G2", "action_taken": "hsa_group_invoice_task",
+         "group": "C1-G2", "deal_ids": ["H1", "H2"], "total": 3750.0}]}
+    monkeypatch.setattr(hsa_sync, "cfg", lambda: {"hsa": {"enabled": True, "pipeline": "5119061",
+                                                          "invoice_owner": "kath"},
+                                                  "hubspot": {"portal_id": "6312752"}})
+    monkeypatch.setattr(hsa_sync, "staff", lambda k: {"kath": {"hubspot_owner_id": "513215050"}}[k])
+    monkeypatch.setattr(hsa_sync.audit, "_iter_records", lambda: iter(list(calls["audit"])))
+    monkeypatch.setattr(hsa_sync.audit, "already_processed",
+                        lambda k: any(r["message_id"] == k for r in calls["audit"]))
+    monkeypatch.setattr(hsa_sync.audit, "append", lambda r: calls["audit"].append(r))
+    monkeypatch.setattr(hsa_sync.hs, "_search_all", lambda *a: [
+        _hsa_deal("H1", "Brooklyn", "C1-G2"), _hsa_deal("H2", "Scarlett", "C1-G2"),
+        _hsa_deal("H3", "Aster", "C1-G2"), _hsa_deal("H9", "Diego", "C1-G9")])   # G9: no task yet
+    monkeypatch.setattr(hsa_sync.hs, "create_task",
+                        lambda subject, body, owner_id, due_ms, priority="MEDIUM", contact_id=None:
+                        calls["tasks"].append((subject, owner_id, body)) or {"id": "T9"})
+    hsa_sync.late_add_sweep()
+    assert len(calls["tasks"]) == 1
+    subject, owner_id, body = calls["tasks"][0]
+    assert subject == "HSA late add — Aster joined C1-G2: set up service + allocation"
+    assert owner_id == "513215050" and "25 hours" in body and "$3,750.00" in body
+    hsa_sync.late_add_sweep()                                  # idempotent
+    assert len(calls["tasks"]) == 1
+
+
 # ─── lesson-series verification (LOCKED: no lesson on a no-class date) ───────
 
 def _lessons(dates):
