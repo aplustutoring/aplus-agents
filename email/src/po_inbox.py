@@ -28,6 +28,7 @@ from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, p
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
+from .names import first_name
 
 PO_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
@@ -218,7 +219,13 @@ def _fmt_time(hhmm: str) -> str:
 def _schedule_text(lessons: list[dict]) -> str:
     """Human schedule line for the SMS from lesson slots — grouped into
     recurring (weekday, time, tutor) patterns, most frequent first:
-    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'."""
+    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'.
+
+    The tutor goes in FIRST NAME ONLY. Teachworks returns "Last, First", so
+    the raw value put "Mondays 10:00 AM with Karl, Sonya" in front of Nikita
+    Brixey on 2026-09-16 and she replied "I don't know who Karl is?" Karl was
+    Sonya's surname, and the comma made one tutor look like two.
+    """
     from collections import Counter
     from datetime import date as _date
     slots: Counter = Counter()
@@ -227,7 +234,7 @@ def _schedule_text(lessons: list[dict]) -> str:
             wd = _date.fromisoformat(str(l.get("date"))[:10]).strftime("%A")
         except ValueError:
             continue
-        slots[(wd, (l.get("time") or "").strip(), (l.get("tutor") or "").strip())] += 1
+        slots[(wd, (l.get("time") or "").strip(), first_name(l.get("tutor")))] += 1
     parts = []
     for (wd, t, tut), _n in slots.most_common(4):
         bit = wd + "s" + (f" {_fmt_time(t)}" if t else "")
