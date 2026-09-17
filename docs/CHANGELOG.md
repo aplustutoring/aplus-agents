@@ -7,6 +7,45 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — one definition of the customer-facing first name ("I don't know who Karl is?")
+
+**What a family saw:** the charter PO confirmation told Nikita Brixey her
+son's schedule was "Mondays 10:00 AM with Karl, Sonya, Mondays 10:30 AM with
+Karl, Sonya". Karl is Sonya's SURNAME. Nikita replied twice: "I don't know who
+Karl is?" and "We've never talked about anyone named Karl. We are only working
+work Sonya." The comma turned one tutor into what read as two people.
+
+**Why:** Teachworks returns people as "Last, First" in `employee_name`.
+`po_inbox._schedule_text` used the raw value.
+
+**Why it happened twice:** this exact class was already fixed on 2026-09-09,
+when the low-balance replay texted a family about "Torres,". That fix was a
+private `_first_name` inside `low_balance.py`. When `po_inbox` grew the same
+need it had nothing to reuse and did it raw. A fix that lives inside one
+module is a fix for one module.
+
+**What changed:** new `email/src/names.py` with a single `first_name()`,
+carrying both incidents in its docstring so the next caller finds it rather
+than rewriting it. `po_inbox._schedule_text` now uses it, and
+`low_balance._first_name` delegates to it so there is one definition.
+
+**A test was protecting the defect.** `test_schedule_stamped_from_upcoming_lessons`
+asserted "Wednesdays 3:30 PM with Sarah Lee" — a full name in copy a family
+reads, which the first-names-only rule (Roman, LOCKED 2026-09-09) forbids. The
+assertion is corrected to "with Sarah". Worth noting that prose rules in
+CLAUDE.md are not enforced anywhere; a lint over customer-facing copy would
+have caught this and the em-dash rule too.
+
+**Not fixed here:** the same text showed 10:00 AM and 10:30 AM as separate
+slots for what the family calls a single 10 to 11 hour. That is two Teachworks
+lessons grouped honestly, so merging adjacent slots is a judgment call for
+Roman rather than a bug to silently "fix".
+
+**Files:** `email/src/names.py` (new), `email/src/po_inbox.py`,
+`email/src/low_balance.py`, `email/tests/test_names.py` (new),
+`email/tests/test_po_inbox.py`. 584 tests pass.
+
+---
 ## 2026-09-16 — Blue Ridge booth: Pages deploys from an allowlist, staff domain button moved below the family chips
 
 **What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
