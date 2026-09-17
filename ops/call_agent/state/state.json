@@ -954,9 +954,10 @@
     416218547,
     416221604,
     416236565,
-    416247012
+    416247012,
+    416247628
   ],
-  "last_run_utc": "2026-09-17T18:12:32.911304+00:00",
+  "last_run_utc": "2026-09-17T18:18:17.788030+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1416,6 +1417,84 @@
         ],
         [
           "Once PO is received from Arete Charter Academy, scheduling team texts Ashley to confirm receipt and book the two 30-minute weekly sessions (reading + math) for Trace.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416247628,
+      "number": "17143083450",
+      "time_pt": "11:10 AM",
+      "matched": true,
+      "contact_label": "Rebecca Slome",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ called Rebecca Slome to collect her home address so the scheduling team can finalize an in-person tutor match for her daughter Zoey. Rebecca provided the address: 11732 Moorpark Street, Unit B, Studio City, CA 91604. Paola told her the scheduling team will text her shortly to confirm which of the two potentially available tutors will take the session. Call was brief and positive.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Scheduling team to text Rebecca confirming which of the two available tutors will be assigned for the in-person session at 11732 Moorpark Street, Unit B, Studio City, CA 91604.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Rebecca Slome (parent of Zoey, 10th grade, Algebra II, in-person) was called by Paola to collect her address so we can finalize a tutor match. Address confirmed: 11732 Moorpark Street, Unit B, Studio City, CA 91604. We told her two tutors may be available today and that scheduling would text her shortly to confirm which one. She is expecting a text soon. Open with: 'Hi Rebecca, this is [name] from A+ Tutoring following up on the tutor for Zoey \u2014 here's who we have available today...' and lock in a specific day/time.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Rebecca is an existing open-deal family already in the scheduling pipeline; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Zoey"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola called Rebecca to collect her home address (11732 Moorpark Street, Unit B, Studio City, CA 91604) so scheduling can match Zoey with one of two potentially available in-person tutors today.",
+          "what_we_can_do_to_help": "Scheduling team to text Rebecca to confirm which of the two available tutors will be assigned and lock in the first in-person session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Rebecca to collect her home address (11732 Moorpark Street, Unit B, Studio City, CA 91604) so scheduling can match Zoey with one of two potentially available in-person tutors today."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Scheduling team to text Rebecca to confirm which of the two available tutors will be assigned and lock in the first in-person session."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Scheduling team to text Rebecca confirming which of the two available tutors will be assigned for the in-person session at 11732 Moorpark Street, Unit B, Studio City, CA 91604.",
           81494333,
           "scheduling"
         ]
