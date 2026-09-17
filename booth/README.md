@@ -55,6 +55,21 @@ chips on the email field (a chip replaces whatever follows the `@`); the email
 field carries a no-spam line; the phone field is optional and says it is only
 for texting the photo. Print is the first delivery card. Consent copy speaks
 to a parent about their student. No em dashes anywhere a family reads.
+Under the family chips, a full-width "Sage Oak staff: + @sageoak.education"
+bar fills the school domain for teachers (`sageoak.education` is the verified
+Sage Oak domain in `ops/hubspot-schema/school-aliases.yml`; a test pins it).
+
+**Group photos (2026-09-17).** One capture can carry several people. On the
+"Where should we send it?" step, fill the fields and tap "+ Add another person
+from this photo"; the person becomes a chip above the form and the fields
+clear. "Next: delivery" takes whatever is still typed as one more person, or,
+with an empty form under the chips, means "that's everyone". On delivery the
+page posts `/submit` once per person with the same photo, so each gets their
+own HubSpot contact, tag, role, persona, seat and email. Texts go only to the
+people who gave a phone, and "Text it" needs at least one phone in the group.
+The same email cannot be added twice; idle reset clears the group. The Worker
+is unchanged. Trade-offs: the photo is archived once per person, the consent
+box is per person, and a group still gets one print per capture.
 
 The event name, card header, banner choices and the partner logo (Sage Oak,
 drawn on the card and the attract screen) are all in

@@ -188,6 +188,21 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
   .domain-btn:active{transform:scale(.97);}
+  /* Group photos: everyone in the frame can get the photo. People already
+     added show as chips above the fields; each one gets their own send. */
+  .people-strip{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+  .people-strip:empty{display:none;}
+  .person-chip{
+    display:inline-flex;align-items:center;gap:10px;min-height:42px;padding:0 8px 0 16px;
+    border-radius:999px;background:var(--sage-soft);color:var(--ink);font-weight:800;font-size:15px;
+  }
+  .person-chip button{
+    border:none;background:var(--oak-deep);color:var(--cream);width:28px;height:28px;
+    border-radius:50%;font-weight:800;font-size:18px;line-height:1;cursor:pointer;
+  }
+  .form-actions{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+  .btn-add{background:transparent;color:var(--oak-deep);border:3px solid var(--sage-soft);font-size:19px;padding:18px 30px;}
+  .group-hint{text-align:center;margin:-8px 0 14px;}
   .hint-sm{font-size:14px;font-weight:600;color:var(--oak-mid);margin-top:8px;}
   .no-spam{
     display:flex;align-items:center;gap:10px;margin-top:10px;padding:12px 14px;
@@ -315,7 +330,9 @@ const CONFIG = {
   <button class="back-link" data-back="review">&larr; Back</button>
   <div class="step-eyebrow">Step 2 of 3</div>
   <h2 class="step-title">Where should we send it?</h2>
+  <p class="hint-sm group-hint">Group photo? Add everyone who wants a copy. Each person gets their own.</p>
   <form id="lead-form" autocomplete="off">
+    <div class="people-strip" id="people-strip" aria-live="polite"></div>
     <div class="field-row">
       <div class="field"><label for="f-first">First name</label><input id="f-first" type="text" required></div>
       <div class="field"><label for="f-last">Last name</label><input id="f-last" type="text" required></div>
@@ -352,7 +369,10 @@ const CONFIG = {
       <span>Send my photo, and A+ Tutoring may reach out about tutoring for my student &#128248;</span>
     </label>
     <div id="form-error"></div>
-    <button class="btn btn-primary" type="submit" style="margin-top:6px">Next: delivery &rarr;</button>
+    <div class="form-actions">
+      <button class="btn btn-add" type="button" id="btn-add-person">+ Add another person from this photo</button>
+      <button class="btn btn-primary" type="submit">Next: delivery &rarr;</button>
+    </div>
   </form>
 </div>
 
@@ -397,7 +417,7 @@ const CONFIG = {
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const state = { goal:null, photoDataUrl:null, contact:null, delivery:null, stream:null };
+  const state = { goal:null, photoDataUrl:null, contact:null, people:[], delivery:null, stream:null };
 
   // ---------- Event branding from CONFIG ----------
   $("attract-eyebrow").textContent = CONFIG.ATTRACT_EYEBROW;
@@ -436,6 +456,7 @@ const CONFIG = {
 
   function fullReset(){
     state.goal=null; state.photoDataUrl=null; state.contact=null; state.delivery=null;
+    state.people=[]; renderPeople();
     selectedRole=null;
     $("lead-form").reset();
     $("form-error").style.display="none";
@@ -599,20 +620,28 @@ const CONFIG = {
       p.classList.add("selected"); selectedRole=p.dataset.role;
     });
   });
-  $("lead-form").addEventListener("submit", e=>{
-    e.preventDefault();
+  // ---------- People in this photo ----------
+  // A group photo is several contacts sharing one capture. Each person is read
+  // off the same fields, added as a chip, and later gets their own /submit
+  // with the same photo. The Worker is unchanged: one person, one contact.
+  const ROLE_LABEL={parent:"Parent",teacher:"Teacher",student:"Student"};
+  function readPerson(){
     const err=$("form-error");
-    const email=$("f-email").value.trim();
+    const email=$("f-email").value.trim().toLowerCase();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
       err.textContent="Please double-check that email address."; err.style.display="block";
-      return;
+      return null;
     }
     if(!selectedRole){
       err.textContent="Tap Parent, Teacher or Student so we know who we met."; err.style.display="block";
-      return;
+      return null;
+    }
+    if(state.people.some(p=>p.email===email)){
+      err.textContent="That email is already in this photo. Add the next person, or tap Next."; err.style.display="block";
+      return null;
     }
     err.style.display="none";
-    state.contact={
+    return {
       firstName:$("f-first").value.trim(),
       lastName:$("f-last").value.trim(),
       email,
@@ -620,15 +649,58 @@ const CONFIG = {
       role:selectedRole,                        // internal VALUE, never the label
       marketingConsent:$("f-consent").checked
     };
+  }
+  function clearPersonFields(){
+    $("lead-form").reset();
+    selectedRole=null;
+    document.querySelectorAll(".role-pill").forEach(x=>x.classList.remove("selected"));
+    $("f-first").focus();
+  }
+  function renderPeople(){
+    const strip=$("people-strip");
+    strip.innerHTML="";
+    state.people.forEach((p,i)=>{
+      const chip=document.createElement("span");
+      chip.className="person-chip";
+      chip.appendChild(document.createTextNode(`${p.firstName||p.email} (${ROLE_LABEL[p.role]||p.role})`));
+      const x=document.createElement("button");
+      x.type="button"; x.textContent="\u00d7";
+      x.setAttribute("aria-label",`Remove ${p.firstName||p.email}`);
+      x.addEventListener("click",()=>{ state.people.splice(i,1); renderPeople(); });
+      chip.appendChild(x);
+      strip.appendChild(chip);
+    });
+  }
+  $("btn-add-person").addEventListener("click",()=>{
+    const person=readPerson();
+    if(!person) return;
+    state.people.push(person);
+    renderPeople();
+    clearPersonFields();
+  });
+  $("lead-form").addEventListener("submit", e=>{
+    e.preventDefault();
+    // Fields typed but not added yet count as one more person. An empty form
+    // with chips above it means "that's everyone".
+    const typed=$("f-email").value.trim()||$("f-first").value.trim()||selectedRole;
+    if(typed||state.people.length===0){
+      const person=readPerson();
+      if(!person) return;
+      state.people.push(person);
+      renderPeople();
+    }
+    state.contact=state.people[0];
     show("delivery");
   });
 
   // ---------- Delivery ----------
   document.querySelectorAll(".deliver-card").forEach(card=>{
     card.addEventListener("click",()=>{
-      if((card.dataset.delivery==="text"||card.dataset.delivery==="all") && !state.contact.phone){
+      if((card.dataset.delivery==="text"||card.dataset.delivery==="all") && !state.people.some(p=>p.phone)){
         const err=$("form-error");
-        err.textContent="Add your phone number and we'll text it to you.";
+        err.textContent=state.people.length>1
+          ? "Add a phone number for at least one person and we'll text it."
+          : "Add your phone number and we'll text it to you.";
         err.style.display="block";
         show("form");
         return;
@@ -650,27 +722,29 @@ const CONFIG = {
       setTimeout(()=>window.print(), 300);
     }
 
-    let sendOk=true;
-    try{
-      const res=await fetch(CONFIG.WORKER_URL,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          ...state.contact,
-          goal:state.goal,
-          delivery:state.delivery,
-          sendEmail:wantsEmail,
-          sendText:wantsText,
-          eventTag:CONFIG.EVENT_TAG,
-          photo:state.photoDataUrl
-        })
-      });
-      if(!res.ok) sendOk=false;
-    }catch(e){ sendOk=false; }
+    // One POST per person, same photo. Texts go only to people who gave a
+    // phone; everyone gets the email when email was chosen. Sent together so
+    // a family of four is not four times slower than one.
+    const outcomes=await Promise.allSettled(state.people.map(person => fetch(CONFIG.WORKER_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        ...person,
+        goal:state.goal,
+        delivery:state.delivery,
+        sendEmail:wantsEmail,
+        sendText:wantsText && !!person.phone,
+        eventTag:CONFIG.EVENT_TAG,
+        photo:state.photoDataUrl
+      })
+    }).then(r=>r.ok)));
+    const sendOk=outcomes.every(o=>o.status==="fulfilled" && o.value);
 
-    const first=state.contact.firstName||"friend";
+    const names=state.people.map(p=>p.firstName||"friend");
+    const first=names.length===1 ? names[0] : names.slice(0,-1).join(", ")+" and "+names[names.length-1];
     let msg;
-    if(wantsText && sendOk) msg=`Check your phone, ${first}. Your photo is on its way.`;
+    if(names.length>1 && (wantsText||wantsEmail) && sendOk) msg=`Photos are on their way to ${first}.`;
+    else if(wantsText && sendOk) msg=`Check your phone, ${first}. Your photo is on its way.`;
     else if(wantsEmail && sendOk) msg=`Check your inbox, ${first}. Your photo is on its way.`;
     else if((wantsEmail||wantsText) && !sendOk) msg=`We saved your info, ${first}. If the photo doesn't arrive, grab us at the table and we'll resend it.`;
     else msg=`Enjoy your print, ${first}!`;

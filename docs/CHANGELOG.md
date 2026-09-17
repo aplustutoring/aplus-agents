@@ -7,6 +7,46 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
+
+**What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`,
+`booth/README.md`): the "Where should we send it?" step takes more than one
+person. Fill the fields, tap "+ Add another person from this photo", and the
+person becomes a chip above the form (first name and role, with a remove
+button); the fields clear for the next one. "Next: delivery" takes whatever is
+typed as one more person, or, with an empty form under the chips, means
+"that's everyone". On delivery the page posts the existing `/submit` once
+per person with the same photo. Each person gets their own HubSpot contact,
+event tag, role, persona and seat, and their own email. Texts go only to
+people who gave a phone; "Text it" needs at least one phone in the group.
+The same email cannot be added twice. Idle reset clears the group. Done
+screen: "Photos are on their way to Jane and Sam." The Worker is untouched:
+one person, one contact, as before.
+
+Driven in the browser with a stubbed fetch: two people, email delivery ->
+two posts, each with its own role and consent, same tag and photo; text
+delivery with one phone in the group -> one `sendText: true`, one `false`.
+37 tests pass (one new: the add button, the chip strip, one post per
+person, text only with a phone, idle reset clears the group, no duplicate
+email).
+
+**Why:** Roman, 2026-09-17: "propose a way we can add multiple people from
+group photos" and then "yess build". Option 1 of the proposal (client loop
+on the existing Worker), chosen because the park day is 2026-09-18. The
+one-archive-many-copies pattern from the conference booth (PR #228) and a
+household link between parent and student contacts stay proposed for after
+the event.
+
+**Known trade-offs:** the photo is uploaded and archived once per person
+(fine at booth volume); the consent box is per person, so a parent who
+ticks it for themselves has to tick it again for the next person; a group
+still gets one print per capture, not one per person.
+
+**Files touched:** `booth/public/sage-oak-park/index.html`,
+`booth/test-worker.mjs`, `booth/README.md`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-17 — Park Day page: Sage Oak staff domain button under the family chips
 
 **What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`):
