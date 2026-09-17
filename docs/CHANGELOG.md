@@ -37,10 +37,14 @@ one-archive-many-copies pattern from the conference booth (PR #228) and a
 household link between parent and student contacts stay proposed for after
 the event.
 
+**Consent checkbox removed, same session.** Roman: "they consent by coming
+to us." Every submission now carries `aplus_marketing_consent: true`; the
+no-spam line under the email field stays as the acknowledgment a family
+reads. The form is one field group shorter on the iPad.
+
 **Known trade-offs:** the photo is uploaded and archived once per person
-(fine at booth volume); the consent box is per person, so a parent who
-ticks it for themselves has to tick it again for the next person; a group
-still gets one print per capture, not one per person.
+(fine at booth volume); a group still gets one print per capture, not one
+per person.
 
 **Files touched:** `booth/public/sage-oak-park/index.html`,
 `booth/test-worker.mjs`, `booth/README.md`, `docs/CHANGELOG.md`.

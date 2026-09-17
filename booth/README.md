@@ -53,8 +53,10 @@ More parents than teachers, so: the role pills are Parent, Teacher, Student
 with Parent first; `@gmail.com` / `@outlook.com` / `@yahoo.com` are one-tap
 chips on the email field (a chip replaces whatever follows the `@`); the email
 field carries a no-spam line; the phone field is optional and says it is only
-for texting the photo. Print is the first delivery card. Consent copy speaks
-to a parent about their student. No em dashes anywhere a family reads.
+for texting the photo. Print is the first delivery card. There is no consent
+checkbox (Roman 2026-09-17: "they consent by coming to us"); every submission
+carries `aplus_marketing_consent: true`, and the no-spam line under the email
+field is the acknowledgment. No em dashes anywhere a family reads.
 Under the family chips, a full-width "Sage Oak staff: + @sageoak.education"
 bar fills the school domain for teachers (`sageoak.education` is the verified
 Sage Oak domain in `ops/hubspot-schema/school-aliases.yml`; a test pins it).
@@ -68,8 +70,8 @@ page posts `/submit` once per person with the same photo, so each gets their
 own HubSpot contact, tag, role, persona, seat and email. Texts go only to the
 people who gave a phone, and "Text it" needs at least one phone in the group.
 The same email cannot be added twice; idle reset clears the group. The Worker
-is unchanged. Trade-offs: the photo is archived once per person, the consent
-box is per person, and a group still gets one print per capture.
+is unchanged. Trade-offs: the photo is archived once per person, and a group
+still gets one print per capture.
 
 The event name, card header, banner choices and the partner logo (Sage Oak,
 drawn on the card and the attract screen) are all in

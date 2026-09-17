@@ -268,8 +268,10 @@ t("group photos: add-a-person on the form, one /submit per person", () => {
   assert.ok(/state\.people=\[\]; renderPeople\(\);/.test(PARK_HTML), "idle reset clears the group");
   assert.ok(/state\.people\.some\(p=>p\.email===email\)/.test(PARK_HTML), "same email is not added twice");
 });
-t("no-spam line and a phone field", () => {
+t("no-spam line and a phone field, no consent checkbox", () => {
   assert.ok(/We will not spam you/.test(PARK_HTML));
+  assert.ok(!PARK_HTML.includes('id="f-consent"'), "consent is implied by coming to the booth (Roman 2026-09-17)");
+  assert.ok(/marketingConsent:true/.test(PARK_HTML), "every submission carries consent");
   assert.ok(PARK_HTML.includes('id="f-phone"'));
 });
 t("no em dashes or double hyphens in the family-facing copy", () => {

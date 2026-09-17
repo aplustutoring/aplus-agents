@@ -210,8 +210,6 @@
     font-size:15px;font-weight:600;line-height:1.35;color:var(--ink);
   }
   .no-spam strong{font-weight:800;}
-  .consent{display:flex;gap:14px;align-items:flex-start;font-size:16px;font-weight:600;color:var(--oak-mid);line-height:1.4;margin-top:4px;}
-  .consent input{width:26px;height:26px;margin-top:2px;flex-shrink:0;}
   #form-error{color:#A33B2E;font-weight:800;font-size:16px;display:none;text-align:center;}
 
   /* ---------- Delivery ---------- */
@@ -364,10 +362,6 @@ const CONFIG = {
         <div class="role-pill" data-role="student">Student</div>
       </div>
     </div>
-    <label class="consent">
-      <input type="checkbox" id="f-consent">
-      <span>Send my photo, and A+ Tutoring may reach out about tutoring for my student &#128248;</span>
-    </label>
     <div id="form-error"></div>
     <div class="form-actions">
       <button class="btn btn-add" type="button" id="btn-add-person">+ Add another person from this photo</button>
@@ -647,7 +641,9 @@ const CONFIG = {
       email,
       phone:$("f-phone").value.trim(),
       role:selectedRole,                        // internal VALUE, never the label
-      marketingConsent:$("f-consent").checked
+      // No checkbox (Roman 2026-09-17: "they consent by coming to us"). The
+      // no-spam line above the fields is the acknowledgment a family reads.
+      marketingConsent:true
     };
   }
   function clearPersonFields(){
