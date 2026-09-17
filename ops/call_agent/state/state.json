@@ -930,9 +930,10 @@
     415904689,
     415911487,
     415913553,
-    415913858
+    415913858,
+    415916539
   ],
-  "last_run_utc": "2026-09-16T23:52:32.751801+00:00",
+  "last_run_utc": "2026-09-17T00:02:43.023234+00:00",
   "pending_digest": [
     {
       "call_id": 415776377,
@@ -2020,6 +2021,61 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 415916539,
+      "number": "13106333955",
+      "time_pt": "4:55 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to a number that had left a missed call. The call went to an automated voicemail system and Paola left a brief message offering help and inviting a callback. No contact was made with a live person, and no details about the caller's needs are known.",
+        "caller_type": "other",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Watch for a return call or text from 310-633-9955 and connect them with the right team once they share what they need.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "We placed an outbound call to 310-633-9955 to return a missed call, but it went to an automated voicemail. Paola left a friendly message from A+ Tutoring asking how we can help. We have no name, no student info, and no context on why they called. If they call back, open with: 'Hi, this is A+ Tutoring returning your call \u2014 thanks for getting back to us. How can we help you today?' Then discover whether it's a family inquiry, school, or tutor applicant and route from there.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call reached voicemail only; no information gathered about who the contact is or their purpose, so status cannot be classified.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for a return call or text from 310-633-9955 and connect them with the right team once they share what they need.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
