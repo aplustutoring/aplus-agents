@@ -260,8 +260,18 @@ t("Sage Oak staff domain button sits below the family chips", () => {
   const aliases = readFileSync(join(ROOT, "ops/hubspot-schema/school-aliases.yml"), "utf8");
   assert.ok(/^\s*sageoak\.education:\s*Sage Oak/m.test(aliases), "sageoak.education is Sage Oak's verified domain");
 });
-t("no-spam line and a phone field", () => {
+t("group photos: add-a-person on the form, one /submit per person", () => {
+  assert.ok(PARK_HTML.includes('id="btn-add-person"'), "add button");
+  assert.ok(PARK_HTML.includes('id="people-strip"'), "chips strip");
+  assert.ok(/state\.people\.map\(person => fetch\(CONFIG\.WORKER_URL/.test(PARK_HTML), "one POST per person");
+  assert.ok(/sendText:wantsText && !!person\.phone/.test(PARK_HTML), "text only to people with a phone");
+  assert.ok(/state\.people=\[\]; renderPeople\(\);/.test(PARK_HTML), "idle reset clears the group");
+  assert.ok(/state\.people\.some\(p=>p\.email===email\)/.test(PARK_HTML), "same email is not added twice");
+});
+t("no-spam line and a phone field, no consent checkbox", () => {
   assert.ok(/We will not spam you/.test(PARK_HTML));
+  assert.ok(!PARK_HTML.includes('id="f-consent"'), "consent is implied by coming to the booth (Roman 2026-09-17)");
+  assert.ok(/marketingConsent:true/.test(PARK_HTML), "every submission carries consent");
   assert.ok(PARK_HTML.includes('id="f-phone"'));
 });
 t("no em dashes or double hyphens in the family-facing copy", () => {
