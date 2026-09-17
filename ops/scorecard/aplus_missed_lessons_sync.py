@@ -228,6 +228,28 @@ def fetch_student_contact_info(student_ids):
 # ─────────────────────────────────────────────
 MONDAY_URL = "https://api.monday.com/v2"
 
+class MondayError(RuntimeError):
+    """Monday answered HTTP 200 with the refusal in the body. NOT a write that landed."""
+
+
+# Same trap as aplus_weekly_sync.py: Monday reports a refused call as HTTP 200
+# with an `errors` array, so reading only ["data"] makes a thrown-away write
+# look successful. Raise instead, and let the caller decide.
+RETRYABLE_ERRORS = ("complexity", "rate limit", "too many requests",
+                    "budget exhausted", "throttled")
+
+
+def monday_errors(body):
+    """Every error string in a Monday response body; [] when the call succeeded."""
+    out = []
+    for e in (body.get("errors") or []):
+        out.append(str(e.get("message") if isinstance(e, dict) else e))
+    for key in ("error_message", "error_code"):
+        if body.get(key):
+            out.append(str(body[key]))
+    return out
+
+
 def monday_query(query, variables=None):
     headers = {
         "Authorization": MONDAY_API_KEY,
@@ -238,7 +260,17 @@ def monday_query(query, variables=None):
         try:
             r = requests.post(MONDAY_URL, headers=headers, json=payload, timeout=60)
             r.raise_for_status()
-            return r.json()
+            body = r.json()
+            errs = monday_errors(body)
+            if errs:
+                joined = "; ".join(errs)
+                if attempt < 2 and any(k in joined.lower() for k in RETRYABLE_ERRORS):
+                    wait = 5 * (attempt + 1)
+                    print(f"      \u23f3 Monday.com {joined[:70]}, retrying in {wait}s...")
+                    time.sleep(wait)
+                    continue
+                raise MondayError(joined)
+            return body
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
             if attempt < 2:
                 wait = 5 * (attempt + 1)
