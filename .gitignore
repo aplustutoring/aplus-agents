@@ -49,3 +49,6 @@ ops/scorecard/.env
 
 # Blue Ridge booth Pages upload dir, built by booth/blue-ridge/pages-dist.sh
 booth/blue-ridge/.pages-dist/
+
+# Wrangler local build/dev cache (created by `wrangler dev` / `wrangler deploy`)
+.wrangler/

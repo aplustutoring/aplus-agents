@@ -7,6 +7,55 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — Fleet map catch-up: ten unregistered agents registered, docs regenerated, checkout synced
+
+**What changed** (`registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
+`ops/fleet-health/registry_check.py`, `.gitignore`):
+
+- **Ten agents registered** that were live on disk with no `registry.yml`
+  entry: `tw-invoice-due-sync` (weekday 6 AM cron, writes `invoice_due_date`
+  on HubSpot deals with `--apply` on every scheduled run), `ticket-reasoner`,
+  `email-backfill-deal-props`, `tutor-roster-check`,
+  `campaign-revenue-report`, `automation-audit`, `claude-code-action`
+  (`claude.yml`), `booth-deploy`, and two Cloudflare Workers:
+  `blue-ridge-booth` and `delilah-booth`. Registry now holds 62 agents across
+  13 engines; `registry_check.py` exits 0 ("every workflow is registered and
+  every entry resolves").
+- **`local` is a valid runtime** in `registry_check.py` (a laptop-run script;
+  still requires `source:`). `teacher-outreach-2026-09` already said
+  `runtime: local` and was failing the check for it.
+- **`docs/FLEET.md` regenerated** from the registry (the handoff brief meant
+  to be pasted into another AI or handed to a new person).
+- **`ARCHITECTURE.md`**: engine table extended from 8 rows to 14 (tutor
+  issues, cohort intake, charter analysis, events, relays); weak point 2
+  ("registration drifts") flipped from CLOSED back to REOPENED with the cause;
+  weak point 4 (screenshot relay) confirmed still open.
+- **`.gitignore`**: `.wrangler/` (Wrangler's local dev/build cache, appearing
+  at the repo root and under both relay Workers).
+
+**Why:** Roman, 2026-09-16: "I want it so that at the end of the day you can
+tell me everything is up to date, how it works, and I can ask another agent
+to analyze it." The session started from a checkout 51 commits behind main
+(49 of them bot state-persist commits) and found the fleet map behind the
+fleet. The registry's first rule is "if it's not here, it doesn't exist";
+the check that enforces it has run in `--warn` mode since 2026-08-20, and
+ten agents shipped past it. Nothing about how any agent runs was changed.
+
+**Verified:** last 200 Actions runs all green except two `cohort-intake`
+failures at 17:32 and 22:35 UTC, both before PR #240 (429 backoff) merged
+at 22:37; the run after it succeeded. Every weekly workflow ran green on
+Monday 2026-09-14. Twelve PRs open, none with failing checks.
+
+**Still human (proposed, not done):** drop `--warn` from the PR step of
+`fleet-docs.yml` so an unregistered workflow blocks the merge (the system
+fix for weak point 2). Flip `sage-oak-booth`, `eo-booth-agent` and
+`delilah-booth` to `deprecated` once their Workers are removed.
+
+**Files touched:** `registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
+`ops/fleet-health/registry_check.py`, `.gitignore`, `docs/CHANGELOG.md`.
+
+---
+
 ## 2026-09-16 — Blue Ridge booth: Pages deploys from an allowlist, staff domain button moved below the family chips
 
 **What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
