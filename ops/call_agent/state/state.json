@@ -956,9 +956,11 @@
     416236565,
     416247012,
     416247628,
-    416253896
+    416253896,
+    416259989,
+    416262452
   ],
-  "last_run_utc": "2026-09-17T18:28:56.384733+00:00",
+  "last_run_utc": "2026-09-17T18:38:50.583715+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1503,6 +1505,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416262452,
+      "number": "16262212281",
+      "time_pt": "11:36 AM",
+      "matched": true,
+      "contact_label": "Mabel Gloria",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Mabel Gloria regarding her prior interest in tutoring. The call went to voicemail and Paola left a brief message asking Mabel to share a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt to reach Mabel again if no callback within a few days to gather student details and discuss tutoring fit.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Mabel Gloria is a prospective family who previously expressed interest in tutoring (found us via a Facebook Group). Paola called today to follow up and reached voicemail \u2014 left a message asking Mabel to suggest a good time to connect. No student details on file yet (name, grade, school, subject, modality all unknown). Mabel now expects a callback opportunity on her end; if she doesn't respond in a few days, try her again. Suggested opener: 'Hi Mabel, this is [name] from A+ Tutoring following up on the message Paola left \u2014 we'd love to learn a bit about your family and how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail only; no live conversation occurred, so keep current ATTEMPTED_TO_CONTACT status until we actually connect.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola placed a follow-up call to Mabel and reached voicemail again; left a message asking Mabel to share a good time to connect about tutoring for her family.",
+          "what_we_can_do_to_help": "Continue follow-up attempts; when we reach Mabel, gather student details (name, grade, school, subject need, modality) so we can recommend a tutoring fit.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed a follow-up call to Mabel and reached voicemail again; left a message asking Mabel to share a good time to connect about tutoring for her family."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Continue follow-up attempts; when we reach Mabel, gather student details (name, grade, school, subject need, modality) so we can recommend a tutoring fit."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt to reach Mabel again if no callback within a few days to gather student details and discuss tutoring fit.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1519,6 +1587,11 @@
     {
       "number": "18188733963",
       "time_pt": "10:14 AM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "19092134868",
+      "time_pt": "11:31 AM",
       "reason": "hang-up"
     }
   ],
