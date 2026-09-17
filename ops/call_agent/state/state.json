@@ -945,9 +945,10 @@
     416188350,
     416192519,
     416200031,
-    416199989
+    416199989,
+    416201322
   ],
-  "last_run_utc": "2026-09-17T16:53:13.502290+00:00",
+  "last_run_utc": "2026-09-17T16:58:03.517485+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -1107,6 +1108,75 @@
           "Text Fabiola the email address where she should send the scanned homework packet for Angeline.",
           86868539,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416201322,
+      "number": "18587171695",
+      "time_pt": "9:53 AM",
+      "matched": true,
+      "contact_label": "Tina Kapadia",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Tina Kapadia regarding tutoring for her kindergartener Amaia. The call went to voicemail; Paola left a message asking Tina to confirm continued interest. No response or new information was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Tina's callback re: continued interest in in-person reading/writing tutoring for Amaia; if no response in a few days, try another follow-up (call/text/email).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound follow-up to Tina Kapadia (mom of kindergartener Amaia, Lupin Hill, ZIP 91367) went to voicemail. Paola left a message asking if Tina is still interested in in-person reading & writing tutoring. Prior context: Tina wants ~30-60 min once/week at home, in-person only (screen-time concerns), quoted $130/hr in-person with package discounts. Tina now expects us to be available when she calls back. If no reply in a few days, follow up again via text/email \u2014 open with: 'Hi Tina, this is Paola from A+ Tutoring following up on my voicemail about getting Amaia started with in-person reading & writing sessions \u2014 would love to find a time that works.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Left voicemail \u2014 no live conversation this call, so keep prior 'We Connected' status from the previous connect. Prospective family, not yet booked.",
+        "student_or_school_names_mentioned": [
+          "Amaia",
+          "Tina Kapadia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail; left message asking Tina to confirm continued interest in in-person reading/writing tutoring for Amaia. Awaiting callback.",
+          "what_we_can_do_to_help": "If no response in a few days, follow up via text and/or email referencing the voicemail and prior quote ($130/hr in-person) to help Tina lock in a first in-person session for Amaia.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail; left message asking Tina to confirm continued interest in in-person reading/writing tutoring for Amaia. Awaiting callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "If no response in a few days, follow up via text and/or email referencing the voicemail and prior quote ($130/hr in-person) to help Tina lock in a first in-person session for Amaia."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Tina's callback re: continued interest in in-person reading/writing tutoring for Amaia; if no response in a few days, try another follow-up (call/text/email).",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
