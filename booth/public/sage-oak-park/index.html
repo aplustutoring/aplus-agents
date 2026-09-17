@@ -177,6 +177,17 @@
     font-family:'Nunito Sans',sans-serif;font-weight:800;font-size:16px;cursor:pointer;
   }
   .domain-chip:active{transform:scale(.97);}
+  /* Sage Oak staff domain. Sits BELOW the family chips (same placement Roman
+     chose for Blue Ridge 2026-09-16): families are most of the park day
+     traffic, so their providers come first and the staff button is a
+     full-width oak bar at the bottom of the email block. */
+  .domain-btn{
+    display:block;width:100%;min-height:52px;margin-top:10px;padding:0 16px;
+    border-radius:14px;border:none;background:var(--oak-deep);color:var(--cream);
+    font-family:'Nunito Sans',sans-serif;font-weight:800;font-size:15px;cursor:pointer;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .domain-btn:active{transform:scale(.97);}
   .hint-sm{font-size:14px;font-weight:600;color:var(--oak-mid);margin-top:8px;}
   .no-spam{
     display:flex;align-items:center;gap:10px;margin-top:10px;padding:12px 14px;
@@ -318,6 +329,7 @@ const CONFIG = {
         <button type="button" class="domain-chip" data-domain="@yahoo.com">+ @yahoo.com</button>
       </div>
       <p class="hint-sm">Type the part before the @ and tap your provider.</p>
+      <button type="button" class="domain-btn" id="btn-domain" data-domain="@sageoak.education">Sage Oak staff: + @sageoak.education</button>
       <p class="no-spam">
         <span aria-hidden="true">&#128274;</span>
         <span><strong>We will not spam you.</strong> We use your email to send your photo and the A+ Tutoring info you asked for. We never sell or share your info, and you can unsubscribe any time.</span>
@@ -577,6 +589,7 @@ const CONFIG = {
   }
   document.querySelectorAll("#domain-chips .domain-chip").forEach(chip =>
     chip.addEventListener("click", () => appendDomain(chip.dataset.domain)));
+  $("btn-domain").addEventListener("click", () => appendDomain($("btn-domain").dataset.domain));
 
   // ---------- Form ----------
   let selectedRole=null;
