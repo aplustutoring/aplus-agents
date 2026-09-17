@@ -941,10 +941,85 @@
     416157633,
     416169145,
     416183091,
-    416182438
+    416182438,
+    416188350
   ],
-  "last_run_utc": "2026-09-17T16:30:14.463503+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-17T16:38:26.485451+00:00",
+  "pending_digest": [
+    {
+      "call_id": 416188350,
+      "number": "19493553715",
+      "time_pt": "9:31 AM",
+      "matched": true,
+      "contact_label": "Krista Camacho",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call from Paola at A+ Tutoring to Krista Camacho, a charter school TOR/EF contact, following up on an email received that morning about a student named Maddie. Call went to voicemail; Paola left a message asking Krista to call back to discuss Maddie's needs and any suggestions Krista has. No connection made yet.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Krista Camacho to discuss Maddie's tutoring needs and Krista's suggestions",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Krista Camacho (charter school TOR/EF) following up on an email Krista sent this morning about a student named Maddie. Krista expects a callback to discuss Maddie's needs and hear Krista's suggestions for support. Open with: 'Hi Krista, this is [name] from A+ Tutoring following up on Paola's voicemail and your email this morning about Maddie \u2014 I'd love to hear more about what she needs and any thoughts you have on how we can help.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation. Krista is already correctly categorized as Charter School Teacher TOR/EF.",
+        "student_or_school_names_mentioned": [
+          "Maddie"
+        ],
+        "record_updates": {
+          "whats_going_on": "Krista (charter TOR/EF) emailed A+ this morning about a student named Maddie. Paola called back to discuss Maddie's needs and any suggestions Krista has, but reached voicemail and left a message asking Krista to call back.",
+          "what_we_can_do_to_help": "Reconnect with Krista to learn about Maddie's grade, subject needs, and modality, then propose a tutoring plan that fits the charter's instructional funds process.",
+          "student_first_name": "Maddie",
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Krista (charter TOR/EF) emailed A+ this morning about a student named Maddie. Paola called back to discuss Maddie's needs and any suggestions Krista has, but reached voicemail and left a message asking Krista to call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Reconnect with Krista to learn about Maddie's grade, subject needs, and modality, then propose a tutoring plan that fits the charter's instructional funds process."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Maddie"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Krista Camacho to discuss Maddie's tutoring needs and Krista's suggestions",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
