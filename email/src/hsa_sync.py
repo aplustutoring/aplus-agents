@@ -59,6 +59,18 @@ def _due_ms(hours: float = 8) -> int:
     return int(add_business_hours(now_la(), hours).timestamp() * 1000)
 
 
+def _invoice_owner(p: dict) -> tuple[str | None, str]:
+    """(HubSpot owner id, label) for the invoice/allocation tasks. Roman
+    2026-09-16: the SCHEDULERS create the Teachworks invoices, so the default
+    `invoice_owner: deal_owner` routes to whoever owns the deal (the group's
+    scheduler by parity). Any staff/role key still works for a different seat."""
+    who = str(_hc().get("invoice_owner") or "deal_owner")
+    if who == "deal_owner":
+        return (str(p.get("hubspot_owner_id") or "") or None), "deal_owner"
+    rec = staff(who) or {}
+    return (str(rec.get("hubspot_owner_id") or "") or None), who
+
+
 def _split_name(full: str) -> tuple[str, str]:
     parts = [x for x in (full or "").strip().split() if x]
     if not parts:
@@ -135,7 +147,7 @@ def _group_invoice_task(deal: dict, p: dict, record: dict) -> None:
         lines.append(f"  - {sp.get('dealname') or s.get('id')}: ${amt:,.2f} "
                      f"({sp.get('hsa_sessions') or '?'} sessions) {_deal_url(str(s.get('id')))}")
     sessions = (p.get("hsa_sessions") or "?")
-    owner = staff(hc.get("invoice_owner", "charter_admin"))
+    owner_id, owner_label = _invoice_owner(p)
     body = (f"IEM HSA group {group}: one flat invoice to IEM (Angie Covil, acovil@ieminc.org), "
             f"sent upfront. Total = sum of the {len(sibs)} sibling deal amounts = ${total:,.2f} "
             f"({sessions} sessions x $150).\n\nIn Teachworks:\n"
@@ -147,10 +159,10 @@ def _group_invoice_task(deal: dict, p: dict, record: dict) -> None:
             f"\n\nSlot: {p.get('hsa_slot') or '?'} from {p.get('hsa_start') or '?'}. "
             f"ES: {p.get('teacher_of_record_name') or '?'}.")
     hs.create_task(f"HSA group invoice — {group} (${total:,.2f}, {len(sibs)} students)", body,
-                   owner.get("hubspot_owner_id"), _due_ms(8), priority="HIGH")
+                   owner_id, _due_ms(8), priority="HIGH")
     audit.append({"message_id": key, "source": "hsa_sync", "action_taken": "hsa_group_invoice_task",
                   "group": group, "total": round(total, 2), "deal_ids": [str(s.get("id")) for s in sibs],
-                  "owner": hc.get("invoice_owner", "charter_admin")})
+                  "owner": owner_label, "owner_id": owner_id})
     record["hsa_group_invoice_task"] = group
     print(f"  🧾 HSA group invoice task for {group}: ${total:,.2f} over {len(sibs)} deal(s)")
 
@@ -193,7 +205,6 @@ def late_add_sweep() -> None:
         {"propertyName": hc.get("group_prop", "hsa_group"), "operator": "HAS_PROPERTY"},
     ], DEAL_PROPS)
     covered: dict[str, set[str] | None] = {}
-    owner = staff(hc.get("invoice_owner", "charter_admin"))
     made = 0
     for d in deals:
         did = str(d["id"])
@@ -217,11 +228,12 @@ def late_add_sweep() -> None:
                 f"for the group); the sibling deals were re-split.\n"
                 f"Slot: {p.get('hsa_slot') or '?'} from {p.get('hsa_start') or '?'}. "
                 f"ES: {p.get('teacher_of_record_name') or '?'}.\n{_deal_url(did)}")
+        owner_id, owner_label = _invoice_owner(p)
         hs.create_task(f"HSA late add — {student} joined {group}: set up service + allocation",
-                       body, owner.get("hubspot_owner_id"), _due_ms(8), priority="HIGH")
+                       body, owner_id, _due_ms(8), priority="HIGH")
         audit.append({"message_id": key, "source": "hsa_sync", "action_taken": "hsa_late_add_task",
                       "group": group, "deal_id": did, "student": student,
-                      "owner": hc.get("invoice_owner", "charter_admin")})
+                      "owner": owner_label, "owner_id": owner_id})
         made += 1
     if made:
         print(f"hsa late_add_sweep: {made} late-add task(s)")

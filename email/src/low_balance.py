@@ -53,6 +53,7 @@ from . import (audit, draft_feedback, gmail_client as gm, hubspot_client as hs,
 from .business_hours import add_business_hours, now_la
 from .config import DRY_RUN, RESEND_API_KEY, ROOT, cfg, staff
 from .gmail_client import _scrub_outbound
+from .names import first_name
 
 TEACHWORKS_DOMAIN = "teachworks.com"
 
@@ -324,16 +325,10 @@ def _today() -> date:
 
 
 def _first_name(full: str) -> str:
-    """Teachworks names people 'Last, First' (employee_name, student_name);
-    the 2026-09-09 replay texted a family about 'Torres,'. A comma means
-    last-first; otherwise the first token."""
-    full = (full or "").strip()
-    if not full:
-        return ""
-    if "," in full:
-        after = full.split(",", 1)[1].strip()
-        return after.split()[0].strip() if after else full.split(",")[0].strip()
-    return full.split()[0].strip(" ,")
+    """Kept as a name this module already uses; the definition now lives in
+    names.py so po_inbox and anything else share it. Duplicating it here is
+    what let the same "Last, First" bug ship again on 2026-09-16."""
+    return first_name(full)
 
 
 def _tw_recent(alert: dict, deal: dict | None) -> dict:

@@ -1334,7 +1334,10 @@ def test_schedule_stamped_from_upcoming_lessons(monkeypatch):
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
     po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-08"), [])
-    assert captured[0]["schedule_preferences"] == "Wednesdays 3:30 PM with Sarah Lee"
+    # FIRST NAME only in anything a family reads (Roman, LOCKED 2026-09-09).
+    # This assertion used to expect "Sarah Lee", which is why the surname was
+    # still in the text that reached Nikita Brixey on 2026-09-16.
+    assert captured[0]["schedule_preferences"] == "Wednesdays 3:30 PM with Sarah"
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
 
 
