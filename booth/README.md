@@ -16,7 +16,7 @@ never a new Worker with secrets to re-enter the morning of the event.
 | Event | Tag | Page | Served from |
 | --- | --- | --- | --- |
 | Sage Oak BTSC 2026 | `sage_oak_btsc_2026` | `index.html` | Cloudflare Pages `sage-oak-booth` (historical) |
-| Sage Oak Park Day 2026 (Ceja) | `sage_oak_park_2026` | `public/sage-oak-park/index.html` | the Worker itself via `[assets]`: https://sage-oak-booth.nameless-mountain-bafa.workers.dev/sage-oak-park/ |
+| Sage Oak Park Day 2026 | `sage_oak_park_2026` | `public/sage-oak-park/index.html` | the Worker itself via `[assets]`: https://sage-oak-booth.nameless-mountain-bafa.workers.dev/sage-oak-park/ |
 
 `GET /` on the Worker redirects to `/sage-oak-park/`, so the tablet can open the bare
 Worker URL. The page posts to `/submit` same-origin, so CORS never enters into

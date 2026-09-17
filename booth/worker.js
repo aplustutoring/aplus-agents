@@ -49,7 +49,7 @@ export const EVENTS = {
     logoUrl: "https://sage-oak-booth.pages.dev/logo.png",
     defaultRole: "teacher",
   },
-  // Sage Oak family park day (Ceja), 2026-09-18. Parents outnumber teachers.
+  // Sage Oak family park day, 2026-09-18. Parents outnumber teachers.
   sage_oak_park_2026: {
     name: "Sage Oak Park Day 2026",
     eyebrow: "SAGE OAK · PARK DAY 2026",

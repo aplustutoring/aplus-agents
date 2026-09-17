@@ -249,7 +249,7 @@ staging dir holding only the HTML and `_redirects`.
 **Files touched:** `docs/CHANGELOG.md` only.
 
 ---
-## 2026-09-17 — Sage Oak Park Day photo booth (Ceja): the Sage Oak Worker becomes the A+ photo booth, one row per event
+## 2026-09-17 — Sage Oak Park Day photo booth: the Sage Oak Worker becomes the A+ photo booth, one row per event
 
 **What changed** (`booth/`, `ops/hubspot-schema/properties.yml`, `registry.yml`):
 
@@ -282,7 +282,7 @@ staging dir holding only the HTML and `_redirects`.
   create-only, the tag rejection still captures the contact, CORS list, the
   root redirect, and the no-em-dash rule over the visible copy.
 
-**Why:** Roman, 2026-09-17: a Sage Oak booth at the park (Ceja) tomorrow, with
+**Why:** Roman, 2026-09-17: a Sage Oak booth at the park tomorrow, with
 the printer, like the BTSC conference booth, but parent-heavy and with the
 email chips. The
 Worker kept its name because renaming it means re-entering four secrets the
@@ -300,9 +300,9 @@ the domain, parent role, consent, "All 3" delivery; the POST carries
 `eventTag: sage_oak_park_2026`, `role: parent`, the framed JPEG, and the done
 screen shows the right message. No console errors.
 
-**Naming:** first cut said "Ceja Park Day"; Roman clarified it is a Sage Oak
-event at the park, so the tag, card, email, text and HubSpot option all say
-"Sage Oak Park Day 2026". To rename again: the `CONFIG` block in
+**Naming:** the first cut carried a name from a typo in the ask; Roman
+clarified it is a Sage Oak event at the park, so the tag, card, email, text
+and HubSpot option all say "Sage Oak Park Day 2026". To rename again: the `CONFIG` block in
 `public/sage-oak-park/index.html`, the `sage_oak_park_2026` row in `worker.js`,
 and the option label in properties.yml.
 
