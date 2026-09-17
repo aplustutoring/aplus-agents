@@ -389,6 +389,23 @@ on the sheet?" question), #244 `hsa_sync.late_add_sweep` raises ONE task to
 the invoice owner when a deal joins a group after its invoice task (Kath's
 G2 task listed two students; nothing told her about the third).
 
+**Invoices are the schedulers' (Roman, 18:45 PT):** `hsa.invoice_owner:
+deal_owner` (#247) routes the group invoice + late-add tasks to the group's
+scheduler by parity; the four tasks already on Kath were moved to Janelle
+(G1, G3) and Yolanda (G2, Aster).
+
+**FERPA pass (Roman, 19:00 PT):** (1) the Actions log is no longer a student
+roster: the dry-run plan, `--list` and refusal messages print first name +
+last initial + IEM id and never a grade, school, parent phone or email
+(`Row.student_short`, `plan_summary(redact=True)`); the full plan still goes
+to the seats' Slack DMs on execute. (2) The committed audit log never carries
+a raw phone or email again: `audit.append` masks `to`, `welcome_email_to`,
+`email`, `phone`, `parent_*` at the choke point ('…4845', 'r…@domain'), and
+one_to_few's send log does the same. Nothing in the fleet read those values
+back (dedupe keys on contact/deal ids); the sheet's "Welcome Sent" column
+now holds the send time. What was committed before today stays in git
+history; a history rewrite is a separate decision.
+
 **Decision-log entries still due (spec §9.4):** group-parity ownership,
 per-student deal + group invoice, max group 4, zaps retired.
 
