@@ -1,0 +1,1829 @@
+[
+ {
+  "id": "46244998699",
+  "subject": "school_partner \u2014 do-not-reply",
+  "category": "New Deal / PO",
+  "owner": "Danielle Brodetsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-06-25",
+  "age_days": 83,
+  "last_activity": "2026-09-14",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Stampli Notifications"
+  ],
+  "deals": []
+ },
+ {
+  "id": "46672153501",
+  "subject": "Omar \u2014 Business Dev",
+  "category": "General",
+  "owner": "Danielle Brodetsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-07-10",
+  "age_days": 68,
+  "last_activity": "2026-09-13",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Omar"
+  ],
+  "deals": []
+ },
+ {
+  "id": "46772286807",
+  "subject": "McCarthy, Tina \u2014 School Partner",
+  "category": "New Deal / PO",
+  "owner": "Danielle Brodetsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-07-15",
+  "age_days": 63,
+  "last_activity": "2026-09-13",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Tina McCarthy [Teacher of Record/EF/ES]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47417320746",
+  "subject": "Luis Ramirez",
+  "category": "Tutor Issue;FEATURE_REQUEST",
+  "owner": "Yolanda Rico",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-04",
+  "age_days": 43,
+  "last_activity": "2026-09-14",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Luis Ramirez [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47468348171",
+  "subject": "Quintanilla, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-05",
+  "age_days": 42,
+  "last_activity": "2026-08-05",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Mariena Quintanilla [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47469482590",
+  "subject": "Hitosis, Kath \u2014 Unknown",
+  "category": "General",
+  "owner": "Emily Shulman",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-08-07",
+  "age_days": 40,
+  "last_activity": "2026-08-26",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Kath Hitosis"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47510747775",
+  "subject": "Alexander Kush",
+  "category": "General",
+  "owner": "Janelle Alinea",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-09",
+  "age_days": 38,
+  "last_activity": "2026-08-26",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Alexander Kush [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47490390869",
+  "subject": "hello \u2014 Business Dev",
+  "category": "General",
+  "owner": "Danielle Brodetsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-11",
+  "age_days": 36,
+  "last_activity": "2026-08-29",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   ""
+  ],
+  "deals": []
+ },
+ {
+  "id": "47506569769",
+  "subject": "Service Desk, IT \u2014 Business Dev",
+  "category": "General",
+  "owner": "Danielle Brodetsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-11",
+  "age_days": 36,
+  "last_activity": "2026-08-14",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "IT Service Desk"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47486391181",
+  "subject": "Check in with `(725) 291-1288` \u2014 call 2026-08-11",
+  "category": "",
+  "owner": "Paola Sarmiento",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-08-11",
+  "age_days": 36,
+  "last_activity": "2026-08-26",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "47576668203",
+  "subject": "Calof, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-12",
+  "age_days": 35,
+  "last_activity": "2026-08-13",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47570632449",
+  "subject": "Lo, Ella \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-13",
+  "age_days": 35,
+  "last_activity": "2026-08-13",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Dorothy Lo [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47757054622",
+  "subject": "Chandraker, Priyanka \u2014 Business Dev",
+  "category": "General",
+  "owner": "Danielle Brodetsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-17",
+  "age_days": 30,
+  "last_activity": "2026-08-26",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Priyanka Chandraker"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47828443785",
+  "subject": "Hope McLendon",
+  "category": "Billing / Refund",
+  "owner": "Yolanda Rico",
+  "stage": "Waiting on Family",
+  "pipeline": "0",
+  "created": "2026-08-19",
+  "age_days": 28,
+  "last_activity": "2026-09-14",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Hope Mclendon [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47835933229",
+  "subject": "Check in with `(478) 654-9001` \u2014 call 2026-08-19",
+  "category": "",
+  "owner": "Paola Sarmiento",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-08-19",
+  "age_days": 28,
+  "last_activity": "2026-08-26",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "47855982460",
+  "subject": "Ahn, Paxton \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-08-20",
+  "age_days": 27,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Zoe Lee [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47954521386",
+  "subject": "Keesee, Harper \u2014 School Partner",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-26",
+  "age_days": 21,
+  "last_activity": "2026-08-27",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Nikki Keesee [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "47978937698",
+  "subject": "Solis, Franny \u2014 School Partner",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-26",
+  "age_days": 21,
+  "last_activity": "2026-08-27",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Kati Solis [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48047124607",
+  "subject": "Quarry, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-28",
+  "age_days": 19,
+  "last_activity": "2026-08-29",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Adrienne Quarry"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48041343816",
+  "subject": "Stover, Ayla \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-08-28",
+  "age_days": 19,
+  "last_activity": "2026-08-29",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Shelly Stover"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48097696522",
+  "subject": "po_inbox review \u2014 9th Grade ELA Tutoring \u2014 PCI / Valley View Charter",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-08-31",
+  "age_days": 16,
+  "last_activity": "2026-08-31",
+  "priority": "HIGH",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48110285644",
+  "subject": "[Tutor Issue] Lesson notes not completed: Chaye Grable (wk of 2026-08-25)",
+  "category": "Tutor Issue",
+  "owner": "Kath Hitosis",
+  "stage": "Stalled Deals",
+  "pipeline": "0",
+  "created": "2026-08-31",
+  "age_days": 16,
+  "last_activity": "2026-09-14",
+  "priority": "LOW",
+  "source": "tutor_issues",
+  "contacts": [
+   "Chaye Grable [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48111866426",
+  "subject": "Trejo, Araceli \u2014 Cancellation",
+  "category": "Cancellation \u2013 one-time",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-01",
+  "age_days": 15,
+  "last_activity": "2026-09-02",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Evelyn Trejo [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48101234555",
+  "subject": "Radell, Justin \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-01",
+  "age_days": 15,
+  "last_activity": "2026-09-02",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Justin Radell [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48105293351",
+  "subject": "Hofstedt, Makayla \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-01",
+  "age_days": 15,
+  "last_activity": "2026-09-03",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Deborah Hoffstead"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48117670729",
+  "subject": "Powers, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-01",
+  "age_days": 15,
+  "last_activity": "2026-09-02",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48151039841",
+  "subject": "Castro, Kayla \u2014 Cancellation",
+  "category": "Cancellation \u2013 one-time",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-02",
+  "age_days": 14,
+  "last_activity": "2026-09-03",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48136948495",
+  "subject": "Zimmerman, Evie \u2014 Cancellation",
+  "category": "Cancellation \u2013 one-time",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-02",
+  "age_days": 14,
+  "last_activity": "2026-09-03",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Aaron Zimmerman [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48148568639",
+  "subject": "Massoudi, Mahfam \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-02",
+  "age_days": 14,
+  "last_activity": "2026-09-03",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Mahfam Mohseni [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48190427161",
+  "subject": "Jones, Gwendolyn \u2014 Scheduling",
+  "category": "General",
+  "owner": "Janelle Alinea",
+  "stage": "Waiting on Family",
+  "pipeline": "0",
+  "created": "2026-09-03",
+  "age_days": 13,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Michael Jones [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48184213775",
+  "subject": "Feinstein, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-03",
+  "age_days": 13,
+  "last_activity": "2026-09-04",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48271960995",
+  "subject": "daniellastein \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-05",
+  "age_days": 11,
+  "last_activity": "2026-09-07",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Daniella Stein [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48242080114",
+  "subject": "Smith, Valhalla \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-05",
+  "age_days": 11,
+  "last_activity": "2026-09-07",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48294665645",
+  "subject": "Liam Donohue - Tutor",
+  "category": "complaint;Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-07",
+  "age_days": 9,
+  "last_activity": "2026-09-14",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Jessie Drake [Family]",
+   "Liam Donohue [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48348010827",
+  "subject": "[Tutor Issue] Lesson notes not completed: Amanda Basinger (wk of 2026-09-02)",
+  "category": "Tutor Issue",
+  "owner": "Kath Hitosis",
+  "stage": "Stalled Deals",
+  "pipeline": "0",
+  "created": "2026-09-07",
+  "age_days": 9,
+  "last_activity": "2026-09-14",
+  "priority": "LOW",
+  "source": "tutor_issues",
+  "contacts": [
+   "Amanda Basinger [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48359358386",
+  "subject": "Albee, ling \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-08",
+  "age_days": 8,
+  "last_activity": "2026-09-10",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Albee Li [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48401770078",
+  "subject": "Li, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-08",
+  "age_days": 8,
+  "last_activity": "2026-09-09",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48408273173",
+  "subject": "po_inbox review \u2014 Parent contact info needed \u2014 Hazel Barnett (Heartl",
+  "category": "General",
+  "owner": "Danielle Brodetsky",
+  "stage": "Waiting on Family",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 8,
+  "last_activity": "2026-09-15",
+  "priority": "MEDIUM",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48402083110",
+  "subject": "Check in with Josh Kingman `(310) 800-6569` \u2014 call 2026-09-08",
+  "category": "",
+  "owner": "Paola Sarmiento",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-11",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Josh Kanan"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48457881095",
+  "subject": "po_inbox review \u2014 Joseph Cruz",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-09",
+  "priority": "HIGH",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48450516513",
+  "subject": "Fiore, Ariana \u2014 Scheduling",
+  "category": "General",
+  "owner": "Janelle Alinea",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Sarah Fiore [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48450981404",
+  "subject": "Strunk, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-10",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48437060176",
+  "subject": "po_inbox review \u2014 Joseph Cruz",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-09",
+  "priority": "HIGH",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48435208197",
+  "subject": "po_inbox review \u2014 Herrera Family",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-10",
+  "priority": "MEDIUM",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48439334918",
+  "subject": "jaclyn.bershadsky \u2014 Cancellation",
+  "category": "Cancellation \u2013 one-time",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-15",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Jaclyn Bershadsky"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48439949447",
+  "subject": "Marcano, Kingston \u2014 Unknown",
+  "category": "General",
+  "owner": "Yolanda Rico",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-09",
+  "age_days": 7,
+  "last_activity": "2026-09-10",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Alexa Marcano [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48438066047",
+  "subject": "Fred Smyser",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-10",
+  "age_days": 6,
+  "last_activity": "2026-09-10",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Fred Smyser [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48440739372",
+  "subject": "Garcia, Lucy \u2014 Unknown",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-10",
+  "age_days": 6,
+  "last_activity": "2026-09-10",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Lucy Garcia [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48458379560",
+  "subject": "Motiwalla, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-10",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Divyesh Motiwalla [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48468193151",
+  "subject": "Shahar, Noa \u2014 Unknown",
+  "category": "General",
+  "owner": "Yolanda Rico",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-10",
+  "age_days": 6,
+  "last_activity": "2026-09-14",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Karine Shahar [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48466644807",
+  "subject": "Low balance: Ember Seeley (iLead), 2.5 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Ember Seeley"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48451322982",
+  "subject": "Low balance: Zie Rojas (iLead), 4 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Jaylene Rojas [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48455311685",
+  "subject": "Low balance: Jil Beck (iLead), 0.25 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Evelin Jimenez [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48438889755",
+  "subject": "Low balance: Emmalyn Czaja (Heartland), 3.08 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Angela Czaja [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48467108753",
+  "subject": "Low balance: Mariah Rodriguez (iLead), 4 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Jessica Lujan [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48465719576",
+  "subject": "Low balance: Taylor Rodriguez (iLead), 4 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 6,
+  "last_activity": "2026-09-11",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Jessica Lujan [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48538819940",
+  "subject": "Noll, Darius \u2014 Cancellation",
+  "category": "Cancellation \u2013 one-time",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 5,
+  "last_activity": "2026-09-11",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48525370214",
+  "subject": "Manukyan, Alec \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 5,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Anni Manukyan [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48544243555",
+  "subject": "Goldzweig, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 5,
+  "last_activity": "2026-09-14",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48554535963",
+  "subject": "Ahmed, Skye \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 5,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Amira Ahmed [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48562595256",
+  "subject": "Zimmerman, Evie \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-11",
+  "age_days": 5,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Aaron Zimmerman [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48572791464",
+  "subject": "Yates, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-12",
+  "age_days": 5,
+  "last_activity": "2026-09-14",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48570169480",
+  "subject": "Werner, Iris \u2014 Study Plan",
+  "category": "General",
+  "owner": "Roman Slavinsky",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-12",
+  "age_days": 4,
+  "last_activity": "2026-09-15",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Jeff Werner [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48561993798",
+  "subject": "Jones, Gwendolyn \u2014 Payment Dispute",
+  "category": "Billing / Refund",
+  "owner": "Janelle Alinea",
+  "stage": "Waiting on Family",
+  "pipeline": "0",
+  "created": "2026-09-13",
+  "age_days": 3,
+  "last_activity": "2026-09-16",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Michael Jones [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48585871509",
+  "subject": "Halili, Izzy \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-13",
+  "age_days": 3,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Genevieve (NBCUniversal) Halili [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48571290722",
+  "subject": "voicemail \u2014 Unknown",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-14",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   ""
+  ],
+  "deals": []
+ },
+ {
+  "id": "48576545921",
+  "subject": "Hannah Thorn - Tutor",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-15",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Hannah Thorn [Tutors]",
+   "Sarah Fiore [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48566958607",
+  "subject": "[Tutor Issue] Lesson notes not completed: Amanda Basinger (wk of 2026-09-09)",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-14",
+  "priority": "LOW",
+  "source": "tutor_issues",
+  "contacts": [
+   "Amanda Basinger [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48585418412",
+  "subject": "[Tutor Issue] Lesson notes not completed: Stephanie Torres (wk of 2026-09-10)",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-14",
+  "priority": "LOW",
+  "source": "tutor_issues",
+  "contacts": [
+   "Stephanie Torres [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48553347001",
+  "subject": "[Tutor Issue] Missed lesson / late: Jonathan Szatkowski (wk of 2026-09-08)",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-14",
+  "priority": "HIGH",
+  "source": "tutor_issues",
+  "contacts": [
+   "Jonathan Szatkowski [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48558459283",
+  "subject": "[Tutor Issue] Lesson notes not completed: Jon Bax (wk of 2026-09-07)",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-14",
+  "priority": "LOW",
+  "source": "tutor_issues",
+  "contacts": [
+   "Jon Bax [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48573618306",
+  "subject": "Zamany, Kaya \u2014 Scheduling",
+  "category": "General",
+  "owner": "Yolanda Rico",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-15",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Maddy Zamany [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48584642985",
+  "subject": "Elenes, Adrian \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-14",
+  "age_days": 2,
+  "last_activity": "2026-09-14",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Lesly Elenes [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48578914609",
+  "subject": "[Tutor Issue] Lesson notes not completed: Jon Bax (wk of 2026-09-06)",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 2,
+  "last_activity": "2026-09-15",
+  "priority": "LOW",
+  "source": "tutor_issues",
+  "contacts": [
+   "Jon Bax [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48551496821",
+  "subject": "Shahar, Noa \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 2,
+  "last_activity": "2026-09-15",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Karine Shahar [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48575481669",
+  "subject": "Pruiett, Elizabeth \u2014 Reschedule",
+  "category": "Reschedule",
+  "owner": "Yolanda Rico",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 2,
+  "last_activity": "2026-09-15",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Elizabeth Pruiett [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48590929751",
+  "subject": "analogcustomdesign \u2014 Unknown",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-15",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   ""
+  ],
+  "deals": []
+ },
+ {
+  "id": "48573328150",
+  "subject": "Bershadsky, Jaclyn \u2014 Unknown",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-15",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Jaclyn Bershadsky"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48570543125",
+  "subject": "Low balance: Christian Martinez (Gorman), 3 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Carla Sagua [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48569307001",
+  "subject": "Low balance: Heaven Williams (iLead), 2.88 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Tamarra Williams [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48538394246",
+  "subject": "Noelle Mador - No TW Profile",
+  "category": "Tutor Issue",
+  "owner": "Kath Hitosis",
+  "stage": "Stalled Deals",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-15",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Noelle Mador [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48570546298",
+  "subject": "Zamany, Keelan \u2014 Scheduling",
+  "category": "General",
+  "owner": "Yolanda Rico",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Maddy Zamany [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48538299225",
+  "subject": "Stephanie Torres",
+  "category": "Tutor Issue",
+  "owner": "Mandy Thwaites",
+  "stage": "Working on it",
+  "pipeline": "0",
+  "created": "2026-09-15",
+  "age_days": 1,
+  "last_activity": "2026-09-15",
+  "priority": "HIGH",
+  "source": "",
+  "contacts": [
+   "Stephanie Torres [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48589537589",
+  "subject": "Low balance: Payton Curtis (Heartland), 4 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Anita Curtis [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48590009948",
+  "subject": "Elenes, Emma \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Lesly Elenes [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48590935299",
+  "subject": "Low balance: Malinally Mata-Villa (iLead), 4 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Abigail Villa [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48568537258",
+  "subject": "Gukasov, Seda \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Susanna Gukasov [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48599665334",
+  "subject": "Low balance: Andrew Gonzalez (iLead), 2.66 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Mary Gonzalez [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48573021349",
+  "subject": "Gukasov, Elona \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 1,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Susanna Gukasov [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48585453611",
+  "subject": "Saragoza, Easton \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Taryn Saragoza [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48578946703",
+  "subject": "Mador, Noelle \u2014 Recruitment",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "LOW",
+  "source": "",
+  "contacts": [
+   "Noelle Mador [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48564389246",
+  "subject": "Motiwalla, Autumn \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Divyesh Motiwalla [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48605887755",
+  "subject": "AR \u2014 Submitted for Payment - 54373",
+  "category": "Billing / Refund",
+  "owner": "Kath Hitosis",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "HIGH",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48623624491",
+  "subject": "Sagesse, Oneal \u2014 Unknown",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Oneal Sagesse"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48625327769",
+  "subject": "Chen, Ethan \u2014 Scheduling",
+  "category": "General",
+  "owner": "Janelle Alinea",
+  "stage": "Waiting on Family",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-17",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Jacky Chen"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48593912502",
+  "subject": "Low balance: Lena Boyden (Ocean Grove), 2.25 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Cindy Boyden [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48603876645",
+  "subject": "AR \u2014 Heartwood Charter School has sent a payment for $7",
+  "category": "Billing / Refund",
+  "owner": "Kath Hitosis",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "HIGH",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48619869788",
+  "subject": "new_po \u2014 Elite Academic Academy (PO 7014230392)",
+  "category": "New Deal / PO",
+  "owner": "Kath Hitosis",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48612891560",
+  "subject": "new_po \u2014 Elite Academic Academy (PO 7014228156)",
+  "category": "New Deal / PO",
+  "owner": "Kath Hitosis",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48609404845",
+  "subject": "new_po \u2014 Visions In Education (PO 1654551)",
+  "category": "New Deal / PO",
+  "owner": "Kath Hitosis",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48631413801",
+  "subject": "Elenes, Nathan \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Lesly Elenes [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48612429069",
+  "subject": "Escobar, Sophia \u2014 Scheduling",
+  "category": "General",
+  "owner": "Janelle Alinea",
+  "stage": "Waiting on Family",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Jeanette Escobar [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48616110605",
+  "subject": "new_po \u2014 Heartland Charter School (PO PF256910)",
+  "category": "New Deal / PO",
+  "owner": "Kath Hitosis",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "MEDIUM",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48621731091",
+  "subject": "COMPLIANCE \u2014 Re: FINAL REMINDER: SB 848 Mandated Reporter Train",
+  "category": "General",
+  "owner": "Danielle Brodetsky",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-16",
+  "age_days": 0,
+  "last_activity": "2026-09-16",
+  "priority": "HIGH",
+  "source": "email_engine",
+  "contacts": [],
+  "deals": []
+ },
+ {
+  "id": "48618634417",
+  "subject": "Mclendon, Luna \u2014 Low Balance",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-17",
+  "age_days": 0,
+  "last_activity": "2026-09-17",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Teachworks"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48607597191",
+  "subject": "Gharib, Liza \u2014 Unknown",
+  "category": "General",
+  "owner": "Mandy Thwaites",
+  "stage": "Stuck",
+  "pipeline": "0",
+  "created": "2026-09-17",
+  "age_days": 0,
+  "last_activity": "2026-09-17",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Oddai Gharib [Tutors]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48625644918",
+  "subject": "Low balance: Alexzander Gonzalez (iLead), 3.08 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-17",
+  "age_days": 0,
+  "last_activity": "2026-09-17",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Mary Gonzalez [Family]"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48608480363",
+  "subject": "Xu, Teachworks \u2014 Scheduling",
+  "category": "General",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-17",
+  "age_days": 0,
+  "last_activity": "2026-09-17",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Judy Xu"
+  ],
+  "deals": []
+ },
+ {
+  "id": "48631571830",
+  "subject": "Low balance: Yanisel Santamaria (Compass Charter Schools), 3.75 hours left",
+  "category": "New Deal / PO",
+  "owner": "Paola Sarmiento",
+  "stage": "Needs Approval",
+  "pipeline": "0",
+  "created": "2026-09-17",
+  "age_days": 0,
+  "last_activity": "2026-09-17",
+  "priority": "MEDIUM",
+  "source": "",
+  "contacts": [
+   "Dayren Santamaria [Family]"
+  ],
+  "deals": []
+ }
+]

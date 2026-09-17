@@ -686,6 +686,62 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-16 — Case engine: Tasks / Tickets / Pipelines rule applied fleet-wide (overnight build)
+
+**What (Roman's locked rule, docs/CASE-ENGINE.md):**
+- Three ticket pipelines in the portal: **Renewals** (935649887: Waiting on
+  family, Needs scheduler, Needs invoice, Renewed, Not renewing, No
+  response), **Support** (id 0 rebuilt in place: New, Waiting on us, Waiting
+  on tutor, Waiting on family, Resolved, Won't fix), **Tutor Accountability**
+  (935648438: New, Debrief, Probation, Evaluated, Resolved). Eight ticket
+  properties (case_key, case_client, funding_type, retention_risk,
+  support_category, linked_tutor_ticket_id, sla_due_at,
+  tutor_probation_until) + seven new tutor_issue_type options, synced.
+- `email/src/case_engine.py`: open_case (idempotent by case_key, contact +
+  deal associations, SLA clock), move / close / mark_risk, owner rules
+  (trial -> charter_sales; IEM HSA -> group parity from the deal's hsa_group;
+  else surname split; Support by category; Tutor -> operations), tutor-ticket
+  link, per-pipeline queries for the digests.
+- Low balance on the engine: every Teachworks alert is a Renewals case
+  (charter_only retired; funding_type charter / private_pay / trial); day-0
+  email reply-to the case owner; replies move the ticket to Needs scheduler
+  and DM the owner; teacher replies DM charter_sales; retention risk = later
+  of day 7 and 1 hour or less, flag + High, DM the owner only (Roman off
+  every case DM); Renewed waits in Needs invoice until Invoice # is on the
+  deal (needs_invoice_sweep); Stopped -> Not renewing; day 28 -> No
+  response. Private-pay / trial rail gated on private_pay.armed (false; needs
+  payment_links).
+- PO agent: clean PO -> Support ticket po_watch (owner charter_admin) that
+  closes on Invoice # (po_watch_sweep); review tickets carry
+  support_category po_exception. No more one-task-per-PO
+  (po_inbox.invoice_task.mode: ticket).
+- Task ceiling: hubspot_client.create_task refuses past
+  tasks.daily_ceiling_per_owner (10) with a DM to operations and an audit
+  record.
+- Digests: `.github/workflows/queue-digests.yml` runs the daily 9:00 AM PT
+  fleet recap (ops/fleet-health/daily_recap.py) and the Monday queue digest
+  (ops/queues/queue_digest.py) to #leadership-team.
+- Migration: `ops/queues/migration_table_2026_09_16.md` (109 open tickets
+  classified) + `ops/queues/migrate_tickets_2026_09_16.py --live` (one
+  ticket at a time, note on each). Execution needs a human run: the
+  auto-mode classifier blocks bulk HubSpot writes from the agent session.
+- roles.operations = mandy (was emily; emily keeps the new `escalation`
+  key). daily_summary stage labels updated.
+
+**Why:** Paola's 9/16 "different queues" point, generalised: one rule for
+what is a task, a ticket, a pipeline, applied to every workflow, with the
+schedulers owning renewals and Kath owning PO watch.
+
+**Files:** email/src/case_engine.py, email/src/low_balance.py,
+email/src/po_inbox.py, email/src/deal_sync.py, email/src/hubspot_client.py,
+email/src/daily_summary.py, email/config.yaml,
+ops/hubspot-schema/properties.yml, ops/queues/*, ops/fleet-health/daily_recap.py,
+.github/workflows/queue-digests.yml, email/tests/test_case_engine.py (+5),
+test_low_balance.py, test_po_inbox.py (+2), docs/CASE-ENGINE.md,
+docs/RETENTION-PROCESS.md, registry.yml.
+
+---
+
 ## 2026-09-11 — low_balance: the office writes (A+ Tutoring / support line), replies reach Paola every sweep
 
 **What:** the day-0 email now comes from "A+ Tutoring <admin@wetutorathome.com>"

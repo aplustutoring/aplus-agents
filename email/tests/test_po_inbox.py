@@ -9,6 +9,21 @@ from src.business_hours import LA
 
 
 @pytest.fixture(autouse=True)
+def _invoice_task_mode_task(monkeypatch):
+    # 2026-09-16: the live config opens a Support po_watch TICKET per clean PO
+    # (case engine). The legacy task path is still supported (mode: task) and
+    # is what these tests exercise; the ticket path has its own test below.
+    import copy
+    real = po.cfg
+
+    def _c():
+        c = copy.deepcopy(real())
+        c.setdefault("po_inbox", {}).setdefault("invoice_task", {})["mode"] = "task"
+        return c
+    monkeypatch.setattr(po, "cfg", _c)
+
+
+@pytest.fixture(autouse=True)
 def _reset_run_seq():
     # 'School N' numbering is RUN-scoped (module-level _RUN_SEQ) — clear it so
     # each test counts from its own mocked search results.
@@ -2498,3 +2513,48 @@ def test_three_sibling_po_stamps_each_deals_own_student(monkeypatch):
         "D1": ("Ezekiel", "Melara", "6"),
         "D2": ("Mario", "Melara", "9"),
         "D3": ("Vincent", "Melara", "7")}
+
+
+# ── 2026-09-16: PO watch is a Support ticket, not a task (case engine) ────────
+
+def test_clean_po_opens_a_po_watch_ticket_instead_of_a_task(monkeypatch):
+    import copy
+    from src import case_engine as ce
+    real = po.cfg
+
+    def _c():
+        c = copy.deepcopy(real())
+        c["po_inbox"]["invoice_task"]["mode"] = "ticket"
+        return c
+    monkeypatch.setattr(po, "cfg", _c)
+    opened, tasks = [], []
+    monkeypatch.setattr(po.hs, "_write", lambda m, p, b=None: {"id": "X"})
+    monkeypatch.setattr(po.hs, "create_task", lambda *a, **k: tasks.append(a) or {})
+    monkeypatch.setattr(ce, "open_case", lambda *a, **k: opened.append((a, k)) or {"id": "PW1"})
+    monkeypatch.setattr(ce, "owner_for_support", lambda cat, last="": ("charter_admin", "po_watch: charter_admin"))
+    notes = []
+    po._invoice_task("D50", _po(po_number="3114250000", po_month="2026-09", amount="300"), notes)
+    assert not tasks and opened
+    args, kw = opened[0]
+    assert args[0] == "po_inbox" and args[1] == "po_watch:3114250000" and args[2:4] == ("support", "new")
+    assert args[6] == "charter_admin" and kw["props"]["support_category"] == "po_watch" and kw["deal_id"] == "D50"
+    assert "3114250000" in args[4] and "closes on its own" in args[5]
+    assert notes and "PO watch ticket PW1" in notes[0]
+
+
+def test_po_watch_sweep_closes_when_invoice_is_on_the_deal(monkeypatch):
+    from src import case_engine as ce
+    closed = []
+    monkeypatch.setattr(ce, "open_tickets", lambda name, f=None, props=None: [{"id": "PW1"}, {"id": "PW2"}])
+    monkeypatch.setattr(ce, "close", lambda tid, name, outcome, note=None, props=None: closed.append((tid, outcome)))
+
+    def fake_get(path, params=None):
+        if "/tickets/PW1/associations/deals" in path:
+            return {"results": [{"toObjectId": 501}]}
+        if "/tickets/PW2/associations/deals" in path:
+            return {"results": [{"toObjectId": 502}]}
+        if path.endswith("/deals/501"):
+            return {"properties": {"invoice__": "TW-88", "dealname": "A - B - iLead 1 - 26/27"}}
+        return {"properties": {"invoice__": "", "dealname": "C - D"}}
+    monkeypatch.setattr(po.hs, "_get", fake_get)
+    assert po.po_watch_sweep() == 1 and closed == [("PW1", "resolved")]

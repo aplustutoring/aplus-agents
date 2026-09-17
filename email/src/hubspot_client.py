@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import requests
 
-from .config import DRY_RUN, HUBSPOT_PRIVATE_APP_TOKEN, cfg
+from .config import DRY_RUN, HUBSPOT_PRIVATE_APP_TOKEN, cfg, staff
 
 HS_BASE = "https://api.hubapi.com"
 
@@ -673,11 +673,57 @@ def create_ticket(subject: str, owner_id: str | None, stage_id: str,
         raise
 
 
+def _under_task_ceiling(owner_id: str, subject: str) -> bool:
+    """False when the owner already has `tasks.daily_ceiling_per_owner` tasks
+    created today (PT). Side effects on a breach: one audit record and one DM
+    to tasks.ceiling_notify naming the task that was not created."""
+    tc = cfg().get("tasks") or {}
+    ceiling = int(tc.get("daily_ceiling_per_owner") or 0)
+    if ceiling <= 0 or DRY_RUN:
+        return True
+    from datetime import datetime as _dt, time as _time
+    from .business_hours import now_la
+    start = _dt.combine(now_la().date(), _time.min, tzinfo=now_la().tzinfo)
+    try:
+        res = _write("POST", "/crm/v3/objects/tasks/search", {
+            "filterGroups": [{"filters": [
+                {"propertyName": "hubspot_owner_id", "operator": "EQ", "value": str(owner_id)},
+                {"propertyName": "hs_createdate", "operator": "GTE", "value": str(int(start.timestamp() * 1000))}]}],
+            "properties": ["hs_task_subject"], "limit": 1})
+        today = int(res.get("total") or 0) if isinstance(res, dict) else 0
+    except Exception as e:  # noqa: BLE001 — never block a task on a count failure
+        print(f"  ⚠️  task ceiling count failed (creating anyway): {e}")
+        return True
+    if today < ceiling:
+        return True
+    from . import audit as _audit, slack_client as _slack
+    _audit.append({"message_id": f"task-ceiling:{owner_id}:{start.date().isoformat()}:{subject[:60]}",
+                   "source": "hubspot_client", "action_taken": "task_ceiling_hit", "owner_id": str(owner_id),
+                   "subject": subject, "today": today, "ceiling": ceiling})
+    who = staff(tc.get("ceiling_notify") or "operations") or {}
+    if who.get("slack_user_id"):
+        try:
+            _slack.dm(who["slack_user_id"], f"🧱 Task ceiling: owner {owner_id} already has {today} tasks today "
+                                            f"(ceiling {ceiling}). Not created: \"{subject}\". If it matters, make it a ticket.")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  ceiling DM failed (non-fatal): {e}")
+    print(f"  🧱 task ceiling hit for owner {owner_id} ({today}/{ceiling}); not creating: {subject}")
+    return False
+
+
 def create_task(subject: str, body: str, owner_id: str | None, due_ms: int,
                 priority: str = "MEDIUM", contact_id: str | None = None) -> dict:
-    """Create a HubSpot Task (owner to-do with a due date + reminders)."""
+    """Create a HubSpot Task (owner to-do with a due date + reminders).
+
+    Roman's rule (2026-09-16): a task is one person, one thing, one date, and
+    machines create one only when they cannot do the thing themselves. The
+    ceiling (config tasks.daily_ceiling_per_owner) is enforced here, once, for
+    every machine path: past it the task is NOT created, the seat lead is DM'd
+    with what would have been created, and the audit log says so."""
     if priority == "URGENT":
         priority = "HIGH"  # tasks support LOW/MEDIUM/HIGH only
+    if owner_id and owner_id != "REPLACE" and not _under_task_ceiling(owner_id, subject):
+        return {"id": "CEILING", "properties": {"hs_task_subject": subject}}
     props = {
         "hs_task_subject": subject,
         "hs_task_body": body,

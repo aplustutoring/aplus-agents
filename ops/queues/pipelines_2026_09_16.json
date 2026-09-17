@@ -1,0 +1,97 @@
+{
+ "Support Pipeline": {
+  "id": "0",
+  "stages": {
+   "Waiting on us": {
+    "id": "131537027",
+    "closed": false
+   },
+   "New": {
+    "id": "1378066770",
+    "closed": false
+   },
+   "Waiting on family": {
+    "id": "2",
+    "closed": false
+   },
+   "Waiting on tutor": {
+    "id": "3",
+    "closed": false
+   },
+   "Won't fix": {
+    "id": "1439476620",
+    "closed": true
+   },
+   "Resolved": {
+    "id": "4",
+    "closed": true
+   },
+   "Stalled Deals": {
+    "id": "1263703060",
+    "closed": false
+   },
+   "Stuck": {
+    "id": "131537028",
+    "closed": false
+   },
+   "Charter School Documentation": {
+    "id": "943335739",
+    "closed": false
+   }
+  }
+ },
+ "Renewals": {
+  "id": "935649887",
+  "stages": {
+   "Waiting on family": {
+    "id": "1439476614",
+    "closed": false
+   },
+   "Needs scheduler": {
+    "id": "1439476615",
+    "closed": false
+   },
+   "Needs invoice": {
+    "id": "1439476616",
+    "closed": false
+   },
+   "Renewed": {
+    "id": "1439476617",
+    "closed": true
+   },
+   "Not renewing": {
+    "id": "1439476618",
+    "closed": true
+   },
+   "No response": {
+    "id": "1439476619",
+    "closed": true
+   }
+  }
+ },
+ "Tutor Accountability": {
+  "id": "935648438",
+  "stages": {
+   "New": {
+    "id": "1439554384",
+    "closed": false
+   },
+   "Debrief": {
+    "id": "1439554385",
+    "closed": false
+   },
+   "Probation": {
+    "id": "1439554386",
+    "closed": false
+   },
+   "Evaluated": {
+    "id": "1439554387",
+    "closed": false
+   },
+   "Resolved": {
+    "id": "1439554388",
+    "closed": true
+   }
+  }
+ }
+}

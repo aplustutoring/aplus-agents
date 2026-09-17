@@ -666,6 +666,55 @@ agents:
       Manual tools: FORCE_DEAL_ID / FORCE_CONTACT_EMAIL / FORCE_STUDENT_FIRST
       workflow inputs (one-deal real sync).
 
+  - id: case-engine
+    runtime: github-actions
+    engine: Email / inbox ops
+    name: Case engine (Tasks / Tickets / Pipelines rule; Renewals, Support, Tutor Accountability pipelines)
+    owner: roman@wetutorathome.com
+    status: active                     # BUILT 2026-09-16 overnight (Roman's locked rule); library, not a scheduled job
+    trigger:
+      type: library
+      source: >
+        Called by low_balance (Renewals), po_inbox (Support po_watch / po_exception) and,
+        once armed, tutor_issues (Tutor Accountability). Owner rules, stage ids and
+        service levels live in email/config.yaml case_engine:.
+    entrypoint: email/src/case_engine.py
+    reads:
+      - "HubSpot:tickets (by case_key; open per pipeline for sweeps and digests)"
+      - "HubSpot:deals (hsa_group for IEM parity; invoice__ for the Needs invoice / PO watch closers)"
+      - "HubSpot:contacts (open Tutor Accountability tickets on the family)"
+    writes:
+      - "HubSpot:tickets (open / move / close in the three pipelines; case_key, case_client, funding_type, retention_risk, support_category, linked_tutor_ticket_id, sla_due_at)"
+      - email/state/audit_log.jsonl (case_opened / case_moved)
+      - "Slack (DM to the case owner role only)"
+    depends_on: [email/config.yaml (case_engine, tasks blocks), docs/CASE-ENGINE.md]
+    notes: >
+      Retention risk = priority High + retention_risk flag, no stage. Task ceiling
+      (tasks.daily_ceiling_per_owner) enforced in hubspot_client.create_task for every
+      machine path. Tutor Accountability automation spec'd from the Escalation
+      Procedure p.1, not armed (p.2 unread).
+
+  - id: queue-digests
+    runtime: github-actions
+    engine: Fleet health
+    name: Monday queue digest + daily fleet recap (Leadership team channel)
+    owner: roman@wetutorathome.com
+    status: active                     # BUILT 2026-09-16
+    trigger:
+      type: schedule
+      cron: "0 16 * * * (recap, 9:00 AM PT) / 5 16 * * 1 (queues, Monday 9:05 AM PT)"
+      workflow: .github/workflows/queue-digests.yml
+    entrypoint: ops/queues/queue_digest.py, ops/fleet-health/daily_recap.py
+    reads:
+      - "HubSpot:tickets (open / closed per pipeline), HubSpot:tasks (overdue, machine-created)"
+      - "GitHub (merged PRs, failed runs) via gh"
+    writes:
+      - "Slack #leadership-team (C0AL86J4Y9Y)"
+    depends_on: [email/src/case_engine.py]
+    notes: >
+      Renewals adds the trailing 4-week renewal rate per family and the fleet-health
+      defect line (charter / private-pay renewal owned by charter_sales).
+
   - id: email-low-balance
     runtime: github-actions
     engine: Email / inbox ops
