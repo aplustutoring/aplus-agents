@@ -985,9 +985,13 @@
     416377642,
     416380456,
     416387533,
-    416387587
+    416387587,
+    416389875,
+    416390657,
+    416391028,
+    416391284
   ],
-  "last_run_utc": "2026-09-17T23:28:57.970679+00:00",
+  "last_run_utc": "2026-09-17T23:37:14.648551+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2451,6 +2455,127 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416389875,
+      "number": "18183121221",
+      "time_pt": "4:29 PM",
+      "matched": true,
+      "contact_label": "A Karmiryan",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to A. Karmiryan, who had previously left a missed call. The call went to voicemail and Paola left a message asking for a good time to connect. No details about the family, student, or tutoring need were shared.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another callback to A. Karmiryan at 818-312-1221 to connect about their tutoring inquiry",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "A. Karmiryan (818-312-1221) called us and we missed it. Paola returned the call and left a voicemail asking for a good time to connect \u2014 no details yet on student, grade, subject, or how they found us. Please try them again in the next day or two. Open with: 'Hi, this is [name] from A+ Tutoring following up on the message Paola left \u2014 we'd love to learn about who we might be helping and answer any questions.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Only reached voicemail on our outbound callback; we have not actually spoken with the contact yet, so there is no new information to classify them by.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound callback from Paola after their missed call to us; reached voicemail and left a message asking for a good time to connect. No details yet on family or student.",
+          "what_we_can_do_to_help": "Try the family again at 818-312-1221 to learn about the student's grade, subjects, and goals so we can recommend the right tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound callback from Paola after their missed call to us; reached voicemail and left a message asking for a good time to connect. No details yet on family or student."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Try the family again at 818-312-1221 to learn about the student's grade, subjects, and goals so we can recommend the right tutoring plan."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another callback to A. Karmiryan at 818-312-1221 to connect about their tutoring inquiry",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416391028,
+      "number": "18182888642",
+      "time_pt": "4:34 PM",
+      "matched": false,
+      "contact_label": null,
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound callback from Paola at A+ Tutoring to a number that had left a missed call. The line was answered by a screening service that asked her to record her name and reason. The intended recipient was unavailable, so Paola left a voicemail identifying herself, explaining she was returning their missed call, and asking them to share the best time to reach them. No contact was made and no information about the caller or their needs was gathered.",
+        "caller_type": "other",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for callback from the number (818) 288-8642; if no response in 1-2 business days, attempt another outreach or send a text.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola made an outbound callback to (818) 288-8642 (a missed call to A+). A call-screening service answered and the person was unavailable, so Paola left a voicemail identifying A+ Tutoring and asking for the best time to reach them. We have no name, student info, or reason for their original call yet. Expect them to call back or respond; if nothing in 1-2 business days, try another call or a text. Opener suggestion: \"Hi, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 we wanted to connect about your call to us. Is now a good time?\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Never reached a live person; unknown who the caller is or whether they are a prospective family, school, tutor, or other. Not enough information to classify.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Returned a missed call from this number. Reached a call-screening service; person was unavailable. Left a voicemail from Paola asking for the best time to reach them.",
+          "what_we_can_do_to_help": "Await callback; if no response in 1-2 business days, try another outreach (call or text) to learn what they need.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for callback from the number (818) 288-8642; if no response in 1-2 business days, attempt another outreach or send a text.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -2487,6 +2612,11 @@
     {
       "number": "17143537555",
       "time_pt": "3:40 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "18188613077",
+      "time_pt": "4:35 PM",
       "reason": "hang-up"
     }
   ],
