@@ -7,6 +7,59 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-18 — When a deal stops, its future work stops with it
+
+**What happened.** On 2026-09-15 Annie Wolfstein texted the sales line asking to
+book Bradley for Wednesday evenings. Paola called her back at 3:15 PM, the call
+logged positive, and the support line texted Bradley's father Nolan to confirm
+the schedule. Annie called in again seventeen minutes later and cancelled:
+Bradley had found a tutor at his own school. Someone moved the deal to Stopped
+and wrote nothing down.
+
+Three days later the record still held two `[Scheduling]` tasks telling a
+scheduler to find a tutor and text Nolan, three older follow-ups, and Nolan's
+unanswered confirm text. On 2026-09-18 that record was read as an urgent dropped
+ball and nearly acted on. The only place the cancellation existed was in one
+person's memory, and it took a Slack question to Paola to find it.
+
+**Why this is a system failure, not a forgetting.** The decision to stop was
+made in conversation and never written anywhere a system could read. The cancel
+call itself carries no summary because it had no recording, and the call agent
+correctly skips those under the two-party consent guardrail. So nothing
+downstream could know.
+
+**What changed** (`email/src/deal_closed.py`, `email/tests/test_deal_closed.py`,
+`email/config.yaml`, `.github/workflows/email-deal-stopped.yml`,
+`email/src/audit.py`): a sweep over deals sitting in a stop stage.
+
+- Tasks due on or after the day the deal stopped are closed. Tasks that predate
+  the decision are reported and left alone: overtaken by events is a guess, and
+  the Lia Beck rule says an agent does not close somebody's real follow-up on a
+  guess.
+- A stop with no reason on the record gets a note saying the reason is missing
+  and one DM to the deal owner asking what the family said. The agent never
+  invents a reason, and it does not read its own nag back as one.
+- One digest per run, never a message per item (the 2026-08-25 aging-sweep
+  near-miss fired 80 DMs in a dry run).
+- Stop stages are matched by stage LABEL across every pipeline, so a new
+  pipeline whose last column is called Stopped is covered without a code change,
+  and a portal rename cannot silently switch the sweep off. It does not rely on
+  `isClosed`, which has a known gap on the In-Person Stopped stage.
+
+Shipped OFF. `deal_closed.enabled: false`; the workflow runs and prints
+"disabled in config". Arm it by flipping the config after a dry run Roman has
+read, not by editing the workflow.
+
+**Not fixed here, and worth knowing:** nothing yet watches a question we asked a
+family that they never answered. Nolan's confirm text has sat unanswered since
+9/15 and no agent notices. `ops/unanswered` watches inbound asks to us, not our
+own unanswered asks to them.
+
+**Still manual:** the five stale Wolfstein tasks are still open. Closing them
+from this session was blocked by the write classifier, so they wait for the
+sweep to be armed or for a human.
+
+---
 ## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
 
 **Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and

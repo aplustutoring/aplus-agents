@@ -153,3 +153,13 @@ def write_cursor(data: dict) -> None:
         return
     STATE_DIR.mkdir(exist_ok=True)
     CURSOR.write_text(json.dumps(data, indent=2, default=str))
+
+
+def deals_closed_swept() -> set[str]:
+    """Deal ids the stopped-deal sweep has already handled, so a deal that stays
+    in a stop stage is not re-swept (and its owner not re-DMed) on every run."""
+    ids: set[str] = set()
+    for r in _iter_records():
+        if r.get("action_taken") == "deal_closed_swept" and r.get("deal_id"):
+            ids.add(str(r["deal_id"]))
+    return ids
