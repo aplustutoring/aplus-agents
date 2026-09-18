@@ -16,15 +16,23 @@
  * Does:
  *   1. Upserts the HubSpot contact (portal 6312752) by email and appends the
  *      event to aplus_event_tag (#AP032: append-only, never a flat write)
- *   2. Archives the photo in KV (permanent) and notes it on the contact
+ *   2. Archives the photo in KV (permanent) and notes it on the contact,
+ *      then mirrors it to a Google Drive folder in the background (Roman
+ *      2026-09-18: same as the Delilah booth, so the team opens one folder)
  *   3. If sendEmail: the framed photo via Resend
  *   4. If sendText: the framed photo via JustCall MMS
  *
+ * POST /drive-backfill[?prefix=YYYY-MM-DD]
+ *   Uploads every archived photo whose key starts with the prefix (default:
+ *   today in Los Angeles) and is not yet in Drive. Idempotent.
+ *
  * Secrets (wrangler secret put ...):
- *   HUBSPOT_TOKEN, RESEND_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET
+ *   HUBSPOT_TOKEN, RESEND_API_KEY, JUSTCALL_API_KEY, JUSTCALL_API_SECRET,
+ *   GOOGLE_SA_JSON (spotlight-watcher service account, one line)
  * Vars (wrangler.toml):
  *   RESEND_FROM, JUSTCALL_FROM, ALLOWED_ORIGIN (comma-separated list),
- *   OWNER_SALES, OWNER_CHARTER_SALES (HubSpot owner ids, by SEAT)
+ *   OWNER_SALES, OWNER_CHARTER_SALES (HubSpot owner ids, by SEAT),
+ *   DRIVE_FOLDER_ID (a folder INSIDE a Shared Drive; SAs have no My Drive quota)
  *
  * Property manifest doctrine: a new event's aplus_event_tag option must be in
  * properties.yml and synced by create_properties.py before go-live. If it is
@@ -83,7 +91,7 @@ const cors = (env, request) => ({
 });
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: cors(env, request) });
     }
@@ -103,6 +111,32 @@ export default {
       return new Response(img, {
         headers: { "Content-Type": "image/jpeg", "Cache-Control": "public, max-age=604800" },
       });
+    }
+
+    // Drive catch-up: photos archived before the mirror shipped, or while
+    // Drive was down. Date-prefixed keys only, so the MMS fallback copies
+    // (bare UUID keys, 7-day TTL) and the drive/ markers are never uploaded.
+    if (request.method === "POST" && url.pathname === "/drive-backfill") {
+      if (!env.DRIVE_FOLDER_ID || !env.GOOGLE_SA_JSON) {
+        return json({ error: "Drive mirror not configured" }, 503, env, request);
+      }
+      const want = url.searchParams.get("prefix");
+      const prefixes = want ? [want] : backfillPrefixes();
+      const report = { prefixes, uploaded: [], skipped: 0, failed: [] };
+      for (const prefix of prefixes) {
+        const list = await env.PHOTOS.list({ prefix, limit: 1000 });
+        for (const k of list.keys) {
+          if (!/^\d{4}-\d{2}-\d{2}-/.test(k.name)) continue;
+          if (await env.PHOTOS.get(`drive/${k.name}`)) { report.skipped++; continue; }
+          try {
+            const id = await mirrorToDrive(env, k.name, k.metadata || {});
+            report.uploaded.push({ key: k.name, id });
+          } catch (e) {
+            report.failed.push({ key: k.name, error: String(e) });
+          }
+        }
+      }
+      return json(report, 200, env, request);
     }
 
     if (request.method !== "POST" || url.pathname !== "/submit") {
@@ -157,9 +191,20 @@ export default {
       try {
         const bytes = jpegBytes(photo);
         const key = `${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID()}.jpg`;
-        await env.PHOTOS.put(key, bytes); // no TTL: permanent archive
+        const meta = {
+          name: `${String(firstName || "").trim()} ${String(lastName || "").trim()}`.trim().slice(0, 60),
+          at: new Date().toISOString(),
+          event: eventTag,
+        };
+        await env.PHOTOS.put(key, bytes, { metadata: meta }); // no TTL: permanent archive
         archiveUrl = `${url.origin}/photo/${key}`;
         results.archive = { url: archiveUrl };
+        // Drive mirror in the background: the family is already looking at
+        // the done screen, and a Drive outage must never cost them the photo.
+        if (env.DRIVE_FOLDER_ID && env.GOOGLE_SA_JSON) {
+          const job = mirrorToDrive(env, key, meta, bytes).catch((e) => console.error("drive mirror", key, String(e)));
+          if (ctx?.waitUntil) ctx.waitUntil(job); else await job;
+        }
         if (results.hubspot?.id) {
           try {
             await logPhotoNote(env, results.hubspot.id, archiveUrl, { goal, delivery, event });
@@ -472,6 +517,82 @@ async function sendPhotoText(env, { phone, firstName, photo, archiveUrl, origin,
   });
   if (!res.ok) throw new Error(`JustCall ${res.status}: ${await res.text()}`);
   return { sent: true };
+}
+
+// ---------- Google Drive mirror ----------
+// Ported from booth/delilah/worker.js. Service-account JWT (RS256 via
+// WebCrypto) -> access token (cached in KV ~50 min) -> multipart upload into
+// DRIVE_FOLDER_ID, which must sit inside a Shared Drive. File names read like
+// "2026-09-18 14.05.12 Ari Cohen.jpg" in Los Angeles time; a photo archived
+// before the mirror existed (no metadata) keeps its KV key as the file name.
+export function laDate(d = new Date()) {
+  return d.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+}
+
+// KV keys are prefixed with the UTC date, so an evening photo in Los Angeles
+// sits under tomorrow's date. "Today" for the backfill is therefore both.
+export function backfillPrefixes(d = new Date()) {
+  return [...new Set([laDate(d), d.toISOString().slice(0, 10)])];
+}
+
+export function driveFileName(key, meta = {}) {
+  if (!meta.at && !meta.name) return key;
+  const at = meta.at ? new Date(meta.at) : new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const la = new Date(at.toLocaleString("en-US", { timeZone: "America/Los_Angeles" }));
+  const stamp = `${la.getFullYear()}-${pad(la.getMonth() + 1)}-${pad(la.getDate())} ${pad(la.getHours())}.${pad(la.getMinutes())}.${pad(la.getSeconds())}`;
+  const who = String(meta.name || "Guest").replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim() || "Guest";
+  return `${stamp} ${who}.jpg`;
+}
+
+async function mirrorToDrive(env, key, meta, bytes) {
+  if (!bytes) {
+    bytes = await env.PHOTOS.get(key, "arrayBuffer");
+    if (!bytes) throw new Error("archive object missing");
+  }
+  const token = await driveToken(env);
+  const boundary = "booth" + crypto.randomUUID();
+  const metaPart = JSON.stringify({ name: driveFileName(key, meta), parents: [env.DRIVE_FOLDER_ID] });
+  const enc = new TextEncoder();
+  const head = enc.encode(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metaPart}\r\n--${boundary}\r\nContent-Type: image/jpeg\r\n\r\n`);
+  const tail = enc.encode(`\r\n--${boundary}--`);
+  const body = new Uint8Array(head.length + bytes.byteLength + tail.length);
+  body.set(head, 0);
+  body.set(new Uint8Array(bytes), head.length);
+  body.set(tail, head.length + bytes.byteLength);
+  const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": `multipart/related; boundary=${boundary}` },
+    body,
+  });
+  if (!res.ok) throw new Error(`Drive upload ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const { id } = await res.json();
+  await env.PHOTOS.put(`drive/${key}`, id, { metadata: { fileId: id } });
+  return id;
+}
+
+async function driveToken(env) {
+  const cached = await env.PHOTOS.get("drive/_token");
+  if (cached) return cached;
+  const sa = JSON.parse(env.GOOGLE_SA_JSON);
+  const now = Math.floor(Date.now() / 1000);
+  const b64url = (s) => btoa(typeof s === "string" ? s : String.fromCharCode(...new Uint8Array(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const header = b64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
+  const claim = b64url(JSON.stringify({ iss: sa.client_email, scope: "https://www.googleapis.com/auth/drive", aud: "https://oauth2.googleapis.com/token", iat: now, exp: now + 3600 }));
+  const pem = sa.private_key.replace(/-----[A-Z ]+-----/g, "").replace(/\s+/g, "");
+  const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
+  const cryptoKey = await crypto.subtle.importKey("pkcs8", der, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, new TextEncoder().encode(`${header}.${claim}`));
+  const jwt = `${header}.${claim}.${b64url(sig)}`;
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=${encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer")}&assertion=${jwt}`,
+  });
+  if (!res.ok) throw new Error(`Google token ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const { access_token } = await res.json();
+  await env.PHOTOS.put("drive/_token", access_token, { expirationTtl: 3000 });
+  return access_token;
 }
 
 function escapeHtml(s) {

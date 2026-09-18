@@ -6,9 +6,24 @@ justcall:
   # number — the main A+ line. This is a list so more lines can be added later
   # without code changes, but before adding a number confirm its recording
   # disclosure is in place (see README — CA two-party consent).
+  # Roman 2026-09-16: "i want all of our lines transcribed." Recording
+  # disclosure on the added lines is his call and he has made it; the
+  # require_recording guardrail below still means an unrecorded call is never
+  # transcribed, whatever line it came in on.
+  #
+  # Why it mattered: a parent called this company twice on 2026-08-28, spoke
+  # to Roman for 3m43s and 37s about their son's PSAT prep, and then texted
+  # 18 days later opening "Hey Roman". There was no HubSpot record of any of
+  # it, because inbound calls on his line were not monitored. Over 30 days
+  # that blind spot covered 41 answered inbound calls, 25 of them on the
+  # sales line.
   monitored_numbers:
     - "+18188506284"        # Main A+ line (IVR announces recording)
-    - "+18188691627"        # Customer support line (recording disclosure confirmed by Roman 2026-07-20)
+    - "+18188691627"        # Customer support line (disclosure confirmed by Roman 2026-07-20)
+    - "+18185736644"        # Sales line — 25 answered inbound calls/month, previously unseen
+    - "+18185736293"        # Roman's line — where the PSAT parent called
+    - "+18888697637"
+    - "+13235150123"
 
   # Consent guardrail: calls with no recording are never transcribed or
   # summarized — they are skipped and counted in the digest. Keep true.
@@ -85,9 +100,43 @@ claude:
   # (truncation is noted in the summary metadata + digest line).
   max_transcript_chars: 50000
 
+# Spam gate (Roman 2026-09-16: "we get a bunch of spam, you gotta be able to
+# filter numbers some how"). Applied to ANSWERED inbound calls before any
+# transcription, HubSpot write or contact creation.
+#
+# Built from 30 days of real traffic rather than guessed. Of 362 inbound
+# calls, 166 were "abandoned" (hung up in the IVR — the robocall signature)
+# and are excluded already by process_call_types. Of the 132 answered ones,
+# junk has one clear shape: SHORT and no caller-ID name. Every call this gate
+# drops in that window was under 20 seconds with a blank caller-ID, and the
+# longest was 18s. Real conversations look nothing like it: of the 58 answered
+# calls over three minutes, 52 carried a human-looking name.
+#
+# All THREE conditions must hold before a call is dropped, so a short call
+# from a known family survives, and a long call from a blank caller-ID
+# survives. Junk has to look like junk on every axis.
+spam_gate:
+  enabled: true
+  min_seconds: 20          # simulated: drops 18 of 132, none longer than 18s
+  # A caller-ID is "not human-looking" when it is blank, a telco generic
+  # ("Wireless Caller"), JustCall's "New JustCall Contact" placeholder, or a
+  # place-plus-state string ("Sherman Oaks Ca"). Shared with the CallRail
+  # shell detector already in this file.
+  require_unknown_to_hubspot: true    # a known family is never dropped
+  # Dropped calls are still counted in the daily digest, so a filter that
+  # starts eating real calls is visible rather than silent.
+
 hubspot:
-  # V1 never auto-creates contacts. Unmatched calls go to the digest for triage.
-  auto_create_contacts: false
+  # Roman 2026-09-16. A caller who talks to us and has no contact record
+  # leaves no trace at all: the PSAT parent spoke to Roman for 3m43s and was
+  # still a stranger 18 days later, so his follow-up text had nothing to
+  # attach to. Contacts are created ONLY for calls that clear the spam gate
+  # and produce a real transcript, which is a much narrower door than the
+  # CallRail auto-create that generated 838 junk contacts in July.
+  auto_create_contacts: true
+  # Lead status stamped on a contact this agent creates, so they are
+  # distinguishable from intake-captured records.
+  created_contact_lead_status: "NEW"
 
   # Owner IDs (HubSpot owner ids, not user ids) for task/ticket assignment.
   owners:
