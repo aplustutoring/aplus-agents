@@ -56,6 +56,35 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-18 — waiting.py 4.2: the echo rule was starved, and a timezone bug I made while fixing it
+
+Two more false breaches on the 4:52 PM tick, and only one needed new vocabulary.
+
+`Reacted 💖 to "Your words mean so much to me..."` was already handled in
+principle: the quoted part is our own message and the shape matcher read it
+correctly. It failed because the outbound index was built from the same narrow
+window as the inbound scan, so on a two hour look-back the message being quoted
+had been sent earlier that afternoon and was not in the index. The rule was
+right and starved. Our own side is now pulled over three days
+(`ECHO_LOOKBACK_HOURS`) whatever window the question asks about.
+
+`Well! Thank you.` was a genuine gap: a closing pleasantry that does not START
+the message. Allowed now only when the whole message is under 40 characters and
+contains no question mark, so "The tutor never showed up. Thanks for nothing."
+and "Thanks, but can we move Wednesday to 5?" both still count as messages.
+
+**A bug I introduced and caught in the same sitting.** The first version of the
+wide pull filtered inbound rows locally against a cutoff built from
+`datetime.now()`. JustCall rows carry the account's clock, so the comparison
+silently widened a two hour question by the UTC offset: the tick reported 34
+numbers over "2 hours" and surfaced an eight hour old message as if it were
+new. The window is back in the API's hands, where it always was, and our own
+words are pulled separately. A test now asserts that `newest_each_way` does no
+timestamp filtering of its own.
+
+Tests: 27, up from 20.
+
+---
 ## 2026-09-18 — waiting.py 4.1: tapbacks detected by echo, not by language
 
 Two hours after the Chinese tapback fix shipped, Hannah Thorn's phone sent the

@@ -43,6 +43,14 @@ message handed back to us. So it is matched against what we actually sent that
 number, and a real reply cannot be swallowed because a real reply is not a
 verbatim echo of our words.
 
+Version 4.2 (2026-09-18, same evening) stopped starving the echo rule. It was
+reading our own outbound from the same narrow window as the question, so on a
+two hour look-back `Reacted 💖 to "..."` had nothing to match against and was
+reported as a parent waiting two hours. Our side is now read over three days
+whatever the question asks about. Same evening, a second gap: a pleasantry that
+does not START the message ("Well! Thank you.") now counts when the whole
+message is short and asks nothing.
+
 Output splits three ways and the third matters: WAITING, answered, and CANNOT
 TELL when a number does not resolve to a contact. An unresolved number is a
 confident wrong answer, not a blank.
@@ -93,10 +101,17 @@ TAPBACK = re.compile(
 # can we move Wednesday to 5?" opens with thanks and is a real request; an
 # earlier version swallowed it, which is the direction of error that hides a
 # family instead of inventing one.
-CLOSING = re.compile(
-    r"^\s*(thank you|thanks|thx|ty|ok(ay)?|got it|great|perfect|wonderful|"
-    r"excellent|awesome|sounds good|will do|no problem|yes|yep|yup|you too|"
-    r"👍|😊|❤️|​👍​|​❤️​)", re.IGNORECASE)
+_CLOSING_WORDS = (r"(thank you|thanks|thx|ty|ok(ay)?|got it|great|perfect|"
+                  r"wonderful|excellent|awesome|sounds good|will do|no problem|"
+                  r"yes|yep|yup|you too|👍|😊|❤️|​👍​|​❤️​)")
+CLOSING = re.compile(r"^\s*" + _CLOSING_WORDS, re.IGNORECASE)
+# The same vocabulary, unanchored, for the short-message rule below. CLOSING
+# itself is anchored, so .search() on it would still only match the start.
+CLOSING_ANY = re.compile(_CLOSING_WORDS, re.IGNORECASE)
+
+# A message this short that contains a pleasantry and asks nothing is a
+# pleasantry wherever the words sit in it.
+_SHORT = 40
 
 # What may trail a pleasantry and still leave it a pleasantry.
 _TRAILING = " \t.!,…~-–—:;)\u200b👍😊❤️🙏😀🙂"
@@ -110,6 +125,14 @@ TAPBACK_SHAPE = re.compile(
     re.DOTALL)
 
 _ECHO_KEEP = 60          # characters of our message to compare; tapbacks truncate
+
+# How far back to read OUR OWN messages, whatever window the question asks
+# about. A tapback quotes something we said, and on 2026-09-18 a two hour
+# look-back could not recognise `Reacted 💖 to "..."` because the message being
+# quoted had been sent earlier that afternoon and was not in the index. The
+# echo rule was right and starved. Reading our side wide costs one more page of
+# JustCall and makes the rule work at any window size.
+ECHO_LOOKBACK_HOURS = 72
 
 INTERNAL_DOMAIN = "@wetutorathome.com"
 
@@ -141,6 +164,12 @@ def is_courtesy(body: str) -> bool:
         return True
     m = CLOSING.match(b)
     if not m:
+        # "Well! Thank you." is a closing pleasantry that does not open the
+        # message. Allowed only when the whole message is short and asks
+        # nothing, so "The tutor never showed up. Thanks for nothing." and
+        # "Thanks, but can we move Wednesday to 5?" both survive.
+        if "?" not in b and len(b) <= _SHORT and CLOSING_ANY.search(b):
+            return True
         return False
     rest = b[m.end():].strip(_TRAILING)
     if "?" in rest:
@@ -219,6 +248,11 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
 
     Calls count. Reading texts alone is what made three phoned-back families
     look neglected.
+
+    The window is whatever the caller already asked JustCall for. Do NOT filter
+    timestamps here: rows carry the account's clock and a local cutoff string
+    compared against them silently widened a two hour check by the UTC offset
+    on 2026-09-18.
     """
     newest_in, newest_out = {}, {}
     for t in texts:
@@ -233,9 +267,6 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
             if n not in newest_in or w > newest_in[n][0]:
                 newest_in[n] = (w, body, t.get("contact_name") or "")
         else:
-            # Keep what we SAID, not just when. A tapback quotes it back at us,
-            # and comparing against it is the only language-proof way to tell.
-            OUR_WORDS.setdefault(n, []).append(body)
             if n not in newest_out or w > newest_out[n]:
                 newest_out[n] = w
     for c in calls:
@@ -249,6 +280,26 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
         if n not in newest_out or w > newest_out[n]:
             newest_out[n] = w
     return newest_in, newest_out
+
+
+def load_our_words(texts: list) -> None:
+    """Fill OUR_WORDS from a WIDE pull of the feed.
+
+    Kept separate from the question's window on purpose. A tapback quotes
+    something we said, and on a two hour check the message being quoted is
+    usually older than that, so the echo rule starves and reports a reaction as
+    a parent waiting.
+    """
+    OUR_WORDS.clear()
+    for t in texts:
+        if str(t.get("direction", "")).lower().startswith("in"):
+            continue
+        n = digits(t.get("contact_number"))
+        if not n:
+            continue
+        info = t.get("sms_info") or {}
+        OUR_WORDS.setdefault(n, []).append(
+            ((info.get("body")) or "").replace("\n", " ").strip())
 
 
 def outbound_email_after(number: str, when: str, h: dict):
@@ -299,10 +350,16 @@ def outbound_email_after(number: str, when: str, h: dict):
 def main(hours: float = 14.0) -> int:
     """Prints the three buckets. Returns how many are past the one-hour bar."""
     jh, h = _headers()
-    since_s = (datetime.datetime.now()
-               - datetime.timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")
-    newest_in, newest_out = newest_each_way(pull("texts", jh, since_s),
-                                            pull("calls", jh, since_s))
+    now = datetime.datetime.now()
+    ask_from = (now - datetime.timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")
+    newest_in, newest_out = newest_each_way(pull("texts", jh, ask_from),
+                                            pull("calls", jh, ask_from))
+    # Our own side, read wider, so a tapback quoting something we said this
+    # morning is still recognisable on a two hour check.
+    wide_from = (now - datetime.timedelta(
+        hours=max(hours, ECHO_LOOKBACK_HOURS))).strftime("%Y-%m-%d %H:%M:%S")
+    load_our_words(pull("texts", jh, wide_from) if hours < ECHO_LOOKBACK_HOURS
+                   else pull("texts", jh, ask_from))
 
     waiting, courtesy = [], 0
     for n, (when, body, name) in sorted(newest_in.items(), key=lambda x: x[1][0]):
