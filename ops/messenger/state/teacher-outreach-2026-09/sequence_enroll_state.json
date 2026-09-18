@@ -1694,6 +1694,11 @@
    "seq": "310844702",
    "date": "2026-09-17",
    "email": "keri.lawson@theblueridgeacademy.com"
+  },
+  "245872935429": {
+   "seq": "310844702",
+   "date": "2026-09-18",
+   "email": "kelly.kingsbury@theblueridgeacademy.com"
   }
  },
  "runs": [
@@ -1852,6 +1857,26 @@
      "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
      "batch": 2,
      "enrolled": 2,
+     "failed": 0,
+     "remaining": 0
+    }
+   ]
+  },
+  {
+   "date": "2026-09-18",
+   "at": "2026-09-18T11:54:17.210069-07:00",
+   "summary": [
+    {
+     "sequence": "Teacher Outreach 26/27 - 1 Worked With Us",
+     "batch": 0,
+     "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    },
+    {
+     "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
+     "batch": 1,
+     "enrolled": 1,
      "failed": 0,
      "remaining": 0
     }
