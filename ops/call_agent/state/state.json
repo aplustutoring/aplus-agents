@@ -991,9 +991,10 @@
     416391028,
     416391284,
     416409073,
-    416408396
+    416408396,
+    416413348
   ],
-  "last_run_utc": "2026-09-18T00:48:19.370447+00:00",
+  "last_run_utc": "2026-09-18T01:05:08.439304+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2741,6 +2742,96 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416413348,
+      "number": "18186451510",
+      "time_pt": "5:55 PM",
+      "matched": true,
+      "contact_label": "Sheyna Ganzburg",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Sheyna Ganzburg, an existing A+ family, called to enroll her younger daughter Sarah (8th grade, pre-algebra) for tutoring in addition to her older daughter Chaya Tova who works with Theresa. Sheyna would like Sarah's sessions ideally back-to-back with Chaya's at 6pm with Theresa if she has availability, but is flexible on tutor. Yolanda confirmed she would add Sarah to the system, create a deal, and follow up via text.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add Sarah Ganzburg (8th grade, pre-algebra) to the system and create a new deal for her tutoring package.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Check Theresa's availability at 6pm to do a back-to-back session with Sarah after Chaya Tova's session; if unavailable, propose an alternate tutor.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Sheyna to confirm Sarah's enrollment, tutor assignment, and start day/time.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sheyna Ganzburg (existing family, warm and appreciative) called to enroll her younger daughter Sarah in 8th-grade pre-algebra tutoring, in addition to Chaya Tova who currently works with Theresa. Sheyna would love Sarah to be with Theresa in a back-to-back slot at 6pm (after Chaya's session), but she is flexible \u2014 if Theresa is unavailable at 6pm, another tutor is fine. She currently has the $700/8-hour package for Chaya and is open to keeping the same package structure for Sarah. Yolanda promised to add Sarah to the system, create a deal, and text Sheyna. Next step: confirm Theresa's 6pm availability, then text Sheyna with tutor + start day/time. Open with: \"Hi Sheyna, following up on getting Sarah set up \u2014 here's what we've got for her with Theresa (or [alt tutor]) at 6pm\u2026\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) calling to add a sibling to service; lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Chaya Tova Ganzburg",
+          "Sarah Ganzburg",
+          "Theresa"
+        ],
+        "record_updates": {
+          "whats_going_on": "Parent called to enroll younger daughter Sarah Ganzburg (8th grade, pre-algebra) in tutoring alongside older sister Chaya Tova. Sheyna would prefer Sarah be with Theresa in a back-to-back slot at 6pm (Sarah gets home at 5), but is flexible on tutor if Theresa is unavailable. Currently on the $700/8-hour package for Chaya and open to same structure for Sarah.",
+          "what_we_can_do_to_help": "Add Sarah to the system and create a new deal. Check Theresa's availability at 6pm for a back-to-back with Chaya; if unavailable, propose an alternate tutor. Text Sheyna to confirm tutor and start day/time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Parent called to enroll younger daughter Sarah Ganzburg (8th grade, pre-algebra) in tutoring alongside older sister Chaya Tova. Sheyna would prefer Sarah be with Theresa in a back-to-back slot at 6pm (Sarah gets home at 5), but is flexible on tutor if Theresa is unavailable. Currently on the $700/8-hour package for Chaya and open to same structure for Sarah."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Add Sarah to the system and create a new deal. Check Theresa's availability at 6pm for a back-to-back with Chaya; if unavailable, propose an alternate tutor. Text Sheyna to confirm tutor and start day/time."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add Sarah Ganzburg (8th grade, pre-algebra) to the system and create a new deal for her tutoring package.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Check Theresa's availability at 6pm to do a back-to-back session with Sarah after Chaya Tova's session; if unavailable, propose an alternate tutor.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Text Sheyna to confirm Sarah's enrollment, tutor assignment, and start day/time.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
