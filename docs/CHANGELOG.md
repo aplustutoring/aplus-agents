@@ -56,6 +56,41 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-18 — waiting.py v4: the checker stops inflating its own count
+
+**What changed** (`scripts/waiting.py`, `scripts/tests/test_waiting.py`): the
+script behind the one-hour acknowledgement rule gets its first tests, and two
+fixes for errors that both pushed the count UP. That direction matters: a
+checker that invents waiting families is one people stop reading, and this one
+reported the same two non-events as breaches on three consecutive ticks.
+
+- **Tapbacks arrive translated into the sender's language.** Judy Xu's iPhone
+  "liked" reaction came through as "赞了：" and never matched the English
+  courtesy list, so it aged past the bar and was reported twice as a parent
+  being ignored.
+- **The conference booth texts a photo to whoever is working the stand.** That
+  staff copy counted as a family waiting on us. Any number resolving to a
+  contact on our own domain is now excluded.
+
+**A third bug the tests caught before it shipped.** Folding tapbacks into the
+existing courtesy regex made it match any message merely STARTING with a
+pleasantry, so "Thanks, but can we move Wednesday to 5?" would have vanished
+from the count. That is the dangerous direction. The filter is now two rules: a
+tapback is a tapback whatever follows it, because what follows is our own quoted
+message, while a closing pleasantry only counts when the message stops there.
+
+Also: `.env` is found by walking up from the script, so it runs from a worktree
+as well as the main checkout, and the helpers moved out of module scope so they
+can be tested with no credentials present.
+
+**Why the tests exist at all.** This script has been wrong four times, each in a
+different direction, and every version looked obviously correct while it was
+lying. The docstring carries that history and the tests now pin it: a call back
+counts as an answer, an inbound call does not, the bar is sixty minutes, and an
+unparseable timestamp does not take the run down.
+
+
+---
 
 ## 2026-09-17 — ops/checkin: the quality check-in, measured first, then rebuilt
 
