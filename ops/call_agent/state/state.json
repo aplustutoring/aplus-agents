@@ -1011,9 +1011,13 @@
     416773217,
     416790981,
     416803219,
-    416805261
+    416805261,
+    416811482,
+    416811986,
+    416812924,
+    416812943
   ],
-  "last_run_utc": "2026-09-18T21:34:13.139045+00:00",
+  "last_run_utc": "2026-09-18T21:49:52.154973+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1893,6 +1897,195 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416811482,
+      "number": "16618784656",
+      "time_pt": "2:38 PM",
+      "matched": true,
+      "contact_label": "Lakaisha Moore",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Lakaisha Moore, a returning charter-school parent, called to re-enroll her twin daughters Kali and Morgan with A+ Tutoring. She initially requested Lisa Rose but Yolanda explained Lisa is pending charter certifications, so Lakaisha agreed to continue with Krista. They agreed on 30-minute sessions twice a week (Mon/Tue afternoons) per child, and Yolanda will submit a request to her charter teacher Desiree Doyle for approximately four weeks of tutoring (~$300/student). Lakaisha also asked about returning-customer discounts; Yolanda explained the referral program (30 min free per referral trial + 30 min if they enroll).",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Submit charter PO request to Desiree Doyle for twins Kali and Morgan \u2014 30-minute sessions, 2x/week (Mon/Tue afternoons), ~4 weeks of tutoring with Krista",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once PO comes in, send automated confirmation text to Lakaisha to confirm days/times and schedule sessions with Krista starting per PO date",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Check status of Lisa Rose's charter certifications so we know when she can take charter students again (family preferred her as a future option)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Returning charter family \u2014 Lakaisha Moore, warm and easy to work with. She wants to re-enroll her twin daughters Kali and Morgan (4th/5th grade, iLEAD) for 30-min sessions 2x/week on Mondays and Tuesdays, afternoons, with Krista. Their charter teacher is Desiree Doyle; each twin gets ~$300 (~4 weeks/4 hours). She originally asked for Lisa Rose but accepted Krista after we explained Lisa is pending charter certifications \u2014 flag Lisa as a future preference. Yolanda promised to submit the PO request to Desiree and told Lakaisha she'll get an automated text to confirm once the PO comes back; start date follows the PO. She asked about a returning-customer discount \u2014 we only offered the referral program (30 min free per referred trial + 30 min if they enroll). Open with: \"Hi Lakaisha, following up on the PO request we sent to Desiree for Kali and Morgan with Krista \u2014 wanted to let you know where it stands.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer in an OPEN_DEAL; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Kali Moore",
+          "Morgan Moore",
+          "iLEAD",
+          "Desiree Doyle",
+          "Krista",
+          "Lisa Rose"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning charter family \u2014 mom Lakaisha called to re-enroll twins Kali and Morgan. Wants 30-min sessions 2x/week (Mon/Tue afternoons) per child with Krista. Charter teacher is Desiree Doyle; ~$300/student covers about 4 weeks, then they'll pause and resubmit when funds refresh. Originally requested Lisa Rose but accepted Krista since Lisa is pending charter certifications.",
+          "what_we_can_do_to_help": "Submit PO request to Desiree Doyle for both twins with Krista, 30 min 2x/week Mon/Tue PM. Once PO returns, confirm schedule via automated text and start per PO date. Track Lisa Rose's charter certification status as a future preferred tutor for this family.",
+          "student_first_name": null,
+          "student_last_name": "Moore",
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning charter family \u2014 mom Lakaisha called to re-enroll twins Kali and Morgan. Wants 30-min sessions 2x/week (Mon/Tue afternoons) per child with Krista. Charter teacher is Desiree Doyle; ~$300/student covers about 4 weeks, then they'll pause and resubmit when funds refresh. Originally requested Lisa Rose but accepted Krista since Lisa is pending charter certifications."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Submit PO request to Desiree Doyle for both twins with Krista, 30 min 2x/week Mon/Tue PM. Once PO returns, confirm schedule via automated text and start per PO date. Track Lisa Rose's charter certification status as a future preferred tutor for this family."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Moore"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Submit charter PO request to Desiree Doyle for twins Kali and Morgan \u2014 30-minute sessions, 2x/week (Mon/Tue afternoons), ~4 weeks of tutoring with Krista",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Once PO comes in, send automated confirmation text to Lakaisha to confirm days/times and schedule sessions with Krista starting per PO date",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Check status of Lisa Rose's charter certifications so we know when she can take charter students again (family preferred her as a future option)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 416811986,
+      "number": "13236320815",
+      "time_pt": "2:39 PM",
+      "matched": true,
+      "contact_label": "Jeff Werner",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman Slavinski from A+ Tutoring returned Jeff Werner's call to discuss his daughter Iris's ISEE/private-school practice test analysis. Roman explained her scores: below-average in math, average elsewhere, with math being the primary concern; verbal can be improved via Greek/Latin roots, reading comprehension via deductive reasoning work. Jeff noted this was Iris's first practice test and she had food poisoning that week. The call cut out mid-conversation and Jeff asked Roman to call him back.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Call Jeff Werner back \u2014 call dropped mid-conversation while Roman was explaining the math section format; continue the discussion of Iris's practice test analysis and next steps for tutoring.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Investigate internally why prior emails from Jeff Werner were missed by the team (Roman already flagged this to Jeff and apologized).",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roman was on a callback with Jeff Werner (dad, warm/easygoing tone, was driving) about his daughter Iris's private-school entrance practice test analysis (she's a 6th grader being evaluated for incoming 7th grade). Roman had walked Jeff through his assessment: math is below average and the main concern; verbal and reading comp are in the average range and can be lifted with Greek/Latin roots work and deductive-reasoning practice. Jeff shared Iris had food poisoning (ER for fluids) the week she took the test, so the score may not fully reflect her ability. Roman had already apologized that earlier emails to us were missed and said he's investigating internally. The call cut out while Roman was starting to explain the math section format, and Jeff asked us to call him back. Open with: 'Hi Jeff, it's [name] from A+ \u2014 sorry we got cut off with Roman. He filled me in on where you left off with Iris's analysis; want to pick up where he was going on the math section and talk through what a tutoring plan would look like?' No pricing or plan has been quoted yet.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing open deal / active customer relationship (current_lead_status OPEN_DEAL); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Iris",
+          "Larchmont",
+          "LA SchoolScout",
+          "Sandy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Iris (6th grade, testing for incoming 7th at private schools) took her first ISEE-style practice test while recovering from food poisoning (was in ER for fluids days before). Per Roman's analysis: math is below average and the primary concern; verbal and reading comprehension are in the average range. Family working with Sandy at LA SchoolScout as their school consultant.",
+          "what_we_can_do_to_help": "Tutor Iris for private-school entrance testing: math foundations (fractions, decimals, percents, operations), verbal via Greek/Latin roots and prefixes, reading comprehension via deductive reasoning / author's-purpose work. Call dropped mid-conversation \u2014 Roman to call Jeff back to continue explaining the math section and outline a tutoring plan.",
+          "student_first_name": "Iris",
+          "student_last_name": null,
+          "grade_level": "6",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Iris (6th grade, testing for incoming 7th at private schools) took her first ISEE-style practice test while recovering from food poisoning (was in ER for fluids days before). Per Roman's analysis: math is below average and the primary concern; verbal and reading comprehension are in the average range. Family working with Sandy at LA SchoolScout as their school consultant."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Tutor Iris for private-school entrance testing: math foundations (fractions, decimals, percents, operations), verbal via Greek/Latin roots and prefixes, reading comprehension via deductive reasoning / author's-purpose work. Call dropped mid-conversation \u2014 Roman to call Jeff back to continue explaining the math section and outline a tutoring plan."
+        ],
+        [
+          "grade_level",
+          "5",
+          "6"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Jeff Werner back \u2014 call dropped mid-conversation while Roman was explaining the math section format; continue the discussion of Iris's practice test analysis and next steps for tutoring.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Investigate internally why prior emails from Jeff Werner were missed by the team (Roman already flagged this to Jeff and apologized).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
