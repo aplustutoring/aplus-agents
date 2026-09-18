@@ -1000,9 +1000,10 @@
     416690184,
     416703568,
     416707056,
-    416724091
+    416724091,
+    416739598
   ],
-  "last_run_utc": "2026-09-18T18:42:04.717163+00:00",
+  "last_run_utc": "2026-09-18T19:10:59.251578+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1375,6 +1376,84 @@
         ],
         [
           "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416739598,
+      "number": "18433687726",
+      "time_pt": "12:03 PM",
+      "matched": true,
+      "contact_label": "Hannah Thorn",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ called tutor Hannah Thorn because she appears to be missing/late for a session with student Angelo (scheduled either 11:30 or 2:30). Call went to Hannah's voicemail; Yolanda asked Hannah to reach out to the family and call A+ back.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Confirm with Angelo's family whether Hannah showed up for the session and whether it was the 11:30 or 2:30 slot",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Follow up with Hannah Thorn once she calls back to confirm she connected with Angelo's family",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Yolanda left a voicemail for tutor Hannah Thorn \u2014 she appears to be missing/late for a session today with student Angelo, and we weren't sure whether the session was at 11:30 or 2:30. Angelo's family reached out looking for her. Hannah is expected to call the family directly and then call A+ back. Please also check in with Angelo's family to confirm Hannah connected and the session happened. Open with: 'Hi Hannah, just following up on the voicemail Yolanda left about Angelo's session today \u2014 were you able to reach the family?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is an active A+ tutor; status is owned by tutor pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Angelo"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda called tutor Hannah Thorn (reached voicemail) because Angelo's family was asking where she was for today's session (either 11:30 or 2:30). Left a message asking Hannah to contact the family and call A+ back.",
+          "what_we_can_do_to_help": "Confirm with Angelo's family whether Hannah showed and the session occurred; follow up with Hannah when she returns the call to verify she reached the family and clarify the correct session time going forward.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda called tutor Hannah Thorn (reached voicemail) because Angelo's family was asking where she was for today's session (either 11:30 or 2:30). Left a message asking Hannah to contact the family and call A+ back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm with Angelo's family whether Hannah showed and the session occurred; follow up with Hannah when she returns the call to verify she reached the family and clarify the correct session time going forward."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Confirm with Angelo's family whether Hannah showed up for the session and whether it was the 11:30 or 2:30 slot",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Follow up with Hannah Thorn once she calls back to confirm she connected with Angelo's family",
           86868539,
           "scheduling"
         ]
