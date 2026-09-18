@@ -331,6 +331,36 @@ Roman rather than a bug to silently "fix".
 `email/tests/test_po_inbox.py`. 584 tests pass.
 
 ---
+## 2026-09-18 — Sage Oak booth: photos mirror to a folder in the A+ Events shared drive
+
+**What changed** (`booth/worker.js`, `booth/wrangler.toml`, `booth/test-worker.mjs`,
+`booth/README.md`):
+
+- The Delilah Drive mirror ported into the Sage Oak Worker. Every archived
+  photo is uploaded in `ctx.waitUntil` to `DRIVE_FOLDER_ID` with the
+  spotlight-watcher SA (`GOOGLE_SA_JSON` secret), named
+  `YYYY-MM-DD HH.MM.SS First Last.jpg` in LA time. Archive puts now carry
+  `{ name, at, event }` metadata so the file name can be built later.
+- `POST /drive-backfill[?prefix=YYYY-MM-DD]` uploads anything not yet in
+  Drive. Default prefix is BOTH the LA date and the UTC date, because KV keys
+  are UTC-dated and an LA evening photo sits under tomorrow's key. Bare-UUID
+  MMS fallback keys are never mirrored.
+- Folder created by the SA: "Sage Oak Park Day 2026-09-18"
+  (`1baGJt4VUj5FZB4JCOzLLgPGd6wvsADnp`) inside A+ Events
+  (`0ABqrqCiZrGoVUk9PVA`), the shared drive that already holds the BTSC photos.
+- 8 new tests (file names, LA date, UTC rollover, waitUntil, metadata, config).
+
+**Why:** Roman, 2026-09-18, morning of Park Day: "I want the Sage Oak booth
+for today to have the same kind of Google folder like Delilah's bday for
+saving photos."
+
+**Deploy state:** Worker deployed with `DRIVE_FOLDER_ID`. The mirror is gated
+on `GOOGLE_SA_JSON`, which Roman sets himself (the classifier blocks Claude
+from piping the key into `wrangler secret put`). Until then the Worker
+behaves exactly as before; run `/drive-backfill` once after the secret lands
+to catch up any photo taken before it.
+
+---
 ## 2026-09-16 — Blue Ridge booth: Pages deploys from an allowlist, staff domain button moved below the family chips
 
 **What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):

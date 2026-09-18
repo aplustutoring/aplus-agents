@@ -26,6 +26,15 @@ JUSTCALL_FROM = "+18188506284"   # Main A+ line (MMS-capable, verified 2026-08-1
 OWNER_SALES = "227538487"
 OWNER_CHARTER_SALES = "81494333"
 
+# Google Drive mirror (Roman 2026-09-18: same as the Delilah booth). Every
+# archived photo is copied here in the background. The folder MUST live inside
+# a Shared Drive: service accounts have no My Drive quota, so an SA-owned My
+# Drive folder accepts the folder and rejects every upload (Delilah lesson).
+# This is "Sage Oak Park Day 2026-09-18" inside the "A+ Events" shared drive
+# (0ABqrqCiZrGoVUk9PVA); the spotlight-watcher SA is a content manager there.
+# Next event: create a new folder in A+ Events and point this at it.
+DRIVE_FOLDER_ID = "1baGJt4VUj5FZB4JCOzLLgPGd6wvsADnp"
+
 # Event pages served by this Worker: public/<event>/index.html at /<event>/.
 # GET / redirects to the current event (see worker.js).
 [assets]
@@ -41,3 +50,4 @@ id = "38b24fd52f064143a0273d9f43a85a3c"
 #   wrangler secret put RESEND_API_KEY
 #   wrangler secret put JUSTCALL_API_KEY
 #   wrangler secret put JUSTCALL_API_SECRET
+#   wrangler secret put GOOGLE_SA_JSON   (spotlight-watcher SA JSON as ONE line)
