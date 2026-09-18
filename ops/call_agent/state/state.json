@@ -1019,9 +1019,10 @@
     416813718,
     416822267,
     416823172,
-    416823379
+    416823379,
+    416827244
   ],
-  "last_run_utc": "2026-09-18T22:45:04.423937+00:00",
+  "last_run_utc": "2026-09-18T23:01:50.503413+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -2264,6 +2265,100 @@
           "Attempt another call to Krista once she replies with a preferred time",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416827244,
+      "number": "18052564656",
+      "time_pt": "3:47 PM",
+      "matched": true,
+      "contact_label": "Megan Haskins",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Megan Haskins to discuss tutoring for her two homeschooled kids (7th grade son, 5th grade daughter) enrolled through Blue Ridge charter. Both need math support (Singapore Primary Math US edition) to build confidence and fill gaps. Paola quoted charter rates ($75/hr, $60/45min), and Megan wants ~1x/week for daughter and possibly 2x/week for son. Megan will place the PO through Procurify; her homeschool teacher is Judy Anderson. Paola will email Megan and Judy with rates and details.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Megan and Judy Anderson (Blue Ridge homeschool teacher) an email with A+ charter rates ($75/hr, $60/45min), program info, and the proposed schedule (~1x/week for daughter, up to 2x/week for son) so Megan can submit a PO via Procurify.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Blue Ridge approves the PO, begin tutor matching for both kids (Singapore Primary Mathematics US Edition) and have scheduling text Megan to set up sessions.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Megan Haskins (warm, engaged parent) homeschools through Blue Ridge charter. Two kids need math support with Singapore Primary Mathematics US Edition: son (7th, age 12) and daughter (5th, age 10) \u2014 both a bit behind grade level, goal is confidence + filling gaps. Quoted charter rates: $75/hr and $60/45min. Megan wants roughly 1 session/week for daughter and up to 2/week for son (son has more funds). Her Blue Ridge homeschool teacher is Judy Anderson (already in our records). At Blue Ridge, the PARENT submits the PO via Procurify and the teacher approves. Paola promised to email Megan (and cc Judy) with rates + program info so Megan can place the PO. Megan expects that email shortly; after PO approval, scheduling will text her to match tutors and set sessions. Opener: 'Hi Megan, following up on your call with Paola \u2014 here are the rates and program details to attach to your Procurify order...'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Homeschool charter family (Blue Ridge) planning to pay via charter instructional funds / PO through Procurify.",
+        "student_or_school_names_mentioned": [
+          "Blue Ridge",
+          "Judy Anderson"
+        ],
+        "record_updates": {
+          "whats_going_on": "Megan homeschools two kids through Blue Ridge charter: son (7th grade, age 12) and daughter (5th grade, age 10). Both are behind grade level in math (using Singapore Primary Mathematics US Edition) and she wants tutoring to build confidence and fill gaps. Wants ~1x/week for daughter and possibly 2x/week for son (son has more funds available).",
+          "what_we_can_do_to_help": "Quoted charter rates ($75/hr, $60/45min). Paola to email Megan and Blue Ridge homeschool teacher Judy Anderson with rates and program details so Megan can submit a PO via Procurify. Once Blue Ridge approves the PO, match tutors familiar with Singapore Math and have scheduling text Megan to set sessions.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Blue Ridge",
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Megan homeschools two kids through Blue Ridge charter: son (7th grade, age 12) and daughter (5th grade, age 10). Both are behind grade level in math (using Singapore Primary Mathematics US Edition) and she wants tutoring to build confidence and fill gaps. Wants ~1x/week for daughter and possibly 2x/week for son (son has more funds available)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted charter rates ($75/hr, $60/45min). Paola to email Megan and Blue Ridge homeschool teacher Judy Anderson with rates and program details so Megan can submit a PO via Procurify. Once Blue Ridge approves the PO, match tutors familiar with Singapore Math and have scheduling text Megan to set sessions."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Blue Ridge"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Megan and Judy Anderson (Blue Ridge homeschool teacher) an email with A+ charter rates ($75/hr, $60/45min), program info, and the proposed schedule (~1x/week for daughter, up to 2x/week for son) so Megan can submit a PO via Procurify.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Blue Ridge approves the PO, begin tutor matching for both kids (Singapore Primary Mathematics US Edition) and have scheduling text Megan to set up sessions.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
