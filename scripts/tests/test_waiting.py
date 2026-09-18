@@ -165,3 +165,56 @@ def test_the_explicit_prefixes_still_cover_unquoted_forms():
     """The Chinese tapback carries no quotes at all, so the word list earns its
     keep alongside the echo check."""
     assert w.is_courtesy("赞了：No worries at all. Thank you for the update.")
+
+
+# ── the echo rule must not be starved by the question's window ─────────────
+def test_our_words_come_from_a_wider_pull_than_the_question():
+    """2026-09-18: a two hour look-back could not recognise a tapback because
+    the message it quoted had been sent earlier that afternoon. The rule was
+    right and starved."""
+    wide = [
+        _text("8185551234", "2026-09-18 09:00:00",
+              "Your words mean so much to me! Thank you for your kindness.",
+              direction="outgoing"),
+        _text("8185551234", "2026-09-18 16:45:00",
+              'Reacted 💖 to “Your words mean so much to me! Thank you for your kindness.”'),
+    ]
+    w.load_our_words(wide)
+    assert w.OUR_WORDS["8185551234"] == [
+        "Your words mean so much to me! Thank you for your kindness."]
+    reaction = wide[1]["sms_info"]["body"]
+    assert w.echoes_our_message(reaction, w.OUR_WORDS["8185551234"])
+
+
+def test_load_our_words_never_keeps_their_messages():
+    """Echoing THEIR words back would make any repeated phrase look like a
+    tapback."""
+    w.load_our_words([_text("8185551234", "2026-09-18 09:00:00", "their question")])
+    assert w.OUR_WORDS.get("8185551234", []) == []
+
+
+def test_the_question_window_is_left_to_the_api():
+    """A local cutoff string compared against the account's clock widened a two
+    hour check by the UTC offset on 2026-09-18."""
+    import inspect
+    src = inspect.getsource(w.newest_each_way)
+    assert "inbound_since" not in src
+
+
+def test_the_outbound_lookback_is_wider_than_any_normal_window():
+    assert w.ECHO_LOOKBACK_HOURS >= 48
+
+
+# ── a pleasantry that does not open the message ────────────────────────────
+def test_a_short_message_that_is_only_thanks_is_a_courtesy():
+    assert w.is_courtesy("Well! Thank you.")
+    assert w.is_courtesy("Oh wonderful, thank you")
+
+
+def test_a_long_message_containing_thanks_is_still_a_message():
+    assert not w.is_courtesy("The tutor never showed up. Thanks for nothing.")
+
+
+def test_a_question_containing_thanks_is_still_a_question():
+    assert not w.is_courtesy("Thanks, but can we move Wednesday to 5?")
+    assert not w.is_courtesy("Ok thank you, can she do Tuesday?")
