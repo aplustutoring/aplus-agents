@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-17T19:12:52.582304+00:00",
+ "_last_run": "2026-09-18T01:15:20.198707+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -369,6 +369,15 @@
   "name": "Eileen Canales",
   "tw_student_id": "2166369"
  },
+ "online:canales, emmanuel": {
+  "checked": "2026-09-17",
+  "contact_id": "50464837529",
+  "deal_id": "21643906612",
+  "email": "canales48@yahoo.com",
+  "first": "2024-08-30",
+  "name": "Emmanuel Canales",
+  "tw_student_id": "1872235"
+ },
  "online:castro, kayla": {
   "checked": "2026-09-11",
   "contact_id": "1585651",
@@ -584,6 +593,15 @@
   "first": "2020-09-04",
   "name": "Emmett Feinstein",
   "tw_student_id": "1114945"
+ },
+ "online:finkelshteyn, emma": {
+  "checked": "2026-09-17",
+  "contact_id": "302901",
+  "deal_id": "13712892167",
+  "email": "yelena.mozgovaya@gmail.com",
+  "first": "2018-11-14",
+  "name": "Emma Finkelshteyn",
+  "tw_student_id": "373894"
  },
  "online:finkelshteyn, noah": {
   "checked": "2026-09-10",
@@ -1680,6 +1698,15 @@
   "first": "2024-08-31",
   "name": "Angelo Tiu",
   "tw_student_id": "1877254"
+ },
+ "online:tofa, legend": {
+  "checked": "2026-09-17",
+  "contact_id": "70257724457",
+  "deal_id": "28341604685",
+  "email": "raqueltofa@gmail.com",
+  "first": "2024-10-25",
+  "name": "Legend Tofa",
+  "tw_student_id": "1918724"
  },
  "online:tokunow, nomi": {
   "checked": "2026-09-13",
