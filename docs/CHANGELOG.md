@@ -7,6 +7,48 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-18 — Ticket pesters come from Roman, daily, and land on Emily when ignored
+
+**Roman:** "I want Kath to be pestered though if she doesn't do shit" ... "We
+currently don't have a scheduling lead and we won't have a scheduling lead.
+All of those things need to be escalated to Emily" ... "I want the pestering
+to look like a direct message from me sent to them."
+
+**What was true before this:** a PO refusal or review ticket got exactly ONE
+bot DM to Kath 8 business hours after it was filed; the next two escalation
+levels pointed at the scheduling-lead seat, vacated 9/17; the weekly aging
+re-nag has been off since 8/28 (59 bot DMs a day, zero read); and the
+evidence-based ticket reasoner, built 8/26 with a 24h / 48h / 96h ladder
+that repeats daily, was never put on a schedule (two hand runs, both in
+August).
+
+**Now:**
+- `ticket-reasoner.yml` runs weekdays 09:30 PT. Scheduled runs are DRY until
+  repo variable `REASONER_LIVE` = "true" (Roman reads one dry pass first, then
+  flips it; manual dispatches keep their inputs). Checkout pinned to `ref:
+  main`, joins the `aplus-email-state` group, commits its audit records back
+  (the daily pester dedupe reads them).
+- Pesters are posted with the visionary seat's Slack USER token
+  (`SLACK_USER_TOKEN_VISIONARY`, new secret, role-named): the recipient sees a
+  DM from Roman. Copy is first person and plain: "Kath, this ticket has been
+  open 3 days and I still see it sitting there: <subject>. <reason>. Where are
+  we on it? <link>". No verdict codes, no emoji, no em dashes. Config
+  `reasoner.pester_as: visionary`. Token unset = bot DM with a warning, never
+  silence. `slack_client.dm(..., as_role=)` is the general mechanism; only the
+  visionary seat has a token today.
+- Escalation targets after #259 (merged today): level 2 deleted, level 3 =
+  operations = Emily. The reasoner's ladder skips a null level. Test added.
+- 8 tests in `email/tests/test_pester_as_visionary.py`.
+
+**Still human (Roman):** create the user token. api.slack.com/apps → the aplus
+bot app → OAuth & Permissions → *User Token Scopes* add `chat:write` →
+Reinstall to Workspace (as Roman) → copy the *User OAuth Token* (xoxp-…) →
+`gh secret set SLACK_USER_TOKEN_VISIONARY`. Then read the first scheduled
+dry run and set repo variable `REASONER_LIVE=true`.
+
+**Files:** .github/workflows/ticket-reasoner.yml, email/src/{config,slack_client,ticket_reasoner}.py,
+email/config.yaml, email/tests/test_pester_as_visionary.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
 
 **Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and
