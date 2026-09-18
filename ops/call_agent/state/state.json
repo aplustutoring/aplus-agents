@@ -998,9 +998,10 @@
     416666147,
     416666485,
     416690184,
-    416703568
+    416703568,
+    416707056
   ],
-  "last_run_utc": "2026-09-18T18:05:43.308363+00:00",
+  "last_run_utc": "2026-09-18T18:11:42.705564+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1196,6 +1197,95 @@
           "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416707056,
+      "number": "13236363579",
+      "time_pt": "11:02 AM",
+      "matched": true,
+      "contact_label": "Karen Chung",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle called Karen Chung back after missing her call. Karen's daughter Yura had a 10:30 AM online trial today but the microphone wasn't working on the tutoring platform, even though Karen confirmed her mic/camera work fine elsewhere. The tutor left and told Karen to contact the office to reschedule. Karen asked Janelle to call back at 12:30\u20131:00 PM so her husband can help troubleshoot, and then we can move forward.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Karen back at 12:30\u20131:00 PM today to troubleshoot the microphone/permission settings on the tutoring platform and get Yura connected.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Reschedule Yura's free 1-hour online trial (originally today at 11 AM / attempted 10:30) once the mic issue is resolved.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Coordinate with the assigned tutor about the failed trial and the reschedule.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Karen Chung (mom of Yura, 6yo, 1st grade, Blue Ridge Academy charter, online ESL/ELA) had her free trial today but the platform microphone wouldn't work on her end \u2014 she confirmed her mic/camera work fine for her regular weekday use, so she suspects a permission setting on our platform. The tutor ended the session and told her to call the office to reschedule. Karen was patient but a little frustrated. Janelle committed to calling her back today at 12:30\u20131:00 PM when her husband can help troubleshoot. Open with: \"Hi Karen, it's [name] from A+ Tutoring following up as Janelle promised \u2014 is now a good time to try the mic again with your husband there?\" Walk her through browser permission settings for mic/camera on the tutoring platform, then reschedule the trial and re-share the tutor's info. Tone: apologetic and hands-on; she's a charter family with ~$2,000 in funds ready to go, so we want to recover this quickly.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Karen is an existing customer already in an open deal (trial booked, charter funds in motion); status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Yura Chung",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "Karen's daughter Yura's free online trial today failed because the microphone wasn't working on the tutoring platform. Karen confirmed her mic and camera work fine for her regular weekday use, so she suspects a permissions issue on our end. The tutor ended the session and told Karen to call the office to reschedule.",
+          "what_we_can_do_to_help": "Janelle to call Karen back today at 12:30\u20131:00 PM (when her husband can help troubleshoot) to walk through platform mic/camera permissions, then reschedule the free trial and re-coordinate with the tutor. Keep tone apologetic and hands-on \u2014 this is a charter family with ~$2,000 in funds ready to deploy.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Karen's daughter Yura's free online trial today failed because the microphone wasn't working on the tutoring platform. Karen confirmed her mic and camera work fine for her regular weekday use, so she suspects a permissions issue on our end. The tutor ended the session and told Karen to call the office to reschedule."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Janelle to call Karen back today at 12:30\u20131:00 PM (when her husband can help troubleshoot) to walk through platform mic/camera permissions, then reschedule the free trial and re-coordinate with the tutor. Keep tone apologetic and hands-on \u2014 this is a charter family with ~$2,000 in funds ready to deploy."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Karen back at 12:30\u20131:00 PM today to troubleshoot the microphone/permission settings on the tutoring platform and get Yura connected.",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Reschedule Yura's free 1-hour online trial (originally today at 11 AM / attempted 10:30) once the mic issue is resolved.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Coordinate with the assigned tutor about the failed trial and the reschedule.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
