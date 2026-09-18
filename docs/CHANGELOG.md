@@ -7,6 +7,102 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
+
+**Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and
+37s about their son's PSAT prep, then texted 18 days later opening "Hey
+Roman". There was no HubSpot record of any of it. Inbound calls on Roman's
+line were not monitored, both calls were ANSWERED so the missed-call safety
+net did not apply, and nothing creates a contact for an unrecognised caller.
+Over 30 days that blind spot covered 41 answered inbound calls, 25 of them on
+the SALES line.
+
+Roman 2026-09-16: "i want all of our lines transcribed... we get a bunch of
+spam, you gotta be able to filter numbers some how."
+
+**What changed:**
+
+1. `monitored_numbers` now lists all six company lines. Recording disclosure
+   on the added lines is Roman's call and he has made it; `require_recording`
+   still means an unrecorded call is never transcribed, on any line.
+
+2. New `spam_gate`, applied to answered inbound calls BEFORE transcription so
+   junk costs nothing. Built from 30 days of live traffic, not guessed: of 362
+   inbound calls 166 were "abandoned" (the robocall signature, already
+   excluded by process_call_types), and among the 132 answered ones junk has
+   one shape — short and no caller-ID name. All THREE conditions must hold to
+   drop a call (under 20s AND caller-ID not human-looking AND unknown to
+   HubSpot), so a short call from a known family survives and a long call from
+   a blank caller-ID survives.
+
+3. `auto_create_contacts` flipped on, but only for calls that clear the spam
+   gate AND produce a real transcript. The contact is named by its phone
+   number, never by the telco caller-ID — naming from caller-ID is exactly how
+   838 CallRail shells got created in July 2026.
+
+**Measured against 30 days of live calls, using the shipped function:**
+132 answered inbound, 114 kept, 18 dropped. Every dropped call was under 20
+seconds with a blank caller-ID, longest 18s. About 10 new contacts a month,
+0.3/day. The PSAT parent's calls are both KEPT, which is the case the gate
+exists to protect.
+
+**Already true, worth recording:** the support line was already monitored and
+already coached. Since 2026-09-01 the rubric has scored 169 calls — Paola 67,
+Janelle 32, Yolanda 29, Roman 19, Emily 17, Mandy 5 — across 47 incoming and
+122 outgoing. Outbound on every line was already covered by `monitor_outbound`.
+The gap was only inbound on unmonitored lines.
+
+**Files:** `ops/call_agent/{call_agent.py,config.yml}`,
+`ops/call_agent/tests/test_spam_gate.py` (54 pass).
+
+---
+
+## 2026-09-17 — ops/checkin: the quality check-in, measured first, then rebuilt
+
+**Measured before touching it.** Seven days of live traffic through HubSpot
+workflow "Quality - 2.0" (1680794394 -> Zapier hook): 9 sends, 8 replies (89%),
+7 within the hour, 5 substantive, 1 collision (11% landed within an hour of a
+human message). In one week it surfaced a family leaving over price (Judy
+Goldzweig), two service gaps nobody had reported (Miran Mavlan, "no homework or
+book to follow"; Albee Li, "we just do not know the plan"), and an unprompted
+testimonial.
+
+So the campaign was NOT the problem, which is the opposite of what the earlier
+notes in this file assumed. Three narrow things were.
+
+**1. The gate.** Albee Li got the robot fifteen minutes after a scheduler had
+apologised to her about the very lesson she was complaining about. Now: skip if
+messaged within 48h, skip if a ticket is open, business hours on weekdays only,
+one per family per day. And one per FAMILY, not per deal — the first dry run
+planned six identical texts to one parent, because charter families carry a
+deal per PO slice.
+
+**2. The copy.** The old text named nobody. The new one names the student and
+the tutor and asks what they want focused on NEXT, which is the question that
+produced the two service gaps above. "How is it going" gets "fine".
+
+**3. Triage.** Nothing caught what it found. Judy said she was leaving over
+cost and was answered with "let me know if there's any other way I can assist".
+A reply matching a churn or gap phrase now opens a HIGH ticket for the
+student's scheduler with the family's own words on it.
+
+**A third instance of the Last, First bug.** `schedule_preferences` holds both
+shapes at once: "with Seifeldin, Youssef" and "with Sonya". Taking the token
+after "with" yields the SURNAME on the first, the same mistake that told Nikita
+Brixey her tutor was "Karl". The extractor now captures the pair, applies
+first_name(), and validates the result against real tutor first names. The
+first dry run said "sessions with Siddiqui" before that check existed.
+
+**Data gap worth fixing upstream:** 11 of the 12 Post-Lesson families in the
+dry run have NO tutor on the deal, most still reading "we don't have your
+schedule on file yet".
+
+**Ships armed:false.** Does not replace the Zap by itself; until "Quality -
+2.0" is paused both would send. Order: read a dry run, flip armed, pause the
+workflow, delete the Zap.
+
+**Files:** `ops/checkin/{checkin.py,config.yml,README.md}`,
+`ops/checkin/tests/` (22 pass).
 ## 2026-09-18 — Scheduling lead seat vacated: owners resolve through roles, not a name
 
 **What changed.** The scheduling lead / operations seat was vacated on
@@ -221,7 +317,6 @@ the Selphy over AirPrint before the first family.
 **Files touched:** `docs/CHANGELOG.md` only (deploy record; the code merged in #253).
 
 ---
-
 ## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
 
 **Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
@@ -387,6 +482,77 @@ Roman rather than a bug to silently "fix".
 **Files:** `email/src/names.py` (new), `email/src/po_inbox.py`,
 `email/src/low_balance.py`, `email/tests/test_names.py` (new),
 `email/tests/test_po_inbox.py`. 584 tests pass.
+
+---
+## 2026-09-18 — Park Day print: one page on any paper size
+
+**What happened (Roman, 10:05 AM at the booth):** the first Selphy print
+showed the header and photo, then a blank bottom quarter: no goal banner, no
+"Powered by A+ Tutoring" footer, no bottom border. Faint text on the sheet
+read the page URL, "9/18/26, 10:05 AM" and "Page 1 of": Safari's print
+header/footer. Diagnosis: the print CSS sized the 2:3 card by WIDTH
+(`width:100%; max-height:100vh`). With a paper size other than 4x6 selected
+in the iPad print sheet, the card was taller than the page, Safari split it
+over two pages and printed its header/footer, and page 1 is what came out of
+the Selphy. The same CSS printed fine on 9/1 and 9/11 with 4x6 selected, so
+the trigger was the paper selection on the iPad, not a code change.
+
+The "watermark" of tiled trees across the photo is the Sage Oak step-and-
+repeat banner behind the subjects, washed out by direct sun. Not in the code.
+
+**Fix (system change, `booth/public/sage-oak-park/index.html`):** the print
+area is one page tall and clipped (`height:100vh; overflow:hidden`), the image
+is sized by page HEIGHT (`height:100vh; width:auto; object-fit:contain`), and
+`@page{size:4in 6in;margin:0}` names the paper. The whole card now fits a
+single page whatever paper the sheet has selected. Worker deployed
+(`a6180015`, assets only; worker.js unchanged from PR #258). The BTSC and
+Delilah pages share the old rule and should get the same change before their
+next use.
+
+**Second print (10:40): the URL was still on the sheet.** Safari stamps its
+header/footer on a `window.print()` page whatever the CSS says, so the page
+no longer prints through Safari at all. `printCard()` hands the JPEG itself
+to the iOS share sheet (`navigator.share({files})`, called synchronously
+inside the tap so it keeps the user activation); staff taps Print there and
+AirPrint prints the image borderless on 4x6 with no text. A gold "Print
+again" button on the done screen re-opens the sheet if it was dismissed.
+`window.print()` remains only as the fallback where Web Share cannot take
+files. Worker `sage-oak-booth` version deployed with this: see PR #261.
+
+**Still human on the iPad:** reload the booth page (or reopen the Home
+Screen icon) so it picks up the change; in the share sheet tap Print, pick
+the Selphy and 4x6 once, and it stays selected. One test print before the
+next family.
+
+---
+## 2026-09-18 — Sage Oak booth: photos mirror to a folder in the A+ Events shared drive
+
+**What changed** (`booth/worker.js`, `booth/wrangler.toml`, `booth/test-worker.mjs`,
+`booth/README.md`):
+
+- The Delilah Drive mirror ported into the Sage Oak Worker. Every archived
+  photo is uploaded in `ctx.waitUntil` to `DRIVE_FOLDER_ID` with the
+  spotlight-watcher SA (`GOOGLE_SA_JSON` secret), named
+  `YYYY-MM-DD HH.MM.SS First Last.jpg` in LA time. Archive puts now carry
+  `{ name, at, event }` metadata so the file name can be built later.
+- `POST /drive-backfill[?prefix=YYYY-MM-DD]` uploads anything not yet in
+  Drive. Default prefix is BOTH the LA date and the UTC date, because KV keys
+  are UTC-dated and an LA evening photo sits under tomorrow's key. Bare-UUID
+  MMS fallback keys are never mirrored.
+- Folder created by the SA: "Sage Oak Park Day 2026-09-18"
+  (`1baGJt4VUj5FZB4JCOzLLgPGd6wvsADnp`) inside A+ Events
+  (`0ABqrqCiZrGoVUk9PVA`), the shared drive that already holds the BTSC photos.
+- 8 new tests (file names, LA date, UTC rollover, waitUntil, metadata, config).
+
+**Why:** Roman, 2026-09-18, morning of Park Day: "I want the Sage Oak booth
+for today to have the same kind of Google folder like Delilah's bday for
+saving photos."
+
+**Deploy state:** Worker deployed with `DRIVE_FOLDER_ID`. The mirror is gated
+on `GOOGLE_SA_JSON`, which Roman sets himself (the classifier blocks Claude
+from piping the key into `wrangler secret put`). Until then the Worker
+behaves exactly as before; run `/drive-backfill` once after the secret lands
+to catch up any photo taken before it.
 
 ---
 ## 2026-09-16 — Blue Ridge booth: Pages deploys from an allowlist, staff domain button moved below the family chips
@@ -785,6 +951,106 @@ option labels exist (the agent reports any it skipped); decision-log entries
 per spec §9.4; the seven first-touch questions (spec §8 stays DRAFT).
 
 ---
+## 2026-09-11 — booth/aplus-2026: APLUS+ conference school list with staff email domains (dropdown source)
+
+**What:** Roman asked for every participant school at the APLUS+ Network 23rd
+Annual Conference (Anaheim, Oct 21-23, 2026; A+ is exhibitor PC6 + Preferred
+Partner) with domains pre-loaded for the booth's school dropdown. New
+`booth/aplus-2026/schools.yml` (95 member schools scraped from
+theaplus.org/member-schools, region, network, website, staff email domains,
+confidence) and `schools-dropdown.json` (flat picker source, 108 rows incl. 13
+A+ partner schools that are not APLUS+ members).
+
+**How:** four parallel web-research passes for domains, then a cross-reference
+against 1,084 HubSpot Teacher of Record contacts grouped by email domain and the
+`[Agent] School` stamp. 27 member schools already have our teachers in HubSpot
+(iLEAD, Compass, IEM x3, Springs x6, PCI x4, Sage Oak, Excel x2, Gorman x2,
+Granite Mountain, Forest, Cottonwood, Epic). 26 rows medium/low confidence
+(Learn4Life "II" campuses, OFY/OFL campus domains, Northern Summit); listed in
+the README to verify.
+
+**Finding from the Jeff Rice thread (45 logged emails):** nobody has asked APLUS+
+for the 2026 registered-school list. Jeff sent the full exhibitor table within
+hours when Roman asked in 2024 and tracks registrations "for planning purposes".
+The ask belongs to the sales seat (Danielle), email only. Roman also meets Jeff
+at the Upper South regional at iLEAD HQ on 2026-09-17.
+
+**Files:** `booth/aplus-2026/{schools.yml,schools-dropdown.json,README.md}`, `docs/CHANGELOG.md`.
+
+## 2026-09-12 — PO duplicate guard fails closed; pending-approval follow-up removed
+
+**Why.** Roman: "Let's get rid of the approval checks, we will work on Kath
+verifying in ops later. For now I just want the no duplicate po option being
+firm as possible."
+
+And the finding that made the second half urgent: **the duplicate lookup was
+blind in every dry run.** `hubspot_client.find_deals_by_po_number` and
+`search_deals_by_name` both went through `_write`, which short-circuits under
+`DRY_RUN` and returns `{"id": "DRYRUN"}`. `res.get("results", [])` was therefore
+always `[]`, so the guard concluded "no duplicate" every single time. Every dry
+run to date showed the agent creating deals it would in fact have refused, which
+means the dry-run transcripts were never evidence that the guard works.
+`_get_search` exists for exactly this ("Separate from `_write` so DRY_RUN cannot
+short-circuit a read") and both functions now use it.
+
+**What. Five holes in the duplicate guard, all closed, all failing closed.**
+
+1. **Blind in DRY_RUN** (above). Both lookups moved to `_get_search`.
+2. **No PO number disabled dedupe entirely.** `if po_num:` meant a PO the
+   extractor could not pull a number from skipped the check and created a deal
+   unconditionally, so two copies of one numberless PO made two deals. Now:
+   no deal, a ⛔ note, a DM to the `po_inbox.owner` seat, audit
+   `po_refused_no_number`.
+3. **Exact EQ missed real variants.** The property lookup now tries the
+   normalized number, the raw string, `PO<number>`, and both cases (deals
+   predating the bare-number rule of 2026-08-10 still carry the prefix;
+   alphanumerics like `PF252648-EzekielGarcia` differ in case), and confirms
+   each hit on normalized equality instead of trusting the filter. The
+   deal-name CONTAINS backstop stays.
+4. **HubSpot search is eventually consistent.** Two copies of a PO seconds apart
+   both passed. Two index-independent checks were added: the audit ledger (new
+   `po_deal_created` row per created deal, plus legacy `po_processed`/`new_po`
+   rows) and an in-run set of claimed numbers, so one `_split_pos` email can
+   never create two deals for one number.
+5. **A failed lookup fell through to creation.** Confirmed what happens today:
+   the exception propagates out of `process_po_message`, `run()` catches it and
+   writes an audit row keyed `gmail:<id>` with `action_taken: "error"`, the
+   same key `already_processed()` reads, so the message is marked handled and
+   **never retried**. A transient HubSpot error silently dropped the PO
+   entirely. Now the guard catches it: no deal, ⛔ note, DM, audit
+   `po_refused_dedupe_unavailable`, and the ticket still gets created.
+
+Two config flags, both read with `.get(..., True)` so an older config file
+inherits the safe behaviour: `po_inbox.require_po_number` and
+`po_inbox.dedupe_fail_closed`. New audit actions: `po_deal_created`,
+`po_refused_duplicate`, `po_reissue_flagged`, `po_refused_ledger_duplicate`,
+`po_refused_no_number`, `po_refused_dedupe_unavailable`. The STOPPED/cancelled
+re-issue wording is unchanged, and both branches still refuse to create.
+
+**Removed:** `_sweep_pending_pos()` and its call site, the `pending_po_opened`
+row on order-agreement deals, the `pending_po_confirmed` row in the duplicate
+branch, and the now-unreferenced `po_inbox.pending_portal_approval_days`. The
+extractor's `pending_approval` flag stays: the ticket, the deal note, the
+invoice task and the scheduler DM still say a PO is pending school approval.
+
+**Not done, deliberately.** Kath's ops-side verification of portal approvals is
+deferred per Roman, so **nothing nags any more when a portal approval stalls**.
+a pending order agreement now sits unchased until a human looks at it. That is
+the accepted trade for this session; the follow-up belongs in ops, not in the
+PO agent.
+
+**Also noticed, not fixed (pre-existing on `main`):** seven
+`email/tests/test_low_balance.py` tests fail on weekends. `_day1_due()` ends in
+`_is_business_day(now.date())`, so the day-1 text path is unreachable on a
+Saturday and the tests assert it fires. They fail identically on `origin/main`
+with this branch stashed.
+
+**Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_dedupe.py` (new, 24 tests),
+`email/tests/test_po_inbox.py`, `email/tests/test_po_sources.py`,
+`docs/PO-PROCESS.md`, `knowledge/journey/04-qualified-to-deal.md`.
+
+---
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`
@@ -1118,6 +1384,55 @@ land with the charter_sales seat. The teacher half stays a business-hours email.
 `_day1_outreach(texts, teachers, label)`, `open_cases` folds `tor_pending`),
 email/src/sms.py, email/src/main.py, email/config.yaml, .github/workflows/email-triage.yml,
 email/tests/test_low_balance.py (+6), docs/RETENTION-PROCESS.md.
+## 2026-09-10 — Tutor issues: the ticket was pretending to be the judgment
+
+**Why:** Mandy flagged that Teachworks no-shows were creating tickets. They were,
+and the ranking they produced was wrong in both directions. Every one of the 23
+events behind a `missed_lesson_or_late` ticket was a STUDENT marked `missed`.
+Teachworks records that a student did not attend, never why, so it cannot tell a
+student who flaked from a tutor who never showed. The agent attributed all of
+them to the tutor, HIGH priority, on the tutor's contact record.
+
+Cross-checked against the real evaluations already on Monday board 8900831153
+(116 evals, 86 tutors, six rated dimensions, run by Mandy):
+
+- 5 of the 12 flagged tutors are rated **Highly Effective on every dimension**.
+  Kelly James was tied #1 on the ticket list; her file is two absences by one
+  student, Finn Goodings. Hannah Thorn was filed as a notes problem in the same
+  week her evaluation read "comprehensive and very detailed, great job."
+- The genuinely struggling tutors have **no tickets at all**: Gianna Centrella
+  and Micah Ybarra at 1.17, Ruth Dapkus at 1.50 with two Emergency evaluations.
+- 3 of the flagged tutors have **no evaluation on file** at all. That is the one
+  genuinely useful thing the ticket data surfaced.
+
+**Changed:**
+- `config.yml` — `missed_lesson_or_late.sweep_auto_ticket: false`. Events are
+  still collected and reported (attendance rate, repeat-pattern trigger); they
+  no longer assert fault. A missed lesson becomes a tutor issue when a FAMILY
+  reports it, which the inbound leg already handles.
+- `tutor_issues.py` — the duplication fix. A closed in-period ticket previously
+  fell through to "create" on the sole test of "is it closed", so any re-sweep
+  of already-recorded events produced an identical duplicate: 8 of 9 tutor-weeks
+  doubled, 29 tickets for 15 real findings, and a count that rose the more
+  diligently Mandy cleared her queue. Now the incoming events are compared
+  against what the closed ticket already records. The original intent is kept
+  and tested: a genuinely NEW incident after resolution still opens a fresh
+  ticket.
+- `README.md` — records why the auto-leg is off and what would be re-asserted by
+  switching it back on.
+- 3 new tests (14 passing).
+
+**The principle worth keeping:** a ticket is a tripwire, an evaluation is a
+judgment. This detector was doing both and was qualified for neither.
+
+**Still open:** the repeat-pattern to Emergency-eval trigger on Mandy's board
+(not built, needs her sign-off since it writes to her workflow); the per-tutor
+attendance rate (needs Teachworks, Actions-only); the 4 open tickets from the
+retired leg; only 8 tutors have a training quiz result on file out of 86
+evaluated.
+
+**Files:** `ops/tutor-issues/config.yml`, `ops/tutor-issues/tutor_issues.py`,
+`ops/tutor-issues/README.md`, `ops/tutor-issues/tests/test_tutor_issues.py`.
 
 ---
 ## 2026-09-10 (night) — Queued runs started from stale checkouts: 16 duplicate HubSpot items, the GitHub failure emails, and the fix
@@ -1443,6 +1758,63 @@ sender number is 818-573-6293, the JustCall number found in-session (his "6793"
 was a typo). The "flagged" wording in wrangler.toml and README is removed.
 
 **Files:** `booth/delilah/{worker.js,wrangler.toml,test-worker.mjs,README.md}`, `docs/CHANGELOG.md`.
+## 2026-09-10 — content-build: preflight the draft a human publishes (3rd report of the same HubSpot error)
+
+**Reported (Danielle, 3rd time):** a weekly draft will not publish from the
+HubSpot UI, "Error Something went wrong. Please try refreshing." Same report on
+2026-08-24 (Title III EL RFA), 2026-09-02 (iLEAD Day 30), 2026-09-10 (Varsity
+Tutors shutdown, post id 221200515332). Corrections filed each time; nothing
+fixed, because each investigation had nothing to look at.
+
+**Diagnosis corrected.** The intake diagnosis assumed `publish-to-hubspot.py`
+was getting a 4xx and that re-running it with verbose logging would show the
+bad field. It will not. The agent only ever writes DRAFTS (`state: DRAFT`,
+hardcoded), and every one of these three drafts was written successfully:
+`publish_rc=0`, post ids recorded in `history.json`, "drafts are ready" posted
+to Slack. The failure happens later, in HubSpot's UI, when Danielle clicks
+Publish, which is a step no A+ script participates in. That is why three
+investigations produced no evidence.
+
+**The real failure class:** nothing in the pipeline ever looks at what it
+shipped. `publish-to-hubspot.py` writes a clean body, then
+`embed-pull-quotes.py` and `fix-links.py` each GET that body, rewrite it and
+PATCH it back. That last patched body is what the publish button renders, and
+it was unexamined. HubSpot stores a draft verbatim but only renders it on
+publish, so markup it will refuse lands silently and a human finds out from a
+generic error. The one forensic trail, `hubspot-usage.log`, is gitignored and
+dies with the CI runner.
+
+**What changed:**
+- `marketing/scripts/shared/hubspot_preflight.py` (new) — deterministic,
+  offline checks on body + meta: tag balance, unterminated tags/attribute
+  quotes, anchors with empty/`javascript:`/double-escaped hrefs, `data:` URI
+  images, empty src/alt, slug and meta-description shape, featured-image URL.
+  Built-in `--self-test` in the `seo_validators.py` style.
+- `publish-to-hubspot.py` — runs preflight before the write (advisory;
+  `--strict-preflight` makes fail-severity fatal). A flagged draft a human can
+  fix beats no draft.
+- `content-build.py` — runs preflight against the LIVE draft after embed and
+  link repair, and folds `EMBED` / `LINKS` / `PREFLIGHT` failures into `flags`,
+  so they reach the Slack summary and `history.json`. They were `logger.warning`
+  into a CI log nobody reads. The Slack summary now calls publish-blockers out
+  separately from content flags. `RuntimeError` on a failed write carries
+  HubSpot's own message, not just an exit code.
+- `fix-links.py` — three swallowed failures: an unchecked GET left `html=""`
+  and printed "all links ok" for a post it never read; a rejected postBody PATCH
+  was printed and ignored, `main()` always returned 0; hrefs were HTTP-checked
+  still HTML-escaped (`?a=1&amp;b=2`), so a live source with a query string
+  could read as 404 and get UNLINKED. Replacement URLs are now escaped on write.
+
+**Honest limit:** this does not name the field that broke Danielle's Sept 11
+post. No HubSpot token in this environment, so the live draft could not be
+pulled and nothing could be re-published for her. What it does is make the next
+occurrence self-evidencing instead of invisible. Next run of content-build
+prints preflight findings per draft; if 221200515332 still will not publish,
+`python3 marketing/scripts/shared/hubspot_preflight.py --post-id 221200515332`
+with the token now answers the question in one call.
+
+**Files:** `marketing/scripts/shared/{hubspot_preflight.py,publish-to-hubspot.py}`,
+`marketing/scripts/b2b/{content-build.py,fix-links.py}`, `docs/CHANGELOG.md`.
 
 ## 2026-09-10 — booth/delilah 2.0: storybook second print (Gemini repaint)
 
