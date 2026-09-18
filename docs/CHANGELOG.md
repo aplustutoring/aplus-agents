@@ -428,6 +428,47 @@ Roman rather than a bug to silently "fix".
 `email/tests/test_po_inbox.py`. 584 tests pass.
 
 ---
+## 2026-09-18 — Park Day print: one page on any paper size
+
+**What happened (Roman, 10:05 AM at the booth):** the first Selphy print
+showed the header and photo, then a blank bottom quarter: no goal banner, no
+"Powered by A+ Tutoring" footer, no bottom border. Faint text on the sheet
+read the page URL, "9/18/26, 10:05 AM" and "Page 1 of": Safari's print
+header/footer. Diagnosis: the print CSS sized the 2:3 card by WIDTH
+(`width:100%; max-height:100vh`). With a paper size other than 4x6 selected
+in the iPad print sheet, the card was taller than the page, Safari split it
+over two pages and printed its header/footer, and page 1 is what came out of
+the Selphy. The same CSS printed fine on 9/1 and 9/11 with 4x6 selected, so
+the trigger was the paper selection on the iPad, not a code change.
+
+The "watermark" of tiled trees across the photo is the Sage Oak step-and-
+repeat banner behind the subjects, washed out by direct sun. Not in the code.
+
+**Fix (system change, `booth/public/sage-oak-park/index.html`):** the print
+area is one page tall and clipped (`height:100vh; overflow:hidden`), the image
+is sized by page HEIGHT (`height:100vh; width:auto; object-fit:contain`), and
+`@page{size:4in 6in;margin:0}` names the paper. The whole card now fits a
+single page whatever paper the sheet has selected. Worker deployed
+(`a6180015`, assets only; worker.js unchanged from PR #258). The BTSC and
+Delilah pages share the old rule and should get the same change before their
+next use.
+
+**Second print (10:40): the URL was still on the sheet.** Safari stamps its
+header/footer on a `window.print()` page whatever the CSS says, so the page
+no longer prints through Safari at all. `printCard()` hands the JPEG itself
+to the iOS share sheet (`navigator.share({files})`, called synchronously
+inside the tap so it keeps the user activation); staff taps Print there and
+AirPrint prints the image borderless on 4x6 with no text. A gold "Print
+again" button on the done screen re-opens the sheet if it was dismissed.
+`window.print()` remains only as the fallback where Web Share cannot take
+files. Worker `sage-oak-booth` version deployed with this: see PR #261.
+
+**Still human on the iPad:** reload the booth page (or reopen the Home
+Screen icon) so it picks up the change; in the share sheet tap Print, pick
+the Selphy and 4x6 once, and it stays selected. One test print before the
+next family.
+
+---
 ## 2026-09-18 — Sage Oak booth: photos mirror to a folder in the A+ Events shared drive
 
 **What changed** (`booth/worker.js`, `booth/wrangler.toml`, `booth/test-worker.mjs`,
