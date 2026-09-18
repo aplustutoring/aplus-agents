@@ -24,15 +24,15 @@ hubspot:
   # ROLES, not names (Roman 2026-08-14). role -> staff key; staff block is
   # the only home for people.
   roles:
-    operations: mandy        # ticket owner on EVERY tutor-issue ticket (Aug 26 decision: escalations land on Operations)
-    fallback_scheduler: mandy  # scheduler pings when the student (and so the A-L/M-Z split) is unknown
+    operations: emily        # ticket owner on EVERY tutor-issue ticket (Aug 26 decision: escalations land on Operations; Roman 2026-09-17: Emily, interim)
+    fallback_scheduler: emily  # scheduler pings when the student (and so the A-L/M-Z split) is unknown
 
 staff:
   # hubspot_owner_id verified against /crm/v3/owners 2026-08-26.
   # slack_id verified against the workspace 2026-08-26.
-  mandy:
-    hubspot_owner_id: "80047201"
-    slack_id: "U08S3CHE93N"
+  emily:
+    hubspot_owner_id: "39191217"
+    slack_id: "U05MXK1MC5Q"
   janelle:
     hubspot_owner_id: "80047202"
     slack_id: "U08S3CG8XNY"

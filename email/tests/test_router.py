@@ -13,7 +13,7 @@ def test_business_dev_routes_to_danielle():
 
 def test_tutor_issue_routes_to_mandy_no_draft():
     d = resolve("tutor_issue", 0.9)
-    assert d.owner_key == "mandy" and d.should_draft is False and d.priority == "high"
+    assert d.owner_key == "emily" and d.should_draft is False and d.priority == "high"
 
 
 def test_scheduling_a_to_l_goes_to_janelle():
@@ -41,7 +41,7 @@ def test_l_boundary_is_inclusive_for_a_to_l():
 
 def test_complaint_routes_to_mandy_no_draft():
     d = resolve("complaint", 0.95)
-    assert d.owner_key == "mandy"
+    assert d.owner_key == "emily"
     assert d.sla_hours == 1.5
     assert d.should_draft is False  # complaints never get a draft
 
@@ -54,7 +54,7 @@ def test_low_confidence_downgrades_to_unknown():
     d = resolve("school_partner", 0.5)
     assert d.category == "unknown"
     assert d.should_draft is False
-    assert d.owner_key == "mandy"   # Mandy owns the Stuck/unknown queue
+    assert d.owner_key == "emily"   # operations (Emily, interim) owns the Stuck/unknown queue
     assert d.sla_hours == 4
 
 
@@ -71,7 +71,7 @@ def test_junk_below_090_held_for_review_not_archived():
     d = resolve("junk", 0.82)
     assert d.auto_archive is False
     assert d.category == "unknown"
-    assert d.owner_key == "mandy"
+    assert d.owner_key == "emily"
     assert any("held for review" in n for n in d.notes)
 
 

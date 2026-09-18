@@ -7,6 +7,23 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-17 — Operations seat moves to Emily (interim); ticket migration executed
+
+**What changed**
+- `roles.operations` and `roles.scheduling_lead` = emily in `email/config.yaml`; Mandy removed from the staff registry. `ops/tutor-issues/config.yml` roles (operations, fallback_scheduler) and staff entry follow.
+- `ops/queues/migrate_tickets_2026_09_16.py` operations owner id re-pointed to Emily (39191217).
+- New `ops/queues/reassign_operations_2026_09_17.py`: moves every open ticket still on the former operations id to Emily, one PATCH at a time with a note. Human-run (bulk HubSpot writes are blocked for agent sessions).
+- Tests that pinned the seat holder by name now pin Emily (router, orchestration, tutor-issues ticket shape).
+
+**Why**
+Mandy left the team the morning of 2026-09-17. Roman ran the 2026-09-16 queue migration the same morning before the seat was re-pointed, so 29 open tickets (13 Tutor Accountability + 16 Support) landed on her id. Emily holds operations until Roman settles the seat.
+
+**Migration result (Roman's terminal run, 2026-09-17):** Renewals 27, Support 60, Tutor Accountability 13, 7 tickets converted to tasks, 2 left for review (Marcano, Shahar: possible Renewals duplicates). Six Support category saved views built in the portal the same morning (PO watch, PO exception, Billing, Scheduling, Cancellation, Other).
+
+**Files:** email/config.yaml, ops/tutor-issues/config.yml, ops/queues/migrate_tickets_2026_09_16.py, ops/queues/reassign_operations_2026_09_17.py, email/tests/test_router.py, email/tests/test_orchestration.py, ops/tutor-issues/tests/test_tutor_issues.py
+
+---
+
 ## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
 
 **What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`,

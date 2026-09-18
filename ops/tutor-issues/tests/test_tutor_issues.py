@@ -122,7 +122,7 @@ def test_ticket_shape(cfg):
                    source="test", evidence="e")
     p = plan.tickets[0]["props"]
     assert p["hs_pipeline"] == "0" and p["hs_pipeline_stage"] == "131537027"
-    assert p["hubspot_owner_id"] == cfg["staff"]["mandy"]["hubspot_owner_id"]
+    assert p["hubspot_owner_id"] == cfg["staff"]["emily"]["hubspot_owner_id"]
     assert p["ticket_source"] == "tutor_issues"
     assert p["hs_ticket_priority"] == "LOW"
     assert p["subject"].startswith("[Tutor Issue] Lesson notes not completed: Jane Doe")

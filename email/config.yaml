@@ -458,7 +458,6 @@ sibling_gap:
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
 staff:
   danielle: { name: "Danielle", hubspot_owner_id: "227538487", slack_user_id: "U05NMABF3B2" }  # Sales
-  mandy:    { name: "Mandy",    hubspot_owner_id: "80047201",  slack_user_id: "U08S3CHE93N" }  # Scheduling Lead
   paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR",
               email: "paola@wetutorathome.com" }  # Sales Support (email = the seat's Gmail; low_balance teacher drafts land there)
   janelle:  { name: "Janelle",  hubspot_owner_id: "80047202",  slack_user_id: "U08S3CG8XNY" }  # Scheduler 1 (A-L)
@@ -513,9 +512,9 @@ presend:
 
 roles:
   visionary: roman          # Director / owner
-  operations: mandy         # ops seat (Roman 2026-09-16: operations = Mandy; tutor accountability, support default)
+  operations: emily         # ops seat (Roman 2026-09-17: Mandy left; Emily holds operations, interim)
   escalation: emily         # last-resort escalation (was the operations key before 2026-09-16)
-  scheduling_lead: mandy    # watches the schedulers; Stuck queue
+  scheduling_lead: emily    # watches the schedulers; Stuck queue (Roman 2026-09-17, interim)
   scheduler_a_l: janelle
   scheduler_m_z: yolanda
   charter_admin: kath       # PO → invoice, tickets, billing

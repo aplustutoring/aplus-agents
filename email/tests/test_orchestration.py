@@ -95,7 +95,7 @@ def test_hubspot_parent_last_name_drives_split(monkeypatch, calls):
 def test_complaint_suppresses_draft(monkeypatch, calls):
     monkeypatch.setattr(main, "classify", _classify_stub("complaint"))
     rec = main.process_message("thread2", _msg())
-    assert rec["owner"] == "mandy"
+    assert rec["owner"] == "emily"
     assert rec["draft_posted"] is False
     assert calls["comments"] == []              # no draft for complaints
     assert len(calls["tickets"]) == 1
