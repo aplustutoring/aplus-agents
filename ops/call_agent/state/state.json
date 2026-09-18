@@ -989,9 +989,11 @@
     416389875,
     416390657,
     416391028,
-    416391284
+    416391284,
+    416409073,
+    416408396
   ],
-  "last_run_utc": "2026-09-17T23:42:27.311758+00:00",
+  "last_run_utc": "2026-09-18T00:45:40.054714+00:00",
   "pending_digest": [
     {
       "call_id": 416188350,
@@ -2571,6 +2573,169 @@
           "Wait for callback from the number (818) 288-8642; if no response in 1-2 business days, attempt another outreach or send a text.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416409073,
+      "number": "17474768918",
+      "time_pt": "5:35 PM",
+      "matched": true,
+      "contact_label": "Alina Matiukhina",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Outbound call to existing customer Alina Matiukhina regarding her daughter Sofiia. The transcript is heavily garbled and largely unintelligible, with references to another party ('Yolanda') and unclear discussion of a store and possibly middle school. No clear outcome or next steps were established on this call.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Re-attempt contact with Alina to clarify what was discussed, as the prior call was garbled and no clear outcome was reached.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Alina Matiukhina (existing customer, daughter Sofiia, grade 3) was reached on an outbound call but the conversation was largely unintelligible on our end \u2014 lots of cross-talk and a reference to someone named 'Yolanda.' No pricing, scheduling, or program decisions were made. Please call back to reset the conversation; open with: 'Hi Alina, this is [name] from A+ Tutoring \u2014 I wanted to follow up on our last call because the connection wasn't great. Can we start fresh on what you need for Sofiia?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with OPEN_DEAL status; lead status is owned by the deal pipeline and should not be changed.",
+        "student_or_school_names_mentioned": [
+          "Sofiia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound call to Alina about Sofiia was largely unintelligible due to audio/cross-talk issues; no substantive information exchanged.",
+          "what_we_can_do_to_help": "Re-attempt outreach to Alina to clarify current needs for Sofiia and reset the conversation.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound call to Alina about Sofiia was largely unintelligible due to audio/cross-talk issues; no substantive information exchanged."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Re-attempt outreach to Alina to clarify current needs for Sofiia and reset the conversation."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Re-attempt contact with Alina to clarify what was discussed, as the prior call was garbled and no clear outcome was reached.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416408396,
+      "number": "16614862261",
+      "time_pt": "5:36 PM",
+      "matched": true,
+      "contact_label": "Emily Arroyo",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle (A+) called Emily Arroyo to follow up on yesterday's missed session with tutor Allison due to a link mix-up. Emily opted to add the missed session to the end of the plan rather than reschedule. She also confirmed the current cadence (M/W/F at 1pm) and requested that Allison add math support for Emery, with Mondays as the preferred math day. Janelle apologized for the mix-up and will coordinate with Allison.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Add the missed session from yesterday to the end of Emery's current package (no reschedule).",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Notify tutor Allison that Emery will also need math support, with math sessions on Mondays.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm updated schedule with Emily once Allison has agreed to add math on Mondays.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Emily Arroyo (mom of Emery, 1st grade, iLEAD charter) was friendly and understanding on this outbound call. Janelle apologized for yesterday's link mix-up with tutor Allison \u2014 no lesson happened. Emily agreed to add that missed session to the END of the package (not reschedule). Current cadence confirmed as M/W/F at 1pm with Allison. Emily also asked whether Allison covers math; we said yes and Emily requested math support added on Mondays. Next step: Janelle to loop Allison in on the added math scope and Monday schedule, then confirm back with Emily. Open with: 'Hi Emily, just following up \u2014 I spoke with Allison about adding math on Mondays for Emery...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active tutoring plan; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Emery",
+          "Allison",
+          "iLEAD California Charters"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up re: yesterday's missed session with tutor Allison (link mix-up, no lesson held). Emily chose to add the missed session to the end of the package. Current cadence is M/W/F at 1pm. Emily also requested math support be added, with Mondays as the preferred math day.",
+          "what_we_can_do_to_help": "Coordinate with Allison to (1) add the missed session to the end of Emery's plan, and (2) add math support on Mondays. Confirm updated schedule back to Emily.",
+          "student_first_name": "Emery",
+          "student_last_name": null,
+          "grade_level": "1",
+          "student_school": "iLEAD California Charters",
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up re: yesterday's missed session with tutor Allison (link mix-up, no lesson held). Emily chose to add the missed session to the end of the package. Current cadence is M/W/F at 1pm. Emily also requested math support be added, with Mondays as the preferred math day."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Coordinate with Allison to (1) add the missed session to the end of Emery's plan, and (2) add math support on Mondays. Confirm updated schedule back to Emily."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Add the missed session from yesterday to the end of Emery's current package (no reschedule).",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Notify tutor Allison that Emery will also need math support, with math sessions on Mondays.",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Confirm updated schedule with Emily once Allison has agreed to add math on Mondays.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
