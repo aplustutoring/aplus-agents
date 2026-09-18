@@ -29631,3 +29631,13 @@
 {"message_id": "pending-po-reminder:64647214081", "source": "po_inbox", "action_taken": "pending_po_reminded", "deal_id": "64647214081", "po_number": "3114211063", "timestamp": "2026-09-17T23:13:30.067420+00:00"}
 {"message_id": "parent-chase-resolved:65103486639", "source": "po_inbox", "action_taken": "parent_chase_resolved", "deal_id": "65103486639", "thread_id": "1a0ac613626ea927", "resolved_via": "deal no longer NEEDS PARENT (human fixed)", "timestamp": "2026-09-17T23:58:02.278048+00:00"}
 {"message_id": "deal:65103486639", "source": "deal_sync", "deal_id": "65103486639", "deal_name": "Melissa Davis - Gianna Davis - Heartland 1 - 26/27", "tw_account": "online", "charter": true, "owner": null, "tw_customer_id": 2177644, "tw_action": "created", "tw_student_created": "Gianna", "action_taken": "tw_synced", "timestamp": "2026-09-17T23:58:04.138648+00:00"}
+{"ticket_id": "48626107916", "thread_id": "11198674763", "category": "payment_dispute", "action_taken": "auto_handled", "timestamp": "2026-09-18T00:35:09.322185+00:00"}
+{"ticket_id": "48590009948", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-18T00:40:09.715300+00:00"}
+{"ticket_id": "48568537258", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-18T00:40:11.019286+00:00"}
+{"ticket_id": "48573021349", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-18T00:40:11.663977+00:00"}
+{"ticket_id": "48585453611", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-18T00:40:12.443364+00:00"}
+{"ticket_id": "48564389246", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 2, "timestamp": "2026-09-18T00:40:14.002812+00:00"}
+{"ticket_id": "48623624491", "category": "unknown", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-18T00:40:17.272761+00:00"}
+{"ticket_id": "48618634417", "category": "low_balance", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-18T00:40:23.090778+00:00"}
+{"ticket_id": "48624570955", "category": "cancellation", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-18T00:40:26.321326+00:00"}
+{"ticket_id": "48609891925", "category": "recruitment", "owner": "mandy", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-18T00:40:27.341748+00:00"}
