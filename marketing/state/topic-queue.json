@@ -1,79 +1,75 @@
 {
-  "current_week": "2026-09-10",
+  "current_week": "2026-09-17",
   "topics": [
     {
       "slot": 1,
       "lens": "policy_funding_hawk",
       "lens_status": "ok",
-      "headline": "The post-ESSER HIT cliff \u2014 NSSA data shows 40% of districts plan to shrink tutoring; braided funding is the only way to hold the line",
-      "category": "E (with strong A crossover)",
+      "headline": "NWEA's new MAP Growth data shows reading recovery is real \u2014 and it's the students furthest behind who are gaining fastest",
+      "category": "E (primary research release)",
       "sources": [
-        "https://nssa.stanford.edu/sites/default/files/2026-Research%20in%20Progress%20to%20Better%20Understand%20%20High%20Impact%20Tutoring.pdf",
-        "https://nssa.stanford.edu/nssa-2026-conference/themes-next-steps"
+        "https://www.edweek.org/teaching-learning/at-long-last-reading-scores-for-younger-students-may-be-rising/2026/09",
+        "https://www.k12dive.com/news/k-8-reading-scores-see-sizable-post-covid-gains-in-latest-nwea-data/830580/",
+        "https://www.prnewswire.com/news-releases/a-welcome-turn-for-us-reading-as-new-nwea-report-shows-positive-trends-302878161.html"
       ],
-      "why_matters": "This is the single strongest evidence base A+ has ever had to argue the Title III / Title I braiding thesis. It is not opinion \u2014 it is Stanford tracking a nationwide decline that our target buyers are living right now. Five of our Tier A partners already receive Title III Immigrant funds; 18 have never applied. This research reframes that gap as urgent, not optional.",
-      "angle": "Lead with the 46% \u2192 decline number, then translate it: \"here is what the Title III + Title I braiding stack looks like for an independent-study charter.\"",
-      "roman_take": "The ESSER-to-Title-III bridge is not a fundraising trick \u2014 it is what separates programs that survive from programs that quietly die in Q3 of SY 2025-26.",
-      "danielle_take": "The 92% diagnostic-data figure is the tell: districts that instrumented HIT properly are the ones still running it. Here is what \"diagnostic data to target participation\" actually looks like inside a CARS/CALPADS workflow.",
-      "redundancy_max_similarity": 0.598642904863762,
+      "why_matters": "NWEA's latest MAP Growth analysis shows reading scores across grades K-8 crept up between spring 2025 and spring 2026, and \u2014 significantly \u2014 reading scores for students at the 10th percentile also improved. The 2026 data show that students across demographic groups made progress in reading, with Black and Hispanic students and students from low-income backgrounds making some of the largest gains. This is exactly the population A+ intervention is built for. A+ can honestly say: this is what our reclassification and intervention work looks like at scale. But the report doesn't declare victory \u2014 reading scores in most grades still remain below pre-pandemic levels, and persistent gaps by race/ethnicity and school poverty level are not gone; recovery will require sustained attention and interventions for students who were furthest from opportunity.",
+      "angle": "Lead with the encouraging headline (recovery is real for the students who were furthest behind), then pivot to the sober part \u2014 middle school math scores stagnated between 2025 and 2026 after showing improvement from 2022 through 2025 \u2014 and frame that as the next intervention frontier.",
+      "roman_take": "The story the field is missing \u2014 \"recovery\" isn't average scores creeping up; it's the 10th-percentile student gaining ground. That's the only recovery that counts, and it's the only recovery worth funding.",
+      "danielle_take": "For charter directors doing MAP Growth right now \u2014 here's what to actually look at in your Fall-to-Fall data, and here's why the middle-school math stagnation should reshape how you allocate Tier 2/Tier 3 minutes this semester. ---",
+      "redundancy_max_similarity": 0.560451888718476,
       "redundancy_bypassed": false
     },
     {
       "slot": 2,
       "lens": "target_school_radar",
       "lens_status": "ok",
-      "headline": "Heartland Charter's LCAP names high-impact 1:1 tutoring as its new 2025-26 intervention action",
-      "category": "C (Tier A partner \u2014 Heartland Charter School)",
-      "sources": [
-        "https://dwscbcy9jc8hm.cloudfront.net/sites/1639/comfy/cms/files/132635/files/original/05.22.2025_Regular_Board_Packet.pdf",
-        "https://heartlandcharterschool.com/"
-      ],
-      "why_matters": "A Tier A partner has put A+'s exact methodology into a governance document. The LCAP created a new action for 2025-2026: \"Provide high dosage and/or high impact 1:1 tutoring to support students' academic needs and close\" gaps, alongside an MTSS screener overhaul: \"Heartland has been evaluating its MTSS screeners and platforms and intends to utilize one or more new screeners and platforms in the coming year to further promote academic achievement through evidence-based interventions\". This is a charter putting the words \"high-impact 1:1 tutoring\" and \"MTSS\" into a board-approved plan \u2014 exactly the buying signal Danielle's other prospects need to see modeled.",
-      "angle": "\"What it looks like when a charter formalizes high-impact tutoring in its LCAP\" \u2014 pull the LCAP language, show why it's the right structural move (governance approval, not vendor promise), and let other charter directors see a peer doing it.",
-      "roman_take": "Conviction angle \u2014 LCAPs are where intervention strategy becomes real; if HIT tutoring isn't in your LCAP, it isn't your strategy, it's a line item somebody can cut in April.",
-      "danielle_take": "Implementation angle \u2014 how a special programs coordinator actually operationalizes an LCAP action like this (screener selection, tier assignment, dosage tracking) without adding an extra full-time role.",
-      "redundancy_max_similarity": 0.570165075975557,
+      "headline": "The Oct 15 aligned Dashboard + CAASPP release will drop with brand-new ELA and Math Growth Indicators for grades 4\u20138. Directors have 4 weeks.",
+      "category": "B (with C overlay \u2014 every Tier A partner is a TK\u201312 LEA subject to this)",
+      "sources": [],
+      "why_matters": "On October 15, 2026, CDE will release both the California School Dashboard and state-level CAASPP and ELPAC results \u2014 the first time since 2024 that assessment data has been aligned with Dashboard release on the same date, pursuant to Education Code 52064.5(f)(2). Layered onto that: the English Language Arts Growth and Mathematics Growth Indicators, reported on the California School Dashboard, applies to local education agencies, schools and student groups with students in grades 4-8, added Sept 3, 2026. Every Tier A partner (Visions, iLEAD, Sage Oak, Heartland, Compass, Ocean Grove, South Sutter, Sky Mountain, etc.) is going to be re-graded on growth for the first time \u2014 and A+'s entire pitch is growth for intervention students. This is the exact moment charter directors are asking \"what does our score look like and what do we do about it?\"",
+      "angle": "A+ publishes the \"4-week checklist\" for charter directors preparing for the Oct 15 release \u2014 what to look at first, how the new Growth Indicators change the story, and where intervention capacity gets deployed between now and January.",
+      "roman_take": "The growth indicator is the honest indicator. Proficiency snapshots reward affluent enrollment; growth rewards actual teaching. Charter schools should have been asking for this for a decade.",
+      "danielle_take": "Practical read-out \u2014 how a director should sit down with their Oct 15 numbers, cross-reference LTEL and Title III subgroups, and identify the 20\u201340 students where a Tier 2 intervention now moves the Dashboard cell color by spring.",
+      "redundancy_max_similarity": 0.7268538760525389,
       "redundancy_bypassed": false
     },
     {
       "slot": 3,
       "lens": "competitive_intel",
       "lens_status": "ok",
-      "headline": "Varsity Tutors for Schools is gone \u2014 and experts blame the evidence gap, not just the funding cliff",
-      "category": "D (industry/competitor moves) \u2014 strongest candidate from this lens",
+      "headline": "The K-12 tutoring market is consolidating around workforce-staffing plays \u2014 right as Varsity exits",
+      "category": "D (industry / competitor moves)",
       "sources": [
-        "https://finance.yahoo.com/small-business/articles/major-virtual-tutoring-provider-shuts-165502701.html",
-        "https://marketbrief.edweek.org/education-market/varsity-tutors-for-schools-exit-hints-at-shift-in-tutoring-market/2026/08",
-        "https://finance.yahoo.com/markets/stocks/articles/nerdy-q2-earnings-call-highlights-210353763.html",
+        "https://www.prnewswire.com/news-releases/ess-announces-acquisition-of-heytutor-expanding-k-12-workforce-solutions-with-tutoring-and-academic-intervention-services-302879932.html",
         "https://govspend.com/blog/varsity-tutors-for-schools-shuts-down-where-online-tutoring-demand-goes-next/",
-        "https://app.dealroom.co/news/feed/major-virtual-tutoring-provider-shuts-down-as-experts-cite-lack-of-evidence-for-student-performance-gains"
+        "https://marketbrief.edweek.org/education-market/varsity-tutors-for-schools-exit-hints-at-shift-in-tutoring-market/2026/08"
       ],
-      "why_matters": "This is the biggest competitive-intel moment in K-12 intervention in years. The post-pandemic tutoring market is entering a more difficult phase as districts move beyond temporary federal funding; at the end of July, Varsity Tutors, one of the nation's largest virtual tutoring providers, told school customers it would discontinue Varsity for Schools services effective immediately, and said the decision would allow it to refocus on parents and college students. Nerdy expects to cut annual fixed costs by about $11 million from the wind-down, and CEO Chuck Cohn said VT4S accounted for a low-single-digit percentage of the overall business but carried complexity amid a school funding environment that has been challenged for several years. The reason matters as much as the news: experts say the shutdown reflects more than just depleted federal relief funds, with multiple states including Louisiana and Massachusetts continuing to fund tutoring, and specialists suggesting Varsity failed to provide evidence of improved student performance as districts increasingly demand proven results. A+ has spent years building exactly the evidence base Varsity did not.",
-      "angle": "\"The largest virtual tutoring provider in the country just walked away from schools. Here's what actually killed the model \u2014 and what charter leaders should demand from any surviving intervention vendor.\"",
-      "roman_take": "Conviction angle \u2014 the market didn't reject tutoring, it rejected undifferentiated tutoring; A+ built for the world where districts ask \"prove it\" instead of \"how fast can you scale.\"",
-      "danielle_take": "Implementation angle \u2014 a practical checklist for charter directors whose Varsity/FEV/etc. contracts just evaporated 30 days before school starts, focused on Title I/III fund protection and continuity of service. ---",
-      "redundancy_max_similarity": 0.5925318307431461,
+      "why_matters": "In 30 days, one of the largest virtual tutoring providers in the country exited the district business, and one of the largest K-12 staffing companies bought its way in. That's a structural reshuffle. Charter directors who signed with Varsity are now scrambling; the ESS/HeyTutor bundle signals tutoring is being repositioned as a staffing category, not a specialized intervention. A+ is one of the few remaining independent, California-focused, charter-native providers \u2014 and that positioning gets sharper the more the market consolidates around generalists.",
+      "angle": "\"Two things happened in the tutoring market this month. Here's what they mean for California charters heading into Q2.\" A calm, useful explainer that doesn't dunk on competitors but names the shift.",
+      "roman_take": "Conviction angle \u2014 tutoring isn't a staffing SKU; it's an intervention model, and the schools that treat it like a commodity get commodity results. The exits and roll-ups prove the point.",
+      "danielle_take": "Implementation angle \u2014 for the ~10 charters in California caught mid-year by Varsity's August shutdown, here's what to check in your current intervention data before choosing what's next (curriculum alignment, ELPAC-linked progress monitoring, Title III eligibility). A practical checklist post.",
+      "redundancy_max_similarity": 0.5715584766708597,
       "redundancy_bypassed": false
     }
   ],
   "slack": {
     "channel_id": "C0B4K9K0162",
-    "message_ts": "1789098405.006819",
-    "posted_at": "2026-09-10T20:41:26.096751-07:00",
+    "message_ts": "1789703697.993729",
+    "posted_at": "2026-09-17T20:49:27.331112-07:00",
     "approval_deadline": null,
     "refresh_mode": false,
     "thread_replies": [
       {
         "slot": 1,
-        "ts": "1789098405.229689"
+        "ts": "1789703698.201039"
       },
       {
         "slot": 2,
-        "ts": "1789098405.460139"
+        "ts": "1789703698.481889"
       },
       {
         "slot": 3,
-        "ts": "1789098405.696589"
+        "ts": "1789703698.733629"
       }
     ],
     "processed_reply_ts": []
@@ -82,7 +78,7 @@
     "status": "auto_approved",
     "approved_slot": null,
     "approved_by": "auto (no approval gate)",
-    "approved_at": "2026-09-10T20:41:26.096751-07:00",
+    "approved_at": "2026-09-17T20:49:27.331112-07:00",
     "denied_by": null,
     "denied_at": null,
     "edit_note": null

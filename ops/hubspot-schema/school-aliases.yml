@@ -85,18 +85,21 @@ schools:
       - Ocean Grove Charter School
       - Ocean Grove
       - Ocean Grove Charter Schoo
+      - OG                       # IEM HSA intake sheet shorthand (2026-09-15)
 
   - canonical: Sky Mountain Charter School
     network: IEM
     aliases:
       - Sky Mountain Charter School
       - Sky Mountain
+      - SM                       # IEM HSA intake sheet shorthand (2026-09-15)
 
   - canonical: South Sutter Charter School
     network: IEM
     aliases:
       - South Sutter Charter School
       - South Sutter
+      - SS                       # IEM HSA intake sheet shorthand (2026-09-15)
 
   - canonical: Lake View Charter School
     network: IEM

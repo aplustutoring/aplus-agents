@@ -1,0 +1,136 @@
+# ops/checkin — the quality check-in, owned by us instead of by a Zap.
+# Secrets live in env vars (repo secrets on Actions) — never here.
+#
+# WHY THIS IS A REBUILD AND NOT A REPLACEMENT.
+#
+# The check-in that runs today lives in HubSpot workflow "Quality - 2.0"
+# (1680794394), which posts to a Zapier hook that sends the text. It is
+# ungated: no suppression list, no time windows, re-enrollment on, and no idea
+# whether a human is already mid-conversation with the family.
+#
+# Measured over 7 days of live traffic BEFORE touching it:
+#
+#   sends        9
+#   replies      8   (89%)
+#   within 1h    7
+#   substantive  5   (56% of sends)
+#   collisions   1   (11% landed within an hour of a human message)
+#
+# That is an exceptional reply rate, and the substance is the point. In one
+# week it surfaced a family leaving over price (Judy Goldzweig), two service
+# gaps nobody had reported (Miran Mavlan, "no homework or book to follow";
+# Albee Li, "we just do not know the plan"), and an unprompted testimonial
+# ("I was doubting a virtual tutoring session, but it worked").
+#
+# So the campaign is not the problem. Three narrow things are:
+#   1. 11% of sends interrupt a live conversation. Albee Li got the robot 15
+#      minutes after a scheduler had apologised to her about the same lesson.
+#   2. The copy is generic. It names nobody and asks nothing specific.
+#   3. Nothing catches what it finds. Judy said she was leaving over cost and
+#      was let go with "let me know if there's any other way I can assist".
+#
+# This agent keeps the reply rate and fixes those three.
+
+registry_id: checkin
+
+# SHIPPED DISARMED. Flip only after Roman reads a dry run (2026-07-31 rule:
+# nothing customer-facing goes live on its author's say-so).
+armed: false
+
+audience:
+  # HubSpot is the trigger, this agent is the judgement. Same shape as the
+  # deal-sync doorbell, and the reason the Zap needs to hold no logic at all
+  # (Roman 2026-09-16: "why deal with HubSpot when we are building it to work
+  # as an agent").
+  pipeline: "907748"           # Charter Schools - Traditional Vendor Funds
+  stages: ["907774"]           # Post-Lesson: tutoring has actually started
+  first_checkin_after_days: 10   # early enough to catch a bad start
+  repeat_after_days: 45          # never pester the same family
+
+gate:
+  # The 11%. If anyone has exchanged a message with this family recently, a
+  # check-in is an interruption, not an outreach.
+  skip_if_message_within_hours: 48
+  skip_if_open_ticket: true      # somebody is already dealing with them
+  # Quiet hours, PT. The existing campaign has no time window at all.
+  send_hour_start_pt: 9
+  send_hour_end_pt: 18
+  send_weekdays_only: true
+  max_per_family_per_day: 1
+
+copy:
+  # Quality means SPECIFIC. The current text names nobody and could be about
+  # any child at any company. Naming the tutor and the count is what makes a
+  # parent answer properly instead of saying "fine".
+  #
+  # First names only, students and tutors alike (Roman, LOCKED 2026-09-09).
+  # No em dashes, ever (LOCKED 2026-08-24).
+  # No invented numbers. An earlier draft said "has had {lessons} sessions",
+  # which needs a Teachworks count this agent cannot reliably source, and a
+  # wrong number in front of a parent is worse than no number.
+  with_tutor: "Hi {parent}, it's A+ Tutoring. How are {student}'s sessions with {tutor} going? If there is anything you would like {tutor} to focus on next, tell us and we will pass it on."
+  without_tutor: "Hi {parent}, it's A+ Tutoring. How are {student}'s sessions going so far? If there is anything you would like the tutor to focus on next, tell us and we will pass it on."
+  # The closing ask is deliberate. "How is it going?" gets "fine". Asking what
+  # they want focused on next is what got Miran's missing homework and Albee's
+  # missing lesson plan, which is where the value was.
+
+triage:
+  # The third fix. A reply reporting a problem, or hinting at leaving, becomes
+  # somebody's job instead of a line in a text thread.
+  enabled: true
+  ticket_pipeline: "0"
+  ticket_stage: "131537027"
+  churn_phrases:
+    - "other services"
+    - "somewhere else"
+    - "too expensive"
+    - "out of my budget"
+    - "budget"
+    - "cancel"
+    - "no lessons until"
+    - "final decision"
+    - "stop for now"
+  gap_phrases:
+    - "no homework"
+    - "don't know the plan"
+    - "do not know the plan"
+    - "no plan"
+    - "hasn't started"
+    - "has not started"
+    # Abigail Villa, 2026-09-17: "Zahavi is supposed to start tutoring but
+    # hasn't". The phrase that carries the meaning is the intent, not the
+    # word "started", which never appears.
+    - "supposed to start"
+    - "still waiting"
+    - "no one has"
+    - "nobody has"
+    - "no book"
+    - "nothing to follow"
+    - "not able to preview"
+    - "never got back"
+  owner_role: scheduler_split
+
+guards:
+  max_sends_per_run: 12
+  # First run with no state/baseline.json sends NOTHING. Not configurable off.
+
+staff:
+  janelle:
+    hubspot_owner_id: "80047202"
+    slack_id: "U08S3CG8XNY"
+  yolanda:
+    hubspot_owner_id: "86868539"
+    slack_id: "U0A6XGBU7QT"
+  paola:
+    hubspot_owner_id: "81494333"
+    slack_id: "U094B5DRZBR"
+schedulers:
+  a_to_l: janelle
+  m_to_z: yolanda
+
+slack:
+  channel: "#calls"
+sms:
+  from_line: "+18188691627"    # support line: these families have a deal
+state:
+  path: "ops/checkin/state"

@@ -26,7 +26,7 @@ const EVENT_TAG = "blue_ridge_btsc_2026";
 // HubSpot silently rejected them, so this list is the contract and
 // test-worker.mjs asserts every one of them.
 const VALID_ROLES = ["administrator", "teacher", "support_staff", "parent", "student"];
-const PRIZES = ["Tic-Tac-Toe", "Bookmark Scratcher", "Pop-it", "Squishy Pen"];
+const PRIZES = ["Bookmark Scratcher", "Pop-it", "Squishy Pen", "Stickers"];
 
 const cors = (env) => ({
   "Access-Control-Allow-Origin": env.ALLOWED_ORIGIN || "*",

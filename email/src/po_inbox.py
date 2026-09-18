@@ -28,6 +28,7 @@ from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, p
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
+from .names import first_name
 
 PO_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
@@ -218,7 +219,13 @@ def _fmt_time(hhmm: str) -> str:
 def _schedule_text(lessons: list[dict]) -> str:
     """Human schedule line for the SMS from lesson slots — grouped into
     recurring (weekday, time, tutor) patterns, most frequent first:
-    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'."""
+    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'.
+
+    The tutor goes in FIRST NAME ONLY. Teachworks returns "Last, First", so
+    the raw value put "Mondays 10:00 AM with Karl, Sonya" in front of Nikita
+    Brixey on 2026-09-16 and she replied "I don't know who Karl is?" Karl was
+    Sonya's surname, and the comma made one tutor look like two.
+    """
     from collections import Counter
     from datetime import date as _date
     slots: Counter = Counter()
@@ -227,7 +234,7 @@ def _schedule_text(lessons: list[dict]) -> str:
             wd = _date.fromisoformat(str(l.get("date"))[:10]).strftime("%A")
         except ValueError:
             continue
-        slots[(wd, (l.get("time") or "").strip(), (l.get("tutor") or "").strip())] += 1
+        slots[(wd, (l.get("time") or "").strip(), first_name(l.get("tutor")))] += 1
     parts = []
     for (wd, t, tut), _n in slots.most_common(4):
         bit = wd + "s" + (f" {_fmt_time(t)}" if t else "")
@@ -507,6 +514,35 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         return
     month_end = _po_month_end(po.get("service_end_month")
                               or po.get("po_month") or "")
+    if (ic.get("mode") or "task").strip().lower() == "ticket":
+        # Roman 2026-09-16 (STEP 5): no more one-task-per-PO. A clean PO is a
+        # Support case, category po_watch, owner charter_admin, that closes
+        # itself when the Teachworks invoice number lands on the deal
+        # (po_watch_sweep). The timeline note on the deal stays as it was.
+        from . import case_engine as ce
+        student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
+        key = f"po_watch:{po.get('po_number') or deal_id}"
+        role, _why = ce.owner_for_support("po_watch")
+        desc = (f"PO received; convert it to a Teachworks invoice, then stamp Invoice # on the deal.\n"
+                f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\nPO #: {po.get('po_number') or 'n/a'}\n"
+                f"Amount: ${po.get('amount')}\nHours: {po.get('hours') or 'n/a'}"
+                + (f" @ ${po.get('rate')}/hr" if po.get("rate") else "") + "\n"
+                + (f"Submit to the school's ops system by {month_end.strftime('%b %-d, %Y')} (end of PO month).\n" if month_end
+                   else "Service month not stated: confirm it and set Expected Lessons Fulfilled Date on the deal.\n")
+                + ("PO is PENDING school approval: confirm before invoicing.\n" if po.get("pending_approval") else "")
+                + f"HubSpot deal id: {deal_id}. This ticket closes on its own once Invoice # is on the deal.")
+        try:
+            t = ce.open_case("po_inbox", key, "support", "new",
+                             f"PO watch: {student} ({po.get('school') or '?'}, PO {po.get('po_number') or 'n/a'}, ${po.get('amount')})",
+                             desc, role, deal_id=(deal_id if deal_id != "DRYRUN" else None),
+                             props={"support_category": "po_watch", "ticket_source": "email_engine"},
+                             priority="MEDIUM", category="new_deal_po", source="EMAIL")
+            note_parts.append(f"🧾 PO watch ticket {t.get('id')} for {(staff(role) or {}).get('name', 'Kath')} "
+                              f"(${po.get('amount')}); it closes itself when Invoice # lands on the deal.")
+        except Exception as e:  # noqa: BLE001 — the deal must survive a ticket failure
+            print(f"  ⚠️  po_watch ticket failed (non-fatal): {e}")
+            note_parts.append("🧾 Could not open the PO watch ticket — invoice manually.")
+        return
     try:
         prop = (ic.get("invoice_due_property") or "").strip()
         if prop and month_end and deal_id and deal_id != "DRYRUN":
@@ -558,6 +594,35 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
     except Exception as e:  # noqa: BLE001 — the deal must survive a task failure
         print(f"  ⚠️  invoice task failed (non-fatal): {e}")
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
+
+
+def po_watch_sweep() -> int:
+    """Needs-invoice for POs: an open Support ticket with support_category
+    po_watch closes as Resolved once its deal carries Invoice # (Kath's stamp
+    from the Teachworks invoice). Runs with the hourly deal-sync sweep.
+    Returns how many closed."""
+    from . import case_engine as ce
+    n = 0
+    try:
+        tickets = ce.open_tickets("support", [{"propertyName": "support_category", "operator": "EQ", "value": "po_watch"}])
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  po_watch sweep read failed: {e}")
+        return 0
+    for t in tickets:
+        tid = str(t.get("id"))
+        try:
+            assoc = hs._get(f"/crm/v4/objects/tickets/{tid}/associations/deals", {"limit": 10})
+            for r in assoc.get("results") or []:
+                d = hs._get(f"/crm/v3/objects/deals/{r['toObjectId']}", {"properties": "invoice__,dealname,po_number"})
+                inv = ((d.get("properties") or {}).get("invoice__") or "").strip()
+                if inv:
+                    ce.close(tid, "support", "resolved",
+                             f"🧾 Invoice {inv} is on {((d.get('properties') or {}).get('dealname'))}; PO watch done.")
+                    n += 1
+                    break
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  po_watch check failed for {tid}: {e}")
+    return n
 
 
 def _norm_po_number(raw) -> str:
@@ -2167,7 +2232,13 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
                               # the subject line.
                               extra_props={"po_work_type": work_type,
                                            "ticket_source": "email_engine",
-                                           "source_thread_id": m.get("threadId", "")})
+                                           "source_thread_id": m.get("threadId", ""),
+                                           # case engine (2026-09-16): PO exceptions are a Support category
+                                           "support_category": ("po_exception" if work_type in
+                                                                ("purchase_order", "po_cancellation", "parent_info_reply",
+                                                                 "ar_followup", "invoice_correction", "vendor_compliance",
+                                                                 "vendor_onboarding") else "other"),
+                                           "case_client": "po_inbox"})
     record["ticket_id"] = ticket.get("id")
     record["sla_due"] = sla_due.isoformat()
 
