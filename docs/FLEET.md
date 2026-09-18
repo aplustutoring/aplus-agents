@@ -250,7 +250,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 |---|---|---|---|---|
 | **tutor-issues**<br>Tutor-issue ticketing (sweep + inbound reports + intake) | Monday sweep, 09/10 PT | active | Teachworks, email/state/audit_log.jsonl, HubSpot, JustCall, Slack | HubSpot, Slack, ops/tutor-issues/state/ |
 
-- **tutor-issues** — Tickets on the tutor's contact record for 5 issue types; owner = the Operations role (`ops/tutor-issues/config.yml` `roles:`, never a person); silent internal log in v1 (nothing tutor-facing)
+- **tutor-issues** — Tickets on the tutor's contact record for 5 issue types; owner = the Operations role (see roles: in the config, never a person); silent internal log in v1 (nothing tutor-facing)
 
 ## Working rules every agent follows
 
