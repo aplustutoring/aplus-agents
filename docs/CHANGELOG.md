@@ -453,10 +453,20 @@ single page whatever paper the sheet has selected. Worker deployed
 Delilah pages share the old rule and should get the same change before their
 next use.
 
+**Second print (10:40): the URL was still on the sheet.** Safari stamps its
+header/footer on a `window.print()` page whatever the CSS says, so the page
+no longer prints through Safari at all. `printCard()` hands the JPEG itself
+to the iOS share sheet (`navigator.share({files})`, called synchronously
+inside the tap so it keeps the user activation); staff taps Print there and
+AirPrint prints the image borderless on 4x6 with no text. A gold "Print
+again" button on the done screen re-opens the sheet if it was dismissed.
+`window.print()` remains only as the fallback where Web Share cannot take
+files. Worker `sage-oak-booth` version deployed with this: see PR #261.
+
 **Still human on the iPad:** reload the booth page (or reopen the Home
-Screen icon) so it picks up the new CSS; in the print sheet pick Paper Size
-4x6 / Postcard; if an Options row shows "Print Headers and Footers", turn it
-off. One test print before the next family.
+Screen icon) so it picks up the change; in the share sheet tap Print, pick
+the Selphy and 4x6 once, and it stays selected. One test print before the
+next family.
 
 ---
 ## 2026-09-18 — Sage Oak booth: photos mirror to a folder in the A+ Events shared drive

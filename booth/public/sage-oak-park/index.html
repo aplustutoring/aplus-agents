@@ -234,6 +234,7 @@
   #screen-done h2{font-size:clamp(40px,6vw,68px);font-weight:800;}
   #screen-done h2 em{font-style:normal;color:var(--gold);}
   .done-sub{margin-top:18px;font-size:21px;font-weight:600;color:var(--sage-soft);max-width:34ch;line-height:1.5;}
+  .done-print{margin-top:30px;min-height:64px;padding:0 34px;font-size:19px;}
   .done-reset{margin-top:46px;font-size:15px;color:rgba(201,212,191,.6);font-weight:700;}
 
   /* ---------- Print ---------- */
@@ -409,6 +410,7 @@ const CONFIG = {
   <h2>You're <em>all set!</em></h2>
   <div class="done-sub" id="done-msg"></div>
   <div class="done-sub" style="margin-top:26px;font-size:17px;">Stop by the A+ Tutoring table to learn about one-on-one tutoring for your student, often at no cost through Sage Oak enrichment funds.</div>
+  <button type="button" class="btn btn-gold done-print" id="btn-print-again">Print again</button>
   <div class="done-reset">Resetting for the next family&hellip;</div>
 </div>
 
@@ -713,17 +715,41 @@ const CONFIG = {
     });
   });
 
+  // ---------- Print ----------
+  // iPad: hand the JPEG to the iOS share sheet and let staff tap Print there.
+  // Safari's window.print() stamps its own header/footer (page URL, date,
+  // "Page 1 of") on the sheet no matter what the page CSS says, and paginates
+  // by whatever paper size the print sheet has selected (Park Day 2026-09-18:
+  // URL across the photo, bottom quarter of the card on a page that never
+  // printed). The share sheet prints the image itself over AirPrint:
+  // borderless 4x6, no text. Falls back to window.print() where the Web Share
+  // API cannot take files (desktop browsers, old iPadOS).
+  function cardFile(){
+    const b64=state.photoDataUrl.split(",")[1];
+    const bin=atob(b64), bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    return new File([bytes], "sage-oak-park-day-2026.jpg", {type:"image/jpeg"});
+  }
+  function printCard(){
+    let file=null;
+    try{ file=cardFile(); }catch(e){}
+    if(file && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file], title:CONFIG.EVENT_NAME}).catch(()=>{ /* dismissed: "Print again" on the done screen */ });
+      return;
+    }
+    $("print-img").src=state.photoDataUrl;
+    setTimeout(()=>window.print(), 300);
+  }
+
   async function submitAll(){
     show("sending");
     const wantsEmail = state.delivery==="email"||state.delivery==="all";
     const wantsText  = state.delivery==="text" ||state.delivery==="all";
     const wantsPrint = state.delivery==="print"||state.delivery==="all";
 
-    // Print immediately (doesn't depend on network)
-    if(wantsPrint){
-      $("print-img").src=state.photoDataUrl;
-      setTimeout(()=>window.print(), 300);
-    }
+    // Print immediately (doesn't depend on network). Must run before the
+    // first await: the share sheet needs the tap's user activation.
+    if(wantsPrint) printCard();
 
     // One POST per person, same photo. Texts go only to people who gave a
     // phone; everyone gets the email when email was chosen. Sent together so
@@ -755,6 +781,7 @@ const CONFIG = {
     show("done");
     setTimeout(fullReset, CONFIG.DONE_RESET_MS);
   }
+  $("btn-print-again").addEventListener("click", ()=>{ if(state.photoDataUrl) printCard(); });
 })();
 </script>
 </body>
