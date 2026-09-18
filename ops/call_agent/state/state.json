@@ -1015,9 +1015,10 @@
     416811482,
     416811986,
     416812924,
-    416812943
+    416812943,
+    416813718
   ],
-  "last_run_utc": "2026-09-18T21:49:52.154973+00:00",
+  "last_run_utc": "2026-09-18T21:57:28.382207+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -2079,6 +2080,106 @@
         ],
         [
           "Investigate internally why prior emails from Jeff Werner were missed by the team (Roman already flagged this to Jeff and apologized).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 416813718,
+      "number": "13236320815",
+      "time_pt": "2:45 PM",
+      "matched": true,
+      "contact_label": "Jeff Werner",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Jeff Werner (dad of Iris, 6th grader prepping for private-school ISEE) reconnected with Roman after the earlier dropped call. Roman explained Iris's ~25% math score is statistically equivalent to random guessing and proposed sending a math-only ISEE practice test for Iris to take fresh tomorrow morning. They aligned on consultant Sandy's plan: target a mid-November ISEE and a mid-December backup, pending cross-reference with target-school application deadlines. Jeff will email results back; Roman is available over the weekend but not Monday. Warm, trusting tone \u2014 Jeff said he feels in good hands.",
+        "caller_type": "parent",
+        "intent": "other",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send Jeff a math-only ISEE practice test (sections 2 and 4) for Iris to take fresh tomorrow morning",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "After Jeff emails results back, review the actual math questions to pinpoint Iris's specific struggle areas and shape the tutoring plan",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Cross-reference target private-school application deadlines against the Nov/Dec ISEE test dates before locking the testing schedule",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Be available to connect with Jeff over the weekend (Roman off Monday) to discuss results",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roman just spoke with Jeff Werner (dad, warm and trusting \u2014 said he feels in good hands) about daughter Iris (6th grade, testing for 7th-grade private school entry via ISEE). Roman promised to send a math-ONLY ISEE practice test (sections 2 and 4); Jeff will have Iris take it fresh tomorrow morning and email results back. Roman will then analyze the actual questions to identify struggle areas and build the tutoring plan. Plan aligned with consultant Sandy (LA SchoolScout): mid-November ISEE + mid-December backup so family has two scores to choose from \u2014 but still need to cross-reference target schools' application deadlines before locking dates. Roman is available this weekend, NOT Monday. Jeff now expects (1) the math practice test in his inbox today/tonight and (2) a follow-up conversation after he emails results back. If opening with Jeff, try: 'Hi Jeff \u2014 Roman here, sending over that math-only ISEE section for Iris now; take your time tomorrow morning and shoot the results back whenever you're done.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an OPEN_DEAL \u2014 status is owned by the deal pipeline, not to be changed from this call.",
+        "student_or_school_names_mentioned": [
+          "Iris Werner",
+          "Sandy (LA SchoolScout)",
+          "Larchmont"
+        ],
+        "record_updates": {
+          "whats_going_on": "Reconnected after earlier dropped call. Roman confirmed Iris's ~25% ISEE math score is statistically equivalent to random guessing across every question \u2014 not a specific grade-level placement. Jeff understood and is aligned on tackling math first, verbal second, per Sandy's plan (mid-Nov ISEE + mid-Dec backup for two scores to choose from). Jeff warm and confident in A+; called from the car.",
+          "what_we_can_do_to_help": "Roman to send a math-only ISEE practice test (sections 2 and 4); Jeff will have Iris take it fresh tomorrow morning and email results back. Roman will then review the actual questions to identify specific struggle areas and shape the tutoring plan. Still need to cross-reference target private-school application deadlines against Nov/Dec ISEE dates before locking the testing schedule. Roman available over the weekend, off Monday.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Reconnected after earlier dropped call. Roman confirmed Iris's ~25% ISEE math score is statistically equivalent to random guessing across every question \u2014 not a specific grade-level placement. Jeff understood and is aligned on tackling math first, verbal second, per Sandy's plan (mid-Nov ISEE + mid-Dec backup for two scores to choose from). Jeff warm and confident in A+; called from the car."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman to send a math-only ISEE practice test (sections 2 and 4); Jeff will have Iris take it fresh tomorrow morning and email results back. Roman will then review the actual questions to identify specific struggle areas and shape the tutoring plan. Still need to cross-reference target private-school application deadlines against Nov/Dec ISEE dates before locking the testing schedule. Roman available over the weekend, off Monday."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Jeff a math-only ISEE practice test (sections 2 and 4) for Iris to take fresh tomorrow morning",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "After Jeff emails results back, review the actual math questions to pinpoint Iris's specific struggle areas and shape the tutoring plan",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Cross-reference target private-school application deadlines against the Nov/Dec ISEE test dates before locking the testing schedule",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Be available to connect with Jeff over the weekend (Roman off Monday) to discuss results",
           81494333,
           "follow_up"
         ]
