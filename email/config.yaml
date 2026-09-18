@@ -458,13 +458,17 @@ sibling_gap:
 # hubspot_owner_id → ticket owner; slack_user_id → DM target (Uxxxx member id).
 staff:
   danielle: { name: "Danielle", hubspot_owner_id: "227538487", slack_user_id: "U05NMABF3B2" }  # Sales
-  mandy:    { name: "Mandy",    hubspot_owner_id: "80047201",  slack_user_id: "U08S3CHE93N" }  # Scheduling Lead
+  # mandy REMOVED 2026-09-17 (terminated). Her seat's work is held by the
+  # tutor_quality_owner role below until the Tutor Quality Lead is hired.
+  # Nothing should reference a person here who cannot receive the work: on
+  # 2026-09-17 a scheduler told a waiting family "Mandy will be right with
+  # you", and the family left after ten minutes.
   paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR",
               email: "paola@wetutorathome.com" }  # Sales Support (email = the seat's Gmail; low_balance teacher drafts land there)
   janelle:  { name: "Janelle",  hubspot_owner_id: "80047202",  slack_user_id: "U08S3CG8XNY" }  # Scheduler 1 (A-L)
   yolanda:  { name: "Yolanda",  hubspot_owner_id: "86868539",  slack_user_id: "U0A6XGBU7QT" }  # Scheduler 2 (M-Z)
   kath:     { name: "Kath",     hubspot_owner_id: "513215050", slack_user_id: "U05NW5H3SLC" }  # Admin
-  emily:    { name: "Emily",    hubspot_owner_id: "39191217",  slack_user_id: "U05MXK1MC5Q" }  # Operations — 2x-breach escalation
+  emily:    { name: "Emily",    hubspot_owner_id: "39191217",  slack_user_id: "U05MXK1MC5Q" }  # Operations, and interim holder of the vacated seat
   roman:    { name: "Roman",    hubspot_owner_id: "38681249",  slack_user_id: "U05NA7UMSSV" }  # Director
 
 # ── Accountability chart (EOS seats) ─────────────────────────────
@@ -513,9 +517,16 @@ presend:
 
 roles:
   visionary: roman          # Director / owner
-  operations: mandy         # ops seat (Roman 2026-09-16: operations = Mandy; tutor accountability, support default)
-  escalation: emily         # last-resort escalation (was the operations key before 2026-09-16)
-  scheduling_lead: mandy    # watches the schedulers; Stuck queue
+  # ── THE ONE LINE TO CHANGE WHEN THE TUTOR QUALITY LEAD IS HIRED ──
+  # Everything the Operations Lead seat held points here. Mandy left on
+  # 2026-09-17; Emily holds it in the interim (Roman: "Interim owner for
+  # everything Mandy held: Emily. Not Roman."). Swap this one value when the
+  # Mexico-based Tutor Quality Lead starts, and onboarding, evaluation and
+  # accountability all follow.
+  tutor_quality_owner: emily
+  operations: emily         # was mandy until 2026-09-17; tutor accountability, support default
+  escalation: emily         # last-resort escalation
+  scheduling_lead: emily    # was mandy; watches the schedulers, owns the Stuck queue
   scheduler_a_l: janelle
   scheduler_m_z: yolanda
   charter_admin: kath       # PO → invoice, tickets, billing
@@ -547,7 +558,7 @@ routing:
   charter_newsletter:  { owner: sales,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
   review_received:     { owner: quality,        sla_hours: 8,   draft: false, priority: normal }  # respond ON the platform, not by email
   junk:                { owner: null,              sla_hours: null, draft: false, auto_archive: true }
-  unknown:             { owner: scheduling_lead,             sla_hours: 4,   draft: false, review: true }  # Mandy owns the Stuck queue
+  unknown:             { owner: scheduling_lead,             sla_hours: 4,   draft: false, review: true }  # the scheduling lead owns Stuck
 
 # Last-name split boundary for scheduling/cancellation.
 scheduler_split:
@@ -971,8 +982,14 @@ thresholds:
 # owners). 3x → level3 (last resort) + ticket moved to Stuck. level2 is skipped if the
 # supervisor is already the owner (no double-ping).
 escalation:
-  level2: scheduling_lead   # watches the schedulers
-  level3: operations   # last resort
+  # level2 DELETED 2026-09-17. It was the Operations Lead step, and Roman's
+  # instruction on Mandy's departure was explicit: "Ticket escalations as a
+  # Mandy-owned function no longer exist. Do not reassign that escalation
+  # step; delete it." Schedulers file Tutor Accountability tickets directly.
+  # Reassigning it would also have pinged the same person twice, since
+  # operations and scheduling_lead are now both Emily.
+  level2: null
+  level3: operations   # last resort (tutor_quality_owner)
 
 # Aging sweep (Roman 2026-08-26). The chain above walks the AUDIT LOG, so it only
 # ever sees tickets the email/PO agents created — hand-made CRM tickets and call
