@@ -1002,9 +1002,10 @@
     416707056,
     416724091,
     416739598,
-    416771215
+    416771215,
+    416775613
   ],
-  "last_run_utc": "2026-09-18T20:12:31.249770+00:00",
+  "last_run_utc": "2026-09-18T20:16:29.356115+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1523,6 +1524,75 @@
           "Await Jacqueline's callback; if no callback within a couple of days, attempt outreach again to discuss tutoring needs.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416775613,
+      "number": "13236363579",
+      "time_pt": "1:13 PM",
+      "matched": true,
+      "contact_label": "Karen Chung",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle called Karen Chung to follow up on the failed trial lesson from 9/18. Karen confirmed the microphone issue has resolved itself \u2014 she rechecked the platform and it's clear now. She needs to reschedule the trial for next week but wants to check her schedule and text Janelle back with times. Warm, easy call; no immediate booking made.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Wait for Karen's text with her availability next week and rebook Yura's free online trial lesson, then re-coordinate with the tutor.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Karen Chung (mom of Yura, 6, Blue Ridge Academy charter, first-grade ESL support) was friendly and easy on this callback. Mic issue that killed the 9/18 trial has resolved on its own \u2014 she rechecked the platform, no permissions block anymore. She can't do the trial today; she'll text us next week with times that work. When her text comes in, confirm a slot, resend the platform link, and re-coordinate the early-elementary ESL tutor. Suggested opener when she texts: 'Hi Karen \u2014 thanks for sending times! Let's lock in [day/time] for Yura's trial. I'll resend the link and loop in the tutor.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Karen is an active family in an open deal (trial being rescheduled) \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Yura Chung",
+          "Blue Ridge Academy"
+        ],
+        "record_updates": {
+          "whats_going_on": "[callback] Janelle reached Karen to reschedule the trial. Karen reported the mic issue has resolved \u2014 she rechecked the platform and it's clear now. She can't do the trial today and will text Janelle next week with times that work.",
+          "what_we_can_do_to_help": "[callback] Janelle to watch for Karen's text with next-week availability, then rebook the free online trial, resend the platform link, and re-coordinate with the matched early-elementary ESL tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[callback] Janelle reached Karen to reschedule the trial. Karen reported the mic issue has resolved \u2014 she rechecked the platform and it's clear now. She can't do the trial today and will text Janelle next week with times that work."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[callback] Janelle to watch for Karen's text with next-week availability, then rebook the free online trial, resend the platform link, and re-coordinate with the matched early-elementary ESL tutor."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Karen's text with her availability next week and rebook Yura's free online trial lesson, then re-coordinate with the tutor.",
+          80047202,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
