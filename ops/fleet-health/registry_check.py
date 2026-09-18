@@ -35,7 +35,9 @@ WORKFLOW_DIR = REPO / ".github" / "workflows"
 
 REQUIRED = ("id", "name", "owner", "status", "engine", "runtime")
 VALID_STATUS = {"active", "manual", "deprecated", "unverified"}
-VALID_RUNTIME = {"github-actions", "cloudflare-worker", "apps-script", "zapier"}
+VALID_RUNTIME = {"github-actions", "cloudflare-worker", "apps-script", "zapier", "local"}
+# `local` = a script a human runs from a laptop (no workflow file, no server).
+# It still needs a `source:` path so the fleet map can point at the code.
 
 # Non-Actions agents have no workflow file to enumerate, so they cannot be
 # discovered the way Actions agents can. These heuristics are the next best

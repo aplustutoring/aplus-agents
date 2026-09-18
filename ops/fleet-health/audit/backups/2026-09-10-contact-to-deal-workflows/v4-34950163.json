@@ -1,0 +1,176 @@
+{
+ "id": "34950163",
+ "isEnabled": true,
+ "flowType": "WORKFLOW",
+ "revisionId": "49",
+ "name": "Contact to Deal Properties",
+ "description": "Copies contact properties like name, grade, and record ID to associated deals when the deal stage is Pre-Lesson or Post Lesson.",
+ "uuid": "hybrid-execution-wf-15344484",
+ "createdAt": "2020-07-31T23:01:42.750Z",
+ "updatedAt": "2024-01-04T19:23:10.372Z",
+ "startActionId": "17",
+ "nextAvailableActionId": "18",
+ "actions": [
+  {
+   "actionId": "1",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "6"
+   },
+   "fields": {
+    "property_name": "student_first_name",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 4
+    },
+    "value": {
+     "propertyName": "student_last_name",
+     "type": "OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "5",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "11"
+   },
+   "fields": {
+    "property_name": "last_name",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 4
+    },
+    "value": {
+     "propertyName": "lastname",
+     "type": "OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "6",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "5"
+   },
+   "fields": {
+    "property_name": "student_grade",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 4
+    },
+    "value": {
+     "propertyName": "what_is_your_child_s_current_grade_level_",
+     "type": "OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "11",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "fields": {
+    "property_name": "first_name",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 4
+    },
+    "value": {
+     "propertyName": "firstname",
+     "type": "OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "17",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "1"
+   },
+   "fields": {
+    "property_name": "contact_record_id",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 4
+    },
+    "value": {
+     "propertyName": "hs_object_id",
+     "type": "OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  }
+ ],
+ "enrollmentCriteria": {
+  "shouldReEnroll": true,
+  "listFilterBranch": {
+   "filterBranches": [
+    {
+     "filterBranches": [
+      {
+       "filterBranches": [],
+       "filters": [
+        {
+         "property": "dealstage",
+         "operation": {
+          "operator": "IS_ANY_OF",
+          "includeObjectsWithNoValueSet": false,
+          "values": [
+           "1066196",
+           "appointmentscheduled",
+           "69948487",
+           "69965353",
+           "47072313",
+           "140397124",
+           "3067398",
+           "907749",
+           "1066199"
+          ],
+          "operationType": "ENUMERATION"
+         },
+         "filterType": "PROPERTY"
+        }
+       ],
+       "objectTypeId": "0-3",
+       "operator": "IN_LIST",
+       "associationTypeId": 4,
+       "associationCategory": "HUBSPOT_DEFINED",
+       "filterBranchType": "ASSOCIATION",
+       "filterBranchOperator": "AND"
+      }
+     ],
+     "filters": [],
+     "filterBranchType": "AND",
+     "filterBranchOperator": "AND"
+    }
+   ],
+   "filters": [],
+   "filterBranchType": "OR",
+   "filterBranchOperator": "OR"
+  },
+  "unEnrollObjectsNotMeetingCriteria": false,
+  "reEnrollmentTriggersFilterBranches": [],
+  "type": "LIST_BASED"
+ },
+ "timeWindows": [],
+ "blockedDates": [],
+ "customProperties": {},
+ "dataSources": [],
+ "crmObjectCreationStatus": "COMPLETE",
+ "suppressionListIds": [],
+ "canEnrollFromSalesforce": false,
+ "type": "CONTACT_FLOW",
+ "objectTypeId": "0-1"
+}

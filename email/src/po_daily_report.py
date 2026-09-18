@@ -10,6 +10,8 @@ POs that came in and corresponds them to how many teachworks invoices created").
 """
 from __future__ import annotations
 
+from datetime import datetime
+
 from . import hubspot_client as hs, slack_client, teachworks_client as tw
 from .business_hours import now_la
 from .config import cfg, staff
@@ -199,15 +201,45 @@ def _dupe_lines() -> list[str]:
     return lines
 
 
+def _waiting_on_parent_lines() -> list[str]:
+    """Every PO deal still NEEDS PARENT, every day, until it resolves. Roman
+    2026-09-11: "I just can't have deals falling through" and "I can't have my
+    team getting 50 DMs" — so the standing list lives in the one report Roman
+    already reads, and nobody gets a new DM for it."""
+    try:
+        from .po_inbox import _open_chases
+        chases = [c for lst in _open_chases().values() for c in lst]
+    except Exception as e:  # noqa: BLE001 - the report never fails on this
+        print(f"  \u26a0\ufe0f  open-chase list failed (non-fatal): {e}")
+        return []
+    if not chases:
+        return []
+    today = now_la().date()
+    out = [f"\U0001f6a7 Waiting on parent info ({len(chases)} PO deal(s), nothing can be "
+           f"scheduled or invoiced until it lands):"]
+    for c in sorted(chases, key=lambda x: x.get("timestamp") or ""):
+        try:
+            opened = datetime.fromisoformat(c.get("timestamp") or "").date()
+            age = f"{(today - opened).days}d"
+        except (TypeError, ValueError):
+            age = "?"
+        out.append(f"  \u2022 {c.get('deal_name')} \u2014 {age}, asked {c.get('chase_to') or '?'}"
+                   + (f" (PO {c.get('po_number')})" if c.get("po_number") else ""))
+    return out
+
+
 def run() -> None:
     roman = staff("roman")
     day = now_la().strftime("%a %b %-d")
     dupe_lines = _dupe_lines()
+    waiting_lines = _waiting_on_parent_lines()
     deals = _todays_po_deals()
     if not deals:
         msg = f"📦 *PO day report — {day}*: no POs came in today."
         if dupe_lines:
             msg += "\n" + "\n".join(dupe_lines)
+        if waiting_lines:
+            msg += "\n" + "\n".join(waiting_lines)
         slack_client.dm(roman.get("slack_user_id"), msg)
         print(msg)
         return
@@ -241,6 +273,7 @@ def run() -> None:
         lines += [f"  • {p.get('dealname')} — ${p.get('amount')} "
                   f"(PO {p.get('po_number')})" for p in missing]
     lines += dupe_lines
+    lines += waiting_lines
     msg = "\n".join(lines)
     slack_client.dm(roman.get("slack_user_id"), msg)
     print(msg)

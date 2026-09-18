@@ -16,10 +16,10 @@ CFG = {
                   "support": "+18188691627", "conference": "+18188506284"},
         "line_owner": {"charter_sales": "charter_sales", "sales": "sales",
                        "support": "scheduler_split", "conference": "sales"},
-        "standing_go": ["po_welcome"],
+        "standing_go": ["po_welcome", "cohort_welcome"],
         "stop_line_exempt": ["po_welcome", "po_push", "tor_confirm"],
         "purposes": {"po_welcome": {}, "po_push": {}, "tor_confirm": {}, "lead_relay": {},
-                     "tutor_ask": {}},
+                     "tutor_ask": {}, "cohort_welcome": {}},
     },
     "sms": {"send_hour_start_pt": 0, "send_hour_end_pt": 24},
     "scheduler_split": {"a_to_l": "janelle", "m_to_z": "yolanda"},
@@ -196,6 +196,23 @@ def test_standing_go_allows_without_confirm(wired):
     wired["deals"] = [{"id": "D1", "createdate": "2026-09-01T00:00:00Z"}]
     d = presend.check("C1", "sms", "support", "po_welcome", contact=_contact(), body="Hi!", now=NOW)
     assert d.verdict == "allow"
+
+
+def test_cohort_welcome_es_email_has_a_standing_go_on_the_email_channel(wired):
+    # the ES group email (agents/cohort_intake): TOR audience, email line,
+    # no --confirm needed; no quiet hours and no STOP line on email
+    es = _contact()
+    es["properties"]["a_persona"] = "Teacher of Record/EF/ES"
+    d = presend.check("C1", "email", "email", "cohort_welcome", contact=es,
+                      body="Your group starts Sep 21.", now=NOW)
+    assert d.verdict == "allow" and d.audience == "tor"
+
+
+def test_cohort_welcome_by_sms_from_the_wrong_line_is_blocked(wired):
+    es = _contact()
+    es["properties"]["a_persona"] = "Teacher of Record/EF/ES"
+    d = presend.check("C1", "sms", "support", "cohort_welcome", contact=es, body="hi", now=NOW)
+    assert d.verdict == "block"
 
 
 def test_no_standing_go_holds_then_confirm_allows(wired):

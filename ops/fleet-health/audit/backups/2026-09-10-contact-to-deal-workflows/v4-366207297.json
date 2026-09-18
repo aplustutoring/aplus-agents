@@ -1,0 +1,155 @@
+{
+ "id": "366207297",
+ "isEnabled": true,
+ "objectTypeId": "0-3",
+ "flowType": "WORKFLOW",
+ "revisionId": "12",
+ "name": "Pipeline is \"Online Summer Boost\", deal stage is \"Pre-Lesson\"",
+ "description": "Updates deal properties when the deal stage is \"Pre-Lesson,\" setting lead status, student names, parent concerns, and syncing information to TeachWorks A+.",
+ "createdAt": "2023-04-21T20:34:20.582Z",
+ "updatedAt": "2024-01-04T22:18:42.375Z",
+ "startActionId": "4",
+ "nextAvailableActionId": "27",
+ "actions": [
+  {
+   "actionId": "4",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "24"
+   },
+   "fields": {
+    "property_name": "hs_lead_status",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 3
+    },
+    "value": {
+     "staticValue": "OPEN_DEAL",
+     "type": "STATIC_VALUE"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "11",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "fields": {
+    "property_name": "sync_to_teachworks_",
+    "association": {
+     "associationCategory": "HUBSPOT_DEFINED",
+     "associationTypeId": 3
+    },
+    "value": {
+     "staticValue": "true",
+     "type": "STATIC_VALUE"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "24",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "25"
+   },
+   "fields": {
+    "property_name": "student_first_name",
+    "value": {
+     "propertyToken": "{{ fetched_objects.fetched_object_21580714.student_last_name }}",
+     "type": "FETCHED_OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "25",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "26"
+   },
+   "fields": {
+    "property_name": "last_name",
+    "value": {
+     "propertyToken": "{{ fetched_objects.fetched_object_21580714.lastname }}",
+     "type": "FETCHED_OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  },
+  {
+   "actionId": "26",
+   "actionTypeVersion": 0,
+   "actionTypeId": "0-5",
+   "connection": {
+    "edgeType": "STANDARD",
+    "nextActionId": "11"
+   },
+   "fields": {
+    "property_name": "what_s_going_on_",
+    "value": {
+     "propertyToken": "{{ fetched_objects.fetched_object_21580714.parent_concerns_what_can_we_do_to_help_ }}",
+     "type": "FETCHED_OBJECT_PROPERTY"
+    }
+   },
+   "type": "SINGLE_CONNECTION"
+  }
+ ],
+ "enrollmentCriteria": {
+  "shouldReEnroll": true,
+  "listFilterBranch": {
+   "filterBranches": [
+    {
+     "filterBranches": [],
+     "filters": [
+      {
+       "property": "dealstage",
+       "operation": {
+        "operator": "IS_ANY_OF",
+        "includeObjectsWithNoValueSet": false,
+        "values": [
+         "69948487"
+        ],
+        "operationType": "ENUMERATION"
+       },
+       "filterType": "PROPERTY"
+      }
+     ],
+     "filterBranchOperator": "AND",
+     "filterBranchType": "AND"
+    }
+   ],
+   "filters": [],
+   "filterBranchOperator": "OR",
+   "filterBranchType": "OR"
+  },
+  "unEnrollObjectsNotMeetingCriteria": false,
+  "reEnrollmentTriggersFilterBranches": [],
+  "type": "LIST_BASED"
+ },
+ "timeWindows": [],
+ "blockedDates": [],
+ "customProperties": {},
+ "dataSources": [
+  {
+   "name": "fetched_object_21580714",
+   "objectTypeId": "0-1",
+   "associationTypeId": 3,
+   "associationCategory": "HUBSPOT_DEFINED",
+   "sortBy": {
+    "property": "hs_lastmodifieddate",
+    "missing": null,
+    "order": "DESC"
+   },
+   "type": "ASSOCIATION"
+  }
+ ],
+ "crmObjectCreationStatus": "COMPLETE",
+ "type": "PLATFORM_FLOW"
+}

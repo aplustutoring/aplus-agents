@@ -333,6 +333,11 @@ def run(dry_run: bool = False, limit: int | None = None,
     now = datetime.now(timezone.utc)
 
     tickets = hs.search_open_tickets()
+    # Low-balance renewal cases have their own lifecycle (email/src/low_balance.py
+    # closes them when the school's PO lands and escalates the stalled ones);
+    # to the reasoner they look like a Teachworks notice nobody replied to.
+    tickets = [t for t in tickets
+               if not ((t.get("properties") or {}).get("subject") or "").startswith("Low balance:")]
     if limit:
         tickets = tickets[:limit]
     invoiced = hs.invoiced_po_numbers()

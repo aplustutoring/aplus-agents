@@ -43,6 +43,7 @@ ticket_fields:
     complaint: "complaint"
     payment_dispute: "billing_refund"
     new_po: "new_deal_po"
+    low_balance: "new_deal_po"      # a renewal PO is what the case needs
     tor_inquiry: "new_deal_po"
     school_partner: "new_deal_po"
     business_dev: "GENERAL_INQUIRY"
@@ -133,6 +134,16 @@ sms:
     "19120821": { template: trial, welcome: true,
                   welcome_template: "templates/welcome_trial.html",
                   welcome_subject: "Ready to Launch: Free Trial Session: Next Steps" }  # Free Trial
+    # IEM HSA cohorts (agents/cohort_intake, spec docs/specs/cohort-intake-spec.md
+    # §5.6, 2026-09-15). The intake agent writes schedule_preferences on every
+    # cohort deal, so the confirm variant always fires; the ask keys point at
+    # the same copy because a cohort family is never asked for a time (LOCKED
+    # Roman 9/15: the slot is IEM's, not ours). The welcome subject and body
+    # carry __STUDENT__/__SLOT__/__START__/__ES__/__NO_CLASS__ tokens filled
+    # from the deal's [Agent] HSA props by _send_welcome.
+    "5119061":  { template: hsa, welcome: true,
+                  welcome_template: "templates/welcome_hsa.html",
+                  welcome_subject: "__STUDENT__'s tutoring starts __START__: __SUBJECT__, __SLOT__" }  # IEM Inc (HSA)
   # Copy locked by Roman 2026-09-01: name the kid, "their" (never guess
   # gender), brand voice (no personal sign-off). Variant chosen by what we
   # KNOW: schedule on file means confirm; none means ask (the old flow pasted
@@ -166,6 +177,268 @@ sms:
     trial_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for {student}'s free trial session. What days and times work best? Reply here and we will get it booked."
     trial_multi_confirm: "Hi {first_name}, it's A+ Tutoring! Free trial sessions for {students} are coming up. Want to confirm their schedules work? Reply here to confirm or change them."
     trial_multi_ask: "Hi {first_name}, it's A+ Tutoring! We are excited for free trial sessions with {students}. What days and times work best? Reply here and we will get them booked."
+    # IEM HSA cohorts (spec §8, Danielle-approved copy). NEVER asks for or offers
+    # to change the schedule; the ask variants are the confirm copy on purpose.
+    hsa_confirm: "Hi {first_name}, it's A+ Tutoring! {student} is set for IEM's HSA tutoring group: {schedule}. Their tutor and session link come by email before the first session. Reply here with any questions."
+    hsa_ask: "Hi {first_name}, it's A+ Tutoring! {student} is set for IEM's HSA tutoring group: {schedule}. Their tutor and session link come by email before the first session. Reply here with any questions."
+    hsa_multi_confirm: "Hi {first_name}, it's A+ Tutoring! {students} are set for IEM's HSA tutoring groups. Schedules and tutor intros come by email before the first session. Reply here with any questions."
+    hsa_multi_ask: "Hi {first_name}, it's A+ Tutoring! {students} are set for IEM's HSA tutoring groups. Schedules and tutor intros come by email before the first session. Reply here with any questions."
+
+# ── Tasks (Roman 2026-09-16): ceiling per seat per day, enforced in hubspot_client.create_task ──
+tasks:
+  daily_ceiling_per_owner: 10          # beyond this the task is NOT created; the seat lead is DM'd instead
+  ceiling_notify: operations
+
+# ── Case engine (Roman 2026-09-16: Tasks / Tickets / Pipelines rule) ───────
+# email/src/case_engine.py. Three ticket pipelines; stage ids from the portal
+# (created 2026-09-16 by the STEP 1 script). Owner rules are ROLES or the
+# token "split" (family surname A-L / M-Z). Service levels in business days.
+case_engine:
+  pipelines:
+    renewals:
+      id: "935649887"
+      stages:
+        waiting_on_family: "1439476614"
+        needs_scheduler: "1439476615"
+        needs_invoice: "1439476616"
+        renewed: "1439476617"
+        not_renewing: "1439476618"
+        no_response: "1439476619"
+      closed: [renewed, not_renewing, no_response]
+    support:
+      id: "0"
+      stages:
+        new: "1378066770"
+        waiting_on_us: "131537027"
+        waiting_on_tutor: "3"
+        waiting_on_family: "2"
+        resolved: "4"
+        wont_fix: "1439476620"
+      closed: [resolved, wont_fix]
+    tutor:
+      id: "935648438"
+      stages:
+        new: "1439554384"
+        debrief: "1439554385"
+        probation: "1439554386"
+        evaluated: "1439554387"
+        resolved: "1439554388"
+      closed: [resolved]
+  owner_rules:
+    renewals:
+      trial: charter_sales                 # the only owner override in Renewals
+      hsa_pipelines: ["5119061"]           # IEM HSA: group-number parity from the deal's hsa_group (C1-G4)
+      hsa_parity: { odd: scheduler_a_l, even: scheduler_m_z }
+      split: { a_l: scheduler_a_l, m_z: scheduler_m_z }
+    support:                               # by support_category; "split" = family surname split
+      po_watch: charter_admin
+      po_exception: charter_admin
+      billing: charter_admin
+      scheduling: split
+      default: operations
+    tutor: operations
+  # Working draft (Roman 2026-09-16), business days per stage. Missing = no clock.
+  service_levels:
+    renewals: { waiting_on_family: 3, needs_scheduler: 1, needs_invoice: 1 }
+    support: { new: 1, waiting_on_us: 1, waiting_on_tutor: 2, waiting_on_family: 3 }
+    tutor: { new: 5, debrief: 5, probation: 30, evaluated: 5 }
+  tutor_accountability:
+    armed: false                           # spec'd from the Escalation Procedure p.1; p.2 unread. Counting only.
+    window_days: 30
+    probation_days: 30
+  digest:
+    channel: "C0AL86J4Y9Y"                 # Leadership team
+
+# ── Low-balance renewal agent (Roman 2026-09-08) ─────────────────
+# A Teachworks "package balance ... has reached the level of N hours" email
+# (the Package Balance Alerts add-on, arriving at admin@ via info@) opens ONE
+# renewal case per student + package per school year: a ticket owned by the
+# charter_sales seat, a text + email to the family and an email DRAFT to the
+# teacher of record from that seat, a follow-up task, and one DM to the seat.
+# The case closes itself when po_inbox creates the student's next PO deal.
+# Replaces the Monday board "A+ Charter Low Balance Alerts" (8802830977) and
+# the retired HubSpot flow "Low Balance Alerts - Charter" (552811839).
+# Sender identity = the seat: from-name, reply-to, sign-off, task owner
+# (Roman 2026-08-25). Alerts go to that seat ONLY (Danielle 2026-08-12).
+low_balance:
+  enabled: true
+  # armed: false = the agent files the ticket, writes the exact copy it WOULD
+  # send into the ticket note, DMs the seat, and touches no family or teacher.
+  # ARMED 2026-09-10 (Roman: "yes, let it run") after the copy was reviewed on
+  # Taylor Rodriguez's real alert and the Aug 1 pool was previewed end to end.
+  armed: true
+  # Roman 2026-09-10: "only on charter service codes, excluding out of
+  # pocket. just a charter low balance alert agent that owns its job."
+  # true = a non-charter alert (private-pay packages, CHARTER - Out of
+  # Pocket) is not this agent's: no case, no email; the alert takes the
+  # ordinary inbox triage path. The private-pay upgrade code below stays
+  # dormant until this is flipped.
+  # 2026-09-16 (case engine): EVERY Teachworks alert opens a Renewals case:
+  # charter and private pay owned by the scheduler split, trial (0.0 hours on
+  # a trial package) owned by charter_sales. charter_only is retired.
+  charter_only: false
+  trial_packages: ["trial"]            # package name token (case-insensitive) = funding_type trial
+  tor_owner: charter_sales             # the teacher email keeps this seat whoever owns the case
+  # The Aug 1 → Sep 10 pool: PO sizes 0.75 to 6.5 hours (median 4) and
+  # Teachworks alerts at 4 the moment the package is created, so an alert on
+  # a PO with no attended lesson yet is "your package exists", not "running
+  # low". Such alerts are parked; the hourly sweep opens the case when the
+  # first lesson on that PO is attended. Parked longer than defer_max_days
+  # with no lesson → let go (the next alert starts fresh).
+  require_attended_lesson: true
+  defer_max_days: 30
+  # An alert on a PO created before this date is last season's leftover
+  # package (July / April / May POs in the pool): archive or reassign, not a
+  # renewal chase. Skipped, audited, one DM to prior_season_notify.
+  season_start: "2026-08-01"
+  prior_season_notify: charter_admin
+  # A case opens only at this many unused hours or fewer (Roman 2026-09-09:
+  # "4 hours or less"). Teachworks' own alert level is per package; alerts
+  # that fire above this line are audited and skipped.
+  max_hours: 4
+  # CHARTER cases only. Private-pay cases route to the assigned SCHEDULER
+  # (A-L / M-Z split): schedulers get commission on private-pay upgrades
+  # (Roman 2026-09-10), so the ticket, the DM, and the sender identity are
+  # theirs. The notify list below is charter-only for the same reason.
+  owner: charter_sales
+  notify: [charter_sales]
+  escalate_to: visionary
+  # The sequence (Roman 2026-09-10): day 0 EMAIL only; the next business
+  # morning, if no PO and no reply, the TEXT and the TEACHER draft; day 7 with
+  # no PO the ticket becomes the retention issue (RETENTION RISK, priority
+  # HIGH, DM to the seat + escalate_to); 21 days after that, Lost + the
+  # re-engagement list. No HubSpot task: the ticket is the case.
+  email_delay_minutes: 60         # day-0 email waits this long so siblings' alerts (minutes apart) become ONE email
+  text_reply_window_days: 14      # JustCall lookback for "did the family text us since the case opened" (day-1 gate)
+  family_text_after_days: 1       # business days after the day-0 email
+  retention_risk_days: 7
+  retention_risk_hours: 1              # risk = later of day 7 AND balance at this many hours or fewer
+  # 2026-09-16: no visionary DM; the case owner (scheduler / charter_sales) gets it
+  lost_after_days: 21             # after the risk flag
+  reengagement_list_id: ""        # HubSpot static list the Lost family joins (empty = skip)
+  draft_unsent_nag_hours: 24      # teacher draft still in Drafts → one nag
+  sla_hours: 8
+  priority: normal
+  # Level Up Terri (Charter Terri pipeline) teachers cannot issue additional
+  # POs (Roman 2025-10-29): family only, never the teacher.
+  no_teacher_email_pipelines: ["72281989"]
+  # A deal whose teacher email is a generic school inbox (ap@, accounts@,
+  # office@ ...) has no teacher to write to: the family is still contacted,
+  # the case is flagged, no personal note goes to a payables desk.
+  generic_inbox_locals: [ap, accounts, accountspayable, payables, billing, invoices, office, admin, info, hello, support, purchasing, orders]
+  # Copy. Tokens: {first_name} {student} {student_full} {hours} {tor_name}
+  # {tor_first} {tor_or_ef} {school} {po_number} {sender_first} {sender_name}
+  # {sender_email}. {hours} renders as "4 hours or less" (max_hours; Roman
+  # 2026-09-09), never the exact balance; {hours_exact} is the number and is
+  # for staff notes only. The PO is issued by the SCHOOL: we ask the family to
+  # request it and offer vendor details; never "we handle the PO". Every
+  # charter student has funds; the hours are simply running low. NO EM DASHES.
+  # Family copy names NO school and NO teacher (Roman 2026-09-09: "does not
+  # build credibility, we know this"). Parents can submit the PO themselves
+  # and we prefer that; the teacher of record is the unnamed fallback.
+  # {tutor_first} = the tutor's FIRST name on the most recent attended lesson
+  # in Teachworks ('Last, First' there; no session counts, no dates: Roman
+  # 2026-09-09 "lets just use tutors name, first name. no duration"). The
+  # text uses sms_template_with_tutor when a tutor is known, else
+  # sms_template. In the email, {personal_line} = " Taylor has been working
+  # with Maria." plus the positivity sentence below, or nothing at all.
+  # {po_ref} = " (PO 3114143406)" or empty.
+  # Framing for family AND teacher (Roman 2026-09-09): we want to keep the
+  # progress going; no educating anyone about POs, vendor details or rates.
+  # The line the renewal text leaves from, as a ROLE resolved through
+  # presend.lines (Roman 2026-09-10: "make these texts go out from 6644", the
+  # charter_sales line the family keeps talking to about the PO; replies land
+  # with Paola). Empty = sms.justcall_number, the schedulers' support line.
+  # Roman 2026-09-11 (Paola's point: a PO reminder is billing, not her sales
+  # line): the text leaves from the SUPPORT line the family already uses,
+  # signed "A+ Tutoring"; Paola is an agent on that line and every reply is
+  # also posted on the ticket and DM'd to her by the sweep (_watch_replies).
+  sms_line: support
+  sms_template_with_tutor: "Hi {first_name}, this is A+ Tutoring. {student} has been working with {tutor_first} and we want to keep that progress going. {student} has {hours} left on the current PO. When you have a moment, please submit a new PO, or ask your teacher of record to. Reply here with any questions."
+  sms_template: "Hi {first_name}, this is A+ Tutoring. {student} has {hours} left on the current PO. To keep sessions going without a gap, please submit a new PO, or ask your teacher of record to, when you have a moment. Reply here with any questions."
+  # Siblings: ONE text per family naming every student ({students}; {tutor_first} = their tutors).
+  sms_template_multi: "Hi {first_name}, this is A+ Tutoring. {students} have been working with {tutor_first} and we want to keep that progress going. Each of them has {hours} left on their current PO. When you have a moment, please submit new POs, or ask your teacher of record to. Reply here with any questions."
+  # One warm sentence DERIVED from the tutor's lesson notes of the last
+  # notes_window_days (Teachworks `public_notes`, confirmed live 2026-09-09),
+  # written by Claude and validated before use (no numbers, no exclamation,
+  # no em dash, 30 words max, else dropped). Roman 2026-09-09: "it cant be
+  # imagined. it only has to be derived from lesson notes from the last
+  # month, if not it should be general" — no notes in the window means no
+  # sentence, and the copy falls back to "{student}'s progress".
+  positivity:
+    enabled: true
+    model: "claude-sonnet-4-6"
+    max_tokens: 120
+    notes_window_days: 30
+  lookback_days: 60                # Teachworks window when the student has no PO deal to date from
+  family_email:
+    mode: send                    # send (Resend, same rail as the What-to-Expect email) | off
+    template: "templates/low_balance_charter.html"
+    from: "A+ Tutoring <admin@wetutorathome.com>"   # the office writes (Roman 2026-09-11); verified sending address
+    reply_to: "{sender_email}"    # replies still reach the seat (Paola) directly
+    subject: "{student}'s tutoring hours are running low"
+    # siblings: one email naming every student
+    subject_multi: "{students}: tutoring hours are running low"
+    template_multi: "templates/low_balance_charter_multi.html"
+  # Private pay auto-renews at 2 hours (Roman 2026-09-10): no text, no
+  # teacher, one email from the seat offering the next package up. Tiers from
+  # the 2026 pricing sheets; the email does the math for the family.
+  private_pay:
+    armed: false                       # 2026-09-16: STEP 8 arms it last; needs payment_links below
+    payment_links: {}                  # tier name -> checkout URL; the email carries {payment_link}
+    template: "templates/low_balance_private.html"
+    subject: "{student}'s next tutoring package"
+    # The upgrade email quotes the tiers below, which are the 2026 pricing
+    # sheets. Families on older service codes (the Teachworks package name
+    # carries the pricing year, e.g. "2025 - Prep Package") must NOT get
+    # this email: their renewal is a rate conversation, and the seat has it
+    # from the ticket (Roman 2026-09-10). Only packages whose name contains
+    # this token get the auto email; empty disables the gate.
+    pricing_token: "2026"
+    tiers:
+      online:
+        - { name: Improvement, hours: 8,   rate: 88 }
+        - { name: Prep,        hours: 20,  rate: 83 }
+        - { name: Success,     hours: 50,  rate: 73 }
+        - { name: Soar,        hours: 100, rate: 68 }
+      in_person:
+        - { name: Improvement, hours: 8,   rate: 115 }
+        - { name: Prep,        hours: 20,  rate: 108 }
+        - { name: Success,     hours: 50,  rate: 103 }
+        - { name: Soar,        hours: 100, rate: 93 }
+  tor_email:
+    # send = AUTOMATIC (Roman 2026-09-10: "i want paolas email to be
+    # automatic"): the teacher email goes out via Resend from the seat's name
+    # on admin@, reply-to the seat's own Gmail, so replies land with the seat.
+    # The seat's Gmail scope stays draft-only; nothing sends from Gmail.
+    # draft = the old mode: a real Gmail draft the seat sends in one click.
+    mode: send
+    mailbox: seat                 # the seat's own Gmail (staff.<seat>.email); a literal address also works
+    # First names only, for everyone we already work with (Roman 2026-09-09).
+    # {student_full} exists but is not used in customer copy.
+    subject: "New PO for {student} (A+ Tutoring)"
+    body: |
+      Hi {tor_first},
+
+      Hope you are well.{personal_line} We want to make sure {progress} continues without a gap, and {student}'s current A+ Tutoring purchase order{po_ref} has {hours} left. Could you issue a new PO when you have a chance?
+
+      Thank you for everything you do for {student}.
+
+      {sender_name}
+      A+ Tutoring
+    # A teacher with several students running low gets ONE draft (Roman
+    # 2026-09-10). {greeting} is the first line of the single draft ("Hi
+    # Kylee,"), {po_lines} = "Ana's current PO has 4 hours or less left. Bo's..."
+    subject_multi: "New POs for {students} (A+ Tutoring)"
+    body_multi: |
+      {greeting}
+
+      Hope you are well.{personal_line} We want to make sure {progress} continues without a gap. {po_lines} Could you issue new POs for them when you have a chance?
+
+      Thank you for everything you do for {students}.
+
+      {sender_name}
+      A+ Tutoring
 
 # ── Sibling-gap tripwire (Roman 2026-09-04) ─────────────────────
 # A family renews SOME kids and one is left out — the strongest miss signal
@@ -186,7 +459,8 @@ sibling_gap:
 staff:
   danielle: { name: "Danielle", hubspot_owner_id: "227538487", slack_user_id: "U05NMABF3B2" }  # Sales
   mandy:    { name: "Mandy",    hubspot_owner_id: "80047201",  slack_user_id: "U08S3CHE93N" }  # Scheduling Lead
-  paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR" }  # Sales Support
+  paola:    { name: "Paola",    hubspot_owner_id: "81494333",  slack_user_id: "U094B5DRZBR",
+              email: "paola@wetutorathome.com" }  # Sales Support (email = the seat's Gmail; low_balance teacher drafts land there)
   janelle:  { name: "Janelle",  hubspot_owner_id: "80047202",  slack_user_id: "U08S3CG8XNY" }  # Scheduler 1 (A-L)
   yolanda:  { name: "Yolanda",  hubspot_owner_id: "86868539",  slack_user_id: "U0A6XGBU7QT" }  # Scheduler 2 (M-Z)
   kath:     { name: "Kath",     hubspot_owner_id: "513215050", slack_user_id: "U05NW5H3SLC" }  # Admin
@@ -218,12 +492,17 @@ presend:
     sales: sales
     support: scheduler_split        # by student last name (scheduler_split below)
     conference: sales
-  standing_go: [po_welcome, low_balance_family]   # tor_confirm, tor_email_ask, tutor_ask join
+  standing_go: [po_welcome, low_balance_family, cohort_welcome]   # tor_confirm, tor_email_ask, tutor_ask join
                                                   # only when their journey stage is REVIEWED
   stop_line_exempt: [po_welcome, po_push, tor_confirm, tor_email_ask, tutor_ask]  # in-conversation
+  # Email sends through one_to_few --channel email (the ES cohort email) go
+  # out as this identity; replies land in admin@, the triage agent's inbox.
+  email_from: "A+ Tutoring Success Team <admin@wetutorathome.com>"
+  email_reply_to: "admin@wetutorathome.com"
   purposes:
     po_welcome:    { audience: scheduling, line: support }
     low_balance_family: { audience: scheduling, line: support }
+    cohort_welcome: { audience: tor,       line: email }   # ES group email, agents/cohort_intake (spec §5.6)
     po_push:       { audience: lead,       line: charter_sales }
     tor_confirm:   { audience: lead,       line: charter_sales }
     tor_email_ask: { audience: lead,       line: charter_sales }
@@ -234,7 +513,8 @@ presend:
 
 roles:
   visionary: roman          # Director / owner
-  operations: emily         # ops; last-resort escalation
+  operations: mandy         # ops seat (Roman 2026-09-16: operations = Mandy; tutor accountability, support default)
+  escalation: emily         # last-resort escalation (was the operations key before 2026-09-16)
   scheduling_lead: mandy    # watches the schedulers; Stuck queue
   scheduler_a_l: janelle
   scheduler_m_z: yolanda
@@ -261,6 +541,7 @@ routing:
   campaign_school:     { owner: sales,          sla_hours: 8,   draft: true,  priority: normal }  # campaign replies from TORs/school staff
   tor_inquiry:         { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
   new_po:              { owner: charter_sales,             sla_hours: 1.5, draft: true,  priority: normal }
+  low_balance:         { owner: charter_sales,  sla_hours: 8,   draft: false, priority: normal }  # Teachworks package-balance alert → renewal case (low_balance.py)
   tutor_document:      { owner: charter_admin,              sla_hours: 1.5, draft: true,  priority: low }
   recruitment:         { owner: scheduling_lead,             sla_hours: 1.5, draft: true,  priority: low }
   charter_newsletter:  { owner: sales,          sla_hours: 48,  draft: false, priority: low, fyi: true }  # FYI, no reply
@@ -308,7 +589,27 @@ deal_automation:
 # Every NEW HubSpot deal: upsert the family in Teachworks (match by EMAIL — the
 # identifier; HubSpot contact info wins on update) and create the student. Account by
 # pipeline; charter students get billing_method=Package, private pay=Service List Cost.
+# ── First-lesson stamp (retention step 2 foundation, email/src/first_lesson.py) ──
+# Reads attended lessons from Teachworks (both accounts), finds each student's
+# FIRST attended lesson ever and stamps it as [Agent] First lesson date on the
+# season's earliest deal and on the family contact. The "New Starts (Care
+# Calls)" deal view (72186918) filters on it. Runs from deal_sync every cycle,
+# self-gated to every_hours. Roman 2026-09-10: "lets work on the gap".
+first_lesson:
+  enabled: true
+  every_hours: 6
+  window_days: 10                  # bulk lessons window per run; new students cost a history call
+  new_start_days: 60               # first lesson within this = a "new start" (audit + summary line)
+  deal_lookback_days: 60           # the stamp goes on the earliest deal created within this many days before the first lesson
+  # Never the deal that gets the stamp: not tutoring deals (deal_sync.exclude_pipelines
+  # apply too). Teacher Scholarship tracking took Malinally Mata-Villa's stamp on 2026-09-11.
+  exclude_pipelines: ["917641511", "918901819", "75e28846-ad0d-4be2-a027-5e1da6590b98", "1066195"]
+  # A trial deal is the family's first by construction; a real tutoring deal in the window wins.
+  trial_pipelines: ["19120821"]
+  retry_days: 3                    # student with no deal yet: look again after this many days
+
 deal_sync:
+  error_alert: charter_admin   # DM'd once per deal from the 2nd consecutive sync failure (Hazel Barnett, 09-08: 40 silent 400s)
   enabled: true
   dry_run_first: false         # LIVE since 2026-08-03 (pilot ran 2026-07-22 → 2026-08-03)
   in_person_pipelines: ["3067397", "16858643", "30837103"]   # → in-person TW account
@@ -377,6 +678,57 @@ owner_assign:
     - "16547180"   # Gold Tutoring - Renewal
     - "3067397"    # In-Person
     - "16858643"   # In-Person - Renewal
+  # Group-parity ownership (LOCKED Roman 2026-09-15): IEM HSA cohort deals are
+  # owned by the GROUP number within the cohort, not the family last name.
+  # Odd group → scheduler_a_l, even → scheduler_m_z. The number is read from
+  # the deal's [Agent] HSA Group ("C1-G4" → 4); numbering restarts each cohort.
+  group_parity:
+    "5119061": { property: hsa_group, odd: scheduler_a_l, even: scheduler_m_z }   # IEM Inc
+
+# ── IEM HSA cohorts in Teachworks (agents/cohort_intake, 2026-09-15) ──
+# deal_sync creates the family + student as usual (Package billing via
+# charter_pipelines). What the Teachworks API cannot do is covered by ONE
+# task per gap: the ES as an additional contact on the student (API spike;
+# task to the deal owner when it fails) and the flat group invoice + $0/hr
+# service + per-student allocation (the API cannot create invoices; task to
+# charter_admin, one per group, summed from the sibling deals' amounts).
+# verify_lessons: once the scheduler books the series, the lesson count must
+# equal [Agent] HSA Sessions and no lesson may fall on a no-class date
+# (LOCKED Roman 9/15); a mismatch DMs the deal owner + sales once a day.
+hsa:
+  enabled: true
+  pipeline: "5119061"
+  pre_lesson_stage: "5119062"
+  sessions_prop: hsa_sessions
+  group_prop: hsa_group
+  # Roman 2026-09-16: the SCHEDULERS create the Teachworks invoices for HSA
+  # groups, so the invoice + late-add tasks go to the deal owner (the group's
+  # scheduler by parity). A staff/role key here routes them to one seat instead.
+  invoice_owner: deal_owner
+  flag_to: [sales]              # Danielle sees every lesson-series mismatch
+  lesson_check_days: 60         # verify deals whose start is within this many days
+
+# ── Fill-only student/parent stamp (Roman 2026-09-10) ──
+# Replaces HubSpot workflow 34950163 "Contact to Deal Properties" (OFF
+# 2026-09-10), which copied the contact's ONE student onto EVERY associated
+# deal and overwrote po_inbox's per-deal stamps (Melara siblings). Runs from
+# deal_sync for each NEW deal in these pipelines; never overwrites a value.
+student_stamp:
+  enabled: true
+  pipelines:
+    - "907748"     # Charter Schools - Traditional Vendor Funds
+    - "default"    # Gold Tutoring
+    - "19120821"   # Free Trial
+    - "3067397"    # In-Person
+    - "16547180"   # Gold Tutoring - Renewal
+    - "16858643"   # In-Person - Renewal
+    - "72281989"   # Charter Terri (iLead Level Up)
+    - "88841552"   # Charter Amy
+    - "5119061"    # IEM Inc
+    - "30837103"   # Summer Boost - In-Person
+    - "30830920"   # Summer Boost - Online
+    - "1066195"    # CFGC
+    - "21277473"   # Subscription
 
 # ── Relay watchdog (Roman 2026-09-09: "is that really the best fix?") ──
 # deal created / stage changed → "[Agent] Doorbell" workflow (1881460299,
@@ -463,6 +815,7 @@ po_inbox:
     escalate_business_hours: 16        # 2 business days AFTER the draft is SENT
     draft_unsent_nag_business_hours: 4 # draft still in Gmail Drafts → 🚩 nag
     notify_charter_sales_after_hours: 24  # info still missing 24h after the email → charter sales
+    assist_seat: charter_sales         # can't get parent info (school declines, or no reply past the window) → ONE DM per deal to this seat, folded into the 24h ping (Roman 2026-09-11: teacher about a specific student = charter_sales; not Danielle)
   # Pending order-agreement POs with no approval signal (duplicate alert =
   # approved PO re-arrived) get ONE nag to missing_info_dms after this window.
   # CALENDAR days: iLEAD/OPS portal approval takes at least 14 days from the
@@ -569,6 +922,7 @@ po_inbox:
   # amount, hours, Bill To from the PO) for a human to paste into TW's invoice form.
   invoice_task:
     enabled: true
+    mode: ticket                       # ticket = Support po_watch case (2026-09-16); task = the old per-PO task
     owner: charter_admin
     due_business_hours: 8    # STEP 1 is same-day: convert the PO to a TW invoice on receipt
     # STEP 2 (submitting to the school's ops system) is due at the END of the PO's

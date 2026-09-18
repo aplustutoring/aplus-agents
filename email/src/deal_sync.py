@@ -24,18 +24,27 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import audit, hubspot_client as hs, owner_assign, slack_client, teachworks_client as tw
-from .config import DRY_RUN, cfg
+from . import audit, hubspot_client as hs, owner_assign, slack_client, student_stamp, teachworks_client as tw
+from .config import DRY_RUN, cfg, staff
 
 CUR_PATH = Path(__file__).resolve().parent.parent / "state" / "sync_cursor.json"
 
 CONTACT_PROPS = ["email", "firstname", "lastname", "phone", "mobilephone",
-                 "address", "city", "state", "zip"]
+                 "address", "city", "state", "zip",
+                 # student_stamp sources (fill-only deal stamp, 2026-09-10);
+                 # a_persona also drives the family-vs-school-staff pick above
+                 "a_persona", "student_first_name", "student_last_name",
+                 "what_is_your_child_s_current_grade_level_"]
 
 
 def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
     """The deal's FAMILY contact. Deals can carry several contacts (parent + TOR);
-    prefer the one whose name matches the deal-name parent, else the first."""
+    prefer the one whose name matches the deal-name parent, else the first
+    contact that is not the school's staff. A contact tagged Teacher of Record
+    and NOT Family is never the family: on a NEEDS PARENT deal it used to be
+    the fallback, and on 2026-09-10 iLEAD's ES got the family's schedule text,
+    the What-to-Expect email and a Teachworks family in her name (Keanu Hsu),
+    while the real parent, associated an hour later, got nothing."""
     try:
         assoc = hs._get(f"/crm/v3/objects/deals/{deal_id}/associations/contacts")
     except Exception:  # noqa: BLE001
@@ -49,9 +58,11 @@ def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
             c = hs._get(f"/crm/v3/objects/contacts/{cid}", {"properties": ",".join(CONTACT_PROPS)})
         except Exception:  # noqa: BLE001
             continue
-        first = first or c
-        if dealname and _contact_matches_dealname(c.get("properties") or {}, dealname):
+        props = c.get("properties") or {}
+        if dealname and _contact_matches_dealname(props, dealname):
             return c
+        if first is None and hs.is_family_contact(props):
+            first = c
     return first
 
 
@@ -165,12 +176,23 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     record = {"message_id": key, "source": "deal_sync", "deal_id": deal["id"],
               "deal_name": deal["properties"].get("dealname"), "tw_account": acct,
               "charter": is_charter, "owner": None}
-    if not email:
-        record.update({"action_taken": "sync_skipped", "reason": "no contact email on deal"})
-        audit.append(record)
+    dealname = deal["properties"].get("dealname", "")
+    if not email or dealname.startswith("NEEDS PARENT"):
+        # Not ready, not failed: the parent is unknown (po_inbox's NEEDS PARENT
+        # placeholder, or no family contact / email yet). Nothing is written
+        # and the deal is NOT marked processed, so the parent-chase resolution
+        # (or a human fix) can run the sync for real later. Before 2026-09-11
+        # this was a permanent sync_skipped, and a NEEDS PARENT deal with a
+        # TOR contact synced the school staffer as the family.
+        why = ("deal still NEEDS PARENT" if dealname.startswith("NEEDS PARENT")
+               else "no family contact with an email on the deal")
+        record.update({"message_id": f"deferred:{key}", "action_taken": "sync_deferred",
+                       "reason": why})
+        if not audit.already_processed(f"deferred:{key}"):
+            audit.append(record)
+        print(f"  \u23f8\ufe0f  {record['deal_name']} -> sync deferred: {why}")
         return record
 
-    dealname = deal["properties"].get("dealname", "")
     fields = _tw_fields(props)
     # Pipeline-specific customer settings ride along on create AND update, so an
     # existing family gets its settings adjusted too.
@@ -184,10 +206,12 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     if email.endswith(f"@{internal_domain}"):
         review = ("sync_skipped", f"internal contact (@{internal_domain}) — not a family")
     elif (is_charter and not po_num and not contact_override
+          and not (deal["properties"].get("hsa_sessions") or "").strip()
           and not _contact_matches_dealname(props, dealname)):
         # Charter deals not born from a PO often carry the school ES as the contact;
         # PO-created deals get the parent associated deliberately (po_inbox), so the
-        # po_number property exempts them.
+        # po_number property exempts them. IEM HSA cohort deals ([Agent] HSA
+        # Sessions set) are agent-made with the parent associated on purpose.
         review = ("sync_needs_review",
                   f"contact '{props.get('firstname', '')} {props.get('lastname', '')}' "
                   f"({email}) doesn't match the deal name — likely school staff, not the parent")
@@ -251,6 +275,15 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
             made.append(sf)
         if made:
             record["tw_student_created"] = ", ".join(made)
+    # IEM HSA cohort deals: ES as additional contact (API spike, task fallback)
+    # and the one flat group invoice task the API cannot make (hsa_sync).
+    if (deal["properties"].get("hsa_sessions") or "").strip():
+        try:
+            from . import hsa_sync
+            hsa_sync.after_sync(deal, record, contact, token)
+        except Exception as e:  # noqa: BLE001 — the family/student sync stands on its own
+            print(f"  ⚠️  hsa after-sync failed (non-fatal): {e}")
+            record["hsa_error"] = str(e)[:160]
     # Gold deals arrive without an amount — the family's most CURRENT Teachworks
     # invoice is the price of record (Roman, 2026-09-03). Free Trial stays $0.
     amt_raw = (deal["properties"].get("amount") or "").strip()
@@ -278,6 +311,31 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
     return record
 
 
+def _alert_repeated_error(deal: dict, err: str) -> bool:
+    """A deal that errors run after run is stuck, not retrying. Hazel Barnett
+    (2026-09-08 to 09-11): 40 identical Teachworks 400s, nobody told, cursor
+    pinned. From the SECOND failure, one DM to the charter admin seat (config
+    deal_sync.error_alert, a role), once per deal (audit error-alert:deal:id)."""
+    did = str(deal.get("id") or "")
+    n = sum(1 for r in audit._iter_records() if r.get("message_id") == f"error:deal:{did}")
+    if n < 2 or audit.already_processed(f"error-alert:deal:{did}"):
+        return False
+    seat = staff(cfg().get("deal_sync", {}).get("error_alert", "charter_admin"))
+    if seat.get("slack_user_id"):
+        try:
+            slack_client.dm(seat["slack_user_id"],
+                            f"\u26a0\ufe0f Deal sync has failed {n}x on "
+                            f"'{deal['properties'].get('dealname', did)}' and will keep failing "
+                            f"until the record is fixed. Last error: {err[:160]}. "
+                            f"Check the deal's family contact in HubSpot, then re-run with "
+                            f"FORCE_DEAL_ID={did}.")
+        except Exception as e:  # noqa: BLE001 - the alert must never fail the sync
+            print(f"  \u26a0\ufe0f  error-alert DM failed (non-fatal): {e}")
+    audit.append({"message_id": f"error-alert:deal:{did}", "source": "deal_sync",
+                  "deal_id": did, "action_taken": "sync_error_alerted", "failures": n})
+    return True
+
+
 def run() -> None:
     ds = cfg().get("deal_sync", {})
     if not ds.get("enabled"):
@@ -287,7 +345,8 @@ def run() -> None:
     if force_id:
         # One-deal REAL sync (test / selective go-live). Cursor untouched.
         d = hs._get(f"/crm/v3/objects/deals/{force_id}",
-                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount,hubspot_owner_id"})
+                    {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount,"
+                                   "hubspot_owner_id,hsa_sessions,hsa_group"})
         # Optional trace-by-contact-email: fetch the contact, fix the missing
         # association on the HubSpot deal, and sync with that contact.
         contact = None
@@ -309,10 +368,13 @@ def run() -> None:
               + (f" — {rec['reason']}" if rec.get("reason") else ""))
         if rec.get("action_taken") == "sync_skipped" and "no contact email" in (rec.get("reason") or ""):
             print("  ↳ associate the parent/family contact on the deal in HubSpot, then re-run.")
-        oa = owner_assign.maybe_assign(
-            d, contact or _deal_contact(force_id, d["properties"].get("dealname", ""))) or {}
+        fam = contact or _deal_contact(force_id, d["properties"].get("dealname", ""))
+        oa = owner_assign.maybe_assign(d, fam) or {}
         if oa:
             print(f"deal_sync FORCE {force_id}: {oa.get('action_taken')} → {oa.get('owner')}")
+        st = student_stamp.maybe_stamp(d, fam) or {}
+        if st:
+            print(f"deal_sync FORCE {force_id}: {st.get('action_taken')} {st.get('stamped')}")
         return
     state = json.loads(CUR_PATH.read_text()) if CUR_PATH.exists() else {}
     since_ms = state.get("last_createdate_ms")
@@ -327,7 +389,7 @@ def run() -> None:
             {"propertyName": "createdate", "operator": "GT", "value": str(since_ms)}]}],
         "sorts": [{"propertyName": "createdate", "direction": "ASCENDING"}],
         "properties": ["dealname", "pipeline", "dealstage", "createdate", "po_number", "amount",
-                       "hubspot_owner_id"],
+                       "hubspot_owner_id", "hsa_sessions", "hsa_group"],
         "limit": 50}
     deals: list = []
     while len(deals) < 200:  # paginate — a stuck 50-deal window must not hide new deals
@@ -354,7 +416,10 @@ def run() -> None:
                 synced += 1
             # Scheduler ownership (replaces the dead Zapier zap). Inside the same
             # try: a failed PATCH holds the cursor and the deal retries next run.
-            owner_assign.maybe_assign(d, _deal_contact(d["id"], d["properties"].get("dealname", "")))
+            fam = _deal_contact(d["id"], d["properties"].get("dealname", ""))
+            owner_assign.maybe_assign(d, fam)
+            # Fill-only student/parent stamp (replaces HubSpot workflow 34950163).
+            student_stamp.maybe_stamp(d, fam)
             cd = d["properties"].get("createdate")
             if cd:
                 ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)
@@ -364,7 +429,12 @@ def run() -> None:
             traceback.print_exc()
             # error: prefix never matches the deal: key → the deal retries next run
             audit.append({"message_id": f"error:deal:{d.get('id')}", "source": "deal_sync",
-                          "action_taken": "error", "error": str(e)[:200]})
+                          "deal_id": str(d.get("id")), "action_taken": "error",
+                          "error": str(e)[:200]})
+            try:
+                _alert_repeated_error(d, str(e))
+            except Exception as e2:  # noqa: BLE001 - the alert must never kill the run
+                print(f"  \u26a0\ufe0f  error-alert failed (non-fatal): {e2}")
             cd = d["properties"].get("createdate")
             if cd:
                 ms = int(datetime.fromisoformat(cd.replace("Z", "+00:00")).timestamp() * 1000)
@@ -397,6 +467,35 @@ def run() -> None:
     except Exception as e:  # noqa: BLE001 — the tripwire must never fail the sync
         import traceback as _tb
         print(f"⚠️  sibling_gap error: {e}")
+        _tb.print_exc()
+    try:
+        from . import low_balance
+        low_balance.run_sweep()
+    except Exception as e:  # noqa: BLE001 — renewal cases must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  low_balance sweep error: {e}")
+        _tb.print_exc()
+    try:
+        from . import po_inbox
+        n = po_inbox.po_watch_sweep()
+        if n:
+            print(f"  🧾 po_watch: {n} ticket(s) closed, invoice on the deal")
+    except Exception as e:  # noqa: BLE001 — the sweep must never fail the sync
+        print(f"⚠️  po_watch sweep error: {e}")
+    try:
+        from . import first_lesson
+        first_lesson.run()
+    except Exception as e:  # noqa: BLE001 — the stamp must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  first_lesson error: {e}")
+        _tb.print_exc()
+    try:
+        from . import hsa_sync
+        hsa_sync.late_add_sweep()
+        hsa_sync.verify_lessons()
+    except Exception as e:  # noqa: BLE001 — the cohort check must never fail the sync
+        import traceback as _tb
+        print(f"⚠️  hsa verify_lessons error: {e}")
         _tb.print_exc()
 
 
