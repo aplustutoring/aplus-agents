@@ -1018,9 +1018,10 @@
     416812943,
     416813718,
     416822267,
-    416823172
+    416823172,
+    416823379
   ],
-  "last_run_utc": "2026-09-18T22:34:47.021921+00:00",
+  "last_run_utc": "2026-09-18T22:40:50.505121+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -2189,6 +2190,85 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 416823379,
+      "number": "19493553715",
+      "time_pt": "3:33 PM",
+      "matched": true,
+      "contact_label": "Krista Camacho",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola placed an outbound call to Krista Camacho (charter TOR/EF) to follow up on Krista's earlier inquiry about a student named Maddie. The call went to Krista's voicemail. Paola left a message saying she would also send an email to find a good time to connect and discuss Maddie.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Krista an email asking for the best time to connect by phone to discuss Maddie",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Attempt another call to Krista once she replies with a preferred time",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola called Krista Camacho (charter TOR/EF at JCS) to follow up on Krista's earlier inquiry about a student named Maddie, and reached voicemail. Paola left a message saying she'd send a follow-up email asking when is best to talk. Krista now expects an email from Paola proposing times to connect. Next contact: send that email today; open with 'Hi Krista, following up on my voicemail \u2014 let me know a good time this coming week to hop on a quick call about Maddie and how A+ can support her through the charter funds process.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Krista is a charter school TOR/EF and already carries that status; nothing on this voicemail-only call changes that.",
+        "student_or_school_names_mentioned": [
+          "Maddie",
+          "Krista Camacho"
+        ],
+        "record_updates": {
+          "whats_going_on": "Paola called Krista to follow up on the Maddie inquiry and reached Krista's voicemail. Paola left a message letting Krista know she'd send an email to coordinate a good time to connect.",
+          "what_we_can_do_to_help": "Send Krista a follow-up email offering times to talk, then reconnect by phone to learn Maddie's grade, subject needs, and modality and map out a plan that fits the charter's instructional funds process.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola called Krista to follow up on the Maddie inquiry and reached Krista's voicemail. Paola left a message letting Krista know she'd send an email to coordinate a good time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Krista a follow-up email offering times to talk, then reconnect by phone to learn Maddie's grade, subject needs, and modality and map out a plan that fits the charter's instructional funds process."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Krista an email asking for the best time to connect by phone to discuss Maddie",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Attempt another call to Krista once she replies with a preferred time",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
