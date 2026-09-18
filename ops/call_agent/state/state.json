@@ -1007,9 +1007,11 @@
     416776895,
     416777529,
     416782696,
-    416787869
+    416787869,
+    416773217,
+    416790981
   ],
-  "last_run_utc": "2026-09-18T20:48:10.289827+00:00",
+  "last_run_utc": "2026-09-18T20:56:40.074355+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1823,6 +1825,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 416790981,
+      "number": "16264225974",
+      "time_pt": "1:46 PM",
+      "matched": true,
+      "contact_label": "Valerie Carney",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Valerie Carney regarding her prior interest in tutoring for her son. The call went to voicemail; Paola left a message asking Valerie to confirm continued interest and share a good callback time. No new information was gathered and no next step was locked in.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with Valerie Carney if no callback is received in a few days",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Valerie Carney did not answer \u2014 Paola left a voicemail following up on her earlier interest in tutoring for her son. We have no student details on file yet (name, grade, school, subject all unknown). Valerie now expects a callback opportunity; if she doesn't respond in a few days, try again. Open with: 'Hi Valerie, this is [name] from A+ Tutoring following up on the message Paola left about tutoring for your son \u2014 wanted to see if you're still looking for support and learn a bit more about what he needs.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail only \u2014 never actually connected with Valerie, so prior ATTEMPTED_TO_CONTACT status still applies.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Valerie had previously expressed interest in tutoring for her son; no additional details known yet.",
+          "what_we_can_do_to_help": "Left a voicemail inviting Valerie to call back with a good time to talk. Will attempt another follow-up if no response.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Valerie had previously expressed interest in tutoring for her son; no additional details known yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Left a voicemail inviting Valerie to call back with a good time to talk. Will attempt another follow-up if no response."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with Valerie Carney if no callback is received in a few days",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1835,6 +1903,11 @@
       "number": "17472673496",
       "time_pt": "9:51 AM",
       "reason": "hang-up"
+    },
+    {
+      "number": "13072076448",
+      "time_pt": "1:09 PM",
+      "reason": "no transcript"
     }
   ],
   "pending_failures": []
