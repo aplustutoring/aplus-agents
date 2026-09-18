@@ -240,11 +240,18 @@
   #print-area{display:none;}
   @media print{
     body>*{display:none !important;}
-    #print-area{display:block !important;position:static;}
-    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
+    /* ONE page, always. Park Day 2026-09-18: with the wrong paper size picked
+       in the iPad print sheet, width:100% made the 2:3 card taller than the
+       page, Safari split it over two pages ("Page 1 of 2"), the goal banner
+       and footer never printed, and Safari's header/footer (URL, date) landed
+       on the sheet. Sizing by page HEIGHT and clipping the area to one page
+       fits the whole card on whatever paper is selected. */
+    #print-area{display:flex !important;position:static;width:100vw;height:100vh;overflow:hidden;
+      align-items:center;justify-content:center;page-break-after:avoid;page-break-inside:avoid;}
+    #print-area img{display:block;height:100vh;width:auto;max-width:100vw;object-fit:contain;page-break-inside:avoid;}
     /* margin:0 leaves Safari no room to print its header/footer (URL, title, date) */
-    @page{margin:0;}
-    html,body{margin:0 !important;padding:0 !important;}
+    @page{size:4in 6in;margin:0;}
+    html,body{margin:0 !important;padding:0 !important;height:100vh;overflow:hidden;}
   }
 
   @media (prefers-reduced-motion:reduce){
