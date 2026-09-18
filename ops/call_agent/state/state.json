@@ -996,9 +996,10 @@
     416659219,
     416664012,
     416666147,
-    416666485
+    416666485,
+    416690184
   ],
-  "last_run_utc": "2026-09-18T16:58:12.137776+00:00",
+  "last_run_utc": "2026-09-18T17:41:19.671556+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1128,6 +1129,72 @@
           "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
           86868539,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416690184,
+      "number": "18183840009",
+      "time_pt": "10:33 AM",
+      "matched": true,
+      "contact_label": "Hermine Torosyan",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Hermine Torosyan regarding prior interest in tutoring for her daughter. The call was screened by a voicemail/assistant system and Hermine was unavailable. Paola left a voicemail asking Hermine to confirm if she's still interested and offering to follow up.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Hermine Torosyan following up on her prior interest in tutoring for her daughter (no student details on file). No conversation occurred \u2014 call was screened by an assistant and rolled to voicemail. Hermine now knows we're interested in reconnecting; she may call back. If no response in a few days, try again \u2014 open with: 'Hi Hermine, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we wanted to check in about tutoring for your daughter and see how we can help.' Current record has her as 'Using Someone Else,' so be ready to ask whether her current arrangement is still working.",
+        "lead_status": "no_change",
+        "lead_status_reason": "No live conversation \u2014 voicemail only. Current status 'Using Someone Else' should remain until we actually connect and learn more.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter.",
+          "what_we_can_do_to_help": "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
