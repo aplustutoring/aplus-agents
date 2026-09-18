@@ -19,7 +19,7 @@ generated from `registry.yml` on every merge to `main`.
 Engines sync **from Teachworks (lessons) into HubSpot (family record)**. No local
 cache, sheet, or state file is ever authoritative over these two.
 
-## The eight engines
+## The engines (13 as of 2026-09-16 — `docs/FLEET.md` carries the live count)
 
 Everything below lives in ONE repo — `aplustutoring/aplus-agents` — and runs on
 GitHub Actions cron. No always-on machine. State is committed back to the repo by
@@ -56,7 +56,12 @@ of any local checkout.
 | **Call agent** | `ops/call_agent` | daily ~5:30 PM PT | JustCall transcripts → contact match → CRM writes, tasks, coaching scores, digest |
 | **Messenger** | `ops/messenger` | manual · daily gated | Bulk email/SMS to a HubSpot list · campaign enrollment launcher |
 | **Feedback agent** | `ops/feedback-agent` | Slack event · Fri digest | #agent-feedback → classify → correction PR → DEMOTE fast path |
-| **Fleet health** | `ops/fleet-health`, `ops/hubspot-schema` | 20-min · Mon · on PR/push · manual | Retry sweeper · branch hygiene · registry check + FLEET.md generation · HubSpot property/enum sync |
+| **Fleet health** | `ops/fleet-health`, `ops/hubspot-schema` | 20-min · Mon · on PR/push · manual | Retry sweeper · branch hygiene · registry check + FLEET.md generation · HubSpot property/enum sync · HubSpot automation census · @claude on issues/PRs |
+| **Tutor issues** | `ops/tutor-issues` | Mon sweep · weekday polls · SMS event | Tutor-issue tickets on the tutor's contact (late, quiet, absence signals), scheduler-owned |
+| **Cohort intake** | `agents/cohort_intake` | manual dispatch | IEM HSA cohort sheet → HubSpot contacts + one deal per student → first touch + scheduler handoff |
+| **Charter analysis** | `scripts/`, `ops/messenger` | weekday 6 AM (due dates) · daily 9 AM (teacher enroller) · manual reports | Invoice due-date sync · teacher outreach enroller · gap / roster / invoice / revenue reports |
+| **Events** | `booth/` | HTTP events (Cloudflare Workers) · manual deploy | Event booths (Sage Oak, Blue Ridge, EO, Delilah): HubSpot upsert + photo/prize delivery |
+| **Email ops relays** | `ops/deal-relay`, `ops/call_agent/webhook-relay` | HubSpot / JustCall webhooks | Always-on Cloudflare Workers that turn a webhook into a `workflow_dispatch` (no reasoning, no content read) |
 
 For the per-agent detail — every trigger, every read, every write — read
 **`docs/FLEET.md`** (generated, always current) or `registry.yml` itself. This
@@ -118,7 +123,7 @@ Rules that bind every agent:
   line is **total failure, or a guard that stopped the real work** — 0 of 50
   enrolled is a failed run, 49 of 50 is a run with a warning.
 
-## Known weak points (as of 2026-08-20)
+## Known weak points (as of 2026-08-20, statuses re-checked 2026-09-16)
 
 Honest list. These are the ways the fleet has actually misled us, not theoretical.
 
@@ -132,11 +137,16 @@ Honest list. These are the ways the fleet has actually misled us, not theoretica
    agents still need the change — `campaign-launch` (`enroll.py`),
    `bulk-messenger` (`messenger.py`), and `call-agent` (only for the
    all-calls-failed case; its per-call isolation is correct as-is).
-2. **Registration drifts.** — CLOSED 2026-08-20. Nine live workflows ran
-   unregistered, three writing to HubSpot and one opening PRs. Nothing enforced
-   the registry's own first rule. Now enforced by
-   `ops/fleet-health/registry_check.py` via the `fleet-docs` workflow (advisory
-   on PRs during rollout; drop `--warn` to make it block).
+2. **Registration drifts.** — REOPENED 2026-09-16. Closed on 2026-08-20 after
+   nine unregistered workflows were found; by 2026-09-16 ten more had shipped
+   unregistered (eight workflows + two Cloudflare Workers), one of them
+   `tw-invoice-due-sync`, which writes HubSpot on a weekday cron. Cause: the
+   check still runs with `--warn` on PRs and on main, so it annotates and never
+   blocks, and nobody reads annotations. All ten are registered now. The fix
+   that makes the class impossible is dropping `--warn` from the PR step in
+   `.github/workflows/fleet-docs.yml` so an unregistered workflow fails the PR
+   — proposed, awaiting Roman's go (it will block any open PR that adds a
+   workflow without a registry entry, which is the point).
 3. **Hand-deployed code drifts from the repo, invisibly.** — OPEN. The two
    Google Apps Scripts deploy by pasting into the Apps Script UI, and a Web App
    serves a pinned *version*, not the saved file — so "saved", "deployed" and
@@ -145,8 +155,9 @@ Honest list. These are the ways the fleet has actually misled us, not theoretica
    version. No red run, no alert, nothing anywhere would have said so. A
    deployed-version-vs-repo-HEAD check would close this; nothing does today.
 
-4. **`#agent-feedback` still drops every report with a screenshot.** — OPEN,
-   and users are affected right now. See TODO-relay-screenshots below.
+4. **`#agent-feedback` still drops every report with a screenshot.** — OPEN
+   (still open 2026-09-16; no changelog entry has closed it). See
+   TODO-relay-screenshots below.
 
 5. **This file drifts.** — MITIGATED 2026-08-20. It described a four-engine world
    for roughly seven weeks. The per-agent breakdown now lives in `docs/FLEET.md`,

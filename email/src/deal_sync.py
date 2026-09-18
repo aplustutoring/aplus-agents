@@ -476,6 +476,13 @@ def run() -> None:
         print(f"⚠️  low_balance sweep error: {e}")
         _tb.print_exc()
     try:
+        from . import po_inbox
+        n = po_inbox.po_watch_sweep()
+        if n:
+            print(f"  🧾 po_watch: {n} ticket(s) closed, invoice on the deal")
+    except Exception as e:  # noqa: BLE001 — the sweep must never fail the sync
+        print(f"⚠️  po_watch sweep error: {e}")
+    try:
         from . import first_lesson
         first_lesson.run()
     except Exception as e:  # noqa: BLE001 — the stamp must never fail the sync

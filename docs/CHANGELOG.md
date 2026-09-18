@@ -56,6 +56,163 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+
+## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
+
+**What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`,
+`booth/README.md`): the "Where should we send it?" step takes more than one
+person. Fill the fields, tap "+ Add another person from this photo", and the
+person becomes a chip above the form (first name and role, with a remove
+button); the fields clear for the next one. "Next: delivery" takes whatever is
+typed as one more person, or, with an empty form under the chips, means
+"that's everyone". On delivery the page posts the existing `/submit` once
+per person with the same photo. Each person gets their own HubSpot contact,
+event tag, role, persona and seat, and their own email. Texts go only to
+people who gave a phone; "Text it" needs at least one phone in the group.
+The same email cannot be added twice. Idle reset clears the group. Done
+screen: "Photos are on their way to Jane and Sam." The Worker is untouched:
+one person, one contact, as before.
+
+Driven in the browser with a stubbed fetch: two people, email delivery ->
+two posts, each with its own role and consent, same tag and photo; text
+delivery with one phone in the group -> one `sendText: true`, one `false`.
+37 tests pass (one new: the add button, the chip strip, one post per
+person, text only with a phone, idle reset clears the group, no duplicate
+email).
+
+**Why:** Roman, 2026-09-17: "propose a way we can add multiple people from
+group photos" and then "yess build". Option 1 of the proposal (client loop
+on the existing Worker), chosen because the park day is 2026-09-18. The
+one-archive-many-copies pattern from the conference booth (PR #228) and a
+household link between parent and student contacts stay proposed for after
+the event.
+
+**Consent checkbox removed, same session.** Roman: "they consent by coming
+to us." Every submission now carries `aplus_marketing_consent: true`; the
+no-spam line under the email field stays as the acknowledgment a family
+reads. The form is one field group shorter on the iPad.
+
+**Known trade-offs:** the photo is uploaded and archived once per person
+(fine at booth volume); a group still gets one print per capture, not one
+per person.
+
+**Files touched:** `booth/public/sage-oak-park/index.html`,
+`booth/test-worker.mjs`, `booth/README.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-17 — Park Day page: Sage Oak staff domain button under the family chips
+
+**What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`):
+a full-width oak bar labeled "Sage Oak staff: + @sageoak.education" below the
+three family chips in the email block. Same placement Roman chose for the
+Blue Ridge staff button on 2026-09-16: families are most of the traffic, so
+their providers come first. Tapping it replaces whatever follows the @, the
+same as the chips. One new test pins the button below the chips and checks
+the domain against `ops/hubspot-schema/school-aliases.yml`, where
+`sageoak.education` is the verified Sage Oak domain. 36 tests pass.
+
+**Why:** Roman, 2026-09-17: "we need to have a .Sageoak.education button."
+Teachers at the park day should not have to type the school domain on an
+iPad. Role routing is untouched: the button fills the email only, and the
+Teacher pill still decides the persona and the sales seat.
+
+**Not built, proposed separately:** group photos with more than one contact
+per capture (see the same-day proposal in the session handoff; the
+conference booth in PR #228 already carries the one-capture, one-print-per-
+person pattern this would reuse).
+
+**Files touched:** `booth/public/sage-oak-park/index.html`,
+`booth/test-worker.mjs`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-16 — Fleet map catch-up: ten unregistered agents registered, docs regenerated, checkout synced
+
+**What changed** (`registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
+`ops/fleet-health/registry_check.py`, `.gitignore`):
+
+- **Ten agents registered** that were live on disk with no `registry.yml`
+  entry: `tw-invoice-due-sync` (weekday 6 AM cron, writes `invoice_due_date`
+  on HubSpot deals with `--apply` on every scheduled run), `ticket-reasoner`,
+  `email-backfill-deal-props`, `tutor-roster-check`,
+  `campaign-revenue-report`, `automation-audit`, `claude-code-action`
+  (`claude.yml`), `booth-deploy`, and two Cloudflare Workers:
+  `blue-ridge-booth` and `delilah-booth`. Registry now holds 62 agents across
+  13 engines; `registry_check.py` exits 0 ("every workflow is registered and
+  every entry resolves").
+- **`local` is a valid runtime** in `registry_check.py` (a laptop-run script;
+  still requires `source:`). `teacher-outreach-2026-09` already said
+  `runtime: local` and was failing the check for it.
+- **`docs/FLEET.md` regenerated** from the registry (the handoff brief meant
+  to be pasted into another AI or handed to a new person).
+- **`ARCHITECTURE.md`**: engine table extended from 8 rows to 14 (tutor
+  issues, cohort intake, charter analysis, events, relays); weak point 2
+  ("registration drifts") flipped from CLOSED back to REOPENED with the cause;
+  weak point 4 (screenshot relay) confirmed still open.
+- **`.gitignore`**: `.wrangler/` (Wrangler's local dev/build cache, appearing
+  at the repo root and under both relay Workers).
+
+**Why:** Roman, 2026-09-16: "I want it so that at the end of the day you can
+tell me everything is up to date, how it works, and I can ask another agent
+to analyze it." The session started from a checkout 51 commits behind main
+(49 of them bot state-persist commits) and found the fleet map behind the
+fleet. The registry's first rule is "if it's not here, it doesn't exist";
+the check that enforces it has run in `--warn` mode since 2026-08-20, and
+ten agents shipped past it. Nothing about how any agent runs was changed.
+
+**Verified:** last 200 Actions runs all green except two `cohort-intake`
+failures at 17:32 and 22:35 UTC, both before PR #240 (429 backoff) merged
+at 22:37; the run after it succeeded. Every weekly workflow ran green on
+Monday 2026-09-14. Twelve PRs open, none with failing checks.
+
+**Still human (proposed, not done):** drop `--warn` from the PR step of
+`fleet-docs.yml` so an unregistered workflow blocks the merge (the system
+fix for weak point 2). Flip `sage-oak-booth`, `eo-booth-agent` and
+`delilah-booth` to `deprecated` once their Workers are removed.
+
+**Files touched:** `registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
+`ops/fleet-health/registry_check.py`, `.gitignore`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-17 — Sage Oak Park Day booth DEPLOYED (PR #253 merged, Worker version 50c54de4)
+
+**What happened** (`booth/`): PR #253 squash-merged to main as `404ed506`
+(Roman: "Merge"). From the main checkout: `node test-worker.mjs` 35 passed;
+`npx wrangler deploy` uploaded 4 assets (`sage-oak-park/index.html`,
+`logo.png`, `logo-white.png`, `sageoak.webp`) and the Worker.
+Version `50c54de4-a977-447d-aec6-0c78c71c1311`. Bindings unchanged: PHOTOS
+KV `38b24fd5`, ASSETS, RESEND_FROM, ALLOWED_ORIGIN (two origins),
+JUSTCALL_FROM, OWNER_SALES, OWNER_CHARTER_SALES.
+
+**Verified at the origin (cache-busting query):** `/` answers 302 to
+`/sage-oak-park/`; the page answers 200 with the "Snap your park day photo"
+heading, the "Tap to start" button and both logos (Sage Oak, A+); `worker.js`,
+`wrangler.toml` and `test-worker.mjs` all answer 404. Opened in the in-app
+browser, no contact submitted.
+
+**Schema gate:** `sage_oak_park_2026` is live on `aplus_event_tag` (portal
+6312752). Two `hubspot-schema.yml` runs on main landed right after the merge
+and were not this session's: dry run 35266738147 at 19:45 UTC ("ADD
+sage_oak_park_2026", 2 would be updated) and live run 35266814328 at 19:46
+("2 were updated"). This session's dry run 35266905715 at 19:46:56 then
+reported 137 in sync, which is the correct reading once the live run has
+applied.
+
+**Drift noticed, not fixed:** the portal also carries
+`aplus_conference_2026` on `aplus_event_tag`, and `properties.yml` on main
+does not declare it (it lives in unmerged PR #228). Additive sync never
+removes options, so nothing breaks, but the registry is behind the portal
+until #228 merges.
+
+**Still human:** on the iPad, Settings > Safari > Camera > Allow for the
+Worker host; add `/sage-oak-park/` to the Home Screen; one 4x6 test print to
+the Selphy over AirPrint before the first family.
+
+**Files touched:** `docs/CHANGELOG.md` only (deploy record; the code merged in #253).
+
+---
 ## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
 
 **Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
@@ -296,6 +453,69 @@ deploys the same `.` so it has the same exposure. Fix candidate: deploy from a
 staging dir holding only the HTML and `_redirects`.
 
 **Files touched:** `docs/CHANGELOG.md` only.
+
+---
+## 2026-09-17 — Sage Oak Park Day photo booth: the Sage Oak Worker becomes the A+ photo booth, one row per event
+
+**What changed** (`booth/`, `ops/hubspot-schema/properties.yml`, `registry.yml`):
+
+- **`booth/worker.js` is now multi-event.** An `EVENTS` map holds every string
+  that names an event (email subject and body, SMS body, attachment name,
+  timeline note, default role). The front end sends `eventTag`; an unknown tag
+  falls back to Sage Oak rather than writing garbage. Ported from Blue Ridge:
+  create-only owner routing by seat (teachers to sales, families to charter
+  sales), Family/Student personas, never blanking an existing value with an
+  empty string, and the unsynced-property retry, widened to cover a
+  not-yet-synced enum option so a new event's tag can never cost the lead.
+  `ALLOWED_ORIGIN` is a comma-separated list, echoed exactly. The MMS fallback
+  photo URL uses the request origin instead of a hardcoded host.
+- **`booth/public/sage-oak-park/index.html`**: fork of the BTSC page for the
+  Sage Oak family park day where parents outnumber teachers. Role pills Parent / Teacher /
+  Student, one-tap `@gmail.com` / `@outlook.com` / `@yahoo.com` chips, a
+  no-spam line, an optional phone field that says what it is for, print as
+  the first delivery card, parent-facing consent copy, no em dashes in
+  anything a family reads. Every event-naming string sits in one `CONFIG`
+  block; the Sage Oak logo is drawn on the card and the attract screen.
+- **Served by the Worker via `[assets]`**, at `/sage-oak-park/`, with `GET /` redirecting
+  there. Same origin as `/submit`, so no CORS. This follows the Delilah lesson:
+  a Pages project and a Worker of the same name collide on current wrangler.
+- **Schema:** `aplus_event_tag` gains `sage_oak_park_2026`. Additive.
+- **Registry:** the Sage Oak entry is now "A+ photo booth (Sage Oak BTSC 2026,
+  Sage Oak Park Day 2026)" with the new writes listed.
+- **Tests:** `booth/test-worker.mjs` grows from 7 to 35: #AP032 append across
+  events, every `EVENTS` key is a declared schema option, the park day page's tag
+  and roles are Worker values, copy follows the event, persona and owner are
+  create-only, the tag rejection still captures the contact, CORS list, the
+  root redirect, and the no-em-dash rule over the visible copy.
+
+**Why:** Roman, 2026-09-17: a Sage Oak booth at the park tomorrow, with
+the printer, like the BTSC conference booth, but parent-heavy and with the
+email chips. The
+Worker kept its name because renaming it means re-entering four secrets the
+morning of an event, and the call-relay incident (2026-09-09) showed what
+"secrets never set" looks like in production. One row per event makes the
+next booth a copy of a folder and a row, not a new deploy surface.
+
+**Deploy (Roman's Mac, wrangler logged in):** `cd booth && node test-worker.mjs
+&& npx wrangler deploy`. Then merge and run the schema sync (dry run first,
+expect one option add). Full notes in `booth/README.md`.
+
+**Verified:** 35 tests pass; Blue Ridge suite still 43. The park day page driven
+headless with a fake camera: attract, banner, capture, review, chips rewrite
+the domain, parent role, consent, "All 3" delivery; the POST carries
+`eventTag: sage_oak_park_2026`, `role: parent`, the framed JPEG, and the done
+screen shows the right message. No console errors.
+
+**Naming:** the first cut carried a name from a typo in the ask; Roman
+clarified it is a Sage Oak event at the park, so the tag, card, email, text
+and HubSpot option all say "Sage Oak Park Day 2026". To rename again: the `CONFIG` block in
+`public/sage-oak-park/index.html`, the `sage_oak_park_2026` row in `worker.js`,
+and the option label in properties.yml.
+
+**Files touched:** `booth/worker.js`, `booth/wrangler.toml`,
+`booth/test-worker.mjs`, `booth/README.md`, `booth/public/sage-oak-park/index.html`,
+`booth/public/logo.png`, `booth/public/logo-white.png`, `booth/public/sageoak.webp`,
+`ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/CHANGELOG.md`.
 
 ---
 ## 2026-09-16 — Blue Ridge booth: a claim is captured wherever the page is opened, and a deploy that needs no laptop
@@ -735,6 +955,62 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-16 — Case engine: Tasks / Tickets / Pipelines rule applied fleet-wide (overnight build)
+
+**What (Roman's locked rule, docs/CASE-ENGINE.md):**
+- Three ticket pipelines in the portal: **Renewals** (935649887: Waiting on
+  family, Needs scheduler, Needs invoice, Renewed, Not renewing, No
+  response), **Support** (id 0 rebuilt in place: New, Waiting on us, Waiting
+  on tutor, Waiting on family, Resolved, Won't fix), **Tutor Accountability**
+  (935648438: New, Debrief, Probation, Evaluated, Resolved). Eight ticket
+  properties (case_key, case_client, funding_type, retention_risk,
+  support_category, linked_tutor_ticket_id, sla_due_at,
+  tutor_probation_until) + seven new tutor_issue_type options, synced.
+- `email/src/case_engine.py`: open_case (idempotent by case_key, contact +
+  deal associations, SLA clock), move / close / mark_risk, owner rules
+  (trial -> charter_sales; IEM HSA -> group parity from the deal's hsa_group;
+  else surname split; Support by category; Tutor -> operations), tutor-ticket
+  link, per-pipeline queries for the digests.
+- Low balance on the engine: every Teachworks alert is a Renewals case
+  (charter_only retired; funding_type charter / private_pay / trial); day-0
+  email reply-to the case owner; replies move the ticket to Needs scheduler
+  and DM the owner; teacher replies DM charter_sales; retention risk = later
+  of day 7 and 1 hour or less, flag + High, DM the owner only (Roman off
+  every case DM); Renewed waits in Needs invoice until Invoice # is on the
+  deal (needs_invoice_sweep); Stopped -> Not renewing; day 28 -> No
+  response. Private-pay / trial rail gated on private_pay.armed (false; needs
+  payment_links).
+- PO agent: clean PO -> Support ticket po_watch (owner charter_admin) that
+  closes on Invoice # (po_watch_sweep); review tickets carry
+  support_category po_exception. No more one-task-per-PO
+  (po_inbox.invoice_task.mode: ticket).
+- Task ceiling: hubspot_client.create_task refuses past
+  tasks.daily_ceiling_per_owner (10) with a DM to operations and an audit
+  record.
+- Digests: `.github/workflows/queue-digests.yml` runs the daily 9:00 AM PT
+  fleet recap (ops/fleet-health/daily_recap.py) and the Monday queue digest
+  (ops/queues/queue_digest.py) to #leadership-team.
+- Migration: `ops/queues/migration_table_2026_09_16.md` (109 open tickets
+  classified) + `ops/queues/migrate_tickets_2026_09_16.py --live` (one
+  ticket at a time, note on each). Execution needs a human run: the
+  auto-mode classifier blocks bulk HubSpot writes from the agent session.
+- roles.operations = mandy (was emily; emily keeps the new `escalation`
+  key). daily_summary stage labels updated.
+
+**Why:** Paola's 9/16 "different queues" point, generalised: one rule for
+what is a task, a ticket, a pipeline, applied to every workflow, with the
+schedulers owning renewals and Kath owning PO watch.
+
+**Files:** email/src/case_engine.py, email/src/low_balance.py,
+email/src/po_inbox.py, email/src/deal_sync.py, email/src/hubspot_client.py,
+email/src/daily_summary.py, email/config.yaml,
+ops/hubspot-schema/properties.yml, ops/queues/*, ops/fleet-health/daily_recap.py,
+.github/workflows/queue-digests.yml, email/tests/test_case_engine.py (+5),
+test_low_balance.py, test_po_inbox.py (+2), docs/CASE-ENGINE.md,
+docs/RETENTION-PROCESS.md, registry.yml.
+
+---
+
 ## 2026-09-11 — low_balance: the office writes (A+ Tutoring / support line), replies reach Paola every sweep
 
 **What:** the day-0 email now comes from "A+ Tutoring <admin@wetutorathome.com>"

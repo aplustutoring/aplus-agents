@@ -21,6 +21,8 @@ groups:
       label: Tutor
     - name: review
       label: Review
+    - name: case_engine            # the case engine (email/src/case_engine.py): every ticket it opens carries these
+      label: Case engine
   deals:
     - name: retention              # the retention journey lives on the deal (HubSpot is the list; Monday retired)
       label: Retention journey
@@ -122,6 +124,104 @@ properties:
     # ── Tutor-issue ticketing (ops/tutor-issues, Roman approved 2026-08-26).
     # Tickets logged on the TUTOR's contact record when we notice an issue.
     # Silent internal log in v1 — nothing tutor-facing reads these.
+    # ── Case engine (2026-09-16, Roman's Tasks / Tickets / Pipelines rule) ──
+    - name: case_key
+      label: "[Agent] Case key"
+      group: case_engine
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. The audit-log
+        case key (one ticket per case); the engine finds its ticket by it.
+    - name: case_client
+      label: "[Agent] Case client"
+      group: case_engine
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. Which client
+        opened the case (low_balance, po_watch, tutor_issues, ...).
+    - name: funding_type
+      label: "[Agent] Funding type"
+      group: case_engine
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py at ticket open
+        (Renewals). Trial is the only owner override in Renewals (charter_sales).
+      options:
+        - value: charter
+          label: "Charter"
+        - value: private_pay
+          label: "Private pay"
+        - value: trial
+          label: "Trial"
+    - name: retention_risk
+      label: "[Agent] Retention risk"
+      group: case_engine
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. Renewals: set
+        with priority High at the later of day 7 or balance at 1 hour or less;
+        sorts the board. No risk stage.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
+    - name: support_category
+      label: "[Agent] Support category"
+      group: case_engine
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py (Support
+        pipeline). One saved view per value; owner map by value in config.
+      options:
+        - value: po_watch
+          label: "PO watch"
+        - value: po_exception
+          label: "PO exception"
+        - value: complaint
+          label: "Complaint"
+        - value: quality
+          label: "Quality"
+        - value: cancellation
+          label: "Cancellation"
+        - value: billing
+          label: "Billing"
+        - value: scheduling
+          label: "Scheduling"
+        - value: scheduling_escalation
+          label: "Scheduling escalation"
+        - value: other
+          label: "Other"
+    - name: linked_tutor_ticket_id
+      label: "[Agent] Linked tutor ticket"
+      group: case_engine
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. A Renewals
+        ticket whose family has an open Tutor Accountability ticket carries
+        its id; the scheduler escalates to operations, ownership stays.
+    - name: sla_due_at
+      label: "[Agent] SLA due"
+      group: case_engine
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. When the
+        current stage's service level runs out (config service_levels).
+    - name: tutor_probation_until
+      label: "[Agent] Tutor probation until"
+      group: tutor
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py (Tutor
+        Accountability). Second ticket in the window: 30 days, no new students.
     - name: tutor_issue_type
       label: "[Agent] Tutor issue type"
       group: tutor
@@ -144,6 +244,19 @@ properties:
           label: "Scheduling flip-flop"
         - value: tech_issue_unreported
           label: "Tech issue not reported"
+        # Tutor Accountability pipeline (2026-09-16, Tutor Issue Escalation Procedure p.1)
+        - value: tutor_switch_requested
+          label: "Tutor switch requested"
+        - value: late_or_no_notice
+          label: "Late or no notice"
+        - value: incomplete_notes
+          label: "Incomplete notes"
+        - value: unresponsive_mia
+          label: "Unresponsive / MIA"
+        - value: other
+          label: "Other"
+        - value: positive_review
+          label: "Positive review"
 
     - name: tutor_issue_source_ids
       label: "[Agent] Tutor issue source records"
@@ -682,6 +795,8 @@ properties:
           label: "EO LA Valley AI Agents 2026"
         - value: blue_ridge_btsc_2026
           label: "Blue Ridge BTSC 2026"
+        - value: sage_oak_park_2026
+          label: "Sage Oak Park Day 2026"
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events
