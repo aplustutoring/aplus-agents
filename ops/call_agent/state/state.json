@@ -1005,9 +1005,10 @@
     416771215,
     416775613,
     416776895,
-    416777529
+    416777529,
+    416782696
   ],
-  "last_run_utc": "2026-09-18T20:27:32.359630+00:00",
+  "last_run_utc": "2026-09-18T20:35:10.514700+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1745,6 +1746,82 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416782696,
+      "number": "14044930579",
+      "time_pt": "1:27 PM",
+      "matched": true,
+      "contact_label": "Caller 404-493-0579",
+      "no_next_step": false,
+      "summary": {
+        "summary": "O'Neil Sagesse called because he completed his tutor training module yesterday and tried to schedule his onboarding call, but the system showed no available times. Janelle apologized, verified the spelling of his name, and promised to look into the scheduling issue and get back to him with an update today. O'Neil was patient and understanding.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Investigate why no onboarding call times are available for O'Neil Sagesse after he completed his training module, and get back to him today with an available onboarding slot.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Onion Sogsse",
+            "correct": "O'Neil Sagesse"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "O'Neil Sagesse (tutor applicant, phone 404-493-0579) called because he finished his training module yesterday but the onboarding scheduler shows no available times. Janelle promised him an update TODAY with a working onboarding slot. He was calm and patient. Please check the onboarding calendar/system, open a slot for him, and reach out today. Suggested opener: 'Hi O'Neil, this is ___ from A+ following up on the onboarding scheduling issue you flagged with Janelle \u2014 I've got some times for you now.'",
+        "lead_status": "Tutor-Active",
+        "lead_status_reason": "Caller is a tutor applicant who has completed the training module and is trying to schedule onboarding.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Tutor applicant O'Neil Sagesse called: completed training module yesterday and tried to book his onboarding call, but the scheduler showed no available times.",
+          "what_we_can_do_to_help": "Investigate the onboarding scheduler, open availability for O'Neil, and follow up with him today with a bookable time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Tutor applicant O'Neil Sagesse called: completed training module yesterday and tried to book his onboarding call, but the scheduler showed no available times."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Investigate the onboarding scheduler, open availability for O'Neil, and follow up with him today with a bookable time."
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "Tutors"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Investigate why no onboarding call times are available for O'Neil Sagesse after he completed his training module, and get back to him today with an available onboarding slot.",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
