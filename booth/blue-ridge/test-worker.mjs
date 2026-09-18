@@ -136,6 +136,78 @@ await ta("an off-list prize is dropped", async () => {
   assert.ok(!("aplus_booth_prize" in props));
 });
 
+await ta("Stickers is on the list", async () => {
+  const { props } = await submit({ ...BASE, prize: "Stickers" });
+  assert.equal(props.aplus_booth_prize, "Stickers");
+});
+
+await ta("a retired prize (Tic-Tac-Toe) is dropped", async () => {
+  const { props } = await submit({ ...BASE, prize: "Tic-Tac-Toe" });
+  assert.ok(!("aplus_booth_prize" in props));
+});
+
+// ── wheel/Worker contract ───────────────────────────────────────────────────
+// A label the wheel can land on but the Worker does not know is silently
+// dropped at write time, so the visitor's prize never reaches HubSpot. These
+// two lists have to stay identical.
+console.log("\nwheel labels match the Worker whitelist");
+const WORKER_SRC = readFileSync(join(HERE, "worker.js"), "utf8");
+const HTML = readFileSync(join(HERE, "spin-back-to-school.html"), "utf8");
+const listFrom = (src, decl) => {
+  const body = src.split(decl)[1].split("]")[0];
+  return [...new Set([...body.matchAll(/"([^"]+)"/g)].map((m) => m[1]))].sort();
+};
+t("the wheel offers exactly the four prizes the Worker accepts", () => {
+  assert.deepEqual(listFrom(HTML, "const categories = ["),
+                   listFrom(WORKER_SRC, "const PRIZES = ["));
+});
+t("the four prizes are the ones Roman asked for", () => {
+  assert.deepEqual(listFrom(WORKER_SRC, "const PRIZES = ["),
+                   ["Bookmark Scratcher", "Pop-it", "Squishy Pen", "Stickers"]);
+});
+
+// ── redeem form: email helpers, disclaimer, phone ───────────────────────────
+console.log("\nredeem form capture");
+t("the three consumer domains are one-tap chips", () => {
+  for (const d of ["@gmail.com", "@outlook.com", "@yahoo.com"]) {
+    assert.ok(HTML.includes(`data-domain="${d}"`), `missing chip ${d}`);
+  }
+});
+t("the staff domain button survives alongside them", () => {
+  assert.ok(HTML.includes('id="btn-domain"'));
+  assert.ok(HTML.includes("@theblueridgeacademy.com"));
+});
+t("the consent acknowledgment carries the no-spam promise", () => {
+  assert.ok(/We will not spam you/.test(HTML));
+});
+t("there is a phone number field, and it is submitted", () => {
+  assert.ok(HTML.includes('id="f-phone"'));
+  assert.ok(/phone: \$\("f-phone"\)\.value\.trim\(\)/.test(HTML));
+});
+t("the capture route falls back to the Worker when there is no artifact runtime", () => {
+  // On Pages there is no window.claude, so cloudDb stays null and the booth
+  // posts to the Worker exactly as before. Guard the feature-detect, not the
+  // hostname: the same file ships to both.
+  assert.ok(/window\.claude && typeof window\.claude\.use === "function"/.test(HTML));
+  assert.ok(/claude\.use\("db"\)/.test(HTML));
+  assert.ok(/if\(cloudDb\)/.test(HTML), "the db branch has to be conditional");
+});
+t("a claim that cannot be sent is still kept locally", () => {
+  assert.ok(/queuePending\(payload\)/.test(HTML));
+  assert.ok(/blueridge_pending/.test(HTML));
+});
+t("the staff panel exists and can export the day", () => {
+  for (const id of ["footer-tap", "staff-overlay", "staff-csv", "staff-list"]) {
+    assert.ok(HTML.includes(`id="${id}"`), `missing #${id}`);
+  }
+  assert.ok(/blue-ridge-claims-/.test(HTML));
+});
+t("no em dashes or double hyphens in the visitor-facing copy", () => {
+  // Roman 2026-08-24, locked: never in customer-facing communication.
+  const visible = HTML.split("<body>")[1].replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.ok(!/\u2014|--/.test(visible.replace(/<!--[\s\S]*?-->/g, "")));
+});
+
 // ── #AP032: append-only event tag ───────────────────────────────────────────
 console.log("\nevent tag is append-only (#AP032)");
 t("merges onto an existing Sage Oak tag", () => {

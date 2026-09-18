@@ -34,6 +34,7 @@ Notes:
 
 import os
 import re
+import sys
 import time
 import requests
 from datetime import datetime, timedelta
@@ -883,6 +884,36 @@ def fetch_charter_pilots_signed(start_date, end_date):
 # ─────────────────────────────────────────────
 MONDAY_URL = "https://api.monday.com/v2"
 
+class MondayError(RuntimeError):
+    """Monday answered HTTP 200 with the refusal in the body. NOT a write that landed."""
+
+
+# Monday reports a refused call (no access to the item, bad column, complexity
+# budget) as HTTP 200 with an `errors` array, so a caller that only reads
+# ["data"] cannot tell a write that landed from one that was thrown away. Every
+# refusal is raised here and remembered in MONDAY_FAILURES; main() exits
+# non-zero when that list is not empty, so a run that could not write is RED in
+# Actions instead of green. (2026-09-16: five CSM scorecard rows had been
+# refused since the 9/7 run and every run reported success.)
+MONDAY_FAILURES = []
+
+# Monday throttles by query cost, and those are worth another attempt. Anything
+# else (unauthorized, not found, malformed) will not fix itself on a retry.
+RETRYABLE_ERRORS = ("complexity", "rate limit", "too many requests",
+                    "budget exhausted", "throttled")
+
+
+def monday_errors(body):
+    """Every error string in a Monday response body; [] when the call succeeded."""
+    out = []
+    for e in (body.get("errors") or []):
+        out.append(str(e.get("message") if isinstance(e, dict) else e))
+    for key in ("error_message", "error_code"):
+        if body.get(key):
+            out.append(str(body[key]))
+    return out
+
+
 def monday_query(query, variables=None):
     headers = {
         "Authorization": MONDAY_API_KEY,
@@ -893,7 +924,17 @@ def monday_query(query, variables=None):
         try:
             r = requests.post(MONDAY_URL, headers=headers, json=payload, timeout=60)
             r.raise_for_status()
-            return r.json()
+            body = r.json()
+            errs = monday_errors(body)
+            if errs:
+                joined = "; ".join(errs)
+                if attempt < 2 and any(k in joined.lower() for k in RETRYABLE_ERRORS):
+                    wait = 5 * (attempt + 1)
+                    print(f"      ⏳ Monday.com {joined[:70]}, retrying in {wait}s...")
+                    time.sleep(wait)
+                    continue
+                raise MondayError(joined)
+            return body
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
             if attempt < 2:
                 wait = 5 * (attempt + 1)
@@ -901,6 +942,18 @@ def monday_query(query, variables=None):
                 time.sleep(wait)
             else:
                 raise
+
+
+def monday_write(what, fn, *args, **kwargs):
+    """Run one Monday write. A refusal is printed and remembered instead of
+    aborting the sync, so the rest of the board still updates, and main() ends
+    the run red because part of the board is stale."""
+    try:
+        return fn(*args, **kwargs)
+    except MondayError as e:
+        print(f"    ❌ {what}: Monday refused the write ({e})")
+        MONDAY_FAILURES.append(f"{what}: {e}")
+        return None
 
 def create_group(board_id, group_name):
     """Create a new group in a Monday.com board."""
@@ -959,11 +1012,10 @@ def add_item_update(item_id, body):
       create_update(item_id: $itemId, body: $body) { id }
     }"""
     try:
-        data = monday_query(q, {"itemId": str(item_id), "body": body})
-        if data.get("errors"):
-            print(f"    ⚠️  update post failed for item {item_id}: {data['errors']}")
+        monday_query(q, {"itemId": str(item_id), "body": body})
     except Exception as e:  # noqa: BLE001
         print(f"    ⚠️  update post failed for item {item_id}: {e}")
+        MONDAY_FAILURES.append(f"context update refused for item {item_id}: {e}")
 
 def get_or_create_scorecard_week_col(board_id, start_date, end_date):
     """Find or create the weekly numbers column on the L10 Scorecard.
@@ -1157,6 +1209,8 @@ def fetch_prior_week_value(board_id, item_id, prior_col):
         return float(text) if text else None
     except Exception as e:
         print(f"   ⚠️  Couldn't fetch prior week value for item {item_id}: {e}")
+        MONDAY_FAILURES.append(f"prior week unreadable for item {item_id} "
+                               f"(status left uncomputed): {e}")
         return None
 
 
@@ -1185,6 +1239,8 @@ def fetch_target_value(board_id, item_id):
         return float(m.group()) if m else None
     except Exception as e:
         print(f"   ⚠️  Couldn't fetch target for item {item_id}: {e}")
+        MONDAY_FAILURES.append(f"target unreadable for item {item_id} "
+                               f"(status computed against the hardcoded default): {e}")
         return None
 
 
@@ -1212,7 +1268,8 @@ def apply_status_updates(metric_values, board_id, prior_col):
           change_multiple_column_values(board_id: $board, item_id: $item, column_values: $vals) { id }
         }
         """
-        monday_query(mutation, {"board": str(board_id), "item": str(item_id), "vals": status_value})
+        monday_write(f"status for {metric_key} (item {item_id})", monday_query, mutation,
+                     {"board": str(board_id), "item": str(item_id), "vals": status_value})
         goal_src = f"goal {target:g}" if target is not None else f"default {rule.get('threshold')}"
         print(f"   {metric_key}: {current} → {status}  (vs {goal_src})")
 
@@ -1249,7 +1306,7 @@ def write_l10_scorecard(metrics, post_lesson_pct,
             print(f"    Skipping numeric write for item {item_id} (no data)")
             continue
         print(f"    Updating scorecard item {item_id}")
-        update_item(board_id, item_id, col_vals)
+        monday_write(f"scorecard item {item_id}", update_item, board_id, item_id, col_vals)
 
     print("  ✅ L10 Scorecard updated.")
 
@@ -1481,21 +1538,34 @@ def main():
 
     # 7. Write to Monday.com
     print("\n📤 Writing to Monday.com...")
-    write_weekly_lesson_report(metrics, post_lesson_pct, missed_deals,
-                               janelle_72hr_pct, yolanda_72hr_pct,
-                               janelle_missed, yolanda_missed,
-                               start_date, end_date)
-    write_l10_scorecard(metrics, post_lesson_pct,
-                        package_hrs, new_students, pkg_units_wk,
-                        csm_meeting_requested=csm_meeting_requested, csm_meeting_scheduled=csm_meeting_scheduled,
-                        csm_proposal_out=csm_proposal_out, csm_active_proposals=csm_active_proposals,
-                        csm_program_won=csm_program_won,
-                        nps_client=nps_client, nps_tutor=nps_tutor, nps_support_bot=nps_support_bot,
-                        start_date=start_date, end_date=end_date,
-                        missed_deals=missed_deals, total_deals=len(all_deal_schedulers),
-                        new_student_names=new_student_names)
-    write_first_lesson_report(new_students, start_date, end_date)
-    write_inactive_family_report(inactive_families, start_date, end_date)
+    monday_write("Weekly Lesson Report", write_weekly_lesson_report,
+                 metrics, post_lesson_pct, missed_deals,
+                 janelle_72hr_pct, yolanda_72hr_pct,
+                 janelle_missed, yolanda_missed,
+                 start_date, end_date)
+    monday_write("L10 Scorecard", write_l10_scorecard,
+                 metrics, post_lesson_pct,
+                 package_hrs, new_students, pkg_units_wk,
+                 csm_meeting_requested=csm_meeting_requested, csm_meeting_scheduled=csm_meeting_scheduled,
+                 csm_proposal_out=csm_proposal_out, csm_active_proposals=csm_active_proposals,
+                 csm_program_won=csm_program_won,
+                 nps_client=nps_client, nps_tutor=nps_tutor, nps_support_bot=nps_support_bot,
+                 start_date=start_date, end_date=end_date,
+                 missed_deals=missed_deals, total_deals=len(all_deal_schedulers),
+                 new_student_names=new_student_names)
+    monday_write("First Lesson Report", write_first_lesson_report,
+                 new_students, start_date, end_date)
+    monday_write("Inactive Student Outreach", write_inactive_family_report,
+                 inactive_families, start_date, end_date)
+
+    if MONDAY_FAILURES:
+        print(f"\n{'='*55}")
+        print(f"  ❌ Monday refused {len(MONDAY_FAILURES)} call(s). The board is NOT fully updated:")
+        for f in MONDAY_FAILURES:
+            print(f"     • {f}")
+        print("  Fix the access on those items, then re-run this workflow.")
+        print(f"{'='*55}\n")
+        sys.exit(1)
 
     print(f"\n{'='*55}")
     print(f"  ✅ Sync complete!")

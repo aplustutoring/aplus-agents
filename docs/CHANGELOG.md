@@ -7,6 +7,726 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
+
+**What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`,
+`booth/README.md`): the "Where should we send it?" step takes more than one
+person. Fill the fields, tap "+ Add another person from this photo", and the
+person becomes a chip above the form (first name and role, with a remove
+button); the fields clear for the next one. "Next: delivery" takes whatever is
+typed as one more person, or, with an empty form under the chips, means
+"that's everyone". On delivery the page posts the existing `/submit` once
+per person with the same photo. Each person gets their own HubSpot contact,
+event tag, role, persona and seat, and their own email. Texts go only to
+people who gave a phone; "Text it" needs at least one phone in the group.
+The same email cannot be added twice. Idle reset clears the group. Done
+screen: "Photos are on their way to Jane and Sam." The Worker is untouched:
+one person, one contact, as before.
+
+Driven in the browser with a stubbed fetch: two people, email delivery ->
+two posts, each with its own role and consent, same tag and photo; text
+delivery with one phone in the group -> one `sendText: true`, one `false`.
+37 tests pass (one new: the add button, the chip strip, one post per
+person, text only with a phone, idle reset clears the group, no duplicate
+email).
+
+**Why:** Roman, 2026-09-17: "propose a way we can add multiple people from
+group photos" and then "yess build". Option 1 of the proposal (client loop
+on the existing Worker), chosen because the park day is 2026-09-18. The
+one-archive-many-copies pattern from the conference booth (PR #228) and a
+household link between parent and student contacts stay proposed for after
+the event.
+
+**Consent checkbox removed, same session.** Roman: "they consent by coming
+to us." Every submission now carries `aplus_marketing_consent: true`; the
+no-spam line under the email field stays as the acknowledgment a family
+reads. The form is one field group shorter on the iPad.
+
+**Known trade-offs:** the photo is uploaded and archived once per person
+(fine at booth volume); a group still gets one print per capture, not one
+per person.
+
+**Files touched:** `booth/public/sage-oak-park/index.html`,
+`booth/test-worker.mjs`, `booth/README.md`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-17 — Park Day page: Sage Oak staff domain button under the family chips
+
+**What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`):
+a full-width oak bar labeled "Sage Oak staff: + @sageoak.education" below the
+three family chips in the email block. Same placement Roman chose for the
+Blue Ridge staff button on 2026-09-16: families are most of the traffic, so
+their providers come first. Tapping it replaces whatever follows the @, the
+same as the chips. One new test pins the button below the chips and checks
+the domain against `ops/hubspot-schema/school-aliases.yml`, where
+`sageoak.education` is the verified Sage Oak domain. 36 tests pass.
+
+**Why:** Roman, 2026-09-17: "we need to have a .Sageoak.education button."
+Teachers at the park day should not have to type the school domain on an
+iPad. Role routing is untouched: the button fills the email only, and the
+Teacher pill still decides the persona and the sales seat.
+
+**Not built, proposed separately:** group photos with more than one contact
+per capture (see the same-day proposal in the session handoff; the
+conference booth in PR #228 already carries the one-capture, one-print-per-
+person pattern this would reuse).
+
+**Files touched:** `booth/public/sage-oak-park/index.html`,
+`booth/test-worker.mjs`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-16 — Fleet map catch-up: ten unregistered agents registered, docs regenerated, checkout synced
+
+**What changed** (`registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
+`ops/fleet-health/registry_check.py`, `.gitignore`):
+
+- **Ten agents registered** that were live on disk with no `registry.yml`
+  entry: `tw-invoice-due-sync` (weekday 6 AM cron, writes `invoice_due_date`
+  on HubSpot deals with `--apply` on every scheduled run), `ticket-reasoner`,
+  `email-backfill-deal-props`, `tutor-roster-check`,
+  `campaign-revenue-report`, `automation-audit`, `claude-code-action`
+  (`claude.yml`), `booth-deploy`, and two Cloudflare Workers:
+  `blue-ridge-booth` and `delilah-booth`. Registry now holds 62 agents across
+  13 engines; `registry_check.py` exits 0 ("every workflow is registered and
+  every entry resolves").
+- **`local` is a valid runtime** in `registry_check.py` (a laptop-run script;
+  still requires `source:`). `teacher-outreach-2026-09` already said
+  `runtime: local` and was failing the check for it.
+- **`docs/FLEET.md` regenerated** from the registry (the handoff brief meant
+  to be pasted into another AI or handed to a new person).
+- **`ARCHITECTURE.md`**: engine table extended from 8 rows to 14 (tutor
+  issues, cohort intake, charter analysis, events, relays); weak point 2
+  ("registration drifts") flipped from CLOSED back to REOPENED with the cause;
+  weak point 4 (screenshot relay) confirmed still open.
+- **`.gitignore`**: `.wrangler/` (Wrangler's local dev/build cache, appearing
+  at the repo root and under both relay Workers).
+
+**Why:** Roman, 2026-09-16: "I want it so that at the end of the day you can
+tell me everything is up to date, how it works, and I can ask another agent
+to analyze it." The session started from a checkout 51 commits behind main
+(49 of them bot state-persist commits) and found the fleet map behind the
+fleet. The registry's first rule is "if it's not here, it doesn't exist";
+the check that enforces it has run in `--warn` mode since 2026-08-20, and
+ten agents shipped past it. Nothing about how any agent runs was changed.
+
+**Verified:** last 200 Actions runs all green except two `cohort-intake`
+failures at 17:32 and 22:35 UTC, both before PR #240 (429 backoff) merged
+at 22:37; the run after it succeeded. Every weekly workflow ran green on
+Monday 2026-09-14. Twelve PRs open, none with failing checks.
+
+**Still human (proposed, not done):** drop `--warn` from the PR step of
+`fleet-docs.yml` so an unregistered workflow blocks the merge (the system
+fix for weak point 2). Flip `sage-oak-booth`, `eo-booth-agent` and
+`delilah-booth` to `deprecated` once their Workers are removed.
+
+**Files touched:** `registry.yml`, `docs/FLEET.md`, `ARCHITECTURE.md`,
+`ops/fleet-health/registry_check.py`, `.gitignore`, `docs/CHANGELOG.md`.
+
+---
+
+## 2026-09-17 — Sage Oak Park Day booth DEPLOYED (PR #253 merged, Worker version 50c54de4)
+
+**What happened** (`booth/`): PR #253 squash-merged to main as `404ed506`
+(Roman: "Merge"). From the main checkout: `node test-worker.mjs` 35 passed;
+`npx wrangler deploy` uploaded 4 assets (`sage-oak-park/index.html`,
+`logo.png`, `logo-white.png`, `sageoak.webp`) and the Worker.
+Version `50c54de4-a977-447d-aec6-0c78c71c1311`. Bindings unchanged: PHOTOS
+KV `38b24fd5`, ASSETS, RESEND_FROM, ALLOWED_ORIGIN (two origins),
+JUSTCALL_FROM, OWNER_SALES, OWNER_CHARTER_SALES.
+
+**Verified at the origin (cache-busting query):** `/` answers 302 to
+`/sage-oak-park/`; the page answers 200 with the "Snap your park day photo"
+heading, the "Tap to start" button and both logos (Sage Oak, A+); `worker.js`,
+`wrangler.toml` and `test-worker.mjs` all answer 404. Opened in the in-app
+browser, no contact submitted.
+
+**Schema gate:** `sage_oak_park_2026` is live on `aplus_event_tag` (portal
+6312752). Two `hubspot-schema.yml` runs on main landed right after the merge
+and were not this session's: dry run 35266738147 at 19:45 UTC ("ADD
+sage_oak_park_2026", 2 would be updated) and live run 35266814328 at 19:46
+("2 were updated"). This session's dry run 35266905715 at 19:46:56 then
+reported 137 in sync, which is the correct reading once the live run has
+applied.
+
+**Drift noticed, not fixed:** the portal also carries
+`aplus_conference_2026` on `aplus_event_tag`, and `properties.yml` on main
+does not declare it (it lives in unmerged PR #228). Additive sync never
+removes options, so nothing breaks, but the registry is behind the portal
+until #228 merges.
+
+**Still human:** on the iPad, Settings > Safari > Camera > Allow for the
+Worker host; add `/sage-oak-park/` to the Home Screen; one 4x6 test print to
+the Selphy over AirPrint before the first family.
+
+**Files touched:** `docs/CHANGELOG.md` only (deploy record; the code merged in #253).
+
+---
+
+## 2026-09-14 — tutor-issues: a tutor who goes quiet in Slack now leaves a ticket
+
+**Why:** Roman, 2026-09-14: "the tutors that don't respond in Slack need to
+have a ticket created, we resorted to text messages but we need to know about
+that so we can sort them out." Scheduling had been texting tutors to ask them
+to go read Slack, and nothing recorded it. Separately, Georgianne Leong told us
+by text on 2026-09-14 that she sees no Slack messages from us at all, so a
+silent tutor is not evidence of an unwilling tutor.
+
+**What changed:** new issue type `unresponsive_in_slack` and a
+`--mode slack-fallback` leg. It scans outbound JustCall texts, resolves the
+number to a contact with the Tutors persona, and opens a ticket when the text
+we sent itself mentions Slack. The marker IS the evidence: no reasoning pass,
+no guessing at intent. Dedupe is rolling 30 days, so three chases in a month
+land on one ticket showing all three. Unlike every other type this ticket is
+not a silent log; it carries an ACTION line, because the point is that someone
+sorts the tutor out.
+
+Excluded by config: tutors with no Slack by policy (Christa, per Roman
+2026-09-08), anyone off the active roster, and the missed-call and applicant
+auto-replies.
+
+**Two JustCall paging traps fixed here, both of which return the wrong rows
+silently rather than erroring.** Paging is zero-indexed, so `page=1` skips the
+newest 100 texts and a short window comes back empty; and with `order=asc` the
+first page is the OLDEST 100 in the window, so one unpaginated call returns
+week-old traffic and misses everything recent. The first trap is what made this
+session's own SMS monitor report "0 inbound" for roughly ten hours on
+2026-09-12 while six families were writing in. `fetch_outbound_sms` now starts
+at page 0 and walks `next_page_link`, with a page cap and tests pinning both.
+
+**Not built, and why:** the stronger signal is "asked in the tutor's channel,
+no reply in N hours". That needs `conversations.history` on the private
+`#first-last` channels. The bot is not a member of them, and no file maps a
+tutor to a channel (`knowledge/journey/11-tutor.md`, Known gaps). Invite the
+bot and add the map and that leg becomes buildable.
+
+**Dry run against 7 days of live traffic:** 2 tickets, both correct. Jon Bax
+(chased 2026-09-08 and 2026-09-09, merged onto one ticket) and Arthur
+Rekechenetskiy (2026-09-14). Nothing else in 1,953 texts matched.
+
+**Amended same day, before merge.** Hannah Thorn told us by text on 2026-09-15:
+"you messaged me on slack at 12:12 and texted at 12:21 (both eastern time), but
+I was in the session." The first version of this detector would have opened a
+ticket on her. Nine minutes is not going quiet, and blaming a tutor for being
+mid-lesson is worse than missing the signal. Because the bot cannot read the
+private tutor channels it cannot measure the real gap, so the gate is now
+`require_urgency_or_repeat`: ticket only when the chase itself uses follow-up
+wording ("gently following up", "I need to know today"), or when the same tutor
+was chased more than once in the window. A single unhurried referral to Slack is
+recorded as seen and refused with a reason. Re-run over the same 7 days: 1
+ticket (Jon Bax, 2 chases) and 1 refusal (Arthur, one calm text). 47 tests pass.
+
+**Files:** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
+`ops/tutor-issues/README.md`, `ops/tutor-issues/tests/test_tutor_issues.py`
+(44 pass).
+
+## 2026-09-16 — phone resolution: use HubSpot's own normalised index, stop guessing formats
+
+**Why:** on 2026-09-16 a check for "who is waiting on us" could not resolve
+Maddy Zamany to any contact. Her number is stored `(310)456-4963`, with no
+space after the paren. Every phone lookup in the fleet guesses a list of
+formatting variants, and that shape was not in the list. Guessing formats is
+always one punctuation style behind whoever typed the number.
+
+HubSpot already maintains `hs_searchable_calculated_phone_number` and
+`hs_searchable_calculated_mobile_number`: the bare digits, however the number
+was entered. That is what they are for.
+
+**What changed:** both phone resolvers now try the calculated index first and
+keep the existing variant and token tiers as a fallback (the index is
+HubSpot-maintained, so a contact edited seconds ago may not be in it yet).
+
+- `ops/tutor-issues/tutor_issues.py` `search_contacts_by_phone` — feeds the
+  family lookup on late-lesson tickets and the tutor lookup on the Slack
+  fallback detector.
+- `ops/call_agent/call_agent.py` `find_contact_by_phone` — every inbound
+  caller. A miss here means a real family is logged as an unknown number.
+
+Verified live against five numbers: the calculated index matched everywhere
+variants matched, and additionally found Maddy, whom variants missed.
+
+**Why it matters beyond one contact:** an unresolved number is not a neutral
+outcome. It silently becomes "unknown caller" in the call agent and "no
+contact" in anything that asks whether a person was answered, which is how a
+family who WAS helped can look neglected, and a family who was not can vanish.
+
+**Files:** `ops/tutor-issues/tutor_issues.py`, `ops/call_agent/call_agent.py`,
+`ops/tutor-issues/tests/test_tutor_issues.py` (35 pass, call agent 40 pass).
+
+## 2026-09-16 — ops/unanswered: somebody asked for a person and nobody got back to them
+
+**Why:** over 2026-09-14 to 09-16 four people texted asking for a named human.
+Inna Volodinsky ("Dear Roman... can you give me a call"), Annie Wolfstein
+("Please feel free to call me at 661-904-3139"), a new number opening "Hey
+Roman" about PSAT prep, and Mary Gonzalez ("Janelle can you please call me").
+
+The team answered three of them by phone, one within 68 SECONDS. Nothing
+watched that, so the only way to know was to go and look, and looking at the
+text log alone produced three false alarms that accused the team of neglect
+while they were on the call. The fourth, the PSAT parent, has never been
+answered and nothing noticed.
+
+The call agent already does this properly for a ringing phone: a missed call
+becomes a Slack alert plus a same-day HIGH call-back task within two minutes.
+A text asking for a person had no equivalent. This is that equivalent.
+
+**Two rules it is built around.** Detection is literal: a message counts only
+if it asks to be called, or names staff on a word boundary. Inferring "this
+sounds like someone who wants a human" would alert on threads that are going
+fine. Resolution is cross-channel and self-healing: `notes_last_contacted`
+aggregates calls, emails, texts and meetings, and the moment it moves past the
+ask the task is completed and the alert forgotten. A false positive therefore
+costs nobody an interruption, which is the whole design constraint.
+
+**Dry run over the incident week:** 383 inbound texts, 72 hours, ONE alert —
+the PSAT parent, still unanswered, not in HubSpot. Inna, Annie and Mary were
+all correctly suppressed from the contact record.
+
+**Cron is justified here** despite the 2026-09-04 event-driven rule: the agent
+must return LATER to check whether the grace window elapsed and whether anyone
+replied, and the closing sweep is periodic by nature. Once the JustCall
+inbound-SMS relay (PR #221) is deployed, detection can be event-driven and the
+cron shrinks to the sweep alone.
+
+**Files:** `ops/unanswered/{unanswered.py,config.yml,README.md}`,
+`ops/unanswered/tests/` (19 pass), `.github/workflows/unanswered-asks.yml`.
+
+## 2026-09-16 — one definition of the customer-facing first name ("I don't know who Karl is?")
+
+**What a family saw:** the charter PO confirmation told Nikita Brixey her
+son's schedule was "Mondays 10:00 AM with Karl, Sonya, Mondays 10:30 AM with
+Karl, Sonya". Karl is Sonya's SURNAME. Nikita replied twice: "I don't know who
+Karl is?" and "We've never talked about anyone named Karl. We are only working
+work Sonya." The comma turned one tutor into what read as two people.
+
+**Why:** Teachworks returns people as "Last, First" in `employee_name`.
+`po_inbox._schedule_text` used the raw value.
+
+**Why it happened twice:** this exact class was already fixed on 2026-09-09,
+when the low-balance replay texted a family about "Torres,". That fix was a
+private `_first_name` inside `low_balance.py`. When `po_inbox` grew the same
+need it had nothing to reuse and did it raw. A fix that lives inside one
+module is a fix for one module.
+
+**What changed:** new `email/src/names.py` with a single `first_name()`,
+carrying both incidents in its docstring so the next caller finds it rather
+than rewriting it. `po_inbox._schedule_text` now uses it, and
+`low_balance._first_name` delegates to it so there is one definition.
+
+**A test was protecting the defect.** `test_schedule_stamped_from_upcoming_lessons`
+asserted "Wednesdays 3:30 PM with Sarah Lee" — a full name in copy a family
+reads, which the first-names-only rule (Roman, LOCKED 2026-09-09) forbids. The
+assertion is corrected to "with Sarah". Worth noting that prose rules in
+CLAUDE.md are not enforced anywhere; a lint over customer-facing copy would
+have caught this and the em-dash rule too.
+
+**Not fixed here:** the same text showed 10:00 AM and 10:30 AM as separate
+slots for what the family calls a single 10 to 11 hour. That is two Teachworks
+lessons grouped honestly, so merging adjacent slots is a judgment call for
+Roman rather than a bug to silently "fix".
+
+**Files:** `email/src/names.py` (new), `email/src/po_inbox.py`,
+`email/src/low_balance.py`, `email/tests/test_names.py` (new),
+`email/tests/test_po_inbox.py`. 584 tests pass.
+
+---
+## 2026-09-16 — Blue Ridge booth: Pages deploys from an allowlist, staff domain button moved below the family chips
+
+**What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
+
+- **Pages upload is an allowlist now.** `pages-dist.sh` copies only
+  `spin-back-to-school.html` and `_redirects` into `.pages-dist/`, and both
+  deploy paths (laptop command in `DEPLOY.md`, the GitHub workflow) upload
+  that directory instead of `.`. `.assetsignore` deleted: it is a Workers
+  static-assets feature and `wrangler pages deploy` never read it, which is
+  why the 2026-09-16 deploy served `worker.js`, `test-worker.mjs`,
+  `wrangler.toml` and `DEPLOY.md` at 200. The workflow's verify step now
+  fails the run if any of those answers 200 on the live site.
+- **Email block reordered for iPad.** Email input is full width, the three
+  family chips (`@gmail.com`, `@outlook.com`, `@yahoo.com`) share the row
+  under it as equal-width 52px tap targets, and the Blue Ridge staff domain
+  is a full-width navy bar at the bottom labeled "Blue Ridge staff: +
+  @theblueridgeacademy.com". Hint text shortened to match. JS and ids are
+  unchanged.
+- **One disclaimer, not two** (Roman 2026-09-16: "just the acknowledgment
+  should stay"). The no-spam paragraph under the email field is gone. The
+  consent checkbox now reads "We will not spam you. We will email you once to
+  say hi." The phone hint stays (it is a field hint, not a disclaimer). The
+  whole claim form now fits one iPad portrait screen without scrolling.
+  Pages production `858311fb`.
+
+**Why:** Roman, 2026-09-16. The exposure was found while verifying the
+first production deploy (no credentials in the served files, but no reason
+to publish the Worker logic and HubSpot owner ids). The reorder: families
+are most of the booth traffic, so their providers come first; the form has
+to work on the booth iPad.
+
+**Deployed:** Pages production `b5d712ef` (built from `.pages-dist`, branch
+`main`). Verified at the origin with a cache-busting query: root carries the
+new staff bar, "Stickers" and "We will not spam you"; `worker.js`,
+`wrangler.toml`, `DEPLOY.md` return 404. Worker untouched (still
+`734d5ae9`). Tap-tested in the in-app browser at 768x1024 and 1024x768:
+staff bar appends `@theblueridgeacademy.com`, gmail chip replaces it, no
+console errors. `node test-worker.mjs` -> 43 passed.
+
+**Gotcha learned:** `wrangler pages deploy` infers the branch from git, so a
+deploy from a worktree lands on a PREVIEW alias, not production. Pass
+`--branch main` from anywhere that is not the main checkout.
+
+**Files touched:** `booth/blue-ridge/pages-dist.sh` (new),
+`booth/blue-ridge/.assetsignore` (deleted), `booth/blue-ridge/DEPLOY.md`,
+`booth/blue-ridge/spin-back-to-school.html`,
+`.github/workflows/booth-deploy.yml`, `.gitignore`, `docs/CHANGELOG.md`.
+
+---
+## 2026-09-16 — Blue Ridge booth DEPLOYED (PR #238 build live on Worker + Pages)
+
+**What changed:** production deploy from Roman's laptop (wrangler OAuth,
+account `Info@wetutorathome.com`), after `git pull` to the #238 merge commit
+and a green gate (`node test-worker.mjs` -> 43 passed).
+
+- Worker `blue-ridge-booth` version `734d5ae9-e8c1-48b7-99e3-5082c898a126`,
+  100% of traffic, `HUBSPOT_TOKEN` secret still present.
+- Pages deployment `8f8d1d8b` -> https://blue-ridge-booth.pages.dev (production
+  bytes identical to the deployment URL).
+- Verified live: page carries "Stickers", "We will not spam you", all four
+  prizes and the three email chips; Worker OPTIONS -> 200 with CORS for the
+  Pages origin, empty POST -> 400 "Valid email required" (not 404). No real
+  contact submitted.
+
+**Open (not worked around, per Roman's instruction):** `.assetsignore` is NOT
+honored by `wrangler pages deploy`. `worker.js`, `test-worker.mjs`,
+`wrangler.toml` and `DEPLOY.md` are served at 200 from the Pages site. No
+credentials in any of them (token is a Cloudflare secret), but the Worker
+logic, HubSpot property names and owner ids are public. `booth-deploy.yml`
+deploys the same `.` so it has the same exposure. Fix candidate: deploy from a
+staging dir holding only the HTML and `_redirects`.
+
+**Files touched:** `docs/CHANGELOG.md` only.
+
+---
+## 2026-09-17 — Sage Oak Park Day photo booth: the Sage Oak Worker becomes the A+ photo booth, one row per event
+
+**What changed** (`booth/`, `ops/hubspot-schema/properties.yml`, `registry.yml`):
+
+- **`booth/worker.js` is now multi-event.** An `EVENTS` map holds every string
+  that names an event (email subject and body, SMS body, attachment name,
+  timeline note, default role). The front end sends `eventTag`; an unknown tag
+  falls back to Sage Oak rather than writing garbage. Ported from Blue Ridge:
+  create-only owner routing by seat (teachers to sales, families to charter
+  sales), Family/Student personas, never blanking an existing value with an
+  empty string, and the unsynced-property retry, widened to cover a
+  not-yet-synced enum option so a new event's tag can never cost the lead.
+  `ALLOWED_ORIGIN` is a comma-separated list, echoed exactly. The MMS fallback
+  photo URL uses the request origin instead of a hardcoded host.
+- **`booth/public/sage-oak-park/index.html`**: fork of the BTSC page for the
+  Sage Oak family park day where parents outnumber teachers. Role pills Parent / Teacher /
+  Student, one-tap `@gmail.com` / `@outlook.com` / `@yahoo.com` chips, a
+  no-spam line, an optional phone field that says what it is for, print as
+  the first delivery card, parent-facing consent copy, no em dashes in
+  anything a family reads. Every event-naming string sits in one `CONFIG`
+  block; the Sage Oak logo is drawn on the card and the attract screen.
+- **Served by the Worker via `[assets]`**, at `/sage-oak-park/`, with `GET /` redirecting
+  there. Same origin as `/submit`, so no CORS. This follows the Delilah lesson:
+  a Pages project and a Worker of the same name collide on current wrangler.
+- **Schema:** `aplus_event_tag` gains `sage_oak_park_2026`. Additive.
+- **Registry:** the Sage Oak entry is now "A+ photo booth (Sage Oak BTSC 2026,
+  Sage Oak Park Day 2026)" with the new writes listed.
+- **Tests:** `booth/test-worker.mjs` grows from 7 to 35: #AP032 append across
+  events, every `EVENTS` key is a declared schema option, the park day page's tag
+  and roles are Worker values, copy follows the event, persona and owner are
+  create-only, the tag rejection still captures the contact, CORS list, the
+  root redirect, and the no-em-dash rule over the visible copy.
+
+**Why:** Roman, 2026-09-17: a Sage Oak booth at the park tomorrow, with
+the printer, like the BTSC conference booth, but parent-heavy and with the
+email chips. The
+Worker kept its name because renaming it means re-entering four secrets the
+morning of an event, and the call-relay incident (2026-09-09) showed what
+"secrets never set" looks like in production. One row per event makes the
+next booth a copy of a folder and a row, not a new deploy surface.
+
+**Deploy (Roman's Mac, wrangler logged in):** `cd booth && node test-worker.mjs
+&& npx wrangler deploy`. Then merge and run the schema sync (dry run first,
+expect one option add). Full notes in `booth/README.md`.
+
+**Verified:** 35 tests pass; Blue Ridge suite still 43. The park day page driven
+headless with a fake camera: attract, banner, capture, review, chips rewrite
+the domain, parent role, consent, "All 3" delivery; the POST carries
+`eventTag: sage_oak_park_2026`, `role: parent`, the framed JPEG, and the done
+screen shows the right message. No console errors.
+
+**Naming:** the first cut carried a name from a typo in the ask; Roman
+clarified it is a Sage Oak event at the park, so the tag, card, email, text
+and HubSpot option all say "Sage Oak Park Day 2026". To rename again: the `CONFIG` block in
+`public/sage-oak-park/index.html`, the `sage_oak_park_2026` row in `worker.js`,
+and the option label in properties.yml.
+
+**Files touched:** `booth/worker.js`, `booth/wrangler.toml`,
+`booth/test-worker.mjs`, `booth/README.md`, `booth/public/sage-oak-park/index.html`,
+`booth/public/logo.png`, `booth/public/logo-white.png`, `booth/public/sageoak.webp`,
+`ops/hubspot-schema/properties.yml`, `registry.yml`, `docs/CHANGELOG.md`.
+
+---
+## 2026-09-16 — Blue Ridge booth: a claim is captured wherever the page is opened, and a deploy that needs no laptop
+
+**What changed** (`booth/blue-ridge/`, `.github/workflows/booth-deploy.yml`):
+
+- **Capture route is chosen by feature detection, not hostname.** The same
+  file ships to Cloudflare Pages and to a claude.ai artifact link. On Pages
+  there is no artifact runtime, so the booth posts to the Worker exactly as
+  before. Opened as an artifact, the Worker refuses the cross-origin call, so
+  the claim is written to the artifact's own store and pushed to HubSpot
+  afterwards. A claim that cannot be sent either way still lands in
+  `localStorage` and retries on the next send.
+- **Booth staff panel:** five taps on the footer of the wheel screen. Shows the
+  capture route, every claim captured on that device, and a Download CSV
+  button. Closes on the idle reset, so it never sits open in front of a
+  visitor.
+- **`booth-deploy.yml`:** manual workflow that runs `test-worker.mjs` as the
+  gate, deploys the Worker and Pages, then fetches
+  `blue-ridge-booth.pages.dev` and fails if the live page does not carry the
+  build. Needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repo
+  secrets, added once.
+
+**Why:** Roman asked for a link that actually works. The repo had no path to
+Cloudflare at all: deploying the booth meant a human with wrangler and
+credentials on a laptop, and nothing in CI could do it or check that it
+happened. Per the investigation rule, the answer to "what would the agent need
+so no human ever does this again" is the workflow, not a reminder to run two
+commands. The artifact-store route is the other half: a booth page that is
+opened anywhere else still captures the visitor rather than dropping them.
+
+**Known limit, stated rather than papered over:** this session cannot deploy.
+The container has no Cloudflare credentials and the network policy blocks
+`api.cloudflare.com` and `blue-ridge-booth.pages.dev` (403 on CONNECT). So
+`blue-ridge-booth.pages.dev` still serves the old build until the workflow runs
+with the secrets in place, or someone runs wrangler. There is no system fix
+available from inside this session; the system fix that IS available is the
+workflow, and it is committed.
+
+**Files touched:** `booth/blue-ridge/spin-back-to-school.html`,
+`booth/blue-ridge/test-worker.mjs`, `booth/blue-ridge/DEPLOY.md`,
+`.github/workflows/booth-deploy.yml`, `docs/CHANGELOG.md`.
+
+**Verified:** `node booth/blue-ridge/test-worker.mjs` -> 43 passed. Both
+capture routes driven headless: with a stubbed artifact runtime the claim
+lands in the store, the staff panel reads it back and the CSV exports; with
+the Worker unreachable and no runtime, the claim queues locally and the panel
+shows it as not yet sent. No console errors in either.
+
+---
+## 2026-09-16 — Blue Ridge booth: final prize set, email domain chips, no-spam line, phone field
+
+**What changed** (`booth/blue-ridge/`, branch `claude/blue-ridge-booth-updates-g3sxhi`):
+
+- **Wheel prizes finalized.** Tic-Tac-Toe is out, Stickers is in. The wheel now
+  offers Bookmark Scratcher, Pop-it, Squishy Pen, Stickers (each twice, so the
+  8 segments still alternate navy/orange). `worker.js` `PRIZES` updated to
+  match, because an off-list label is silently dropped at write time and the
+  visitor's prize would never reach `aplus_booth_prize`. A new test compares
+  the two lists directly so they cannot drift again.
+- **One-tap email domains.** `@gmail.com`, `@outlook.com`, `@yahoo.com` chips
+  under the email field, alongside the existing `@theblueridgeacademy.com`
+  staff button. Tapping a chip replaces whatever follows the `@`, so a visitor
+  who picked the wrong provider re-taps instead of backspacing on a tablet.
+- **No-spam disclaimer** on the email field: what the address is used for, no
+  selling or sharing, unsubscribe any time. Asked for by Roman; a booth tablet
+  asking for an email with no promise attached is the moment people bail.
+- **Phone number field** kept optional but made visible: clearer label, a
+  placeholder, and a hint that it is only used to reach them about tutoring.
+  Left optional on purpose so a missing phone never blocks a prize claim.
+
+**Why:** Roman, 2026-09-16, ahead of the Blue Ridge BTSC booth. The prize list
+was still carrying placeholders, and the capture form asked for an email with
+no reassurance and buried the phone line.
+
+**Files touched:** `booth/blue-ridge/spin-back-to-school.html`,
+`booth/blue-ridge/worker.js`, `booth/blue-ridge/test-worker.mjs`,
+`booth/blue-ridge/DEPLOY.md`, `docs/CHANGELOG.md`.
+
+**Verified:** `node booth/blue-ridge/test-worker.mjs` -> 40 passed (7 new).
+Rendered headless and walked the flow: spin lands a prize, each chip rewrites
+the domain correctly, no console errors. No schema change needed
+(`aplus_booth_prize` is free text, not an enum).
+
+---
+## 2026-09-16 — cohort_intake LIVE: cohort 1 enrolled (7 students); what the first runs taught
+
+**Merged:** #233 (build), #234 (slot cells carry no AM/PM: "Mon 10:00"),
+#235 (dry-run searches read HubSpot for real), #236 (workflow passes the
+JustCall secrets the pre-send gate needs before ANY send, email included;
+Monday/Wednesday schedule preference props are WINDOWS "9AM-12PM" /
+"12PM-3PM", the slot maps to the one containing it; ES email + scheduler
+handoff sent once per roster). Schema sync applied: 5 `[Agent] HSA *` props.
+
+**TEST-001 (Roman's row):** deal 65074382964 created, owner Yolanda (group 4,
+even), text at 10:39 PT to Roman's line via the SMS sweep one minute after
+the deal landed (the deal-sync relay IS wired), welcome email to roman@,
+ES email to danielle@ on the second execute, handoff DM to Yolanda. Roman
+reviewed and deleted the deal. Note: the test rode Roman's REAL contact
+(persona Family, lifecycle Customer, parent_* fields added fill-only).
+
+**Cohort 1, 9:56 to 10:02 PT, one execute per group label:** 7 deals.
+G1 English 9 Mon 10 (Avendano 65074362458, Young 65074227815, Espinoza
+65074683727; ES Kathy Paré; Janelle). G2 Geometry Wed 11 (Lebeouf
+65074701917, Riddell 65074724482; ES Munir + Paré; Yolanda). G3 Pre-Algebra
+Wed 3 (Gallegos 65074404751, Daoud 65074665052; ES Ari Taub; Janelle). Every
+family texted + welcome-emailed by the sweep within minutes; Teachworks
+families + students created by deal_sync; ONE group invoice task per group
+to Kath ($3,750 each); ES emails sent to Paré (x2) and Taub.
+
+**Spike answered (spec §5.5):** Teachworks /v1 has NO additional-contact
+endpoint. `POST customers/{id}/additional_contacts` → HTTP 404 (HTML). The
+ES stays a task on the deal owner, one per deal. No fix exists because the
+API does not expose it; the task IS the system.
+
+**Blocked, human:** Melanie Munir's ES email: her HubSpot contact has
+`hs_email_optout` set, the gate BLOCKS. Email her by hand or clear the
+opt-out and re-run `--group-label C1-G2` (once-per-roster guard skips Paré).
+
+**Fixed after the run (this entry's PR):** (1) the group-3 execute was
+CANCELLED in the queue: the workflow shared `aplus-email-state` with the
+relay-fired deal-sync runs, and GitHub evicts an older pending run when a
+newer one queues. The agent now keeps its own state file
+(`agents/cohort_intake/state/audit.jsonl`, `state.py`; the shared log is
+still read for sms/deal_sync markers and for keys written before the split)
+and its own concurrency group. (2) `subject_need` is a family of options
+(English Language Arts / Math / Both / Other): Geometry and Pre-Algebra now
+map to Math, English 9 to English Language Arts (G2/G3 contacts got no
+subject_need; the deals are complete).
+
+**Late add, 18:18 PT (first real re-split):** Aster White (86888) added to
+G2 Geometry on the sheet as Ready. `--group-label C1-G2` execute: new deal
+65101190710 $1,250 (full 25 sessions, group starts 9/23), Lebeouf + Riddell
+re-split $1,875 → $1,250 with a note on each deal, ES emails to Holbrook
+(new) + Paré (updated roster), Munir still blocked, fresh handoff to Yolanda;
+Aster's family texted + welcome-emailed within a minute (relay). Two more
+fixes from it: #240 HubSpot 429s retried with backoff (a dry run died on
+one), #241 `--list` prints every Intake row with status (the "is the new kid
+on the sheet?" question), #244 `hsa_sync.late_add_sweep` raises ONE task to
+the invoice owner when a deal joins a group after its invoice task (Kath's
+G2 task listed two students; nothing told her about the third).
+
+**Invoices are the schedulers' (Roman, 18:45 PT):** `hsa.invoice_owner:
+deal_owner` (#247) routes the group invoice + late-add tasks to the group's
+scheduler by parity; the four tasks already on Kath were moved to Janelle
+(G1, G3) and Yolanda (G2, Aster).
+
+**FERPA pass (Roman, 19:00 PT):** (1) the Actions log is no longer a student
+roster: the dry-run plan, `--list` and refusal messages print first name +
+last initial + IEM id and never a grade, school, parent phone or email
+(`Row.student_short`, `plan_summary(redact=True)`); the full plan still goes
+to the seats' Slack DMs on execute. (2) The committed audit log never carries
+a raw phone or email again: `audit.append` masks `to`, `welcome_email_to`,
+`email`, `phone`, `parent_*` at the choke point ('…4845', 'r…@domain'), and
+one_to_few's send log does the same. Nothing in the fleet read those values
+back (dedupe keys on contact/deal ids); the sheet's "Welcome Sent" column
+now holds the send time. What was committed before today stays in git
+history; a history rewrite is a separate decision.
+
+**Decision-log entries still due (spec §9.4):** group-parity ownership,
+per-student deal + group invoice, max group 4, zaps retired.
+
+---
+## 2026-09-15 — cohort_intake: IEM HSA cohort onboarding agent (spec v1) + rail changes
+
+**Spec:** `docs/specs/cohort-intake-spec.md`, saved verbatim first (fb60a857).
+Roman's build prompt (spec §10) delivered as ONE PR.
+
+**The agent (`agents/cohort_intake/`, `python -m agents.cohort_intake`):**
+Intake tab of the A+-owned sheet "HSA 26/27 Intake (A+)" → rows with A+
+Status = Ready → parse + hard-stop validation (every blank required field
+named at once; unknown school spelling refused, never guessed; student email
+equal to parent email dropped without a flag) → groups by cohort + group # +
+slot + subject, cap 4 → cohort from the START DATE (never the group number),
+session calendar from the locked table + no-class weeks (Wednesday groups
+skip Mar 10 / Mar 31 / Apr 28 and still get 25), amounts split to the cent
+with remainder on the first deal → plan DM (visionary, sales) → `--execute`
+after a Slack stop window that FAILS CLOSED when replies cannot be read →
+Family + ES contacts (fill-only; persona added, never replaced), one deal per
+student in IEM Inc. (5119061, stage 5119062 verified by label), associations,
+the full §5.4 prop set with enum values looked up by LABEL at run time (a
+missing option is skipped and reported, never fatal) → agent columns written
+on the same sheet row, one Log line per run → ES group email (one per ES per
+group) through `one_to_few --channel email` → scheduler handoff DM with the
+skip dates spelled out. Idempotent on school + student id + subject + term:
+re-runs update and re-split; a late add gets the remaining sessions and every
+sibling deal gets the new amount + a note. `--refresh` reads the rails back
+(Teachworks ID, Text Sent, Welcome Sent) and DMs the deal owner once when a
+cohort text was skipped (the one silent path in the SMS rail, spec §5.6 d).
+
+**Rails (nothing new built that a rail already did):**
+- `email/config.yaml`: `sms.pipelines["5119061"]` (template hsa, welcome
+  template + tokenised subject), `hsa_*` copy (the ask keys ARE the confirm
+  copy: LOCKED, a cohort family is never asked for a time), presend purpose
+  `cohort_welcome` with a standing go + `email_from`/`email_reply_to`,
+  `owner_assign.group_parity` for 5119061, new `hsa:` block.
+- `email/src/sms.py`: `_send_welcome(..., deal_props)` fills
+  `__STUDENT__ __SUBJECT__ __COHORT__ __START__ __END__ __SLOT__ __ES__
+  __SESSIONS__ __CALENDAR__ __NO_CLASS__` from the deal's [Agent] HSA props +
+  description lines; subject is scrubbed too; every other pipeline keeps the
+  `__FIRST_NAME__`-only behaviour. `templates/welcome_hsa.html` new.
+- `email/src/owner_assign.py`: group-parity branch (odd → scheduler_a_l,
+  even → scheduler_m_z) reading [Agent] HSA Group ("C1-G4" → 4); a deal
+  without a group number is left and not marked, so a replay assigns it.
+- `email/src/deal_sync.py`: a deal carrying `hsa_sessions` is exempt from the
+  charter needs-review guard (agent-made, parent associated on purpose);
+  after the family/student write it calls `hsa_sync.after_sync`; the run
+  ends with `hsa_sync.verify_lessons`. Search props carry hsa_sessions/group.
+- `email/src/hsa_sync.py` (new): (1) ES as additional contact via the
+  Teachworks SPIKE `tw.add_additional_contact` (POST
+  customers/{id}/additional_contacts); any failure → ONE task to the deal
+  owner. The first live outcome answers the spike; record it here. (2) ONE
+  flat group invoice task to charter_admin per [Agent] HSA Group, summed from
+  the sibling deals, with the $0/hr service + allocation instructions (the
+  API cannot create invoices, po_inbox has said so since August). (3) Lesson
+  series verification: count must equal HSA Sessions and no lesson on a
+  no-class date (LOCKED); mismatch DMs the deal owner + sales once a day.
+- `email/src/invoice_sweep.py`: $0 invoices never reach the overdue nag.
+- `email/src/teachworks_client.py`: `add_additional_contact` + the 400
+  wrapper knows `additional_contact`.
+- `ops/messenger/one_to_few.py`: `--channel email` (recipient = contact
+  email, subject rendered + scrubbed, gate on the email channel, Resend
+  sender as `presend.email_from`, record channel=email). `check`/`record`
+  defaults now resolve at call time.
+- `ops/hubspot-schema/properties.yml`: `[Agent] HSA Cohort / Group /
+  Sessions / Start / Slot` (deal, group charter). Schema dry run 2026-09-15:
+  `5 would be created, 0 would be updated, 124 already in sync` (hsa_cohort,
+  hsa_group, hsa_sessions, hsa_start, hsa_slot). Not applied yet.
+- `ops/hubspot-schema/school-aliases.yml`: OG / SM / SS aliases (the three
+  schools already existed under their long canonical names).
+- `registry.yml` `cohort-intake` + `.github/workflows/cohort-intake.yml`
+  (workflow_dispatch: execute, only_row, group_label, sheet_id, wait_minutes,
+  refresh; checks out the dispatched ref so a branch can be test-run);
+  `docs/FLEET.md` regenerated; `knowledge/journey/01-first-touch.md` gains a
+  charter-cohort paragraph (DRAFT).
+
+**Tests:** agents 85, email 572 (+ test_hsa_rails.py: cohort text never asks,
+welcome tokens + subject scrub, one family two kids = one text + one welcome,
+parity, guard exemption, spike fallback task, one invoice task per group,
+lesson verification, $0 nag), messenger 11 (email channel, subject scrub,
+CLI refusals), presend cohort_welcome standing go. Not fixed here: two
+`test_low_balance.py` tests (owed teacher email) fail on this branch with
+low_balance.py and its test untouched; fixtures are pinned to 2026-09-11
+against a real `datetime.now` (date drift since #227).
+
+**Written no-fix lines:** (a) Slack `/cohort <group>` trigger: no slash-command
+receiver exists anywhere in the fleet; the Apps Script `repository_dispatch`
+doorbell is the pattern, and it is a separate build, so the trigger is
+`workflow_dispatch` only. (b) `RETENTION_SA_JSON` has no local copy, so every
+run goes through the workflow; local runs need `GOOGLE_SHEETS_CREDS`.
+
+**Still human:** apply the schema sync (`create_properties.py` without
+--dry-run) BEFORE the first execute (the deal create writes hsa_* props);
+Roman reviews the TEST-001 text / welcome / ES email / deal, then deletes the
+test deal + contact + Teachworks entry and sets the row to `Test - done`;
+Danielle confirms the `charter_school_teacher` label and the grade / subject
+option labels exist (the agent reports any it skipped); decision-log entries
+per spec §9.4; the seven first-touch questions (spec §8 stays DRAFT).
+
+---
 ## 2026-09-11 — booth/aplus-2026: APLUS+ conference school list with staff email domains (dropdown source)
 
 **What:** Roman asked for every participant school at the APLUS+ Network 23rd
@@ -212,6 +932,112 @@ retroactive; sent before Roman rerouted the seat to Paola), Janelle (text Charle
 **Files:** email/src/{po_inbox,deal_sync,relay_watchdog,sms,po_daily_report}.py,
 email/config.yaml, email/tests/{test_po_inbox,test_deal_sync,test_relay_watchdog,
 test_daily_summary}.py (9 tests, 469 pass), docs/PO-PROCESS.md, docs/CHANGELOG.md.
+## 2026-09-16 — Case engine: Tasks / Tickets / Pipelines rule applied fleet-wide (overnight build)
+
+**What (Roman's locked rule, docs/CASE-ENGINE.md):**
+- Three ticket pipelines in the portal: **Renewals** (935649887: Waiting on
+  family, Needs scheduler, Needs invoice, Renewed, Not renewing, No
+  response), **Support** (id 0 rebuilt in place: New, Waiting on us, Waiting
+  on tutor, Waiting on family, Resolved, Won't fix), **Tutor Accountability**
+  (935648438: New, Debrief, Probation, Evaluated, Resolved). Eight ticket
+  properties (case_key, case_client, funding_type, retention_risk,
+  support_category, linked_tutor_ticket_id, sla_due_at,
+  tutor_probation_until) + seven new tutor_issue_type options, synced.
+- `email/src/case_engine.py`: open_case (idempotent by case_key, contact +
+  deal associations, SLA clock), move / close / mark_risk, owner rules
+  (trial -> charter_sales; IEM HSA -> group parity from the deal's hsa_group;
+  else surname split; Support by category; Tutor -> operations), tutor-ticket
+  link, per-pipeline queries for the digests.
+- Low balance on the engine: every Teachworks alert is a Renewals case
+  (charter_only retired; funding_type charter / private_pay / trial); day-0
+  email reply-to the case owner; replies move the ticket to Needs scheduler
+  and DM the owner; teacher replies DM charter_sales; retention risk = later
+  of day 7 and 1 hour or less, flag + High, DM the owner only (Roman off
+  every case DM); Renewed waits in Needs invoice until Invoice # is on the
+  deal (needs_invoice_sweep); Stopped -> Not renewing; day 28 -> No
+  response. Private-pay / trial rail gated on private_pay.armed (false; needs
+  payment_links).
+- PO agent: clean PO -> Support ticket po_watch (owner charter_admin) that
+  closes on Invoice # (po_watch_sweep); review tickets carry
+  support_category po_exception. No more one-task-per-PO
+  (po_inbox.invoice_task.mode: ticket).
+- Task ceiling: hubspot_client.create_task refuses past
+  tasks.daily_ceiling_per_owner (10) with a DM to operations and an audit
+  record.
+- Digests: `.github/workflows/queue-digests.yml` runs the daily 9:00 AM PT
+  fleet recap (ops/fleet-health/daily_recap.py) and the Monday queue digest
+  (ops/queues/queue_digest.py) to #leadership-team.
+- Migration: `ops/queues/migration_table_2026_09_16.md` (109 open tickets
+  classified) + `ops/queues/migrate_tickets_2026_09_16.py --live` (one
+  ticket at a time, note on each). Execution needs a human run: the
+  auto-mode classifier blocks bulk HubSpot writes from the agent session.
+- roles.operations = mandy (was emily; emily keeps the new `escalation`
+  key). daily_summary stage labels updated.
+
+**Why:** Paola's 9/16 "different queues" point, generalised: one rule for
+what is a task, a ticket, a pipeline, applied to every workflow, with the
+schedulers owning renewals and Kath owning PO watch.
+
+**Files:** email/src/case_engine.py, email/src/low_balance.py,
+email/src/po_inbox.py, email/src/deal_sync.py, email/src/hubspot_client.py,
+email/src/daily_summary.py, email/config.yaml,
+ops/hubspot-schema/properties.yml, ops/queues/*, ops/fleet-health/daily_recap.py,
+.github/workflows/queue-digests.yml, email/tests/test_case_engine.py (+5),
+test_low_balance.py, test_po_inbox.py (+2), docs/CASE-ENGINE.md,
+docs/RETENTION-PROCESS.md, registry.yml.
+
+---
+
+## 2026-09-11 — low_balance: the office writes (A+ Tutoring / support line), replies reach Paola every sweep
+
+**What:** the day-0 email now comes from "A+ Tutoring <admin@wetutorathome.com>"
+(reply-to paola@ unchanged, sign-off without the seat's name); the day-1 text
+leaves from the SUPPORT line (`low_balance.sms_line: support`, 818-869-1627)
+and opens "Hi {first_name}, this is A+ Tutoring."; the teacher email keeps
+Paola's name. New `_watch_replies` runs every hourly sweep over every open
+charter case: a reply by email or by text on any JustCall line is audited
+(`low_balance_family_replied` with the words and the line), posted on the
+ticket, and DM'd to the charter_sales seat; day 1 and the teacher email skip
+that family. Before, replies were only checked at the day-1 gate.
+
+**Why:** Paola, 2026-09-11 morning: why do PO reminders go out from her sales
+and relationship line? Roman: "send from Admin and responses go to Paola",
+and she is an agent on the support line in JustCall. This restores the
+2026-09-08 rule (deal exists = support line) that last night's "from 6644"
+had overridden. Days 0 and 1 are billing logistics from the office; day 7
+Retention Risk stays Paola's.
+
+**Files:** email/src/low_balance.py, email/config.yaml, email/templates/
+low_balance_charter.html, email/templates/low_balance_charter_multi.html,
+email/tests/test_low_balance.py (+2), docs/RETENTION-PROCESS.md.
+
+---
+
+## 2026-09-10 — first_lesson: Teachworks first attended lesson stamped on the deal + family (retention step 2 foundation)
+
+**What:** `email/src/first_lesson.py`, run from deal_sync every cycle and
+self-gated to every 6 hours: bulk-reads the last 10 days of lessons from both
+Teachworks accounts; for each attended student not yet in
+`state/first_lessons.json` reads the full lesson history, takes the first
+attended lesson ever, and stamps `[Agent] First lesson date`
+(`retention_first_lesson_date`, new on deals group retention and contacts
+group family) on the season's earliest deal and on the family contact
+(earliest across siblings). Students with no deal yet are retried after 3
+days; returning students are stamped but only first lessons within 60 days
+are audited as `first_lesson_stamped`. Workflow input
+`first_lesson_backfill_days` (+ dry_run preview) on email-deal-sync.
+
+**Why:** Roman 2026-09-10 "Let's work on the gap": the New Starts (Care
+Calls) view keyed off HubSpot's batched "date entered Post-Lesson", so the
+day-14 / day-45 care calls could be days off. The lesson date is the truth.
+
+**Files:** email/src/first_lesson.py, email/src/deal_sync.py (hook),
+email/config.yaml (first_lesson block), ops/hubspot-schema/properties.yml,
+.github/workflows/email-deal-sync.yml, email/state/first_lessons.json,
+email/tests/test_first_lesson.py (+9), registry.yml, docs/RETENTION-PROCESS.md.
+
+---
+
 ## 2026-09-10 — HubSpot: "Renewal Chase" and "New Starts (Care Calls)" deal views for Paola
 
 **What:** two shared saved deal views (owner Roman, Paola added), built in the
@@ -5535,3 +6361,78 @@ Nathan / 5, as Danielle typed them 90 s before the workflow fired) 2026-09-10.
 **Files:** email/src/student_stamp.py, email/src/deal_sync.py, email/config.yaml,
 email/tests/test_student_stamp.py, ops/hubspot-schema/properties.yml,
 ops/fleet-health/audit/retire_contact_to_deal_workflows.py, docs/PO-PROCESS.md.
+
+## 2026-09-14: Low-balance tests pinned to their own clock (weekend-green suite)
+
+**Why:** seven tests in `email/tests/test_low_balance.py` passed Monday to
+Friday and failed every Saturday and Sunday. The day-1 step is gated on
+`low_balance._day1_due()`, which ends in
+`now.date() >= d and _is_business_day(now.date()) and _in_sms_window()`: a real
+business-day check plus the 8am-8pm PT text window. The tests read the wall
+clock, so on a weekend the text and teacher-draft path never ran and the
+assertions that it did failed. Same root cause, second symptom: the fixtures
+dated cases from `datetime.now()` while pinning `now_la` to hard-coded
+September dates, so two of those tests (the owed-teacher-email pair) had
+already drifted into failing on weekdays too, and
+`test_charter_sales_notified_24h_after_sent_email` in `test_po_inbox.py` was
+set to break for real on 2026-09-20, when the wall clock passes its `sla_due`.
+
+**The rule is right, the tests were wrong.** No agent should text a family or
+ask a school for a PO on a Saturday or at 6am, so `_day1_due` is unchanged.
+The tests now pin their own instant: `NOW_LA` = Friday 2026-09-11, 9:03 AM PT,
+with `FrozenDatetime` patched over `low_balance.datetime` and `now_la` patched
+in the `Harness`, and every case dated back from `NOW_UTC` instead of the wall
+clock. The gates keep real coverage:
+`test_day1_waits_for_the_next_business_morning` (unchanged) plus a new
+`test_day1_held_on_the_weekend_and_outside_the_text_window`, which calls
+`_day1_due` on an explicit clock and asserts it holds on Saturday, on Sunday,
+and at 7am PT.
+
+**Verified:** `python3 -m pytest email -q` is 557 passed, 0 failed. Re-run with
+the process clock shifted to every weekday and weekend, at 3am, 11am and 11pm,
+and a year out: 557 passed each time. The seven reported failures reproduce
+exactly on the pre-fix file under a faked Saturday clock.
+
+**Files:** email/tests/test_low_balance.py, email/tests/test_po_inbox.py.
+No production code changed.
+
+## 2026-09-16: Monday writes that get refused now fail the run instead of reporting success
+
+**Why:** Roman asked whether the weekly L10 data worker still works. It runs
+(`scorecard-weekly.yml`, Mondays 10:00 AM PT, 10 straight green runs), but five
+CSM scorecard rows have been broken since the 2026-09-07 run and every run
+still reported success. Two symptoms on items 11487307910, 12005709448,
+11760102894, 12504179404 and 11760067895 (csm_meeting_requested,
+csm_meeting_scheduled, csm_proposal_out, csm_active_proposals,
+csm_program_won): `create_update` returns 403 USER_UNAUTHORIZED, and reading
+the row returns an empty item list, so `fetch_target_value` cannot read the
+goal and the On Track / Off Track colour is computed against the hardcoded
+default. The 9/14 run printed `csm_meeting_requested: 2 → Off Track (vs
+default 5)`. Clean on every run from 7/13 through 8/31, both symptoms from 9/7,
+which lines up with the Monday capacity problem around 9/4.
+
+**The system fix (not a human workaround):** Monday reports a refused call as
+HTTP 200 with the reason in an `errors` array. All three copies of the client
+(`ops/scorecard/aplus_weekly_sync.py`, `ops/scorecard/aplus_missed_lessons_sync.py`,
+`email/src/monday_client.py`, the last one writing two more rows to the same
+board from the weekly digest) returned `r.json()` without reading it, so a
+thrown-away write was indistinguishable from one that landed. Now
+`monday_query` raises `MondayError` on any refusal, retrying only the throttle
+cases (complexity budget, rate limit). In the weekly sync a refusal is recorded
+in `MONDAY_FAILURES` by `monday_write()` rather than aborting, so the rest of
+the board still updates and `main()` exits 1 at the end with every refused call
+named. Unreadable targets and prior-week values are recorded too, because a
+status colour computed against a default is a wrong number on the L10, not a
+warning. `digest._write_monday` prints and re-raises so the digest workflow
+goes red instead of leaving a stale row.
+
+**Expect the next scorecard run to be RED.** That is the fix working: the log
+will name which calls Monday refuses, which answers the open question of
+whether the five CSM numbers are landing at all.
+
+**Still human:** restore the API user's access to those five items (or move the
+L10 feed to HubSpot per the 2026-09-10 Monday-retired decision, Roman's call).
+
+**Files:** ops/scorecard/aplus_weekly_sync.py,
+ops/scorecard/aplus_missed_lessons_sync.py, email/src/monday_client.py,
+email/src/digest.py, email/tests/test_monday_client.py (new, 6 tests).

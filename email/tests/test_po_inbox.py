@@ -1,9 +1,26 @@
 """PO-inbox deal handling: advance Waiting-for-PO, create when none, surface on multi."""
 import base64
+import datetime as dt
 
 import pytest
 
 from src import deal_sync as dsy_mod, gmail_client as gmc, po_inbox as po
+from src.business_hours import LA
+
+
+@pytest.fixture(autouse=True)
+def _invoice_task_mode_task(monkeypatch):
+    # 2026-09-16: the live config opens a Support po_watch TICKET per clean PO
+    # (case engine). The legacy task path is still supported (mode: task) and
+    # is what these tests exercise; the ticket path has its own test below.
+    import copy
+    real = po.cfg
+
+    def _c():
+        c = copy.deepcopy(real())
+        c.setdefault("po_inbox", {}).setdefault("invoice_task", {})["mode"] = "task"
+        return c
+    monkeypatch.setattr(po, "cfg", _c)
 
 
 @pytest.fixture(autouse=True)
@@ -1332,7 +1349,10 @@ def test_schedule_stamped_from_upcoming_lessons(monkeypatch):
                         lambda name, pl, st, amt=None, extra_props=None, **k:
                         captured.append(extra_props) or {"id": "D1"})
     po._handle_deal(_po(parent_email="mom@x.com", po_month="2026-08"), [])
-    assert captured[0]["schedule_preferences"] == "Wednesdays 3:30 PM with Sarah Lee"
+    # FIRST NAME only in anything a family reads (Roman, LOCKED 2026-09-09).
+    # This assertion used to expect "Sarah Lee", which is why the surname was
+    # still in the text that reached Nikita Brixey on 2026-09-16.
+    assert captured[0]["schedule_preferences"] == "Wednesdays 3:30 PM with Sarah"
     assert captured[0]["is_the_family_currently_being_tutored_by_us_"] == "Yes"
 
 
@@ -1985,8 +2005,11 @@ def test_charter_sales_notified_24h_after_sent_email(monkeypatch):
     monkeypatch.setattr(po.audit, "_iter_records", lambda: iter(recs))
     monkeypatch.setattr(po.audit, "append", lambda r: appended.append(r))
     monkeypatch.setattr(po.slack_client, "dm", lambda u, t: dms.append((u, t)))
+    # pinned: the sweep reads the wall clock, and the assertion below is about
+    # a chase whose escalation window has not opened yet
+    monkeypatch.setattr(po, "now_la", lambda: dt.datetime(2026, 9, 11, 9, 3, tzinfo=LA))
     po._sweep_parent_chases()
-    # >24h since send, escalation window (Sep) not yet reached → ONLY Paola
+    # >24h since send, escalation window (Sep 20) not yet reached → ONLY Paola
     assert len(dms) == 1
     assert dms[0][0] == po.cfg()["staff"][po.cfg()["roles"]["charter_sales"]]["slack_user_id"]
     assert "STILL MISSING 24h" in dms[0][1] and "Kruz Vouniozos" in dms[0][1]
@@ -2490,3 +2513,48 @@ def test_three_sibling_po_stamps_each_deals_own_student(monkeypatch):
         "D1": ("Ezekiel", "Melara", "6"),
         "D2": ("Mario", "Melara", "9"),
         "D3": ("Vincent", "Melara", "7")}
+
+
+# ── 2026-09-16: PO watch is a Support ticket, not a task (case engine) ────────
+
+def test_clean_po_opens_a_po_watch_ticket_instead_of_a_task(monkeypatch):
+    import copy
+    from src import case_engine as ce
+    real = po.cfg
+
+    def _c():
+        c = copy.deepcopy(real())
+        c["po_inbox"]["invoice_task"]["mode"] = "ticket"
+        return c
+    monkeypatch.setattr(po, "cfg", _c)
+    opened, tasks = [], []
+    monkeypatch.setattr(po.hs, "_write", lambda m, p, b=None: {"id": "X"})
+    monkeypatch.setattr(po.hs, "create_task", lambda *a, **k: tasks.append(a) or {})
+    monkeypatch.setattr(ce, "open_case", lambda *a, **k: opened.append((a, k)) or {"id": "PW1"})
+    monkeypatch.setattr(ce, "owner_for_support", lambda cat, last="": ("charter_admin", "po_watch: charter_admin"))
+    notes = []
+    po._invoice_task("D50", _po(po_number="3114250000", po_month="2026-09", amount="300"), notes)
+    assert not tasks and opened
+    args, kw = opened[0]
+    assert args[0] == "po_inbox" and args[1] == "po_watch:3114250000" and args[2:4] == ("support", "new")
+    assert args[6] == "charter_admin" and kw["props"]["support_category"] == "po_watch" and kw["deal_id"] == "D50"
+    assert "3114250000" in args[4] and "closes on its own" in args[5]
+    assert notes and "PO watch ticket PW1" in notes[0]
+
+
+def test_po_watch_sweep_closes_when_invoice_is_on_the_deal(monkeypatch):
+    from src import case_engine as ce
+    closed = []
+    monkeypatch.setattr(ce, "open_tickets", lambda name, f=None, props=None: [{"id": "PW1"}, {"id": "PW2"}])
+    monkeypatch.setattr(ce, "close", lambda tid, name, outcome, note=None, props=None: closed.append((tid, outcome)))
+
+    def fake_get(path, params=None):
+        if "/tickets/PW1/associations/deals" in path:
+            return {"results": [{"toObjectId": 501}]}
+        if "/tickets/PW2/associations/deals" in path:
+            return {"results": [{"toObjectId": 502}]}
+        if path.endswith("/deals/501"):
+            return {"properties": {"invoice__": "TW-88", "dealname": "A - B - iLead 1 - 26/27"}}
+        return {"properties": {"invoice__": "", "dealname": "C - D"}}
+    monkeypatch.setattr(po.hs, "_get", fake_get)
+    assert po.po_watch_sweep() == 1 and closed == [("PW1", "resolved")]

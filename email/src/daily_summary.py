@@ -83,9 +83,12 @@ def ticket_eod_stats() -> dict:
             continue
         first_seen[tid] = (d, r.get("category", "?"), r.get("owner") or "unassigned")
 
-    stages = {"1378066770": "Needs Approval", "131537027": "Working on it",
-              "2": "Waiting on Family", "3": "Waiting on Tutor",
-              "943335739": "Charter Docs", "131537028": "Stuck", "4": "Done"}
+    # Support pipeline stages after the 2026-09-16 rebuild (case engine); the
+    # ids did not change, the labels did.
+    stages = {"1378066770": "New", "131537027": "Waiting on us",
+              "2": "Waiting on family", "3": "Waiting on tutor",
+              "943335739": "Charter Docs (legacy)", "131537028": "Stuck (legacy)", "4": "Resolved",
+              "1439476620": "Won't fix"}
     out = {"created": {today: 0, yday: 0}, "closed": {today: 0, yday: 0}, "open": []}
     from . import hubspot_client as hs
 
