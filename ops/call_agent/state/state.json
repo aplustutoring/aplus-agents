@@ -992,10 +992,78 @@
     416391284,
     416409073,
     416408396,
-    416413348
+    416413348,
+    416659219
   ],
-  "last_run_utc": "2026-09-18T04:57:41.221833+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-18T16:45:13.860801+00:00",
+  "pending_digest": [
+    {
+      "call_id": 416659219,
+      "number": "13105006987",
+      "time_pt": "9:38 AM",
+      "matched": true,
+      "contact_label": "Miriam Menkin",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Miriam Menkin regarding her earlier interest in tutoring. The call went to voicemail and Paola left a message asking Miriam to confirm continued interest and share a good callback time. No new information about the student or need was obtained.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Miriam Menkin following up on her prior tutoring interest \u2014 no answer, no new details. Miriam's current lead status is 'Using Someone Else' and how-did-you-hear shows 'From my Charter School'. She now expects a callback opportunity; if she doesn't respond, plan another gentle follow-up in a few days. Suggested opener: 'Hi Miriam, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 just wanted to check whether tutoring is still something you're exploring for your family.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Outbound call reached voicemail only; no conversation occurred, so existing 'Using Someone Else' status should not be changed based on a one-way message.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time.",
+          "what_we_can_do_to_help": "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
