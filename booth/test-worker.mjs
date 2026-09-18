@@ -11,7 +11,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import worker, { EVENTS, VALID_ROLES, mergeEventTags, corsOrigin, ownerForRole,
-                 withoutUnsyncedProps, normalizePhone } from "./worker.js";
+                 withoutUnsyncedProps, normalizePhone, driveFileName, laDate, backfillPrefixes } from "./worker.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
@@ -287,3 +287,40 @@ t("no em dashes or double hyphens in the family-facing copy", () => {
 });
 
 console.log(`\n${pass} passed\n`);
+
+console.log("\nGoogle Drive mirror (Roman 2026-09-18, same as the Delilah booth)");
+t("file names are LA time + guest name, no path characters", () => {
+  assert.equal(driveFileName("k", { at: "2026-09-18T21:05:12.000Z", name: "Ari Cohen" }), "2026-09-18 14.05.12 Ari Cohen.jpg");
+  assert.equal(driveFileName("k", { at: "2026-09-18T21:05:12.000Z", name: "Mom/Dad: <3" }), "2026-09-18 14.05.12 Mom Dad 3.jpg");
+  assert.equal(driveFileName("k", { at: "2026-09-18T21:05:12.000Z" }), "2026-09-18 14.05.12 Guest.jpg");
+});
+t("a photo archived before the mirror keeps its KV key as the file name", () =>
+  assert.equal(driveFileName("2026-09-18-abc.jpg", {}), "2026-09-18-abc.jpg"));
+t("laDate is the Los Angeles calendar day", () => {
+  assert.equal(laDate(new Date("2026-09-19T03:00:00Z")), "2026-09-18");
+  assert.equal(laDate(new Date("2026-09-18T12:00:00Z")), "2026-09-18");
+});
+t("backfill covers the UTC rollover: an LA evening photo has tomorrow's key prefix", () => {
+  assert.deepEqual(backfillPrefixes(new Date("2026-09-19T03:00:00Z")), ["2026-09-18", "2026-09-19"]);
+  assert.deepEqual(backfillPrefixes(new Date("2026-09-18T12:00:00Z")), ["2026-09-18"]);
+});
+t("the mirror runs in waitUntil and never blocks or fails the submit", () => {
+  const src = readFileSync(join(HERE, "worker.js"), "utf8");
+  assert.match(src, /ctx\.waitUntil\(job\)/);
+  assert.match(src, /mirrorToDrive\(env, key, meta, bytes\)\.catch\(/);
+  assert.match(src, /async fetch\(request, env, ctx\)/);
+});
+t("archive puts carry the metadata the Drive file name needs", () => {
+  const src = readFileSync(join(HERE, "worker.js"), "utf8");
+  assert.match(src, /env\.PHOTOS\.put\(key, bytes, \{ metadata: meta \}\)/);
+});
+t("wrangler.toml points at a folder and the SA secret is documented", () => {
+  const toml = readFileSync(join(HERE, "wrangler.toml"), "utf8");
+  assert.match(toml, /^DRIVE_FOLDER_ID = "[A-Za-z0-9_-]{20,}"/m);
+  assert.match(toml, /GOOGLE_SA_JSON/);
+});
+t("backfill only touches date-prefixed archive keys", () => {
+  const src = readFileSync(join(HERE, "worker.js"), "utf8");
+  assert.match(src, /\/drive-backfill/);
+  assert.match(src, /\^\\d\{4\}-\\d\{2\}-\\d\{2\}-\//);
+});

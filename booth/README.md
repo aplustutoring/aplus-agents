@@ -78,6 +78,38 @@ drawn on the card and the attract screen) are all in
 `public/sage-oak-park/index.html` `CONFIG`. To rename the event or swap the
 logo, edit that block only.
 
+## Photos mirror to the A+ Events shared drive (2026-09-18)
+
+Every archived photo is copied to one Google Drive folder the moment it is
+archived, in the background, named like `2026-09-18 14.05.12 Ari Cohen.jpg`
+(Los Angeles time, guest name). Same mechanism as `booth/delilah`: the Worker
+signs a service-account JWT with the `GOOGLE_SA_JSON` secret (spotlight-watcher
+SA), caches the token in KV for 50 minutes, and multipart-uploads into
+`DRIVE_FOLDER_ID` with `supportsAllDrives=true`. Marker keys `drive/<key>` in KV
+hold the Drive file id. The upload runs in `ctx.waitUntil`, so the iPad never
+waits on Drive and a Drive outage never costs a family their photo.
+
+Park Day 2026 folder: **"Sage Oak Park Day 2026-09-18"** inside the
+**A+ Events** shared drive (`0ABqrqCiZrGoVUk9PVA`):
+
+https://drive.google.com/drive/folders/1baGJt4VUj5FZB4JCOzLLgPGd6wvsADnp
+
+**It must be a folder inside a Shared Drive.** Service accounts have no My
+Drive quota (Delilah lesson, 2026-09-11). For the next event, create a new
+folder in A+ Events and point `DRIVE_FOLDER_ID` at it.
+
+Catch-up (photos archived before the mirror shipped, or during a Drive outage):
+
+```bash
+curl -s -X POST https://sage-oak-booth.nameless-mountain-bafa.workers.dev/drive-backfill
+```
+
+Defaults to today's photos. KV keys carry the UTC date, so an evening photo in
+LA sits under tomorrow's key; the default covers both days. Pass
+`?prefix=2026-09-01` for another day. Returns `{ uploaded, skipped, failed }`
+and is safe to run any number of times. The MMS fallback copies (bare UUID
+keys, 7-day TTL) are never mirrored.
+
 ## Deploy
 
 The Worker is already deployed with its secrets and KV. Shipping the park day is one
@@ -87,6 +119,8 @@ command from a machine where wrangler is logged in (Roman's Mac):
 cd booth
 node test-worker.mjs          # the gate
 npx wrangler deploy           # Worker + the public/ pages together
+# Drive mirror, once: paste the spotlight-watcher service-account JSON as ONE line
+python3 -c "import json;print(json.dumps(json.load(open('/path/to/a-plus-spotlight-watcher-1323d431f814.json')),separators=(',',':')))" | npx wrangler secret put GOOGLE_SA_JSON
 ```
 
 Then open https://sage-oak-booth.nameless-mountain-bafa.workers.dev/ on the
