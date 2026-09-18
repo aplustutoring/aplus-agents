@@ -116,3 +116,52 @@ def test_age_and_its_formatting():
 
 def test_an_unparseable_timestamp_does_not_crash_the_run():
     assert w.age_minutes("not a date", dt.datetime(2026, 9, 18)) == -1
+
+
+# ── tapbacks, without enumerating languages ─────────────────────────────────
+OURS = ["Okay thank you, I offered Angelo 2:30 pm today. Waiting on their "
+        "confirmation. I'll be using slack to for future communication.",
+        "Hi Misty, we have you down for Tuesdays at 10."]
+
+
+def test_a_spanish_tapback_is_caught_by_the_echo_not_a_word_list():
+    """2026-09-18, two hours after the Chinese fix shipped: Hannah Thorn's phone
+    sent the Spanish form. Enumerating languages loses; the quoted part being
+    OUR OWN message does not change between languages."""
+    body = ('Le gusta “Okay thank you, I offered Angelo 2:30 pm today. Waiting on '
+            'their confirmation. I\'ll be using slack to for future communication.”')
+    assert w.echoes_our_message(body, OURS)
+
+
+def test_any_language_works_because_the_prefix_is_never_read():
+    for prefix in ("Aimé", "Gefällt mir", "いいね", "Понравилось", "Curtiu"):
+        body = f'{prefix} “Hi Misty, we have you down for Tuesdays at 10.”'
+        assert w.echoes_our_message(body, OURS), prefix
+
+
+def test_a_quote_we_never_sent_is_not_a_tapback():
+    body = '“My tutor said she would email me the homework” — did that happen?'
+    assert not w.echoes_our_message(body, OURS)
+
+
+def test_a_real_message_that_happens_to_quote_is_left_alone():
+    body = 'She told me “bring the workbook” but which one?'
+    assert not w.echoes_our_message(body, OURS)
+
+
+def test_nothing_quoted_means_nothing_to_echo():
+    assert not w.echoes_our_message("Can we move to 4pm?", OURS)
+    assert not w.echoes_our_message("", OURS)
+    assert not w.echoes_our_message('Liked “ok”', OURS)   # too short to be distinctive
+
+
+def test_a_truncated_tapback_still_matches():
+    """Tapbacks cut long messages off with an ellipsis."""
+    body = 'Le gusta “Okay thank you, I offered Angelo 2:30 pm today. Waiting on…”'
+    assert w.echoes_our_message(body, OURS)
+
+
+def test_the_explicit_prefixes_still_cover_unquoted_forms():
+    """The Chinese tapback carries no quotes at all, so the word list earns its
+    keep alongside the echo check."""
+    assert w.is_courtesy("赞了：No worries at all. Thank you for the update.")
