@@ -999,9 +999,10 @@
     416666485,
     416690184,
     416703568,
-    416707056
+    416707056,
+    416724091
   ],
-  "last_run_utc": "2026-09-18T18:16:02.687852+00:00",
+  "last_run_utc": "2026-09-18T18:42:04.717163+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1285,6 +1286,96 @@
         [
           "Coordinate with the assigned tutor about the failed trial and the reschedule.",
           81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416724091,
+      "number": "18317475108",
+      "time_pt": "11:32 AM",
+      "matched": true,
+      "contact_label": "Pamela Richardson",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Pamela Richardson to confirm scheduling for Eli's tutoring with proposed tutor Jonathan. They worked around Eli's class schedule and confirmed Mondays at 11 AM and Thursdays at 12 PM (adjusted from 11 AM due to a class conflict). Pamela was agreeable and the schedule is now locked in.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Book Eli's recurring 45-min sessions with Jonathan on Mondays at 11 AM and Thursdays at 12 PM",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm Jonathan's availability for Thursdays at 12 PM (shifted from 11 AM)",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Pamela (warm, cooperative) confirmed scheduling for Eli with tutor Jonathan. Locked in Mondays at 11 AM and Thursdays at 12 PM (Thursday shifted from 11 AM because Eli has a class 11-12). PO is already in hand for 2x/week 45-min sessions. Pamela expects sessions to be booked on those days/times. Next: verify Jonathan can do Thu 12 PM, then send Pamela a confirmation. Open with: 'Hi Pamela, just confirming Eli's sessions with Jonathan are set for Mondays 11 AM and Thursdays 12 PM starting [date].'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with PO in hand and open deal; status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Eli",
+          "Jonathan",
+          "Pamela Richardson"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Reached Pamela to confirm scheduling for Eli with tutor Jonathan. Worked around Eli's class schedule: Mondays 11 AM works, but Thursday 11 AM conflicts with a class, so shifted Thursday to 12 PM. Schedule locked in.",
+          "what_we_can_do_to_help": "Yolanda to confirm Jonathan's availability for Thursdays at 12 PM (instead of 11 AM), then book Eli's recurring 2x/week 45-min sessions on Mon 11 AM and Thu 12 PM and send Pamela a confirmation.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Reached Pamela to confirm scheduling for Eli with tutor Jonathan. Worked around Eli's class schedule: Mondays 11 AM works, but Thursday 11 AM conflicts with a class, so shifted Thursday to 12 PM. Schedule locked in."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Yolanda to confirm Jonathan's availability for Thursdays at 12 PM (instead of 11 AM), then book Eli's recurring 2x/week 45-min sessions on Mon 11 AM and Thu 12 PM and send Pamela a confirmation."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Book Eli's recurring 45-min sessions with Jonathan on Mondays at 11 AM and Thursdays at 12 PM",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Confirm Jonathan's availability for Thursdays at 12 PM (shifted from 11 AM)",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
+          86868539,
           "scheduling"
         ]
       ],
