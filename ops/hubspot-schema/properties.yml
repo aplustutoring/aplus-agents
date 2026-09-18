@@ -21,6 +21,8 @@ groups:
       label: Tutor
     - name: review
       label: Review
+    - name: case_engine            # the case engine (email/src/case_engine.py): every ticket it opens carries these
+      label: Case engine
   deals:
     - name: retention              # the retention journey lives on the deal (HubSpot is the list; Monday retired)
       label: Retention journey
@@ -122,6 +124,104 @@ properties:
     # ── Tutor-issue ticketing (ops/tutor-issues, Roman approved 2026-08-26).
     # Tickets logged on the TUTOR's contact record when we notice an issue.
     # Silent internal log in v1 — nothing tutor-facing reads these.
+    # ── Case engine (2026-09-16, Roman's Tasks / Tickets / Pipelines rule) ──
+    - name: case_key
+      label: "[Agent] Case key"
+      group: case_engine
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. The audit-log
+        case key (one ticket per case); the engine finds its ticket by it.
+    - name: case_client
+      label: "[Agent] Case client"
+      group: case_engine
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. Which client
+        opened the case (low_balance, po_watch, tutor_issues, ...).
+    - name: funding_type
+      label: "[Agent] Funding type"
+      group: case_engine
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py at ticket open
+        (Renewals). Trial is the only owner override in Renewals (charter_sales).
+      options:
+        - value: charter
+          label: "Charter"
+        - value: private_pay
+          label: "Private pay"
+        - value: trial
+          label: "Trial"
+    - name: retention_risk
+      label: "[Agent] Retention risk"
+      group: case_engine
+      type: enumeration
+      fieldType: booleancheckbox
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. Renewals: set
+        with priority High at the later of day 7 or balance at 1 hour or less;
+        sorts the board. No risk stage.
+      options:
+        - value: "true"
+          label: "Yes"
+        - value: "false"
+          label: "No"
+    - name: support_category
+      label: "[Agent] Support category"
+      group: case_engine
+      type: enumeration
+      fieldType: select
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py (Support
+        pipeline). One saved view per value; owner map by value in config.
+      options:
+        - value: po_watch
+          label: "PO watch"
+        - value: po_exception
+          label: "PO exception"
+        - value: complaint
+          label: "Complaint"
+        - value: quality
+          label: "Quality"
+        - value: cancellation
+          label: "Cancellation"
+        - value: billing
+          label: "Billing"
+        - value: scheduling
+          label: "Scheduling"
+        - value: scheduling_escalation
+          label: "Scheduling escalation"
+        - value: other
+          label: "Other"
+    - name: linked_tutor_ticket_id
+      label: "[Agent] Linked tutor ticket"
+      group: case_engine
+      type: string
+      fieldType: text
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. A Renewals
+        ticket whose family has an open Tutor Accountability ticket carries
+        its id; the scheduler escalates to operations, ownership stays.
+    - name: sla_due_at
+      label: "[Agent] SLA due"
+      group: case_engine
+      type: datetime
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py. When the
+        current stage's service level runs out (config service_levels).
+    - name: tutor_probation_until
+      label: "[Agent] Tutor probation until"
+      group: tutor
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/case_engine.py (Tutor
+        Accountability). Second ticket in the window: 30 days, no new students.
     - name: tutor_issue_type
       label: "[Agent] Tutor issue type"
       group: tutor
@@ -144,6 +244,19 @@ properties:
           label: "Scheduling flip-flop"
         - value: tech_issue_unreported
           label: "Tech issue not reported"
+        # Tutor Accountability pipeline (2026-09-16, Tutor Issue Escalation Procedure p.1)
+        - value: tutor_switch_requested
+          label: "Tutor switch requested"
+        - value: late_or_no_notice
+          label: "Late or no notice"
+        - value: incomplete_notes
+          label: "Incomplete notes"
+        - value: unresponsive_mia
+          label: "Unresponsive / MIA"
+        - value: other
+          label: "Other"
+        - value: positive_review
+          label: "Positive review"
 
     - name: tutor_issue_source_ids
       label: "[Agent] Tutor issue source records"
@@ -245,6 +358,15 @@ properties:
     # so humans in the portal can tell agent-maintained fields from intake
     # capture at a glance. Applies to new declarations; existing agent props
     # were relabeled in-portal the same day (sync never relabels).
+    - name: retention_first_lesson_date
+      label: "[Agent] First lesson date"
+      group: family
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/first_lesson.py. The family's
+        first attended lesson in Teachworks (earliest across siblings), the
+        day the retention journey starts (day-14 / day-45 care calls).
     - name: sms_opt_out
       label: "[Agent] SMS Opt Out"
       group: master
@@ -673,6 +795,8 @@ properties:
           label: "EO LA Valley AI Agents 2026"
         - value: blue_ridge_btsc_2026
           label: "Blue Ridge BTSC 2026"
+        - value: sage_oak_park_2026
+          label: "Sage Oak Park Day 2026"
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events
@@ -926,6 +1050,15 @@ properties:
       description: >-
         AGENT PROPERTY — written by the retention agents (low_balance.py
         today). The most recent automated touch of any kind on this journey.
+    - name: retention_first_lesson_date
+      label: "[Agent] First lesson date"
+      group: retention
+      type: date
+      fieldType: date
+      description: >-
+        AGENT PROPERTY — written by email/src/first_lesson.py. The student's
+        first ATTENDED lesson in Teachworks, ever; stamped on the season's
+        earliest deal. The "New Starts (Care Calls)" view filters on it.
 
     # ── Consolidation keepers (approved by Roman 2026-08-10) — see KEEPERS.md ──
     # Deal TOR fields (teacher_of_record_name/email, tor_first/last_name) retire
@@ -995,6 +1128,42 @@ properties:
       group: charter
       type: string
       fieldType: text
+    # ── IEM HSA cohorts (agents/cohort_intake, 2026-09-15; spec
+    # docs/specs/cohort-intake-spec.md §5.4/§7). Written on deal create by the
+    # intake agent; owner_assign reads hsa_group (parity), sms reads all five
+    # for the welcome email tokens, hsa_sync keys the group invoice on
+    # hsa_group and verifies the lesson series against hsa_sessions/hsa_start.
+    # Portal automation must never overwrite them (#AP049).
+    - name: hsa_cohort
+      label: "[Agent] HSA Cohort"
+      group: charter
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by agents/cohort_intake. IEM HSA cohort number (1 to 6), derived from the cohort start date in the intake sheet. Never edit by hand; correct the sheet and re-run."
+    - name: hsa_group
+      label: "[Agent] HSA Group"
+      group: charter
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by agents/cohort_intake. Group key within the cohort, e.g. C1-G4 (cohort 1, group 4). Drives scheduler ownership (odd group A-L seat, even group M-Z seat) and the one flat group invoice."
+    - name: hsa_sessions
+      label: "[Agent] HSA Sessions"
+      group: charter
+      type: number
+      fieldType: number
+      description: "AGENT PROPERTY — written by agents/cohort_intake. One-hour group sessions in the cohort (= Teachworks hours per student at $0/hr). deal_sync treats a deal carrying this as an HSA cohort deal."
+    - name: hsa_start
+      label: "[Agent] HSA Start"
+      group: charter
+      type: date
+      fieldType: date
+      description: "AGENT PROPERTY — written by agents/cohort_intake. First session date for this student's group (first slot weekday on or after the cohort start)."
+    - name: hsa_slot
+      label: "[Agent] HSA Slot"
+      group: charter
+      type: string
+      fieldType: text
+      description: "AGENT PROPERTY — written by agents/cohort_intake. Weekly slot fixed by IEM, e.g. 'Monday 10:00 AM' (PT). Families cannot change it; requests go to the ES."
     - name: student_first_name
       label: "[Agent] Student First Name"
       group: dealinformation

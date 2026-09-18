@@ -5,7 +5,7 @@ record. Approved by Roman 2026-08-26. **v1 is a silent internal log**: the
 tutor is never notified, and nothing here is tutor-facing (a tutor-facing
 next step is v2 — nothing in this design blocks it).
 
-## The five issue types
+## The six issue types
 
 | type | detection | priority |
 |---|---|---|
@@ -14,6 +14,7 @@ next step is v2 — nothing in this design blocks it).
 | `notes_not_completed` | auto (Teachworks unmarked after Sunday cutoff) | LOW |
 | `scheduling_flip_flop` | Slack intake | MEDIUM |
 | `tech_issue_unreported` | Slack intake | MEDIUM |
+| `unresponsive_in_slack` | auto (an outbound text that itself mentions Slack) | MEDIUM |
 
 Detection is automated **only where system data proves it**. Types 2/4/5
 have no proving field, and a false ticket about a contractor's conduct is
@@ -56,6 +57,35 @@ attendance rate and the repeat-pattern trigger that opens an **evaluation**,
 which is the workflow that actually judges a tutor. A ticket is the tripwire;
 the evaluation is the judgment. They are not the same thing and the ticket
 should never have been pretending to be both.
+
+### "The tutor is late" texts (Roman 2026-09-10)
+
+One category breaks the tutor-only shape. When an inbound text reasons to
+`missed_lesson_or_late`, the sender's number is resolved to the **family**
+contact (two-tier phone search ported from `ops/call_agent/call_agent.py`,
+CallRail caller-ID shells skipped) and the ticket is opened with:
+
+- **both contacts associated** (tutor first, family second, association
+  type 16 on each),
+- **owner = that student's scheduler** (A-L Janelle, M-Z Yolanda) instead
+  of Operations, so nobody has to tell a scheduler by hand,
+- **the family's own words quoted verbatim** in the body (trimmed to 500
+  chars) with the sender number, the line it arrived on, and the timestamp.
+
+The split keys on the student's SURNAME, read from
+`student_last_name_if_diff_from_parent` and falling back to the family
+contact's `lastname`. Not `student_last_name`: that property is labelled
+"Student FIRST Name" in the registry.
+
+Refusal still beats a guess. More than one non-junk contact on the number,
+or a number whose only match is a Tutor or Teacher of Record (a tutor
+texting about their own lesson is not a family report), resolves to no
+family: the ticket is still created tutor-only and owned by Operations, and
+the ambiguity is printed in the run report.
+
+The `late_reports` block in `config.yml` is the switch
+(`route_to_scheduler`, `associate_family`); with the block missing or
+disabled the engine behaves exactly as it did before.
 
 ## Sources
 
@@ -110,9 +140,37 @@ logged as a refusal in the digest and the run report.
 - **Idempotent**: every event has a stable key in `state/processed.json`;
   running twice on the same day produces the same result once.
 
+### Tutors who go quiet in Slack (Roman 2026-09-14)
+
+Roman: "the tutors that don't respond in Slack need to have a ticket created,
+we resorted to text messages but we need to know about that so we can sort
+them out."
+
+Detection is deliberately literal. The engine counts an outbound text to a
+tutor **only when the text itself mentions Slack**, because that text is us
+saying, in our own words, that Slack did not work. Inferring "this looks like
+a chase" would put a conduct ticket on a contractor's record from a hunch,
+which is the one thing this engine refuses to do.
+
+This is the only type whose ticket is NOT a silent internal log. Its body
+carries an ACTION line, because the whole point is that somebody works out
+with the tutor how to reach them.
+
+Excluded, by config: tutors with no Slack by policy (`sms_only_tutors`),
+anyone not on the active roster (`roster_status_prefixes`), and the
+missed-call and applicant auto-replies (`ignore_bodies_starting`).
+
+**What this does not do yet.** The real question is "we asked in the tutor's
+channel and they never replied", which needs `conversations.history` on the
+private `#first-last` channels. The bot is not a member of them, so it cannot
+read them, and no file in the repo maps a tutor to a channel (see
+`knowledge/journey/11-tutor.md`, Known gaps). Invite the bot and add the map
+and that leg becomes buildable. Until then this catches the fallback itself,
+which is the part that was invisible.
+
 ## Running
 
-    python3 tutor_issues.py --mode all|sweep|inbound|intake [--dry-run]
+    python3 tutor_issues.py --mode all|sweep|inbound|intake|slack-fallback [--dry-run]
         [--force-sweep] [--probe-lateness] [--assume-baselined]
         [--report-json PATH] [--simulate-event PATH]
 
@@ -124,6 +182,12 @@ never persists state.
 On Actions: `.github/workflows/tutor-issues.yml` (manual dispatch, dry-run
 default TRUE; the schedule stays commented out until the baseline is
 verified and Roman flips it on).
+
+The workflow also accepts a `repository_dispatch` of type `tutor-sms`,
+which runs the inbound leg live (`--mode inbound`) within a minute instead
+of waiting up to two hours for the next weekday poll. Nothing fires it yet:
+the JustCall inbound-SMS webhook plus a relay worker is a follow-up PR, so
+until it lands the cron is still the real latency.
 
 ## Setup still pending before live
 

@@ -403,15 +403,34 @@
   }
   .field .row{display:flex; gap:10px;}
   .field .row input{flex:1; min-width:0;}
+  /* Blue Ridge staff domain. Sits BELOW the family chips (Roman 2026-09-16):
+     families are most of the traffic, so their providers come first and the
+     staff button is a full-width navy bar at the bottom of the email block. */
   .domain-btn{
-    flex:0 0 auto;
-    min-height:58px; padding:0 16px;
+    display:block; width:100%;
+    min-height:52px; margin-top:10px; padding:0 16px;
     border-radius:14px; border:none;
     background:var(--navy); color:var(--cream);
-    font-family:'Space Mono', monospace; font-size:12px; font-weight:700;
+    font-family:'Space Mono', monospace; font-size:13px; font-weight:700;
     cursor:pointer; letter-spacing:0.02em; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
   }
   .domain-btn:active{transform:scale(0.97);}
+  /* Quick-append domain chips. Most visitors use one of three providers, so
+     typing the local part and tapping a chip beats typing it all on a tablet.
+     Chips share the row equally so each is a wide iPad tap target; they wrap
+     on a phone. */
+  .domain-chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .domain-chip{
+    flex:1 1 130px;
+    min-height:52px; padding:0 14px;
+    border-radius:12px;
+    border:2px solid rgba(18,60,98,0.22);
+    background:rgba(18,60,98,0.06); color:var(--navy-deep);
+    font-family:'Space Mono', monospace; font-size:14px; font-weight:700;
+    cursor:pointer; white-space:nowrap;
+  }
+  .domain-chip:active{transform:scale(0.97);}
   .hint-sm{font-size:12px; color:rgba(8,23,38,0.55); margin:6px 0 0;}
 
   /* Consent: a whole tappable row, never a bare 16px checkbox */
@@ -451,6 +470,45 @@
     border-radius:12px; background:rgba(239,88,41,0.12);
     color:#9c2f10; font-size:14px; font-weight:700;
   }
+
+  /* ---------- Booth staff panel (5 taps on the footer) ---------- */
+  .staff-card{
+    background:var(--cream); color:var(--navy-deep);
+    border-radius:22px; padding:30px 24px 24px;
+    width:100%; max-width:520px; text-align:left;
+    box-shadow:0 30px 60px rgba(0,0,0,0.45);
+    position:relative; overflow:hidden;
+  }
+  .staff-card .stripe{
+    position:absolute; top:0; left:0; right:0; height:8px;
+    background:repeating-linear-gradient(90deg, var(--orange) 0 18px, var(--navy) 18px 36px);
+  }
+  .staff-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-top:12px;}
+  .staff-kicker{
+    font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
+    color:var(--orange); margin:0 0 4px;
+  }
+  .staff-title{font-weight:900; font-size:22px; margin:0;}
+  .staff-close{
+    flex:0 0 auto; min-height:44px; padding:0 16px;
+    border-radius:12px; border:none;
+    background:var(--navy-deep); color:#fff;
+    font-family:'Space Mono', monospace; font-size:12px; font-weight:700;
+    cursor:pointer;
+  }
+  .staff-mode{font-size:12px; color:rgba(8,23,38,0.6); margin:10px 0 0;}
+  .staff-list{
+    margin:14px 0 0; max-height:46vh; overflow-y:auto;
+    border-top:1px solid rgba(18,60,98,0.18);
+  }
+  .staff-row{
+    padding:11px 2px; border-bottom:1px solid rgba(18,60,98,0.12);
+    font-size:14px; line-height:1.35;
+  }
+  .staff-row b{font-weight:800;}
+  .staff-row span{display:block; font-size:12px; color:rgba(8,23,38,0.6); word-break:break-all;}
+  .staff-empty{padding:16px 2px; font-size:14px; color:rgba(8,23,38,0.6);}
 
   /* ---------- Claim / confirmation ---------- */
   .claim-card{
@@ -527,7 +585,7 @@ const CONFIG = {
 
     <p class="hint">Tap the center button to spin</p>
 
-    <footer>A+ Tutoring &amp; Blue Ridge Academy &middot; Conference 2026</footer>
+    <footer id="footer-tap">A+ Tutoring &amp; Blue Ridge Academy &middot; Conference 2026</footer>
   </div>
 
   <div class="overlay" id="overlay">
@@ -568,29 +626,51 @@ const CONFIG = {
 
       <div class="field">
         <label for="f-email">Email</label>
-        <div class="row">
-          <input id="f-email" type="email" autocomplete="email"
-                 inputmode="email" autocapitalize="off" spellcheck="false"
-                 enterkeyhint="next" required>
-          <button type="button" class="domain-btn" id="btn-domain">+ @theblueridgeacademy.com</button>
+        <input id="f-email" type="email" autocomplete="email"
+               inputmode="email" autocapitalize="off" spellcheck="false"
+               enterkeyhint="next" required>
+        <div class="domain-chips" id="domain-chips">
+          <button type="button" class="domain-chip" data-domain="@gmail.com">+ @gmail.com</button>
+          <button type="button" class="domain-chip" data-domain="@outlook.com">+ @outlook.com</button>
+          <button type="button" class="domain-chip" data-domain="@yahoo.com">+ @yahoo.com</button>
         </div>
-        <p class="hint-sm">Blue Ridge staff: type the part before the @ and tap the button.</p>
+        <p class="hint-sm">Type the part before the @ and tap your provider.</p>
+        <button type="button" class="domain-btn" id="btn-domain">Blue Ridge staff: + @theblueridgeacademy.com</button>
       </div>
 
       <div class="field">
-        <label for="f-phone">Phone <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input id="f-phone" type="tel" autocomplete="tel" inputmode="tel" enterkeyhint="done">
+        <label for="f-phone">Phone number <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input id="f-phone" type="tel" autocomplete="tel" inputmode="tel"
+               placeholder="(555) 555-5555" enterkeyhint="done">
+        <p class="hint-sm">Only used if we need to reach you about tutoring. No spam texts.</p>
       </div>
 
       <label class="consent" for="f-consent">
         <input type="checkbox" id="f-consent">
-        <span>I agree to receive tutoring info from A+ Tutoring.</span>
+        <span><strong>We will not spam you.</strong> We will email you once to say hi.</span>
       </label>
 
       <p class="form-error" id="form-error"></p>
       <button type="submit" class="pill-cta" id="btn-claim">Claim my prize</button>
       <button type="button" class="link-back" id="btn-back">Back to the wheel</button>
     </form>
+  </div>
+
+  <!-- ============ BOOTH STAFF (5 taps on the footer) ============ -->
+  <div class="overlay" id="staff-overlay">
+    <div class="staff-card">
+      <div class="stripe"></div>
+      <div class="staff-head">
+        <div>
+          <p class="staff-kicker">Booth staff</p>
+          <h3 class="staff-title" id="staff-count">No claims yet</h3>
+        </div>
+        <button type="button" class="staff-close" id="staff-close">Close</button>
+      </div>
+      <p class="staff-mode" id="staff-mode">&nbsp;</p>
+      <div class="staff-list" id="staff-list"></div>
+      <button type="button" class="pill-cta" id="staff-csv">Download CSV</button>
+    </div>
   </div>
 
   <!-- ============ CLAIM (show this to booth staff) ============ -->
@@ -606,16 +686,18 @@ const CONFIG = {
   </div>
 
 <script>
-  // ---- Categories (placeholders — swap these labels once finalized) ----
+  // ---- Prizes. Each one appears twice so the 8 segments alternate colors.
+  // This list is the contract with worker.js PRIZES: an off-list name is
+  // dropped rather than written to aplus_booth_prize. ----
   const categories = [
-    "Tic-Tac-Toe",
     "Bookmark Scratcher",
     "Pop-it",
     "Squishy Pen",
-    "Tic-Tac-Toe",
+    "Stickers",
     "Bookmark Scratcher",
     "Pop-it",
-    "Squishy Pen"
+    "Squishy Pen",
+    "Stickers"
   ];
 
   const navy = "#123c62";
@@ -723,6 +805,24 @@ const CONFIG = {
 
   // ================= Booth flow =================
   const $ = (id) => document.getElementById(id);
+
+  // ---------- Where a claim goes ----------
+  // On Cloudflare Pages there is no artifact runtime, so this resolves null
+  // and the booth posts to the Worker exactly as it always has. Opened as a
+  // claude.ai artifact (the preview link), the Worker is cross-origin and
+  // refuses the call, so the claim is written to the artifact's own store
+  // instead and pushed into HubSpot afterwards. Either way the visitor's
+  // details are captured somewhere durable before they walk away.
+  let cloudDb = null;
+  const captureReady = (async () => {
+    try{
+      if(window.claude && typeof window.claude.use === "function"){
+        cloudDb = await window.claude.use("db");
+      }
+    }catch(_){ cloudDb = null; }
+    return cloudDb;
+  })();
+  const captureMode = () => (cloudDb ? "artifact store" : "HubSpot Worker");
   const screens = ["wheel", "redeem", "claim"];
   const state = { prize: null, contact: null, spent: false };
 
@@ -752,6 +852,7 @@ const CONFIG = {
     $("redeem-form").reset();
     $("form-error").style.display = "none";
     overlay.classList.remove('show');
+    $("staff-overlay").classList.remove('show');
     spinBtn.classList.remove('disabled');
     show("wheel");
   }
@@ -769,15 +870,23 @@ const CONFIG = {
     setTimeout(() => $("f-role").focus({ preventScroll: true }), 250);
   });
 
-  // ---------- One-tap staff domain ----------
-  $("btn-domain").addEventListener('click', () => {
+  // ---------- One-tap domains ----------
+  // Replaces whatever follows the @ so a visitor who typed the wrong provider
+  // can just tap the right chip instead of backspacing on a tablet.
+  function appendDomain(domain){
     const el = $("f-email");
     const v = el.value.trim();
     if(!v) { el.focus(); return; }
-    el.value = v.includes("@") ? v.split("@")[0] + CONFIG.STAFF_DOMAIN
-                               : v + CONFIG.STAFF_DOMAIN;
+    el.value = (v.includes("@") ? v.split("@")[0] : v) + domain;
     el.focus();
-  });
+  }
+
+  $("btn-domain").addEventListener('click', () => appendDomain(CONFIG.STAFF_DOMAIN));
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll("#domain-chips .domain-chip"),
+    (chip) => chip.addEventListener('click', () => appendDomain(chip.dataset.domain))
+  );
 
   $("btn-back").addEventListener('click', fullReset);
 
@@ -818,17 +927,7 @@ const CONFIG = {
     // The visitor gets their prize whether or not the network cooperates:
     // show the claim screen regardless, and keep any failed capture locally
     // so nothing is lost (checked at end of day, see DEPLOY.md).
-    try{
-      const res = await fetch(CONFIG.WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(state.contact)
-      });
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      flushPending();
-    }catch(_){
-      queuePending(state.contact);
-    }
+    await capture(state.contact);
 
     btn.disabled = false;
     btn.textContent = "Claim my prize";
@@ -838,8 +937,38 @@ const CONFIG = {
     setTimeout(fullReset, CONFIG.DONE_RESET_MS);
   });
 
-  // ---------- Offline queue ----------
+  // ---------- Capture ----------
   const PENDING_KEY = "blueridge_pending";
+
+  async function sendOne(payload){
+    await captureReady;
+    if(cloudDb){
+      await cloudDb.collection("claims").add({
+        ...payload,
+        capturedAt: new Date().toISOString(),
+        syncedToHubspot: false
+      });
+      return;
+    }
+    const res = await fetch(CONFIG.WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+  }
+
+  async function capture(payload){
+    try{
+      await sendOne(payload);
+      flushPending();
+      return true;
+    }catch(_){
+      queuePending(payload);
+      return false;
+    }
+  }
+
   function queuePending(payload){
     try{
       const q = JSON.parse(localStorage.getItem(PENDING_KEY) || "[]");
@@ -847,24 +976,116 @@ const CONFIG = {
       localStorage.setItem(PENDING_KEY, JSON.stringify(q));
     }catch(_){ /* storage unavailable: the prize still gets handed over */ }
   }
+  function readPending(){
+    try{ return JSON.parse(localStorage.getItem(PENDING_KEY) || "[]"); }
+    catch(_){ return []; }
+  }
   async function flushPending(){
-    let q;
-    try{ q = JSON.parse(localStorage.getItem(PENDING_KEY) || "[]"); }catch(_){ return; }
+    const q = readPending();
     if(!q.length) return;
     const left = [];
     for(const item of q){
-      try{
-        const r = await fetch(CONFIG.WORKER_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(item)
-        });
-        if(!r.ok) left.push(item);
-      }catch(_){ left.push(item); }
+      try{ await sendOne(item); }
+      catch(_){ left.push(item); }
     }
     try{ localStorage.setItem(PENDING_KEY, JSON.stringify(left)); }catch(_){}
   }
-  flushPending();
+  captureReady.then(flushPending);
+
+  // ---------- Booth staff panel ----------
+  // Five taps on the footer. Staff need to see that claims are landing
+  // without leaving the booth, and to carry the day home as a CSV if the
+  // capture route was the artifact store rather than the Worker.
+  let tapCount = 0, tapTimer = null;
+  $("footer-tap").addEventListener('click', () => {
+    clearTimeout(tapTimer);
+    tapCount++;
+    tapTimer = setTimeout(() => { tapCount = 0; }, 2500);
+    if(tapCount >= 5){ tapCount = 0; openStaff(); }
+  });
+
+  $("staff-close").addEventListener('click', () => {
+    $("staff-overlay").classList.remove('show');
+  });
+
+  let staffRows = [];
+
+  async function loadClaims(){
+    await captureReady;
+    const pending = readPending().map(r => ({ ...r, pending: true }));
+    if(!cloudDb) return pending;
+    try{
+      const snap = await cloudDb.collection("claims")
+                                .orderBy("capturedAt", "desc").limit(500).get();
+      return snap.docs.map(d => d.data()).concat(pending);
+    }catch(_){ return pending; }
+  }
+
+  async function openStaff(){
+    const list = $("staff-list");
+    list.innerHTML = '<p class="staff-empty">Loading\u2026</p>';
+    $("staff-overlay").classList.add('show');
+    staffRows = await loadClaims();
+
+    $("staff-count").textContent = staffRows.length === 1
+      ? "1 claim captured" : staffRows.length + " claims captured";
+    $("staff-mode").textContent = "Capture route: " + captureMode() + "."
+      + (cloudDb ? " Claims are saved with this page and synced to HubSpot afterwards."
+                 : " Claims go straight to HubSpot.");
+
+    if(!staffRows.length){
+      list.innerHTML = '<p class="staff-empty">Nothing yet. Claims show up here as visitors fill the form.</p>';
+      return;
+    }
+    list.innerHTML = "";
+    staffRows.forEach(r => {
+      const row = document.createElement("div");
+      row.className = "staff-row";
+      const name = document.createElement("b");
+      name.textContent = [r.firstName, r.lastName].filter(Boolean).join(" ") || "(no name)";
+      const meta = document.createElement("span");
+      const when = (r.capturedAt || r.queuedAt || "").slice(0, 16).replace("T", " ");
+      meta.textContent = [r.prize, r.email, r.phone, r.role, when,
+                          r.pending ? "not yet sent" : ""].filter(Boolean).join(" \u00b7 ");
+      row.appendChild(name);
+      row.appendChild(meta);
+      list.appendChild(row);
+    });
+  }
+
+  const CSV_COLS = ["capturedAt", "firstName", "lastName", "email", "phone",
+                    "role", "prize", "marketingConsent", "eventTag"];
+  function toCsv(rows){
+    const cell = (v) => {
+      const t = v === undefined || v === null ? "" : String(v);
+      return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+    };
+    return [CSV_COLS.join(",")]
+      .concat(rows.map(r => CSV_COLS.map(c => cell(c === "capturedAt"
+        ? (r.capturedAt || r.queuedAt) : r[c])).join(",")))
+      .join("\n");
+  }
+
+  $("staff-csv").addEventListener('click', async () => {
+    if(!staffRows.length) return;
+    const filename = "blue-ridge-claims-" + new Date().toISOString().slice(0, 10) + ".csv";
+    const csv = toCsv(staffRows);
+    let downloads = null;
+    try{
+      if(window.claude && typeof window.claude.use === "function"){
+        downloads = await window.claude.use("downloads");
+      }
+    }catch(_){ downloads = null; }
+    if(downloads){
+      try{ await downloads.save({ filename, data: csv }); return; }
+      catch(_){ /* viewer declined or saves are unavailable: fall through */ }
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  });
 </script>
 
 </body>

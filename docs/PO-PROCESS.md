@@ -79,7 +79,19 @@ Tried in order; the first hit wins:
    the send (unsent after 4 business hours → 🚩 nag), the reply auto-creates
    the contact, renames the deal, fires the Teachworks sync, and arms the
    family's SMS. Open chases also **self-resolve** if the family contact
-   appears on its own. No reply 2 business days after the SEND → escalation DM.
+   appears on its own, and a deal a human un-NEEDS-PARENTs by hand gets its
+   Teachworks sync run by the sweep (the creation-time sync is **deferred**
+   while the parent is unknown; nothing is ever synced or texted to the
+   school's staffer, 2026-09-11). No reply 2 business days after the SEND →
+   escalation DM.
+   **Can't get the info** (the school replies without it, e.g. Heartland's
+   "privacy laws, we cannot share it") → the **charter sales seat is asked to
+   assist** right then (audit `parent_chase_assist_requested`; seat in
+   `parent_chase.assist_seat`, Roman 2026-09-11: a teacher about a specific
+   student is that seat). That ask and the 24h "still missing" ping are the
+   SAME one DM per deal, whichever fires first. Every open chase is also listed
+   in the 6 PM **PO day report** until it resolves, so nothing falls through
+   without anyone getting another DM.
 
 Why it matters: the Teachworks sync keys the family on the deal's parent
 contact email — no parent contact means no TW family, no scheduling, no

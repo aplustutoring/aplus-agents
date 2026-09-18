@@ -28,6 +28,7 @@ from . import audit, draft_feedback, gmail_client as gm, hubspot_client as hs, p
 from .business_hours import add_business_hours, now_la
 from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
+from .names import first_name
 
 PO_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
@@ -218,7 +219,13 @@ def _fmt_time(hhmm: str) -> str:
 def _schedule_text(lessons: list[dict]) -> str:
     """Human schedule line for the SMS from lesson slots — grouped into
     recurring (weekday, time, tutor) patterns, most frequent first:
-    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'."""
+    'Wednesdays 3:30 PM with Sarah, Fridays 4:00 PM with Sarah'.
+
+    The tutor goes in FIRST NAME ONLY. Teachworks returns "Last, First", so
+    the raw value put "Mondays 10:00 AM with Karl, Sonya" in front of Nikita
+    Brixey on 2026-09-16 and she replied "I don't know who Karl is?" Karl was
+    Sonya's surname, and the comma made one tutor look like two.
+    """
     from collections import Counter
     from datetime import date as _date
     slots: Counter = Counter()
@@ -227,7 +234,7 @@ def _schedule_text(lessons: list[dict]) -> str:
             wd = _date.fromisoformat(str(l.get("date"))[:10]).strftime("%A")
         except ValueError:
             continue
-        slots[(wd, (l.get("time") or "").strip(), (l.get("tutor") or "").strip())] += 1
+        slots[(wd, (l.get("time") or "").strip(), first_name(l.get("tutor")))] += 1
     parts = []
     for (wd, t, tut), _n in slots.most_common(4):
         bit = wd + "s" + (f" {_fmt_time(t)}" if t else "")
@@ -403,6 +410,12 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
     t_email = (po.get("tor_email") or "").strip().lower()
     p_email = (po.get("parent_email") or "").strip().lower()
     t_name = f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
+    if t_email and _robot_tor_addr(t_email):
+        note_parts.append(f"\U0001f916 TOR email <{t_email}> is a portal/vendor mailbox, not a "
+                          f"teacher; NOT associated as Teacher of Record"
+                          + (f" (name '{t_name}' tried instead)." if t_name else "."))
+        t_email = ""
+        po["tor_email"] = ""
     if not deal_id or deal_id == "DRYRUN" or (t_email and t_email == p_email) \
             or not (t_email or t_name):
         return
@@ -501,6 +514,35 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         return
     month_end = _po_month_end(po.get("service_end_month")
                               or po.get("po_month") or "")
+    if (ic.get("mode") or "task").strip().lower() == "ticket":
+        # Roman 2026-09-16 (STEP 5): no more one-task-per-PO. A clean PO is a
+        # Support case, category po_watch, owner charter_admin, that closes
+        # itself when the Teachworks invoice number lands on the deal
+        # (po_watch_sweep). The timeline note on the deal stays as it was.
+        from . import case_engine as ce
+        student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
+        key = f"po_watch:{po.get('po_number') or deal_id}"
+        role, _why = ce.owner_for_support("po_watch")
+        desc = (f"PO received; convert it to a Teachworks invoice, then stamp Invoice # on the deal.\n"
+                f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\nPO #: {po.get('po_number') or 'n/a'}\n"
+                f"Amount: ${po.get('amount')}\nHours: {po.get('hours') or 'n/a'}"
+                + (f" @ ${po.get('rate')}/hr" if po.get("rate") else "") + "\n"
+                + (f"Submit to the school's ops system by {month_end.strftime('%b %-d, %Y')} (end of PO month).\n" if month_end
+                   else "Service month not stated: confirm it and set Expected Lessons Fulfilled Date on the deal.\n")
+                + ("PO is PENDING school approval: confirm before invoicing.\n" if po.get("pending_approval") else "")
+                + f"HubSpot deal id: {deal_id}. This ticket closes on its own once Invoice # is on the deal.")
+        try:
+            t = ce.open_case("po_inbox", key, "support", "new",
+                             f"PO watch: {student} ({po.get('school') or '?'}, PO {po.get('po_number') or 'n/a'}, ${po.get('amount')})",
+                             desc, role, deal_id=(deal_id if deal_id != "DRYRUN" else None),
+                             props={"support_category": "po_watch", "ticket_source": "email_engine"},
+                             priority="MEDIUM", category="new_deal_po", source="EMAIL")
+            note_parts.append(f"🧾 PO watch ticket {t.get('id')} for {(staff(role) or {}).get('name', 'Kath')} "
+                              f"(${po.get('amount')}); it closes itself when Invoice # lands on the deal.")
+        except Exception as e:  # noqa: BLE001 — the deal must survive a ticket failure
+            print(f"  ⚠️  po_watch ticket failed (non-fatal): {e}")
+            note_parts.append("🧾 Could not open the PO watch ticket — invoice manually.")
+        return
     try:
         prop = (ic.get("invoice_due_property") or "").strip()
         if prop and month_end and deal_id and deal_id != "DRYRUN":
@@ -552,6 +594,35 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
     except Exception as e:  # noqa: BLE001 — the deal must survive a task failure
         print(f"  ⚠️  invoice task failed (non-fatal): {e}")
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
+
+
+def po_watch_sweep() -> int:
+    """Needs-invoice for POs: an open Support ticket with support_category
+    po_watch closes as Resolved once its deal carries Invoice # (Kath's stamp
+    from the Teachworks invoice). Runs with the hourly deal-sync sweep.
+    Returns how many closed."""
+    from . import case_engine as ce
+    n = 0
+    try:
+        tickets = ce.open_tickets("support", [{"propertyName": "support_category", "operator": "EQ", "value": "po_watch"}])
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  po_watch sweep read failed: {e}")
+        return 0
+    for t in tickets:
+        tid = str(t.get("id"))
+        try:
+            assoc = hs._get(f"/crm/v4/objects/tickets/{tid}/associations/deals", {"limit": 10})
+            for r in assoc.get("results") or []:
+                d = hs._get(f"/crm/v3/objects/deals/{r['toObjectId']}", {"properties": "invoice__,dealname,po_number"})
+                inv = ((d.get("properties") or {}).get("invoice__") or "").strip()
+                if inv:
+                    ce.close(tid, "support", "resolved",
+                             f"🧾 Invoice {inv} is on {((d.get('properties') or {}).get('dealname'))}; PO watch done.")
+                    n += 1
+                    break
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  po_watch check failed for {tid}: {e}")
+    return n
 
 
 def _norm_po_number(raw) -> str:
@@ -793,6 +864,23 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str]) -> str:
 
 
 _NOREPLY_RE = re.compile(r"no-?reply|do-?not-?reply|notifications?@|@mailer\.", re.I)
+# Portal / vendor-desk mailboxes: a real inbox, but not a teacher. Never a TOR
+# contact (Visions "vendorsupport@viedu.org" was attached as Justin LaRue's
+# Teacher of Record on 2026-09-10 and linked to the family as their TOR).
+_ROBOT_TOR_RE = re.compile(r"vendor-?support|vendor-?desk|procurify|launchpad\.viedu|"
+                           r"^(orders?|purchasing|procurement|billing|invoices?)@", re.I)
+
+
+def _robot_tor_addr(addr: str) -> bool:
+    a = (addr or "").strip().lower()
+    return bool(a) and (not _human_addr(a) or bool(_ROBOT_TOR_RE.search(a)))
+
+
+def _sender_addr(msg: dict) -> str:
+    """Bare lowercase address out of a 'Name <addr>' sender header."""
+    raw = (msg or {}).get("sender") or ""
+    mm = re.search(r"<([^>]+)>", raw)
+    return (mm.group(1) if mm else raw).strip().lower()
 
 
 def _human_addr(addr: str) -> bool:
@@ -1050,6 +1138,56 @@ def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
                           "create/associate the contact manually.")
 
 
+def _request_parent_assist(chases: list, why: str) -> list:
+    """Roman, 2026-09-11: when we cannot get parent info to fulfill a PO, the
+    CHARTER SALES seat (a teacher about a SPECIFIC student is that seat by the
+    sender-routing rule; a role mapped in config, never a name in code) is
+    asked for assistance the moment the school replies to the chase WITHOUT
+    the info (Heartland, Sept 9: "privacy laws, we cannot share it"). No reply
+    at all is already covered by the 24h "still missing" ping to the same
+    seat; this ask counts as that ping, so a deal costs Paola ONE DM total.
+    ONE DM per call naming every student (a multi-kid certificate is one ask,
+    not five), one audit row per deal. Returns the chases newly asked about."""
+    ch = cfg()["po_inbox"].get("parent_chase", {})
+    fresh = []
+    for c in chases:
+        did = str(c.get("deal_id") or "")
+        # one DM per deal to this seat, whichever fires first: this ask or the
+        # 24h "still missing" ping in _sweep_parent_chases (Roman 2026-09-11:
+        # "I can't have my team getting 50 DMs")
+        if did and did != "DRYRUN" and not audit.already_processed(f"parent-chase-assist:{did}") \
+                and not audit.already_processed(f"parent-chase-sales:{did}"):
+            fresh.append(c)
+    if not fresh:
+        return []
+    seat_key = ch.get("assist_seat") or "charter_sales"
+    seat = staff(seat_key)
+    first = fresh[0]
+    asked = (first.get("chase_to") or "the school").strip()
+    when = (first.get("timestamp") or "")[:10]
+    lines = [f"  - {c.get('deal_name')} (student {c.get('student') or '?'}, "
+             f"PO {c.get('po_number') or '?'})" for c in fresh]
+    if seat.get("slack_user_id"):
+        try:
+            slack_client.dm(
+                seat["slack_user_id"],
+                f"\U0001f91d Need your help getting parent info to fulfill "
+                f"{'a PO' if len(fresh) == 1 else f'{len(fresh)} POs'} from "
+                f"{first.get('school') or 'the school'}. We asked {asked} on {when or '?'}. "
+                f"{why}\n" + "\n".join(lines) + "\n"
+                f"Until we have the parent's name, email and phone, the Teachworks family, "
+                f"the schedule text and the invoice are all blocked. Can you reach the school "
+                f"or the family through your contacts?")
+        except Exception as e:  # noqa: BLE001 - the ask must never break the sweep
+            print(f"  \u26a0\ufe0f  parent-assist DM failed (non-fatal): {e}")
+    for c in fresh:
+        audit.append({"message_id": f"parent-chase-assist:{c.get('deal_id')}",
+                      "source": "po_inbox", "action_taken": "parent_chase_assist_requested",
+                      "deal_id": str(c.get("deal_id")), "thread_id": c.get("thread_id"),
+                      "seat": seat_key, "reason": why[:200]})
+    return fresh
+
+
 def _sweep_parent_chases() -> None:
     """Chase past its window with no reply → one escalation DM to the owner
     (chase by phone). Never re-pings a deal."""
@@ -1078,7 +1216,7 @@ def _sweep_parent_chases() -> None:
         # Roman, 2026-08-14: family contact info still missing 24 HOURS after
         # the email went out → CHARTER SALES (role, mapped in config — never a
         # person's name in code) is notified too, ahead of the escalation.
-        if did not in sales_pinged:
+        if did not in sales_pinged and not audit.already_processed(f"parent-chase-assist:{did}"):
             try:
                 anchor = datetime.fromisoformat((s or r).get("timestamp") or "")
             except (TypeError, ValueError):
@@ -1097,6 +1235,7 @@ def _sweep_parent_chases() -> None:
                               "source": "po_inbox",
                               "action_taken": "parent_chase_sales_notified",
                               "deal_id": did, "thread_id": r.get("thread_id")})
+                sales_pinged.add(did)
         if did in escalated:
             continue
         try:
@@ -1189,6 +1328,20 @@ def _deal_still_needs_parent(deal_id) -> bool:
     return "NEEDS PARENT" in ((d.get("properties") or {}).get("dealname") or "")
 
 
+def _sync_fixed_deal(deal_id) -> None:
+    """Teachworks sync for a deal a human un-NEEDS-PARENTed by hand."""
+    if not deal_id or deal_id == "DRYRUN":
+        return
+    try:
+        from . import deal_sync
+        live = hs._get(f"/crm/v3/objects/deals/{deal_id}",
+                       {"properties": "dealname,pipeline,dealstage,createdate,po_number,amount"})
+        rec = deal_sync.sync_deal(live) or {}
+        print(f"  \U0001f504 human-fixed deal {deal_id}: TW sync {rec.get('action_taken', 'skipped')}")
+    except Exception as e:  # noqa: BLE001 - never breaks the sweep
+        print(f"  \u26a0\ufe0f  TW sync for human-fixed deal {deal_id} failed (non-fatal): {e}")
+
+
 def _sweep_chase_self_resolve() -> None:
     """Open chases re-check HubSpot each run: the family may have appeared on
     its own (called in, intake form) — the August Vouniozos case, where the
@@ -1207,11 +1360,15 @@ def _sweep_chase_self_resolve() -> None:
             continue
         if not _deal_still_needs_parent(r.get("deal_id")):
             # already fixed by a human (or resolved elsewhere) → close the
-            # chase so it stops being swept, but touch NOTHING on the deal
+            # chase so it stops being swept. Touch nothing on the deal's
+            # contacts, but DO run the Teachworks sync now: the creation-time
+            # sync was deferred (NEEDS PARENT) and the cursor has moved on, so
+            # nothing else would ever create the family.
             audit.append({"message_id": f"parent-chase-resolved:{r.get('deal_id')}",
                           "source": "po_inbox", "action_taken": "parent_chase_resolved",
                           "deal_id": r.get("deal_id"), "thread_id": r.get("thread_id"),
                           "resolved_via": "deal no longer NEEDS PARENT (human fixed)"})
+            _sync_fixed_deal(r.get("deal_id"))
             continue
         try:
             parents = hs.find_family_contact(parts[0], " ".join(parts[1:]))
@@ -1893,6 +2050,17 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
         if chases and (po.get("parent_email") or "").strip():
             _resolve_parent_chases(chases, po, note_parts)
             record["category"] = "parent_info_reply"
+        elif chases and not _internal_email(_sender_addr(m)):
+            # the school answered the chase but gave NO parent info (privacy,
+            # "we'll have the family call you") -> the sales seat is asked to
+            # help, right now, not after the SLA clock (Roman 2026-09-11)
+            why = f"The school replied without it: \"{(po.get('summary') or '')[:160]}\""
+            asked = _request_parent_assist(list(chases), why)
+            if asked:
+                seat = cfg()["po_inbox"].get("parent_chase", {}).get("assist_seat") or "charter_sales"
+                note_parts.append(f"\U0001f91d Reply carried no parent info; the {seat} seat "
+                                  f"was DM'd to assist ({', '.join(c.get('student') or '?' for c in asked)}).")
+            record["category"] = "parent_chase_no_info_reply"
         if hint:
             record["category_hint"] = hint
         note_parts.append(f"Not a PO: {po.get('summary','')[:200]}")
@@ -1976,7 +2144,13 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
                               # the subject line.
                               extra_props={"po_work_type": work_type,
                                            "ticket_source": "email_engine",
-                                           "source_thread_id": m.get("threadId", "")})
+                                           "source_thread_id": m.get("threadId", ""),
+                                           # case engine (2026-09-16): PO exceptions are a Support category
+                                           "support_category": ("po_exception" if work_type in
+                                                                ("purchase_order", "po_cancellation", "parent_info_reply",
+                                                                 "ar_followup", "invoice_correction", "vendor_compliance",
+                                                                 "vendor_onboarding") else "other"),
+                                           "case_client": "po_inbox"})
     record["ticket_id"] = ticket.get("id")
     record["sla_due"] = sla_due.isoformat()
 

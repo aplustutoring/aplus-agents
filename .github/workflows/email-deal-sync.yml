@@ -25,6 +25,10 @@ on:
         required: false
         type: string
         default: ""
+      first_lesson_backfill_days:
+        description: "First-lesson stamp: sweep the last N days of Teachworks lessons now (pair with dry_run to preview)"
+        required: false
+        default: ""
       contact_email:
         description: "With deal_id: HubSpot contact email to associate to the deal + sync as the family"
         required: false
@@ -70,13 +74,19 @@ jobs:
           FORCE_DEAL_ID: ${{ inputs.deal_id }}
           FORCE_CONTACT_EMAIL: ${{ inputs.contact_email }}
           FORCE_STUDENT_FIRST: ${{ inputs.student_first }}
-        run: python -m src.deal_sync
+          FIRST_LESSON_BACKFILL_DAYS: ${{ inputs.first_lesson_backfill_days }}
+        run: |
+          if [ -n "${{ inputs.first_lesson_backfill_days }}" ]; then
+            python -m src.first_lesson
+          else
+            python -m src.deal_sync
+          fi
       - name: Commit state changes
         if: ${{ inputs.dry_run != true }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/sync_cursor.json state/audit_log.jsonl
+          git add state/sync_cursor.json state/audit_log.jsonl state/first_lessons.json
           if git diff --cached --quiet; then
             echo "no state changes to commit"
           else

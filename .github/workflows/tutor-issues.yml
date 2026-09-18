@@ -10,10 +10,17 @@ env:
 #   - Mondays 17:00 UTC (09/10 PT): weekly sweep (last complete Sun-Sat week,
 #     after the Sunday notes cutoff) + inbound + intake
 #   - every 2h in the business window: inbound reports + Slack intake only
+#   - repository_dispatch (type: tutor-sms): an inbound text fires the SMS leg
+#     within a minute instead of waiting up to 2h for the next poll. Live, same
+#     flags as the schedule, --mode inbound. The JustCall webhook + relay worker
+#     that sends this event is NOT built yet (follow-up PR); until it lands the
+#     event can be fired by hand and the cron is still the real latency.
 on:
   schedule:
     - cron: "0 17 * * 1"               # Monday sweep
     - cron: "0 16,18,20,22,0 * * 1-5"  # inbound/intake polls, weekdays
+  repository_dispatch:
+    types: [tutor-sms]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -90,7 +97,10 @@ jobs:
             sed "s/SIM_TUTOR_NAME/${{ inputs.simulate_tutor }}/" tests/sim_event.json > /tmp/sim.json
             FLAGS="$FLAGS --simulate-event /tmp/sim.json"
           fi
-          python tutor_issues.py --mode "${{ inputs.mode || 'all' }}" \
+          MODE="${{ inputs.mode || 'all' }}"
+          # An inbound-text doorbell only runs the SMS/email leg.
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then MODE="inbound"; fi
+          python tutor_issues.py --mode "$MODE" \
             --report-json report.json $FLAGS
 
       - name: Upload run report
@@ -102,7 +112,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Commit state changes
-        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == false) }}
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == false) }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

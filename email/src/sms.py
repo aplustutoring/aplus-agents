@@ -44,11 +44,12 @@ from .gmail_client import _scrub_outbound
 JC_BASE = "https://api.justcall.io"
 
 
-def _jc_send(to_number: str, body: str) -> dict:
+def _jc_send(to_number: str, body: str, from_number: str | None = None) -> dict:
     """One SMS via JustCall (the line schedulers already answer — replies land
-    in the same JustCall threads they handle today)."""
+    in the same JustCall threads they handle today). from_number overrides the
+    line for engines that text from a different seat (low_balance.sms_line)."""
     sc = cfg().get("sms", {})
-    payload = {"justcall_number": sc.get("justcall_number"),
+    payload = {"justcall_number": from_number or sc.get("justcall_number"),
                "contact_number": to_number, "body": body}
     if DRY_RUN:
         print(f"[DRY_RUN] justcall SMS -> {to_number}: {body[:100]}")
@@ -61,8 +62,57 @@ def _jc_send(to_number: str, body: str) -> dict:
     return r.json()
 
 
+HSA_TOKENS = ("__STUDENT__", "__SUBJECT__", "__COHORT__", "__START__", "__END__",
+              "__SLOT__", "__ES__", "__SESSIONS__", "__CALENDAR__", "__NO_CLASS__")
+
+
+def _long_date(raw: str) -> str:
+    """'2026-09-21' → 'Monday, September 21, 2026'; anything else unchanged."""
+    try:
+        d = datetime.fromisoformat((raw or "")[:10])
+        return f"{d:%A, %B %-d, %Y}"
+    except ValueError:
+        return raw or ""
+
+
+def _description_line(desc: str, label: str) -> str:
+    """The value after '<label>:' on its own line of the deal description
+    (the intake agent writes 'Session calendar: ...' and 'No class: ...')."""
+    for line in (desc or "").splitlines():
+        if line.strip().lower().startswith(label.lower() + ":"):
+            return line.split(":", 1)[1].strip()
+    return ""
+
+
+def welcome_fields(deal_props: dict | None) -> dict[str, str]:
+    """Token → value for the HSA welcome email, from the deal's [Agent] HSA
+    props (spec §5.6 option b). Every token resolves to a string, empty when
+    the deal has no value, so a template never ships a literal __TOKEN__."""
+    p = deal_props or {}
+    dealname = p.get("dealname") or ""
+    subject = dealname.split("IEM HSA", 1)[1].strip() if "IEM HSA" in dealname else ""
+    return {
+        "__STUDENT__": (p.get("student_first_name") or "").strip(),
+        "__SUBJECT__": subject,
+        "__COHORT__": str(p.get("hsa_cohort") or "").strip(),
+        "__START__": _long_date(p.get("hsa_start") or ""),
+        "__END__": _long_date(p.get("date_of_last_lesson_in_this_deal") or ""),
+        "__SLOT__": (p.get("hsa_slot") or "").strip(),
+        "__ES__": (p.get("teacher_of_record_name") or "").strip(),
+        "__SESSIONS__": str(p.get("hsa_sessions") or "").split(".")[0],
+        "__CALENDAR__": _description_line(p.get("description") or "", "Session calendar"),
+        "__NO_CLASS__": _description_line(p.get("description") or "", "No class"),
+    }
+
+
+def _fill(text: str, fields: dict[str, str]) -> str:
+    for k, v in fields.items():
+        text = text.replace(k, v)
+    return text
+
+
 def _send_welcome(to_email: str, first_name: str,
-                  pconf: dict | None = None) -> None:
+                  pconf: dict | None = None, deal_props: dict | None = None) -> None:
     """The "What to Expect (Charter)" onboarding email, sent via RESEND the
     moment the family texts (Roman 2026-09-03, Option A — amending the
     only-outbound-email rule: tutor-doc receipt PLUS this). Lifetime stats
@@ -83,12 +133,20 @@ def _send_welcome(to_email: str, first_name: str,
     tpl_path = ROOT / (pconf.get("welcome_template") or wc.get("template")
                        or "templates/welcome_charter.html")
     html = tpl_path.read_text().replace("__FIRST_NAME__", first_name or "Parent")
+    subject = (pconf.get("welcome_subject")
+               or wc.get("subject", "We received your PO! Ready to Launch: Next Steps"))
+    # Program tokens (IEM HSA cohorts) come from the deal's [Agent] HSA props;
+    # every other pipeline's template carries only __FIRST_NAME__ and is
+    # untouched by this pass. The subject is customer-facing copy too, so the
+    # em-dash scrub applies to it as well as the body.
+    if deal_props:
+        fields = welcome_fields(deal_props)
+        html = _fill(html, fields)
+        subject = _fill(subject, fields)
     payload = {"from": wc.get("from", "A+ Tutoring Success Team <admin@wetutorathome.com>"),
                "to": [to_email],
                "reply_to": wc.get("reply_to", "admin@wetutorathome.com"),
-               "subject": pconf.get("welcome_subject")
-                          or wc.get("subject",
-                                    "We received your PO! Ready to Launch: Next Steps"),
+               "subject": _scrub_outbound(subject),
                "html": html}
     bcc = (cfg().get("hubspot") or {}).get("bcc_log_address")
     if bcc:
@@ -142,7 +200,11 @@ def _pre_lesson_deals(pipeline_id: str, start_ms: int) -> list[dict]:
                 "properties": ["dealname", "pipeline", "dealstage", "createdate",
                                "schedule_preferences", "hubspot_owner_id",
                                "student_first_name",
-                               "is_the_family_currently_being_tutored_by_us_"],
+                               "is_the_family_currently_being_tutored_by_us_",
+                               # IEM HSA welcome tokens (welcome_fields)
+                               "hsa_cohort", "hsa_group", "hsa_sessions", "hsa_start",
+                               "hsa_slot", "teacher_of_record_name",
+                               "date_of_last_lesson_in_this_deal", "description"],
                 "limit": 100}
         if after:
             body["after"] = after
@@ -280,10 +342,11 @@ def run_sweep() -> None:
                     parent = (props[0].get('dealname') or '').split(' - ')[0]
                     slack_client.dm(target["slack_user_id"],
                                     f"📅 New PO for {names} (parent: {parent}). No lessons "
-                                    f"are on the calendar for them yet. In about 15 minutes "
-                                    f"the family will automatically get a text asking what "
-                                    f"days and times work. If you'd rather call them first, "
-                                    f"now is your window.")
+                                    f"are on the calendar for them yet. On the next deal-sync "
+                                    f"run (usually within the hour) the family will "
+                                    f"automatically get a text asking what days and times "
+                                    f"work. If you'd rather call them first, now is your "
+                                    f"window.")
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  sms staff alert failed (non-fatal): {e}")
             for d in unalerted:
@@ -363,7 +426,8 @@ def run_sweep() -> None:
         if wants_welcome and to_email:
             try:
                 _send_welcome(to_email, first,
-                              pconf2 if isinstance(pconf2, dict) else None)
+                              pconf2 if isinstance(pconf2, dict) else None,
+                              deal_props=deals[0].get("properties") or {})
                 welcome = to_email
             except Exception as e:  # noqa: BLE001 — email must never void the text
                 audit.append({"message_id": f"welcome-error:{dids[0]}", "source": "sms",

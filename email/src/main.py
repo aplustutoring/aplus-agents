@@ -885,5 +885,7 @@ if __name__ == "__main__":
         low_balance.replay_thread(_replay, int(_sim) if _sim.isdigit() else None)
     elif _backfill.isdigit():
         low_balance.backfill(int(_backfill))
+    elif os.environ.get("LOW_BALANCE_DAY1_NOW") == "1":
+        low_balance.day1_now()
     else:
         run()

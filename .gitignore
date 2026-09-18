@@ -46,3 +46,9 @@ marketing/scripts/state/
 # ops/scorecard — secrets are written at runtime by CI; never commit them
 ops/scorecard/service_account.json
 ops/scorecard/.env
+
+# Blue Ridge booth Pages upload dir, built by booth/blue-ridge/pages-dist.sh
+booth/blue-ridge/.pages-dist/
+
+# Wrangler local build/dev cache (created by `wrangler dev` / `wrangler deploy`)
+.wrangler/
