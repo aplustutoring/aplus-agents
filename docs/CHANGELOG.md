@@ -56,6 +56,28 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-18 — waiting.py 4.1: tapbacks detected by echo, not by language
+
+Two hours after the Chinese tapback fix shipped, Hannah Thorn's phone sent the
+Spanish form: `Le gusta "Okay thank you, I offered Angelo 2:30 pm today..."`.
+Adding Spanish would have left French, Portuguese, Hebrew, Russian and every
+other language our families use, and each gap shows up as an invented breach on
+the one-hour report.
+
+A tapback has one property no language changes: **the quoted part is our own
+message, handed back to us.** So it is now matched against what we actually sent
+that number inside the window. Language-proof, and it cannot swallow a real
+message, because a real message is not a verbatim echo of our words.
+
+The explicit prefix list stays for the forms that carry no quotes at all: the
+Chinese tapback is "赞了:" followed by bare text, with nothing to match on.
+
+`scripts/tests/test_waiting.py` grows to 20, including German, Japanese,
+Russian, Portuguese and French forms that were never written into the code, a
+truncated tapback, and the two cases that must NOT match: a quote we never sent,
+and a real question that happens to contain a quotation.
+
+---
 ## 2026-09-18 — waiting.py v4: the checker stops inflating its own count
 
 **What changed** (`scripts/waiting.py`, `scripts/tests/test_waiting.py`): the

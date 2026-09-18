@@ -35,6 +35,14 @@ failure mode that gets a monitor ignored rather than trusted:
     staff copy counted as a family waiting on us. A number that resolves to a
     contact on our own domain is now excluded.
 
+Version 4.1 (2026-09-18, two hours later) stopped enumerating languages. Hannah
+Thorn's phone sent the Spanish tapback `Le gusta "..."`, and adding Spanish
+would have left French, Portuguese, Hebrew and every other language our families
+use. A tapback has one property no language changes: the quoted part is OUR OWN
+message handed back to us. So it is matched against what we actually sent that
+number, and a real reply cannot be swallowed because a real reply is not a
+verbatim echo of our words.
+
 Output splits three ways and the third matters: WAITING, answered, and CANNOT
 TELL when a number does not resolve to a contact. An unresolved number is a
 confident wrong answer, not a blank.
@@ -93,7 +101,20 @@ CLOSING = re.compile(
 # What may trail a pleasantry and still leave it a pleasantry.
 _TRAILING = " \t.!,…~-–—:;)\u200b👍😊❤️🙏😀🙂"
 
+# The language-proof form: a few words, then OUR message in typographic quotes,
+# and nothing after it. Hannah Thorn's phone sent the Spanish tapback
+# `Le gusta “Okay thank you, I offered Angelo 2:30 pm today...”` two hours after
+# the Chinese one was fixed by adding Chinese. Enumerating languages loses.
+TAPBACK_SHAPE = re.compile(
+    r"^\s*\S{1,18}(?:\s+\S{1,18}){0,3}\s*[:：]?\s*[“\u201c](.+)[”\u201d]\s*$",
+    re.DOTALL)
+
+_ECHO_KEEP = 60          # characters of our message to compare; tapbacks truncate
+
 INTERNAL_DOMAIN = "@wetutorathome.com"
+
+# number -> the bodies we sent it inside the window, filled by newest_each_way
+OUR_WORDS: dict = {}
 
 
 def _headers() -> tuple[dict, dict]:
@@ -128,6 +149,32 @@ def is_courtesy(body: str) -> bool:
     # move Wednesday" does not, and the difference is that the message keeps
     # going.
     return len(rest) <= 25
+
+
+def _squash(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "")).strip().lower()
+
+
+def quoted_part(body: str) -> str:
+    """The quoted payload of a tapback-shaped message, else ""."""
+    m = TAPBACK_SHAPE.match((body or "").strip())
+    return m.group(1) if m else ""
+
+
+def echoes_our_message(body: str, ours: list) -> bool:
+    """Is this message quoting something WE sent to this number?
+
+    That is what a tapback is, in every language. A real reply is not a verbatim
+    echo of our own words, so this cannot swallow one.
+    """
+    quoted = _squash(quoted_part(body))
+    if not quoted:
+        return False
+    quoted = quoted.rstrip("…....").strip()
+    if len(quoted) < 8:          # too short to be distinctive
+        return False
+    head = quoted[:_ECHO_KEEP]
+    return any(head in _squash(o) for o in ours if o)
 
 
 def is_internal(email: str) -> bool:
@@ -185,8 +232,12 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
         if str(t.get("direction", "")).lower().startswith("in"):
             if n not in newest_in or w > newest_in[n][0]:
                 newest_in[n] = (w, body, t.get("contact_name") or "")
-        elif n not in newest_out or w > newest_out[n]:
-            newest_out[n] = w
+        else:
+            # Keep what we SAID, not just when. A tapback quotes it back at us,
+            # and comparing against it is the only language-proof way to tell.
+            OUR_WORDS.setdefault(n, []).append(body)
+            if n not in newest_out or w > newest_out[n]:
+                newest_out[n] = w
     for c in calls:
         info = c.get("call_info") or {}
         if str(info.get("direction") or "").lower() != "outgoing":
@@ -258,7 +309,7 @@ def main(hours: float = 14.0) -> int:
         out = newest_out.get(n, "")
         if out and out[:19] >= when[:19]:
             continue                               # texted or called back
-        if is_courtesy(body):
+        if is_courtesy(body) or echoes_our_message(body, OUR_WORDS.get(n, [])):
             courtesy += 1
             continue
         answered, label = outbound_email_after(n, when, h)
