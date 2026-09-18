@@ -1001,9 +1001,10 @@
     416703568,
     416707056,
     416724091,
-    416739598
+    416739598,
+    416771215
   ],
-  "last_run_utc": "2026-09-18T19:10:59.251578+00:00",
+  "last_run_utc": "2026-09-18T20:12:31.249770+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1456,6 +1457,72 @@
           "Follow up with Hannah Thorn once she calls back to confirm she connected with Angelo's family",
           86868539,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416771215,
+      "number": "13233389789",
+      "time_pt": "1:05 PM",
+      "matched": true,
+      "contact_label": "Jacqueline Venegas",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Jacqueline Venegas to follow up on her prior inquiry. Jacqueline was at the library and couldn't talk, and said she would call back. No details about the student or tutoring needs were discussed.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Jacqueline's callback; if no callback within a couple of days, attempt outreach again to discuss tutoring needs.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola reached Jacqueline Venegas on an outbound follow-up call. Jacqueline was at the library and asked to call us back \u2014 polite but brief, no details discussed about student, grade, or subject need. Her record indicates she came in via a charter school. If she doesn't call back within a couple of days, try her again at a better time (afternoon/evening). Suggested opener: 'Hi Jacqueline, this is [name] from A+ Tutoring following up from Paola's call \u2014 is now a better time to chat about what you're looking for?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call was too brief to qualify \u2014 no substantive conversation about tutoring needs occurred. Leaving status as-is until we actually connect.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call reached Jacqueline but she was at the library and could not talk. She said she would call us back.",
+          "what_we_can_do_to_help": "Wait for her callback; if none within a couple of days, try again at a better time of day to learn about her student's tutoring needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call reached Jacqueline but she was at the library and could not talk. She said she would call us back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Wait for her callback; if none within a couple of days, try again at a better time of day to learn about her student's tutoring needs."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Jacqueline's callback; if no callback within a couple of days, attempt outreach again to discuss tutoring needs.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
