@@ -155,7 +155,7 @@ school buying tutoring — that's `school_partner`). **Any staff-referred outrea
 Distinguish from `junk`: a mass cold blast (SEO/leadgen/templates, no real knowledge of
 A+) is junk; an individualized, genuine proposal or anything staff-referred is business_dev.
 
-### `tutor_issue` — 90 min → Mandy
+### `tutor_issue` — 90 min → the scheduling lead
 Family is unhappy with the tutor, reports a problem with them, or wants a different tutor.
 A switch usually SAVES the account, so route it fast. Examples:
 - "We'd like to request a different tutor for our son."
@@ -204,7 +204,7 @@ notifications about a posted review.
 Spam, cold vendor pitches, marketing blasts, SEO/lead-gen solicitations, unrelated mail,
 **and automated transactional/finance notifications**.
 **NEVER junk a staff referral**: if the sender says they spoke with / were referred by a
-named A+ team member (Paola, Mandy, Danielle, Roman, etc.), it is NOT junk no matter how
+named A+ team member (Paola, Danielle, Roman, etc.), it is NOT junk no matter how
 much it resembles a cold pitch — a human invited that contact. Classify it `unknown`
 (or a fitting category) so a person reviews it, and say so in `reason`.
 Examples:

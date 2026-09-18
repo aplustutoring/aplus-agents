@@ -16,7 +16,7 @@ H = {"Authorization": "Bearer " + tok, "Content-Type": "application/json"}
 PIPES = json.load(open(OUT + "pipelines_2026_09_16.json"))
 ROWS = json.load(open(OUT + "tickets_open_2026_09_16.json"))
 OWNER = {"charter_sales": "81494333", "charter_admin": "513215050", "scheduler_a_l": "80047202",
-         "scheduler_m_z": "86868539", "operations": "80047201", "partnerships": "227538487", "roman": "38681249"}
+         "scheduler_m_z": "86868539", "operations": "39191217", "partnerships": "227538487", "roman": "38681249"}
 TRIAL_TICKETS = {"48584642985", "48590009948", "48631413801"}          # Elenes x3 (STEP 8: trial at zero)
 STAGE = {("Renewals", "Waiting on family"): PIPES["Renewals"]["stages"]["Waiting on family"]["id"],
          ("Support", "New"): "1378066770", ("Support", "Waiting on us"): "131537027",

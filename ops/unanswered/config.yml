@@ -58,6 +58,9 @@ detect:
     - danielle
     - kath
     - emily
+    # Kept after her 2026-09-17 departure ON PURPOSE. Families and tutors
+    # still write "Mandy said..." and that ask now has nobody behind it, so
+    # it needs answering more urgently, not less.
     - mandy
   # Messages that name staff but are plainly not an ask. A thank-you naming
   # the person who just helped is the commonest false positive.

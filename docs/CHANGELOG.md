@@ -7,6 +7,64 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-18 — Scheduling lead seat vacated: owners resolve through roles, not a name
+
+**What changed.** The scheduling lead / operations seat was vacated on
+2026-09-17. Every place the fleet still pointed at that person by name now
+resolves through a role, and the role points at Emily as interim holder.
+
+Config, one line each:
+- `email/config.yaml` and `ops/tutor-issues/config.yml` gain
+  `roles.tutor_quality_owner`, marked as THE ONE LINE TO CHANGE when the Tutor
+  Quality Lead is hired. `operations`, `scheduling_lead` and
+  `fallback_scheduler` follow it to `emily`. The vacated person is gone from
+  both `staff:` blocks.
+- `escalation.level2` is now `null`. Roman was explicit: "Ticket escalations as
+  a Mandy-owned function no longer exist. Do not reassign that escalation step;
+  delete it." `email/src/sla_sweep.py` skips level 2 when it is null. Without
+  that skip, `staff.get("")` returns `{}`, the DM goes to an empty Slack user
+  id, and an audit row still says level 2 was pinged, so a ticket would look
+  escalated when nobody heard anything.
+- `ops/queues/migrate_tickets_2026_09_16.py` points the operations queue at the
+  new owner id.
+
+Tests: six assertions named the person instead of the role
+(`email/tests/test_router.py` x4, `test_orchestration.py`,
+`ops/tutor-issues/tests/test_tutor_issues.py`). They now read the holder out of
+config. A test that names a person breaks on every personnel change and teaches
+the next reader that the person is the contract. Fixture `staff:` blocks still
+carry names, which is correct: the staff block is the only home for names.
+
+One live break found while sweeping: `ops/scorecard/aplus_weekly_sync.py`
+assigned the Weekly Lesson Report company-total row to a Monday user that no
+longer exists. That sync runs Mondays 08:55 PT, so the next run would have
+posted to a deactivated user. The People column is now omitted when the
+Operations seat has no Monday id, rather than failing the whole sync.
+
+Docs that a teammate or an agent would read as current were de-named:
+`registry.yml`, `docs/FLEET.md`, `ops/tutor-issues/README.md`,
+`email/TEAM_PLAYBOOK.md`, `email/rules.md`, `email/SETUP.md`,
+`knowledge/eos/README.md`, `knowledge/journey/README.md` (open item 1, the
+`operations` role collision, is now resolved), `ops/call_agent/metrics/SPEC.md`,
+`ops/feedback-agent/README.md` + `config.yml`. History was left alone: this
+changelog, `docs/decisions/`, the 2026-09-16 queue migration table, and the
+verbatim Roman quote in `corrections/UNKNOWN/2026-08-14-...` (dated note added
+under it instead).
+
+`ops/unanswered/config.yml` keeps the departed name in `staff_first_names` on
+purpose. Families and tutors still write "Mandy said...", and that ask now has
+nobody behind it, so it needs answering more urgently, not less.
+
+**Why.** Roman, 2026-09-17: "thats why we name things by position and not by
+name. so it will be fine." The cost of getting this wrong was visible the same
+day: a scheduler told a waiting family the departed person would be right with
+them, and the family left after ten minutes.
+
+**Still open, and Roman's call:** the 171 open HubSpot tasks on the old owner,
+deactivating that HubSpot user, and whether the Operations seat gets a Monday
+user at all now that Monday is retired for new work.
+
+---
 ## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
 
 **What changed** (`booth/public/sage-oak-park/index.html`, `booth/test-worker.mjs`,

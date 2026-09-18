@@ -25,8 +25,9 @@ intake) or reasoned inbound reports that a human can audit.
 
 Support Pipeline (`0`), opens in "Working on it" (`131537027`),
 `hs_ticket_category` = "Tutor Issue" (matched **by label** at runtime),
-owner = **Operations role** (Mandy — Aug 26 decision: escalations land on
-Operations), associated to the tutor contact (`a_persona` contains
+owner = the **Operations role** (Aug 26 decision: escalations land on
+Operations). The role maps to a person in `config.yml` under `roles:`,
+which is the only line to change when the seat changes hands, associated to the tutor contact (`a_persona` contains
 "Tutors"), `ticket_source=tutor_issues`, `source_agent=tutor-issues`, and
 the `tutor_issue_*` audit fields (type, source record ids, detected-at,
 last-event-at, occurrences, period) declared in
