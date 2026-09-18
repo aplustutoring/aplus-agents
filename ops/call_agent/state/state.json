@@ -1003,9 +1003,11 @@
     416724091,
     416739598,
     416771215,
-    416775613
+    416775613,
+    416776895,
+    416777529
   ],
-  "last_run_utc": "2026-09-18T20:16:29.356115+00:00",
+  "last_run_utc": "2026-09-18T20:23:27.579684+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -1592,6 +1594,151 @@
         [
           "Wait for Karen's text with her availability next week and rebook Yura's free online trial lesson, then re-coordinate with the tutor.",
           80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416776895,
+      "number": "18189391570",
+      "time_pt": "1:16 PM",
+      "matched": true,
+      "contact_label": "Sophie Crespel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Sophie Crespel about tutoring for her family. The call was intercepted by a call-screening service; Sophie was not available. Paola left a voicemail asking Sophie to confirm continued interest and share a good time to reach her.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Sophie Crespel again in a few days if no callback, to gauge continued interest and gather student details (grade, school, subject).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sophie Crespel is a prospective parent we've been trying to reach about tutoring for her son. Second outbound attempt today \u2014 screened again by her call-screening service and rolled to voicemail; Paola left a message asking Sophie to confirm interest and share a good callback time. No new details gathered (no grade, school, or subject yet). If she calls back, open warmly with: 'Hi Sophie, this is [name] from A+ Tutoring returning your call \u2014 Paola mentioned you were looking into tutoring for your son. Can you tell me a bit about him and what you're hoping to work on?' If no callback in a couple of days, try her again.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail via screening service; did not actually speak with Sophie, so lead status shouldn't change based on this attempt.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Second outbound follow-up attempt to Sophie. Screened again by call-screening service; left another voicemail asking her to confirm interest and share a good time to connect. Still no new details on the student.",
+          "what_we_can_do_to_help": "If Sophie doesn't call back in a few days, try again to reach her live and gather son's grade, school, and subject needs so we can recommend a tutoring plan.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Second outbound follow-up attempt to Sophie. Screened again by call-screening service; left another voicemail asking her to confirm interest and share a good time to connect. Still no new details on the student."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "If Sophie doesn't call back in a few days, try again to reach her live and gather son's grade, school, and subject needs so we can recommend a tutoring plan."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Sophie Crespel again in a few days if no callback, to gauge continued interest and gather student details (grade, school, subject).",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 416777529,
+      "number": "18184718591",
+      "time_pt": "1:17 PM",
+      "matched": true,
+      "contact_label": "Fabiola Mort",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda placed an outbound call to Fabiola Mort to confirm Angeline's 4pm online tutoring session today with Sonia. Fabiola needs to check with her mom whether they'll be home to log in at 4pm and will call Yolanda back to confirm. Yolanda also reminded Fabiola to use the payment link to purchase the lesson beforehand so Sonia's time is secured. Fabiola was cooperative; no confirmation or cancellation yet.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Fabiola's callback confirming whether Angeline can do the 4pm session with Sonia today; if not heard back soon, follow up with Fabiola to confirm or reschedule.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm Sonia's availability once Fabiola confirms, and ensure payment link has been used before the session starts.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda called Fabiola to confirm Angeline's 4pm online session today with tutor Sonia. Fabiola needs to check with her mom whether they'll be home at 4pm to help Angeline log in and said she'd call back (either the main line or Yolanda's scheduling number ending 1627). Fabiola also seemed briefly confused about who the session was with \u2014 clarified Sonia is the tutor and Yolanda is scheduling. Fabiola still needs to use the payment link to buy the hours before the lesson. If she hasn't called back within ~1 hour of the 4pm start, reach out to confirm or reschedule. Open with: 'Hi Fabiola, just circling back on Angeline's 4pm session with Sonia today \u2014 were you able to check with your mom about being home to log in?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with a booked first session; scheduling confirmation call, status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Angeline Mort",
+          "Sonia"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Yolanda called Fabiola to confirm Angeline's 4pm online session today with tutor Sonia. Fabiola needs to check with her mom whether they'll be home at 4pm to help Angeline log in and will call Yolanda back to confirm.",
+          "what_we_can_do_to_help": "Hold the 4pm slot with Sonia pending Fabiola's callback; remind Fabiola to use the payment link to purchase hours before the lesson starts. Yolanda gave Fabiola her scheduling line (ends 1627) as an alternate callback number.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Yolanda called Fabiola to confirm Angeline's 4pm online session today with tutor Sonia. Fabiola needs to check with her mom whether they'll be home at 4pm to help Angeline log in and will call Yolanda back to confirm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Hold the 4pm slot with Sonia pending Fabiola's callback; remind Fabiola to use the payment link to purchase hours before the lesson starts. Yolanda gave Fabiola her scheduling line (ends 1627) as an alternate callback number."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Fabiola's callback confirming whether Angeline can do the 4pm session with Sonia today; if not heard back soon, follow up with Fabiola to confirm or reschedule.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Confirm Sonia's availability once Fabiola confirms, and ensure payment link has been used before the session starts.",
+          86868539,
           "scheduling"
         ]
       ],
