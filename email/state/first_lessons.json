@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-19T16:50:52.178162+00:00",
+ "_last_run": "2026-09-19T23:38:12.614793+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -1105,6 +1105,15 @@
   "name": "Jacqueline Mendez-Campos",
   "tw_student_id": "2187634"
  },
+ "online:mort, angeline": {
+  "checked": "2026-09-19",
+  "contact_id": "248686221319",
+  "deal_id": "65027146062",
+  "email": "fabiola.m.chavez@gmail.com",
+  "first": "2026-09-18",
+  "name": "Angeline Mort",
+  "tw_student_id": "2353996"
+ },
  "online:motiwalla, autumn": {
   "checked": "2026-09-10",
   "contact_id": "241120347008",
@@ -1185,6 +1194,15 @@
   "first": "2023-09-01",
   "name": "Phoenix Nourn Bernard",
   "tw_student_id": "1694111"
+ },
+ "online:olshansky, dalia": {
+  "checked": "2026-09-19",
+  "contact_id": "106072489313",
+  "deal_id": "34650154363",
+  "email": "martav@gmail.com",
+  "first": "2025-03-16",
+  "name": "Dalia Olshansky",
+  "tw_student_id": "1999002"
  },
  "online:page, sky": {
   "checked": "2026-09-11",
