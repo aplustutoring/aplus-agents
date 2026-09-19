@@ -56,6 +56,55 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-18 — personal_line: tutoring texts on Roman's mobile reach a scheduler
+
+**What happened.** On 2026-09-17 Inna Volodinsky was told, in writing, that the
+support line was the best number and the team there could help her right away.
+On 2026-09-18 at 8:30 AM she replied on Roman's personal line anyway, because
+that is where the conversation already was. She wrote that she was afraid her
+son would be overwhelmed and crack, and asked us to let his tutor decide how
+hard to push him. Nobody saw it for eight and a half hours.
+
+A redirect does not move a conversation. People reply where they are. So the
+line gets a watcher rather than the family getting another instruction.
+
+**What changed** (`email/src/personal_line.py`,
+`email/tests/test_personal_line.py`, `email/config.yaml`, `email/src/audit.py`,
+`.github/workflows/personal-line.yml`).
+
+The agent reads one number and asks one question of each inbound message: is
+this about tutoring? Tutoring messages go to the student's scheduler by the
+usual A-L / M-Z surname split, with the family's own words, how long they have
+waited, and an instruction to answer from the support line.
+
+**Because it reads a personal phone, the privacy contract is the design:**
+
+- A message judged personal is never logged, never summarised, never DMed and
+  never written to HubSpot. Its audit row carries the message id and the word
+  ignored, nothing else. A test asserts the serialised row contains none of the
+  message's words.
+- An unsure classifier counts as personal. Below `min_confidence` (0.7) nothing
+  is relayed. Silence about a tutoring text costs an hour of response time;
+  relaying a private message cannot be undone.
+- A classifier error, malformed JSON, or an empty response all answer personal.
+- Only the message body is sent to the model. No name, no history, no account
+  context: it does not need them to answer this question, and sending them
+  would widen what leaves the phone for no gain.
+
+**It never replies.** Roman's rule from 2026-09-09: watch means read and report.
+This agent has a go for exactly one thing, telling a scheduler.
+
+**It waits before speaking.** Roman answers his own phone. A message surfaces
+only when nothing has gone OUT on that line after it and it is older than
+`grace_minutes` (20). Outbound counts calls, so picking up the phone is
+handling it, which is the mistake that called three phoned-back families
+neglected on 2026-09-15.
+
+Shipped OFF (`personal_line.enabled: false`). The workflow runs every 30 minutes
+between 7am and 4:30pm PT, because a one hour acknowledgement bar needs a
+tighter loop than hourly and nobody is answering at 3am. 21 tests.
+
+---
 ## 2026-09-18 — waiting.py 4.1: tapbacks detected by echo, not by language
 
 Two hours after the Chinese tapback fix shipped, Hannah Thorn's phone sent the

@@ -153,3 +153,15 @@ def write_cursor(data: dict) -> None:
         return
     STATE_DIR.mkdir(exist_ok=True)
     CURSOR.write_text(json.dumps(data, indent=2, default=str))
+
+
+def personal_line_seen() -> set[str]:
+    """Message ids the personal-line watch has already judged, so a message is
+    classified once and a scheduler is told about it once. Personal messages
+    are in here too: that is the only trace they leave, and it is what stops
+    them being re-read on every run."""
+    ids: set[str] = set()
+    for r in _iter_records():
+        if r.get("source") == "personal_line" and r.get("message_id"):
+            ids.add(str(r["message_id"])[3:])   # strip the "pl:" prefix
+    return ids
