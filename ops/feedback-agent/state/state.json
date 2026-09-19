@@ -69,7 +69,8 @@
     "Ev0BUKU5CFAM",
     "Ev0BUNQG6ZT6",
     "Ev0C1357KNPN",
-    "Ev0C1682FLQ4"
+    "Ev0C1682FLQ4",
+    "Ev0C2W78QMN1"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -501,12 +502,12 @@
       "correction_path": "corrections/content-build/2026-09-10-hubspot-publish-refresh-error.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/205",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1789060685425199"
     }
   ],
   "graduation": {
-    "clean_merges": 19
+    "clean_merges": 20
   },
   "pending_proposals": {
     "1786554388.265099": {
