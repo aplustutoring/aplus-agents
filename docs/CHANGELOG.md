@@ -100,9 +100,18 @@ only when nothing has gone OUT on that line after it and it is older than
 handling it, which is the mistake that called three phoned-back families
 neglected on 2026-09-15.
 
+**Amended the same evening.** At 9:48 PM the PSAT family replied "Hey. No." to
+Roman's question about whether their son had taken a College Board practice
+test. Alone those two words are unclassifiable, and the prompt rightly says to
+answer no when a message is short and context-free, so the version shipped that
+afternoon would have left a live lead sitting. The model is now handed the one
+message WE sent immediately before, and nothing else: never another of theirs,
+so what leaves the phone grows by our own words only. A reply means what the
+question made it mean.
+
 Shipped OFF (`personal_line.enabled: false`). The workflow runs every 30 minutes
 between 7am and 4:30pm PT, because a one hour acknowledgement bar needs a
-tighter loop than hourly and nobody is answering at 3am. 21 tests.
+tighter loop than hourly and nobody is answering at 3am. 27 tests.
 
 ---
 ## 2026-09-18 — waiting.py 4.1: tapbacks detected by echo, not by language

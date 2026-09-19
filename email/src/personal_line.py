@@ -30,6 +30,14 @@ Reply, on any channel. Roman's rule from 2026-09-09: watch means read and
 report. Relaying, posting and texting each need a go, and this agent has a go
 for exactly one thing, telling a scheduler.
 
+IT JUDGES THE EXCHANGE, NOT THE ORPHAN MESSAGE
+
+On 2026-09-18 at 9:48 PM a family replied "Hey. No." to Roman's question about
+whether their son had taken a College Board practice test. Alone, those two
+words are unclassifiable and the prompt rightly says to answer no. So the model
+is handed the one message WE sent immediately before, and nothing else: never
+another of theirs, so what leaves the phone grows by our own words only.
+
 WHEN IT SPEAKS
 
 Not immediately. Roman answers his own phone, and a scheduler DM thirty seconds
@@ -60,9 +68,15 @@ NOT TUTORING-RELATED means anything else, including messages from friends and fa
 personal appointments, deliveries, banks, politics, health, social plans, marketing,
 one-time passcodes, and any message you cannot confidently place.
 
+You may also be given the one message the owner sent immediately before, under
+PREVIOUS. Judge the EXCHANGE. A reply means what the question made it mean: "Hey. No."
+after "Has he taken a practice test via college board?" is about tutoring, while the
+same two words after a question about dinner are not. When there is no PREVIOUS and the
+message is short or context-free, answer no.
+
 You are reading a private phone. A wrong "yes" shows a private message to an employee
-and cannot be undone. A wrong "no" delays a reply. When the message is ambiguous, short,
-context-free, or you are less than confident, answer no.
+and cannot be undone. A wrong "no" delays a reply. When you are less than confident,
+answer no.
 
 Return ONLY this JSON object and nothing else:
 {"tutoring": true|false, "confidence": 0.0-1.0, "student": "first name or empty",
@@ -97,12 +111,13 @@ def parse_verdict(text: str) -> dict:
     return obj
 
 
-def classify(body: str, client=None) -> dict:
-    """Tutoring or personal. Any failure answers personal.
+def classify(body: str, previous: str = "", client=None) -> dict:
+    """Tutoring or personal, judged on the exchange. Any failure answers personal.
 
-    The message body is the ONLY thing sent. No contact name, no history, no
-    account context: the model does not need them to answer this question, and
-    sending them would widen what leaves the phone for no gain.
+    `previous` is the ONE message WE sent immediately before, and nothing else
+    goes with it: no contact name, no account history, and never another of
+    their messages. Our own words are the only thing worth widening the call
+    for, and they are what makes a two word reply readable at all.
     """
     conf = cfg().get("personal_line") or {}
     try:
@@ -112,13 +127,36 @@ def classify(body: str, client=None) -> dict:
             model=conf.get("model", "claude-opus-4-7"),
             max_tokens=int(conf.get("max_tokens", 400)),
             system=SYSTEM,
-            messages=[{"role": "user", "content": body[:2000]}])
+            messages=[{"role": "user", "content": _prompt_for(body, previous)}])
         text = "".join(b.text for b in msg.content
                        if getattr(b, "type", None) == "text")
         return parse_verdict(text)
     except Exception as e:  # noqa: BLE001
         # A classifier that cannot answer must not leak. Personal by default.
         return {"tutoring": False, "confidence": 0.0, "reason": f"classifier error: {e}"}
+
+
+def _prompt_for(body: str, previous: str = "") -> str:
+    if previous:
+        return (f"PREVIOUS (sent by the owner):\n{previous[:600]}\n\n"
+                f"THEIR REPLY:\n{body[:2000]}")
+    return body[:2000]
+
+
+def preceding_outbound(thread: dict, line: str, message: dict) -> str:
+    """The newest thing WE sent on this line before their message.
+
+    Only texts. A call has no body to give the model, and inventing "he phoned
+    them" as context would be a guess.
+    """
+    line_d = _digits(line)
+    before = [t for t in thread.get("texts", [])
+              if _digits(t.get("line")) == line_d
+              and not str(t.get("direction", "")).startswith("in")
+              and t.get("at", "") < message.get("at", "")]
+    if not before:
+        return ""
+    return (max(before, key=lambda x: x.get("at", "")).get("text") or "").strip()
 
 
 def _thread(index: dict, number: str) -> dict:
@@ -223,7 +261,7 @@ def run(now: datetime | None = None) -> None:
             body = (msg.get("text") or "").strip()
             if not body:
                 continue
-            verdict = classify(body)
+            verdict = classify(body, preceding_outbound(thread, line, msg))
             min_conf = float(conf.get("min_confidence", 0.7))
             if not verdict.get("tutoring") or verdict["confidence"] < min_conf:
                 personal += 1

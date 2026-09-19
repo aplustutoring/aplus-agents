@@ -129,15 +129,15 @@ def test_no_surname_falls_back_and_says_so(monkeypatch):
 # ── the privacy contract ────────────────────────────────────────────────────
 @pytest.fixture
 def wired(monkeypatch):
-    state = {"dms": [], "audit": [], "index": {}, "verdicts": {}}
+    state = {"dms": [], "audit": [], "index": {}, "verdicts": {}, "seen": []}
     monkeypatch.setattr(pl, "cfg", lambda: CFG)
     monkeypatch.setattr(pl, "DRY_RUN", False)
     monkeypatch.setattr(pl, "staff", lambda k: CFG["staff"].get(CFG["roles"].get(k, k), {}))
     monkeypatch.setattr(pl.jc, "index_by_number", lambda days: state["index"])
-    monkeypatch.setattr(pl, "classify",
-                        lambda body, client=None: state["verdicts"].get(body,
-                                                                        {"tutoring": False,
-                                                                         "confidence": 0.0}))
+    def _classify(body, previous="", client=None):
+        state["seen"].append((body, previous))
+        return state["verdicts"].get(body, {"tutoring": False, "confidence": 0.0})
+    monkeypatch.setattr(pl, "classify", _classify)
     monkeypatch.setattr(pl, "_contact_for", lambda n: {"properties": {
         "firstname": "Inna", "lastname": "Volodinsky"}})
     monkeypatch.setattr(pl, "scheduler_for_last_name", lambda last: ("scheduler_m_z", []))
@@ -240,3 +240,56 @@ def test_a_message_already_judged_is_not_judged_again(monkeypatch, wired):
     wired["verdicts"] = {TUTORING: {"tutoring": True, "confidence": 0.95}}
     pl.run()
     assert wired["dms"] == [] and wired["audit"] == []
+
+
+# ── a reply means what the question made it mean ───────────────────────────
+def test_the_owners_previous_message_is_found_as_context():
+    """2026-09-18 9:48 PM: the PSAT family answered "Hey. No." to a question
+    about a College Board practice test. Alone it is unclassifiable."""
+    reply = _t("inbound", 30, "Hey. No.")
+    thread = {"texts": [
+        _t("inbound", 4000, "Michael has the PSAT coming up in about a month"),
+        _t("outgoing", 200, "Has he taken a practice test via college board?"),
+        reply], "calls": []}
+    assert pl.preceding_outbound(thread, LINE, reply) == \
+        "Has he taken a practice test via college board?"
+
+
+def test_context_is_never_one_of_their_messages():
+    """Exposure may grow by OUR words only."""
+    reply = _t("inbound", 30, "Hey. No.")
+    thread = {"texts": [_t("inbound", 200, "something private they said"), reply],
+              "calls": []}
+    assert pl.preceding_outbound(thread, LINE, reply) == ""
+
+
+def test_context_comes_from_this_line_only():
+    reply = _t("inbound", 30, "Hey. No.")
+    thread = {"texts": [_t("outgoing", 200, "support line question",
+                           line="+18188691627"), reply], "calls": []}
+    assert pl.preceding_outbound(thread, LINE, reply) == ""
+
+
+def test_context_never_comes_from_after_their_message():
+    reply = _t("inbound", 200, "Hey. No.")
+    thread = {"texts": [reply, _t("outgoing", 30, "sent later")], "calls": []}
+    assert pl.preceding_outbound(thread, LINE, reply) == ""
+
+
+def test_the_prompt_labels_whose_words_are_whose():
+    built = pl._prompt_for("Hey. No.", "Has he taken a practice test?")
+    assert "PREVIOUS (sent by the owner)" in built and "THEIR REPLY" in built
+    assert pl._prompt_for("Hey. No.", "") == "Hey. No."
+
+
+def test_run_hands_the_classifier_the_previous_message(wired):
+    reply_text = "Hey. No."
+    wired["index"] = {"8182688000": {"texts": [
+        _t("outgoing", 200, "Has he taken a practice test via college board?"),
+        _t("inbound", 30, reply_text)], "calls": []}}
+    wired["verdicts"] = {reply_text: {"tutoring": True, "confidence": 0.88,
+                                      "family_last_name": "Unknown"}}
+    pl.run(now=NOW)
+    assert wired["seen"] == [(reply_text,
+                              "Has he taken a practice test via college board?")]
+    assert len(wired["dms"]) == 1
