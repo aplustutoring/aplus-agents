@@ -1021,9 +1021,10 @@
     416823172,
     416823379,
     416827244,
-    416834264
+    416834264,
+    416837259
   ],
-  "last_run_utc": "2026-09-18T23:43:47.080444+00:00",
+  "last_run_utc": "2026-09-19T00:09:29.835633+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -2365,6 +2366,109 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 416837259,
+      "number": "13104905906",
+      "time_pt": "4:57 PM",
+      "matched": true,
+      "contact_label": "Aminah Bliss",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Aminah Bliss called from Santa Monica seeking online tutoring for her 10th grader Ekrem Afsar in AP World History (Modern). Paola quoted $95/hour with packages available and explained the process \u2014 tutor profile shared before booking, potential start next week. Aminah gave her email (ablissmd@gmail.com) and confirmed she'll review the pricing and get back over the weekend or Monday. No next step was locked in.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Aminah the current online tutoring rates and package options for AP World History support.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Aminah over the weekend / Monday if she hasn't replied, to confirm whether she wants to move forward.",
+            "owner_hint": null,
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Aminah confirms, hand off to scheduling to match an AP World History tutor and send the tutor profile for approval before booking.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Aminah Bliss (warm, friendly, a bit stressed after a bad test score) called for online tutoring for her 10th grader Ekrem Afsar (note different last name \u2014 mom is Bliss, student is Afsar) in AP World History / Modern World. She's in Santa Monica but wants online only. Paola quoted $95/hr with packages available, promised to email rates, and explained we send a tutor profile before booking and can switch if it's not a fit; potential start next week. Aminah will review pricing over the weekend or Monday and email back. Confirmed email: ablissmd@gmail.com. Open with: 'Hi Aminah, just following up on the AP World History pricing I sent for Ekrem \u2014 happy to answer any questions and get scheduling started whenever you're ready.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective family; not charter-funded and no diagnostic needed \u2014 standard AP World History subject tutoring.",
+        "student_or_school_names_mentioned": [
+          "Ekrem Afsar"
+        ],
+        "record_updates": {
+          "whats_going_on": "Mom Aminah called for online tutoring for 10th grader Ekrem (last name Afsar) in AP World History (Modern). Recent test went poorly and she wants to get ahead of it; not an emergency but expects to need support soon.",
+          "what_we_can_do_to_help": "Sent (to send) current online rates and packages ($95/hr base). Once she confirms, match with a professional AP World History tutor, share profile for approval, and target a start next week.",
+          "student_first_name": "Ekrem",
+          "student_last_name": "Afsar",
+          "grade_level": "10",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Mom Aminah called for online tutoring for 10th grader Ekrem (last name Afsar) in AP World History (Modern). Recent test went poorly and she wants to get ahead of it; not an emergency but expects to need support soon."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Sent (to send) current online rates and packages ($95/hr base). Once she confirms, match with a professional AP World History tutor, share profile for approval, and target a start next week."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Afsar"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Aminah the current online tutoring rates and package options for AP World History support.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Aminah over the weekend / Monday if she hasn't replied, to confirm whether she wants to move forward.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Aminah confirms, hand off to scheduling to match an AP World History tutor and send the tutor profile for approval before booking.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
