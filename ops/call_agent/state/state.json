@@ -1023,9 +1023,10 @@
     416827244,
     416834264,
     416837259,
-    416842645
+    416842645,
+    416845625
   ],
-  "last_run_utc": "2026-09-19T01:11:01.263347+00:00",
+  "last_run_utc": "2026-09-19T01:48:14.504940+00:00",
   "pending_digest": [
     {
       "call_id": 416659219,
@@ -2492,6 +2493,11 @@
       "number": "13236320815",
       "time_pt": "2:23 PM",
       "reason": "hang-up"
+    },
+    {
+      "number": "13108012573",
+      "time_pt": "6:41 PM",
+      "reason": "spam gate: 5s call from an unknown number with no caller-ID"
     }
   ],
   "pending_failures": []
