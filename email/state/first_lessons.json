@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-19T23:38:12.614793+00:00",
+ "_last_run": "2026-09-20T10:09:34.486333+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -413,6 +413,15 @@
   "first": "2025-12-04",
   "name": "Payton Curtis",
   "tw_student_id": "2143471"
+ },
+ "online:czaja, adeline": {
+  "checked": "2026-09-20",
+  "contact_id": "198008137574",
+  "deal_id": "55475353878",
+  "email": "angela.czaja5@gmail.com",
+  "first": "2026-03-02",
+  "name": "Adeline Czaja",
+  "tw_student_id": "2191419"
  },
  "online:czaja, charlotte": {
   "checked": "2026-09-10",
@@ -1054,7 +1063,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-19",
+  "checked": "2026-09-20",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1062,7 +1071,7 @@
   "tw_student_id": "2209726"
  },
  "online:mejia, velena": {
-  "checked": "2026-09-19",
+  "checked": "2026-09-20",
   "deal_id": "64201523521",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-11",
@@ -1565,12 +1574,12 @@
   "tw_student_id": "2213150"
  },
  "online:schwartz, roslyn": {
-  "checked": "2026-09-17",
+  "checked": "2026-09-20",
   "contact_id": "199699140690",
   "email": "brooklyn77@mac.com",
   "first": "2026-09-15",
   "name": "Roslyn Schwartz",
-  "no_deal_until": "2026-09-20",
+  "no_deal_until": "2026-09-23",
   "tw_student_id": "2348247"
  },
  "online:seeley, ember": {
@@ -1797,6 +1806,24 @@
   "first": "2026-09-03",
   "name": "Ezekiel Villa",
   "tw_student_id": "2341148"
+ },
+ "online:villanueva, lavy": {
+  "checked": "2026-09-20",
+  "contact_id": "211122455576",
+  "deal_id": "58295815438",
+  "email": "yvette.eamd@gmail.com",
+  "first": "2026-03-26",
+  "name": "Lavy Villanueva",
+  "tw_student_id": "2220912"
+ },
+ "online:villanueva, liam": {
+  "checked": "2026-09-20",
+  "contact_id": "211122455576",
+  "deal_id": "58474853474",
+  "email": "yvette.eamd@gmail.com",
+  "first": "2026-03-31",
+  "name": "Liam Villanueva",
+  "tw_student_id": "2222465"
  },
  "online:villatoro, khana": {
   "checked": "2026-09-13",
