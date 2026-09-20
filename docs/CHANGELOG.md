@@ -56,6 +56,39 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-20 — waiting.py 4.3: a truncated read now says so
+
+JustCall's `/calls` endpoint timed out twice on the morning of 2026-09-20. The
+timeouts surfaced correctly, but they raised a question the walker could not
+answer: how would it tell a PARTIAL read from a finished one?
+
+It could not. `pull()` stops when `next_page_link` is empty, so a page that
+arrives short ends the walk and the result looks complete, with no error raised
+anywhere. A family missing from a truncated read looks like a family who is
+fine, and that is the dangerous direction for this script to be wrong in.
+
+Every page of the envelope reports `total_count`. The walk now checks its own
+work against it, retries once, and raises `ShortRead` rather than returning a
+number it cannot stand behind. Over-counting is fine, since the window gains
+rows while we page; only under-counting is a short read. A missing
+`total_count` is trusted rather than blocking, because losing the check is bad
+and losing the monitor is worse.
+
+Also: `from __future__ import annotations`, because this runs on the system
+python 3.9 where `int | None` in a signature is a TypeError at import.
+
+Tests: 33, up from 27.
+
+**A correction to the record.** While investigating I reported that the API was
+"giving different answers to the same question", citing 22 numbers then 19 for
+an identical 41 hour window. That was my error, not the API's. The window is
+relative to now, so a message at 40h44m sits inside a 41 hour window at 10:23
+and outside it at 10:53. Three consecutive envelope reads came back identical
+(60/60/60), and a 4 day pull returned 922 rows against a reported 922. The
+guard is still worth having for a real truncation; the instability it was
+prompted by was a sliding window being read as an unstable API.
+
+---
 ## 2026-09-18 — waiting.py 4.2: the echo rule was starved, and a timezone bug I made while fixing it
 
 Two more false breaches on the 4:52 PM tick, and only one needed new vocabulary.

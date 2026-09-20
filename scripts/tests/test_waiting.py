@@ -218,3 +218,82 @@ def test_a_long_message_containing_thanks_is_still_a_message():
 def test_a_question_containing_thanks_is_still_a_question():
     assert not w.is_courtesy("Thanks, but can we move Wednesday to 5?")
     assert not w.is_courtesy("Ok thank you, can she do Tuesday?")
+
+
+# ── a short read must say so, not look like a quiet line ───────────────────
+class _Resp:
+    def __init__(self, rows, total, nxt):
+        self.status_code = 200
+        self._j = {"data": rows, "total_count": total, "next_page_link": nxt}
+
+    def json(self):
+        return self._j
+
+
+def _pager(pages, calls=None):
+    """A fake JustCall that serves the given pages in order."""
+    def _get(url, headers=None, timeout=None, params=None):
+        if calls is not None:
+            calls.append(params.get("page"))
+        i = params.get("page", 0)
+        return pages[i] if i < len(pages) else _Resp([], pages[0]._j["total_count"], "")
+    return _get
+
+
+def test_a_complete_read_returns_every_row(monkeypatch):
+    rows = [{"n": i} for i in range(150)]
+    monkeypatch.setattr(w.requests, "get", _pager([
+        _Resp(rows[:100], 150, "next"), _Resp(rows[100:], 150, "")]))
+    assert len(w.pull("texts", {}, "since")) == 150
+
+
+def test_paging_starts_at_zero(monkeypatch):
+    """page=1 skips the newest hundred rows. That broke the monitor for ten
+    hours on 2026-09-12 while six families were writing in."""
+    calls = []
+    monkeypatch.setattr(w.requests, "get", _pager([_Resp([{"n": 1}], 1, "")], calls))
+    w.pull("texts", {}, "since")
+    assert calls[0] == 0
+
+
+def test_a_truncated_walk_raises_rather_than_answering(monkeypatch):
+    """A short page ends the walk with no error raised anywhere. A family
+    missing from a truncated read looks like a family who is fine."""
+    monkeypatch.setattr(w.requests, "get",
+                        _pager([_Resp([{"n": i} for i in range(19)], 22, "")]))
+    try:
+        w.pull("texts", {}, "since")
+    except w.ShortRead as e:
+        assert "19 of 22" in str(e)
+    else:
+        raise AssertionError("a short read must not return quietly")
+
+
+def test_a_short_read_is_retried_before_refusing(monkeypatch):
+    state = {"attempt": 0}
+
+    def _get(url, headers=None, timeout=None, params=None):
+        if params.get("page", 0) == 0:
+            state["attempt"] += 1
+            if state["attempt"] == 1:
+                return _Resp([{"n": i} for i in range(19)], 22, "")   # short
+            return _Resp([{"n": i} for i in range(22)], 22, "")       # recovered
+        return _Resp([], 22, "")
+    monkeypatch.setattr(w.requests, "get", _get)
+    assert len(w.pull("texts", {}, "since")) == 22
+    assert state["attempt"] == 2
+
+
+def test_more_rows_than_claimed_is_fine(monkeypatch):
+    """The window keeps gaining rows while we page. Only UNDER-counting is a
+    short read."""
+    monkeypatch.setattr(w.requests, "get",
+                        _pager([_Resp([{"n": i} for i in range(25)], 22, "")]))
+    assert len(w.pull("texts", {}, "since")) == 25
+
+
+def test_a_missing_total_is_trusted_rather_than_blocking(monkeypatch):
+    """If the envelope stops carrying total_count, answer rather than refuse to
+    run at all. Losing the check is bad; losing the monitor is worse."""
+    monkeypatch.setattr(w.requests, "get", _pager([_Resp([{"n": 1}], None, "")]))
+    assert len(w.pull("texts", {}, "since")) == 1

@@ -43,6 +43,15 @@ message handed back to us. So it is matched against what we actually sent that
 number, and a real reply cannot be swallowed because a real reply is not a
 verbatim echo of our words.
 
+Version 4.3 (2026-09-20) made a truncated read say so. The pager stops on an
+empty `next_page_link`, so a page that arrives short ends the walk and the
+result LOOKS complete, with no error anywhere. Every page reports
+`total_count`, so the walk now checks its own work, retries once, and raises
+`ShortRead` rather than reporting a number it cannot stand behind. A family
+missing from a truncated read looks like a family who is fine, which is the
+dangerous direction to be wrong in. Prompted by two JustCall read timeouts that
+morning; the walk had no way to tell a short page from a finished one.
+
 Version 4.2 (2026-09-18, same evening) stopped starving the echo rule. It was
 reading our own outbound from the same narrow window as the question, so on a
 two hour look-back `Reacted 💖 to "..."` had nothing to match against and was
@@ -64,6 +73,10 @@ Two open questions Roman has not settled, both of which change the count:
     needs either stated hours or an after-hours auto-acknowledgement that buys
     the real reply until the morning.
 """
+# Annotations as strings: this runs on the system python 3.9, where
+# `int | None` in a signature is a TypeError at import time.
+from __future__ import annotations
+
 import datetime
 import os
 import re
@@ -224,23 +237,57 @@ def fmt_age(minutes: int) -> str:
     return f"{h}h {m:02d}m" if h else f"{m}m"
 
 
-def pull(kind: str, jh: dict, since_s: str) -> list:
-    """JustCall v2.1 paging starts at ZERO. `page=1` skips the newest hundred
-    rows and makes a narrow window look empty; that broke the SMS monitor for
-    about ten hours on 2026-09-12 while six families were writing in."""
-    out, page = [], 0
+class ShortRead(Exception):
+    """The walk ended with fewer rows than the API said exist."""
+
+
+def _walk(kind: str, jh: dict, since_s: str) -> tuple[list, int | None]:
+    """One pass. Returns (rows, total the API claims) so the caller can check.
+
+    JustCall v2.1 paging starts at ZERO. `page=1` skips the newest hundred rows
+    and makes a narrow window look empty; that broke the SMS monitor for about
+    ten hours on 2026-09-12 while six families were writing in.
+    """
+    out, page, total = [], 0, None
     while page <= 60:
         r = requests.get(f"https://api.justcall.io/v2.1/{kind}", headers=jh, timeout=60,
                          params={"per_page": 100, "page": page, "from_datetime": since_s})
         if r.status_code >= 300:
             raise SystemExit(f"JustCall {kind} HTTP {r.status_code}: {r.text[:200]}")
         j = r.json()
+        if total is None:
+            try:
+                total = int(j.get("total_count"))
+            except (TypeError, ValueError):
+                total = None
         rows = j.get("data") or []
         out += rows
         if not rows or not j.get("next_page_link"):
             break
         page += 1
-    return out
+    return out, total
+
+
+def pull(kind: str, jh: dict, since_s: str, attempts: int = 2) -> list:
+    """Every row in the window, or an exception. Never a partial answer.
+
+    The walk stops on an empty `next_page_link`, so a page that arrives short
+    or link-less ends it early and the result LOOKS complete, with no error
+    raised anywhere. A family missing from a truncated read looks like a family
+    who is fine, which is the dangerous direction to be wrong in.
+
+    Every page reports `total_count`, so the walk checks its own work. An
+    over-count is fine (the window can gain rows while we page); an under-count
+    is a short read, retried once and then refused.
+    """
+    last = 0
+    for _ in range(max(1, attempts)):
+        rows, total = _walk(kind, jh, since_s)
+        if total is None or len(rows) >= total:
+            return rows
+        last = len(rows)
+    raise ShortRead(f"{kind}: read {last} of {total} rows the API reports. "
+                    f"Refusing to answer on a partial read.")
 
 
 def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
@@ -351,6 +398,9 @@ def main(hours: float = 14.0) -> int:
     """Prints the three buckets. Returns how many are past the one-hour bar."""
     jh, h = _headers()
     now = datetime.datetime.now()
+    # A ShortRead here must reach the caller. Catching it and carrying on would
+    # turn "I could not read the line" into "nobody is waiting", which is the
+    # single failure this script keeps having.
     ask_from = (now - datetime.timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")
     newest_in, newest_out = newest_each_way(pull("texts", jh, ask_from),
                                             pull("calls", jh, ask_from))
