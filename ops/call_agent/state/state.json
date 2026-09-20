@@ -1029,9 +1029,10 @@
     416889743,
     416918817,
     416928101,
-    416953718
+    416953718,
+    416971493
   ],
-  "last_run_utc": "2026-09-20T17:23:19.419448+00:00",
+  "last_run_utc": "2026-09-20T21:40:43.682800+00:00",
   "pending_digest": [
     {
       "call_id": 416953718,
@@ -1120,6 +1121,99 @@
       ],
       "ticket_id": null,
       "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 416971493,
+      "number": "13233174759",
+      "time_pt": "2:32 PM",
+      "matched": true,
+      "contact_label": "Jawed Iqbal",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Jawed Iqbal called seeking an online English and math tutor for his daughter, a kindergartener at Alexander Science Center School. Roman explained pricing starts at $68/hour with hourly and prepaid options. Jawed said that was too expensive for him and ended the call. No next step was scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Log the inquiry and pricing objection in Jawed Iqbal's record; consider a follow-up in the future if lower-cost options (charter funding, small group, etc.) become relevant.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jawed Iqbal (dad) called looking for online English + math tutoring for his kindergarten daughter at Alexander Science Center School. Call had a language/audio barrier but he was polite. Roman quoted our starting rate of $68/hr (hourly or prepaid packages); Jawed said it was too much and thanked us before hanging up \u2014 no next step booked. He is price-sensitive and did not commit to anything, so he expects nothing further unless we reach back out. If following up, open warmly in simple language: 'Hi Jawed, this is ___ from A+ Tutoring following up on your call about English and math for your daughter in kindergarten \u2014 I wanted to see if it would help to talk through a few options that might fit your budget, like shorter sessions or whether her school offers any funding we can work with.' Confirm best email on file (none yet) before sending anything.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with about a K student needing English/math; not test prep and not charter-funded, so standard We Connected.",
+        "student_or_school_names_mentioned": [
+          "Alexander Science Center School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Dad Jawed called looking for online English and math tutoring for his kindergarten daughter at Alexander Science Center School. When quoted our starting rate of $68/hr, he said it was too expensive and politely ended the call. Some language/audio difficulty on the call.",
+          "what_we_can_do_to_help": "Keep record warm as a price-sensitive lead. If he re-engages, explore whether the school offers any funding, and explain hourly vs. prepaid package value. Use simple, clear language on any follow-up.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "Kindergarten",
+          "student_school": "Alexander Science Center School",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Dad Jawed called looking for online English and math tutoring for his kindergarten daughter at Alexander Science Center School. When quoted our starting rate of $68/hr, he said it was too expensive and politely ended the call. Some language/audio difficulty on the call."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Keep record warm as a price-sensitive lead. If he re-engages, explore whether the school offers any funding, and explain hourly vs. prepaid package value. Use simple, clear language on any follow-up."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "Kindergarten"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Alexander Science Center School"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Log the inquiry and pricing objection in Jawed Iqbal's record; consider a follow-up in the future if lower-cost options (charter funding, small group, etc.) become relevant.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": false,
       "direction": "incoming"
     }
   ],
