@@ -1028,10 +1028,101 @@
     416886171,
     416889743,
     416918817,
-    416928101
+    416928101,
+    416953718
   ],
-  "last_run_utc": "2026-09-20T05:08:37.871502+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-20T17:23:19.419448+00:00",
+  "pending_digest": [
+    {
+      "call_id": 416953718,
+      "number": "13109366500",
+      "time_pt": "10:12 AM",
+      "matched": true,
+      "contact_label": "Sarah Coe",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Sarah Coe, a grandmother, called seeking tutoring/GATE test prep for her 8-year-old grandson who attends Jackson Elementary in Pasadena Unified. He didn't pass the GATE screening in 2nd grade, and the family is considering prep for a February retest. Roman explained we need to know which specific assessment PUSD uses (CogAT, OLSAT, etc.) so we can source a practice test and evaluate the student. Sarah will call the PUSD district office to find out and call back with the test name.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Await Sarah's callback with the name of the GATE assessment PUSD is administering, then source a practice test and send to the family for a diagnostic evaluation.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sarah Coe (grandmother, 76, warm and appreciative, paying for services) called about GATE test prep for her 8-year-old grandson at Jackson Elementary in Pasadena Unified. Grandson didn't pass GATE screening in 2nd grade (scored 71); family wants to prep for a possible February retest but also wants an honest diagnostic first to decide whether to proceed or wait. Roman told her we need the specific assessment name (CogAT vs OLSAT etc.) because PUSD's test varies; she'll call the PUSD district gifted office and call us back. Once she reports the test, we promised to find a practice/diagnostic version, send it over, evaluate, and recommend from there. She'll loop in the student's mom. Open with: 'Hi Sarah, this is [name] from A+ Tutoring following up on your call with Roman \u2014 did you get a chance to reach Pasadena Unified about which GATE assessment they're using?'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family; grandson needs GATE diagnostic/evaluation before proposing a plan, so QTL - Diagnostic Sent fits best once test is identified. Setting Diagnostic Sent track.",
+        "student_or_school_names_mentioned": [
+          "Jackson Elementary",
+          "Pasadena Unified School District"
+        ],
+        "record_updates": {
+          "whats_going_on": "Grandmother Sarah Coe called seeking GATE test prep for her 8-year-old grandson (2nd grade previously, now ~3rd) at Jackson Elementary in Pasadena Unified. He scored 71 on the prior GATE screening and did not qualify; grades are A's and B's. Family wants a diagnostic first to decide whether to prep for a February retest or wait until he's older to avoid pressure. Grandmother is the payer; student's mom is also involved.",
+          "what_we_can_do_to_help": "Once Sarah calls PUSD's gifted/talented office to confirm which assessment they use (CogAT, OLSAT, etc.), Roman will source a matching practice test, send it over, and evaluate the grandson's readiness to recommend next steps.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "3",
+          "student_school": "Jackson Elementary (Pasadena Unified)",
+          "subject_need": "Other",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Grandmother Sarah Coe called seeking GATE test prep for her 8-year-old grandson (2nd grade previously, now ~3rd) at Jackson Elementary in Pasadena Unified. He scored 71 on the prior GATE screening and did not qualify; grades are A's and B's. Family wants a diagnostic first to decide whether to prep for a February retest or wait until he's older to avoid pressure. Grandmother is the payer; student's mom is also involved."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once Sarah calls PUSD's gifted/talented office to confirm which assessment they use (CogAT, OLSAT, etc.), Roman will source a matching practice test, send it over, and evaluate the grandson's readiness to recommend next steps."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "3"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Jackson Elementary (Pasadena Unified)"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Sarah's callback with the name of the GATE assessment PUSD is administering, then source a practice test and send to the family for a diagnostic evaluation.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
