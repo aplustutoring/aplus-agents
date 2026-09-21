@@ -1046,9 +1046,10 @@
     417417939,
     417420938,
     417423171,
-    417423793
+    417423793,
+    417448648
   ],
-  "last_run_utc": "2026-09-21T21:42:34.210246+00:00",
+  "last_run_utc": "2026-09-21T22:50:57.135660+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1624,6 +1625,104 @@
           "Schedule an additional ~20 minute session for Mateo within the availability windows Sida previously provided",
           80047202,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417448648,
+      "number": "13235044798",
+      "time_pt": "3:43 PM",
+      "matched": true,
+      "contact_label": "Vanessa Ramos",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound call to Vanessa Ramos and reached voicemail. Paola left a message letting Vanessa know that her daughter Melody's teacher, Desiree, nominated Melody for the Teacher Scholarship Program (a free tutoring session). Paola said she'd also follow up by email and invited Vanessa to call back to learn more.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send follow-up email to Vanessa Ramos explaining the Teacher Scholarship Program and Melody's nomination by teacher Desiree",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Attempt another callback to Vanessa if no response to voicemail/email within a few days",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Outbound call from Paola to Vanessa Ramos (mom of Melody at iLEAD Acton Hybrid) went to voicemail. Paola left a message that Melody was nominated by her teacher Desiree for the Teacher Scholarship Program (free tutoring session) and promised a follow-up email. Vanessa now expects an email from Paola with more info about the scholarship. When following up, open with: 'Hi Vanessa, this is Paola from A+ Tutoring following up on the voicemail I left \u2014 Melody's teacher Desiree nominated her for our Teacher Scholarship Program and I'd love to tell you how it works.' Existing record notes Melody has low MAP Math scores and week-to-week struggles with math concepts, so tie the scholarship into supporting her math growth.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Left voicemail \u2014 no live conversation, but this is a prospective family we are actively engaging. Using We Connected as the closest applicable status for an active prospective family outreach (no charter/diagnostic indicators). If a strict 'left voicemail / no connection' status exists, adjust accordingly.",
+        "student_or_school_names_mentioned": [
+          "Melody",
+          "Vanessa Ramos",
+          "Desiree",
+          "iLEAD Acton Hybrid",
+          "A+ Tutoring",
+          "Paola"
+        ],
+        "record_updates": {
+          "whats_going_on": "Melody was nominated by her teacher Desiree for A+'s Teacher Scholarship Program (free tutoring session). Outbound call to mom Vanessa went to voicemail; Paola left a message and will follow up by email.",
+          "what_we_can_do_to_help": "Offer Melody the free Teacher Scholarship session and use it to address her low MAP Math scores and week-to-week math concept struggles; follow up by email and callback to explain the program to Vanessa.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": "From my Charter School",
+          "referral_name": "Desiree",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Melody was nominated by her teacher Desiree for A+'s Teacher Scholarship Program (free tutoring session). Outbound call to mom Vanessa went to voicemail; Paola left a message and will follow up by email."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Offer Melody the free Teacher Scholarship session and use it to address her low MAP Math scores and week-to-week math concept struggles; follow up by email and callback to explain the program to Vanessa."
+        ],
+        [
+          "how_did_you_hear",
+          "(blank)",
+          "From my Charter School"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Desiree"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send follow-up email to Vanessa Ramos explaining the Teacher Scholarship Program and Melody's nomination by teacher Desiree",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Attempt another callback to Vanessa if no response to voicemail/email within a few days",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
