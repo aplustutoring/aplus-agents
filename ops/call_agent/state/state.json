@@ -1039,9 +1039,11 @@
     417350782,
     417377775,
     417380694,
-    417397017
+    417397017,
+    417408060,
+    417410867
   ],
-  "last_run_utc": "2026-09-21T20:45:12.241229+00:00",
+  "last_run_utc": "2026-09-21T21:05:46.097811+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1460,6 +1462,99 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417408060,
+      "number": "15593124916",
+      "time_pt": "1:55 PM",
+      "matched": true,
+      "contact_label": "Kym Whitley",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Kym Whitley, a returning customer, called to expand tutoring for her son Joshua (10th grade). Janelle greeted her and transferred to Yolanda. Kym wants in-person tutors for Integrated Math/Interactions, English, geometry, world history, and Spanish 1 \u2014 noting A+ typically doesn't have in-person Spanish. Availability is weekdays after 4pm (Joshua has an activity at 5pm Tue/Thu), ideally 2x/week, and she's open to piecing together multiple tutors by subject. Yolanda will source tutors and text Kym later today.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Source in-person tutor(s) for Joshua Whitley (10th grade) covering Integrated Math/Interactions, English, geometry, world history, and Spanish 1 \u2014 available weekdays after 4pm, ideally 2x/week; piecing subjects across multiple tutors is acceptable.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Kym later today with tutor match update.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Specifically search for an in-person Spanish 1 tutor (or a tutor with Spanish knowledge) since A+ typically doesn't staff in-person Spanish.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Kym Whitley (returning customer, warm and upbeat) called to expand Joshua's (10th grade) in-person tutoring beyond the earlier Spanish request. She now wants in-person help in Integrated Math/Interactions, English, geometry, world history, AND Spanish 1. Availability: weekdays after 4pm (he gets out at 3:30, has an activity at 5pm Tue/Thu, otherwise open until bedtime), ideally 2x/week. She's fine splitting subjects across multiple tutors. Yolanda promised to text her LATER TODAY with a match update. Note Joshua has dyslexia + ADHD and an IEP \u2014 prior notes call for tutors with that background. In-person Spanish is the hard one; Kym knows this and is open to anyone who speaks Spanish for a basic Spanish 1 level. Open with: \"Hi Kym, it's Yolanda following up like I promised \u2014 here's who I've lined up so far for Joshua...\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/past customer expanding services; status is owned by the deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Joshua Whitley"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Kym called back to expand Joshua's (10th) in-person tutoring needs beyond Spanish. Now wants in-person support in Integrated Math/Interactions, English, geometry, world history, and Spanish 1. Availability weekdays after 4pm (out of school 3:30; has an activity at 5pm Tue/Thu), ideally 2x/week. Open to splitting subjects across multiple tutors. Confirmed OK to text.",
+          "what_we_can_do_to_help": "[call] Yolanda to source in-person tutor(s) covering Interactions/math, English, geometry, world history, and Spanish 1 for weekdays after 4pm, ~2x/week (may piece subjects across tutors) and text Kym later today with the match. Continue prioritizing tutors experienced with dyslexia/ADHD and IEP accommodations.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Kym called back to expand Joshua's (10th) in-person tutoring needs beyond Spanish. Now wants in-person support in Integrated Math/Interactions, English, geometry, world history, and Spanish 1. Availability weekdays after 4pm (out of school 3:30; has an activity at 5pm Tue/Thu), ideally 2x/week. Open to splitting subjects across multiple tutors. Confirmed OK to text."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to source in-person tutor(s) covering Interactions/math, English, geometry, world history, and Spanish 1 for weekdays after 4pm, ~2x/week (may piece subjects across tutors) and text Kym later today with the match. Continue prioritizing tutors experienced with dyslexia/ADHD and IEP accommodations."
+        ],
+        [
+          "subject_need",
+          "Other",
+          "Both"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Source in-person tutor(s) for Joshua Whitley (10th grade) covering Integrated Math/Interactions, English, geometry, world history, and Spanish 1 \u2014 available weekdays after 4pm, ideally 2x/week; piecing subjects across multiple tutors is acceptable.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Text Kym later today with tutor match update.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Specifically search for an in-person Spanish 1 tutor (or a tutor with Spanish knowledge) since A+ typically doesn't staff in-person Spanish.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
@@ -1467,6 +1562,11 @@
       "number": "16093065606",
       "time_pt": "1:05 PM",
       "reason": "hang-up"
+    },
+    {
+      "number": "14244576022",
+      "time_pt": "2:04 PM",
+      "reason": "no recording"
     }
   ],
   "pending_failures": []
