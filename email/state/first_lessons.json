@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-20T17:04:39.414548+00:00",
+ "_last_run": "2026-09-21T00:35:24.612687+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -152,6 +152,15 @@
   "first": "2023-09-27",
   "name": "Layla Schnider",
   "tw_student_id": "1714302"
+ },
+ "in_person:smith, alaina": {
+  "checked": "2026-09-20",
+  "contact_id": "190294395284",
+  "deal_id": "53623703727",
+  "email": "desmith@cresa.com",
+  "first": "2026-01-24",
+  "name": "Alaina Smith",
+  "tw_student_id": "2175746"
  },
  "in_person:weingold, hudson erice": {
   "checked": "2026-09-10",
@@ -602,6 +611,15 @@
   "first": "2020-09-04",
   "name": "Emmett Feinstein",
   "tw_student_id": "1114945"
+ },
+ "online:feinstein, greta": {
+  "checked": "2026-09-20",
+  "contact_id": "336001",
+  "deal_id": "2884094380",
+  "email": "feinstein.adam@gmail.com",
+  "first": "2020-09-14",
+  "name": "Greta Feinstein",
+  "tw_student_id": "1122237"
  },
  "online:finkelshteyn, emma": {
   "checked": "2026-09-17",
