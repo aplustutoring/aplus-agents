@@ -1049,9 +1049,11 @@
     417423793,
     417448648,
     417450875,
-    417451554
+    417451554,
+    417453059,
+    417454775
   ],
-  "last_run_utc": "2026-09-21T23:01:51.069959+00:00",
+  "last_run_utc": "2026-09-21T23:07:49.668437+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1803,6 +1805,88 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 417453059,
+      "number": "17604887145",
+      "time_pt": "3:58 PM",
+      "matched": true,
+      "contact_label": "Jessica Franco",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola (A+) called Jessica Franco to follow up on charter tutoring enrollment for her sons Mason and Levi. Paola confirmed Melissa (EF) shared available funds and proposed 19 sessions for the semester \u2014 two sessions/week per student (one math, one reading/writing), running through December 17. Jessica agreed to start now and accepted the full semester plan. Paola will email the monthly session breakdown to Jessica and Melissa.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Jessica and Melissa Yandell the monthly breakdown of the 19 semester sessions (Sept: 2/student, Oct: 8/student, Nov: 6/student, Dec: 3/student) with schedule details.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Schedule the two weekly online sessions per student (math + reading/writing) starting next week through Dec 17 for Mason and Levi.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Jessica Franco (parent, positive/agreeable) confirmed she wants to move forward with the charter-funded semester plan for her sons Mason (5th) and Levi (2nd) at Elite Academic Academy. Paola quoted 19 sessions per student for the semester \u2014 2 sessions/week each (one math, one reading/writing), running from next week through Dec 17 (Sept 2, Oct 8, Nov 6, Dec 3 per student). Jessica agreed to start now. Next: send the monthly breakdown email to Jessica and Melissa Yandell (EF) and get the weekly sessions on the calendar. Open with: \"Hi Jessica \u2014 following up on the plan you and Paola confirmed, here's the monthly breakdown and proposed weekly times to kick off next week.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing charter family already in QTL - Charter and now confirming enrollment; deal pipeline owns status from here.",
+        "student_or_school_names_mentioned": [
+          "Mason Franco",
+          "Levi Franco",
+          "Elite Academic Academy",
+          "Melissa Yandell",
+          "Jessica Franco"
+        ],
+        "record_updates": {
+          "whats_going_on": "Jessica confirmed she wants to move forward with the charter-funded semester plan for Mason and Levi at Elite Academic Academy. She accepted Paola's proposal of 19 sessions per student for the semester, starting next week and running through Dec 17.",
+          "what_we_can_do_to_help": "Send Jessica and Melissa Yandell the monthly session breakdown (Sept 2, Oct 8, Nov 6, Dec 3 per student) and schedule two weekly online sessions per student \u2014 one math, one reading/writing \u2014 beginning next week.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Jessica confirmed she wants to move forward with the charter-funded semester plan for Mason and Levi at Elite Academic Academy. She accepted Paola's proposal of 19 sessions per student for the semester, starting next week and running through Dec 17."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send Jessica and Melissa Yandell the monthly session breakdown (Sept 2, Oct 8, Nov 6, Dec 3 per student) and schedule two weekly online sessions per student \u2014 one math, one reading/writing \u2014 beginning next week."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Jessica and Melissa Yandell the monthly breakdown of the 19 semester sessions (Sept: 2/student, Oct: 8/student, Nov: 6/student, Dec: 3/student) with schedule details.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Schedule the two weekly online sessions per student (math + reading/writing) starting next week through Dec 17 for Mason and Levi.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1815,6 +1899,11 @@
       "number": "14244576022",
       "time_pt": "2:04 PM",
       "reason": "no recording"
+    },
+    {
+      "number": "19493553715",
+      "time_pt": "4:06 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
