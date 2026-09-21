@@ -1052,9 +1052,11 @@
     417451554,
     417453059,
     417454775,
-    417456694
+    417456694,
+    417458895,
+    417460381
   ],
-  "last_run_utc": "2026-09-21T23:20:50.054187+00:00",
+  "last_run_utc": "2026-09-21T23:28:24.596559+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1957,6 +1959,83 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417458895,
+      "number": "15627250152",
+      "time_pt": "4:21 PM",
+      "matched": true,
+      "contact_label": "Kaati Coppel",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Kaati Coppel about tutoring for her three students (Lofi, Niua, Bo) at Taylion. Call went to voicemail; Paola left a message offering to help create a PO request and asking Kaati to confirm continued interest. No callback or next step confirmed on this call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Kaati's callback; if no response in a few days, try again to confirm interest and offer to initiate the PO request through Taylion.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Kaati Coppel following up on tutoring for her three Taylion students \u2014 Lofi (5th, math & writing), Niua (2nd, math facts & writing), and Bo (K, phonics/sight words/letters). Kaati was previously prioritizing in-person in San Pedro but open to online; we've already offered a free 1-hour online trial split across the three kids and quoted $75/hr charter rate. Voicemail offered to help create a PO request. Kaati now expects a callback opportunity or another outreach attempt. If she calls back, open with: 'Hi Kaati, it's Paola from A+ Tutoring returning your call \u2014 I wanted to check in on tutoring for Lofi, Niua, and Bo, and see if you'd like us to get a PO request started with Taylion so we can book that free trial.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Taylion charter instructional funds; voicemail only, no status change warranted beyond existing charter-qualified lead.",
+        "student_or_school_names_mentioned": [
+          "Lofi",
+          "Niua",
+          "Bo",
+          "Taylion",
+          "Kaati Coppel"
+        ],
+        "record_updates": {
+          "whats_going_on": "[outbound call] Paola left another voicemail following up on Kaati's interest in tutoring for Lofi, Niua, and Bo at Taylion. No response yet; still awaiting a callback to confirm continued interest and next steps.",
+          "what_we_can_do_to_help": "[outbound call] Continue follow-up cadence and, when Kaati responds, offer to initiate the PO request with Taylion and book the previously offered free 1-hour online trial split across the three students.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[outbound call] Paola left another voicemail following up on Kaati's interest in tutoring for Lofi, Niua, and Bo at Taylion. No response yet; still awaiting a callback to confirm continued interest and next steps."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[outbound call] Continue follow-up cadence and, when Kaati responds, offer to initiate the PO request with Taylion and book the previously offered free 1-hour online trial split across the three students."
+        ],
+        [
+          "lead_status",
+          "Check Back Quarterly",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Kaati's callback; if no response in a few days, try again to confirm interest and offer to initiate the PO request through Taylion.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1973,6 +2052,11 @@
     {
       "number": "19493553715",
       "time_pt": "4:06 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "19092134868",
+      "time_pt": "4:26 PM",
       "reason": "hang-up"
     }
   ],
