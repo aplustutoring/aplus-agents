@@ -1033,9 +1033,10 @@
     416971493,
     417233868,
     417267543,
-    417272187
+    417272187,
+    417310756
   ],
-  "last_run_utc": "2026-09-21T17:21:39.935242+00:00",
+  "last_run_utc": "2026-09-21T18:23:43.957193+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1241,6 +1242,74 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 417310756,
+      "number": "19493553715",
+      "time_pt": "11:16 AM",
+      "matched": true,
+      "contact_label": "Krista Camacho",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Krista Camacho (charter TOR/EF) about student Maddie and reached Krista's voicemail. Paola left a message asking Krista to call back so they can make sure the best sessions are scheduled for Maddie. No new information about Maddie was obtained on this call.",
+        "caller_type": "school/charter contact",
+        "intent": "school partnership",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Wait for Krista's callback; if no response in a couple of days, try Krista again to coordinate Maddie's sessions.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Krista Camacho (charter TOR/EF) has been playing phone tag with Paola about student Maddie. Paola left another voicemail today asking Krista to call back so we can confirm the best sessions for Maddie. We still don't have Maddie's grade, subject needs, or modality. If Krista calls back, open with: 'Hi Krista, thanks for calling back \u2014 Paola asked me to help make sure we get Maddie set up with the right sessions. Can you tell me a bit about her grade and what subjects she needs support in?' Then map to the charter instructional funds process.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Krista is an existing charter TOR/EF contact already correctly tagged; call was a voicemail with no new qualifying info.",
+        "student_or_school_names_mentioned": [
+          "Maddie"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Paola called Krista again to follow up on scheduling sessions for Maddie and reached voicemail. Paola left a message asking Krista to call back at a convenient time.",
+          "what_we_can_do_to_help": "[call] Await Krista's callback; if no response soon, try again to gather Maddie's grade, subject needs, and modality so we can schedule sessions through the charter's instructional funds process.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Paola called Krista again to follow up on scheduling sessions for Maddie and reached voicemail. Paola left a message asking Krista to call back at a convenient time."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Await Krista's callback; if no response soon, try again to gather Maddie's grade, subject needs, and modality so we can schedule sessions through the charter's instructional funds process."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Wait for Krista's callback; if no response in a couple of days, try Krista again to coordinate Maddie's sessions.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
