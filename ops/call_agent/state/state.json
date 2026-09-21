@@ -1045,9 +1045,10 @@
     417417666,
     417417939,
     417420938,
-    417423171
+    417423171,
+    417423793
   ],
-  "last_run_utc": "2026-09-21T21:32:14.186248+00:00",
+  "last_run_utc": "2026-09-21T21:36:47.321891+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1559,6 +1560,75 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 417423793,
+      "number": "13528992181",
+      "time_pt": "2:30 PM",
+      "matched": true,
+      "contact_label": "Caller 352-899-2181",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Sida to follow up on a message about Mateo's tutoring session. Sida confirmed she saw the message late and is currently working with Mateo now for a short session, but will need to squeeze in an additional 20 minutes at another time. She asked Janelle to arrange scheduling within the times she previously provided since she also has Araceli to attend to. Call ended cordially with Sida expecting follow-up scheduling.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Schedule an additional ~20 minute session for Mateo within the availability windows Sida previously provided",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sida (parent) was reached by Janelle re: Mateo's tutoring. She's doing a short session with Mateo today but needs another ~20 minutes scheduled at a different time within the availability windows she previously shared. She also mentioned juggling another child, Araceli. Sida expects us to book that make-up/extra 20-minute block soon. Open with: 'Hi Sida, this is [name] from A+ following up on getting Mateo's extra 20 minutes on the calendar within the times you sent over \u2014 here's what I have available...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Sida appears to be an active tutoring family (session in progress with Mateo); status is owned by the deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Mateo",
+          "Araceli"
+        ],
+        "record_updates": {
+          "whats_going_on": "Janelle reached Sida to follow up on a scheduling message about Mateo. Sida is doing a short session today but needs an additional ~20 minutes scheduled at another time, and mentioned she also has Araceli to manage.",
+          "what_we_can_do_to_help": "Arrange Mateo's additional 20-minute session within the availability windows Sida previously provided and confirm the time back to her.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Janelle reached Sida to follow up on a scheduling message about Mateo. Sida is doing a short session today but needs an additional ~20 minutes scheduled at another time, and mentioned she also has Araceli to manage."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Arrange Mateo's additional 20-minute session within the availability windows Sida previously provided and confirm the time back to her."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Schedule an additional ~20 minute session for Mateo within the availability windows Sida previously provided",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
