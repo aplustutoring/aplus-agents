@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-21T11:09:48.961370+00:00",
+ "_last_run": "2026-09-21T17:14:56.777044+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -449,6 +449,15 @@
   "first": "2026-03-02",
   "name": "Emmalyn Czaja",
   "tw_student_id": "2191463"
+ },
+ "online:dai, ethan": {
+  "checked": "2026-09-21",
+  "contact_id": "247937722516",
+  "deal_id": "65056655772",
+  "email": "jackych@msn.com",
+  "first": "2026-09-21",
+  "name": "Ethan Dai",
+  "tw_student_id": "2354014"
  },
  "online:danna, valentina": {
   "checked": "2026-09-15",
@@ -1716,6 +1725,15 @@
   "first": "2024-02-01",
   "name": "Bennett Song",
   "tw_student_id": "1771968"
+ },
+ "online:soroudi, nicole": {
+  "checked": "2026-09-21",
+  "contact_id": "1239701",
+  "deal_id": "43635661704",
+  "email": "msoroudi@aol.com",
+  "first": "2023-11-22",
+  "name": "Nicole Soroudi",
+  "tw_student_id": "1714954"
  },
  "online:spainhour, michael": {
   "checked": "2026-09-13",
