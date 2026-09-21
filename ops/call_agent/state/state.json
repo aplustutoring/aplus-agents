@@ -1036,9 +1036,11 @@
     417272187,
     417310756,
     417350261,
-    417350782
+    417350782,
+    417377775,
+    417380694
   ],
-  "last_run_utc": "2026-09-21T19:28:38.517283+00:00",
+  "last_run_utc": "2026-09-21T20:12:30.008356+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1312,8 +1314,83 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417380694,
+      "number": "12817771990",
+      "time_pt": "1:09 PM",
+      "matched": true,
+      "contact_label": "Regina Gatdula",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring made an outbound follow-up call to Regina Gatdula about her daughter Peppa's diagnostic exam. The call went to voicemail; Paola left a message checking on the diagnostic completion, offering help with any questions, and asking Regina to confirm if she is still interested.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Regina's response to voicemail; if no reply in a few days, follow up again about Peppa's diagnostic exam completion.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Regina Gatdula following up on daughter Peppa's (3rd grade, Rio Vista Elementary, math) diagnostic exam. No response yet \u2014 Regina expects a check-in and support with the diagnostic. If she calls back or you follow up again, open with: 'Hi Regina, just circling back on Peppa's diagnostic \u2014 wanted to see if she's had a chance to complete it or if you have any questions we can help with.' Be ready to resend the diagnostic link and I-Ready upload instructions, and to book the results meeting once completed.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Voicemail only \u2014 no live conversation, and current status QTL - Diagnostic Sent still accurately reflects where she is in the pipeline.",
+        "student_or_school_names_mentioned": [
+          "Peppa Gatdula",
+          "Rio Vista Elementary"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola \u2014 reached voicemail. Left a message checking on Peppa's diagnostic exam progress and offering help with any questions.",
+          "what_we_can_do_to_help": "Wait for Regina's callback; if no response in a few days, follow up again and offer to resend the diagnostic link or walk her through completion.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola \u2014 reached voicemail. Left a message checking on Peppa's diagnostic exam progress and offering help with any questions."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Wait for Regina's callback; if no response in a few days, follow up again and offer to resend the diagnostic link or walk her through completion."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Regina's response to voicemail; if no reply in a few days, follow up again about Peppa's diagnostic exam completion.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "16093065606",
+      "time_pt": "1:05 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
