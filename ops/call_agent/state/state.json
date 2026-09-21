@@ -1032,9 +1032,10 @@
     416953718,
     416971493,
     417233868,
-    417267543
+    417267543,
+    417272187
   ],
-  "last_run_utc": "2026-09-21T17:14:07.393917+00:00",
+  "last_run_utc": "2026-09-21T17:21:39.935242+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1113,6 +1114,133 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417272187,
+      "number": "17604887145",
+      "time_pt": "10:08 AM",
+      "matched": true,
+      "contact_label": "Caller 760-488-7145",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Jessica Franco, a charter-school parent at Elite Academy, called to enroll her two sons \u2014 Mason Franco (5th grade) and Levi Cacalen (2nd grade) \u2014 in online tutoring for reading, math, and writing using school instructional funds. Paola quoted current rates ($75/hour, $60/45-min) and explained funds/out-of-pocket options, and Jessica indicated a preference for weekly 1-hour sessions if funds cover it, otherwise 30 minutes. Jessica provided her EF/teacher contact Melissa Yandell at Elite Academy and confirmed her email and phone. Paola committed to sending an intro email looping in the teacher to confirm available funds and next steps.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Send intro email to Jessica Franco and EF Melissa Yandell (Elite Academy) with current rates ($75/hr, $60/45-min) and confirm available instructional funds for Mason and Levi",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Verify Jessica's email address on file (she spelled it as jessica_cacalan118 at what sounded like 'icloud.com' \u2014 confirm spelling/domain before sending)",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once funds are confirmed with Melissa, coordinate weekly online tutoring schedule for Mason (5th) and Levi (2nd) \u2014 1-hour sessions preferred, 30-min fallback",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jessica Franco (mom, warm and ready to enroll) called to set up online tutoring for two sons at Elite Academy charter using instructional funds: Mason Franco, 5th grade, and Levi Cacalen (Cacalen \u2014 spelled C-A-C-A-L-E-N), 2nd grade. Both need reading, math, and writing. Paola quoted $75/hr and $60/45-min and told her we'll email her and her EF Melissa Yandell (email sounds like myandell@elite academic plate/charter \u2014 verify exact domain) to confirm available funds. Jessica wants weekly sessions, ideally 1 hour if funds cover it, otherwise 30 minutes; she wants everything paid through school funds and specifically asked whether there's a registration fee (there is not for charter families). She expects an email shortly looping in Melissa. Open with: 'Hi Jessica, this is ___ from A+ Tutoring following up on your call with Paola \u2014 I'm looping in Melissa at Elite so we can confirm Mason and Levi's available funds and get their weekly sessions on the calendar.' Double-check email spelling (jessica_cacalan118@icloud.com?) before sending.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Prospective family paying via Elite Academy charter instructional funds; spoke live and provided EF contact.",
+        "student_or_school_names_mentioned": [
+          "Mason Franco",
+          "Levi Cacalen",
+          "Elite Academy",
+          "Melissa Yandell",
+          "Jessica Franco"
+        ],
+        "record_updates": {
+          "whats_going_on": "Jessica Franco called to enroll her two sons at Elite Academy charter \u2014 Mason Franco (5th) and Levi Cacalen (2nd) \u2014 in online tutoring for reading, math, and writing using instructional funds. She wants weekly sessions, ideally 1 hour, and confirmed she wants everything covered by school funds. EF is Melissa Yandell at Elite Academy.",
+          "what_we_can_do_to_help": "Send intro email to Jessica and Melissa Yandell with current rates ($75/hr, $60/45-min, $ /30-min) and request confirmation of available funds for both boys, then schedule weekly online sessions accordingly. Confirm no registration fee applies for charter families.",
+          "student_first_name": "Mason",
+          "student_last_name": "Franco",
+          "grade_level": "5",
+          "student_school": "Elite Academy",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Jessica Franco called to enroll her two sons at Elite Academy charter \u2014 Mason Franco (5th) and Levi Cacalen (2nd) \u2014 in online tutoring for reading, math, and writing using instructional funds. She wants weekly sessions, ideally 1 hour, and confirmed she wants everything covered by school funds. EF is Melissa Yandell at Elite Academy."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send intro email to Jessica and Melissa Yandell with current rates ($75/hr, $60/45-min, $ /30-min) and request confirmation of available funds for both boys, then schedule weekly online sessions accordingly. Confirm no registration fee applies for charter families."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Mason"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Franco"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Elite Academy"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send intro email to Jessica Franco and EF Melissa Yandell (Elite Academy) with current rates ($75/hr, $60/45-min) and confirm available instructional funds for Mason and Levi",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Verify Jessica's email address on file (she spelled it as jessica_cacalan118 at what sounded like 'icloud.com' \u2014 confirm spelling/domain before sending)",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once funds are confirmed with Melissa, coordinate weekly online tutoring schedule for Mason (5th) and Levi (2nd) \u2014 1-hour sessions preferred, 30-min fallback",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
