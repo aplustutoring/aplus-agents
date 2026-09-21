@@ -1051,9 +1051,10 @@
     417450875,
     417451554,
     417453059,
-    417454775
+    417454775,
+    417456694
   ],
-  "last_run_utc": "2026-09-21T23:13:53.173035+00:00",
+  "last_run_utc": "2026-09-21T23:20:50.054187+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1882,6 +1883,75 @@
           "Schedule the two weekly online sessions per student (math + reading/writing) starting next week through Dec 17 for Mason and Levi.",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417456694,
+      "number": "18183914724",
+      "time_pt": "4:13 PM",
+      "matched": true,
+      "contact_label": "Daniella Stein",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola to Daniella Stein about tutoring for her 10th-grade daughter Lily went to voicemail. Daniella's professional voicemail identifies her as a school psychologist/educational therapist in Calabasas. Paola left a message inviting Daniella to reconnect about tutoring and offering help.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Daniella again in ~2 weeks if no response, to re-offer the free trial for Lily in geometry and chemistry.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for Daniella Stein following up on tutoring for her 10th grader Lily (Louisville) in geometry and regular chemistry. Pricing was previously sent and Daniella said it was out of budget. Daniella now expects a callback offering the free trial. If she doesn't respond in ~2 weeks, try her again \u2014 open with: 'Hi Daniella, it's [name] from A+ Tutoring following up on Lily \u2014 I'd love to get her set up with a free trial session in geometry or chemistry so you can see the fit before committing.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Reached voicemail only \u2014 no live conversation to reclassify. Existing status stays until we actually connect with Daniella.",
+        "student_or_school_names_mentioned": [
+          "Lily",
+          "Louisville"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Paola went to Daniella's voicemail again. Left a message inviting her to reconnect about tutoring for Lily.",
+          "what_we_can_do_to_help": "Try Daniella again in about two weeks to re-offer the free trial for Lily in geometry and chemistry.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Paola went to Daniella's voicemail again. Left a message inviting her to reconnect about tutoring for Lily."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Try Daniella again in about two weeks to re-offer the free trial for Lily in geometry and chemistry."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Daniella again in ~2 weeks if no response, to re-offer the free trial for Lily in geometry and chemistry.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
