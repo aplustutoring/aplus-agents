@@ -1030,10 +1030,90 @@
     416918817,
     416928101,
     416953718,
-    416971493
+    416971493,
+    417233868
   ],
-  "last_run_utc": "2026-09-21T05:13:47.398812+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-21T16:19:10.412546+00:00",
+  "pending_digest": [
+    {
+      "call_id": 417233868,
+      "number": "17143083450",
+      "time_pt": "9:11 AM",
+      "matched": true,
+      "contact_label": "Rebecca Slome",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Rebecca Slome to confirm a session today at 8 PM with tutor Emily for Zoey. The call went to Rebecca's Mommy To Be Wellness voicemail, so no live confirmation was obtained. Yolanda left a voicemail saying she'd text in 10 minutes and call back around 4 PM with the callback number.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Text Rebecca within 10 minutes to confirm today's 8 PM session with Emily for Zoey",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Call Rebecca back around 4 PM to confirm the 8 PM session with Emily",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": null,
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in OPEN_DEAL pipeline \u2014 scheduling confirmation call, status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Zoey"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda called Rebecca to confirm today's 8 PM session with tutor Emily for Zoey; reached voicemail (Mommy To Be Wellness). Left message that she'd text in 10 minutes and call back around 4 PM.",
+          "what_we_can_do_to_help": "[call] Yolanda to text Rebecca within 10 minutes and call back at 4 PM to lock in the 8 PM session with Emily.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda called Rebecca to confirm today's 8 PM session with tutor Emily for Zoey; reached voicemail (Mommy To Be Wellness). Left message that she'd text in 10 minutes and call back around 4 PM."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to text Rebecca within 10 minutes and call back at 4 PM to lock in the 8 PM session with Emily."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Text Rebecca within 10 minutes to confirm today's 8 PM session with Emily for Zoey",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Call Rebecca back around 4 PM to confirm the 8 PM session with Emily",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
