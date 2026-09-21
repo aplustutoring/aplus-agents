@@ -1038,9 +1038,10 @@
     417350261,
     417350782,
     417377775,
-    417380694
+    417380694,
+    417397017
   ],
-  "last_run_utc": "2026-09-21T20:17:16.621635+00:00",
+  "last_run_utc": "2026-09-21T20:45:12.241229+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1377,6 +1378,82 @@
         [
           "Await Regina's response to voicemail; if no reply in a few days, follow up again about Peppa's diagnostic exam completion.",
           81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417397017,
+      "number": "12135247104",
+      "time_pt": "1:37 PM",
+      "matched": true,
+      "contact_label": "Elia Palacios",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Elia Palacios to follow up on her prior inquiry (originally handled by Roman) about tutoring for her daughter and niece. Elia said they're still shopping around and are focused on math and reading for a 10th grader. She agreed to a follow-up call next week. Tone was polite and neutral.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Call Elia Palacios back next week to check in on her tutoring decision for her daughter and niece (math and reading, 10th grade).",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Elia Palacios is a prospective parent looking into tutoring for her daughter and a niece \u2014 focus subjects are math and reading, student is in 10th grade. She previously spoke with Roman last week and is still comparing options. On today's outbound call with Paola she was polite but non-committal and agreed to a follow-up call next week. She expects a check-in call, not a hard sell. Suggested opener: \"Hi Elia, it's [name] from A+ Tutoring following up like we promised \u2014 wanted to see where you're at on math and reading support for your 10th grader and answer any questions that have come up since you spoke with Roman.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Family already at 'We Connected' and this call didn't change qualification \u2014 still shopping, follow-up scheduled for next week.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call with Elia. She is still evaluating tutoring options for her daughter and niece, focused on math and reading; student is in 10th grade. Previously spoke with Roman last week.",
+          "what_we_can_do_to_help": "Follow up next week to check in, answer any remaining questions, and move toward booking a diagnostic/trial for math and reading support at the 10th-grade level.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "10",
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call with Elia. She is still evaluating tutoring options for her daughter and niece, focused on math and reading; student is in 10th grade. Previously spoke with Roman last week."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Follow up next week to check in, answer any remaining questions, and move toward booking a diagnostic/trial for math and reading support at the 10th-grade level."
+        ],
+        [
+          "grade_level",
+          "9",
+          "10"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Call Elia Palacios back next week to check in on her tutoring decision for her daughter and niece (math and reading, 10th grade).",
+          38681249,
           "follow_up"
         ]
       ],
