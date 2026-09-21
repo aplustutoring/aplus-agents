@@ -1047,9 +1047,11 @@
     417420938,
     417423171,
     417423793,
-    417448648
+    417448648,
+    417450875,
+    417451554
   ],
-  "last_run_utc": "2026-09-21T22:50:57.135660+00:00",
+  "last_run_utc": "2026-09-21T22:56:55.089890+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -1728,6 +1730,79 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417450875,
+      "number": "18017628772",
+      "time_pt": "3:48 PM",
+      "matched": true,
+      "contact_label": "Repay N/A",
+      "no_next_step": false,
+      "summary": {
+        "summary": "JC from Repay (processing payment on behalf of Heartland Charter School) called A+ Tutoring to reach accounts receivable about paying an invoice. Janelle attempted to transfer the call and collected callback info: phone 801-762-8772 and email payables.help@repay.com. Call ended with Janelle attempting another transfer to A/R.",
+        "caller_type": "vendor",
+        "intent": "billing",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Have accounts receivable call JC back at 801-762-8772 (or email payables.help@repay.com) to process the Heartland Charter School invoice payment via Repay",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "JC from Repay called on behalf of Heartland Charter School to pay an A+ invoice. Neutral, professional tone. Janelle tried to transfer to A/R but took a callback in case. Call back at 801-762-8772 or email payables.help@repay.com to complete the payment. Open with: 'Hi JC, this is [name] from A+ Tutoring accounts receivable returning your call about the Heartland Charter invoice \u2014 happy to take that payment now.'",
+        "lead_status": "UNQUALIFIED",
+        "lead_status_reason": "Caller is a third-party payment processor (Repay) handling a charter school invoice payment \u2014 not a family lead.",
+        "student_or_school_names_mentioned": [
+          "Heartland Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "JC from Repay called on behalf of Heartland Charter School to make payment on an A+ invoice. Provided callback 801-762-8772 and email payables.help@repay.com.",
+          "what_we_can_do_to_help": "Route to accounts receivable to process the Heartland Charter School invoice payment through Repay.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "JC from Repay called on behalf of Heartland Charter School to make payment on an A+ invoice. Provided callback 801-762-8772 and email payables.help@repay.com."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Route to accounts receivable to process the Heartland Charter School invoice payment through Repay."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "Dead Opportunity/Unqualified"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Have accounts receivable call JC back at 801-762-8772 (or email payables.help@repay.com) to process the Heartland Charter School invoice payment via Repay",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
