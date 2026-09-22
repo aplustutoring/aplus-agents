@@ -1082,9 +1082,11 @@
     417829749,
     417833269,
     417834234,
-    417880683
+    417880683,
+    417901548,
+    417901383
   ],
-  "last_run_utc": "2026-09-22T20:20:19.257784+00:00",
+  "last_run_utc": "2026-09-22T20:50:23.775302+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1709,6 +1711,87 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417901548,
+      "number": "18185715003",
+      "time_pt": "1:47 PM",
+      "matched": true,
+      "contact_label": "Caller 818-571-5003",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Inbound call from an unidentified parent inquiring about in-person tutoring rates for a 7th grader. Paola quoted $130/hr standard and the 8-hour Improvement Package at $115/hr ($920 total). The caller declined further package details and email follow-up, saying they would keep shopping and reach out again. No student details, name, or email were collected.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "If caller re-engages, capture student name, school, subject needs, and email so a proper follow-up can be initiated.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": false,
+        "next_step_scheduled": false,
+        "handoff_note": null,
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with about in-person 7th grade tutoring; not charter, no diagnostic needed \u2014 standard 'We Connected'.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Parent called asking about in-person tutoring rates for a 7th grader. Did not share student name, school, or contact details and declined to have pricing emailed.",
+          "what_we_can_do_to_help": "Quoted $130/hr standard and Improvement Package (8 hrs at $115/hr = $920). Parent is price-shopping and said they will reach out again if interested; no follow-up committed on our side.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "7",
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Parent called asking about in-person tutoring rates for a 7th grader. Did not share student name, school, or contact details and declined to have pricing emailed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted $130/hr standard and Improvement Package (8 hrs at $115/hr = $920). Parent is price-shopping and said they will reach out again if interested; no follow-up committed on our side."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "7"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "If caller re-engages, capture student name, school, subject needs, and email so a proper follow-up can be initiated.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
