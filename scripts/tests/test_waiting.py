@@ -218,3 +218,32 @@ def test_a_long_message_containing_thanks_is_still_a_message():
 def test_a_question_containing_thanks_is_still_a_question():
     assert not w.is_courtesy("Thanks, but can we move Wednesday to 5?")
     assert not w.is_courtesy("Ok thank you, can she do Tuesday?")
+
+
+# ── quote characters vary by client, not only by language ──────────────────
+OURS_RU = ["Hi Alina, no we don't until Stephanie confirms she's ready to start again."]
+
+
+def test_a_straight_quote_tapback_is_caught():
+    """2026-09-22: Alina's client used a straight quote and the whole rule
+    missed, even though the quoted text was our own message word for word."""
+    body = ('Реакция ❤️ на " Hi Alina, no we don\'t until Stephanie confirms '
+            'she\'s ready to start again. "')
+    assert w.echoes_our_message(body, OURS_RU)
+
+
+def test_every_common_quote_character_opens_a_tapback():
+    inner = OURS_RU[0]
+    for o, c in (("“", "”"), ('"', '"'), ("«", "»"),
+                 ("„", "“"), ("‘", "’")):
+        assert w.echoes_our_message(f"Liked {o}{inner}{c}", OURS_RU), (o, c)
+
+
+def test_mismatched_quote_characters_still_count():
+    """Clients are not consistent about pairing them."""
+    assert w.echoes_our_message(f'Liked "{OURS_RU[0]}”', OURS_RU)
+
+
+def test_widening_the_quote_class_did_not_swallow_real_messages():
+    assert not w.echoes_our_message('She told me "bring the workbook" but which one?', OURS_RU)
+    assert not w.echoes_our_message('"My tutor never emailed the homework"', OURS_RU)
