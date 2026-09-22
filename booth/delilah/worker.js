@@ -30,13 +30,14 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { headers: cors(env) });
     const url = new URL(request.url);
 
-    if (request.method === "GET" && url.pathname.startsWith("/photo/")) {
+    // HEAD is answered too: MMS gateways and link previews probe the media
+    // URL before fetching it, and a 404 on HEAD reads as "no image".
+    if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/photo/")) {
       const key = url.pathname.slice("/photo/".length);
       const img = await env.PHOTOS.get(key, "arrayBuffer");
       if (!img) return new Response("Gone", { status: 404 });
-      return new Response(img, {
-        headers: { "Content-Type": "image/jpeg", "Cache-Control": "public, max-age=604800" },
-      });
+      const headers = { "Content-Type": "image/jpeg", "Content-Length": String(img.byteLength), "Cache-Control": "public, max-age=604800" };
+      return new Response(request.method === "HEAD" ? null : img, { headers });
     }
 
     if (request.method === "POST" && url.pathname === "/drive-backfill") {
