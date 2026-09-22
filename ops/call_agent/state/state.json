@@ -1081,9 +1081,10 @@
     417825893,
     417829749,
     417833269,
-    417834234
+    417834234,
+    417880683
   ],
-  "last_run_utc": "2026-09-22T20:07:57.637338+00:00",
+  "last_run_utc": "2026-09-22T20:20:19.257784+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1609,6 +1610,98 @@
         ],
         [
           "Once schedule is located, call Carmesha back to confirm tutoring days/times for Riley",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417880683,
+      "number": "18053207522",
+      "time_pt": "1:09 PM",
+      "matched": true,
+      "contact_label": "Lesly Elenes",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Lesly Elenes to follow up on the free online trial sessions for Adrian and Nathan. Lesly reported the trials went really well and the kids liked it, especially Emma Rose who built good rapport with tutor Sonia. Lesly is submitting a purchase order today through Blue Ridge for Emma Rose to continue with Sonia; the boys (Adrian and Nathan) are on hold pending their 30-day IEP meeting because their schedules are currently overloaded. Lesly also asked for a curriculum recommendation for Emma Rose since Mr. D Math isn't the right fit \u2014 Paola will ask Sonia for suggestions.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for Emma Rose's purchase order from Blue Ridge and, once received, text Lesly to confirm and schedule ongoing sessions with tutor Sonia.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Ask tutor Sonia for a math curriculum recommendation for Emma Rose (alternative to Mr. D Math; Singapore Math was mentioned by the charter) and relay her answer to Lesly.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Hold on scheduling Adrian and Nathan until Lesly confirms after their 30-day Blue Ridge IEP meeting; keep the door open with Sonia as their tutor when ready.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Lesly Elenes (Blue Ridge homeschool parent, 3 kids: Adrian 8th, Emma Rose 7th, Nathan 5th) is warm and happy \u2014 the free online trials with Sonia went great and she's sold on continuing. TODAY she is submitting a Blue Ridge purchase order for Emma Rose only, to continue with Sonia. Once the PO hits, text Lesly to confirm receipt and book ongoing sessions with Sonia. Adrian and Nathan are paused: they're mid 30-day IEP transfer to Blue Ridge with back-to-back schedules \u2014 do NOT push to schedule them; she'll circle back after the IEP meeting and wants Sonia for them too when ready. Separately, she asked for a math curriculum recommendation for Emma Rose (Mr. D isn't working; charter suggested Singapore Math) \u2014 Paola owes her Sonia's recommendation. Suggested opener: 'Hi Lesly, following up \u2014 we received Emma Rose's PO / here's what Sonia recommends for curriculum...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family already in an open deal / active tutoring relationship; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Adrian",
+          "Emma Rose",
+          "Nathan",
+          "Blue Ridge",
+          "Sonia"
+        ],
+        "record_updates": {
+          "whats_going_on": "Trials with Sonia went great \u2014 kids loved it despite Lesly's initial doubts about virtual. Emma Rose (7th) is moving forward: Lesly is submitting a Blue Ridge purchase order today to continue with Sonia. Adrian (8th) and Nathan (5th) are on hold \u2014 Lesly is new to Blue Ridge and in the middle of a 30-day IEP transfer meeting for writing/language arts/math; their schedules are back-to-back and overloaded right now, so she'll revisit after the IEP is set. Also flagged that Mr. D Math isn't the right curriculum for Emma Rose; charter suggested Singapore Math but Lesly wants Sonia's recommendation.",
+          "what_we_can_do_to_help": "Paola to watch for Emma Rose's Blue Ridge PO and, upon receipt, text Lesly to confirm and lock in ongoing sessions with Sonia. Paola to ask Sonia for a math curriculum recommendation for Emma Rose and relay it to Lesly. Hold the boys' scheduling until Lesly gives the green light post-IEP; keep Sonia earmarked as their tutor when they're ready.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Trials with Sonia went great \u2014 kids loved it despite Lesly's initial doubts about virtual. Emma Rose (7th) is moving forward: Lesly is submitting a Blue Ridge purchase order today to continue with Sonia. Adrian (8th) and Nathan (5th) are on hold \u2014 Lesly is new to Blue Ridge and in the middle of a 30-day IEP transfer meeting for writing/language arts/math; their schedules are back-to-back and overloaded right now, so she'll revisit after the IEP is set. Also flagged that Mr. D Math isn't the right curriculum for Emma Rose; charter suggested Singapore Math but Lesly wants Sonia's recommendation."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola to watch for Emma Rose's Blue Ridge PO and, upon receipt, text Lesly to confirm and lock in ongoing sessions with Sonia. Paola to ask Sonia for a math curriculum recommendation for Emma Rose and relay it to Lesly. Hold the boys' scheduling until Lesly gives the green light post-IEP; keep Sonia earmarked as their tutor when they're ready."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Emma Rose's purchase order from Blue Ridge and, once received, text Lesly to confirm and schedule ongoing sessions with tutor Sonia.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Ask tutor Sonia for a math curriculum recommendation for Emma Rose (alternative to Mr. D Math; Singapore Math was mentioned by the charter) and relay her answer to Lesly.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Hold on scheduling Adrian and Nathan until Lesly confirms after their 30-day Blue Ridge IEP meeting; keep the door open with Sonia as their tutor when ready.",
           81494333,
           "scheduling"
         ]
