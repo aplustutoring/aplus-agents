@@ -1078,9 +1078,11 @@
     417808885,
     417808928,
     417809253,
-    417825893
+    417825893,
+    417829749,
+    417833269
   ],
-  "last_run_utc": "2026-09-22T18:50:25.199733+00:00",
+  "last_run_utc": "2026-09-22T18:56:33.874889+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1463,6 +1465,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417829749,
+      "number": "15622124963",
+      "time_pt": "11:48 AM",
+      "matched": true,
+      "contact_label": "Ada Munoz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Ada Munoz called back with a follow-up question about how A+ handles curriculum for her 5th grade daughter (a different student than the 10th grader previously discussed). Paola explained that tutors adapt to the school's curriculum, can work from shared materials/links, and will informally assess the student's level in the first sessions to identify gaps. Ada mentioned her daughter is behind and she wants her to catch up but doesn't know how far behind. Call ended cordially with no next step booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Ada to clarify whether tutoring is now also being considered for her 5th grade daughter (in addition to the 10th grader), and gather student name, school, subject focus, and modality",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ada Munoz (existing charter-funded prospect \u2014 previously discussing her 10th grader for Math) called back with curriculum questions, but this time about her 5TH GRADE DAUGHTER who she says is behind and she doesn't know how far. Paola explained we adapt to the school's curriculum, can work from shared online materials/links, and the tutor will gauge the student's level in the first sessions and work on gaps. Ada was warm and satisfied with the answer but no next step was set. She now expects that once charter funds are approved (was pending as of the prior call), she can move forward. Please clarify with Ada whether the 5th grader is a new/additional student to tutor or if she was asking generally \u2014 get the daughter's name, school, subject (likely Math but confirm), and online vs in-person. Suggested opener: 'Hi Ada, it's ___ from A+ \u2014 Paola shared your question about your 5th grader's curriculum. I wanted to check in on the charter approval and also make sure we understand who we'll be tutoring \u2014 is your daughter joining your 10th grader in getting support?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Ada is an existing prospective family already set to QTL - Charter from the prior call; this follow-up question doesn't change her status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Ada called back with a follow-up question about curriculum, this time asking about her 5th grade daughter who is behind academically (a different student than the 10th grader previously discussed). Ada doesn't know how far behind her daughter is and wants her to catch up.",
+          "what_we_can_do_to_help": "Paola explained we adapt to the school's curriculum, can work from shared online materials/links, and the tutor will assess the student's level informally in the first sessions to identify and work on gaps, building confidence from the basics up. Need to follow up to clarify if the 5th grader is an additional student to enroll and gather her details (name, school, subject, modality).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ada called back with a follow-up question about curriculum, this time asking about her 5th grade daughter who is behind academically (a different student than the 10th grader previously discussed). Ada doesn't know how far behind her daughter is and wants her to catch up."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola explained we adapt to the school's curriculum, can work from shared online materials/links, and the tutor will assess the student's level informally in the first sessions to identify and work on gaps, building confidence from the basics up. Need to follow up to clarify if the 5th grader is an additional student to enroll and gather her details (name, school, subject, modality)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Ada to clarify whether tutoring is now also being considered for her 5th grade daughter (in addition to the 10th grader), and gather student name, school, subject focus, and modality",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
