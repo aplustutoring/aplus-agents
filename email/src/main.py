@@ -17,8 +17,8 @@ import traceback
 from datetime import date, datetime, time, timedelta, timezone
 from types import SimpleNamespace
 
-from . import (audit, hubspot_client as hs, low_balance, po_sources, slack_client,
-               teachworks_client as tw)
+from . import (audit, case_engine, hubspot_client as hs, low_balance, po_sources,
+               slack_client, teachworks_client as tw)
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
 from .config import DRY_RUN, ROOT, cfg, require, staff
@@ -778,7 +778,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
 
     # ── HubSpot Task for the owner (due-dated to-do with reminders) ──
     owner_name = (decision.owner or {}).get("name") or decision.owner_key or "unassigned"
-    task_line = ""
+    task_line, task_owner_name, task_owner_slack = "", owner_name, None
     if cfg().get("owner_task", {}).get("enabled") and owner_id and sla_due:
         tbody = (
             f"{result.get('reason')}\n"
@@ -786,11 +786,27 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             + f"\nTicket: {hs.ticket_url(ticket_id) if ticket_id else ''}\n"
             f"Proposed reply:\n{draft_text or '(none — handle manually)'}"
         )
+        task_subject = f"Reply: {decision.category} — {contact_name}"
+        task_owner_id = owner_id
+        # Session logistics belong to the scheduler for the family's surname,
+        # whatever category the thread classified as (Paola 2026-09-22). The
+        # pre-deal-lead override is exempt: that family has no deal yet, so the
+        # thread is a sale, not a schedule (Roman 2026-07-20).
+        if not predeal_intake:
+            role, why = case_engine.owner_for_task(task_subject, last_name or "", owner_id)
+            if role:
+                who = staff(role) or {}
+                if who.get("hubspot_owner_id"):
+                    task_owner_id = who["hubspot_owner_id"]
+                    task_owner_name = who.get("name") or role
+                    task_owner_slack = who.get("slack_user_id")
+                    record["task_rerouted"] = why
+                    decision.notes.append(f"task → {task_owner_name} ({why})")
         try:
-            hs.create_task(f"Reply: {decision.category} — {contact_name}", tbody,
-                           owner_id, int(sla_due.timestamp() * 1000), hs_priority, ticket_contact_id)
+            hs.create_task(task_subject, tbody,
+                           task_owner_id, int(sla_due.timestamp() * 1000), hs_priority, ticket_contact_id)
             record["task_created"] = True
-            task_line = f"\n✅ A HubSpot Task was created for {owner_name}, due {record['sla_due']} — check your Tasks queue."
+            task_line = f"\n✅ A HubSpot Task was created for {task_owner_name}, due {record['sla_due']} — check your Tasks queue."
         except Exception as e:  # noqa: BLE001 — task is best-effort, never block triage
             print(f"  ⚠️  task create failed (non-fatal): {e}")
             record["task_created"] = False
@@ -809,7 +825,9 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     # ── owner Slack DM (+ CC) ──
     flag = " ⚠️ REVIEW (no draft)" if not record["draft_posted"] else ""
     reason_bit = f" Cancellation reason: {cancel_reason}." if cancel_reason else ""
-    task_bit = " 📋 Task created." if record.get("task_created") else ""
+    task_bit = (f" 📋 Task created for {task_owner_name} ({record['task_rerouted']})."
+                if record.get("task_rerouted") and record.get("task_created")
+                else (" 📋 Task created." if record.get("task_created") else ""))
     deal_bit = (f" 💸 {len(deal_rec['moves'])} deal(s) auto-moved (undo if wrong)." if deal_rec
                 else (" 💸 check deal stage." if deal_line else ""))
     followup_bit = " 📆 re-engagement follow-up scheduled." if followup_line else ""
@@ -823,6 +841,14 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         f"Due {record['sla_due']}. {hs.ticket_url(ticket_id) if ticket_id else ''}"
     )
     _notify_owner(decision, notify_text)
+    # The task went to a seat that does not own the ticket — tell them, or the
+    # task is a to-do nobody was told about.
+    if record.get("task_rerouted") and record.get("task_created") and task_owner_slack:
+        slack_client.dm(task_owner_slack,
+                        f"📋 Scheduling task for you ({record['task_rerouted']}), due "
+                        f"{record['sla_due']}: {task_subject}. The *{decision.category}* "
+                        f"ticket stays with {owner_name}. "
+                        f"{hs.ticket_url(ticket_id) if ticket_id else ''}")
 
     record["action_taken"] = "ticket_created"
     audit.append(record)
