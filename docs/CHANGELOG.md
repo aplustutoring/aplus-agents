@@ -7,6 +7,30 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-22 — Scorecard sync skips rows archived on the board instead of failing
+
+**What:** the Monday weekly sync (run 35652565342) failed all four attempts.
+Monday refused writes to five L10 rows with "Cannot change column value for
+inactive items": Meeting Requested, Meeting Scheduled, Proposal Out, Active
+Proposals, Program Contracted (Danielle's School Partnerships group). Monday's
+own record shows all five archived by hand on 2026-08-31 within three
+seconds, so this was a deliberate retirement three weeks ago, not damage.
+The 9/7 and 9/14 runs hit the same refusals but stayed green; since 2026-09-16
+a refused write ends the run red, which is correct, and this was the first
+Monday after that change.
+
+**Fix:** `archived_scorecard_items()` reads every scorecard row's state in
+one query before writing; rows not `active` are skipped in the numeric
+write, the context post, and the status update, with one "skipped" line
+each. Ids stay in `SCORECARD_ITEMS`: un-archive a row on the board and it
+resumes on the next run. A failed state lookup writes to every row as
+before, never blocks. 4 tests in `ops/scorecard/tests/test_archived_rows.py`.
+
+**Roman to confirm:** the five CSM rows are retired for good. If yes, nothing
+else to do; if they should come back, un-archive them on the board.
+
+**Files:** ops/scorecard/aplus_weekly_sync.py, ops/scorecard/tests/test_archived_rows.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-22 — case engine: a task routes on what the task says, not on the thread's category
 
 **Why:** Paola, the day after the Teachworks-notice fix: "Any task related to

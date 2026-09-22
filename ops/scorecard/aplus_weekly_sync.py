@@ -950,6 +950,36 @@ def monday_query(query, variables=None):
                 raise
 
 
+def archived_scorecard_items():
+    """{item_id: 'Name [state]'} for L10 rows that are no longer active on the
+    board. Monday refuses every write to an archived or deleted item ("Cannot
+    change column value for inactive items"), and since 2026-09-16 a refusal
+    ends the run red, so five CSM rows archived by hand on 2026-08-31 failed
+    all four attempts of the 2026-09-21 sync. Rows are skipped, not dropped:
+    un-archive one on the board and it resumes on the next run."""
+    ids = list(SCORECARD_ITEMS.values())
+    q = "query ($ids: [ID!]) { items (ids: $ids) { id name state } }"
+    try:
+        data = monday_query(q, {"ids": [str(i) for i in ids]})
+    except MondayError as e:
+        print(f"    ⚠️  could not read scorecard row states ({e}); writing to every row")
+        return {}
+    found = {}
+    for it in ((data.get("data") or {}).get("items") or []):
+        try:
+            found[int(it["id"])] = it
+        except (KeyError, TypeError, ValueError):
+            continue
+    dead = {}
+    for iid in ids:
+        it = found.get(iid)
+        if it is None:
+            dead[iid] = "(deleted)"
+        elif it.get("state") != "active":
+            dead[iid] = f"{it.get('name')} [{it.get('state')}]"
+    return dead
+
+
 def monday_write(what, fn, *args, **kwargs):
     """Run one Monday write. A refusal is printed and remembered instead of
     aborting the sync, so the rest of the board still updates, and main() ends
@@ -1293,6 +1323,9 @@ def write_l10_scorecard(metrics, post_lesson_pct,
                         missed_deals=None, total_deals=0, new_student_names=None):
     board_id = BOARDS["l10_scorecard"]
     col = get_or_create_scorecard_week_col(board_id, start_date, end_date)
+    dead = archived_scorecard_items()
+    for iid, label in dead.items():
+        print(f"    ⏭  scorecard item {iid} {label}: not active on the board, skipped")
 
     updates = [
         (SCORECARD_ITEMS["hours_attended"],         {col: metrics["company"]["attended"]}),
@@ -1312,6 +1345,8 @@ def write_l10_scorecard(metrics, post_lesson_pct,
     ]
 
     for item_id, col_vals in updates:
+        if item_id in dead:
+            continue
         if any(v is None for v in col_vals.values()):
             print(f"    Skipping numeric write for item {item_id} (no data)")
             continue
@@ -1361,7 +1396,7 @@ def write_l10_scorecard(metrics, post_lesson_pct,
     }
     print("    Posting context updates on scorecard rows...")
     for key, body in update_bodies.items():
-        if body:
+        if body and SCORECARD_ITEMS[key] not in dead:
             add_item_update(SCORECARD_ITEMS[key], f"🤖 {body}")
 
     metric_values = {
@@ -1374,6 +1409,7 @@ def write_l10_scorecard(metrics, post_lesson_pct,
         "nps_tutor":              nps_tutor,
         "nps_support_bot":        nps_support_bot,
     }
+    metric_values = {k: v for k, v in metric_values.items() if SCORECARD_ITEMS[k] not in dead}
     prior_col = get_prior_week_col(board_id, start_date)
     apply_status_updates(metric_values, board_id, prior_col)
 
