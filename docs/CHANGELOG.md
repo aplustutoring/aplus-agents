@@ -90,6 +90,38 @@ generated when a text is going out (no Gemini call for print-only guests).
 Done and progress messages follow the choice.
 
 **Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs}`, `docs/CHANGELOG.md`.
+## 2026-09-22 — Low balance: five days of silent day-0 failures (redacted case store)
+
+**What happened.** The FERPA pass (PR #250, merged 2026-09-16 19:02 PT) masks
+phone and email in `email/state/audit_log.jsonl`. The low-balance agent
+rebuilds its case state from that same log (`open_cases()`), so every case
+opened after the merge came back with `to_email` = `m…@gmail.com` and `phone`
+= `…6225`. Resend answered 422 on each day-0 email from 2026-09-17 17:15 UTC;
+the day-1 text and the teacher email gate on the day-0 send, so they never
+fired either. Nine charter families got no outreach (Alexzander Gonzalez,
+Yanisel Santamaria, Mia and Valentina Zamora, Arianna Rodriguez, Adeline
+Czaja, Ethan Dai, Ayden Botts, Charli Rajewich); the hourly retry wrote about
+100 "send it by hand" notes on Alexzander's ticket. Last successful day-0
+email before the break: Lena Boyden, 2026-09-16 20:52 UTC.
+
+**Fix.** `open_cases()` rehydrates a redacted `to_email` / `parent_email` /
+`phone` from the HubSpot contact (the contact id survives redaction), accepting
+only the same domain and the same last four digits. The held-email audit
+record now carries its `reason`, and the ticket note is written once per
+reason instead of once per sweep.
+
+**Also seen in the same trace (not fixed here):** Jil Beck's case (0.25 h,
+flagged RETENTION RISK 9/18) was already renewed on 8/28 with three 6-hour POs
+and invoices; renewal detection only counts deals created after the alert.
+Malinally Mata-Villa's reply moved her ticket to Needs scheduler on 9/17 and
+the migration script moved it back to Waiting on family on 9/18 (it applied a
+9/16 table without re-reading the stage). Ten low-balance tests fail on main
+before this change (DM target and note-order assertions drifted after #259 /
+#275); unchanged here.
+
+**Files:** email/src/low_balance.py, email/tests/test_low_balance_rehydrate.py
+
+---
 
 ## 2026-09-22 — Every event gets a HubSpot segment (active list per aplus_event_tag option)
 

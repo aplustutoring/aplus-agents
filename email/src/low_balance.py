@@ -183,7 +183,54 @@ def open_cases() -> dict:
             base = key.rsplit(":draft-nag", 1)[0]
             if base in opened:
                 opened[base]["draft_nagged"] = True
+        elif act == "low_balance_email_held":
+            base = key.rsplit(":email", 1)[0]
+            if base in opened:
+                opened[base]["hold_reason"] = r.get("reason") or ""
+    _rehydrate_contacts(opened)
     return opened
+
+
+def _redacted(value: str) -> bool:
+    """audit.redact() output: '…6225' or 'm…@gmail.com'."""
+    v = (value or "").strip()
+    return v.startswith("…") or "…@" in v
+
+
+def _rehydrate_contacts(opened: dict) -> None:
+    """The audit log is the case store AND it is redacted (FERPA pass, PR #250):
+    a case opened after 2026-09-16 comes back with to_email 'm…@gmail.com' and
+    phone '…6225'. Resend answered 422 on every day-0 email for five days and
+    the day-1 text never fired (Alexzander Gonzalez, Ethan Dai, the Zamoras).
+    The contact id survives redaction, so the family's real address and phone
+    come from HubSpot at read time. Non-fatal: a case that cannot be
+    rehydrated keeps the masked value and fails loudly at send, as before."""
+    cache: dict = {}
+    for case in opened.values():
+        if not (_redacted(case.get("to_email")) or _redacted(case.get("phone"))
+                or _redacted(case.get("parent_email"))):
+            continue
+        cid = str(case.get("contact_id") or "")
+        if not cid or cid == "None":
+            continue
+        if cid not in cache:
+            try:
+                cache[cid] = hs._get(f"/crm/v3/objects/contacts/{cid}",
+                                     {"properties": "email,phone,mobilephone"}) or {}
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  contact rehydrate failed for {cid} (non-fatal): {e}")
+                cache[cid] = {}
+        props = (cache[cid] or {}).get("properties") or {}
+        email = (props.get("email") or "").strip()
+        for k in ("to_email", "parent_email"):
+            masked = case.get(k) or ""
+            # the masked form keeps the domain: only accept the same mailbox
+            if email and _redacted(masked) and masked.partition("@")[2].lower() == email.partition("@")[2].lower():
+                case[k] = email
+        if _redacted(case.get("phone")):
+            real = _phone_for({"parent_phone": ""}, cache[cid] or None)
+            if real and real.endswith((case.get("phone") or "")[-4:]):
+                case["phone"] = real
 
 
 # ── HubSpot lookups ─────────────────────────────────────────────────────────
@@ -1451,8 +1498,12 @@ def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, fo
             audit.append({"message_id": f"{k}:email", "source": "low_balance",
                           "action_taken": "low_balance_email_sent" if k in done else "low_balance_email_held",
                           "to": to_email, "subject": subject, "siblings": len(members),
-                          "ticket_id": c.get("ticket_id")})
+                          "reason": line[:160], "ticket_id": c.get("ticket_id")})
             tid = c.get("ticket_id")
+            # a hold repeats every sweep: note the ticket once per reason, not
+            # once an hour (Alexzander Gonzalez's ticket collected 100 notes)
+            if k not in done and line[:160] == (c.get("hold_reason") or ""):
+                tid = None
             if tid and tid != "DRYRUN":
                 try:
                     hs.add_ticket_note(tid, "Day 0: " + line + (f" (one email for {fctx['students']})" if multi else ""))
