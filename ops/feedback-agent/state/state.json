@@ -73,7 +73,8 @@
     "Ev0C2W78QMN1",
     "Ev0C3GD5ABTL",
     "Ev0C4AT82Z9N",
-    "Ev0C4B00DW8Y"
+    "Ev0C4B00DW8Y",
+    "Ev0C31838S6T"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -520,12 +521,12 @@
       "correction_path": "corrections/case-engine/2026-09-21-cancellation-task-assignment-by-lastname.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/271",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790034459088409"
     }
   ],
   "graduation": {
-    "clean_merges": 20
+    "clean_merges": 21
   },
   "pending_proposals": {
     "1786554388.265099": {
