@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-21T17:14:56.777044+00:00",
+ "_last_run": "2026-09-22T00:07:52.760221+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -207,6 +207,15 @@
   "name": "Luke Aarvik",
   "tw_student_id": "1758500"
  },
+ "online:aguila, johnny": {
+  "checked": "2026-09-21",
+  "contact_id": "166823063828",
+  "deal_id": "51020046243",
+  "email": "y.aguila@outlook.com",
+  "first": "2025-11-03",
+  "name": "Johnny Aguila",
+  "tw_student_id": "2134956"
+ },
  "online:ahn, paxton": {
   "checked": "2026-09-10",
   "contact_id": "3620301",
@@ -225,6 +234,15 @@
   "name": "Kate Anderson",
   "tw_student_id": "1959988"
  },
+ "online:arenas, gia": {
+  "checked": "2026-09-21",
+  "contact_id": "216704457003",
+  "deal_id": "59369600925",
+  "email": "lindsayfaulk1@gmail.com",
+  "first": "2026-05-06",
+  "name": "Gia Arenas",
+  "tw_student_id": "2234954"
+ },
  "online:arriaga, lizbeth": {
   "checked": "2026-09-10",
   "contact_id": "173992378943",
@@ -233,6 +251,15 @@
   "first": "2025-11-17",
   "name": "Lizbeth Arriaga",
   "tw_student_id": "2141681"
+ },
+ "online:avendano, daniel": {
+  "checked": "2026-09-21",
+  "contact_id": "248872030351",
+  "deal_id": "65074362458",
+  "email": "ariana.avendano@gmail.com",
+  "first": "2026-09-21",
+  "name": "Daniel Avendano",
+  "tw_student_id": "2354715"
  },
  "online:barajas, zackarias": {
   "checked": "2026-09-10",
@@ -828,6 +855,15 @@
   "name": "Brian Jackson",
   "tw_student_id": "2198879"
  },
+ "online:jacob, eli": {
+  "checked": "2026-09-21",
+  "contact_id": "203139567214",
+  "deal_id": "64928488304",
+  "email": "pam.drichard2@yahoo.com",
+  "first": "2026-02-25",
+  "name": "Eli Jacob",
+  "tw_student_id": "2201625"
+ },
  "online:jaramillo, isaac": {
   "checked": "2026-09-10",
   "contact_id": "217026937989",
@@ -998,6 +1034,15 @@
   "name": "Sebastian Lozano",
   "no_deal_until": "2026-09-13",
   "tw_student_id": "2271409"
+ },
+ "online:lucero, melanie": {
+  "checked": "2026-09-21",
+  "contact_id": "248880107786",
+  "deal_id": "65074683727",
+  "email": "lucero.lupita@gmail.com",
+  "first": "2026-09-21",
+  "name": "Melanie Lucero",
+  "tw_student_id": "2354717"
  },
  "online:maddocks, mia": {
   "checked": "2026-09-17",
