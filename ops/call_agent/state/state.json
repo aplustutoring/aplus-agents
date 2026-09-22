@@ -1069,10 +1069,112 @@
     417694487,
     417693772,
     417720512,
-    417746301
+    417746301,
+    417747598
   ],
-  "last_run_utc": "2026-09-22T16:38:58.637575+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-22T16:43:56.417682+00:00",
+  "pending_digest": [
+    {
+      "call_id": 417747598,
+      "number": "16618784656",
+      "time_pt": "9:38 AM",
+      "matched": true,
+      "contact_label": "Lakaisha Moore",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda returned Lakaisha Moore's missed call about her twins Kali and Morgan restarting tutoring. Only Kali's PO came through; Morgan's PO has not been received, though Paula emailed the charter teacher about the October PO. Lakaisha wants both girls to start the same day for scheduling ease, so Yolanda agreed to cancel today's session for Kali and aim to start both next week once Morgan's PO arrives. Lakaisha will also email the teacher to push Morgan's PO through. Friendly, cooperative call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Cancel Kali's tutoring session scheduled for today with Krista",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Paula to follow up with charter teacher (Desiree Doyle) about Morgan's October PO",
+            "owner_hint": "Paula",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Morgan's PO arrives, schedule both twins to start on the same day next week",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Let Krista know today's session is cancelled and apologize for the miscommunication (per Lakaisha's request)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paula: Lakaisha Moore (returning charter family, friendly) called because only Kali's PO came through \u2014 Morgan's did not. She wants both twins starting the SAME day for scheduling simplicity, so Yolanda cancelled Kali's session for today and promised both would start next week once Morgan's PO lands. Please follow up with charter teacher Desiree Doyle on Morgan's October PO ASAP; Lakaisha is also emailing Desiree to push it. Once Morgan's PO is in, schedule both Kali and Morgan with Krista, 30 min 2x/week Mon/Tue PM, starting the same day next week. Also make sure Krista is told today's session is cancelled \u2014 Lakaisha specifically asked us to apologize to her. Suggested opener: 'Hi Lakaisha, it's Paula \u2014 good news, I'm chasing Desiree on Morgan's PO so we can get both girls started together next week.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer actively in the deal pipeline re-enrolling twins; status owned by deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Kali Moore",
+          "Morgan Moore",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Lakaisha called because only Kali's PO came through for the restart \u2014 Morgan's October PO is still outstanding despite Paula emailing charter teacher Desiree Doyle. Lakaisha wants both twins to start on the SAME day for scheduling simplicity, so today's Kali session was cancelled. Lakaisha is also emailing Desiree to push Morgan's PO through.",
+          "what_we_can_do_to_help": "[call] Cancelled Kali's session for today. Paula to follow up with Desiree Doyle on Morgan's October PO; once received, schedule both twins with Krista starting the same day next week (30 min 2x/week Mon/Tue PM). Notify Krista of today's cancellation and pass along Lakaisha's apology for the miscommunication.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Lakaisha called because only Kali's PO came through for the restart \u2014 Morgan's October PO is still outstanding despite Paula emailing charter teacher Desiree Doyle. Lakaisha wants both twins to start on the SAME day for scheduling simplicity, so today's Kali session was cancelled. Lakaisha is also emailing Desiree to push Morgan's PO through."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Cancelled Kali's session for today. Paula to follow up with Desiree Doyle on Morgan's October PO; once received, schedule both twins with Krista starting the same day next week (30 min 2x/week Mon/Tue PM). Notify Krista of today's cancellation and pass along Lakaisha's apology for the miscommunication."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Cancel Kali's tutoring session scheduled for today with Krista",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Paula to follow up with charter teacher (Desiree Doyle) about Morgan's October PO",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Morgan's PO arrives, schedule both twins to start on the same day next week",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Let Krista know today's session is cancelled and apologize for the miscommunication (per Lakaisha's request)",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
