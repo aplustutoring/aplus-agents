@@ -1061,9 +1061,10 @@
     417485268,
     417494797,
     417503681,
-    417509815
+    417509815,
+    417510788
   ],
-  "last_run_utc": "2026-09-22T02:46:41.815818+00:00",
+  "last_run_utc": "2026-09-22T02:51:43.896461+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -2117,6 +2118,94 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417510788,
+      "number": "12133089493",
+      "time_pt": "7:47 PM",
+      "matched": true,
+      "contact_label": "Emmy Swayze",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Tutor Emmy Swayze called Roman because she couldn't locate Unit B at the Moore Park address for a session and had been unable to reach the family (Mommy Get Well Place, 714-308-3450) all day. Roman confirmed the family texted Yolanda that they were on their way and may be late. Roman told Emmy her billable time starts from her arrival. Emmy said she'd text the family again from Moore Park Street to get directions to Unit B.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Follow up with Emmy to confirm she found Unit B and the session started; if not, help coordinate directions with the family",
+            "owner_hint": "Roman",
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm with the family (Mommy Get Well Place, 714-308-3450) that Emmy arrived and note that billable time starts from her arrival",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Verify the session address/Unit B on file for this family and update if incorrect so future tutors don't get lost",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Emmy Swayze (one of our tutors) called Roman confused and a bit frustrated \u2014 she was at the Moore Park address for a session but couldn't find Unit B in the dark complex, and had been trying to reach the family (business name 'Mommy Get Well Place', 714-308-3450) all day with no answer. Yolanda got a text from the family saying they're on their way and may be late. Roman told Emmy her billable time starts from arrival. Emmy was going to text the family again from Moore Park St to get walked in. Please check in with Emmy shortly to make sure she got into Unit B and the session happened, and confirm with the family via Yolanda's thread. Suggested opener: 'Hi Emmy, Roman filled me in \u2014 did you end up finding Unit B and getting started with the family?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Contact is an active tutor (current status Tutor-Active); call was internal logistics, not a lead-qualification event.",
+        "student_or_school_names_mentioned": [
+          "Mommy Get Well Place"
+        ],
+        "record_updates": {
+          "whats_going_on": "Emmy called from the Moore Park session location unable to find Unit B and unable to reach the family (Mommy Get Well Place, 714-308-3450) who had been unreachable all day. Family eventually texted Yolanda that they were on their way and may be late.",
+          "what_we_can_do_to_help": "Roman confirmed billable time starts at Emmy's arrival and coordinated with Yolanda's text thread to the family. Need to verify the exact unit/access instructions for this location so tutors aren't lost after dark in the future.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Emmy called from the Moore Park session location unable to find Unit B and unable to reach the family (Mommy Get Well Place, 714-308-3450) who had been unreachable all day. Family eventually texted Yolanda that they were on their way and may be late."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman confirmed billable time starts at Emmy's arrival and coordinated with Yolanda's text thread to the family. Need to verify the exact unit/access instructions for this location so tutors aren't lost after dark in the future."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Emmy to confirm she found Unit B and the session started; if not, help coordinate directions with the family",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Confirm with the family (Mommy Get Well Place, 714-308-3450) that Emmy arrived and note that billable time starts from her arrival",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Verify the session address/Unit B on file for this family and update if incorrect so future tutors don't get lost",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
