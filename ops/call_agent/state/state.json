@@ -1087,9 +1087,10 @@
     417901383,
     417926361,
     417926227,
-    417924377
+    417924377,
+    417936571
   ],
-  "last_run_utc": "2026-09-22T21:48:18.240913+00:00",
+  "last_run_utc": "2026-09-22T22:16:31.012318+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1795,6 +1796,121 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 417936571,
+      "number": "19094890150",
+      "time_pt": "3:02 PM",
+      "matched": true,
+      "contact_label": "Elizabeth Morales",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Elizabeth Morales, a Granite Mountain Charter homeschool parent, to discuss tutoring for her 6th-grade son who is struggling with a new heavily writing-based online curriculum and is very behind (150+ to-do items) causing anxiety. Elizabeth wants online tutoring funded through Granite Mountain Charter and her TOR Diana Oseguera is already on board to approve. Paola will email Elizabeth and Diana (diana.oseguera@granitemountainschool.com) with A+'s current rates and vendor info so the PO can be issued. Once the PO is received, tutor matching and scheduling can start immediately, potentially this week.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Elizabeth and TOR Diana Oseguera (diana.oseguera@granitemountainschool.com) with current rates, vendor info (A+ Tutoring), and PO instructions so Granite Mountain can issue the PO.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is received from Granite Mountain, begin tutor matching for 6th-grade online ELA/writing support and have scheduling text Elizabeth to confirm session times.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Elizabeth Morales (warm, motivated, ready to move fast) is a Granite Mountain Charter homeschool parent whose 6th-grade son (started late August) is overwhelmed by a new 100% online curriculum that is ~75% writing. He understands concepts but struggles without multiple choice, started mid-learning-period so he's ~150 items behind across 6 subjects, and is showing anxiety. She wants online tutoring funded by Granite Mountain charter funds and her TOR Diana Oseguera (diana.oseguera@granitemountainschool.com) is on board to approve immediately. Paola promised to email Elizabeth and Diana right after the call with A+ current rates + vendor info (A+ Tutoring) so the PO can be created ASAP; Paola told Elizabeth that if the PO arrives tomorrow, scheduling can text to set up sessions and potentially start this week. Next step: send that rate/PO email today, then hand to scheduling the moment the PO lands. Suggested opener if following up: \"Hi Elizabeth, just making sure the rate email reached you and Diana and seeing if there's anything you need from us to get the PO over so we can get your son started this week.\"",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family pays via Granite Mountain Charter instructional funds; spoke with parent and confirmed intent to issue PO.",
+        "student_or_school_names_mentioned": [
+          "Leonardo Morales",
+          "Granite Mountain Charters",
+          "Diana Oseguera"
+        ],
+        "record_updates": {
+          "whats_going_on": "6th grader (started late August) at Granite Mountain Charters homeschool, new 100% online curriculum that is ~75% writing. He understands concepts but struggles without multiple choice; started mid-learning-period so he is ~150 to-do items behind across 6 subjects and experiencing anxiety. Mom works and can't get him caught up herself.",
+          "what_we_can_do_to_help": "Provide an online tutor to help with writing and overall schoolwork/assignments across his subjects, funded via Granite Mountain charter funds. Paola to email Elizabeth and TOR Diana Oseguera (diana.oseguera@granitemountainschool.com) with current rates + vendor info so PO can be issued; tutor matching and scheduling begin as soon as PO arrives, potentially starting this week.",
+          "student_first_name": "Leonardo",
+          "student_last_name": "Morales",
+          "grade_level": "6",
+          "student_school": "Granite Mountain Charters",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": "Diana Oseguera",
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "6th grader (started late August) at Granite Mountain Charters homeschool, new 100% online curriculum that is ~75% writing. He understands concepts but struggles without multiple choice; started mid-learning-period so he is ~150 to-do items behind across 6 subjects and experiencing anxiety. Mom works and can't get him caught up herself."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Provide an online tutor to help with writing and overall schoolwork/assignments across his subjects, funded via Granite Mountain charter funds. Paola to email Elizabeth and TOR Diana Oseguera (diana.oseguera@granitemountainschool.com) with current rates + vendor info so PO can be issued; tutor matching and scheduling begin as soon as PO arrives, potentially starting this week."
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Morales"
+        ],
+        [
+          "grade_level",
+          "5",
+          "6"
+        ],
+        [
+          "student_school",
+          "Granite Mountain",
+          "Granite Mountain Charters"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "referral_name",
+          "(blank)",
+          "Diana Oseguera"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Elizabeth and TOR Diana Oseguera (diana.oseguera@granitemountainschool.com) with current rates, vendor info (A+ Tutoring), and PO instructions so Granite Mountain can issue the PO.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once PO is received from Granite Mountain, begin tutor matching for 6th-grade online ELA/writing support and have scheduling text Elizabeth to confirm session times.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
