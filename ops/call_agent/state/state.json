@@ -1067,10 +1067,568 @@
     417512179,
     417526008,
     417694487,
-    417693772
+    417693772,
+    417720512,
+    417746301,
+    417747598,
+    417771429,
+    417773392,
+    417787032,
+    417797863,
+    417808885,
+    417808928,
+    417809253,
+    417825893,
+    417829749,
+    417833269,
+    417834234
   ],
-  "last_run_utc": "2026-09-22T15:28:15.966376+00:00",
-  "pending_digest": [],
-  "pending_skipped": [],
+  "last_run_utc": "2026-09-22T20:07:57.637338+00:00",
+  "pending_digest": [
+    {
+      "call_id": 417747598,
+      "number": "16618784656",
+      "time_pt": "9:38 AM",
+      "matched": true,
+      "contact_label": "Lakaisha Moore",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda returned Lakaisha Moore's missed call about her twins Kali and Morgan restarting tutoring. Only Kali's PO came through; Morgan's PO has not been received, though Paula emailed the charter teacher about the October PO. Lakaisha wants both girls to start the same day for scheduling ease, so Yolanda agreed to cancel today's session for Kali and aim to start both next week once Morgan's PO arrives. Lakaisha will also email the teacher to push Morgan's PO through. Friendly, cooperative call.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Cancel Kali's tutoring session scheduled for today with Krista",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Paula to follow up with charter teacher (Desiree Doyle) about Morgan's October PO",
+            "owner_hint": "Paula",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Morgan's PO arrives, schedule both twins to start on the same day next week",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Let Krista know today's session is cancelled and apologize for the miscommunication (per Lakaisha's request)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paula: Lakaisha Moore (returning charter family, friendly) called because only Kali's PO came through \u2014 Morgan's did not. She wants both twins starting the SAME day for scheduling simplicity, so Yolanda cancelled Kali's session for today and promised both would start next week once Morgan's PO lands. Please follow up with charter teacher Desiree Doyle on Morgan's October PO ASAP; Lakaisha is also emailing Desiree to push it. Once Morgan's PO is in, schedule both Kali and Morgan with Krista, 30 min 2x/week Mon/Tue PM, starting the same day next week. Also make sure Krista is told today's session is cancelled \u2014 Lakaisha specifically asked us to apologize to her. Suggested opener: 'Hi Lakaisha, it's Paula \u2014 good news, I'm chasing Desiree on Morgan's PO so we can get both girls started together next week.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer actively in the deal pipeline re-enrolling twins; status owned by deal pipeline, do not demote.",
+        "student_or_school_names_mentioned": [
+          "Kali Moore",
+          "Morgan Moore",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Lakaisha called because only Kali's PO came through for the restart \u2014 Morgan's October PO is still outstanding despite Paula emailing charter teacher Desiree Doyle. Lakaisha wants both twins to start on the SAME day for scheduling simplicity, so today's Kali session was cancelled. Lakaisha is also emailing Desiree to push Morgan's PO through.",
+          "what_we_can_do_to_help": "[call] Cancelled Kali's session for today. Paula to follow up with Desiree Doyle on Morgan's October PO; once received, schedule both twins with Krista starting the same day next week (30 min 2x/week Mon/Tue PM). Notify Krista of today's cancellation and pass along Lakaisha's apology for the miscommunication.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Lakaisha called because only Kali's PO came through for the restart \u2014 Morgan's October PO is still outstanding despite Paula emailing charter teacher Desiree Doyle. Lakaisha wants both twins to start on the SAME day for scheduling simplicity, so today's Kali session was cancelled. Lakaisha is also emailing Desiree to push Morgan's PO through."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Cancelled Kali's session for today. Paula to follow up with Desiree Doyle on Morgan's October PO; once received, schedule both twins with Krista starting the same day next week (30 min 2x/week Mon/Tue PM). Notify Krista of today's cancellation and pass along Lakaisha's apology for the miscommunication."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Cancel Kali's tutoring session scheduled for today with Krista",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Paula to follow up with charter teacher (Desiree Doyle) about Morgan's October PO",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Morgan's PO arrives, schedule both twins to start on the same day next week",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Let Krista know today's session is cancelled and apologize for the miscommunication (per Lakaisha's request)",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417771429,
+      "number": "19094548581",
+      "time_pt": "10:16 AM",
+      "matched": true,
+      "contact_label": "Jessica Lujan",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Jessica Lujan called to reschedule her daughter Taylor Rodriguez's tutoring from Thursdays to Wednesdays because Taylor joined a sport with Thursday practices. Yolanda took the request and said she would confirm the tutor's Wednesday availability. A+ will follow up via text once confirmed.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check Taylor Rodriguez's tutor's availability to move her weekly session from Thursday to Wednesday",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Jessica to confirm the new Wednesday day/time for Taylor",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jessica Lujan (existing customer, warm/friendly) called to move her daughter Taylor Rodriguez's weekly tutoring from Thursdays to Wednesdays because Taylor joined a sport that practices Thursdays. Yolanda promised to check the tutor's Wednesday availability and text Jessica back. No specific new time has been agreed yet. Please confirm with Taylor's tutor whether Wednesday works (any time \u2014 original slot was Thursday, previously flexible after 3 PM, ideally after 5 PM), then text Jessica to lock in the new day/time. Suggested opener: \"Hi Jessica, it's [name] at A+ Tutoring following up on Taylor's schedule change \u2014 here's what we can do for Wednesdays\u2026\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) calling about their active tutoring service; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Taylor Rodriguez"
+        ],
+        "record_updates": {
+          "whats_going_on": "Jessica called to reschedule Taylor's weekly tutoring from Thursdays to Wednesdays because Taylor joined a sport with Thursday practices.",
+          "what_we_can_do_to_help": "Confirm Taylor's tutor's Wednesday availability and text Jessica back with the new day/time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Jessica called to reschedule Taylor's weekly tutoring from Thursdays to Wednesdays because Taylor joined a sport with Thursday practices."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Taylor's tutor's Wednesday availability and text Jessica back with the new day/time."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check Taylor Rodriguez's tutor's availability to move her weekly session from Thursday to Wednesday",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Text Jessica to confirm the new Wednesday day/time for Taylor",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 417787032,
+      "number": "15622124963",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Ada Munoz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Ada Munoz back to clarify pricing after previously sending at-pay rates. Ada confirmed she's using charter school funds (Talion/Calion charter) for her 10th grader who needs Math only. Paola quoted the charter rate of $75/hour and $60 (stated as 'sixty four') for 45-minute sessions, and Ada asked her to email the charter rates so she can request the PO tomorrow once funds are approved. Ada is still evaluating one other tutor before deciding but wants to try month-to-month first. Ada was receptive to A+ contacting her charter teacher directly to expedite the PO if she confirms via email.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Ada the charter school rates ($75/hour, $60/45-min) to munozada@yahoo.com so she can request the PO tomorrow once funds are approved",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "If Ada replies confirming, reach out to her charter school teacher at Talion (spelling to verify \u2014 sounded like 'Talion/Calion') to send the PO request directly",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Verify correct spelling of the charter school ('Talion' vs 'Calion') on follow-up",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ada Munoz (parent, friendly and engaged) is a charter-funded family whose 10th grader needs Math tutoring only. Paola quoted her the charter rate: $75/hour and $60 for a 45-minute session, and promised to email those rates to munozada@yahoo.com today. Ada said her charter funds will be approved tomorrow and she'll request the PO then; she's comparing us against one other tutor and wants to start month-to-month to try us out. Her charter is 'Talion' (she said Talion, Paola heard Calion \u2014 please verify spelling; likely Excel Academy/Cabrillo/etc., confirm on next contact). Ada agreed we can contact her charter teacher directly to speed up the PO if she confirms via email reply. She also asked about tutor accents \u2014 reassured we use US-based teachers. Open with: 'Hi Ada, following up on the charter rates Paola sent \u2014 just checking whether your funds came through and if you'd like us to reach out to your teacher at [charter] to get the PO moving.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Confirmed charter-funded family (Talion charter) actively working toward a PO for Math tutoring; status remains QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "Talion charter school"
+        ],
+        "record_updates": {
+          "whats_going_on": "Charter-funded family (Talion charter \u2014 spelling to confirm) for 10th grade student needing Math only. Ada is waiting on charter fund approval tomorrow and comparing A+ against one other tutor; wants to start month-to-month.",
+          "what_we_can_do_to_help": "Paola quoted charter rates ($75/hr, $60/45-min) and is emailing them to Ada. Once Ada confirms via email, we can send the PO request directly to her charter teacher to expedite. Recommend starting with a 1-month trial schedule (flexible: 30/45/60-min sessions) based on approved fund amount.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "10",
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Charter-funded family (Talion charter \u2014 spelling to confirm) for 10th grade student needing Math only. Ada is waiting on charter fund approval tomorrow and comparing A+ against one other tutor; wants to start month-to-month."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted charter rates ($75/hr, $60/45-min) and is emailing them to Ada. Once Ada confirms via email, we can send the PO request directly to her charter teacher to expedite. Recommend starting with a 1-month trial schedule (flexible: 30/45/60-min sessions) based on approved fund amount."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Ada the charter school rates ($75/hour, $60/45-min) to munozada@yahoo.com so she can request the PO tomorrow once funds are approved",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "If Ada replies confirming, reach out to her charter school teacher at Talion (spelling to verify \u2014 sounded like 'Talion/Calion') to send the PO request directly",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Verify correct spelling of the charter school ('Talion' vs 'Calion') on follow-up",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417825893,
+      "number": "13109105142",
+      "time_pt": "11:28 AM",
+      "matched": true,
+      "contact_label": "Charlene Wetzell",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Charlene Wetzell back to follow up on her missed call about out-of-pocket pricing for her son Keanu's online tutoring with Miss Katie (Katie Holiday). Charlene is thrilled with Katie and wants to expand from 2 to 4 sessions per week (45 min preferred, but open to 30 min to stretch funds). Current iLEAD funds cover through Dec 7 at 2x/week 30-min; if reallocated to 4x/week they run out ~week of Oct 19, leaving 7-8 weeks of out-of-pocket needed to bridge to next semester. Paola will build a proposal blending remaining charter funds with an out-of-pocket package and email/text it today, and will loop in the EF to confirm the schedule change. Charlene will also ask her EF about next semester's fund amount so they can plan 4x/week fully funded.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Build and send Charlene a proposal today combining remaining iLEAD funds (4x/week 30-min through ~week of Oct 19) with an out-of-pocket package to bridge the remaining 7-8 weeks of the semester through December.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Charlene approves the proposal, reach out to Keanu's EF (Courtney Gannon) to confirm reallocating current funds to 4 sessions per week.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Re-send the charter out-of-pocket pricing sheet via email and text (single session $75/hr, 6-pack 45-min $300, 12-pack 45-min $550; 6-pack can be used as 9x 30-min).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "After Charlene confirms next-semester fund amount with her EF, help her build a 4x/week schedule fully covered by charter funds for next semester.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once schedule change is approved, update Keanu's calendar to 4x/week with Katie starting next week.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Charlene Wetzell (mom of Keanu, 1st grade, iLEAD Exploration homeschool) is very happy \u2014 she loves tutor Katie (Katie Holiday) and Keanu looks forward to sessions. She wants to expand from 2x/week 30-min to 4x/week, ideally 45-min but open to 30-min to stretch funds. Paola walked her through pricing (single $75/hr; 6-pack 45-min $300 usable as 9x 30-min; 12-pack 45-min $550) and re-sent the pricing sheet by email + text. Plan agreed on the call: burn remaining iLEAD funds faster at 4x/week 30-min (runs out ~week of Oct 19), then bridge the remaining 7-8 weeks to end of semester (~Dec 11 or Dec 18) with an out-of-pocket package. Paola PROMISED to send a written proposal TODAY laying this out, and to loop EF Courtney Gannon in to approve the schedule change once Charlene signs off. Charlene will text her EF about next semester's fund amount so we can plan a fully-funded 4x/week schedule then. Open with: 'Hi Charlene, following up with the proposal Paola promised for Keanu's 4x/week schedule with Katie \u2014 here's how we'd use the remaining iLEAD funds through mid-October and bridge out-of-pocket to the end of semester.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Charlene is an existing active customer (Keanu already in sessions with Katie); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Keanu",
+          "Katie Holiday",
+          "iLEAD Exploration",
+          "Courtney Gannon"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Charlene called back about out-of-pocket pricing. Keanu is thriving with tutor Katie (Katie Holiday) and Charlene wants to expand from 2x/week to 4x/week. She used most of this semester's iLEAD funds on curriculum, so remaining funds only cover 2x/week 30-min through Dec 7. She wants to reallocate to 4x/week 30-min (funds would last through ~week of Oct 19) and pay out of pocket for the remaining 7-8 weeks to end of semester. Next semester she expects more funds and wants to run 4x/week fully charter-funded.",
+          "what_we_can_do_to_help": "[Call] Paola to send Charlene a written proposal today blending remaining iLEAD funds (4x/week 30-min through mid-October) with an out-of-pocket package to bridge to end of semester. Pricing re-sent by email + text (6-pack 45-min $300 usable as 9x 30-min; 12-pack 45-min $550; single $75/hr). Once Charlene approves, Paola to notify EF Courtney Gannon to confirm the schedule change. For next semester, help Charlene plan a fully-funded 4x/week schedule once she confirms available funds with her EF.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Charlene called back about out-of-pocket pricing. Keanu is thriving with tutor Katie (Katie Holiday) and Charlene wants to expand from 2x/week to 4x/week. She used most of this semester's iLEAD funds on curriculum, so remaining funds only cover 2x/week 30-min through Dec 7. She wants to reallocate to 4x/week 30-min (funds would last through ~week of Oct 19) and pay out of pocket for the remaining 7-8 weeks to end of semester. Next semester she expects more funds and wants to run 4x/week fully charter-funded."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Paola to send Charlene a written proposal today blending remaining iLEAD funds (4x/week 30-min through mid-October) with an out-of-pocket package to bridge to end of semester. Pricing re-sent by email + text (6-pack 45-min $300 usable as 9x 30-min; 12-pack 45-min $550; single $75/hr). Once Charlene approves, Paola to notify EF Courtney Gannon to confirm the schedule change. For next semester, help Charlene plan a fully-funded 4x/week schedule once she confirms available funds with her EF."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Build and send Charlene a proposal today combining remaining iLEAD funds (4x/week 30-min through ~week of Oct 19) with an out-of-pocket package to bridge the remaining 7-8 weeks of the semester through December.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Charlene approves the proposal, reach out to Keanu's EF (Courtney Gannon) to confirm reallocating current funds to 4 sessions per week.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Re-send the charter out-of-pocket pricing sheet via email and text (single session $75/hr, 6-pack 45-min $300, 12-pack 45-min $550; 6-pack can be used as 9x 30-min).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "After Charlene confirms next-semester fund amount with her EF, help her build a 4x/week schedule fully covered by charter funds for next semester.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Once schedule change is approved, update Keanu's calendar to 4x/week with Katie starting next week.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417829749,
+      "number": "15622124963",
+      "time_pt": "11:48 AM",
+      "matched": true,
+      "contact_label": "Ada Munoz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Ada Munoz called back with a follow-up question about how A+ handles curriculum for her 5th grade daughter (a different student than the 10th grader previously discussed). Paola explained that tutors adapt to the school's curriculum, can work from shared materials/links, and will informally assess the student's level in the first sessions to identify gaps. Ada mentioned her daughter is behind and she wants her to catch up but doesn't know how far behind. Call ended cordially with no next step booked.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with Ada to clarify whether tutoring is now also being considered for her 5th grade daughter (in addition to the 10th grader), and gather student name, school, subject focus, and modality",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ada Munoz (existing charter-funded prospect \u2014 previously discussing her 10th grader for Math) called back with curriculum questions, but this time about her 5TH GRADE DAUGHTER who she says is behind and she doesn't know how far. Paola explained we adapt to the school's curriculum, can work from shared online materials/links, and the tutor will gauge the student's level in the first sessions and work on gaps. Ada was warm and satisfied with the answer but no next step was set. She now expects that once charter funds are approved (was pending as of the prior call), she can move forward. Please clarify with Ada whether the 5th grader is a new/additional student to tutor or if she was asking generally \u2014 get the daughter's name, school, subject (likely Math but confirm), and online vs in-person. Suggested opener: 'Hi Ada, it's ___ from A+ \u2014 Paola shared your question about your 5th grader's curriculum. I wanted to check in on the charter approval and also make sure we understand who we'll be tutoring \u2014 is your daughter joining your 10th grader in getting support?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Ada is an existing prospective family already set to QTL - Charter from the prior call; this follow-up question doesn't change her status.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Ada called back with a follow-up question about curriculum, this time asking about her 5th grade daughter who is behind academically (a different student than the 10th grader previously discussed). Ada doesn't know how far behind her daughter is and wants her to catch up.",
+          "what_we_can_do_to_help": "Paola explained we adapt to the school's curriculum, can work from shared online materials/links, and the tutor will assess the student's level informally in the first sessions to identify and work on gaps, building confidence from the basics up. Need to follow up to clarify if the 5th grader is an additional student to enroll and gather her details (name, school, subject, modality).",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ada called back with a follow-up question about curriculum, this time asking about her 5th grade daughter who is behind academically (a different student than the 10th grader previously discussed). Ada doesn't know how far behind her daughter is and wants her to catch up."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola explained we adapt to the school's curriculum, can work from shared online materials/links, and the tutor will assess the student's level informally in the first sessions to identify and work on gaps, building confidence from the basics up. Need to follow up to clarify if the 5th grader is an additional student to enroll and gather her details (name, school, subject, modality)."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with Ada to clarify whether tutoring is now also being considered for her 5th grade daughter (in addition to the 10th grader), and gather student name, school, subject focus, and modality",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 417834234,
+      "number": "16615217803",
+      "time_pt": "11:55 AM",
+      "matched": true,
+      "contact_label": "Carmesha Jones",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Carmesha Jones to follow up on a purchase order received for her son Riley and to coordinate a tutoring schedule. Carmesha said she had already emailed Riley's schedule to a representative working with the child's school but couldn't recall the name. Janelle said she'd check internally for the emailed schedule. Carmesha had to go because she was at work and said she'd call back.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Search inbox for Carmesha Jones's email containing Riley's availability/schedule (likely sent to the rep working with iLEAD)",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once schedule is located, call Carmesha back to confirm tutoring days/times for Riley",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Carmesha Jones (parent of Riley, iLEAD charter) is expecting us to find the email she already sent with Riley's availability and then reach back out to lock in a schedule. We have a PO in hand for Riley (Math + ELA, has IEP, MAP scores available). She was polite but rushed \u2014 had to end the call because she was at work. Before calling back, search the team inbox for her email with Riley's schedule (she couldn't remember which rep she sent it to, but says it went to whoever was coordinating with iLEAD). Open with: 'Hi Carmesha, it's ___ from A+ Tutoring following up on Riley \u2014 I found the availability you sent over, let's get his sessions on the calendar.' If the email can't be located, apologize and ask her to resend to our main scheduling address.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family uses charter learner/instructional funds (iLEAD) with a PO already issued for Riley.",
+        "student_or_school_names_mentioned": [
+          "Riley",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "PO received for Riley (iLEAD). Called Carmesha to set a schedule; she says she already emailed Riley's availability to the rep coordinating with his school but doesn't recall the name. She had to end the call quickly (at work) and will call back.",
+          "what_we_can_do_to_help": "Locate Carmesha's prior email with Riley's availability and proactively call her back to confirm Math/ELA tutoring days and times, keeping IEP needs and MAP scores in mind when matching a tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "PO received for Riley (iLEAD). Called Carmesha to set a schedule; she says she already emailed Riley's availability to the rep coordinating with his school but doesn't recall the name. She had to end the call quickly (at work) and will call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Locate Carmesha's prior email with Riley's availability and proactively call her back to confirm Math/ELA tutoring days and times, keeping IEP needs and MAP scores in mind when matching a tutor."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Search inbox for Carmesha Jones's email containing Riley's availability/schedule (likely sent to the rep working with iLEAD)",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Once schedule is located, call Carmesha back to confirm tutoring days/times for Riley",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
+  "pending_skipped": [
+    {
+      "number": "18182921268",
+      "time_pt": "10:58 AM",
+      "reason": "spam gate: 17s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "18182921268",
+      "time_pt": "11:17 AM",
+      "reason": "spam gate: 3s call from an unknown number with no caller-ID"
+    }
+  ],
   "pending_failures": []
 }

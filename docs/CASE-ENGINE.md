@@ -57,6 +57,41 @@ no Teachworks account — goes to `charter_sales` until the deal exists, so a
 new sale isn't handed to a scheduler (Roman 2026-07-20, after the Deanna
 Smith miss).
 
+### Tasks answer the same question from their own subject
+
+The owner rules above answer "who owns this ticket?" from the category a
+client declares. A TASK now answers it from what the task says
+(`case_engine.owner_for_task`, config `case_engine.task_routing`): a subject
+carrying the `[Scheduling]` label, or one of the session-logistics keywords
+(reschedule, cancel, no-show, confirm session, session address / unit number /
+access instruction, tutor or student schedule), is scheduler work and goes to
+the surname split — even when the thread it came from classified as something
+else. Paola, 2026-09-22: "Any task related to active-session scheduling or
+session logistics should NOT be assigned to Paola."
+
+Three guards keep it narrow:
+
+- It only takes a task from the seats in `task_routing.applies_to`
+  (charter_sales and quality, both Paola today). A task already aimed at a
+  scheduler, at charter_admin (PO -> invoice, billing) or at operations is not
+  misrouted care work, so it is left alone.
+- A care keyword beats a scheduling keyword. The win-back `Re-engage:` task, a
+  renewal, a payment, an invoice and a review all mention scheduling words and
+  are all Student Success work. An explicit `[Scheduling]` label beats both: a
+  human who typed it has already answered the question.
+- No family surname, no move. The split is meaningless without one, and taking
+  it from the tutor or from another contact named in the task is the exact
+  mistake the rule exists to stop.
+
+The pre-deal-lead override still wins: a family with no deal yet is a sale, so
+its reschedule thread and the thread's task both stay with charter sales.
+
+`email/src/reroute_scheduling_tasks.py` is the one-shot that applies the rule
+to the tasks already sitting on the care seat. It reads the surname from the
+task's associated FAMILY contact, refuses anything ambiguous (no family
+contact, two families on one task, a tutor-only task) in print rather than
+guessing, and honours `DRY_RUN`.
+
 Worked example. `Sterling, Sam — Cancellation`, a Teachworks notice for a
 one-time skip on 9/21. Surname Sterling, S is M-Z, so the ticket and its
 reply task are **Yolanda's**. The pre-deal override does not apply: the

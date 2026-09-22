@@ -129,6 +129,62 @@ def seat(role: str) -> dict:
     return staff(role) or {}
 
 
+# ── task routing (Paola 2026-09-22) ─────────────────────────────────────────
+# The owner rules above answer "who owns this ticket?" from the category the
+# client declares. Nothing answered "who owns this TASK?" from what the task
+# says, so session-logistics work created under any other category kept the
+# category's owner — care. Paola, 2026-09-22: "Any task related to
+# active-session scheduling or session logistics should NOT be assigned to
+# Paola. Assign these to the Scheduling Team, based on the family's last name."
+
+def _tr() -> dict:
+    return _ce().get("task_routing") or {}
+
+
+def task_is_scheduling(subject: str) -> bool:
+    """True when a task subject is about managing an EXISTING schedule: the
+    `[Scheduling]` label, or one of `task_routing.keywords`. A care keyword
+    wins — a win-back, a renewal, a payment or a review reads as scheduling
+    ('cancellation', 'renewal') but is Student Success work."""
+    s = (subject or "").strip().lower()
+    if not s:
+        return False
+    tr = _tr()
+    if any(str(x).lower() in s for x in tr.get("labels") or []):
+        return True
+    if any(str(k).lower() in s for k in tr.get("care_keywords") or []):
+        return False
+    return any(str(k).lower() in s for k in tr.get("keywords") or [])
+
+
+def owner_for_task(subject: str, family_last: str, current_owner_id: str | None) -> tuple[str | None, str]:
+    """(role, why) for a task about to be created, or (None, why) to leave the
+    caller's owner alone. `current_owner_id` is the HubSpot owner id the caller
+    would otherwise use — an id, not a seat key, because callers hold ids and
+    a seat key means nothing once roles resolve to people.
+
+    Re-owns only a scheduling task that would otherwise land on one of
+    `task_routing.applies_to` (care today), and only when we have the FAMILY
+    surname — the split is meaningless without it, and guessing it from the
+    tutor or from another contact named in the task is the exact mistake the
+    rule exists to stop, so no surname means no change. `split_role` is the
+    one implementation of the boundary; there is no second copy here."""
+    tr = _tr()
+    if not tr.get("enabled"):
+        return None, "task_routing off"
+    cur = str(current_owner_id or "")
+    if not cur or cur not in {str(seat(r).get("hubspot_owner_id") or "")
+                              for r in (tr.get("applies_to") or [])}:
+        return None, "owner is not a re-owned seat"
+    if not task_is_scheduling(subject):
+        return None, "not a scheduling task"
+    last = (family_last or "").strip()
+    if not last:
+        return None, "scheduling task with no family surname; owner left as is, CHECK"
+    role = split_role(last)
+    return role, f"scheduling task: surname {last} ({'A-L' if role.endswith('a_l') else 'M-Z'})"
+
+
 # ── service levels ──────────────────────────────────────────────────────────
 
 def sla_due_at(name: str, stage: str) -> str | None:

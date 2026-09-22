@@ -7,6 +7,71 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-22 — case engine: a task routes on what the task says, not on the thread's category
+
+**Why:** Paola, the day after the Teachworks-notice fix: "Any task related to
+active-session scheduling or session logistics should NOT be assigned to
+Paola... Assign these tasks directly to the Scheduling Team, based on the
+family's last name. A-L Janelle, M-Z Yolanda. Always route based on the
+family's last name, not the tutor's last name or the name of another contact
+mentioned in the task."
+
+The surname split already existed and was already correct — for TICKETS, and
+for the three email categories that carry it (`routing.cancellation /
+reschedule / scheduling`, `case_engine.owner_rules.support.scheduling`). What
+did not exist was any rule that reads a TASK. A task inherited the owner of
+whatever the thread classified as, so session logistics arriving under
+`tor_inquiry`, `new_po`, `campaign_family` or `review_received` kept the
+category's owner, which is Paola in all four. Nothing re-read the task.
+
+**What changed:**
+
+1. `case_engine.task_is_scheduling` + `case_engine.owner_for_task` — the one
+   shared resolver, config-driven (`case_engine.task_routing`). It re-owns a
+   task ONLY when three things hold: the task would land on a seat in
+   `applies_to` (charter_sales, quality — both Paola), the subject reads as
+   session logistics, and we have the family surname. The A-L / M-Z boundary
+   is not redeclared: it calls `split_role`, which reads the one copy in
+   `owner_rules.renewals.split`.
+
+2. Guards, because the rule is a re-owning rule and a wrong one is worse than
+   none. A care keyword (re-engage, renewal, payment, invoice, review,
+   Student Success) beats a scheduling keyword, so the win-back task and the
+   review task stay Student Success work; an explicit `[Scheduling]` label
+   beats both. Matching is on the SUBJECT only — the body of a `Reply:` task
+   carries the drafted email, and a draft that says "availability" is not a
+   scheduling task. No surname means no move, with the reason printed.
+
+3. `main.py` consults the resolver at the SLA reply task, and DMs the
+   scheduler who got the task (the ticket owner does not change, so without
+   the DM it is a to-do nobody was told about). The pre-deal-lead override is
+   exempt: that family has no deal yet, so the thread is a sale, not a
+   schedule (Roman 2026-07-20).
+
+4. `email/src/reroute_scheduling_tasks.py` — one-shot for the tasks already on
+   Paola's queue, since a rule nobody backfills is a rule the person who
+   reported it never sees. Surname from the task's associated FAMILY contact
+   (`a_persona`), never the tutor's; no family contact, two families on one
+   task, or a tutor-only task is PRINTED and left alone. Honours `DRY_RUN`.
+   Run it with `DRY_RUN=true`, read the list, then live.
+
+No new people or ids: Janelle (80047202, `scheduler_a_l`) and Yolanda
+(86868539, `scheduler_m_z`) and the inclusive-L boundary were already in
+`email/config.yaml` and are reused as-is.
+
+**Not done:** the resolver is wired at triage's task path only. `po_inbox` and
+`hsa_sync` also create tasks, but theirs are PO / invoice / Teachworks-admin
+work owned by charter_admin or the deal owner, which `applies_to` deliberately
+excludes — the resolver would no-op there, so wiring it in would be dead code.
+
+**Files:** `email/config.yaml`, `email/src/case_engine.py`,
+`email/src/main.py`, `email/src/reroute_scheduling_tasks.py`,
+`email/tests/test_task_routing.py`, `docs/CASE-ENGINE.md`.
+
+**Correction:** `corrections/case-engine/2026-09-22-scheduling-tasks-route-by-family-lastnam.md`
+(Paola, thread C0BL05MCJ4B/1790094666.888569).
+
+---
 ## 2026-09-22 — Tutor-issues nightly died on an undeclared enum value; registry and engine now locked together
 
 **What:** the 2026-09-21 run (35671819729) crashed creating its first ticket:

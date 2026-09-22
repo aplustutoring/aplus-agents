@@ -74,7 +74,11 @@
     "Ev0C3GD5ABTL",
     "Ev0C4AT82Z9N",
     "Ev0C4B00DW8Y",
-    "Ev0C31838S6T"
+    "Ev0C31838S6T",
+    "Ev0C3NTC4PAN",
+    "Ev0C3SN3LFSQ",
+    "Ev0C383XJLKH",
+    "Ev0C3JGVA4DB"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -523,10 +527,25 @@
       "ticket": null,
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790034459088409"
+    },
+    {
+      "date": "2026-09-22",
+      "ts": "1790094666.888569",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "case-engine",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/case-engine/2026-09-22-scheduling-tasks-route-by-family-lastnam.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/274",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790094666888569"
     }
   ],
   "graduation": {
-    "clean_merges": 21
+    "clean_merges": 22
   },
   "pending_proposals": {
     "1786554388.265099": {
