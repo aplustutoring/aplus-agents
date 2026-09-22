@@ -1070,9 +1070,11 @@
     417693772,
     417720512,
     417746301,
-    417747598
+    417747598,
+    417771429,
+    417773392
   ],
-  "last_run_utc": "2026-09-22T16:46:01.370823+00:00",
+  "last_run_utc": "2026-09-22T17:21:55.210894+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1173,6 +1175,84 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 417771429,
+      "number": "19094548581",
+      "time_pt": "10:16 AM",
+      "matched": true,
+      "contact_label": "Jessica Lujan",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Jessica Lujan called to reschedule her daughter Taylor Rodriguez's tutoring from Thursdays to Wednesdays because Taylor joined a sport with Thursday practices. Yolanda took the request and said she would confirm the tutor's Wednesday availability. A+ will follow up via text once confirmed.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check Taylor Rodriguez's tutor's availability to move her weekly session from Thursday to Wednesday",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Jessica to confirm the new Wednesday day/time for Taylor",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jessica Lujan (existing customer, warm/friendly) called to move her daughter Taylor Rodriguez's weekly tutoring from Thursdays to Wednesdays because Taylor joined a sport that practices Thursdays. Yolanda promised to check the tutor's Wednesday availability and text Jessica back. No specific new time has been agreed yet. Please confirm with Taylor's tutor whether Wednesday works (any time \u2014 original slot was Thursday, previously flexible after 3 PM, ideally after 5 PM), then text Jessica to lock in the new day/time. Suggested opener: \"Hi Jessica, it's [name] at A+ Tutoring following up on Taylor's schedule change \u2014 here's what we can do for Wednesdays\u2026\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer (OPEN_DEAL) calling about their active tutoring service; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Taylor Rodriguez"
+        ],
+        "record_updates": {
+          "whats_going_on": "Jessica called to reschedule Taylor's weekly tutoring from Thursdays to Wednesdays because Taylor joined a sport with Thursday practices.",
+          "what_we_can_do_to_help": "Confirm Taylor's tutor's Wednesday availability and text Jessica back with the new day/time.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Jessica called to reschedule Taylor's weekly tutoring from Thursdays to Wednesdays because Taylor joined a sport with Thursday practices."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Taylor's tutor's Wednesday availability and text Jessica back with the new day/time."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check Taylor Rodriguez's tutor's availability to move her weekly session from Thursday to Wednesday",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Text Jessica to confirm the new Wednesday day/time for Taylor",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
