@@ -1084,9 +1084,12 @@
     417834234,
     417880683,
     417901548,
-    417901383
+    417901383,
+    417926361,
+    417926227,
+    417924377
   ],
-  "last_run_utc": "2026-09-22T20:55:29.648301+00:00",
+  "last_run_utc": "2026-09-22T21:42:59.337309+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1804,6 +1807,16 @@
       "number": "18182921268",
       "time_pt": "11:17 AM",
       "reason": "spam gate: 3s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "13235790686",
+      "time_pt": "2:41 PM",
+      "reason": "spam gate: 17s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "18052564656",
+      "time_pt": "2:36 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
