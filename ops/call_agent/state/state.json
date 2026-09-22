@@ -1063,9 +1063,10 @@
     417503681,
     417509815,
     417510788,
-    417511483
+    417511483,
+    417512179
   ],
-  "last_run_utc": "2026-09-22T02:55:00.053491+00:00",
+  "last_run_utc": "2026-09-22T02:59:50.997720+00:00",
   "pending_digest": [
     {
       "call_id": 417233868,
@@ -2200,6 +2201,92 @@
         ],
         [
           "Verify the session address/Unit B on file for this family and update if incorrect so future tutors don't get lost",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 417512179,
+      "number": "12133089493",
+      "time_pt": "7:55 PM",
+      "matched": true,
+      "contact_label": "Emmy Swayze",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Tutor Emmy Swayze called Roman to report that the parent she was scheduled to meet at the Moore Park location cannot arrive until 9pm due to a holiday, and Emmy is heading home. Emmy had waited on the street, couldn't find the unit number, and the parent was still 45+ minutes away. Roman told her to mark it as a no-show and confirmed A+ will still pay her for the booked time. The family wants to reschedule.",
+        "caller_type": "other",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Mark tonight's Moore Park session as a no-show and ensure Emmy is paid for the booked time",
+            "owner_hint": "Roman",
+            "route": "scheduling"
+          },
+          {
+            "item": "Reach out to the family to reschedule the session Emmy was unable to complete tonight",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Document/verify the correct unit number and access instructions for the Moore Park session location so future tutors can find it",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "handoff_note": "Emmy (tutor) called Roman calm but done-for-the-night: she went to the Moore Park location, couldn't find the unit number, waited on the street, and the parent said she was 45+ min away and couldn't arrive until 9pm because of their holiday. Family asked to reschedule. Roman told Emmy to mark it a no-show and confirmed A+ will pay her regardless. Next steps: (1) make sure the no-show is logged and Emmy's pay is protected, (2) contact the family to reschedule, (3) get the exact unit/access info for Moore Park on file so this doesn't happen again. Open with the family warmly acknowledging the holiday and offer 2-3 reschedule options.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Caller is an active tutor (Emmy Swayze) reporting a session issue; tutor status is unchanged.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Emmy called to report she is leaving the Moore Park location as a no-show \u2014 she couldn't find the unit number, waited on the street, and the parent said she was 45+ minutes away and couldn't arrive until 9pm due to their holiday. Family asked to reschedule.",
+          "what_we_can_do_to_help": "Roman told Emmy to mark it as a no-show and confirmed she'll still be paid for the booked time. Team needs to contact the family to reschedule and finally document the correct unit/access instructions for this Moore Park location.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Emmy called to report she is leaving the Moore Park location as a no-show \u2014 she couldn't find the unit number, waited on the street, and the parent said she was 45+ minutes away and couldn't arrive until 9pm due to their holiday. Family asked to reschedule."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Roman told Emmy to mark it as a no-show and confirmed she'll still be paid for the booked time. Team needs to contact the family to reschedule and finally document the correct unit/access instructions for this Moore Park location."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Mark tonight's Moore Park session as a no-show and ensure Emmy is paid for the booked time",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Reach out to the family to reschedule the session Emmy was unable to complete tonight",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Document/verify the correct unit number and access instructions for the Moore Park session location so future tutors can find it",
           81494333,
           "follow_up"
         ]
