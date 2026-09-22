@@ -77,7 +77,8 @@
     "Ev0C31838S6T",
     "Ev0C3NTC4PAN",
     "Ev0C3SN3LFSQ",
-    "Ev0C383XJLKH"
+    "Ev0C383XJLKH",
+    "Ev0C3JGVA4DB"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -539,12 +540,12 @@
       "correction_path": "corrections/case-engine/2026-09-22-scheduling-tasks-route-by-family-lastnam.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/274",
       "ticket": null,
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790094666888569"
     }
   ],
   "graduation": {
-    "clean_merges": 21
+    "clean_merges": 22
   },
   "pending_proposals": {
     "1786554388.265099": {
