@@ -1080,9 +1080,10 @@
     417809253,
     417825893,
     417829749,
-    417833269
+    417833269,
+    417834234
   ],
-  "last_run_utc": "2026-09-22T18:56:33.874889+00:00",
+  "last_run_utc": "2026-09-22T19:02:07.383338+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1531,6 +1532,90 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 417834234,
+      "number": "16615217803",
+      "time_pt": "11:55 AM",
+      "matched": true,
+      "contact_label": "Carmesha Jones",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ Tutoring called Carmesha Jones to follow up on a purchase order received for her son Riley and to coordinate a tutoring schedule. Carmesha said she had already emailed Riley's schedule to a representative working with the child's school but couldn't recall the name. Janelle said she'd check internally for the emailed schedule. Carmesha had to go because she was at work and said she'd call back.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Search inbox for Carmesha Jones's email containing Riley's availability/schedule (likely sent to the rep working with iLEAD)",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once schedule is located, call Carmesha back to confirm tutoring days/times for Riley",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Carmesha Jones (parent of Riley, iLEAD charter) is expecting us to find the email she already sent with Riley's availability and then reach back out to lock in a schedule. We have a PO in hand for Riley (Math + ELA, has IEP, MAP scores available). She was polite but rushed \u2014 had to end the call because she was at work. Before calling back, search the team inbox for her email with Riley's schedule (she couldn't remember which rep she sent it to, but says it went to whoever was coordinating with iLEAD). Open with: 'Hi Carmesha, it's ___ from A+ Tutoring following up on Riley \u2014 I found the availability you sent over, let's get his sessions on the calendar.' If the email can't be located, apologize and ask her to resend to our main scheduling address.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family uses charter learner/instructional funds (iLEAD) with a PO already issued for Riley.",
+        "student_or_school_names_mentioned": [
+          "Riley",
+          "iLEAD"
+        ],
+        "record_updates": {
+          "whats_going_on": "PO received for Riley (iLEAD). Called Carmesha to set a schedule; she says she already emailed Riley's availability to the rep coordinating with his school but doesn't recall the name. She had to end the call quickly (at work) and will call back.",
+          "what_we_can_do_to_help": "Locate Carmesha's prior email with Riley's availability and proactively call her back to confirm Math/ELA tutoring days and times, keeping IEP needs and MAP scores in mind when matching a tutor.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "PO received for Riley (iLEAD). Called Carmesha to set a schedule; she says she already emailed Riley's availability to the rep coordinating with his school but doesn't recall the name. She had to end the call quickly (at work) and will call back."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Locate Carmesha's prior email with Riley's availability and proactively call her back to confirm Math/ELA tutoring days and times, keeping IEP needs and MAP scores in mind when matching a tutor."
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Search inbox for Carmesha Jones's email containing Riley's availability/schedule (likely sent to the rep working with iLEAD)",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Once schedule is located, call Carmesha back to confirm tutoring days/times for Riley",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
