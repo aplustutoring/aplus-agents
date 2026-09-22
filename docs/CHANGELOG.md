@@ -383,6 +383,28 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-22 — waiting.py 4.4: the echo rule was defeated by a straight quote
+
+Alina Matiukhina's phone sent `Реакция ❤️ на " Hi Alina, no we don't until
+Stephanie confirms she's ready to start again. "`, which is our own message
+handed back to us. The echo rule exists precisely so tapbacks are caught
+whatever language they arrive in, and it missed.
+
+**Not a language gap.** The Russian prefix is irrelevant to the rule, which
+never reads it. The shape matcher only recognised typographic quotes, and this
+client used a straight one. The identical text in curly quotes matched.
+
+The quote class now covers curly, straight, angled and low-9 forms, and any of
+them may open or close, because clients are not consistent about pairing them.
+Four tests, including two that assert the widening did not start swallowing
+real messages that happen to contain a quotation.
+
+Worth recording that this is the second time the general rule beat the specific
+one. Every language added to the tapback word list has a half-life; the echo
+rule needed one character class widened and now handles languages nobody has
+written down.
+
+---
 ## 2026-09-18 — waiting.py 4.2: the echo rule was starved, and a timezone bug I made while fixing it
 
 Two more false breaches on the 4:52 PM tick, and only one needed new vocabulary.
