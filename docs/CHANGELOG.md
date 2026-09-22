@@ -7,6 +7,42 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-22 — Low balance fires at 3 hours live, email and text together, teacher a business day later
+
+**What changed** (`email/src/low_balance.py`, `email/config.yaml`,
+`docs/RETENTION-PROCESS.md`, tests)
+- The case still opens on the Teachworks 4-hour alert, but now WAITS. Every
+  hourly sweep pulls attended lessons since the alert from both Teachworks
+  accounts (`_attended_since`, one bulk pull), subtracts them from the alert's
+  balance, and records `low_balance_balance` + a ticket note only when the
+  number changes. Lesson length = `to_date - from_date`, else
+  `lesson_hours_default` (1.0). Teachworks down = balances untouched.
+- `_fire_ready`: family outreach fires at `fire_at_hours` (3) or fewer live,
+  or `fire_fallback_days` (5) business days after the alert. An alert already
+  at 3 or below fires after the 60-minute sibling delay.
+- `text_with_email: true`: the day-0 text leaves in the same sweep as the
+  email (both the hourly sweep and the :15/:30/:45 email pass), through the
+  same gates as before (charter, phone, ticket open, no reply by email or
+  text; JustCall unreadable = the text waits). The record carries
+  `tor_pending`, so the teacher email follows `family_text_after_days` (1)
+  business days later, clock from the text (`day1_at`), only if still no PO
+  and no reply. Roman declined a parallel teacher email (2026-09-09 rule:
+  parent first, teacher backup).
+- Retention risk reads the live balance.
+
+**Why.** Roman 2026-09-22: Teachworks' own family notice already does the
+4-hour nudge (3 of the first 13 renewals arrived with no message from us);
+the sweet spot for our ask is 2 to 4 hours. Private pay and trial stay
+parked: no payment links.
+
+**Test suite.** The ten low-balance sweep tests that failed on main were not
+drift: `run_sweep` read the REAL audit log through `deferred_alerts()` and
+re-opened a parked Xena Chacon alert inside every test, and
+`needs_invoice_sweep` hit the portal. The harness now pins both plus
+`_attended_since`. 681 passed.
+
+---
+
 ## 2026-09-11 — booth/aplus-2026: conference booth BUILT (group selfie, one print per contact, Mac print queue)
 
 **What:** the APLUS+ Conference booth (Anaheim, Oct 21-23; A+ = table PC6 +
