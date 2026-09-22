@@ -101,6 +101,33 @@ excludes — the resolver would no-op there, so wiring it in would be dead code.
 (Paola, thread C0BL05MCJ4B/1790094666.888569).
 
 ---
+## 2026-09-22 — Tutor-issues nightly died on an undeclared enum value; registry and engine now locked together
+
+**What:** the 2026-09-21 run (35671819729) crashed creating its first ticket:
+`400 Client Error` from HubSpot, no body logged. Dry run this morning showed
+the ticket: "Unresponsive in Slack (chased by text): Fidaya Williams", the
+sixth issue type #213 added to `ISSUE_TYPES` on 9/18. `tutor_issue_type` in
+`ops/hubspot-schema/properties.yml` never got the option, so the portal
+refused the value. The retry sweeper correctly HELD the run (4xx, no rerun).
+
+**Fix:** option `unresponsive_in_slack` declared in properties.yml (label
+matches the engine); `hs_req` logs status + response body on any 4xx/5xx
+before raising; `ops/tutor-issues/tests/test_registry_lockstep.py` fails the
+suite when any `ISSUE_TYPES` value or label is not in the registry. 55 tests
+green. After merge: run `hubspot-schema.yml` (dry_run=false, additive) so the
+portal learns the option, then the nightly run files the Fidaya ticket.
+
+**Also seen this morning:** Scorecard weekly sync failed all 4 attempts:
+Monday refuses writes to five items marked inactive on the board (Meeting
+Requested 11487307910, Meeting Scheduled 12005709448, Proposal Out
+11760102894, Active Proposals 12504179404, Program Contracted 11760067895,
+the CSM pipeline rows). Same five threw "unauthorized" last week but did not
+fail the job. Either the rows were retired on the board and the sync should
+drop them, or they were archived by mistake. Roman to say which; not changed.
+
+**Files:** ops/hubspot-schema/properties.yml, ops/tutor-issues/tutor_issues.py,
+ops/tutor-issues/tests/test_registry_lockstep.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-21 — case engine: a Teachworks notice is not a pre-deal lead
 
 **Why:** Paola reported that cancellation work coming from Teachworks
