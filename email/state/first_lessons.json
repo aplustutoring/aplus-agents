@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-22T16:40:53.377195+00:00",
+ "_last_run": "2026-09-22T23:36:25.990622+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -333,6 +333,15 @@
   "name": "Nathan Bershadsky",
   "tw_student_id": "2227977"
  },
+ "online:botts, ayden": {
+  "checked": "2026-09-22",
+  "contact_id": "75931935511",
+  "deal_id": "28866188709",
+  "email": "botts.ilead@gmail.com",
+  "first": "2024-11-15",
+  "name": "Ayden Botts",
+  "tw_student_id": "1925808"
+ },
  "online:boyden, lena": {
   "checked": "2026-09-16",
   "contact_id": "221259630480",
@@ -602,6 +611,15 @@
   "first": "2026-09-16",
   "name": "Nathan Elenes",
   "tw_student_id": "2349103"
+ },
+ "online:enge, zayne": {
+  "checked": "2026-09-22",
+  "contact_id": "220445289045",
+  "deal_id": "60108288945",
+  "email": "tajahbusiness@gmail.com",
+  "first": "2026-05-19",
+  "name": "Zayne Enge",
+  "tw_student_id": "2244377"
  },
  "online:erfan, elhaan": {
   "checked": "2026-09-16",
@@ -1447,6 +1465,15 @@
   "name": "Yoel Radnia",
   "tw_student_id": "2349870"
  },
+ "online:rajewich, charli": {
+  "checked": "2026-09-22",
+  "contact_id": "151911033486",
+  "deal_id": "44452555350",
+  "email": "cassierajewich@gmail.com",
+  "first": "2025-09-30",
+  "name": "Charli Rajewich",
+  "tw_student_id": "2113232"
+ },
  "online:ramos, john": {
   "checked": "2026-09-11",
   "contact_id": "234178601643",
@@ -1482,6 +1509,15 @@
   "first": "2020-03-05",
   "name": "Charlotte Richardson",
   "tw_student_id": "1057102"
+ },
+ "online:richardson, jiselle": {
+  "checked": "2026-09-22",
+  "contact_id": "3790951",
+  "deal_id": "65063600143",
+  "email": "roseanna.ortiz@yahoo.com",
+  "first": "2024-01-30",
+  "name": "Jiselle Richardson",
+  "tw_student_id": "1758775"
  },
  "online:rivas, amelia \"milly\"": {
   "checked": "2026-09-13",
@@ -1905,6 +1941,15 @@
   "first": "2026-08-20",
   "name": "Elias Van Reuter",
   "tw_student_id": "2290260"
+ },
+ "online:viilacin, emilio": {
+  "checked": "2026-09-22",
+  "contact_id": "194444677429",
+  "deal_id": "54101275018",
+  "email": "adamvillacin@gmail.com",
+  "first": "2026-01-27",
+  "name": "Emilio Viilacin",
+  "tw_student_id": "2181390"
  },
  "online:villa, ezekiel": {
   "checked": "2026-09-10",
