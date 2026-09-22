@@ -1000,401 +1000,77 @@
     416690184,
     416703568,
     416707056,
-    416724091
+    416724091,
+    416739598,
+    416771215,
+    416775613,
+    416776895,
+    416777529,
+    416782696,
+    416787869,
+    416773217,
+    416790981,
+    416803219,
+    416805261,
+    416811482,
+    416811986,
+    416812924,
+    416812943,
+    416813718,
+    416822267,
+    416823172,
+    416823379,
+    416827244,
+    416834264,
+    416837259,
+    416842645,
+    416845625,
+    416886171,
+    416889743,
+    416918817,
+    416928101,
+    416953718,
+    416971493,
+    417233868,
+    417267543,
+    417272187,
+    417310756,
+    417350261,
+    417350782,
+    417377775,
+    417380694,
+    417397017,
+    417408060,
+    417410867,
+    417417666,
+    417417939,
+    417420938,
+    417423171,
+    417423793,
+    417448648,
+    417450875,
+    417451554,
+    417453059,
+    417454775,
+    417456694,
+    417458895,
+    417460381,
+    417461878,
+    417462571,
+    417465693,
+    417485268,
+    417494797,
+    417503681,
+    417509815,
+    417510788,
+    417511483,
+    417512179,
+    417526008,
+    417694487,
+    417693772
   ],
-  "last_run_utc": "2026-09-18T18:42:04.717163+00:00",
-  "pending_digest": [
-    {
-      "call_id": 416659219,
-      "number": "13105006987",
-      "time_pt": "9:38 AM",
-      "matched": true,
-      "contact_label": "Miriam Menkin",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Miriam Menkin regarding her earlier interest in tutoring. The call went to voicemail and Paola left a message asking Miriam to confirm continued interest and share a good callback time. No new information about the student or need was obtained.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for Miriam Menkin following up on her prior tutoring interest \u2014 no answer, no new details. Miriam's current lead status is 'Using Someone Else' and how-did-you-hear shows 'From my Charter School'. She now expects a callback opportunity; if she doesn't respond, plan another gentle follow-up in a few days. Suggested opener: 'Hi Miriam, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 just wanted to check whether tutoring is still something you're exploring for your family.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Outbound call reached voicemail only; no conversation occurred, so existing 'Using Someone Else' status should not be changed based on a one-way message.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time.",
-          "what_we_can_do_to_help": "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416666147,
-      "number": "13104977863",
-      "time_pt": "9:50 AM",
-      "matched": true,
-      "contact_label": "Jacqueline McClain",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda from A+ Tutoring called Jacqueline McClain to follow up on her son Prince and propose a trial session with tutor Ayesha on Friday at 9 AM. The call went to voicemail; Yolanda left a message asking Jacqueline to confirm availability and said she would call back around 4 PM the same day.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Yolanda left a voicemail for Jacqueline McClain (parent of Prince, 5th grade) proposing a trial session with tutor Ayesha on Friday at 9 AM. Yolanda promised to call back around 4 PM today. Jacqueline expects a return call to confirm the trial time. Open with: 'Hi Jacqueline, this is [name] from A+ Tutoring following up on Yolanda's message about setting Prince up for a trial with Ayesha on Friday at 9 AM \u2014 does that time still work for you?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Contact is already in an OPEN_DEAL pipeline stage; status is owned by the deal pipeline and should not be demoted.",
-        "student_or_school_names_mentioned": [
-          "Prince"
-        ],
-        "record_updates": {
-          "whats_going_on": "Yolanda left voicemail proposing a trial session with tutor Ayesha for Prince on Friday at 9 AM. Awaiting Jacqueline's confirmation.",
-          "what_we_can_do_to_help": "Set up trial session with Ayesha on Friday at 9 AM pending parent confirmation; Yolanda to call back around 4 PM today.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Yolanda left voicemail proposing a trial session with tutor Ayesha for Prince on Friday at 9 AM. Awaiting Jacqueline's confirmation."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Set up trial session with Ayesha on Friday at 9 AM pending parent confirmation; Yolanda to call back around 4 PM today."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416690184,
-      "number": "18183840009",
-      "time_pt": "10:33 AM",
-      "matched": true,
-      "contact_label": "Hermine Torosyan",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Hermine Torosyan regarding prior interest in tutoring for her daughter. The call was screened by a voicemail/assistant system and Hermine was unavailable. Paola left a voicemail asking Hermine to confirm if she's still interested and offering to follow up.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for Hermine Torosyan following up on her prior interest in tutoring for her daughter (no student details on file). No conversation occurred \u2014 call was screened by an assistant and rolled to voicemail. Hermine now knows we're interested in reconnecting; she may call back. If no response in a few days, try again \u2014 open with: 'Hi Hermine, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we wanted to check in about tutoring for your daughter and see how we can help.' Current record has her as 'Using Someone Else,' so be ready to ask whether her current arrangement is still working.",
-        "lead_status": "no_change",
-        "lead_status_reason": "No live conversation \u2014 voicemail only. Current status 'Using Someone Else' should remain until we actually connect and learn more.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter.",
-          "what_we_can_do_to_help": "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416707056,
-      "number": "13236363579",
-      "time_pt": "11:02 AM",
-      "matched": true,
-      "contact_label": "Karen Chung",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Janelle called Karen Chung back after missing her call. Karen's daughter Yura had a 10:30 AM online trial today but the microphone wasn't working on the tutoring platform, even though Karen confirmed her mic/camera work fine elsewhere. The tutor left and told Karen to contact the office to reschedule. Karen asked Janelle to call back at 12:30\u20131:00 PM so her husband can help troubleshoot, and then we can move forward.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Call Karen back at 12:30\u20131:00 PM today to troubleshoot the microphone/permission settings on the tutoring platform and get Yura connected.",
-            "owner_hint": "Janelle",
-            "route": "scheduling"
-          },
-          {
-            "item": "Reschedule Yura's free 1-hour online trial (originally today at 11 AM / attempted 10:30) once the mic issue is resolved.",
-            "owner_hint": null,
-            "route": "scheduling"
-          },
-          {
-            "item": "Coordinate with the assigned tutor about the failed trial and the reschedule.",
-            "owner_hint": null,
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "Karen Chung (mom of Yura, 6yo, 1st grade, Blue Ridge Academy charter, online ESL/ELA) had her free trial today but the platform microphone wouldn't work on her end \u2014 she confirmed her mic/camera work fine for her regular weekday use, so she suspects a permission setting on our platform. The tutor ended the session and told her to call the office to reschedule. Karen was patient but a little frustrated. Janelle committed to calling her back today at 12:30\u20131:00 PM when her husband can help troubleshoot. Open with: \"Hi Karen, it's [name] from A+ Tutoring following up as Janelle promised \u2014 is now a good time to try the mic again with your husband there?\" Walk her through browser permission settings for mic/camera on the tutoring platform, then reschedule the trial and re-share the tutor's info. Tone: apologetic and hands-on; she's a charter family with ~$2,000 in funds ready to go, so we want to recover this quickly.",
-        "lead_status": "no_change",
-        "lead_status_reason": "Karen is an existing customer already in an open deal (trial booked, charter funds in motion); status is owned by the deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Yura Chung",
-          "Blue Ridge Academy"
-        ],
-        "record_updates": {
-          "whats_going_on": "Karen's daughter Yura's free online trial today failed because the microphone wasn't working on the tutoring platform. Karen confirmed her mic and camera work fine for her regular weekday use, so she suspects a permissions issue on our end. The tutor ended the session and told Karen to call the office to reschedule.",
-          "what_we_can_do_to_help": "Janelle to call Karen back today at 12:30\u20131:00 PM (when her husband can help troubleshoot) to walk through platform mic/camera permissions, then reschedule the free trial and re-coordinate with the tutor. Keep tone apologetic and hands-on \u2014 this is a charter family with ~$2,000 in funds ready to deploy.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Karen's daughter Yura's free online trial today failed because the microphone wasn't working on the tutoring platform. Karen confirmed her mic and camera work fine for her regular weekday use, so she suspects a permissions issue on our end. The tutor ended the session and told Karen to call the office to reschedule."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Janelle to call Karen back today at 12:30\u20131:00 PM (when her husband can help troubleshoot) to walk through platform mic/camera permissions, then reschedule the free trial and re-coordinate with the tutor. Keep tone apologetic and hands-on \u2014 this is a charter family with ~$2,000 in funds ready to deploy."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Call Karen back at 12:30\u20131:00 PM today to troubleshoot the microphone/permission settings on the tutoring platform and get Yura connected.",
-          80047202,
-          "scheduling"
-        ],
-        [
-          "Reschedule Yura's free 1-hour online trial (originally today at 11 AM / attempted 10:30) once the mic issue is resolved.",
-          81494333,
-          "scheduling"
-        ],
-        [
-          "Coordinate with the assigned tutor about the failed trial and the reschedule.",
-          81494333,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416724091,
-      "number": "18317475108",
-      "time_pt": "11:32 AM",
-      "matched": true,
-      "contact_label": "Pamela Richardson",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda called Pamela Richardson to confirm scheduling for Eli's tutoring with proposed tutor Jonathan. They worked around Eli's class schedule and confirmed Mondays at 11 AM and Thursdays at 12 PM (adjusted from 11 AM due to a class conflict). Pamela was agreeable and the schedule is now locked in.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Book Eli's recurring 45-min sessions with Jonathan on Mondays at 11 AM and Thursdays at 12 PM",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          },
-          {
-            "item": "Confirm Jonathan's availability for Thursdays at 12 PM (shifted from 11 AM)",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          },
-          {
-            "item": "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "Pamela (warm, cooperative) confirmed scheduling for Eli with tutor Jonathan. Locked in Mondays at 11 AM and Thursdays at 12 PM (Thursday shifted from 11 AM because Eli has a class 11-12). PO is already in hand for 2x/week 45-min sessions. Pamela expects sessions to be booked on those days/times. Next: verify Jonathan can do Thu 12 PM, then send Pamela a confirmation. Open with: 'Hi Pamela, just confirming Eli's sessions with Jonathan are set for Mondays 11 AM and Thursdays 12 PM starting [date].'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing customer with PO in hand and open deal; status owned by deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Eli",
-          "Jonathan",
-          "Pamela Richardson"
-        ],
-        "record_updates": {
-          "whats_going_on": "[call] Reached Pamela to confirm scheduling for Eli with tutor Jonathan. Worked around Eli's class schedule: Mondays 11 AM works, but Thursday 11 AM conflicts with a class, so shifted Thursday to 12 PM. Schedule locked in.",
-          "what_we_can_do_to_help": "Yolanda to confirm Jonathan's availability for Thursdays at 12 PM (instead of 11 AM), then book Eli's recurring 2x/week 45-min sessions on Mon 11 AM and Thu 12 PM and send Pamela a confirmation.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "[call] Reached Pamela to confirm scheduling for Eli with tutor Jonathan. Worked around Eli's class schedule: Mondays 11 AM works, but Thursday 11 AM conflicts with a class, so shifted Thursday to 12 PM. Schedule locked in."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Yolanda to confirm Jonathan's availability for Thursdays at 12 PM (instead of 11 AM), then book Eli's recurring 2x/week 45-min sessions on Mon 11 AM and Thu 12 PM and send Pamela a confirmation."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Book Eli's recurring 45-min sessions with Jonathan on Mondays at 11 AM and Thursdays at 12 PM",
-          86868539,
-          "scheduling"
-        ],
-        [
-          "Confirm Jonathan's availability for Thursdays at 12 PM (shifted from 11 AM)",
-          86868539,
-          "scheduling"
-        ],
-        [
-          "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    }
-  ],
-  "pending_skipped": [
-    {
-      "number": "18622381623",
-      "time_pt": "9:47 AM",
-      "reason": "hang-up"
-    },
-    {
-      "number": "17472673496",
-      "time_pt": "9:51 AM",
-      "reason": "hang-up"
-    }
-  ],
+  "last_run_utc": "2026-09-22T15:28:15.966376+00:00",
+  "pending_digest": [],
+  "pending_skipped": [],
   "pending_failures": []
 }

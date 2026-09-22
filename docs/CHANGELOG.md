@@ -7,6 +7,62 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-21 — case engine: a Teachworks notice is not a pre-deal lead
+
+**Why:** Paola reported that cancellation work coming from Teachworks
+notifications should be assigned by the family's surname (A-L Janelle, M-Z
+Yolanda). That rule already existed and was already wired to cancellation,
+reschedule and scheduling (`scheduler_split` in `email/config.yaml`,
+`router.scheduler_for_last_name`), so the report was a symptom, not the rule
+being missing.
+
+What actually broke it: the pre-deal-lead override in triage (shipped
+2026-07-20 after the Deanna Smith miss) asks "does this family have a deal or
+a Teachworks account?" of the SENDER's contact. A Teachworks notice arrives
+from one shared no-reply address, which has neither and never will, so the
+override answered "pre-deal lead" for EVERY notice and moved it off the
+scheduler to charter sales. The audit log shows 90 such decisions between
+2026-07-24 and 2026-09-21; 71 came from the Teachworks notification contact
+(the other 19 are real families with no deal yet, which is what the override
+is for). 43 landed in September alone. Sam Sterling's 9/20 cancellation —
+S, so Yolanda's — went to Paola, which is how she found it.
+
+**What changed:**
+
+1. `router.is_notification_sender` (+ `NOTIFICATION_SENDER_DOMAINS`) names the
+   machine senders that write ABOUT a family rather than as one. It lives in
+   `router.py` next to the split it guards, and replaces the three inline
+   `endswith("@teachworks.com")` checks in `main.py`.
+
+2. `main._predeal_lead` extracts the override into one testable predicate and
+   exempts notification senders. The split's owner now stands for notices, so
+   the ticket, the SLA reply task and the win-back `Re-engage:` task all reach
+   the right scheduler. Reschedule and scheduling notices were broken the same
+   way and are fixed by the same line.
+
+3. `email/src/backfill_notice_owners.py` — one-shot sweep. Reads the misrouted
+   tickets out of the audit log (no guessing from CRM state), skips anything
+   closed or already taken back by a human, recomputes the owner from the
+   ticket subject's surname, and moves the associated open tasks. A task whose
+   contact is shared by several families is REPORTED, never moved: that
+   contact is the no-reply address, and guessing there hands one family's work
+   to another family's scheduler. Honours `DRY_RUN`. Run it once with
+   `DRY_RUN=true`, read the list, then live.
+
+4. `docs/CASE-ENGINE.md` gains a "surname split" section with the rule, the
+   one override, and the Sterling -> Yolanda worked example.
+
+No new config: the owner map, the split boundary and both HubSpot owner ids
+were already in `email/config.yaml`. Nothing was added that duplicates them.
+
+**Files:** `email/src/router.py`, `email/src/main.py`,
+`email/src/backfill_notice_owners.py`, `email/tests/test_predeal_lead.py`,
+`email/tests/test_backfill_notice_owners.py`, `docs/CASE-ENGINE.md`.
+
+**Correction:** `corrections/case-engine/2026-09-21-cancellation-task-assignment-by-lastname.md`
+(Paola, thread C0BL05MCJ4B/1790034459.088409).
+
+---
 ## 2026-09-18 — Ticket pesters come from Roman, daily, and land on Emily when ignored
 
 **Roman:** "I want Kath to be pestered though if she doesn't do shit" ... "We
@@ -96,6 +152,92 @@ The gap was only inbound on unmonitored lines.
 
 **Files:** `ops/call_agent/{call_agent.py,config.yml}`,
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
+
+---
+## 2026-09-18 — waiting.py 4.2: the echo rule was starved, and a timezone bug I made while fixing it
+
+Two more false breaches on the 4:52 PM tick, and only one needed new vocabulary.
+
+`Reacted 💖 to "Your words mean so much to me..."` was already handled in
+principle: the quoted part is our own message and the shape matcher read it
+correctly. It failed because the outbound index was built from the same narrow
+window as the inbound scan, so on a two hour look-back the message being quoted
+had been sent earlier that afternoon and was not in the index. The rule was
+right and starved. Our own side is now pulled over three days
+(`ECHO_LOOKBACK_HOURS`) whatever window the question asks about.
+
+`Well! Thank you.` was a genuine gap: a closing pleasantry that does not START
+the message. Allowed now only when the whole message is under 40 characters and
+contains no question mark, so "The tutor never showed up. Thanks for nothing."
+and "Thanks, but can we move Wednesday to 5?" both still count as messages.
+
+**A bug I introduced and caught in the same sitting.** The first version of the
+wide pull filtered inbound rows locally against a cutoff built from
+`datetime.now()`. JustCall rows carry the account's clock, so the comparison
+silently widened a two hour question by the UTC offset: the tick reported 34
+numbers over "2 hours" and surfaced an eight hour old message as if it were
+new. The window is back in the API's hands, where it always was, and our own
+words are pulled separately. A test now asserts that `newest_each_way` does no
+timestamp filtering of its own.
+
+Tests: 27, up from 20.
+
+---
+## 2026-09-18 — waiting.py 4.1: tapbacks detected by echo, not by language
+
+Two hours after the Chinese tapback fix shipped, Hannah Thorn's phone sent the
+Spanish form: `Le gusta "Okay thank you, I offered Angelo 2:30 pm today..."`.
+Adding Spanish would have left French, Portuguese, Hebrew, Russian and every
+other language our families use, and each gap shows up as an invented breach on
+the one-hour report.
+
+A tapback has one property no language changes: **the quoted part is our own
+message, handed back to us.** So it is now matched against what we actually sent
+that number inside the window. Language-proof, and it cannot swallow a real
+message, because a real message is not a verbatim echo of our words.
+
+The explicit prefix list stays for the forms that carry no quotes at all: the
+Chinese tapback is "赞了:" followed by bare text, with nothing to match on.
+
+`scripts/tests/test_waiting.py` grows to 20, including German, Japanese,
+Russian, Portuguese and French forms that were never written into the code, a
+truncated tapback, and the two cases that must NOT match: a quote we never sent,
+and a real question that happens to contain a quotation.
+
+---
+## 2026-09-18 — waiting.py v4: the checker stops inflating its own count
+
+**What changed** (`scripts/waiting.py`, `scripts/tests/test_waiting.py`): the
+script behind the one-hour acknowledgement rule gets its first tests, and two
+fixes for errors that both pushed the count UP. That direction matters: a
+checker that invents waiting families is one people stop reading, and this one
+reported the same two non-events as breaches on three consecutive ticks.
+
+- **Tapbacks arrive translated into the sender's language.** Judy Xu's iPhone
+  "liked" reaction came through as "赞了：" and never matched the English
+  courtesy list, so it aged past the bar and was reported twice as a parent
+  being ignored.
+- **The conference booth texts a photo to whoever is working the stand.** That
+  staff copy counted as a family waiting on us. Any number resolving to a
+  contact on our own domain is now excluded.
+
+**A third bug the tests caught before it shipped.** Folding tapbacks into the
+existing courtesy regex made it match any message merely STARTING with a
+pleasantry, so "Thanks, but can we move Wednesday to 5?" would have vanished
+from the count. That is the dangerous direction. The filter is now two rules: a
+tapback is a tapback whatever follows it, because what follows is our own quoted
+message, while a closing pleasantry only counts when the message stops there.
+
+Also: `.env` is found by walking up from the script, so it runs from a worktree
+as well as the main checkout, and the helpers moved out of module scope so they
+can be tested with no credentials present.
+
+**Why the tests exist at all.** This script has been wrong four times, each in a
+different direction, and every version looked obviously correct while it was
+lying. The docstring carries that history and the tests now pin it: a call back
+counts as an answer, an inbound call does not, the bar is sixty minutes, and an
+unparseable timestamp does not take the run down.
+
 
 ---
 

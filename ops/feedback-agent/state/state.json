@@ -69,7 +69,12 @@
     "Ev0BUKU5CFAM",
     "Ev0BUNQG6ZT6",
     "Ev0C1357KNPN",
-    "Ev0C1682FLQ4"
+    "Ev0C1682FLQ4",
+    "Ev0C2W78QMN1",
+    "Ev0C3GD5ABTL",
+    "Ev0C4AT82Z9N",
+    "Ev0C4B00DW8Y",
+    "Ev0C31838S6T"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -501,12 +506,27 @@
       "correction_path": "corrections/content-build/2026-09-10-hubspot-publish-refresh-error.md",
       "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/205",
       "ticket": "drafted",
-      "status": "open",
+      "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1789060685425199"
+    },
+    {
+      "date": "2026-09-21",
+      "ts": "1790034459.088409",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Paola",
+      "reporter_slack_id": "U094B5DRZBR",
+      "agent": "case-engine",
+      "type": "IDEA",
+      "severity": "normal",
+      "correction_path": "corrections/case-engine/2026-09-21-cancellation-task-assignment-by-lastname.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/271",
+      "ticket": null,
+      "status": "resolved",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790034459088409"
     }
   ],
   "graduation": {
-    "clean_merges": 19
+    "clean_merges": 21
   },
   "pending_proposals": {
     "1786554388.265099": {
