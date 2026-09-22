@@ -237,6 +237,34 @@ case_engine:
       scheduling: split
       default: operations
     tutor: operations
+  # Scheduling TASK routing (Paola 2026-09-22). The owner rules above answer
+  # "who owns this ticket?" by category; this one answers "who owns this task?"
+  # by what the task says. A task about an EXISTING schedule — confirming a
+  # session, a reschedule or cancellation, a no-show, an address / unit /
+  # access correction, tutor-student scheduling details — is scheduler work,
+  # owned by the FAMILY surname split, never care and never the tutor's
+  # surname. Care keeps a scheduling-looking task only when it asks for
+  # Student Success / Care follow-up (care_keywords beat keywords).
+  task_routing:
+    enabled: true
+    # Only tasks that would otherwise land on these seats are re-owned. A task
+    # already aimed at charter_admin (billing, PO->invoice) or operations is
+    # not scheduling work that went astray; leave it where its client put it.
+    applies_to: [charter_sales, quality]
+    # The A-L / M-Z boundary itself is NOT redeclared here: case_engine.split_role
+    # reads owner_rules.renewals.split, the one place it lives.
+    # Matched against the task SUBJECT, lowercased. Subject only: the body of a
+    # "Reply: ..." task carries the drafted email, and a draft that happens to
+    # say "availability" is not a scheduling task.
+    # An explicit label wins over everything, including care_keywords: a human
+    # who typed "[Scheduling]" has already answered the question.
+    labels: ["[scheduling]"]
+    keywords: [reschedule, cancellation, cancel, no-show, "no show", missed session,
+               confirm session, session details, session time, session address,
+               unit number, access instruction, gate code, schedule change,
+               tutor schedule, student schedule, scheduling]
+    care_keywords: ["student success", care coordinator, care follow-up, care call,
+                    re-engage, win-back, renewal, payment, invoice, review]
   # Working draft (Roman 2026-09-16), business days per stage. Missing = no clock.
   service_levels:
     renewals: { waiting_on_family: 3, needs_scheduler: 1, needs_invoice: 1 }
