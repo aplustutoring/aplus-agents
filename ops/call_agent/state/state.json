@@ -1077,9 +1077,10 @@
     417797863,
     417808885,
     417808928,
-    417809253
+    417809253,
+    417825893
   ],
-  "last_run_utc": "2026-09-22T18:23:38.756413+00:00",
+  "last_run_utc": "2026-09-22T18:50:25.199733+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1346,6 +1347,117 @@
           "Verify correct spelling of the charter school ('Talion' vs 'Calion') on follow-up",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417825893,
+      "number": "13109105142",
+      "time_pt": "11:28 AM",
+      "matched": true,
+      "contact_label": "Charlene Wetzell",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Paola called Charlene Wetzell back to follow up on her missed call about out-of-pocket pricing for her son Keanu's online tutoring with Miss Katie (Katie Holiday). Charlene is thrilled with Katie and wants to expand from 2 to 4 sessions per week (45 min preferred, but open to 30 min to stretch funds). Current iLEAD funds cover through Dec 7 at 2x/week 30-min; if reallocated to 4x/week they run out ~week of Oct 19, leaving 7-8 weeks of out-of-pocket needed to bridge to next semester. Paola will build a proposal blending remaining charter funds with an out-of-pocket package and email/text it today, and will loop in the EF to confirm the schedule change. Charlene will also ask her EF about next semester's fund amount so they can plan 4x/week fully funded.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Build and send Charlene a proposal today combining remaining iLEAD funds (4x/week 30-min through ~week of Oct 19) with an out-of-pocket package to bridge the remaining 7-8 weeks of the semester through December.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Charlene approves the proposal, reach out to Keanu's EF (Courtney Gannon) to confirm reallocating current funds to 4 sessions per week.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Re-send the charter out-of-pocket pricing sheet via email and text (single session $75/hr, 6-pack 45-min $300, 12-pack 45-min $550; 6-pack can be used as 9x 30-min).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "After Charlene confirms next-semester fund amount with her EF, help her build a 4x/week schedule fully covered by charter funds for next semester.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once schedule change is approved, update Keanu's calendar to 4x/week with Katie starting next week.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Charlene Wetzell (mom of Keanu, 1st grade, iLEAD Exploration homeschool) is very happy \u2014 she loves tutor Katie (Katie Holiday) and Keanu looks forward to sessions. She wants to expand from 2x/week 30-min to 4x/week, ideally 45-min but open to 30-min to stretch funds. Paola walked her through pricing (single $75/hr; 6-pack 45-min $300 usable as 9x 30-min; 12-pack 45-min $550) and re-sent the pricing sheet by email + text. Plan agreed on the call: burn remaining iLEAD funds faster at 4x/week 30-min (runs out ~week of Oct 19), then bridge the remaining 7-8 weeks to end of semester (~Dec 11 or Dec 18) with an out-of-pocket package. Paola PROMISED to send a written proposal TODAY laying this out, and to loop EF Courtney Gannon in to approve the schedule change once Charlene signs off. Charlene will text her EF about next semester's fund amount so we can plan a fully-funded 4x/week schedule then. Open with: 'Hi Charlene, following up with the proposal Paola promised for Keanu's 4x/week schedule with Katie \u2014 here's how we'd use the remaining iLEAD funds through mid-October and bridge out-of-pocket to the end of semester.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Charlene is an existing active customer (Keanu already in sessions with Katie); lead status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Keanu",
+          "Katie Holiday",
+          "iLEAD Exploration",
+          "Courtney Gannon"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Charlene called back about out-of-pocket pricing. Keanu is thriving with tutor Katie (Katie Holiday) and Charlene wants to expand from 2x/week to 4x/week. She used most of this semester's iLEAD funds on curriculum, so remaining funds only cover 2x/week 30-min through Dec 7. She wants to reallocate to 4x/week 30-min (funds would last through ~week of Oct 19) and pay out of pocket for the remaining 7-8 weeks to end of semester. Next semester she expects more funds and wants to run 4x/week fully charter-funded.",
+          "what_we_can_do_to_help": "[Call] Paola to send Charlene a written proposal today blending remaining iLEAD funds (4x/week 30-min through mid-October) with an out-of-pocket package to bridge to end of semester. Pricing re-sent by email + text (6-pack 45-min $300 usable as 9x 30-min; 12-pack 45-min $550; single $75/hr). Once Charlene approves, Paola to notify EF Courtney Gannon to confirm the schedule change. For next semester, help Charlene plan a fully-funded 4x/week schedule once she confirms available funds with her EF.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Charlene called back about out-of-pocket pricing. Keanu is thriving with tutor Katie (Katie Holiday) and Charlene wants to expand from 2x/week to 4x/week. She used most of this semester's iLEAD funds on curriculum, so remaining funds only cover 2x/week 30-min through Dec 7. She wants to reallocate to 4x/week 30-min (funds would last through ~week of Oct 19) and pay out of pocket for the remaining 7-8 weeks to end of semester. Next semester she expects more funds and wants to run 4x/week fully charter-funded."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Paola to send Charlene a written proposal today blending remaining iLEAD funds (4x/week 30-min through mid-October) with an out-of-pocket package to bridge to end of semester. Pricing re-sent by email + text (6-pack 45-min $300 usable as 9x 30-min; 12-pack 45-min $550; single $75/hr). Once Charlene approves, Paola to notify EF Courtney Gannon to confirm the schedule change. For next semester, help Charlene plan a fully-funded 4x/week schedule once she confirms available funds with her EF."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Build and send Charlene a proposal today combining remaining iLEAD funds (4x/week 30-min through ~week of Oct 19) with an out-of-pocket package to bridge the remaining 7-8 weeks of the semester through December.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Charlene approves the proposal, reach out to Keanu's EF (Courtney Gannon) to confirm reallocating current funds to 4 sessions per week.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Re-send the charter out-of-pocket pricing sheet via email and text (single session $75/hr, 6-pack 45-min $300, 12-pack 45-min $550; 6-pack can be used as 9x 30-min).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "After Charlene confirms next-semester fund amount with her EF, help her build a 4x/week schedule fully covered by charter funds for next semester.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Once schedule change is approved, update Keanu's calendar to 4x/week with Katie starting next week.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
