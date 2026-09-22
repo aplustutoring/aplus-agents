@@ -1074,9 +1074,12 @@
     417771429,
     417773392,
     417787032,
-    417797863
+    417797863,
+    417808885,
+    417808928,
+    417809253
   ],
-  "last_run_utc": "2026-09-22T18:06:24.092713+00:00",
+  "last_run_utc": "2026-09-22T18:18:09.606338+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1355,6 +1358,11 @@
       "number": "18182921268",
       "time_pt": "10:58 AM",
       "reason": "spam gate: 17s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "18182921268",
+      "time_pt": "11:17 AM",
+      "reason": "spam gate: 3s call from an unknown number with no caller-ID"
     }
   ],
   "pending_failures": []
