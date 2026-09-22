@@ -7,6 +7,35 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-22 — Every event gets a HubSpot segment (active list per aplus_event_tag option)
+
+**What changed** (`ops/hubspot-schema/event_lists.py` + tests,
+`.github/workflows/hubspot-schema.yml`, `ops/hubspot-schema/README.md`):
+
+- `event_lists.py` reads the `aplus_event_tag` options from the PORTAL and
+  ensures one ACTIVE contact list per option, named `Event: <label>`,
+  filtered `aplus_event_tag IS_ANY_OF [value]`. Matched by exact name,
+  never recreated, `--dry-run` prints the plan. Filter shape copied from a
+  live dynamic list in the portal (list 286) rather than the docs, which 404.
+- The schema sync workflow runs it right after the property sync, so a new
+  event's list exists the moment its tag option does. No cron: the sync is
+  the event.
+- 4 unit tests (`python3 -m pytest ops/hubspot-schema/test_event_lists.py`).
+
+**Why:** Roman, 2026-09-22: "after each event including this one, I want
+there to be a segment created in HubSpot for the event." Active rather than
+static so late booth submissions and backfills join on their own.
+
+**Run record (2026-09-22, from Roman's Mac with the local token):** created
+`Event: Sage Oak BTSC 2026` (3242), `Event: EO LA Valley AI Agents 2026`
+(3243), `Event: Blue Ridge BTSC 2026` (3244), `Event: APLUS+ Conference 2026`
+(3245), `Event: Sage Oak Park Day 2026` (3246). Re-run: 5 kept, 0 created.
+Park Day list had 31 members within a minute. Bug found on the re-run and
+fixed: list search is eventually consistent, so a list made seconds earlier
+was missing from the search and the create was refused as a duplicate name;
+the script now treats that refusal as "kept".
+
+---
 ## 2026-09-22 — case engine: a task routes on what the task says, not on the thread's category
 
 **Why:** Paola, the day after the Teachworks-notice fix: "Any task related to
