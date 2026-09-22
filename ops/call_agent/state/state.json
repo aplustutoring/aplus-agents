@@ -1072,9 +1072,10 @@
     417746301,
     417747598,
     417771429,
-    417773392
+    417773392,
+    417787032
   ],
-  "last_run_utc": "2026-09-22T17:26:44.572593+00:00",
+  "last_run_utc": "2026-09-22T17:48:32.604321+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1253,6 +1254,99 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 417787032,
+      "number": "15622124963",
+      "time_pt": "10:36 AM",
+      "matched": true,
+      "contact_label": "Ada Munoz",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ called Ada Munoz back to clarify pricing after previously sending at-pay rates. Ada confirmed she's using charter school funds (Talion/Calion charter) for her 10th grader who needs Math only. Paola quoted the charter rate of $75/hour and $60 (stated as 'sixty four') for 45-minute sessions, and Ada asked her to email the charter rates so she can request the PO tomorrow once funds are approved. Ada is still evaluating one other tutor before deciding but wants to try month-to-month first. Ada was receptive to A+ contacting her charter teacher directly to expedite the PO if she confirms via email.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Ada the charter school rates ($75/hour, $60/45-min) to munozada@yahoo.com so she can request the PO tomorrow once funds are approved",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "If Ada replies confirming, reach out to her charter school teacher at Talion (spelling to verify \u2014 sounded like 'Talion/Calion') to send the PO request directly",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Verify correct spelling of the charter school ('Talion' vs 'Calion') on follow-up",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ada Munoz (parent, friendly and engaged) is a charter-funded family whose 10th grader needs Math tutoring only. Paola quoted her the charter rate: $75/hour and $60 for a 45-minute session, and promised to email those rates to munozada@yahoo.com today. Ada said her charter funds will be approved tomorrow and she'll request the PO then; she's comparing us against one other tutor and wants to start month-to-month to try us out. Her charter is 'Talion' (she said Talion, Paola heard Calion \u2014 please verify spelling; likely Excel Academy/Cabrillo/etc., confirm on next contact). Ada agreed we can contact her charter teacher directly to speed up the PO if she confirms via email reply. She also asked about tutor accents \u2014 reassured we use US-based teachers. Open with: 'Hi Ada, following up on the charter rates Paola sent \u2014 just checking whether your funds came through and if you'd like us to reach out to your teacher at [charter] to get the PO moving.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Confirmed charter-funded family (Talion charter) actively working toward a PO for Math tutoring; status remains QTL - Charter.",
+        "student_or_school_names_mentioned": [
+          "Talion charter school"
+        ],
+        "record_updates": {
+          "whats_going_on": "Charter-funded family (Talion charter \u2014 spelling to confirm) for 10th grade student needing Math only. Ada is waiting on charter fund approval tomorrow and comparing A+ against one other tutor; wants to start month-to-month.",
+          "what_we_can_do_to_help": "Paola quoted charter rates ($75/hr, $60/45-min) and is emailing them to Ada. Once Ada confirms via email, we can send the PO request directly to her charter teacher to expedite. Recommend starting with a 1-month trial schedule (flexible: 30/45/60-min sessions) based on approved fund amount.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "10",
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Charter-funded family (Talion charter \u2014 spelling to confirm) for 10th grade student needing Math only. Ada is waiting on charter fund approval tomorrow and comparing A+ against one other tutor; wants to start month-to-month."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted charter rates ($75/hr, $60/45-min) and is emailing them to Ada. Once Ada confirms via email, we can send the PO request directly to her charter teacher to expedite. Recommend starting with a 1-month trial schedule (flexible: 30/45/60-min sessions) based on approved fund amount."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Ada the charter school rates ($75/hour, $60/45-min) to munozada@yahoo.com so she can request the PO tomorrow once funds are approved",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "If Ada replies confirming, reach out to her charter school teacher at Talion (spelling to verify \u2014 sounded like 'Talion/Calion') to send the PO request directly",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Verify correct spelling of the charter school ('Talion' vs 'Calion') on follow-up",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [],
