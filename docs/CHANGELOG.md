@@ -7,6 +7,35 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-22 — Every event gets a HubSpot segment (active list per aplus_event_tag option)
+
+**What changed** (`ops/hubspot-schema/event_lists.py` + tests,
+`.github/workflows/hubspot-schema.yml`, `ops/hubspot-schema/README.md`):
+
+- `event_lists.py` reads the `aplus_event_tag` options from the PORTAL and
+  ensures one ACTIVE contact list per option, named `Event: <label>`,
+  filtered `aplus_event_tag IS_ANY_OF [value]`. Matched by exact name,
+  never recreated, `--dry-run` prints the plan. Filter shape copied from a
+  live dynamic list in the portal (list 286) rather than the docs, which 404.
+- The schema sync workflow runs it right after the property sync, so a new
+  event's list exists the moment its tag option does. No cron: the sync is
+  the event.
+- 4 unit tests (`python3 -m pytest ops/hubspot-schema/test_event_lists.py`).
+
+**Why:** Roman, 2026-09-22: "after each event including this one, I want
+there to be a segment created in HubSpot for the event." Active rather than
+static so late booth submissions and backfills join on their own.
+
+**Run record (2026-09-22, from Roman's Mac with the local token):** created
+`Event: Sage Oak BTSC 2026` (3242), `Event: EO LA Valley AI Agents 2026`
+(3243), `Event: Blue Ridge BTSC 2026` (3244), `Event: APLUS+ Conference 2026`
+(3245), `Event: Sage Oak Park Day 2026` (3246). Re-run: 5 kept, 0 created.
+Park Day list had 31 members within a minute. Bug found on the re-run and
+fixed: list search is eventually consistent, so a list made seconds earlier
+was missing from the search and the create was refused as a duplicate name;
+the script now treats that refusal as "kept".
+
+---
 ## 2026-09-22 — Scorecard sync skips rows archived on the board instead of failing
 
 **What:** the Monday weekly sync (run 35652565342) failed all four attempts.
@@ -96,6 +125,33 @@ excludes — the resolver would no-op there, so wiring it in would be dead code.
 (Paola, thread C0BL05MCJ4B/1790094666.888569).
 
 ---
+## 2026-09-22 — Tutor-issues nightly died on an undeclared enum value; registry and engine now locked together
+
+**What:** the 2026-09-21 run (35671819729) crashed creating its first ticket:
+`400 Client Error` from HubSpot, no body logged. Dry run this morning showed
+the ticket: "Unresponsive in Slack (chased by text): Fidaya Williams", the
+sixth issue type #213 added to `ISSUE_TYPES` on 9/18. `tutor_issue_type` in
+`ops/hubspot-schema/properties.yml` never got the option, so the portal
+refused the value. The retry sweeper correctly HELD the run (4xx, no rerun).
+
+**Fix:** option `unresponsive_in_slack` declared in properties.yml (label
+matches the engine); `hs_req` logs status + response body on any 4xx/5xx
+before raising; `ops/tutor-issues/tests/test_registry_lockstep.py` fails the
+suite when any `ISSUE_TYPES` value or label is not in the registry. 55 tests
+green. After merge: run `hubspot-schema.yml` (dry_run=false, additive) so the
+portal learns the option, then the nightly run files the Fidaya ticket.
+
+**Also seen this morning:** Scorecard weekly sync failed all 4 attempts:
+Monday refuses writes to five items marked inactive on the board (Meeting
+Requested 11487307910, Meeting Scheduled 12005709448, Proposal Out
+11760102894, Active Proposals 12504179404, Program Contracted 11760067895,
+the CSM pipeline rows). Same five threw "unauthorized" last week but did not
+fail the job. Either the rows were retired on the board and the sync should
+drop them, or they were archived by mistake. Roman to say which; not changed.
+
+**Files:** ops/hubspot-schema/properties.yml, ops/tutor-issues/tutor_issues.py,
+ops/tutor-issues/tests/test_registry_lockstep.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-21 — case engine: a Teachworks notice is not a pre-deal lead
 
 **Why:** Paola reported that cancellation work coming from Teachworks
@@ -152,6 +208,48 @@ were already in `email/config.yaml`. Nothing was added that duplicates them.
 (Paola, thread C0BL05MCJ4B/1790034459.088409).
 
 ---
+## 2026-09-18 — Ticket pesters come from Roman, daily, and land on Emily when ignored
+
+**Roman:** "I want Kath to be pestered though if she doesn't do shit" ... "We
+currently don't have a scheduling lead and we won't have a scheduling lead.
+All of those things need to be escalated to Emily" ... "I want the pestering
+to look like a direct message from me sent to them."
+
+**What was true before this:** a PO refusal or review ticket got exactly ONE
+bot DM to Kath 8 business hours after it was filed; the next two escalation
+levels pointed at the scheduling-lead seat, vacated 9/17; the weekly aging
+re-nag has been off since 8/28 (59 bot DMs a day, zero read); and the
+evidence-based ticket reasoner, built 8/26 with a 24h / 48h / 96h ladder
+that repeats daily, was never put on a schedule (two hand runs, both in
+August).
+
+**Now:**
+- `ticket-reasoner.yml` runs weekdays 09:30 PT. Scheduled runs are DRY until
+  repo variable `REASONER_LIVE` = "true" (Roman reads one dry pass first, then
+  flips it; manual dispatches keep their inputs). Checkout pinned to `ref:
+  main`, joins the `aplus-email-state` group, commits its audit records back
+  (the daily pester dedupe reads them).
+- Pesters are posted with the visionary seat's Slack USER token
+  (`SLACK_USER_TOKEN_VISIONARY`, new secret, role-named): the recipient sees a
+  DM from Roman. Copy is first person and plain: "Kath, this ticket has been
+  open 3 days and I still see it sitting there: <subject>. <reason>. Where are
+  we on it? <link>". No verdict codes, no emoji, no em dashes. Config
+  `reasoner.pester_as: visionary`. Token unset = bot DM with a warning, never
+  silence. `slack_client.dm(..., as_role=)` is the general mechanism; only the
+  visionary seat has a token today.
+- Escalation targets after #259 (merged today): level 2 deleted, level 3 =
+  operations = Emily. The reasoner's ladder skips a null level. Test added.
+- 8 tests in `email/tests/test_pester_as_visionary.py`.
+
+**Still human (Roman):** create the user token. api.slack.com/apps → the aplus
+bot app → OAuth & Permissions → *User Token Scopes* add `chat:write` →
+Reinstall to Workspace (as Roman) → copy the *User OAuth Token* (xoxp-…) →
+`gh secret set SLACK_USER_TOKEN_VISIONARY`. Then read the first scheduled
+dry run and set repo variable `REASONER_LIVE=true`.
+
+**Files:** .github/workflows/ticket-reasoner.yml, email/src/{config,slack_client,ticket_reasoner}.py,
+email/config.yaml, email/tests/test_pester_as_visionary.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
 
 **Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and

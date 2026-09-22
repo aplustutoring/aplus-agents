@@ -1042,6 +1042,11 @@ reasoner:
   supervisor_after_hours: 48
   last_resort_after_hours: 96
   repeat_every_hours: 24      # daily drumbeat once the ladder starts
+  # Who the nudge appears to come from. "visionary" posts with that seat's
+  # Slack USER token (secret SLACK_USER_TOKEN_VISIONARY), so Kath or Emily
+  # sees a DM from Roman, not from a bot (Roman 2026-09-18: "I want the
+  # pestering to look like a direct message from me"). Token unset = bot DM.
+  pester_as: visionary
 
 aging_sweep:
   # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
