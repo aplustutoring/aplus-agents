@@ -38,6 +38,34 @@ Ticket properties the engine writes (group Case engine, all `[Agent]`):
 Retention risk is **priority High + `retention_risk` = true**, no stage.
 The board sorts on the flag.
 
+## The surname split (cancellation, reschedule, scheduling)
+
+Cancellation, reschedule and scheduling work is owned by the FAMILY's
+surname, never the student's and never the tutor's: **A-L -> `scheduler_a_l`,
+M-Z -> `scheduler_m_z`** (config `scheduler_split`, held today by Janelle and
+Yolanda; `router.scheduler_for_last_name` is the one implementation). The
+ticket and every task hung off it — the SLA reply task and the win-back
+`Re-engage:` task — carry that owner.
+
+The surname comes from the email CONTENT first, because the sender often
+isn't the family: a Teachworks notice names them in the body
+(`main._parent_last_name`). Then the HubSpot contact, then the Teachworks
+family record.
+
+One override, and only one: a **pre-deal lead** — a family with no deal and
+no Teachworks account — goes to `charter_sales` until the deal exists, so a
+new sale isn't handed to a scheduler (Roman 2026-07-20, after the Deanna
+Smith miss).
+
+Worked example. `Sterling, Sam — Cancellation`, a Teachworks notice for a
+one-time skip on 9/21. Surname Sterling, S is M-Z, so the ticket and its
+reply task are **Yolanda's**. The pre-deal override does not apply: the
+notice's no-reply sender is not the family, and a family Teachworks writes
+about is active by definition. (Before 2026-09-21 it did apply — the override
+tested the no-reply sender, found no deal and no Teachworks account, and gave
+71 notices to charter sales. Paola caught it on this one.
+`email/src/backfill_notice_owners.py` reassigned the open ones.)
+
 ## The engine's shape
 
 trigger -> `open_case` (idempotent by `case_key`, associates contact and
