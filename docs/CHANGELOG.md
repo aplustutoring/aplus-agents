@@ -7,6 +7,62 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-21 — case engine: a Teachworks notice is not a pre-deal lead
+
+**Why:** Paola reported that cancellation work coming from Teachworks
+notifications should be assigned by the family's surname (A-L Janelle, M-Z
+Yolanda). That rule already existed and was already wired to cancellation,
+reschedule and scheduling (`scheduler_split` in `email/config.yaml`,
+`router.scheduler_for_last_name`), so the report was a symptom, not the rule
+being missing.
+
+What actually broke it: the pre-deal-lead override in triage (shipped
+2026-07-20 after the Deanna Smith miss) asks "does this family have a deal or
+a Teachworks account?" of the SENDER's contact. A Teachworks notice arrives
+from one shared no-reply address, which has neither and never will, so the
+override answered "pre-deal lead" for EVERY notice and moved it off the
+scheduler to charter sales. The audit log shows 90 such decisions between
+2026-07-24 and 2026-09-21; 71 came from the Teachworks notification contact
+(the other 19 are real families with no deal yet, which is what the override
+is for). 43 landed in September alone. Sam Sterling's 9/20 cancellation —
+S, so Yolanda's — went to Paola, which is how she found it.
+
+**What changed:**
+
+1. `router.is_notification_sender` (+ `NOTIFICATION_SENDER_DOMAINS`) names the
+   machine senders that write ABOUT a family rather than as one. It lives in
+   `router.py` next to the split it guards, and replaces the three inline
+   `endswith("@teachworks.com")` checks in `main.py`.
+
+2. `main._predeal_lead` extracts the override into one testable predicate and
+   exempts notification senders. The split's owner now stands for notices, so
+   the ticket, the SLA reply task and the win-back `Re-engage:` task all reach
+   the right scheduler. Reschedule and scheduling notices were broken the same
+   way and are fixed by the same line.
+
+3. `email/src/backfill_notice_owners.py` — one-shot sweep. Reads the misrouted
+   tickets out of the audit log (no guessing from CRM state), skips anything
+   closed or already taken back by a human, recomputes the owner from the
+   ticket subject's surname, and moves the associated open tasks. A task whose
+   contact is shared by several families is REPORTED, never moved: that
+   contact is the no-reply address, and guessing there hands one family's work
+   to another family's scheduler. Honours `DRY_RUN`. Run it once with
+   `DRY_RUN=true`, read the list, then live.
+
+4. `docs/CASE-ENGINE.md` gains a "surname split" section with the rule, the
+   one override, and the Sterling -> Yolanda worked example.
+
+No new config: the owner map, the split boundary and both HubSpot owner ids
+were already in `email/config.yaml`. Nothing was added that duplicates them.
+
+**Files:** `email/src/router.py`, `email/src/main.py`,
+`email/src/backfill_notice_owners.py`, `email/tests/test_predeal_lead.py`,
+`email/tests/test_backfill_notice_owners.py`, `docs/CASE-ENGINE.md`.
+
+**Correction:** `corrections/case-engine/2026-09-21-cancellation-task-assignment-by-lastname.md`
+(Paola, thread C0BL05MCJ4B/1790034459.088409).
+
+---
 ## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
 
 **Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and

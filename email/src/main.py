@@ -22,7 +22,7 @@ from . import (audit, hubspot_client as hs, low_balance, po_sources, slack_clien
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
 from .config import DRY_RUN, ROOT, cfg, require, staff
-from .router import resolve
+from .router import is_notification_sender, resolve
 
 DOC_RECEIPT = "tutor_document"  # the only category permitted to send an outbound MESSAGE
 
@@ -111,6 +111,31 @@ def _parent_last_name(contact: dict | None, tw_enrich: dict, result: dict | None
         if ln:
             return ln
     return tw_enrich.get("parent_last_name")
+
+
+def _predeal_lead(decision, hs_enrich: dict, tw_enrich: dict, notification: bool) -> bool:
+    """Should a scheduler-routed thread go to charter sales instead?
+
+    The A-L/M-Z split assumes an active family; a lead with no deal and no
+    Teachworks account isn't one, and scheduler-routing them drops the sale
+    (Roman 2026-07-20, after the Deanna Smith miss).
+
+    A notification sender is exempt (Paola 2026-09-21). The no-reply address a
+    Teachworks notice comes from has no deal and no Teachworks account of its
+    own and never will, so this test answered "pre-deal lead" for EVERY notice
+    and took the cancellation, reschedule and scheduling notices away from the
+    scheduler: 43 of the 76 notices triaged in September, Sam Sterling's 9/20
+    cancellation among them (S is M-Z, so Yolanda's). A family Teachworks
+    writes about is an active family by definition.
+    """
+    split = cfg()["scheduler_split"]
+    if decision.owner_key not in (split["a_to_l"], split["m_to_z"]):
+        return False
+    if notification:
+        return False
+    return bool((hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
+                and not hs_enrich.get("associated_deals")
+                and not tw_enrich.get("teachworks_match"))
 
 
 def _cancellation_deal_action(family_cid, result: dict) -> tuple[str, dict | None]:
@@ -303,7 +328,7 @@ def _handle_followup(thread_id: str, message: dict, prior: dict, result: dict,
 
     # Re-draft the reply as an internal comment (same rules as a fresh ticket).
     draft_text = result.get("draft_reply") or ""
-    is_teachworks = (email or "").lower().endswith("@teachworks.com")
+    is_teachworks = is_notification_sender(email)
     if decision.should_draft and draft_text.strip() and not is_teachworks:
         hs.post_comment(thread_id, f"[A+ draft reply — review & send]\n\n{draft_text}")
         record["draft_posted"] = True
@@ -462,16 +487,12 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     decision = resolve(result["category"], result["confidence"], last_name)
     contact_name = email.split("@")[0] if email else "unknown"
 
-    # Pre-deal leads own their thread with sales support until a deal exists.
-    # The A-L/M-Z split assumes an active family; a lead with no deal and no
-    # Teachworks account isn't one, and scheduler-routing them drops the sale
-    # (per Roman 2026-07-20, after the Deanna Smith miss).
-    split = cfg()["scheduler_split"]
+    # Pre-deal leads own their thread with sales support until a deal exists
+    # (see _predeal_lead — a Teachworks notice is not a lead, it is mail ABOUT
+    # an active family, and keeps the scheduler the split picked).
+    is_teachworks = is_notification_sender(email)
     predeal_intake = False
-    if (decision.owner_key in (split["a_to_l"], split["m_to_z"])
-            and (hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
-            and not hs_enrich.get("associated_deals")
-            and not tw_enrich.get("teachworks_match")):
+    if _predeal_lead(decision, hs_enrich, tw_enrich, is_teachworks):
         role_key = cfg().get("roles", {}).get("charter_sales", "charter_sales")
         decision.owner_key = role_key
         decision.owner = (staff(role_key) or None)
@@ -501,7 +522,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     # email the family straight from the ticket), not the no-reply Teachworks address.
     ticket_contact_id = contact_id
     family_email = email   # who to enroll / email; the sender, unless we resolve the family
-    if email.lower().endswith("@teachworks.com") and last_name:
+    if is_teachworks and last_name:
         fam = hs.find_family_contact(result.get("student_first_name") or "", last_name)
         if len(fam) == 1:
             ticket_contact_id = fam[0]["id"]
@@ -662,7 +683,6 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     #     for Teachworks the draft still lives in the ticket note so the owner emails the
     #     family from the ticket) ──
     draft_text = result.get("draft_reply") or ""
-    is_teachworks = email.lower().endswith("@teachworks.com")
     if decision.should_draft and draft_text.strip() and not is_teachworks:
         hs.post_comment(thread_id, f"[A+ draft reply — review & send]\n\n{draft_text}")
         record["draft_posted"] = True

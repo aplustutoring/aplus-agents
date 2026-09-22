@@ -25,6 +25,19 @@ class RouteDecision:
     notes: list[str] = field(default_factory=list)
 
 
+# Senders that are machines writing ABOUT a family, never the family itself.
+NOTIFICATION_SENDER_DOMAINS = ("teachworks.com",)
+
+
+def is_notification_sender(email: str | None) -> bool:
+    """True when the sender is a machine writing about a family (a Teachworks
+    notice) rather than a family writing to us. Every notice arrives from one
+    shared no-reply address, so anything asked of the SENDER tells us nothing
+    about the family: the family is named in the body, not in the From line."""
+    e = (email or "").lower()
+    return any(e.endswith("@" + d) for d in NOTIFICATION_SENDER_DOMAINS)
+
+
 def last_name_initial(last_name: str | None) -> str | None:
     """First alphabetic character of a last name, uppercased; None if unknown."""
     if not last_name:
