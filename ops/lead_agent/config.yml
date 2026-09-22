@@ -1,0 +1,60 @@
+# ops/lead_agent — the reasoning lead engine.
+#
+# Claude DECIDES. presend GATES. This code EXECUTES.
+# Claude never holds the send button: it returns a decision object, the
+# guardrails below run in Python where no prompt can talk past them, and only
+# then does anything leave the building.
+
+model: "claude-opus-5"        # fleet elsewhere is on claude-opus-4-7; this engine
+                              # reasons about live customer copy, so it runs current
+effort: "high"                # low | medium | high | xhigh | max
+max_tokens: 8000
+
+# LOCKED off until knowledge/journey 00 + 01 are REVIEWED + agent_readable.
+# With send:false every outbound decision becomes a DRAFT on a task for the
+# seat. The reasoning, the status logic and the guardrails all still run, so a
+# week in this mode is a real rehearsal, not a mock.
+send: false
+
+# Poll window and caps
+lookback_hours: 72            # how far back a lead stays "active" for re-evaluation
+max_leads_per_run: 25         # above this, abort BEFORE any write
+max_outbound_per_lead_per_day: 1
+min_hours_between_touches: 12
+
+# ── Guardrails Claude cannot argue with ───────────────────────────
+# Each status may only be written when its evidence exists on the record.
+# The old workflow stamped ATTEMPTED_TO_CONTACT on a timer and emailed families
+# "we could not leave a voicemail" with no call placed. A status is a claim
+# about reality; it needs proof.
+status_evidence:
+  ATTEMPTED_TO_CONTACT: calls_outbound      # a real outbound CALL engagement
+  "Meeting Booked": meetings                # a real MEETING object
+  "We Connected": calls_connected           # a call with a connected disposition
+  OPEN_DEAL: deals                          # a real deal
+  UNQUALIFIED: human_only                   # never an agent decision
+  "Using Someone Else": replied             # they told us so
+
+# Statuses the agent may never write under any reasoning.
+status_forbidden:
+  - UNQUALIFIED
+  - "For Review To Be Deleted"
+
+# Confidence below this is never executed; it becomes a task for the seat.
+min_confidence_to_send: high
+
+# Routing (seat, line, SLA hours, presend purpose) by audience.
+routing:
+  family:         { seat: charter_sales,   line: charter_sales, sla_hours: 1.5, purpose: lead_first_touch }
+  tor:            { seat: charter_sales,   line: charter_sales, sla_hours: 8,   purpose: lead_first_touch }
+  decision_maker: { seat: sales,           line: charter_sales, sla_hours: 8,   purpose: lead_first_touch }
+  tutor:          { seat: scheduling_lead, line: support,       sla_hours: 8,   purpose: lead_first_touch }
+
+# The seat's working window, Pacific. Nothing leaves outside it and no task is
+# due outside it.
+work_window:
+  open_hour: 8
+  close_hour: 18
+
+booking_link: ""              # TODO(Roman): which link — paola157, successful/consultation?
+                              # Empty means the agent is told it has no link to offer.

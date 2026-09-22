@@ -7,6 +7,60 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-22 — `ops/lead_agent`: leads get a reasoning engine, not a sequence (BUILT, draft-only)
+
+**What:** Roman: "build a new workflow or even better an agentic model that
+focuses on our new leads... next level shit. not outdated workflows with
+templated emails." Built `ops/lead_agent/`: entrypoint, runner, `config.yml`,
+`prompts/decide.md`, 20 guardrail tests, Actions workflow, registry entry.
+`ops/lead_intake` is marked `deprecated` (superseded, not deleted — its cadence
+config and templates are the reference for what the agent should produce).
+
+Shape: **Claude DECIDES · guardrails ENFORCE · presend GATES · code EXECUTES.**
+Per lead it builds a dossier (form answers, full history, every call, meeting,
+reply and prior agent touch, cross-line thread state), asks
+`claude-opus-5` (adaptive thinking, effort high, structured output against a
+fixed decision schema) for the ONE next right thing, and writes the copy for
+that family. Actions: send_sms · send_email · set_status · create_task · wait ·
+handoff · nothing. The prompt says outright that `wait` and `nothing` are real
+answers and "an agent that always finds a reason to send is a worse agent".
+
+**Claude never holds the send button.** The reason is the defect we are
+replacing: flow 50818589 made claims about reality it had no evidence for
+(F1 — "we could not leave a voicemail" on a branch default, nobody dialed;
+ATTEMPTED_TO_CONTACT on a timer). A model with a send tool makes that same
+class of mistake more fluently. So, in Python where no prompt reaches:
+
+- **every status needs its evidence in the dossier** (`status_evidence`):
+  ATTEMPTED_TO_CONTACT needs a real outbound CALL, Meeting Booked needs a real
+  MEETING, UNQUALIFIED is never the agent's call;
+- **copy rules run on the text** (em dash scrub, STOP line) after the model
+  returns, not as a request inside the prompt;
+- **frequency and quiet hours are counted from the record**;
+- **confidence below `high` is a human's call**;
+- **a blocked send is never silence** — it becomes a task carrying the agent's
+  read, its draft and why it was held. Silence is how the old flow lost people.
+
+Model note: the fleet standard is `claude-opus-4-7`; this engine runs
+`claude-opus-5` deliberately because it reasons about live customer copy. The
+system prompt + CARE values are one cached prefix, so per-lead cost is the
+dossier.
+
+**Still `send: false`**, and the entrypoint cannot be flipped until journey 00
+and 01 are REVIEWED. In draft mode every outbound decision becomes a draft on
+the seat's task while the reasoning, status logic, gate and guardrails all run,
+so a week in this mode is a rehearsal rather than a mock.
+
+**Context from the same day:** in the 7 days 09-15..09-22, 7 intake
+submissions, **zero calls placed**, and 5 people were sent "1st Phone Call -
+Unable To Leave VM" — three real families (Cynthia Carrillo, Caroline Sfez,
+Samina Pashtoon) and the same spam number twice. F1 is still firing weekly
+while the fix sits on an unmerged branch.
+
+**Files:** `ops/lead_agent/` (new), `.github/workflows/lead-agent.yml` (new),
+`registry.yml`, `docs/FLEET.md`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-15 — Review pass on journey 00 and 01: not signable as written, and the gap is small
 
 **What:** read `00-pre-send-checklist.md` and `01-first-touch.md` line by line

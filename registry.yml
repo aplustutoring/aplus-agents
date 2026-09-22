@@ -62,13 +62,50 @@
 # ("America/Los_Angeles") when an explicit zone is needed (DST-aware).
 
 agents:
+  # ───────────────────────── Lead agent (reasoning) ─────────────────────
+  - id: lead-agent
+    runtime: github-actions
+    engine: Lead intake
+    name: Lead agent — reason over new leads
+    owner: roman@wetutorathome.com
+    status: active
+    probation: draft   # config.yml send:false; journey 00 + 01 still DRAFT
+    trigger:
+      type: cron
+      schedule: ["*/30 15-23,0-1 * * * (08:00-18:30 PT)"]
+      workflow: .github/workflows/lead-agent.yml
+    entrypoint: ops/lead_agent/lead_agent.py
+    reads:
+      - HubSpot:contacts          # recent_conversion_date cursor
+      - HubSpot:deals             # returning-family detection + status evidence
+      - HubSpot:calls             # status evidence: nobody claims a call that did not happen
+      - HubSpot:meetings          # booking detection, not the fragile title match
+      - JustCall                  # via presend: threads on every other line
+      - Anthropic                 # claude-opus-5, structured decision output
+    writes:
+      - HubSpot:tasks             # the seat's alert, carrying the agent's read + draft
+      - HubSpot:notes             # [Agent] decision record
+      - HubSpot:contacts          # hs_lead_status, ONLY where the dossier proves it
+      - ops/lead_agent/state/     # cursor, committed back
+    depends_on:
+      - email/src/presend.py      # the one pre-send gate
+      - email/src/hubspot_client.py
+      - ops/lead_agent/prompts/decide.md
+      - ops/values/care-values.md
+      - knowledge/journey/01-first-touch.md
+    # Claude decides, guardrails enforce, presend gates, code executes.
+    # Supersedes the decision layer of lead-intake (now deprecated) and
+    # replaces HubSpot flow 50818589.
+
   # ───────────────────────── Lead intake (stage 01) ─────────────────────
   - id: lead-intake
     runtime: github-actions
     engine: Lead intake
     name: Lead intake — stage 01 first touch
     owner: roman@wetutorathome.com
-    status: active
+    status: deprecated   # superseded by lead-agent 2026-09-22; kept for its
+                         # cadence config + templates, which are the reference
+                         # for what the agent should produce
     probation: draft   # knowledge/journey 00 + 01 are DRAFT; config.yml send:false
     trigger:
       type: cron

@@ -1,0 +1,88 @@
+name: Lead agent — reason over new leads
+
+env:
+  TZ: America/Los_Angeles
+
+# NOT LIVE. Scheduled runs plan only; `live` must be dispatched by hand, and
+# even live it cannot message a human until config.yml `send` is flipped, which
+# needs knowledge/journey 00 + 01 REVIEWED.
+on:
+  schedule:
+    - cron: "*/30 15,16,17,18,19,20,21,22,23,0,1 * * *"   # 08:00-18:30 PT, every 30 min
+  workflow_dispatch:
+    inputs:
+      live:
+        description: "Write tasks, notes and statuses (false = plan only)"
+        required: false
+        type: boolean
+        default: false
+      contact:
+        description: "One contact id, for verification"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  lead-agent:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: aplus-lead-agent-state
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: ops/lead_agent
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # branch TIP, not the dispatch SHA: a queued run must see the previous run's cursor commit
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Guardrail tests (the guardrails are the product)
+        run: |
+          pip install -q pytest
+          python -m pytest tests/ -q
+
+      - name: Run engine
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+        run: |
+          FLAGS=""
+          if [ "${{ inputs.live }}" = "true" ]; then FLAGS="$FLAGS --live"; fi
+          if [ -n "${{ inputs.contact }}" ]; then FLAGS="$FLAGS --contact ${{ inputs.contact }}"; fi
+          python lead_agent.py --report-json report.json $FLAGS
+
+      - name: Upload run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lead-agent-report
+          path: ops/lead_agent/report*.json
+          if-no-files-found: ignore
+
+      - name: Commit state changes
+        if: ${{ inputs.live == true }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/
+          if git diff --cached --quiet; then
+            echo "no state changes to commit"
+          else
+            git commit -m "lead-agent: persist cursor for $(date -u +%Y-%m-%dT%H:%M)"
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              git rebase --abort 2>/dev/null || true
+              sleep 5
+            done
+          fi
