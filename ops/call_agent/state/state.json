@@ -1088,9 +1088,10 @@
     417926361,
     417926227,
     417924377,
-    417936571
+    417936571,
+    417951828
   ],
-  "last_run_utc": "2026-09-22T22:16:31.012318+00:00",
+  "last_run_utc": "2026-09-22T23:11:24.968171+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -1906,6 +1907,120 @@
           "Once PO is received from Granite Mountain, begin tutor matching for 6th-grade online ELA/writing support and have scheduling text Elizabeth to confirm session times.",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 417951828,
+      "number": "16145079328",
+      "time_pt": "4:00 PM",
+      "matched": true,
+      "contact_label": "Ashley Andrews Schuh",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola called Ashley Andrews Schuh to follow up on her inquiry about tutoring for her 8-year-old son Bennett Schuh, a third grader at iLEAD Hybrid who is struggling with handwriting and the mechanics of writing. Ashley wants to start in December, prefers in-person but is open to online, and may use charter school funds or pay out of pocket depending on whether the funds go toward music classes. Paola quoted charter rates ($75/hr or $60/45min online) and offered to email pricing for both charter and out-of-pocket options. Ashley agreed to review and reach back out when ready to move forward.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Ashley the charter and out-of-pocket pricing options, vendor list info, and how to submit a purchase order for Bennett's tutoring.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Ashley closer to December to see if she's ready to move forward and whether she'll use charter funds or pay out of pocket.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Ashley Andrews Schuh (warm, friendly) wants tutoring for her 8-year-old son Bennett Schuh, a 3rd grader at iLEAD Hybrid, starting in December. Focus: handwriting and mechanics of writing. She prefers in-person but will accept online. She may use iLEAD charter funds OR pay out of pocket \u2014 undecided because she's also considering using the funds for music classes. Paola quoted charter online rates ($75/60-min, $60/45-min) and promised to email both charter and out-of-pocket pricing plus vendor/PO info. Ashley expects that email and will reach back out when ready. Opener: 'Hi Ashley, just checking in on the pricing info Paola sent over for Bennett \u2014 have you had a chance to decide whether you'll be using iLEAD funds or going out of pocket so we can line up a writing tutor for December?'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family attends iLEAD Hybrid (charter) and is considering using instructional funds for tutoring; Paola quoted charter rates.",
+        "student_or_school_names_mentioned": [
+          "Bennett Schuh",
+          "iLEAD Hybrid"
+        ],
+        "record_updates": {
+          "whats_going_on": "Ashley wants to start tutoring in December for her 8-year-old son Bennett (3rd grade at iLEAD Hybrid) who is struggling with handwriting and the mechanics of writing. She prefers in-person but is open to online. May use iLEAD charter funds or pay out of pocket \u2014 undecided because funds might go to music classes instead.",
+          "what_we_can_do_to_help": "Paola quoted charter online rates ($75/60-min, $60/45-min) and will email both charter and out-of-pocket pricing plus vendor/PO info. Once Ashley decides on funding, match Bennett with a writing/handwriting-focused tutor around the family's preferred schedule for a December start.",
+          "student_first_name": "Bennett",
+          "student_last_name": "Schuh",
+          "grade_level": "3",
+          "student_school": "iLEAD Hybrid",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Ashley wants to start tutoring in December for her 8-year-old son Bennett (3rd grade at iLEAD Hybrid) who is struggling with handwriting and the mechanics of writing. She prefers in-person but is open to online. May use iLEAD charter funds or pay out of pocket \u2014 undecided because funds might go to music classes instead."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola quoted charter online rates ($75/60-min, $60/45-min) and will email both charter and out-of-pocket pricing plus vendor/PO info. Once Ashley decides on funding, match Bennett with a writing/handwriting-focused tutor around the family's preferred schedule for a December start."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Bennett"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Schuh"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "3"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "iLEAD Hybrid"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Ashley the charter and out-of-pocket pricing options, vendor list info, and how to submit a purchase order for Bennett's tutoring.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Ashley closer to December to see if she's ready to move forward and whether she'll use charter funds or pay out of pocket.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
