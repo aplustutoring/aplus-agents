@@ -75,7 +75,8 @@
     "Ev0C4AT82Z9N",
     "Ev0C4B00DW8Y",
     "Ev0C31838S6T",
-    "Ev0C3NTC4PAN"
+    "Ev0C3NTC4PAN",
+    "Ev0C3SN3LFSQ"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -668,24 +669,6 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-09-02T17:30:29.319813+00:00",
       "reporter": "Danielle"
-    },
-    "1790094666.888569": {
-      "agent": "case-engine",
-      "agent_label": "Case engine (Tasks / Tickets / Pipelines rule; Renewals, Support, Tutor Accountability pipelines)",
-      "correction_path": "corrections/case-engine/2026-09-22-scheduling-tasks-route-by-family-lastnam.md",
-      "branch": "fix/case-engine-2026-09-22-888569",
-      "diagnosis": "The case engine's task routing config doesn't encode a scheduling-vs-care split \u2014 scheduling-related tasks are landing on Paola instead of being routed to Janelle (A\u2013L) or Yolanda (M\u2013Z) by family last name. The owner-selection logic lives in email/config.yaml (case_engine/tasks blocks) and is applied in email/src/owner_assign.py and hubspot_client task creation.",
-      "fix_plan": [
-        "Add a scheduling routing rule to email/config.yaml under case_engine: define a scheduling task category (matching [Scheduling] label + keywords: reschedule, cancel, no-show, address/unit/access, confirm session, tutor/student schedule) and split owners by family last name (A\u2013L \u2192 Janelle, M\u2013Z \u2192 Yolanda).",
-        "Extend email/src/owner_assign.py to detect scheduling intent (label prefix + keyword list) and pick the owner from the family's last name (already available via case_client/contact), falling back to Paola only when the task is explicitly Student Success/Care follow-up.",
-        "Wire the new resolver into email/src/case_engine.py at task creation so Support and Tutor Accountability pipelines consult it before defaulting to Paola; keep email/src/hubspot_client.py task ceiling enforcement intact.",
-        "Add unit coverage for the three examples (Moore\u2192Yolanda, Garcia\u2192Janelle, Sterling\u2192Yolanda) and confirm last-name source is family, not tutor or other mentioned contact.",
-        "Get Janelle and Yolanda's HubSpot owner IDs from Roman and confirm the A\u2013L / M\u2013Z cutoff (does 'L' go to Janelle, 'M' to Yolanda?) before shipping."
-      ],
-      "risk": "medium",
-      "recommendation": "needs_human_input",
-      "proposed_utc": "2026-09-22T16:32:11.240541+00:00",
-      "reporter": "Paola"
     }
   }
 }
