@@ -1068,6 +1068,23 @@ reasoner:
   # pestering to look like a direct message from me"). Token unset = bot DM.
   pester_as: visionary
 
+# ── Deals that stop, and the work that should stop with them ──────
+# Born from the Wolfstein cancellation of 2026-09-15: the family said no, the
+# deal was moved to Stopped, nobody wrote down why, and three days later the
+# record still told a scheduler to find a tutor and text the father.
+deal_closed:
+  enabled: false             # shadow first. Flip after one clean DRY_RUN pass Roman has read.
+  lookback_days: 7           # how far back a stop counts as recent; state, not the window, prevents repeats
+  max_deals_per_run: 25      # blast ceiling (the 2026-08-25 aging-sweep near-miss fired 80 DMs)
+  digest_channel: ""         # ONE digest per run. Empty = print only, never DM per item.
+  # Matched against the stage LABEL, case-insensitive substring (enumeration
+  # rule). Covers every deal pipeline at once, so a new pipeline that calls its
+  # last column "Stopped" is picked up without a code change.
+  stop_stage_labels:
+    - "stopped"
+    - "closed lost"
+    - "lost"
+
 aging_sweep:
   # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
   # hours, 59 of them from this sweep, and zero replies from her in the last 400
