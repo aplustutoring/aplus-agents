@@ -30,6 +30,41 @@ from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 from .names import first_name
 
+
+# Money never reaches the deal description (Roman 2026-09-23): the HubSpot
+# workflow behind should_this_deal_be_posted_to_a_slack_channel_ posts the
+# description to the tutor channel, and tutors must never see the PO value or
+# our hourly rate. Amount and rate stay on their own properties and the ticket.
+_MONEY_PATTERNS = [
+    # "at $75/hour", "@ $75 per hour", "at 75.00/hr", "at $60 per 45-minute session"
+    re.compile(r",?\s*(?:at|@|for)\s*\$?\s?\d[\d,]*(?:\.\d+)?\s*(?:/|per)\s*(?:\d+[- ]?(?:min(?:ute)?s?)?\s*)?"
+               r"(?:hour|hr|session|lesson|class)\b(?:\s*(?:rate|each))?", re.I),
+    # "totaling $300", "for a total of $300", "worth $300", "valued at $300.00"
+    re.compile(r",?\s*(?:totaling|totalling|total(?:ing)?\s+of|for\s+a\s+total\s+of|worth|valued\s+at|value\s+of|"
+               r"amount\s+of)\s*\$?\s?\d[\d,]*(?:\.\d+)?\b", re.I),
+    # "Value 150.00", "Total Cost: 300", "payout 140.00", "hourly rate of 75"
+    re.compile(r"\b(?:total\s+cost|total\s+value|po\s+value|value|payout|amount|hourly\s+rate|rate)\s*(?:of|:|=)?\s*"
+               r"\$?\s?\d[\d,]*(?:\.\d{2})?\b(?:\s*(?:/|per)\s*(?:hour|hr))?", re.I),
+    # any dollar figure left, with or without a per-unit tail
+    re.compile(r"\$\s?\d[\d,]*(?:\.\d+)?(?:\s*(?:/|per)\s*(?:hour|hr|session|lesson|class))?", re.I),
+]
+
+
+def no_money(text: str) -> str:
+    """The PO summary with every dollar figure and per-hour price removed:
+    'PO #3114264191 covers 4 hours ... for September 2026 at $75/hour,
+    totaling $300.' becomes 'PO #3114264191 covers 4 hours ... for
+    September 2026.' Hours and PO numbers stay."""
+    s = text or ""
+    for pat in _MONEY_PATTERNS:
+        s = pat.sub("", s)
+    s = re.sub(r"\(\s*\)", "", s)                       # emptied parentheses
+    s = re.sub(r"\s+([,.;:])", r"\1", s)                 # space before punctuation
+    s = re.sub(r",\s*([.;])", r"\1", s)                  # ", ." after a removed clause
+    s = re.sub(r"\.\s*\.", ".", s)
+    s = re.sub(r"[ \t]{2,}", " ", s)
+    return s.strip()
+
 PO_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "Before contacting a family, teacher, or tutor, read knowledge/journey/README.md "
@@ -43,6 +78,10 @@ PO_SYSTEM = (
     "parent_last, parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, level_up (bool), "
     "summary, draft_reply, confidence (0-1)}. "
+    "summary = two or three plain sentences: school, student and grade, PO number, hours "
+    "and month covered, teacher of record, parent, approval status. NEVER a dollar "
+    "figure, PO value, total, or hourly/session price in the summary: it is shown to "
+    "tutors. Money goes in amount and rate only. "
     "tutor_name = the A+ tutor named on the PO/order agreement, if any (e.g. 'Jacquelyn Lemerond'). "
     "rate = the unit price stated in the PO (number only, e.g. 75). rate_unit = what that "
     "price buys: 'hour' when the PO prices per hour, 'session' when it prices per session/"
@@ -1690,9 +1729,11 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         extra = {"po_number": po_num,
                  "should_this_deal_be_posted_to_a_slack_channel_": "true"}
         # Deal Description carries the extraction summary (Roman 2026-09-04:
-        # the deal itself should say what the PO says, not just the ticket)
-        if (po.get("summary") or "").strip():
-            extra["description"] = po["summary"].strip()[:1500]
+        # the deal itself should say what the PO says, not just the ticket),
+        # minus every dollar figure and hourly price (Roman 2026-09-23: the
+        # description is what the tutor channel sees)
+        if no_money(po.get("summary") or "").strip():
+            extra["description"] = no_money(po["summary"]).strip()[:1500]
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
         # Resolve the PARENT contact FIRST — the deal name leads with the parent

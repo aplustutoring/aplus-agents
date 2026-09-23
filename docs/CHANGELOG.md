@@ -7,6 +7,26 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — PO deal description carries no money (the tutor channel reads it)
+
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_no_money.py`)
+- `no_money()`: every dollar figure, PO value, total, and per-hour / per-session
+  price is stripped from the extraction summary before it becomes the deal
+  `description`. Hours, months, PO numbers, names survive. Deterministic, so a
+  model slip cannot leak.
+- The extraction prompt now says what the summary is (school, student, grade,
+  PO number, hours and month, teacher, parent, approval status) and that it
+  never carries money. `amount` and `rate` keep their own fields; the ticket
+  keeps its Amount / Hours @ rate lines for charter_admin.
+
+**Why.** Roman 2026-09-23: the HubSpot workflow behind
+`should_this_deal_be_posted_to_a_slack_channel_` posts the description to
+#charter-tutoring ("we have a new Charter student..."), and the 9/22 and
+9/23 posts read "4 hours ... at $75/hour, totaling $300". Tutors never see the
+PO value or our hourly cost.
+
+---
+
 ## 2026-09-11 — booth/aplus-2026: conference booth BUILT (group selfie, one print per contact, Mac print queue)
 
 **What:** the APLUS+ Conference booth (Anaheim, Oct 21-23; A+ = table PC6 +
