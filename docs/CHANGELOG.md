@@ -7,6 +7,29 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — PO deal description carries no money (the tutor channel reads it)
+
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_no_money.py`)
+- `no_money()`: every dollar figure, PO value, total, and per-hour / per-session
+  price is stripped from the extraction summary before it becomes the deal
+  `description`. Hours, months, PO numbers, names survive. Deterministic, so a
+  model slip cannot leak.
+- The extraction prompt now says what the summary is (school, student, grade,
+  PO number, hours and month, teacher, parent, approval status) and that it
+  never carries money. `amount` and `rate` keep their own fields; the ticket
+  keeps its Amount / Hours @ rate lines for charter_admin.
+- `ops/hubspot-schema/scrub_deal_descriptions_2026_09_23.py`: one-off, human-run,
+  applies `no_money()` to every existing 26/27 deal description. Dry run on
+  2026-09-23: 273 deals with a description, 134 carried money, 0 figures or
+  dangling money words left after the scrub (the patterns were tuned on that
+  set: "at 1/2 hour per week" is cadence and survives; "PO total $300",
+  "Total authorization is $750", "($150/week)", "Total combined $600" go).
+
+**Why.** Roman 2026-09-23: the HubSpot workflow behind
+`should_this_deal_be_posted_to_a_slack_channel_` posts the description to
+#charter-tutoring ("we have a new Charter student..."), and the 9/22 and
+9/23 posts read "4 hours ... at $75/hour, totaling $300". Tutors never see the
+PO value or our hourly cost.
 ## 2026-09-22 — Low balance fires at 3 hours live, email and text together, teacher a business day later
 
 **What changed** (`email/src/low_balance.py`, `email/config.yaml`,
