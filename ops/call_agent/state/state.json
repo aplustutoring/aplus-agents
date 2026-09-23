@@ -1094,9 +1094,10 @@
     418179936,
     418215813,
     418311876,
-    418343728
+    418343728,
+    418348852
   ],
-  "last_run_utc": "2026-09-23T19:33:33.780550+00:00",
+  "last_run_utc": "2026-09-23T19:41:30.224684+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1198,6 +1199,11 @@
       "number": "13109903032",
       "time_pt": "12:26 PM",
       "reason": "spam gate: 5s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "19093011696",
+      "time_pt": "12:34 PM",
+      "reason": "hang-up"
     }
   ],
   "pending_failures": []
