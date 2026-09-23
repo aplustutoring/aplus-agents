@@ -1105,9 +1105,10 @@
     418441657,
     418440858,
     418442608,
-    418447728
+    418447728,
+    418450136
   ],
-  "last_run_utc": "2026-09-23T23:37:20.002821+00:00",
+  "last_run_utc": "2026-09-23T23:46:34.466617+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1625,6 +1626,100 @@
         [
           "Await Christa's callback confirming 5 PM availability for Tejas and Rashni; if no response, follow up to confirm today's start time",
           86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418450136,
+      "number": "19173252075",
+      "time_pt": "4:35 PM",
+      "matched": true,
+      "contact_label": "Matthew Ferrigno",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola made an outbound follow-up call to Matthew Ferrigno regarding his Yelp inquiry for tutoring his 5th-grade daughter Nyla at Sierra Canyon. Matthew wants weekly in-person homework support in Sherman Oaks (ZIP 91411), specified a female tutor, and noted the school uses Singapore math. Paola quoted $130/hr, explained packages don't expire and can be used across subjects, and agreed to email pricing. Matthew will review and reply by email or text if he wants to move forward.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Matthew the current $130/hr rate and package options for his review, noting packages don't expire and are usable across subjects.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check female tutor availability in ZIP 91411 (Sherman Oaks) for weekly in-person 5th grade homework support, ideally comfortable with Singapore math.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Matthew Ferrigno (warm, easy conversation) is a Yelp lead for his 5th-grade daughter Nyla at Sierra Canyon in Sherman Oaks (ZIP 91411). He wants a female tutor to come in-person about once a week for homework help and to keep her on track; school uses Singapore math. Paola quoted $130/hr, explained packages (don't expire, usable for any subject, professional/teacher tutors) and is emailing pricing after the call. Matthew was clear he won't buy a package until after a first session \u2014 he'll reply by email or text if he wants to move forward. Open with: 'Hi Matthew, just following up on the pricing Paola sent over for Nyla \u2014 happy to set up a first session with a female tutor in your area whenever you're ready.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective family; standard private-pay inquiry, no charter funds and no diagnostic needed.",
+        "student_or_school_names_mentioned": [
+          "Nyla",
+          "Sierra Canyon"
+        ],
+        "record_updates": {
+          "whats_going_on": "Connected with Matthew on Yelp follow-up. Daughter Nyla is a 5th grader at Sierra Canyon (Singapore math curriculum); family is in Sherman Oaks 91411 and wants a female tutor in-person about once a week for homework support and to keep her on track.",
+          "what_we_can_do_to_help": "Emailing $130/hr rate and package options (don't expire, usable across subjects). Source a female tutor in 91411 comfortable with 5th grade / Singapore math for weekly in-person homework help; Matthew wants a first session before committing to a package and will reply by email/text to move forward.",
+          "student_first_name": "Nyla",
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": "Sierra Canyon",
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": "Yelp!",
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected with Matthew on Yelp follow-up. Daughter Nyla is a 5th grader at Sierra Canyon (Singapore math curriculum); family is in Sherman Oaks 91411 and wants a female tutor in-person about once a week for homework support and to keep her on track."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Emailing $130/hr rate and package options (don't expire, usable across subjects). Source a female tutor in 91411 comfortable with 5th grade / Singapore math for weekly in-person homework help; Matthew wants a first session before committing to a package and will reply by email/text to move forward."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Sierra Canyon"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Matthew the current $130/hr rate and package options for his review, noting packages don't expire and are usable across subjects.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check female tutor availability in ZIP 91411 (Sherman Oaks) for weekly in-person 5th grade homework support, ideally comfortable with Singapore math.",
+          81494333,
           "scheduling"
         ]
       ],
