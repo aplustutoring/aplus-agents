@@ -454,6 +454,123 @@ dry run and set repo variable `REASONER_LIVE=true`.
 **Files:** .github/workflows/ticket-reasoner.yml, email/src/{config,slack_client,ticket_reasoner}.py,
 email/config.yaml, email/tests/test_pester_as_visionary.py (new), docs/CHANGELOG.md.
 
+<<<<<<< HEAD
+## 2026-09-18 — inbound_watch: messages that bear on work already open
+
+**Two failures on the same day, same shape.**
+
+*Jeff Werner.* 9/12 he emails about ISEE prep for his daughter. Triage files a
+HIGH ticket and a reply task inside 42 minutes. 9/13 he sends the practice test
+results. Monday 9/14 the SLA ladder breaches and fires all three escalation
+levels between 12:38 and 16:23 PT, levels 1 and 2 inside the same minute, then
+by design never speaks again. Tuesday 9/15 the reply task is marked COMPLETED
+with no reply ever sent. Jeff chases 9/15 and again 9/17. Triage reads both,
+scores them 0.30 and 0.52 confidence, and does nothing, because "just following
+up" carries no new information. Roman answered it himself on 9/18, five days and
+one hour after the email Jeff was waiting on.
+
+*Ashley Clay.* 9/18 she texts that her school is approving and will send the
+purchase order directly. Her open task "PO request: Ashley Clay - Trace" was due
+that same day with the body "Awaiting email confirmation from EF." The answer
+arrived; the task waiting for it never heard.
+
+**The common failure.** An inbound message that bears on open work reaches
+nobody who is holding that work. One case was an answer, the other a chase.
+
+**What changed** (`email/src/inbound_watch.py`,
+`email/tests/test_inbound_watch.py`, `email/config.yaml`, `email/src/audit.py`,
+`.github/workflows/email-inbound-watch.yml`):
+
+- **Chase leg.** Two or more inbound messages with nothing outbound since, the
+  oldest past a 4-hour bar, re-arms the ticket: a note with the customer's own
+  words, a DM to the owner and the last-resort seat, and any `Reply:` task that
+  was marked COMPLETED *while they were still waiting* is reopened with the
+  reason written into its body. Outbound means text, call or email, so a phone
+  call back still counts as an answer (version 1 of the waiting checker read
+  only texts and called three families neglected while Paola was on the phone
+  with them).
+- **Answer leg.** An inbound text matching a purchase-order promise gets stamped
+  onto the open PO task verbatim and moves its due date out 7 days, so the chase
+  resurfaces when it is useful instead of expiring unread the same day.
+- Both legs switch independently. One digest per run, never a DM per item.
+  A JustCall failure aborts the run rather than treating a blind index as
+  silence.
+
+Shipped OFF (`inbound_watch.enabled: false`).
+
+**Deliberately not done:** the agent never replies, never closes, and never
+judges whether the customer is right. It puts what they said where the work
+lives and makes sure a person sees it.
+
+**Two things Roman still owns, both surfaced by the Werner thread:**
+
+1. `ticket-reasoner.yml` has **no schedule**. It is `workflow_dispatch` only and
+   last ran 2026-08-29. `aging_sweep` was switched off on 2026-08-28 with the
+   comment "the reasoning sweep supersedes this", and the reasoning sweep was
+   never given a cron. It is the component whose whole job is BALL_IN_COURT →
+   pester, and it never looked at Jeff's ticket. Arming it means arming a sweep
+   that can close tickets (`reasoner.allow_close: true`), so it is not armed
+   here. The queue is not rotting in general: 113 open tickets, only 2 untouched
+   for 3+ days.
+2. The escalation ladder spends levels 1 and 2 in the same minute on any
+   category with a short SLA (scheduling is 1.5h, and the sweep runs hourly).
+   A supervisor ping that arrives simultaneously with the owner ping is not an
+   escalation.
+=======
+## 2026-09-18 — When a deal stops, its future work stops with it
+
+**What happened.** On 2026-09-15 Annie Wolfstein texted the sales line asking to
+book Bradley for Wednesday evenings. Paola called her back at 3:15 PM, the call
+logged positive, and the support line texted Bradley's father Nolan to confirm
+the schedule. Annie called in again seventeen minutes later and cancelled:
+Bradley had found a tutor at his own school. Someone moved the deal to Stopped
+and wrote nothing down.
+
+Three days later the record still held two `[Scheduling]` tasks telling a
+scheduler to find a tutor and text Nolan, three older follow-ups, and Nolan's
+unanswered confirm text. On 2026-09-18 that record was read as an urgent dropped
+ball and nearly acted on. The only place the cancellation existed was in one
+person's memory, and it took a Slack question to Paola to find it.
+
+**Why this is a system failure, not a forgetting.** The decision to stop was
+made in conversation and never written anywhere a system could read. The cancel
+call itself carries no summary because it had no recording, and the call agent
+correctly skips those under the two-party consent guardrail. So nothing
+downstream could know.
+
+**What changed** (`email/src/deal_closed.py`, `email/tests/test_deal_closed.py`,
+`email/config.yaml`, `.github/workflows/email-deal-stopped.yml`,
+`email/src/audit.py`): a sweep over deals sitting in a stop stage.
+
+- Tasks due on or after the day the deal stopped are closed. Tasks that predate
+  the decision are reported and left alone: overtaken by events is a guess, and
+  the Lia Beck rule says an agent does not close somebody's real follow-up on a
+  guess.
+- A stop with no reason on the record gets a note saying the reason is missing
+  and one DM to the deal owner asking what the family said. The agent never
+  invents a reason, and it does not read its own nag back as one.
+- One digest per run, never a message per item (the 2026-08-25 aging-sweep
+  near-miss fired 80 DMs in a dry run).
+- Stop stages are matched by stage LABEL across every pipeline, so a new
+  pipeline whose last column is called Stopped is covered without a code change,
+  and a portal rename cannot silently switch the sweep off. It does not rely on
+  `isClosed`, which has a known gap on the In-Person Stopped stage.
+
+Shipped OFF. `deal_closed.enabled: false`; the workflow runs and prints
+"disabled in config". Arm it by flipping the config after a dry run Roman has
+read, not by editing the workflow.
+
+**Not fixed here, and worth knowing:** nothing yet watches a question we asked a
+family that they never answered. Nolan's confirm text has sat unanswered since
+9/15 and no agent notices. `ops/unanswered` watches inbound asks to us, not our
+own unanswered asks to them.
+
+**Still manual:** the five stale Wolfstein tasks are still open. Closing them
+from this session was blocked by the write classifier, so they wait for the
+sweep to be armed or for a human.
+>>>>>>> origin/main
+
+---
 ## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
 
 **Why:** a parent called A+ twice on 2026-08-28, spoke to Roman for 3m43s and

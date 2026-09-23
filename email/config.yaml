@@ -1068,6 +1068,47 @@ reasoner:
   # pestering to look like a direct message from me"). Token unset = bot DM.
   pester_as: visionary
 
+# ── Deals that stop, and the work that should stop with them ──────
+# Born from the Wolfstein cancellation of 2026-09-15: the family said no, the
+# deal was moved to Stopped, nobody wrote down why, and three days later the
+# record still told a scheduler to find a tutor and text the father.
+deal_closed:
+  enabled: false             # shadow first. Flip after one clean DRY_RUN pass Roman has read.
+  lookback_days: 7           # how far back a stop counts as recent; state, not the window, prevents repeats
+  max_deals_per_run: 25      # blast ceiling (the 2026-08-25 aging-sweep near-miss fired 80 DMs)
+  digest_channel: ""         # ONE digest per run. Empty = print only, never DM per item.
+  # Matched against the stage LABEL, case-insensitive substring (enumeration
+  # rule). Covers every deal pipeline at once, so a new pipeline that calls its
+  # last column "Stopped" is picked up without a code change.
+  stop_stage_labels:
+    - "stopped"
+    - "closed lost"
+    - "lost"
+
+# ── Inbound messages that bear on work already open ───────────────
+# Two things families do that nothing heard until 2026-09-18.
+#   Ashley Clay texted the answer to the exact question her open PO task was
+#   waiting on, and the task stayed blind and due that day.
+#   Jeff Werner chased twice over five days. Triage scored his chases 0.30 and
+#   0.52 confidence and did nothing, because "just following up" carries no new
+#   information. That reading is backwards: a customer repeating themselves is
+#   the strongest signal we get that we are late.
+inbound_watch:
+  enabled: false             # shadow first. Flip after a DRY_RUN pass Roman has read.
+  sms_lookback_days: 30      # JustCall window; state, not the window, prevents repeats
+  digest_channel: ""         # ONE digest per run. Empty = print only, never a DM per item.
+  chase:
+    enabled: true
+    min_messages: 2          # one unanswered message is a queue; two is them telling us we are late
+    after_hours: 4           # ...and the oldest of them has waited at least this long
+    repeat_every_hours: 24   # re-arm at most once a day per ticket
+    max_per_run: 10          # blast ceiling (the 2026-08-25 aging sweep fired 80 DMs in a dry run)
+  answers:
+    enabled: true
+    task_prefixes: ["PO request:"]   # tasks whose open question a text can answer
+    promise_pushes_due_days: 7       # a promised PO moves the chase out this far, then it resurfaces
+    max_per_run: 25
+
 # ── Tutoring texts on the visionary's personal line ───────────────
 # Inna Volodinsky was told in writing on 2026-09-17 that the support line was
 # the best number. On 2026-09-18 at 8:30 AM she replied on Roman's personal
