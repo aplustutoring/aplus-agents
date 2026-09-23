@@ -5,6 +5,8 @@ tutor-doc receipt send path, without touching any real API.
 """
 import pytest
 
+from src.config import cfg
+
 from src import main
 
 
@@ -95,7 +97,8 @@ def test_hubspot_parent_last_name_drives_split(monkeypatch, calls):
 def test_complaint_suppresses_draft(monkeypatch, calls):
     monkeypatch.setattr(main, "classify", _classify_stub("complaint"))
     rec = main.process_message("thread2", _msg())
-    assert rec["owner"] == "mandy"
+    # the ROLE, not the person: this line said "mandy" until she left
+    assert rec["owner"] == cfg()["roles"]["scheduling_lead"]
     assert rec["draft_posted"] is False
     assert calls["comments"] == []              # no draft for complaints
     assert len(calls["tickets"]) == 1

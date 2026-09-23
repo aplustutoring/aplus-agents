@@ -17,7 +17,12 @@
       "roman_take": "The story the field is missing \u2014 \"recovery\" isn't average scores creeping up; it's the 10th-percentile student gaining ground. That's the only recovery that counts, and it's the only recovery worth funding.",
       "danielle_take": "For charter directors doing MAP Growth right now \u2014 here's what to actually look at in your Fall-to-Fall data, and here's why the middle-school math stagnation should reshape how you allocate Tier 2/Tier 3 minutes this semester. ---",
       "redundancy_max_similarity": 0.560451888718476,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-19T11:05:24.382815-07:00",
+      "post_date": "2026-09-21",
+      "bundle_dir": "aplus-content/2026-09-21-nwea-2026-map-growth-reading",
+      "hubspot_post_id": "222274804288"
     },
     {
       "slot": 2,
@@ -31,7 +36,12 @@
       "roman_take": "The growth indicator is the honest indicator. Proficiency snapshots reward affluent enrollment; growth rewards actual teaching. Charter schools should have been asking for this for a decade.",
       "danielle_take": "Practical read-out \u2014 how a director should sit down with their Oct 15 numbers, cross-reference LTEL and Title III subgroups, and identify the 20\u201340 students where a Tier 2 intervention now moves the Dashboard cell color by spring.",
       "redundancy_max_similarity": 0.7268538760525389,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-19T11:27:46.314826-07:00",
+      "post_date": "2026-09-23",
+      "bundle_dir": "aplus-content/2026-09-23-oct-15-dashboard-growth-indicator",
+      "hubspot_post_id": "222275324027"
     },
     {
       "slot": 3,
@@ -49,7 +59,12 @@
       "roman_take": "Conviction angle \u2014 tutoring isn't a staffing SKU; it's an intervention model, and the schools that treat it like a commodity get commodity results. The exits and roll-ups prove the point.",
       "danielle_take": "Implementation angle \u2014 for the ~10 charters in California caught mid-year by Varsity's August shutdown, here's what to check in your current intervention data before choosing what's next (curriculum alignment, ELPAC-linked progress monitoring, Title III eligibility). A practical checklist post.",
       "redundancy_max_similarity": 0.5715584766708597,
-      "redundancy_bypassed": false
+      "redundancy_bypassed": false,
+      "staged": true,
+      "staged_at": "2026-09-19T11:42:33.351530-07:00",
+      "post_date": "2026-09-25",
+      "bundle_dir": "aplus-content/2026-09-25-tutoring-market-consolidation-2026",
+      "hubspot_post_id": "222278535690"
     }
   ],
   "slack": {

@@ -244,6 +244,11 @@ properties:
           label: "Scheduling flip-flop"
         - value: tech_issue_unreported
           label: "Tech issue not reported"
+        # Added by #213 (2026-09-18) to the engine but not here: HubSpot 400'd
+        # the first ticket of that type on 2026-09-21. tests/test_registry_lockstep
+        # now fails when ISSUE_TYPES and these options drift.
+        - value: unresponsive_in_slack
+          label: "Unresponsive in Slack (chased by text)"
         # Tutor Accountability pipeline (2026-09-16, Tutor Issue Escalation Procedure p.1)
         - value: tutor_switch_requested
           label: "Tutor switch requested"
@@ -797,6 +802,8 @@ properties:
           label: "Blue Ridge BTSC 2026"
         - value: sage_oak_park_2026
           label: "Sage Oak Park Day 2026"
+        - value: aplus_conference_2026
+          label: "APLUS+ Conference 2026"   # Anaheim, Oct 21-23 2026, booth/aplus-2026
     - name: aplus_booth_goal
       label: "Booth Photo Banner"
       group: events

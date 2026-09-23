@@ -62,7 +62,8 @@ MONDAY_USER_IDS = {
     "kath":    "48072738",
     "janelle": "76279527",
     "yolanda": "97968060",
-    "mandy":   "76279529",
+    # The Operations seat's entry was removed 2026-09-17 (holder terminated).
+    # Only scheduler keys are ever looked up here, so nothing referenced it.
 }
 
 # ─────────────────────────────────────────────

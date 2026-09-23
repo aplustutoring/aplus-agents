@@ -7,6 +7,453 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — Money lives on the deal's Amount only; iLEAD Level Up is its own program
+
+**What changed** (`email/src/po_inbox.py`, `email/config.yaml`,
+`ops/hubspot-schema/scrub_deal_descriptions_2026_09_23.py`, tests)
+- **Money:** the PO watch ticket, the convert-to-invoice task, their bodies,
+  the ticket "Summary:" note and the cancellation note no longer carry the PO
+  value or the rate; hours stay ("value on the deal's Amount"). `no_money()`
+  tuned on the 2026-09-23 live pass (clipped sentences repaired, cadence
+  phrases kept, sentences about missing data kept). The one-off script now
+  has three steps: descriptions, open PO-agent tickets and tasks, Level Up
+  deal names. Dry run: 12 descriptions, 9 tickets, 2 tasks, 2 deals change.
+- **Level Up (Roman's answers 2026-09-23):** Terri's pipeline is dormant, not
+  retired, and resumes November 2026 (site rule still to set); Level Up
+  teachers CAN issue Level Up POs (capped at $300 a month), so
+  `low_balance.no_teacher_email_pipelines` is now empty; Level Up posting to
+  #charter-tutoring stays. Level Up deals are named "<School> Level Up N"
+  with their own count; the extraction prompt defines `level_up` and requires
+  the teacher's name and email on a Level Up PO; `_level_up_backstop` flags
+  any PO whose own words say "Level Up" whatever the model returned; a Level
+  Up deal without the teacher gets a ⚠️ note (reaches the missing-info DM).
+  HubSpot form workflow "New Level Up Charter Deal iLEAD" (513259427), which
+  created Level Up deals in the Traditional pipeline, turned OFF via the API.
+
+**Why.** Roman 2026-09-23: "make sure that the only place where money stays
+is in the deal amount"; Level Up POs must never look like Traditional ones
+and must always name the teacher who issues the next PO.
+
+---
+
+## 2026-09-23 — PO deal description carries no money (the tutor channel reads it)
+
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_no_money.py`)
+- `no_money()`: every dollar figure, PO value, total, and per-hour / per-session
+  price is stripped from the extraction summary before it becomes the deal
+  `description`. Hours, months, PO numbers, names survive. Deterministic, so a
+  model slip cannot leak.
+- The extraction prompt now says what the summary is (school, student, grade,
+  PO number, hours and month, teacher, parent, approval status) and that it
+  never carries money. `amount` and `rate` keep their own fields; the ticket
+  keeps its Amount / Hours @ rate lines for charter_admin.
+- `ops/hubspot-schema/scrub_deal_descriptions_2026_09_23.py`: one-off, human-run,
+  applies `no_money()` to every existing 26/27 deal description. Dry run on
+  2026-09-23: 273 deals with a description, 134 carried money, 0 figures or
+  dangling money words left after the scrub (the patterns were tuned on that
+  set: "at 1/2 hour per week" is cadence and survives; "PO total $300",
+  "Total authorization is $750", "($150/week)", "Total combined $600" go).
+
+**Why.** Roman 2026-09-23: the HubSpot workflow behind
+`should_this_deal_be_posted_to_a_slack_channel_` posts the description to
+#charter-tutoring ("we have a new Charter student..."), and the 9/22 and
+9/23 posts read "4 hours ... at $75/hour, totaling $300". Tutors never see the
+PO value or our hourly cost.
+## 2026-09-22 — Low balance fires at 3 hours live, email and text together, teacher a business day later
+
+**What changed** (`email/src/low_balance.py`, `email/config.yaml`,
+`docs/RETENTION-PROCESS.md`, tests)
+- The case still opens on the Teachworks 4-hour alert, but now WAITS. Every
+  hourly sweep pulls attended lessons since the alert from both Teachworks
+  accounts (`_attended_since`, one bulk pull), subtracts them from the alert's
+  balance, and records `low_balance_balance` + a ticket note only when the
+  number changes. Lesson length = `to_date - from_date`, else
+  `lesson_hours_default` (1.0). Teachworks down = balances untouched.
+- `_fire_ready`: family outreach fires at `fire_at_hours` (3) or fewer live,
+  or `fire_fallback_days` (5) business days after the alert. An alert already
+  at 3 or below fires after the 60-minute sibling delay.
+- `text_with_email: true`: the day-0 text leaves in the same sweep as the
+  email (both the hourly sweep and the :15/:30/:45 email pass), through the
+  same gates as before (charter, phone, ticket open, no reply by email or
+  text; JustCall unreadable = the text waits). The record carries
+  `tor_pending`, so the teacher email follows `family_text_after_days` (1)
+  business days later, clock from the text (`day1_at`), only if still no PO
+  and no reply. Roman declined a parallel teacher email (2026-09-09 rule:
+  parent first, teacher backup).
+- Retention risk reads the live balance.
+
+**Why.** Roman 2026-09-22: Teachworks' own family notice already does the
+4-hour nudge (3 of the first 13 renewals arrived with no message from us);
+the sweet spot for our ask is 2 to 4 hours. Private pay and trial stay
+parked: no payment links.
+
+**Test suite.** The ten low-balance sweep tests that failed on main were not
+drift: `run_sweep` read the REAL audit log through `deferred_alerts()` and
+re-opened a parked Xena Chacon alert inside every test, and
+`needs_invoice_sweep` hit the portal. The harness now pins both plus
+`_attended_since`. 681 passed.
+
+---
+
+## 2026-09-11 — booth/aplus-2026: conference booth BUILT (group selfie, one print per contact, Mac print queue)
+
+**What:** the APLUS+ Conference booth (Anaheim, Oct 21-23; A+ = table PC6 +
+Preferred Partner). Roman's design, locked in conversation: handheld group
+selfies, the print is the currency (each copy costs a name + email, first entry
+prints immediately, each further entry queues), conference logo + dates on the
+frame, school name on the bottom, no storybook print.
+
+- `booth/aplus-2026/public/index.html` — start, camera, burst of 3 + pick,
+  copies screen (rows with role chips; school from email domain against the
+  108-domain list, campus select for shared network domains, dropdown fallback,
+  group memory), live queue bar, done, hidden host view (queue table + reprint).
+  1200x1800 card: navy band with the APLUS+ logo, event name and dates, A+ mark;
+  school name + "Together in person" on the foot.
+- `booth/aplus-2026/worker.js` — `POST /group` (archive + Drive mirror into the
+  A+ Events shared drive folder `18dhJTAOSUnxOxkGJuQeUUyv2IH42r83w`),
+  `POST /copy` (HubSpot upsert with #AP032 tag merge, role persona on create,
+  `aplus_booth_photo_url`, timeline note with the school; JustCall MMS from the
+  SALES seat line 818-573-6258 when a cell is given; print job enqueued),
+  queue API for the Mac agent with `X-Agent-Token`, reprint, `/photos`,
+  `/drive-backfill`. 58 tests.
+- `booth/aplus-2026/print-agent/print_agent.py` — stdlib Mac agent: claims the
+  oldest queued job, `lp`s the 4x6 to the Selphy, marks done; pauses while
+  `lpstat` says the printer is stopped; failed jobs re-queue in place; `--dry-run`.
+- `ops/hubspot-schema/properties.yml` — `aplus_event_tag` option
+  `aplus_conference_2026` (additive sync).
+- Deployed: https://aplus-conference-booth.nameless-mountain-bafa.workers.dev,
+  KV `APLUS_2026_PHOTOS` 9331154493e840e5ab80640de9e04306. Secrets set:
+  HUBSPOT_TOKEN, JUSTCALL_API_KEY/SECRET, AGENT_TOKEN. `GOOGLE_SA_JSON` is on
+  Roman (classifier blocks piping the SA key), README has the command.
+
+**Why a Mac print agent:** iPad `window.print()` needs a tap per copy and blocks
+the page; a queue of five copies per group cannot ride on that. The Worker owns
+the queue; the Mac at the table drains it through CUPS with no dialogs.
+
+**Why the sales seat sends the texts:** conference contacts are teachers and
+admins, so the 2026-08-25 sender-routing rule puts the from-number on Danielle.
+
+**Printer decision (Roman, 2026-09-11):** keep the Selphy CP1500, add the Canon
+NB-CP2LI battery pack for outlet-less events (park 9/18). The Liene M100 that
+Danielle linked is a Selphy clone with no battery; the M200 is the battery one.
+No power station.
+
+**Files:** `booth/aplus-2026/{public/index.html,public/schools.json,public/*.png,worker.js,wrangler.toml,test-worker.mjs,print-agent/print_agent.py,README.md}`, `ops/hubspot-schema/properties.yml`, `docs/CHANGELOG.md`.
+## 2026-09-11 — booth/delilah: storybook paint failed once, silently; now retried twice and never silent
+
+**Incident:** Roman ran the booth at 15:28 PT ("Roman and Anna"); print 1 came
+out, the storybook did not. The album confirmed it: the two shots before it had
+storybooks, this one did not. Replaying the same photo through `/storybook` 30
+minutes later succeeded in 11 s, so Gemini can paint it; the failure was
+transient (a Gemini 429/5xx, an empty candidate, or a dropped request on the
+home Wi-Fi). Which one is unknowable because the page swallowed the error and
+the Worker had no persisted logs. That silence is the bug.
+
+**System change:**
+- `worker.js` `/storybook` now makes two Gemini attempts 1.5 s apart, and on
+  final failure writes `err/<ts>` to KV (30-day TTL) and `console.error`s;
+  new `GET /errors` lists them; `/photos` hides them.
+- `public/index.html` retries the whole request once from the iPad (2 s gap,
+  75 s abort each), so a dropped request is also covered. Four Gemini attempts
+  worst case before the done screen says "ask Roman for it later".
+- `wrangler.toml` `[observability] enabled = true`: Workers Logs keep the
+  `console.error` in the dashboard.
+- Tests: the failure case asserts two attempts, the KV record, `/errors`, and
+  that `/photos` stays clean (68 assertions).
+
+**Recovery:** the replayed painting of "Roman and Anna" was archived into the
+album as a storybook entry (unframed), so it can be texted or reprinted from
+the host view. No text was sent (no number on file for that entry).
+
+**Roman, 2026-09-11, locked:** the Gemini painting is TEXT ONLY, never printed
+("that will be a huge waste of paper"). `CONFIG.STORYBOOK_PRINT = false` in
+`public/index.html`; the booth prints one 4x6 per guest, the real photo. The
+painting screen, form note and done messages now say the storybook goes to the
+phone. Same rule already applied to the APLUS+ conference booth.
+
+**Roman, 2026-09-11, second change:** print is not mandatory. The form now
+offers **Text me / Print it / Both**. Text needs a cell and sends the photo then
+the painting; Print needs nothing; Both does both. The painting is only
+generated when a text is going out (no Gemini call for print-only guests).
+Done and progress messages follow the choice.
+
+**Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs}`, `docs/CHANGELOG.md`.
+## 2026-09-22 — Low balance: five days of silent day-0 failures (redacted case store)
+
+**What happened.** The FERPA pass (PR #250, merged 2026-09-16 19:02 PT) masks
+phone and email in `email/state/audit_log.jsonl`. The low-balance agent
+rebuilds its case state from that same log (`open_cases()`), so every case
+opened after the merge came back with `to_email` = `m…@gmail.com` and `phone`
+= `…6225`. Resend answered 422 on each day-0 email from 2026-09-17 17:15 UTC;
+the day-1 text and the teacher email gate on the day-0 send, so they never
+fired either. Nine charter families got no outreach (Alexzander Gonzalez,
+Yanisel Santamaria, Mia and Valentina Zamora, Arianna Rodriguez, Adeline
+Czaja, Ethan Dai, Ayden Botts, Charli Rajewich); the hourly retry wrote about
+100 "send it by hand" notes on Alexzander's ticket. Last successful day-0
+email before the break: Lena Boyden, 2026-09-16 20:52 UTC.
+
+**Fix.** `open_cases()` rehydrates a redacted `to_email` / `parent_email` /
+`phone` from the HubSpot contact (the contact id survives redaction), accepting
+only the same domain and the same last four digits. The held-email audit
+record now carries its `reason`, and the ticket note is written once per
+reason instead of once per sweep.
+
+**Also seen in the same trace (not fixed here):** Jil Beck's case (0.25 h,
+flagged RETENTION RISK 9/18) was already renewed on 8/28 with three 6-hour POs
+and invoices; renewal detection only counts deals created after the alert.
+Malinally Mata-Villa's reply moved her ticket to Needs scheduler on 9/17 and
+the migration script moved it back to Waiting on family on 9/18 (it applied a
+9/16 table without re-reading the stage). Ten low-balance tests fail on main
+before this change (DM target and note-order assertions drifted after #259 /
+#275); unchanged here.
+
+**Files:** email/src/low_balance.py, email/tests/test_low_balance_rehydrate.py
+
+---
+
+## 2026-09-22 — Every event gets a HubSpot segment (active list per aplus_event_tag option)
+
+**What changed** (`ops/hubspot-schema/event_lists.py` + tests,
+`.github/workflows/hubspot-schema.yml`, `ops/hubspot-schema/README.md`):
+
+- `event_lists.py` reads the `aplus_event_tag` options from the PORTAL and
+  ensures one ACTIVE contact list per option, named `Event: <label>`,
+  filtered `aplus_event_tag IS_ANY_OF [value]`. Matched by exact name,
+  never recreated, `--dry-run` prints the plan. Filter shape copied from a
+  live dynamic list in the portal (list 286) rather than the docs, which 404.
+- The schema sync workflow runs it right after the property sync, so a new
+  event's list exists the moment its tag option does. No cron: the sync is
+  the event.
+- 4 unit tests (`python3 -m pytest ops/hubspot-schema/test_event_lists.py`).
+
+**Why:** Roman, 2026-09-22: "after each event including this one, I want
+there to be a segment created in HubSpot for the event." Active rather than
+static so late booth submissions and backfills join on their own.
+
+**Run record (2026-09-22, from Roman's Mac with the local token):** created
+`Event: Sage Oak BTSC 2026` (3242), `Event: EO LA Valley AI Agents 2026`
+(3243), `Event: Blue Ridge BTSC 2026` (3244), `Event: APLUS+ Conference 2026`
+(3245), `Event: Sage Oak Park Day 2026` (3246). Re-run: 5 kept, 0 created.
+Park Day list had 31 members within a minute. Bug found on the re-run and
+fixed: list search is eventually consistent, so a list made seconds earlier
+was missing from the search and the create was refused as a duplicate name;
+the script now treats that refusal as "kept".
+
+---
+## 2026-09-22 — Scorecard sync skips rows archived on the board instead of failing
+
+**What:** the Monday weekly sync (run 35652565342) failed all four attempts.
+Monday refused writes to five L10 rows with "Cannot change column value for
+inactive items": Meeting Requested, Meeting Scheduled, Proposal Out, Active
+Proposals, Program Contracted (Danielle's School Partnerships group). Monday's
+own record shows all five archived by hand on 2026-08-31 within three
+seconds, so this was a deliberate retirement three weeks ago, not damage.
+The 9/7 and 9/14 runs hit the same refusals but stayed green; since 2026-09-16
+a refused write ends the run red, which is correct, and this was the first
+Monday after that change.
+
+**Fix:** `archived_scorecard_items()` reads every scorecard row's state in
+one query before writing; rows not `active` are skipped in the numeric
+write, the context post, and the status update, with one "skipped" line
+each. Ids stay in `SCORECARD_ITEMS`: un-archive a row on the board and it
+resumes on the next run. A failed state lookup writes to every row as
+before, never blocks. 4 tests in `ops/scorecard/tests/test_archived_rows.py`.
+
+**Roman to confirm:** the five CSM rows are retired for good. If yes, nothing
+else to do; if they should come back, un-archive them on the board.
+
+**Files:** ops/scorecard/aplus_weekly_sync.py, ops/scorecard/tests/test_archived_rows.py (new), docs/CHANGELOG.md.
+
+## 2026-09-22 — case engine: a task routes on what the task says, not on the thread's category
+
+**Why:** Paola, the day after the Teachworks-notice fix: "Any task related to
+active-session scheduling or session logistics should NOT be assigned to
+Paola... Assign these tasks directly to the Scheduling Team, based on the
+family's last name. A-L Janelle, M-Z Yolanda. Always route based on the
+family's last name, not the tutor's last name or the name of another contact
+mentioned in the task."
+
+The surname split already existed and was already correct — for TICKETS, and
+for the three email categories that carry it (`routing.cancellation /
+reschedule / scheduling`, `case_engine.owner_rules.support.scheduling`). What
+did not exist was any rule that reads a TASK. A task inherited the owner of
+whatever the thread classified as, so session logistics arriving under
+`tor_inquiry`, `new_po`, `campaign_family` or `review_received` kept the
+category's owner, which is Paola in all four. Nothing re-read the task.
+
+**What changed:**
+
+1. `case_engine.task_is_scheduling` + `case_engine.owner_for_task` — the one
+   shared resolver, config-driven (`case_engine.task_routing`). It re-owns a
+   task ONLY when three things hold: the task would land on a seat in
+   `applies_to` (charter_sales, quality — both Paola), the subject reads as
+   session logistics, and we have the family surname. The A-L / M-Z boundary
+   is not redeclared: it calls `split_role`, which reads the one copy in
+   `owner_rules.renewals.split`.
+
+2. Guards, because the rule is a re-owning rule and a wrong one is worse than
+   none. A care keyword (re-engage, renewal, payment, invoice, review,
+   Student Success) beats a scheduling keyword, so the win-back task and the
+   review task stay Student Success work; an explicit `[Scheduling]` label
+   beats both. Matching is on the SUBJECT only — the body of a `Reply:` task
+   carries the drafted email, and a draft that says "availability" is not a
+   scheduling task. No surname means no move, with the reason printed.
+
+3. `main.py` consults the resolver at the SLA reply task, and DMs the
+   scheduler who got the task (the ticket owner does not change, so without
+   the DM it is a to-do nobody was told about). The pre-deal-lead override is
+   exempt: that family has no deal yet, so the thread is a sale, not a
+   schedule (Roman 2026-07-20).
+
+4. `email/src/reroute_scheduling_tasks.py` — one-shot for the tasks already on
+   Paola's queue, since a rule nobody backfills is a rule the person who
+   reported it never sees. Surname from the task's associated FAMILY contact
+   (`a_persona`), never the tutor's; no family contact, two families on one
+   task, or a tutor-only task is PRINTED and left alone. Honours `DRY_RUN`.
+   Run it with `DRY_RUN=true`, read the list, then live.
+
+No new people or ids: Janelle (80047202, `scheduler_a_l`) and Yolanda
+(86868539, `scheduler_m_z`) and the inclusive-L boundary were already in
+`email/config.yaml` and are reused as-is.
+
+**Not done:** the resolver is wired at triage's task path only. `po_inbox` and
+`hsa_sync` also create tasks, but theirs are PO / invoice / Teachworks-admin
+work owned by charter_admin or the deal owner, which `applies_to` deliberately
+excludes — the resolver would no-op there, so wiring it in would be dead code.
+
+**Files:** `email/config.yaml`, `email/src/case_engine.py`,
+`email/src/main.py`, `email/src/reroute_scheduling_tasks.py`,
+`email/tests/test_task_routing.py`, `docs/CASE-ENGINE.md`.
+
+**Correction:** `corrections/case-engine/2026-09-22-scheduling-tasks-route-by-family-lastnam.md`
+(Paola, thread C0BL05MCJ4B/1790094666.888569).
+
+---
+## 2026-09-22 — Tutor-issues nightly died on an undeclared enum value; registry and engine now locked together
+
+**What:** the 2026-09-21 run (35671819729) crashed creating its first ticket:
+`400 Client Error` from HubSpot, no body logged. Dry run this morning showed
+the ticket: "Unresponsive in Slack (chased by text): Fidaya Williams", the
+sixth issue type #213 added to `ISSUE_TYPES` on 9/18. `tutor_issue_type` in
+`ops/hubspot-schema/properties.yml` never got the option, so the portal
+refused the value. The retry sweeper correctly HELD the run (4xx, no rerun).
+
+**Fix:** option `unresponsive_in_slack` declared in properties.yml (label
+matches the engine); `hs_req` logs status + response body on any 4xx/5xx
+before raising; `ops/tutor-issues/tests/test_registry_lockstep.py` fails the
+suite when any `ISSUE_TYPES` value or label is not in the registry. 55 tests
+green. After merge: run `hubspot-schema.yml` (dry_run=false, additive) so the
+portal learns the option, then the nightly run files the Fidaya ticket.
+
+**Also seen this morning:** Scorecard weekly sync failed all 4 attempts:
+Monday refuses writes to five items marked inactive on the board (Meeting
+Requested 11487307910, Meeting Scheduled 12005709448, Proposal Out
+11760102894, Active Proposals 12504179404, Program Contracted 11760067895,
+the CSM pipeline rows). Same five threw "unauthorized" last week but did not
+fail the job. Either the rows were retired on the board and the sync should
+drop them, or they were archived by mistake. Roman to say which; not changed.
+
+**Files:** ops/hubspot-schema/properties.yml, ops/tutor-issues/tutor_issues.py,
+ops/tutor-issues/tests/test_registry_lockstep.py (new), docs/CHANGELOG.md.
+
+## 2026-09-21 — case engine: a Teachworks notice is not a pre-deal lead
+
+**Why:** Paola reported that cancellation work coming from Teachworks
+notifications should be assigned by the family's surname (A-L Janelle, M-Z
+Yolanda). That rule already existed and was already wired to cancellation,
+reschedule and scheduling (`scheduler_split` in `email/config.yaml`,
+`router.scheduler_for_last_name`), so the report was a symptom, not the rule
+being missing.
+
+What actually broke it: the pre-deal-lead override in triage (shipped
+2026-07-20 after the Deanna Smith miss) asks "does this family have a deal or
+a Teachworks account?" of the SENDER's contact. A Teachworks notice arrives
+from one shared no-reply address, which has neither and never will, so the
+override answered "pre-deal lead" for EVERY notice and moved it off the
+scheduler to charter sales. The audit log shows 90 such decisions between
+2026-07-24 and 2026-09-21; 71 came from the Teachworks notification contact
+(the other 19 are real families with no deal yet, which is what the override
+is for). 43 landed in September alone. Sam Sterling's 9/20 cancellation —
+S, so Yolanda's — went to Paola, which is how she found it.
+
+**What changed:**
+
+1. `router.is_notification_sender` (+ `NOTIFICATION_SENDER_DOMAINS`) names the
+   machine senders that write ABOUT a family rather than as one. It lives in
+   `router.py` next to the split it guards, and replaces the three inline
+   `endswith("@teachworks.com")` checks in `main.py`.
+
+2. `main._predeal_lead` extracts the override into one testable predicate and
+   exempts notification senders. The split's owner now stands for notices, so
+   the ticket, the SLA reply task and the win-back `Re-engage:` task all reach
+   the right scheduler. Reschedule and scheduling notices were broken the same
+   way and are fixed by the same line.
+
+3. `email/src/backfill_notice_owners.py` — one-shot sweep. Reads the misrouted
+   tickets out of the audit log (no guessing from CRM state), skips anything
+   closed or already taken back by a human, recomputes the owner from the
+   ticket subject's surname, and moves the associated open tasks. A task whose
+   contact is shared by several families is REPORTED, never moved: that
+   contact is the no-reply address, and guessing there hands one family's work
+   to another family's scheduler. Honours `DRY_RUN`. Run it once with
+   `DRY_RUN=true`, read the list, then live.
+
+4. `docs/CASE-ENGINE.md` gains a "surname split" section with the rule, the
+   one override, and the Sterling -> Yolanda worked example.
+
+No new config: the owner map, the split boundary and both HubSpot owner ids
+were already in `email/config.yaml`. Nothing was added that duplicates them.
+
+**Files:** `email/src/router.py`, `email/src/main.py`,
+`email/src/backfill_notice_owners.py`, `email/tests/test_predeal_lead.py`,
+`email/tests/test_backfill_notice_owners.py`, `docs/CASE-ENGINE.md`.
+
+**Correction:** `corrections/case-engine/2026-09-21-cancellation-task-assignment-by-lastname.md`
+(Paola, thread C0BL05MCJ4B/1790034459.088409).
+
+---
+## 2026-09-18 — Ticket pesters come from Roman, daily, and land on Emily when ignored
+
+**Roman:** "I want Kath to be pestered though if she doesn't do shit" ... "We
+currently don't have a scheduling lead and we won't have a scheduling lead.
+All of those things need to be escalated to Emily" ... "I want the pestering
+to look like a direct message from me sent to them."
+
+**What was true before this:** a PO refusal or review ticket got exactly ONE
+bot DM to Kath 8 business hours after it was filed; the next two escalation
+levels pointed at the scheduling-lead seat, vacated 9/17; the weekly aging
+re-nag has been off since 8/28 (59 bot DMs a day, zero read); and the
+evidence-based ticket reasoner, built 8/26 with a 24h / 48h / 96h ladder
+that repeats daily, was never put on a schedule (two hand runs, both in
+August).
+
+**Now:**
+- `ticket-reasoner.yml` runs weekdays 09:30 PT. Scheduled runs are DRY until
+  repo variable `REASONER_LIVE` = "true" (Roman reads one dry pass first, then
+  flips it; manual dispatches keep their inputs). Checkout pinned to `ref:
+  main`, joins the `aplus-email-state` group, commits its audit records back
+  (the daily pester dedupe reads them).
+- Pesters are posted with the visionary seat's Slack USER token
+  (`SLACK_USER_TOKEN_VISIONARY`, new secret, role-named): the recipient sees a
+  DM from Roman. Copy is first person and plain: "Kath, this ticket has been
+  open 3 days and I still see it sitting there: <subject>. <reason>. Where are
+  we on it? <link>". No verdict codes, no emoji, no em dashes. Config
+  `reasoner.pester_as: visionary`. Token unset = bot DM with a warning, never
+  silence. `slack_client.dm(..., as_role=)` is the general mechanism; only the
+  visionary seat has a token today.
+- Escalation targets after #259 (merged today): level 2 deleted, level 3 =
+  operations = Emily. The reasoner's ladder skips a null level. Test added.
+- 8 tests in `email/tests/test_pester_as_visionary.py`.
+
+**Still human (Roman):** create the user token. api.slack.com/apps → the aplus
+bot app → OAuth & Permissions → *User Token Scopes* add `chat:write` →
+Reinstall to Workspace (as Roman) → copy the *User OAuth Token* (xoxp-…) →
+`gh secret set SLACK_USER_TOKEN_VISIONARY`. Then read the first scheduled
+dry run and set repo variable `REASONER_LIVE=true`.
+
+**Files:** .github/workflows/ticket-reasoner.yml, email/src/{config,slack_client,ticket_reasoner}.py,
+email/config.yaml, email/tests/test_pester_as_visionary.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-18 — inbound_watch: messages that bear on work already open
 
 **Two failures on the same day, same shape.**
@@ -119,6 +566,146 @@ The gap was only inbound on unmonitored lines.
 `ops/call_agent/tests/test_spam_gate.py` (54 pass).
 
 ---
+## 2026-09-22 — waiting.py 4.4: the echo rule was defeated by a straight quote
+
+Alina Matiukhina's phone sent `Реакция ❤️ на " Hi Alina, no we don't until
+Stephanie confirms she's ready to start again. "`, which is our own message
+handed back to us. The echo rule exists precisely so tapbacks are caught
+whatever language they arrive in, and it missed.
+
+**Not a language gap.** The Russian prefix is irrelevant to the rule, which
+never reads it. The shape matcher only recognised typographic quotes, and this
+client used a straight one. The identical text in curly quotes matched.
+
+The quote class now covers curly, straight, angled and low-9 forms, and any of
+them may open or close, because clients are not consistent about pairing them.
+Four tests, including two that assert the widening did not start swallowing
+real messages that happen to contain a quotation.
+
+Worth recording that this is the second time the general rule beat the specific
+one. Every language added to the tapback word list has a half-life; the echo
+rule needed one character class widened and now handles languages nobody has
+written down.
+
+## 2026-09-20 — waiting.py 4.3: a truncated read now says so
+
+JustCall's `/calls` endpoint timed out twice on the morning of 2026-09-20. The
+timeouts surfaced correctly, but they raised a question the walker could not
+answer: how would it tell a PARTIAL read from a finished one?
+
+It could not. `pull()` stops when `next_page_link` is empty, so a page that
+arrives short ends the walk and the result looks complete, with no error raised
+anywhere. A family missing from a truncated read looks like a family who is
+fine, and that is the dangerous direction for this script to be wrong in.
+
+Every page of the envelope reports `total_count`. The walk now checks its own
+work against it, retries once, and raises `ShortRead` rather than returning a
+number it cannot stand behind. Over-counting is fine, since the window gains
+rows while we page; only under-counting is a short read. A missing
+`total_count` is trusted rather than blocking, because losing the check is bad
+and losing the monitor is worse.
+
+Also: `from __future__ import annotations`, because this runs on the system
+python 3.9 where `int | None` in a signature is a TypeError at import.
+
+Tests: 33, up from 27.
+
+**A correction to the record.** While investigating I reported that the API was
+"giving different answers to the same question", citing 22 numbers then 19 for
+an identical 41 hour window. That was my error, not the API's. The window is
+relative to now, so a message at 40h44m sits inside a 41 hour window at 10:23
+and outside it at 10:53. Three consecutive envelope reads came back identical
+(60/60/60), and a 4 day pull returned 922 rows against a reported 922. The
+guard is still worth having for a real truncation; the instability it was
+prompted by was a sliding window being read as an unstable API.
+
+---
+## 2026-09-18 — waiting.py 4.2: the echo rule was starved, and a timezone bug I made while fixing it
+
+Two more false breaches on the 4:52 PM tick, and only one needed new vocabulary.
+
+`Reacted 💖 to "Your words mean so much to me..."` was already handled in
+principle: the quoted part is our own message and the shape matcher read it
+correctly. It failed because the outbound index was built from the same narrow
+window as the inbound scan, so on a two hour look-back the message being quoted
+had been sent earlier that afternoon and was not in the index. The rule was
+right and starved. Our own side is now pulled over three days
+(`ECHO_LOOKBACK_HOURS`) whatever window the question asks about.
+
+`Well! Thank you.` was a genuine gap: a closing pleasantry that does not START
+the message. Allowed now only when the whole message is under 40 characters and
+contains no question mark, so "The tutor never showed up. Thanks for nothing."
+and "Thanks, but can we move Wednesday to 5?" both still count as messages.
+
+**A bug I introduced and caught in the same sitting.** The first version of the
+wide pull filtered inbound rows locally against a cutoff built from
+`datetime.now()`. JustCall rows carry the account's clock, so the comparison
+silently widened a two hour question by the UTC offset: the tick reported 34
+numbers over "2 hours" and surfaced an eight hour old message as if it were
+new. The window is back in the API's hands, where it always was, and our own
+words are pulled separately. A test now asserts that `newest_each_way` does no
+timestamp filtering of its own.
+
+Tests: 27, up from 20.
+
+---
+## 2026-09-18 — waiting.py 4.1: tapbacks detected by echo, not by language
+
+Two hours after the Chinese tapback fix shipped, Hannah Thorn's phone sent the
+Spanish form: `Le gusta "Okay thank you, I offered Angelo 2:30 pm today..."`.
+Adding Spanish would have left French, Portuguese, Hebrew, Russian and every
+other language our families use, and each gap shows up as an invented breach on
+the one-hour report.
+
+A tapback has one property no language changes: **the quoted part is our own
+message, handed back to us.** So it is now matched against what we actually sent
+that number inside the window. Language-proof, and it cannot swallow a real
+message, because a real message is not a verbatim echo of our words.
+
+The explicit prefix list stays for the forms that carry no quotes at all: the
+Chinese tapback is "赞了:" followed by bare text, with nothing to match on.
+
+`scripts/tests/test_waiting.py` grows to 20, including German, Japanese,
+Russian, Portuguese and French forms that were never written into the code, a
+truncated tapback, and the two cases that must NOT match: a quote we never sent,
+and a real question that happens to contain a quotation.
+
+---
+## 2026-09-18 — waiting.py v4: the checker stops inflating its own count
+
+**What changed** (`scripts/waiting.py`, `scripts/tests/test_waiting.py`): the
+script behind the one-hour acknowledgement rule gets its first tests, and two
+fixes for errors that both pushed the count UP. That direction matters: a
+checker that invents waiting families is one people stop reading, and this one
+reported the same two non-events as breaches on three consecutive ticks.
+
+- **Tapbacks arrive translated into the sender's language.** Judy Xu's iPhone
+  "liked" reaction came through as "赞了：" and never matched the English
+  courtesy list, so it aged past the bar and was reported twice as a parent
+  being ignored.
+- **The conference booth texts a photo to whoever is working the stand.** That
+  staff copy counted as a family waiting on us. Any number resolving to a
+  contact on our own domain is now excluded.
+
+**A third bug the tests caught before it shipped.** Folding tapbacks into the
+existing courtesy regex made it match any message merely STARTING with a
+pleasantry, so "Thanks, but can we move Wednesday to 5?" would have vanished
+from the count. That is the dangerous direction. The filter is now two rules: a
+tapback is a tapback whatever follows it, because what follows is our own quoted
+message, while a closing pleasantry only counts when the message stops there.
+
+Also: `.env` is found by walking up from the script, so it runs from a worktree
+as well as the main checkout, and the helpers moved out of module scope so they
+can be tested with no credentials present.
+
+**Why the tests exist at all.** This script has been wrong four times, each in a
+different direction, and every version looked obviously correct while it was
+lying. The docstring carries that history and the tests now pin it: a call back
+counts as an answer, an inbound call does not, the bar is sixty minutes, and an
+unparseable timestamp does not take the run down.
+
+
+---
 
 ## 2026-09-17 — ops/checkin: the quality check-in, measured first, then rebuilt
 
@@ -166,6 +753,62 @@ workflow, delete the Zap.
 
 **Files:** `ops/checkin/{checkin.py,config.yml,README.md}`,
 `ops/checkin/tests/` (22 pass).
+## 2026-09-18 — Scheduling lead seat vacated: owners resolve through roles, not a name
+
+**What changed.** The scheduling lead / operations seat was vacated on
+2026-09-17. Every place the fleet still pointed at that person by name now
+resolves through a role, and the role points at Emily as interim holder.
+
+Config, one line each:
+- `email/config.yaml` and `ops/tutor-issues/config.yml` gain
+  `roles.tutor_quality_owner`, marked as THE ONE LINE TO CHANGE when the Tutor
+  Quality Lead is hired. `operations`, `scheduling_lead` and
+  `fallback_scheduler` follow it to `emily`. The vacated person is gone from
+  both `staff:` blocks.
+- `escalation.level2` is now `null`. Roman was explicit: "Ticket escalations as
+  a Mandy-owned function no longer exist. Do not reassign that escalation step;
+  delete it." `email/src/sla_sweep.py` skips level 2 when it is null. Without
+  that skip, `staff.get("")` returns `{}`, the DM goes to an empty Slack user
+  id, and an audit row still says level 2 was pinged, so a ticket would look
+  escalated when nobody heard anything.
+- `ops/queues/migrate_tickets_2026_09_16.py` points the operations queue at the
+  new owner id.
+
+Tests: six assertions named the person instead of the role
+(`email/tests/test_router.py` x4, `test_orchestration.py`,
+`ops/tutor-issues/tests/test_tutor_issues.py`). They now read the holder out of
+config. A test that names a person breaks on every personnel change and teaches
+the next reader that the person is the contract. Fixture `staff:` blocks still
+carry names, which is correct: the staff block is the only home for names.
+
+One live break found while sweeping: `ops/scorecard/aplus_weekly_sync.py`
+assigned the Weekly Lesson Report company-total row to a Monday user that no
+longer exists. That sync runs Mondays 08:55 PT, so the next run would have
+posted to a deactivated user. The People column is now omitted when the
+Operations seat has no Monday id, rather than failing the whole sync.
+
+Docs that a teammate or an agent would read as current were de-named:
+`registry.yml`, `docs/FLEET.md`, `ops/tutor-issues/README.md`,
+`email/TEAM_PLAYBOOK.md`, `email/rules.md`, `email/SETUP.md`,
+`knowledge/eos/README.md`, `knowledge/journey/README.md` (open item 1, the
+`operations` role collision, is now resolved), `ops/call_agent/metrics/SPEC.md`,
+`ops/feedback-agent/README.md` + `config.yml`. History was left alone: this
+changelog, `docs/decisions/`, the 2026-09-16 queue migration table, and the
+verbatim Roman quote in `corrections/UNKNOWN/2026-08-14-...` (dated note added
+under it instead).
+
+`ops/unanswered/config.yml` keeps the departed name in `staff_first_names` on
+purpose. Families and tutors still write "Mandy said...", and that ask now has
+nobody behind it, so it needs answering more urgently, not less.
+
+**Why.** Roman, 2026-09-17: "thats why we name things by position and not by
+name. so it will be fine." The cost of getting this wrong was visible the same
+day: a scheduler told a waiting family the departed person would be right with
+them, and the family left after ten minutes.
+
+**Still open, and Roman's call:** the 171 open HubSpot tasks on the old owner,
+deactivating that HubSpot user, and whether the Operations seat gets a Monday
+user at all now that Monday is retired for new work.
 
 ---
 ## 2026-09-17 — Park Day page: group photos, one contact per person in the frame
@@ -984,6 +1627,80 @@ at the Upper South regional at iLEAD HQ on 2026-09-17.
 
 **Files:** `booth/aplus-2026/{schools.yml,schools-dropdown.json,README.md}`, `docs/CHANGELOG.md`.
 
+## 2026-09-12 — PO duplicate guard fails closed; pending-approval follow-up removed
+
+**Why.** Roman: "Let's get rid of the approval checks, we will work on Kath
+verifying in ops later. For now I just want the no duplicate po option being
+firm as possible."
+
+And the finding that made the second half urgent: **the duplicate lookup was
+blind in every dry run.** `hubspot_client.find_deals_by_po_number` and
+`search_deals_by_name` both went through `_write`, which short-circuits under
+`DRY_RUN` and returns `{"id": "DRYRUN"}`. `res.get("results", [])` was therefore
+always `[]`, so the guard concluded "no duplicate" every single time. Every dry
+run to date showed the agent creating deals it would in fact have refused, which
+means the dry-run transcripts were never evidence that the guard works.
+`_get_search` exists for exactly this ("Separate from `_write` so DRY_RUN cannot
+short-circuit a read") and both functions now use it.
+
+**What. Five holes in the duplicate guard, all closed, all failing closed.**
+
+1. **Blind in DRY_RUN** (above). Both lookups moved to `_get_search`.
+2. **No PO number disabled dedupe entirely.** `if po_num:` meant a PO the
+   extractor could not pull a number from skipped the check and created a deal
+   unconditionally, so two copies of one numberless PO made two deals. Now:
+   no deal, a ⛔ note, a DM to the `po_inbox.owner` seat, audit
+   `po_refused_no_number`.
+3. **Exact EQ missed real variants.** The property lookup now tries the
+   normalized number, the raw string, `PO<number>`, and both cases (deals
+   predating the bare-number rule of 2026-08-10 still carry the prefix;
+   alphanumerics like `PF252648-EzekielGarcia` differ in case), and confirms
+   each hit on normalized equality instead of trusting the filter. The
+   deal-name CONTAINS backstop stays.
+4. **HubSpot search is eventually consistent.** Two copies of a PO seconds apart
+   both passed. Two index-independent checks were added: the audit ledger (new
+   `po_deal_created` row per created deal, plus legacy `po_processed`/`new_po`
+   rows) and an in-run set of claimed numbers, so one `_split_pos` email can
+   never create two deals for one number.
+5. **A failed lookup fell through to creation.** Confirmed what happens today:
+   the exception propagates out of `process_po_message`, `run()` catches it and
+   writes an audit row keyed `gmail:<id>` with `action_taken: "error"`, the
+   same key `already_processed()` reads, so the message is marked handled and
+   **never retried**. A transient HubSpot error silently dropped the PO
+   entirely. Now the guard catches it: no deal, ⛔ note, DM, audit
+   `po_refused_dedupe_unavailable`, and the ticket still gets created.
+
+Two config flags, both read with `.get(..., True)` so an older config file
+inherits the safe behaviour: `po_inbox.require_po_number` and
+`po_inbox.dedupe_fail_closed`. New audit actions: `po_deal_created`,
+`po_refused_duplicate`, `po_reissue_flagged`, `po_refused_ledger_duplicate`,
+`po_refused_no_number`, `po_refused_dedupe_unavailable`. The STOPPED/cancelled
+re-issue wording is unchanged, and both branches still refuse to create.
+
+**Removed:** `_sweep_pending_pos()` and its call site, the `pending_po_opened`
+row on order-agreement deals, the `pending_po_confirmed` row in the duplicate
+branch, and the now-unreferenced `po_inbox.pending_portal_approval_days`. The
+extractor's `pending_approval` flag stays: the ticket, the deal note, the
+invoice task and the scheduler DM still say a PO is pending school approval.
+
+**Not done, deliberately.** Kath's ops-side verification of portal approvals is
+deferred per Roman, so **nothing nags any more when a portal approval stalls**.
+a pending order agreement now sits unchased until a human looks at it. That is
+the accepted trade for this session; the follow-up belongs in ops, not in the
+PO agent.
+
+**Also noticed, not fixed (pre-existing on `main`):** seven
+`email/tests/test_low_balance.py` tests fail on weekends. `_day1_due()` ends in
+`_is_business_day(now.date())`, so the day-1 text path is unreachable on a
+Saturday and the tests assert it fires. They fail identically on `origin/main`
+with this branch stashed.
+
+**Files:** `email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_dedupe.py` (new, 24 tests),
+`email/tests/test_po_inbox.py`, `email/tests/test_po_sources.py`,
+`docs/PO-PROCESS.md`, `knowledge/journey/04-qualified-to-deal.md`.
+
+---
 ## 2026-09-11 — booth/delilah: Drive mirror moved to the "Delilah's Bday" Shared Drive (SA quota lesson)
 
 **What broke:** after Roman set `GOOGLE_SA_JSON`, the first `/drive-backfill`

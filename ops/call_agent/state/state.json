@@ -997,39 +997,153 @@
     416664012,
     416666147,
     416666485,
-    416690184
+    416690184,
+    416703568,
+    416707056,
+    416724091,
+    416739598,
+    416771215,
+    416775613,
+    416776895,
+    416777529,
+    416782696,
+    416787869,
+    416773217,
+    416790981,
+    416803219,
+    416805261,
+    416811482,
+    416811986,
+    416812924,
+    416812943,
+    416813718,
+    416822267,
+    416823172,
+    416823379,
+    416827244,
+    416834264,
+    416837259,
+    416842645,
+    416845625,
+    416886171,
+    416889743,
+    416918817,
+    416928101,
+    416953718,
+    416971493,
+    417233868,
+    417267543,
+    417272187,
+    417310756,
+    417350261,
+    417350782,
+    417377775,
+    417380694,
+    417397017,
+    417408060,
+    417410867,
+    417417666,
+    417417939,
+    417420938,
+    417423171,
+    417423793,
+    417448648,
+    417450875,
+    417451554,
+    417453059,
+    417454775,
+    417456694,
+    417458895,
+    417460381,
+    417461878,
+    417462571,
+    417465693,
+    417485268,
+    417494797,
+    417503681,
+    417509815,
+    417510788,
+    417511483,
+    417512179,
+    417526008,
+    417694487,
+    417693772,
+    417720512,
+    417746301,
+    417747598,
+    417771429,
+    417773392,
+    417787032,
+    417797863,
+    417808885,
+    417808928,
+    417809253,
+    417825893,
+    417829749,
+    417833269,
+    417834234,
+    417880683,
+    417901548,
+    417901383,
+    417926361,
+    417926227,
+    417924377,
+    417936571,
+    417951828,
+    417977706,
+    418179936,
+    418215813,
+    418311876,
+    418343728,
+    418348852,
+    418398846,
+    418400015,
+    418415147
   ],
-  "last_run_utc": "2026-09-18T17:41:19.671556+00:00",
+  "last_run_utc": "2026-09-23T21:45:29.911155+00:00",
   "pending_digest": [
     {
-      "call_id": 416659219,
-      "number": "13105006987",
-      "time_pt": "9:38 AM",
+      "call_id": 418215813,
+      "number": "13236320815",
+      "time_pt": "8:58 AM",
       "matched": true,
-      "contact_label": "Miriam Menkin",
+      "contact_label": "Jeff Werner",
       "no_next_step": true,
       "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Miriam Menkin regarding her earlier interest in tutoring. The call went to voicemail and Paola left a message asking Miriam to confirm continued interest and share a good callback time. No new information about the student or need was obtained.",
+        "summary": "Roman called Jeff Werner back with the hand-graded results of Iris's ISEE math practice test: 20/47 correct, with most 'knew it' answers right and most 'don't know' answers wrong. Roman recommended a high-dosage tutoring model (3x/week, 45 min) targeting a mid-November ISEE and mid-December backup, and quoted a 20-hour prepaid package at $1,660. Jeff was warm and enthusiastic, said he'll check with Iris's mom on schedule and expects to confirm and purchase by end of day (hopefully before lunch). Roman sent the pricing graphic with a Get Started Now link during the call.",
         "caller_type": "parent",
         "intent": "new inquiry",
-        "sentiment": "neutral",
+        "sentiment": "positive",
         "action_items": [
           {
-            "item": "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
-            "owner_hint": "Paola",
+            "item": "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
+            "owner_hint": "Roman",
             "route": "follow_up"
           }
         ],
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for Miriam Menkin following up on her prior tutoring interest \u2014 no answer, no new details. Miriam's current lead status is 'Using Someone Else' and how-did-you-hear shows 'From my Charter School'. She now expects a callback opportunity; if she doesn't respond, plan another gentle follow-up in a few days. Suggested opener: 'Hi Miriam, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 just wanted to check whether tutoring is still something you're exploring for your family.'",
+        "handoff_note": "Jeff Werner (dad of Iris, 6th grade testing into 7th at private schools) is warm, engaged, and effectively ready to buy. Roman just walked him through Iris's hand-graded ISEE math practice results (20/47; goal to reach 30-32/47 next run) and recommended our high-dosage model \u2014 3x/week, 45 min \u2014 with one tutor covering all four sections. Roman quoted a 20-hour prepaid package at $1,660 and emailed the pricing graphic with the Get Started Now link during the call. Testing plan remains Sandy's: mid-Nov ISEE + mid-Dec backup. Jeff will confer with Iris's mom on schedule and expects to come back with a yes and preferred times by end of day today (hopefully before lunch). If he calls or emails, open with: 'Hi Jeff \u2014 Roman filled me in, congrats on moving forward with Iris. Let's lock in the three weekly 45-minute slots that work for you and mom and get her started with our tutor this week.' Still need to cross-check target-school application deadlines against Nov/Dec ISEE dates before finalizing test registration.",
         "lead_status": "no_change",
-        "lead_status_reason": "Outbound call reached voicemail only; no conversation occurred, so existing 'Using Someone Else' status should not be changed based on a one-way message.",
-        "student_or_school_names_mentioned": [],
+        "lead_status_reason": "Existing/returning customer with an open deal in the pipeline; deal stage owns status.",
+        "student_or_school_names_mentioned": [
+          "Iris Werner",
+          "Stanford University"
+        ],
         "record_updates": {
-          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time.",
-          "what_we_can_do_to_help": "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs.",
+          "whats_going_on": "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup.",
+          "what_we_can_do_to_help": "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -1047,18 +1161,28 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time."
+          "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs."
+          "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
+          "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
           81494333,
           "follow_up"
         ]
@@ -1068,88 +1192,20 @@
       "direction": "outgoing"
     },
     {
-      "call_id": 416666147,
-      "number": "13104977863",
-      "time_pt": "9:50 AM",
+      "call_id": 418398846,
+      "number": "19173252075",
+      "time_pt": "2:01 PM",
       "matched": true,
-      "contact_label": "Jacqueline McClain",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda from A+ Tutoring called Jacqueline McClain to follow up on her son Prince and propose a trial session with tutor Ayesha on Friday at 9 AM. The call went to voicemail; Yolanda left a message asking Jacqueline to confirm availability and said she would call back around 4 PM the same day.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Yolanda left a voicemail for Jacqueline McClain (parent of Prince, 5th grade) proposing a trial session with tutor Ayesha on Friday at 9 AM. Yolanda promised to call back around 4 PM today. Jacqueline expects a return call to confirm the trial time. Open with: 'Hi Jacqueline, this is [name] from A+ Tutoring following up on Yolanda's message about setting Prince up for a trial with Ayesha on Friday at 9 AM \u2014 does that time still work for you?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Contact is already in an OPEN_DEAL pipeline stage; status is owned by the deal pipeline and should not be demoted.",
-        "student_or_school_names_mentioned": [
-          "Prince"
-        ],
-        "record_updates": {
-          "whats_going_on": "Yolanda left voicemail proposing a trial session with tutor Ayesha for Prince on Friday at 9 AM. Awaiting Jacqueline's confirmation.",
-          "what_we_can_do_to_help": "Set up trial session with Ayesha on Friday at 9 AM pending parent confirmation; Yolanda to call back around 4 PM today.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Yolanda left voicemail proposing a trial session with tutor Ayesha for Prince on Friday at 9 AM. Awaiting Jacqueline's confirmation."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Set up trial session with Ayesha on Friday at 9 AM pending parent confirmation; Yolanda to call back around 4 PM today."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416690184,
-      "number": "18183840009",
-      "time_pt": "10:33 AM",
-      "matched": true,
-      "contact_label": "Hermine Torosyan",
+      "contact_label": "Matthew Ferrigno",
       "no_next_step": true,
       "summary": {
-        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Hermine Torosyan regarding prior interest in tutoring for her daughter. The call was screened by a voicemail/assistant system and Hermine was unavailable. Paola left a voicemail asking Hermine to confirm if she's still interested and offering to follow up.",
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Matthew Ferrigno regarding his inquiry about tutoring for his daughter. Call went to voicemail; Paola left a message asking him to return the call to find a good time to connect. No new information was gathered.",
         "caller_type": "parent",
         "intent": "new inquiry",
         "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
+            "item": "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
             "owner_hint": "Paola",
             "route": "follow_up"
           }
@@ -1157,13 +1213,13 @@
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for Hermine Torosyan following up on her prior interest in tutoring for her daughter (no student details on file). No conversation occurred \u2014 call was screened by an assistant and rolled to voicemail. Hermine now knows we're interested in reconnecting; she may call back. If no response in a few days, try again \u2014 open with: 'Hi Hermine, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we wanted to check in about tutoring for your daughter and see how we can help.' Current record has her as 'Using Someone Else,' so be ready to ask whether her current arrangement is still working.",
+        "handoff_note": "Matthew Ferrigno (Yelp lead) inquired about tutoring for his daughter. Paola called and left a voicemail asking him to call back to find a time to connect \u2014 no details on daughter's grade, subject, or needs yet. Matthew now expects a callback opportunity; if he doesn't respond, try again in a day or two. Suggested opener: 'Hi Matthew, this is [name] from A+ Tutoring following up on Paola's message about tutoring for your daughter \u2014 I'd love to learn a bit about what she needs help with.'",
         "lead_status": "no_change",
-        "lead_status_reason": "No live conversation \u2014 voicemail only. Current status 'Using Someone Else' should remain until we actually connect and learn more.",
+        "lead_status_reason": "Left voicemail only; did not actually connect with the parent, so keep status as NEW until we speak.",
         "student_or_school_names_mentioned": [],
         "record_updates": {
-          "whats_going_on": "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter.",
-          "what_we_can_do_to_help": "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed.",
+          "whats_going_on": "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect.",
+          "what_we_can_do_to_help": "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -1181,18 +1237,18 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter."
+          "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed."
+          "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
+          "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
           81494333,
           "follow_up"
         ]
@@ -1204,13 +1260,23 @@
   ],
   "pending_skipped": [
     {
-      "number": "18622381623",
-      "time_pt": "9:47 AM",
+      "number": "16615217803",
+      "time_pt": "11:34 AM",
       "reason": "hang-up"
     },
     {
-      "number": "17472673496",
-      "time_pt": "9:51 AM",
+      "number": "13109903032",
+      "time_pt": "12:26 PM",
+      "reason": "spam gate: 5s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "19093011696",
+      "time_pt": "12:34 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "19173252075",
+      "time_pt": "2:04 PM",
       "reason": "hang-up"
     }
   ],

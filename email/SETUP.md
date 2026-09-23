@@ -69,7 +69,7 @@ names; the agent DMs by id and doesn't require it at runtime).
 **3b. Create channel `#email-agent`** (does not exist yet) for the digest + (optionally)
 owner pings. The bot can post via `chat:write.public` even without joining.
 
-**3c. Verify member ids.** Already in `config.yaml: staff` (Danielle, Mandy, Paola,
+**3c. Verify member ids.** Already in `config.yaml: staff` (Danielle, Paola,
 Janelle, Yolanda, Kath, Emily, Roman). These could NOT be auto-verified because
 `users:read` isn't granted — once it is, re-run the Slack check, or just confirm the
 first real DM lands. Member id = Profile → ⋯ → *Copy member ID* (`Uxxxxxxxx`).

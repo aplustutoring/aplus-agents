@@ -93,4 +93,4 @@ Outbound-call quotas, call quality/transcript scoring (that's the existing call 
 
 1. Confirm or overrule D1–D5.
 2. Which Slack channel/DM gets the summary — you only, or you + Emily?
-3. Should the digest also go to Mandy as escalation owner, even though she's not in any ring group?
+3. Should the digest also go to the escalation owner, even though that seat is not in any ring group? (The seat was vacated 2026-09-17; `email/config.yaml` `escalation.level2` is now null.)

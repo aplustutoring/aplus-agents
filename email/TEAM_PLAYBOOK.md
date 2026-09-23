@@ -40,17 +40,17 @@ document get an automatic "we received it" receipt.)
 | **Scheduling** (new booking / availability) | draft → scheduler | 90 min | Review draft → send. |
 | **Cancellation** — **one-time / pause / stop** | draft → scheduler; reason + type captured. **Pause AND stop** → auto-close the student's active deals + re-engagement follow-up task (sample email, due ~Sep 1 / Jan 2). **One-time** → no deal/win-back (family stays) | 90 min | Try to **reschedule** instead of cancel. Review draft → send. Eyeball the auto-deal-move (undo if wrong); when the family resumes, create a **NEW deal marked Existing Business** (Renewal deals are only for immediate continuations). |
 | **Returning family booking new service** (`scheduling`, existing customer) | draft → scheduler + **agent creates the deal** (Gold/Pre-Lesson, **Existing Business**) | 90 min | Review draft → send; deal is already on the board. |
-| **Tutor issue** (unhappy / wants a switch) | ticket → **Mandy**, NO draft | 90 min | Handle fast — a switch usually **saves** the account. |
-| **Complaint** | ticket → **Mandy**, NO draft | 90 min | Handle personally. |
-| **Payment dispute** | ticket → **Mandy**, NO draft | 90 min | Handle personally. |
+| **Tutor issue** (unhappy / wants a switch) | ticket → **scheduling lead**, NO draft | 90 min | Handle fast — a switch usually **saves** the account. |
+| **Complaint** | ticket → **scheduling lead**, NO draft | 90 min | Handle personally. |
+| **Payment dispute** | ticket → **scheduling lead**, NO draft | 90 min | Handle personally. |
 | **School partner** (contract, PO, program) | draft → **Danielle** | 90 min | Review draft → send. Revenue-critical. |
 | **Business dev** (partnerships, collabs, press, staff-referred pitches) | draft → **Danielle** | 8h | Review and decide if it's worth pursuing. |
 | **TOR inquiry / new PO** | draft → **Paola** | 90 min | Review draft → send. |
 | **Tutor document** | **auto-receipt to tutor** + ticket → **Kath** | 90 min | Process the document. No reply needed. |
-| **Recruitment** (applying to tutor) | draft → **Mandy** | 90 min | Review draft → send. |
+| **Recruitment** (applying to tutor) | draft → **scheduling lead** | 90 min | Review draft → send. |
 | **Charter newsletter** (mass announcement) | FYI ticket → **Danielle**, no draft | 48h | Read. Usually no action. |
 | **Junk / spam / vendor / payment notices** | **auto-archived** (recoverable) | — | Nothing. |
-| **Unknown / unclear** | ticket → **Stuck**, owned by **Mandy** | 4h | Mandy glances daily, dismisses noise, reassigns the rare real one. |
+| **Unknown / unclear** | ticket → **Stuck**, owned by the **scheduling lead** | 4h | That seat glances daily, dismisses noise, reassigns the rare real one. |
 | **Internal staff email** (@wetutorathome.com) | routed to the **teammate it's addressed to** ("Hi Kath" → Kath); ticket. Falls back to Roman if unclear | — | That teammate handles it. |
 | **Teachworks notification** | cancellation/etc. → scheduler by family name; **ticket linked to the family contact**, draft in the ticket (no reply sent to Teachworks) | 24h | Open ticket → email the **family** straight from the ticket. |
 
@@ -154,7 +154,8 @@ checklist for flipping `dry_run_first: false`:
 
 ## Escalation — when something sits too long
 - **1× past due** → the **owner** gets a Slack reminder.
-- **2× past due** → **Mandy** is pinged (she watches the schedulers, nudges them).
+- **2× past due** → nobody. The supervisor step was deleted on 2026-09-17 when
+  that seat was vacated. A 2× breach waits for the 3× last-resort ping.
 - **3× past due** ("really off") → **Emily** is pinged + the ticket moves to **Stuck**.
 
 ## Reports you'll get
@@ -170,7 +171,8 @@ Everything else is **draft-only**; a human always sends.
 ---
 
 ## Decisions (locked 2026-06-10)
-1. **Stuck queue → Mandy.** She checks it daily; unknowns are now assigned to her.
+1. **Stuck queue → the scheduling lead.** Checked daily; unknowns are assigned
+   to whoever `roles.scheduling_lead` names in `email/config.yaml`.
 2. **Payment notices → archived for now.** Future: trigger a "record payment in
    Teachworks" flow (not built yet).
 3. **Teachworks notifications →** capture the reason + route by family name, draft goes
