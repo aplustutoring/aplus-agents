@@ -209,6 +209,10 @@ def hs_req(method, path, payload=None, params=None):
                          headers={"Authorization": f"Bearer {HUBSPOT_API_KEY}",
                                   "Content-Type": "application/json"},
                          json=payload, params=params, timeout=30)
+    if r.status_code >= 400:
+        # A bare "400 Client Error" hid WHICH value HubSpot rejected for a
+        # day (2026-09-21: an enum option missing from the property registry).
+        log.error(f"HubSpot {method} {path} -> {r.status_code}: {r.text[:400]}")
     r.raise_for_status()
     return r.json() if r.text else {}
 

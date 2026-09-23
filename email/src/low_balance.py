@@ -183,7 +183,58 @@ def open_cases() -> dict:
             base = key.rsplit(":draft-nag", 1)[0]
             if base in opened:
                 opened[base]["draft_nagged"] = True
+        elif act == "low_balance_email_held":
+            base = key.rsplit(":email", 1)[0]
+            if base in opened:
+                opened[base]["hold_reason"] = r.get("reason") or ""
+        elif act == "low_balance_balance":
+            base = key.rsplit(":balance", 1)[0]
+            if base in opened:
+                opened[base].update(hours_live=r.get("hours_live"), lessons_since=r.get("lessons_since"))
+    _rehydrate_contacts(opened)
     return opened
+
+
+def _redacted(value: str) -> bool:
+    """audit.redact() output: '…6225' or 'm…@gmail.com'."""
+    v = (value or "").strip()
+    return v.startswith("…") or "…@" in v
+
+
+def _rehydrate_contacts(opened: dict) -> None:
+    """The audit log is the case store AND it is redacted (FERPA pass, PR #250):
+    a case opened after 2026-09-16 comes back with to_email 'm…@gmail.com' and
+    phone '…6225'. Resend answered 422 on every day-0 email for five days and
+    the day-1 text never fired (Alexzander Gonzalez, Ethan Dai, the Zamoras).
+    The contact id survives redaction, so the family's real address and phone
+    come from HubSpot at read time. Non-fatal: a case that cannot be
+    rehydrated keeps the masked value and fails loudly at send, as before."""
+    cache: dict = {}
+    for case in opened.values():
+        if not (_redacted(case.get("to_email")) or _redacted(case.get("phone"))
+                or _redacted(case.get("parent_email"))):
+            continue
+        cid = str(case.get("contact_id") or "")
+        if not cid or cid == "None":
+            continue
+        if cid not in cache:
+            try:
+                cache[cid] = hs._get(f"/crm/v3/objects/contacts/{cid}",
+                                     {"properties": "email,phone,mobilephone"}) or {}
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  contact rehydrate failed for {cid} (non-fatal): {e}")
+                cache[cid] = {}
+        props = (cache[cid] or {}).get("properties") or {}
+        email = (props.get("email") or "").strip()
+        for k in ("to_email", "parent_email"):
+            masked = case.get(k) or ""
+            # the masked form keeps the domain: only accept the same mailbox
+            if email and _redacted(masked) and masked.partition("@")[2].lower() == email.partition("@")[2].lower():
+                case[k] = email
+        if _redacted(case.get("phone")):
+            real = _phone_for({"parent_phone": ""}, cache[cid] or None)
+            if real and real.endswith((case.get("phone") or "")[-4:]):
+                case["phone"] = real
 
 
 # ── HubSpot lookups ─────────────────────────────────────────────────────────
@@ -1342,9 +1393,10 @@ def _ticket_open(case: dict) -> bool:
 
 
 def _day1_due(case: dict, now, days: int) -> bool:
-    """The next business morning after the day-0 email (calendar days, weekends
-    skipped) and inside the text window."""
-    opened = case.get("opened_at")
+    """The next business morning after the family send (calendar days, weekends
+    skipped) and inside the text window. The clock starts at the day-0 text
+    when one went out (day1_at), else at the alert (opened_at)."""
+    opened = case.get("day1_at") or case.get("opened_at")
     if not opened:
         return False
     from .business_hours import LA, _is_business_day
@@ -1405,16 +1457,153 @@ def _family_ctx(members: list, seat: dict, lb: dict) -> dict:
             "multi": multi}
 
 
+def _lesson_hours(lesson: dict, default: float) -> float:
+    """Hours of one Teachworks lesson from its start/end pair; `default` when
+    the pair cannot be read (Teachworks' lesson JSON carries from_date and
+    to_date as local datetimes; unverified field shapes fall back)."""
+    try:
+        a = datetime.fromisoformat(str(lesson.get("from_date") or "").replace(" ", "T")[:19])
+        b = datetime.fromisoformat(str(lesson.get("to_date") or "").replace(" ", "T")[:19])
+        h = (b - a).total_seconds() / 3600
+        return round(h, 2) if 0 < h <= 8 else default
+    except (TypeError, ValueError):
+        return default
+
+
+def _student_key(name: str) -> str:
+    """'DaVault, Kailyn Marie' and 'Kailyn Marie DaVault' → the same key."""
+    s = re.sub(r"\s+", " ", (name or "").strip().lower())
+    if "," in s:
+        last, _, first = s.partition(",")
+        s = f"{first.strip()} {last.strip()}"
+    return s
+
+
+def _attended_since(since_date: str, lb: dict) -> dict:
+    """{student key: [(local start 'YYYY-MM-DDTHH:MM:SS', hours)]} for every
+    attended lesson from since_date to today, both Teachworks accounts. One
+    bulk pull per sweep. Raises on a Teachworks failure: a balance that
+    cannot be read must not be mistaken for 'no lessons'."""
+    from . import teachworks_client as tw
+    default = float(lb.get("lesson_hours_default", 1.0))
+    today = _today().isoformat()
+    out: dict = {}
+    for _acct, token in tw.accounts().items():
+        for l in tw.tw_get("lessons", {"from_date[gte]": since_date, "from_date[lte]": today}, token=token):
+            start = str(l.get("from_date") or "").replace(" ", "T")[:19]
+            if not start or start[:10] > today:
+                continue
+            lst = str(l.get("status") or "").lower()
+            hours = _lesson_hours(l, default)
+            for p in l.get("participants") or []:
+                st = str(p.get("status") or lst).lower()
+                if not any(a in st for a in _ATTENDED):
+                    continue
+                key = _student_key(p.get("student_name") or "")
+                if key:
+                    out.setdefault(key, []).append((start, hours))
+    return out
+
+
+def _update_live_hours(cases: dict, lb: dict) -> None:
+    """Hourly: the live balance of every open case = the alert's balance minus
+    the student's attended lessons since the alert (Roman 2026-09-22: fire at
+    3 hours, not at Teachworks' 4). Audited and noted on the ticket only when
+    the number changes; a Teachworks failure leaves every case as it was."""
+    from .business_hours import LA
+    if not cases:
+        return
+    since = min((c.get("opened_at") or "")[:10] for c in cases.values() if c.get("opened_at")) or _today().isoformat()
+    try:
+        attended = _attended_since(since, lb)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  Teachworks lessons unreadable ({str(e)[:80]}): live balances unchanged this sweep")
+        return
+    fire_at = float(lb.get("fire_at_hours", 3))
+    for key, c in cases.items():
+        opened = c.get("opened_at")
+        if not opened or c.get("hours") is None:
+            continue
+        try:
+            base = float(c["hours"])
+        except (TypeError, ValueError):
+            continue
+        cutoff = datetime.fromisoformat(opened).astimezone(LA).replace(tzinfo=None).isoformat()[:19]
+        burned = [(t, h) for t, h in attended.get(_student_key(c.get("student") or ""), []) if t > cutoff]
+        live = max(0.0, round(base - sum(h for _t, h in burned), 2))
+        if c.get("hours_live") is not None and float(c["hours_live"]) == live and c.get("lessons_since") == len(burned):
+            continue
+        c["hours_live"], c["lessons_since"] = live, len(burned)
+        audit.append({"message_id": f"{key}:balance", "source": "low_balance", "action_taken": "low_balance_balance",
+                      "hours_live": live, "lessons_since": len(burned), "ticket_id": c.get("ticket_id")})
+        tid = c.get("ticket_id")
+        if tid and tid != "DRYRUN" and not c.get("email_sent"):
+            try:
+                hs.add_ticket_note(tid, f"⏳ Live balance {live:g} h after {len(burned)} attended lesson(s) since the "
+                                        f"alert. Family outreach fires at {fire_at:g} h or fewer, or "
+                                        f"{int(lb.get('fire_fallback_days', 5))} business days after the alert.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  balance note failed (non-fatal): {e}")
+
+
+def _fire_ready(case: dict, lb: dict, now_utc) -> bool:
+    """The family outreach fires when the live balance (else the alert's) is
+    at fire_at_hours or fewer, or fire_fallback_days business days after the
+    alert with nothing burning it down."""
+    fire_at = float(lb.get("fire_at_hours", 3))
+    hours = case.get("hours_live") if case.get("hours_live") is not None else case.get("hours")
+    try:
+        if hours is not None and float(hours) <= fire_at:
+            return True
+    except (TypeError, ValueError):
+        pass
+    opened = case.get("opened_at")
+    if not opened:
+        return False
+    from .business_hours import LA, _is_business_day
+    d, today, n = datetime.fromisoformat(opened).astimezone(LA).date(), now_utc.astimezone(LA).date(), 0
+    while d < today:
+        d += timedelta(days=1)
+        if _is_business_day(d):
+            n += 1
+    return n >= int(lb.get("fire_fallback_days", 5))
+
+
+def _day0_texts(cases: dict, emailed: set, seat: dict, lb: dict, armed: bool, now_utc) -> None:
+    """The day-0 text, in the same sweep as the email (text_with_email). Same
+    gates as the morning text: charter, phone, ticket open, no reply by email
+    or text (JustCall read first; unreadable = held, never texted blind)."""
+    if not emailed or not lb.get("text_with_email", True):
+        return
+    pool = {k: c for k, c in cases.items() if k in emailed and c.get("charter", True)
+            and not c.get("day1_done") and not c.get("replied")}
+    if not pool:
+        return
+    try:
+        jc_idx = jc.index_by_number(since_days=int(lb.get("text_reply_window_days", 14)))
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  JustCall unreadable ({str(e)[:80]}): day-0 texts HELD, they follow the next sweep")
+        return
+    replied = _watch_replies(pool, seat, lb, jc_idx)
+    due = {k: c for k, c in pool.items() if k not in replied and _ticket_open(c)}
+    if due:
+        _day1_outreach(due, seat, lb, armed, now_utc, texts=True, teachers=False,
+                       label="Day 0 text, with the email")
+
+
 def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, force: bool) -> set:
     """Day 0, grouped: one email per family naming every student whose case is
-    waiting, after email_delay_minutes (siblings alert minutes apart) and
-    inside the send window. Returns the case keys emailed."""
+    waiting, after email_delay_minutes (siblings alert minutes apart), once the
+    case is ready to fire (live balance at fire_at_hours or fewer, or the
+    fallback clock ran out) and inside the send window. Returns the case keys
+    emailed."""
     delay = int(lb.get("email_delay_minutes", 60))
     now_utc = datetime.now(timezone.utc)
     waiting = {k: c for k, c in cases.items()
                if c.get("email_pending") and not c.get("email_sent") and c.get("to_email")
                and (force or (c.get("opened_at") and
-                              now_utc - datetime.fromisoformat(c["opened_at"]) >= timedelta(minutes=delay)))}
+                              now_utc - datetime.fromisoformat(c["opened_at"]) >= timedelta(minutes=delay)
+                              and _fire_ready(c, lb, now_utc)))}
     done: set = set()
     if not waiting or not (force or _in_sms_window()):
         return done
@@ -1451,8 +1640,12 @@ def _send_pending_emails(cases: dict, now, seat: dict, lb: dict, armed: bool, fo
             audit.append({"message_id": f"{k}:email", "source": "low_balance",
                           "action_taken": "low_balance_email_sent" if k in done else "low_balance_email_held",
                           "to": to_email, "subject": subject, "siblings": len(members),
-                          "ticket_id": c.get("ticket_id")})
+                          "reason": line[:160], "ticket_id": c.get("ticket_id")})
             tid = c.get("ticket_id")
+            # a hold repeats every sweep: note the ticket once per reason, not
+            # once an hour (Alexzander Gonzalez's ticket collected 100 notes)
+            if k not in done and line[:160] == (c.get("hold_reason") or ""):
+                tid = None
             if tid and tid != "DRYRUN":
                 try:
                     hs.add_ticket_note(tid, "Day 0: " + line + (f" (one email for {fctx['students']})" if multi else ""))
@@ -1662,10 +1855,13 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
             except Exception as e:  # noqa: BLE001
                 print(f"  ⚠️  low-balance sweep deal read failed for {key}: {e}")
         live[key] = case
-    # 0: the day-0 email, one per family
+    # 0: live balances (Teachworks), then the day-0 email, one per family
+    if not texts_only:
+        _update_live_hours(live, lb)
     emailed = _send_pending_emails(live, now, seat, lb, armed, force)
     for k in emailed:
         live[k] = {**live[k], "email_sent": live[k].get("to_email")}
+    with_email = bool(lb.get("text_with_email", True))
     # 3a: replies, every sweep, every open case (Roman 2026-09-11: the texts
     # leave from the support line and the email from A+ Tutoring, so every
     # reply, on any line, is posted to the ticket and DM'd to the seat)
@@ -1681,6 +1877,7 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
     replied = _watch_replies(live, seat, lb, jc_idx) if jc_ok else set()
     # 3b: day 1, grouped by family and by teacher
     due: dict = {}
+    due0: dict = {}                                     # emailed this sweep: the text goes with it
     due_teacher: dict = {}                              # texted earlier, teacher email still owed
     for key, case in live.items():
         if not case.get("charter", True) or case.get("replied") or key in replied:
@@ -1694,11 +1891,15 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
             continue                                    # the text follows the email, never leads
         if not _ticket_open(case):
             continue
-        if not (force or _day1_due(case, now, int(lb.get("family_text_after_days", 1)))):
+        same_sweep = with_email and key in emailed and not teacher_pass   # text with the email, today
+        if not (force or same_sweep or _day1_due(case, now, int(lb.get("family_text_after_days", 1)))):
             continue
         if not jc_ok:
             continue                                    # held: a text reply may be sitting unread
-        (due_teacher if teacher_pass else due)[key] = case
+        (due_teacher if teacher_pass else due0 if same_sweep else due)[key] = case
+    if due0:
+        _day1_outreach(due0, seat, lb, armed, now_utc, texts=True, teachers=False,
+                       label="Day 0 text, with the email")
     if due and texts_only:
         _day1_outreach(due, seat, lb, armed, now_utc, texts=True, teachers=False,
                        label="Same-day text, no PO and no reply")
@@ -1727,7 +1928,8 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
                 audit.append({"message_id": f"{key}:draft-nag", "source": "low_balance",
                               "action_taken": "low_balance_draft_nag", "ticket_id": case.get("ticket_id")})
         try:
-            hours_left = float(case.get("hours") if case.get("hours") is not None else 99)
+            h = case.get("hours_live") if case.get("hours_live") is not None else case.get("hours")
+            hours_left = float(h if h is not None else 99)
         except (TypeError, ValueError):
             hours_left = 99.0
         if (opened and not case.get("escalated") and age >= risk_days
@@ -1837,7 +2039,10 @@ def run_sweep(force: bool = False) -> None:
     if not hourly:
         seat = staff(lb.get("owner", "charter_sales")) or {}
         armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
-        _send_pending_emails(cases, now, seat, lb, armed, False)
+        emailed = _send_pending_emails(cases, now, seat, lb, armed, False)
+        for k in emailed:
+            cases[k] = {**cases[k], "email_sent": cases[k].get("to_email")}
+        _day0_texts(cases, emailed, seat, lb, armed, datetime.now(timezone.utc))
         return
     _sweep(cases, now, force=False)
     try:

@@ -43,6 +43,12 @@ message handed back to us. So it is matched against what we actually sent that
 number, and a real reply cannot be swallowed because a real reply is not a
 verbatim echo of our words.
 
+Version 4.4 (2026-09-22) widened the quote class. A Russian tapback quoting our
+own message went uncaught because the client used a straight quote and the
+shape matcher only knew typographic ones. Not a language gap: the same text in
+curly quotes matched. Clients differ on quote characters and on whether they
+pair them, so any of them opens and any of them closes.
+
 Version 4.3 (2026-09-20) made a truncated read say so. The pager stops on an
 empty `next_page_link`, so a page that arrives short ends the walk and the
 result LOOKS complete, with no error anywhere. Every page reports
@@ -133,8 +139,14 @@ _TRAILING = " \t.!,…~-–—:;)\u200b👍😊❤️🙏😀🙂"
 # and nothing after it. Hannah Thorn's phone sent the Spanish tapback
 # `Le gusta “Okay thank you, I offered Angelo 2:30 pm today...”` two hours after
 # the Chinese one was fixed by adding Chinese. Enumerating languages loses.
+# Quote characters vary by client, not just by language. Alina's phone used a
+# straight quote on 2026-09-22 and the whole rule missed, even though the
+# quoted text was our own message word for word. Curly, straight, angled and
+# low-9 all count, and the closing quote is any of them rather than the
+# matching pair: clients are not consistent about pairing them.
+_Q = "“”\"«»„‟‘’"
 TAPBACK_SHAPE = re.compile(
-    r"^\s*\S{1,18}(?:\s+\S{1,18}){0,3}\s*[:：]?\s*[“\u201c](.+)[”\u201d]\s*$",
+    r"^\s*\S{1,18}(?:\s+\S{1,18}){0,3}\s*[:：]?\s*[" + _Q + r"](.+)[" + _Q + r"]\s*$",
     re.DOTALL)
 
 _ECHO_KEEP = 60          # characters of our message to compare; tapbacks truncate

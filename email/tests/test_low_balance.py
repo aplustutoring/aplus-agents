@@ -181,6 +181,7 @@ class Harness:
         self.tickets, self.notes, self.dms, self.patches = [], [], [], []
         self.sms, self.emails, self.private, self.drafts, self.recs = [], [], [], [], []
         self.stage_updates, self.stamps = [], []
+        self.attended: dict = {}                     # Teachworks attended lessons the sweep sees
         monkeypatch.setattr(lb, "cfg", lambda: cfgv)
         monkeypatch.setattr(lb, "now_la", lambda: NOW_LA)      # both clocks the sweep reads
         monkeypatch.setattr(lb, "datetime", FrozenDatetime)
@@ -197,6 +198,11 @@ class Harness:
         monkeypatch.setattr(lb, "_parent_replied", lambda c, s, l: replied)
         monkeypatch.setattr(lb.jc, "index_by_number", lambda since_days=14: {})
         monkeypatch.setattr(lb, "_ticket_open", lambda c: ticket_open)
+        # the sweep's side doors read the REAL audit log / portal: pinned shut
+        # (run_sweep used to re-open a parked Xena Chacon alert from state/)
+        monkeypatch.setattr(lb, "deferred_alerts", lambda: {})
+        monkeypatch.setattr(lb, "needs_invoice_sweep", lambda: 0)
+        monkeypatch.setattr(lb, "_attended_since", lambda since, l: dict(self.attended))
         monkeypatch.setattr(lb, "_send_sms", lambda p, b: self.sms.append((p, b)) or {"ok": True})
         monkeypatch.setattr(lb, "_send_email",
                             lambda to, subj, tpl, ctx, c: self.emails.append((to, subj, tpl, ctx)))
