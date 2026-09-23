@@ -22,6 +22,8 @@ status: open
 > 
 > Tutor applications/tutor applicant follow-ups → Always assign to Mandy.
 
+(2026-09-18: that seat was vacated on 2026-09-17. The rule still holds, read as the role: tutor applicant follow-ups go to whoever `roles.scheduling_lead` names in `email/config.yaml`. The quote above is left as Roman said it.)
+
 ## Classification
 
 Reporter provided routing rules for scheduling tasks (split by last name) and tutor applicant follow-ups, which don't map to any existing registered agent.

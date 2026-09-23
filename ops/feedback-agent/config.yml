@@ -12,8 +12,9 @@ corrections_dir: "corrections"
 
 slack:
   # The one channel for the whole fleet: #agent-feedback (created 2026-07-27,
-  # PRIVATE — enforces staff-only for v1; tutors' path stays through Mandy
-  # until this agent graduates and Roman revisits). Channel ID, not name:
+  # PRIVATE — enforces staff-only for v1; tutors' path stays through the
+  # tutor quality seat until this agent graduates and Roman revisits).
+  # Channel ID, not name:
   # private channels don't resolve by name for bot posts. The aplus bot must
   # be /invite'd.
   channel: "C0BL05MCJ4B"

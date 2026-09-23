@@ -1427,7 +1427,8 @@ agents:
       - ops/hubspot-schema/properties.yml    # tutor_issue_* ticket properties
     notes: >
       Tickets on the tutor's contact record for 5 issue types; owner =
-      Operations role (Mandy); silent internal log in v1 (nothing
+      the Operations role (see roles: in the config, never a person);
+      silent internal log in v1 (nothing
       tutor-facing). Auto-detects only what Teachworks proves (no-shows,
       unmarked-after-Sunday); family email/SMS reports get a reasoning pass
       (create + tell the scheduler, or refuse + hand to the scheduler);

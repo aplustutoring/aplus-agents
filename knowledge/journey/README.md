@@ -168,9 +168,10 @@ means "ask the owner seat". 00 must be REVIEWED before any stage is readable.
 Decisions or code that this playbook does not settle. Deciding seat in
 parentheses.
 
-1. The `operations` role key maps to two people: `email/config.yaml` (emily)
-   and `ops/tutor-issues/config.yml` (mandy). Rename one or move ownership
-   (visionary).
+1. RESOLVED 2026-09-18: the `operations` role key pointed at two different
+   people. Both configs now resolve it to the same seat holder, and both
+   carry `tutor_quality_owner` as the single line to change when the Tutor
+   Quality Lead starts.
 2. SLA hours differ across `email/rules.md`, `email/config.yaml`, and
    `email/TEAM_PLAYBOOK.md`. This playbook treats `email/config.yaml` as the
    truth; reconcile the other two (operations).

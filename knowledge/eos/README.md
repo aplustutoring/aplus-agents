@@ -33,7 +33,7 @@ FY2028 baselines).
 - **Operations (Emily) — Codify the Operation**: Kath independently running
   diagnostics (8/19); August Summit workflow documented (7/31, w/ Danielle);
   Organizational Excellence doc — roles, workflows, NSSA Data Review Protocol (9/30).
-- **Scheduling lead (Mandy) — Every Tutor Scored** *(→ Goal 5)*: 6-category
+- **Scheduling lead (Emily, interim from 2026-09-17) — Every Tutor Scored** *(→ Goal 5)*: 6-category
   NSSA-aligned rubric (7/15); ~50% tutors scored + Tutor NPS (8/15); 100%
   scored with recurring cadence + A/B-tier clarity for the AI recommender (9/30).
 - **Charter sales (Paola) — Referral Engine + Retention** *(→ Goals 6, 4)*:
@@ -48,9 +48,10 @@ FY2028 baselines).
 - **Visionary (Roman) — HubSpot Conversion + Data Backbone**: full HubSpot
   conversion, Monday retired for new deals (7/31) *(→ Goals 1, 3)*; cohort
   retention script, 12-month backfill (7/22, feeds Paola's rock) *(→ Goal 4)*;
-  tutor-recommender data structures using Mandy's scores (9/30) *(→ Goal 5)*.
+  tutor-recommender data structures using the Every Tutor Scored rubric
+  scores (9/30) *(→ Goal 5)*.
 - **Standing (every quarter)**: Weekly Rock Review (Emily); Monthly
-  Instructional Review (Mandy); end-of-quarter rollover checklist (score
+  Instructional Review (scheduling lead); end-of-quarter rollover checklist (score
   Win/Fail → archive → carry-forwards out loud → clone board → quarterly
   review). Q2 parked: Review Prep Agent (automate data assembly after the
   manual quarter proves out).

@@ -1,8 +1,9 @@
 """Hourly SLA sweep + escalation chain.
 
 1x breach (past due, ticket still open) → DM the owner (the scheduler).
-2x breach (one more SLA window past)    → DM the supervisor who watches the owners (Mandy).
-3x breach (two more SLA windows past)   → DM the last resort (Emily) + move ticket to Stuck.
+2x breach (one more SLA window past)    → DM the supervisor step. DELETED 2026-09-17:
+                                          escalation.level2 is null, so this level is skipped.
+3x breach (two more SLA windows past)   → DM the last resort (escalation.level3) + Stuck.
 Targets are config-driven (escalation.level2 / level3). Level 2 is skipped if the
 supervisor is already the owner. Never re-pings a given level twice per ticket.
 """
@@ -205,13 +206,20 @@ def run() -> None:
             if lvl == 1:  # the owner (scheduler)
                 tgt = staff.get(owner_key or "", {})
                 msg = f"⏰ SLA breach: *{cat}* past due ({age}). {url}"
-            elif lvl == 2:  # supervisor who watches the owners (Mandy)
-                if l2_key and l2_key == owner_key:
+            elif lvl == 2:  # supervisor step — DELETED 2026-09-17 with that seat
+                # escalation.level2 is null since 2026-09-17. Without this
+                # skip, staff.get("") returns {} and the DM goes to an empty
+                # user id: a silent no-op that still writes an audit row
+                # saying level 2 was pinged, so the ticket looks escalated
+                # when nobody heard anything.
+                if not l2_key:
+                    continue
+                if l2_key == owner_key:
                     continue  # supervisor is already the owner — pinged at lvl 1
-                tgt = staff.get(l2_key or "", {})
+                tgt = staff.get(l2_key, {})
                 msg = (f"🚨 2x SLA breach: *{cat}* (owner {owner_key}) due {age}. "
                        f"Please check in with them. {url}")
-            else:  # lvl 3 → last resort (Emily) + move to Stuck
+            else:  # lvl 3 → last resort (tutor_quality_owner) + move to Stuck
                 tgt = staff.get(l3_key or "", {})
                 msg = (f"🆘 3x SLA breach — last resort: *{cat}* (owner {owner_key}) "
                        f"due {age}, still open. {url}")
