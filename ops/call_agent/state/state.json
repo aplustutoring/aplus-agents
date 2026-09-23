@@ -1091,10 +1091,101 @@
     417936571,
     417951828,
     417977706,
-    418179936
+    418179936,
+    418215813
   ],
-  "last_run_utc": "2026-09-23T15:17:57.222154+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-23T16:10:54.744623+00:00",
+  "pending_digest": [
+    {
+      "call_id": 418215813,
+      "number": "13236320815",
+      "time_pt": "8:58 AM",
+      "matched": true,
+      "contact_label": "Jeff Werner",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Roman called Jeff Werner back with the hand-graded results of Iris's ISEE math practice test: 20/47 correct, with most 'knew it' answers right and most 'don't know' answers wrong. Roman recommended a high-dosage tutoring model (3x/week, 45 min) targeting a mid-November ISEE and mid-December backup, and quoted a 20-hour prepaid package at $1,660. Jeff was warm and enthusiastic, said he'll check with Iris's mom on schedule and expects to confirm and purchase by end of day (hopefully before lunch). Roman sent the pricing graphic with a Get Started Now link during the call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Jeff Werner (dad of Iris, 6th grade testing into 7th at private schools) is warm, engaged, and effectively ready to buy. Roman just walked him through Iris's hand-graded ISEE math practice results (20/47; goal to reach 30-32/47 next run) and recommended our high-dosage model \u2014 3x/week, 45 min \u2014 with one tutor covering all four sections. Roman quoted a 20-hour prepaid package at $1,660 and emailed the pricing graphic with the Get Started Now link during the call. Testing plan remains Sandy's: mid-Nov ISEE + mid-Dec backup. Jeff will confer with Iris's mom on schedule and expects to come back with a yes and preferred times by end of day today (hopefully before lunch). If he calls or emails, open with: 'Hi Jeff \u2014 Roman filled me in, congrats on moving forward with Iris. Let's lock in the three weekly 45-minute slots that work for you and mom and get her started with our tutor this week.' Still need to cross-check target-school application deadlines against Nov/Dec ISEE dates before finalizing test registration.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an open deal in the pipeline; deal stage owns status.",
+        "student_or_school_names_mentioned": [
+          "Iris Werner",
+          "Stanford University"
+        ],
+        "record_updates": {
+          "whats_going_on": "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup.",
+          "what_we_can_do_to_help": "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }

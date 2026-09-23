@@ -24,6 +24,39 @@ Newest entries first.
 #charter-tutoring ("we have a new Charter student..."), and the 9/22 and
 9/23 posts read "4 hours ... at $75/hour, totaling $300". Tutors never see the
 PO value or our hourly cost.
+## 2026-09-22 — Low balance fires at 3 hours live, email and text together, teacher a business day later
+
+**What changed** (`email/src/low_balance.py`, `email/config.yaml`,
+`docs/RETENTION-PROCESS.md`, tests)
+- The case still opens on the Teachworks 4-hour alert, but now WAITS. Every
+  hourly sweep pulls attended lessons since the alert from both Teachworks
+  accounts (`_attended_since`, one bulk pull), subtracts them from the alert's
+  balance, and records `low_balance_balance` + a ticket note only when the
+  number changes. Lesson length = `to_date - from_date`, else
+  `lesson_hours_default` (1.0). Teachworks down = balances untouched.
+- `_fire_ready`: family outreach fires at `fire_at_hours` (3) or fewer live,
+  or `fire_fallback_days` (5) business days after the alert. An alert already
+  at 3 or below fires after the 60-minute sibling delay.
+- `text_with_email: true`: the day-0 text leaves in the same sweep as the
+  email (both the hourly sweep and the :15/:30/:45 email pass), through the
+  same gates as before (charter, phone, ticket open, no reply by email or
+  text; JustCall unreadable = the text waits). The record carries
+  `tor_pending`, so the teacher email follows `family_text_after_days` (1)
+  business days later, clock from the text (`day1_at`), only if still no PO
+  and no reply. Roman declined a parallel teacher email (2026-09-09 rule:
+  parent first, teacher backup).
+- Retention risk reads the live balance.
+
+**Why.** Roman 2026-09-22: Teachworks' own family notice already does the
+4-hour nudge (3 of the first 13 renewals arrived with no message from us);
+the sweet spot for our ask is 2 to 4 hours. Private pay and trial stay
+parked: no payment links.
+
+**Test suite.** The ten low-balance sweep tests that failed on main were not
+drift: `run_sweep` read the REAL audit log through `deferred_alerts()` and
+re-opened a parked Xena Chacon alert inside every test, and
+`needs_invoice_sweep` hit the portal. The harness now pins both plus
+`_attended_since`. 681 passed.
 
 ---
 
@@ -110,6 +143,38 @@ generated when a text is going out (no Gemini call for print-only guests).
 Done and progress messages follow the choice.
 
 **Files:** `booth/delilah/{worker.js,public/index.html,wrangler.toml,test-worker.mjs}`, `docs/CHANGELOG.md`.
+## 2026-09-22 — Low balance: five days of silent day-0 failures (redacted case store)
+
+**What happened.** The FERPA pass (PR #250, merged 2026-09-16 19:02 PT) masks
+phone and email in `email/state/audit_log.jsonl`. The low-balance agent
+rebuilds its case state from that same log (`open_cases()`), so every case
+opened after the merge came back with `to_email` = `m…@gmail.com` and `phone`
+= `…6225`. Resend answered 422 on each day-0 email from 2026-09-17 17:15 UTC;
+the day-1 text and the teacher email gate on the day-0 send, so they never
+fired either. Nine charter families got no outreach (Alexzander Gonzalez,
+Yanisel Santamaria, Mia and Valentina Zamora, Arianna Rodriguez, Adeline
+Czaja, Ethan Dai, Ayden Botts, Charli Rajewich); the hourly retry wrote about
+100 "send it by hand" notes on Alexzander's ticket. Last successful day-0
+email before the break: Lena Boyden, 2026-09-16 20:52 UTC.
+
+**Fix.** `open_cases()` rehydrates a redacted `to_email` / `parent_email` /
+`phone` from the HubSpot contact (the contact id survives redaction), accepting
+only the same domain and the same last four digits. The held-email audit
+record now carries its `reason`, and the ticket note is written once per
+reason instead of once per sweep.
+
+**Also seen in the same trace (not fixed here):** Jil Beck's case (0.25 h,
+flagged RETENTION RISK 9/18) was already renewed on 8/28 with three 6-hour POs
+and invoices; renewal detection only counts deals created after the alert.
+Malinally Mata-Villa's reply moved her ticket to Needs scheduler on 9/17 and
+the migration script moved it back to Waiting on family on 9/18 (it applied a
+9/16 table without re-reading the stage). Ten low-balance tests fail on main
+before this change (DM target and note-order assertions drifted after #259 /
+#275); unchanged here.
+
+**Files:** email/src/low_balance.py, email/tests/test_low_balance_rehydrate.py
+
+---
 
 ## 2026-09-22 — Every event gets a HubSpot segment (active list per aplus_event_tag option)
 
