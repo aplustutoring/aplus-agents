@@ -357,9 +357,11 @@ low_balance:
   draft_unsent_nag_hours: 24      # teacher draft still in Drafts → one nag
   sla_hours: 8
   priority: normal
-  # Level Up Terri (Charter Terri pipeline) teachers cannot issue additional
-  # POs (Roman 2025-10-29): family only, never the teacher.
-  no_teacher_email_pipelines: ["72281989"]
+  # Roman 2026-09-23: Level Up teachers CAN issue Level Up POs (capped at
+  # $300 a month), so the teacher email goes out on Level Up cases in both
+  # Level Up pipelines. (Supersedes 2025-10-29 "Terri teachers cannot issue
+  # additional POs", which kept 72281989 here.) Empty = no pipeline excluded.
+  no_teacher_email_pipelines: []
   # A deal whose teacher email is a generic school inbox (ap@, accounts@,
   # office@ ...) has no teacher to write to: the family is still contacted,
   # the case is flagged, no personal note goes to a payables desk.
@@ -827,7 +829,15 @@ po_inbox:
   label_processed: "A+ Agent/Processed"
   label_review: "A+ Agent/Needs Review"
   # LEVEL UP POs route to "Amy - Charter - iLead - Level Up" (Level Up A).
-  # Verified against the portal 2026-07-31.
+  # Verified against the portal 2026-07-31. Roman 2026-09-23: "Terri - Charter
+  # - iLead - Level Up" (72281989) is dormant, NOT retired; it resumes in
+  # November 2026 (a site rule for which Level Up POs go there is still to be
+  # set). Level Up deals are named "<School> Level Up N" with their own count;
+  # the Level Up teacher issues these POs ($300 a month cap), so a Level Up PO
+  # without the teacher's name and email is flagged on the ticket. The HubSpot
+  # form workflow "New Level Up Charter Deal iLEAD" (513259427), which created
+  # Level Up deals in the Traditional pipeline, was turned OFF 2026-09-23: the
+  # PO agent is the only thing that creates Level Up deals.
   levelup_pipeline_id: "88841552"
   levelup_stage_id: "164922249"    # its Pre-Lesson stage
   # Deal naming (Roman, 2026-08-10): "Parent - Student - School N - YY/YY".

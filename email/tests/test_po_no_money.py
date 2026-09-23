@@ -45,6 +45,30 @@ def test_every_money_shape_is_removed():
         "PO 6614257316 for October 2026 (same service). Total combined $600. Document is stamped.": "PO 6614257316 for October 2026 (same service). Document is stamped.",
         "PO 6614252513 for September 2026 ($150, one 45-minute session per week starting 9/2).":
             "PO 6614252513 for September 2026 (one 45-minute session per week starting 9/2).",
+        # clipped sentences from the 2026-09-23 live run, now whole
+        "The PO line item shows Month: Dec with a value of $525.00 (Order Total $525.00). Service period spans Sept.":
+            "The PO line item shows Month: Dec. Service period spans Sept.",
+        "covering October, November, and December 2026. Each PO is valued at $150.00; total authorization $450.00. Service provider is A+.":
+            "covering October, November, and December 2026. Service provider is A+.",
+        "Authorized 28 sessions of 1:1 Synchronous Virtual Tutoring at $60/session ($1,680 total). Service dates: Sept 22.":
+            "Authorized 28 sessions of 1:1 Synchronous Virtual Tutoring. Service dates: Sept 22.",
+        "(4 sessions total) for Tutoring - Core Subject in September 2026. Order Total: $240.00. Teacher of Record: Tamara.":
+            "(4 sessions) for Tutoring - Core Subject in September 2026. Teacher of Record: Tamara.",
+        "sessions are 30-minute per subject (likely $60/session model). Must log into OPS.":
+            "sessions are 30-minute per subject. Must log into OPS.",
+        # what the first live pass left behind, repaired on the second pass
+        "The PO line item shows Month: Dec with a (Order). Service period spans Sept.": "The PO line item shows Month: Dec. Service period spans Sept.",
+        "in September 2026. Order. Teacher of Record: Tamara.": "in September 2026. Teacher of Record: Tamara.",
+        "Authorized 28 sessions of 1:1 Synchronous Virtual Tutoring (). Service dates: Sept 22.": "Authorized 28 sessions of 1:1 Synchronous Virtual Tutoring. Service dates: Sept 22.",
+        "December 2026. Each PO is;. Service provider is A+.": "December 2026. Service provider is A+.",
+        "sessions are 30-minute per subject (likely model). Must log in.": "sessions are 30-minute per subject. Must log in.",
+        "no attachment content parsed —, rate, hours, service period are all missing.": "no attachment content parsed — rate, hours, service period are all missing.",
+        "Email body contains no dollar, rate, hours, service period.": "Email body contains no dollar amount, rate, hours, service period.",
+        # sentences about MISSING data keep their words
+        "no attachment content parsed, amount, rate, hours, service period, and parent/TOR details are all missing.":
+            "no attachment content parsed, amount, rate, hours, service period, and parent/TOR details are all missing.",
+        "Email body contains no dollar amount, rate, hours, service period, or parent/TOR contact details.":
+            "Email body contains no dollar amount, rate, hours, service period, or parent/TOR contact details.",
         "": "",
     }
     for src, want in cases.items():
