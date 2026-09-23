@@ -1106,9 +1106,10 @@
     418440858,
     418442608,
     418447728,
-    418450136
+    418450136,
+    418452497
   ],
-  "last_run_utc": "2026-09-23T23:46:34.466617+00:00",
+  "last_run_utc": "2026-09-23T23:54:03.410761+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1721,6 +1722,72 @@
           "Check female tutor availability in ZIP 91411 (Sherman Oaks) for weekly in-person 5th grade homework support, ideally comfortable with Singapore math.",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418452497,
+      "number": "17182888561",
+      "time_pt": "4:46 PM",
+      "matched": true,
+      "contact_label": "Valerie Kameya",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound call from Roman at A+ Tutoring to Valerie Kameya, returning a missed call. Reached her voicemail; Roman apologized for missing her earlier call and left his callback number (818-573-6293). No substantive conversation occurred.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Try Valerie Kameya again if she doesn't call back after Roman's voicemail",
+            "owner_hint": "Roman",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Roman called Valerie Kameya back after missing her earlier call and left a voicemail with his callback number (818-573-6293). We don't yet know what she's inquiring about \u2014 record shows an 11th grader referred by a friend, but no other details. If she calls back, open with: 'Hi Valerie, this is [name] with A+ Tutoring returning your call \u2014 thanks for reaching out, tell me a bit about your student and what you're looking for.' If no callback in a day or two, Roman should try her again.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Only reached voicemail \u2014 no conversation happened, so no basis to advance status beyond current null.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Valerie called A+ earlier today; Roman missed the call and returned it but reached her voicemail. Left a message with his callback number. Reason for her inquiry still unknown.",
+          "what_we_can_do_to_help": "Await callback; if she doesn't respond, try her again to learn what she needs for her 11th grader.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Valerie called A+ earlier today; Roman missed the call and returned it but reached her voicemail. Left a message with his callback number. Reason for her inquiry still unknown."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Await callback; if she doesn't respond, try her again to learn what she needs for her 11th grader."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Try Valerie Kameya again if she doesn't call back after Roman's voicemail",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
