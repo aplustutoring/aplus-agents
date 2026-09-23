@@ -1921,6 +1921,26 @@
      "remaining": 0
     }
    ]
+  },
+  {
+   "date": "2026-09-23",
+   "at": "2026-09-23T12:28:37.831794-07:00",
+   "summary": [
+    {
+     "sequence": "Teacher Outreach 26/27 - 1 Worked With Us",
+     "batch": 0,
+     "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    },
+    {
+     "sequence": "Teacher Outreach 26/27 - 2 Known Schools",
+     "batch": 0,
+     "enrolled": 0,
+     "failed": 0,
+     "remaining": 0
+    }
+   ]
   }
  ],
  "sender_email_confirmed": "danielle@wetutorathome.com",
