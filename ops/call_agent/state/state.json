@@ -1089,9 +1089,10 @@
     417926227,
     417924377,
     417936571,
-    417951828
+    417951828,
+    417977706
   ],
-  "last_run_utc": "2026-09-22T23:11:24.968171+00:00",
+  "last_run_utc": "2026-09-23T00:52:02.093256+00:00",
   "pending_digest": [
     {
       "call_id": 417747598,
@@ -2048,6 +2049,11 @@
       "number": "18052564656",
       "time_pt": "2:36 PM",
       "reason": "hang-up"
+    },
+    {
+      "number": "13109903032",
+      "time_pt": "5:45 PM",
+      "reason": "spam gate: 4s call from an unknown number with no caller-ID"
     }
   ],
   "pending_failures": []
