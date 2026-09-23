@@ -1098,9 +1098,11 @@
     418348852,
     418398846,
     418400015,
-    418415147
+    418415147,
+    418432770,
+    418433938
   ],
-  "last_run_utc": "2026-09-23T21:45:29.911155+00:00",
+  "last_run_utc": "2026-09-23T22:38:38.312279+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1251,6 +1253,114 @@
           "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418433938,
+      "number": "16614963125",
+      "time_pt": "3:30 PM",
+      "matched": true,
+      "contact_label": "Katie Wilson",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Katie Wilson to follow up on her booked meeting and learn about her family's tutoring needs. Katie has two sons (ages 11 and 13, in language arts curriculum levels 6 and 7) enrolled with Hartwood Charter, and is looking for help with essay writing. Paola quoted the $75/hr charter rate ($60 for 45 min) and explained the online Lessons Pay platform and tutor matching process. Katie asked whether both boys could share a session to stretch limited charter funds; Paola will check on that and send a confirmation email with rates. Katie will confirm available fund balances afterward.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check whether both sons (ages 11 and 13) can be tutored together in the same session for language arts/essay writing",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Katie a confirmation email including current charter rates ($75/hr, $60/45min) and next steps",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once Katie shares available charter fund balances, help build a schedule (e.g., 30-min weekly sessions) for both boys",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Katie Wilson (warm, easygoing parent) is a Hartwood Charter family with two sons, ages 11 and 13, in language arts curriculum levels 6 and 7. Both need help with essay writing / building writing confidence. She has NOT filled out POs yet because she wants to confirm feasibility first. Paola quoted the charter rate of $75/hr and $60 for 45 min and explained the Lessons Pay platform and tutor matching. Key open question Katie is waiting on: can both boys share one session (even just doing an intro-to-essays topic together) since their charter funds are limited? Note the 13-year-old will be in high school next year and has a different charter teacher than the younger son. Katie expects an email from Paola with rates + an answer on the shared-session question. Suggested opener: \"Hi Katie, following up on your call with Paola \u2014 here are our charter rates and what we can do about running your two boys together...\" Also ask her to share fund balances so we can size sessions (30-min options are on the table).",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Charter-funded family (Hartwood Charter) paying via instructional funds \u2014 QTL - Charter fits best.",
+        "student_or_school_names_mentioned": [
+          "Hartwood Charter"
+        ],
+        "record_updates": {
+          "whats_going_on": "Hartwood Charter family with two sons ages 11 and 13 (language arts curriculum levels 6 and 7). Both need support with essay writing \u2014 they have the basic building blocks but writing does not come naturally. Older son moves to high school next year and has a different charter teacher than the younger son. Charter funds are limited, so Katie is exploring whether both boys can share a session (even a general intro-to-essays topic) to stretch the budget.",
+          "what_we_can_do_to_help": "Confirm whether we can run both brothers in one shared session (or same-time/different-tutor) for language arts/essay writing. Send Katie an email with our charter rates ($75/hr, $60 for 45 min) and the Lessons Pay platform overview. Once she shares available fund balances, build a schedule \u2014 30-min weekly sessions are an option to fit budget and attention span.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Hartwood Charter",
+          "subject_need": "English Language Arts",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Hartwood Charter family with two sons ages 11 and 13 (language arts curriculum levels 6 and 7). Both need support with essay writing \u2014 they have the basic building blocks but writing does not come naturally. Older son moves to high school next year and has a different charter teacher than the younger son. Charter funds are limited, so Katie is exploring whether both boys can share a session (even a general intro-to-essays topic) to stretch the budget."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm whether we can run both brothers in one shared session (or same-time/different-tutor) for language arts/essay writing. Send Katie an email with our charter rates ($75/hr, $60 for 45 min) and the Lessons Pay platform overview. Once she shares available fund balances, build a schedule \u2014 30-min weekly sessions are an option to fit budget and attention span."
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Hartwood Charter"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "English Language Arts"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "Meeting Booked",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check whether both sons (ages 11 and 13) can be tutored together in the same session for language arts/essay writing",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Katie a confirmation email including current charter rates ($75/hr, $60/45min) and next steps",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once Katie shares available charter fund balances, help build a schedule (e.g., 30-min weekly sessions) for both boys",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
