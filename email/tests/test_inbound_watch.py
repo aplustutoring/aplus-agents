@@ -132,7 +132,7 @@ def _werner_ev():
 def test_werner_chase_is_detected_and_both_seats_told(wired):
     wired["tickets"] = [{"id": "48570169480", "properties": {}}]
     wired["ev"] = _werner_ev()
-    iw.run()
+    iw.run(now=NOW)
     assert len(wired["dms"]) == 2                      # owner and the last-resort seat
     assert {d[0] for d in wired["dms"]} == {"UY", "UE"}
     assert "3 times" in wired["dms"][0][1]
@@ -150,7 +150,7 @@ def test_a_reply_task_closed_while_they_waited_is_reopened(wired):
         "hs_task_status": "COMPLETED",
         "hs_task_completion_date": _iso(days=3, hours=2),
         "hs_task_body": "Parent Jeff Werner is inquiring about test prep"}}]
-    iw.run()
+    iw.run(now=NOW)
     patches = [p for p in wired["patched"] if p[0] == "PATCH"]
     assert len(patches) == 1
     props = patches[0][2]["properties"]
@@ -165,7 +165,7 @@ def test_a_task_completed_before_they_started_waiting_is_left_alone(wired):
     wired["tasks"] = [{"id": "old", "properties": {
         "hs_task_subject": "Reply: scheduling", "hs_task_status": "COMPLETED",
         "hs_task_completion_date": _iso(days=30), "hs_task_body": ""}}]
-    iw.run()
+    iw.run(now=NOW)
     assert [p for p in wired["patched"] if p[0] == "PATCH"] == []
 
 
@@ -175,7 +175,7 @@ def test_non_reply_tasks_are_never_reopened(wired):
     wired["tasks"] = [{"id": "x", "properties": {
         "hs_task_subject": "QTL Charter Call 1: Ashley Clay", "hs_task_status": "COMPLETED",
         "hs_task_completion_date": _iso(days=1), "hs_task_body": ""}}]
-    iw.run()
+    iw.run(now=NOW)
     assert [p for p in wired["patched"] if p[0] == "PATCH"] == []
 
 
@@ -184,7 +184,7 @@ def test_answered_thread_says_nothing(wired):
     ev["emails"].append({"at": _iso(hours=1), "direction": "outbound", "text": "sorry, here we go"})
     wired["tickets"] = [{"id": "T", "properties": {}}]
     wired["ev"] = ev
-    iw.run()
+    iw.run(now=NOW)
     assert wired["dms"] == [] and wired["audit"] == []
 
 
@@ -197,21 +197,21 @@ def test_justcall_failure_refuses_to_run(monkeypatch, wired):
     monkeypatch.setattr(iw.jc, "index_by_number", boom)
     monkeypatch.setattr(iw.hs, "search_open_tickets",
                         lambda: pytest.fail("must not sweep on a blind index"))
-    iw.run()
+    iw.run(now=NOW)
 
 
 def test_disabled_does_nothing(monkeypatch, wired):
     monkeypatch.setattr(iw, "cfg", lambda: {**CFG, "inbound_watch": {"enabled": False}})
     monkeypatch.setattr(iw.jc, "index_by_number",
                         lambda d: pytest.fail("must not read while disabled"))
-    iw.run()
+    iw.run(now=NOW)
 
 
 def test_dry_run_writes_nothing(monkeypatch, wired):
     monkeypatch.setattr(iw, "DRY_RUN", True)
     wired["tickets"] = [{"id": "T", "properties": {}}]
     wired["ev"] = _werner_ev()
-    iw.run()
+    iw.run(now=NOW)
     assert wired["dms"] == [] and wired["notes"] == [] and wired["audit"] == []
     assert wired["posts"] == []
 
@@ -220,7 +220,7 @@ def test_recent_chase_is_not_repeated(monkeypatch, wired):
     monkeypatch.setattr(iw.audit, "last_inbound_chase", lambda tid: _iso(hours=2))
     wired["tickets"] = [{"id": "T", "properties": {}}]
     wired["ev"] = _werner_ev()
-    iw.run()
+    iw.run(now=NOW)
     assert wired["dms"] == []
 
 
@@ -228,14 +228,14 @@ def test_a_day_old_chase_fires_again(monkeypatch, wired):
     monkeypatch.setattr(iw.audit, "last_inbound_chase", lambda tid: _iso(days=2))
     wired["tickets"] = [{"id": "T", "properties": {}}]
     wired["ev"] = _werner_ev()
-    iw.run()
+    iw.run(now=NOW)
     assert len(wired["dms"]) == 2
 
 
 def test_one_digest_per_run(wired):
     wired["tickets"] = [{"id": "T", "properties": {}}]
     wired["ev"] = _werner_ev()
-    iw.run()
+    iw.run(now=NOW)
     assert len(wired["posts"]) == 1 and wired["posts"][0][0] == "C_D"
 
 
@@ -277,7 +277,7 @@ ASHLEY_TEXT = {"at": _iso(hours=2), "direction": "inbound",
 def test_ashley_answer_is_stamped_and_the_due_date_moves_out(answers_wired):
     answers_wired["open_tasks"] = [ASHLEY_TASK]
     answers_wired["sms"] = {"5305595178": {"texts": [ASHLEY_TEXT], "calls": []}}
-    iw.run()
+    iw.run(now=NOW)
     patches = [p for p in answers_wired["patched"] if p[0] == "PATCH"]
     assert len(patches) == 1
     props = patches[0][2]["properties"]
@@ -291,7 +291,7 @@ def test_a_text_that_predates_the_task_is_not_its_answer(answers_wired):
     answers_wired["open_tasks"] = [ASHLEY_TASK]
     answers_wired["sms"] = {"5305595178": {
         "texts": [{**ASHLEY_TEXT, "at": _iso(days=5)}], "calls": []}}
-    iw.run()
+    iw.run(now=NOW)
     assert [p for p in answers_wired["patched"] if p[0] == "PATCH"] == []
 
 
@@ -299,7 +299,7 @@ def test_our_own_outbound_never_counts_as_their_answer(answers_wired):
     answers_wired["open_tasks"] = [ASHLEY_TASK]
     answers_wired["sms"] = {"5305595178": {
         "texts": [{**ASHLEY_TEXT, "direction": "outgoing"}], "calls": []}}
-    iw.run()
+    iw.run(now=NOW)
     assert [p for p in answers_wired["patched"] if p[0] == "PATCH"] == []
 
 
@@ -309,7 +309,7 @@ def test_the_same_answer_is_never_stamped_twice(monkeypatch, answers_wired):
     monkeypatch.setattr(iw.audit, "inbound_answers_stamped", lambda: {key})
     answers_wired["open_tasks"] = [ASHLEY_TASK]
     answers_wired["sms"] = {"5305595178": {"texts": [ASHLEY_TEXT], "calls": []}}
-    iw.run()
+    iw.run(now=NOW)
     assert [p for p in answers_wired["patched"] if p[0] == "PATCH"] == []
 
 
@@ -318,5 +318,5 @@ def test_tasks_outside_the_configured_prefixes_are_ignored(answers_wired):
         "hs_task_subject": "QTL Charter Call 1: Ashley Clay", "hs_task_body": "",
         "hs_createdate": _iso(days=1), "hs_timestamp": _iso()}}]
     answers_wired["sms"] = {"5305595178": {"texts": [ASHLEY_TEXT], "calls": []}}
-    iw.run()
+    iw.run(now=NOW)
     assert [p for p in answers_wired["patched"] if p[0] == "PATCH"] == []

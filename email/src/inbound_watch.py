@@ -192,7 +192,11 @@ def _owner_key(owner_id) -> str:
     return ""
 
 
-def run() -> None:
+def run(now: datetime | None = None) -> None:
+    """`now` is injectable so cadence and age assertions in the tests do not
+    drift with the calendar. test_recent_chase_is_not_repeated passed on the
+    day it was written and failed five days later, which is a test bug, not a
+    behaviour change."""
     conf = cfg().get("inbound_watch") or {}
     if not conf.get("enabled"):
         print("=== inbound_watch: disabled in config ===")
@@ -209,7 +213,7 @@ def run() -> None:
 
     lines: list[str] = []
     if conf.get("chase", {}).get("enabled"):
-        lines += _chase_leg(conf, sms_index)
+        lines += _chase_leg(conf, sms_index, now)
     if conf.get("answers", {}).get("enabled"):
         lines += _answer_leg(conf, sms_index)
 
@@ -221,13 +225,14 @@ def run() -> None:
         slack_client.post_message(chan, "📨 *Inbound that bears on open work*\n" + "\n".join(lines))
 
 
-def _chase_leg(conf: dict, sms_index: dict) -> list[str]:
+def _chase_leg(conf: dict, sms_index: dict,
+               now: datetime | None = None) -> list[str]:
     c = conf.get("chase") or {}
     min_msgs = int(c.get("min_messages", 2))
     after_h = float(c.get("after_hours", 4))
     repeat_h = float(c.get("repeat_every_hours", 24))
     cap = int(c.get("max_per_run", 10))
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
     lines, acted = [], 0
 
     for ticket in hs.search_open_tickets():
