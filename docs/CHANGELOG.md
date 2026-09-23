@@ -18,6 +18,12 @@ Newest entries first.
   PO number, hours and month, teacher, parent, approval status) and that it
   never carries money. `amount` and `rate` keep their own fields; the ticket
   keeps its Amount / Hours @ rate lines for charter_admin.
+- `ops/hubspot-schema/scrub_deal_descriptions_2026_09_23.py`: one-off, human-run,
+  applies `no_money()` to every existing 26/27 deal description. Dry run on
+  2026-09-23: 273 deals with a description, 134 carried money, 0 figures or
+  dangling money words left after the scrub (the patterns were tuned on that
+  set: "at 1/2 hour per week" is cadence and survives; "PO total $300",
+  "Total authorization is $750", "($150/week)", "Total combined $600" go).
 
 **Why.** Roman 2026-09-23: the HubSpot workflow behind
 `should_this_deal_be_posted_to_a_slack_channel_` posts the description to

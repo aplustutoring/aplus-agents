@@ -25,6 +25,26 @@ def test_every_money_shape_is_removed():
         "10 hours @ 75/hr for October.": "10 hours for October.",
         "Amount $1,200.50 covers 16 hours.": "covers 16 hours.",
         "PO 4471 for 6 hours of tutoring.": "PO 4471 for 6 hours of tutoring.",      # no money: untouched
+        # cadence, not price (Ebalina Barrientos, 2026-09-23 dry run): kept whole
+        "Math tutoring at 1/2 hour per week, covering October at $37.50/session.": "Math tutoring at 1/2 hour per week, covering October.",
+        "Reading at 1 hour per week for 8 weeks.": "Reading at 1 hour per week for 8 weeks.",
+        "Two POs: #1 for September ($150) and #2 for October ($300), total $450.": "Two POs: #1 for September and #2 for October.",
+        "two sessions per week ($150/week), for September 2026.": "two sessions per week, for September 2026.",
+        # the money word left standing (2026-09-23 dry run)
+        "Mondays and Wednesdays 10/5. Total: $300.00. No tutor named.": "Mondays and Wednesdays 10/5. No tutor named.",
+        "5 sessions for September 2026 at $300 total. TOR is Ana.": "5 sessions for September 2026. TOR is Ana.",
+        "once a week in September 2026. Total PO value is $300. Tutor is Roman.": "once a week in September 2026. Tutor is Roman.",
+        "Authorizes 4 sessions of online Math Tutoring = $300 total. Service dates 9/9.": "Authorizes 4 sessions of online Math Tutoring. Service dates 9/9.",
+        "for September 2026 at $300.00 total ($60/session). Tutor named is Roman.": "for September 2026. Tutor named is Roman.",
+        "ELA and math support for September 2026. Total authorized: $300. Tutor assigned: Roman.": "ELA and math support for September 2026. Tutor assigned: Roman.",
+        "support for September 2026. PO value is $300.00. Tutor assigned is Roman.": "support for September 2026. Tutor assigned is Roman.",
+        "Gianna Davis (4 hours) and Londyn Brixey (4 hours). Total certificate value $600.00.": "Gianna Davis (4 hours) and Londyn Brixey (4 hours).",
+        "two sessions per week, for September 2026. PO total $300.": "two sessions per week, for September 2026.",
+        "virtual math tutoring for Yanisel (Grade 12) for November at $525. Service period is Sept.": "virtual math tutoring for Yanisel (Grade 12) for November. Service period is Sept.",
+        "Three POs: 3114234164 (Sept, $225.00), 3114234165 (Oct, $337.50). Total cost $862.50. TOR is Courtney.": "Three POs: 3114234164 (Sept), 3114234165 (Oct). TOR is Courtney.",
+        "PO 6614257316 for October 2026 (same service). Total combined $600. Document is stamped.": "PO 6614257316 for October 2026 (same service). Document is stamped.",
+        "PO 6614252513 for September 2026 ($150, one 45-minute session per week starting 9/2).":
+            "PO 6614252513 for September 2026 (one 45-minute session per week starting 9/2).",
         "": "",
     }
     for src, want in cases.items():

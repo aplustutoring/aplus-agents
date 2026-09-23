@@ -37,16 +37,20 @@ from .names import first_name
 # our hourly rate. Amount and rate stay on their own properties and the ticket.
 _MONEY_PATTERNS = [
     # "at $75/hour", "@ $75 per hour", "at 75.00/hr", "at $60 per 45-minute session"
-    re.compile(r",?\s*(?:at|@|for)\s*\$?\s?\d[\d,]*(?:\.\d+)?\s*(?:/|per)\s*(?:\d+[- ]?(?:min(?:ute)?s?)?\s*)?"
-               r"(?:hour|hr|session|lesson|class)\b(?:\s*(?:rate|each))?", re.I),
+    # ("at 1/2 hour per week" and "at 1 hour per week" are cadence, not price: kept)
+    re.compile(r",?\s*(?:at|@|for)(?!\s*\d+/\d+\s*(?:hour|hr))(?!\s*\d+\s+(?:hour|hr)s?\s+per\s+(?:week|month))"
+               r"\s*\$?\s?\d(?:[\d,]*\d)?(?:\.\d+)?\s*(?:/|per)\s*(?:\d+[- ]?(?:min(?:ute)?s?)?\s*)?"
+               r"(?:hour|hr|session|lesson|class|week|month)\b(?:\s*(?:rate|each))?", re.I),
     # "totaling $300", "for a total of $300", "worth $300", "valued at $300.00"
-    re.compile(r",?\s*(?:totaling|totalling|total(?:ing)?\s+of|for\s+a\s+total\s+of|worth|valued\s+at|value\s+of|"
-               r"amount\s+of)\s*\$?\s?\d[\d,]*(?:\.\d+)?\b", re.I),
+    # "totaling $300", "PO total $300", "Total authorization is $750", "for a total of $300", "worth $300"
+    re.compile(r",?\s*(?:PO\s+)?(?:totaling|totalling|for\s+a\s+total\s+of|"
+               r"(?:total|value|amount|cost|worth|valued)(?:\s+(?:PO|certificate|authorized|authorization|combined|"
+               r"value|cost|amount|is|of|at))*)\s*[:=]?\s*\$?\s?\d(?:[\d,]*\d)?(?:\.\d+)?\b", re.I),
     # "Value 150.00", "Total Cost: 300", "payout 140.00", "hourly rate of 75"
     re.compile(r"\b(?:total\s+cost|total\s+value|po\s+value|value|payout|amount|hourly\s+rate|rate)\s*(?:of|:|=)?\s*"
                r"\$?\s?\d[\d,]*(?:\.\d{2})?\b(?:\s*(?:/|per)\s*(?:hour|hr))?", re.I),
     # any dollar figure left, with or without a per-unit tail
-    re.compile(r"\$\s?\d[\d,]*(?:\.\d+)?(?:\s*(?:/|per)\s*(?:hour|hr|session|lesson|class))?", re.I),
+    re.compile(r"\$\s?\d(?:[\d,]*\d)?(?:\.\d+)?(?:\s*(?:/|per)\s*(?:hour|hr|session|lesson|class|week|month|day))?", re.I),
 ]
 
 
@@ -58,7 +62,16 @@ def no_money(text: str) -> str:
     s = text or ""
     for pat in _MONEY_PATTERNS:
         s = pat.sub("", s)
+    s = re.sub(r"\(\s*[,;:]?\s*", "(", s)               # "($150, one session" → "(one session"
+    s = re.sub(r"\s*[,;:]?\s*\)", ")", s)               # "session, $150)" → "session)"
     s = re.sub(r"\(\s*\)", "", s)                       # emptied parentheses
+    # the money word left standing once its number is gone: "Total.", "at total.",
+    # "Total PO value is.", "= total.", "Total authorized:.", "PO value is.",
+    # "Total certificate value." (2026-09-23 dry run over 132 deals)
+    s = re.sub(r"[,;]?\s*(?:at|=|for|of)?\s*(?:PO\s+)?(?:total|value|amount|cost)"
+               r"(?:\s+(?:PO|certificate|authorized|authorization|combined|value|cost|amount|is|of))*\s*[:=]?\s*(?=[.;,()]|$)",
+               "", s, flags=re.I)
+    s = re.sub(r"\s+(?:at|of|=)\s*(?=[.;,)]|$)", "", s, flags=re.I)   # "for November at $525." → "for November."
     s = re.sub(r"\s+([,.;:])", r"\1", s)                 # space before punctuation
     s = re.sub(r",\s*([.;])", r"\1", s)                  # ", ." after a removed clause
     s = re.sub(r"\.\s*\.", ".", s)
