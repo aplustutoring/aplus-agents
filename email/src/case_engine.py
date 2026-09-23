@@ -33,7 +33,7 @@ ASSOC_TICKET_DEAL = 28
 TICKET_PROPS = ["subject", "hs_pipeline", "hs_pipeline_stage", "hubspot_owner_id", "createdate",
                 "hs_lastmodifieddate", "hs_ticket_priority", "case_key", "case_client", "funding_type",
                 "retention_risk", "support_category", "linked_tutor_ticket_id", "sla_due_at",
-                "tutor_issue_type", "tutor_probation_until"]
+                "tutor_issue_type", "tutor_probation_until", "hours_left"]
 
 
 def _ce() -> dict:

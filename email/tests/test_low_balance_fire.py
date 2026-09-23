@@ -55,7 +55,7 @@ def test_live_hours_subtracts_lessons_after_the_alert_only(monkeypatch):
     assert case["hours_live"] == 2.5 and case["lessons_since"] == 2
     recs = [r for r in h.recs if r["action_taken"] == "low_balance_balance"]
     assert len(recs) == 1 and recs[0]["hours_live"] == 2.5 and recs[0]["message_id"].endswith(":balance")
-    assert h.notes and "Live balance 2.5 h after 2 attended lesson(s)" in h.notes[0][1]
+    assert h.notes and "Live balance 2.5 h: 2 attended lesson(s)" in h.notes[0][1]
     # unchanged next sweep: no second record, no second note
     lb._update_live_hours(cases, lb.cfg()["low_balance"])
     assert len([r for r in h.recs if r["action_taken"] == "low_balance_balance"]) == 1 and len(h.notes) == 1
@@ -144,3 +144,85 @@ def test_risk_reads_the_live_balance(monkeypatch):
     _active_deal(monkeypatch)
     lb.run_sweep()
     assert not any(r["action_taken"] == "low_balance_escalated" for r in h2.recs)
+
+
+# ── the title carries the balance; zero is High now (Roman 2026-09-23) ──────
+
+def test_hours_label_and_subject_rewrite():
+    assert lb._hours_label(1.75) == "1.75 h left" and lb._hours_label(0) == "0 h left" and lb._hours_label(2.6) == "2.5 h left"
+    assert lb._subject_with_hours("Low balance: Ember Seeley (iLead), 2.5 hours left", 1.75) == "Low balance: Ember Seeley (iLead), 1.75 h left"
+    assert lb._subject_with_hours("Low balance: Ember Seeley (iLead), 1.75 h left", 1.0) == "Low balance: Ember Seeley (iLead), 1 h left"
+    assert lb._subject_with_hours("Abby Ulstrup (private pay), 0 lessons left", 0.0) == "Abby Ulstrup (private pay), 0 h left"
+
+
+def test_balance_change_rewrites_the_title_and_stamps_hours_left(monkeypatch):
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    case = _case(email_sent=None, hours=4.0, subject="Low balance: Taylor Rodriguez (iLead), 4 hours left",
+                 opened_at=(NOW_UTC - dt.timedelta(days=2)).isoformat())
+    h.attended = {"taylor rodriguez": [((NOW_LA - dt.timedelta(days=1)).replace(tzinfo=None).isoformat()[:19], 0.75)]}
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    ticket_patch = next(p for m, path, p in h.patches if "/tickets/T1" in path)
+    assert ticket_patch["properties"] == {"subject": "Low balance: Taylor Rodriguez (iLead), 3.25 h left", "hours_left": "3.25"}
+    assert ("64250037589", {"retention_hours_left": "3.25"}) in h.stamps
+    assert not h.dms                                                 # 3.25 h is not zero
+
+
+def test_repeat_alert_resets_the_anchor_and_the_title(monkeypatch):
+    # opened at 4.0 five days ago, two lessons since; Teachworks re-alerts at 3.0 yesterday:
+    # the alert wins, and only lessons AFTER it subtract
+    recs = [{"message_id": "k", "action_taken": "low_balance_opened", "hours": 4.0, "contact_id": "C",
+             "to_email": "a@b.com", "parent_email": "a@b.com", "phone": "+15550000000",
+             "opened_at": (NOW_UTC - dt.timedelta(days=5)).isoformat()},
+            {"message_id": "k", "action_taken": "low_balance_repeat", "hours": 3.0,
+             "timestamp": (NOW_UTC - dt.timedelta(days=1)).isoformat()}]
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs))
+    case = lb.open_cases()["k"]
+    assert case["hours"] == 3.0 and case["hours_at"] == recs[1]["timestamp"] and case["hours_live"] is None
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    case.update(student="Taylor Rodriguez", ticket_id="T1", deal_id="D1", subject="Low balance: Taylor Rodriguez (iLead), 4 hours left")
+    h.attended = {"taylor rodriguez": [((NOW_LA - dt.timedelta(days=3)).replace(tzinfo=None).isoformat()[:19], 1.0),
+                                       ((NOW_LA - dt.timedelta(hours=6)).replace(tzinfo=None).isoformat()[:19], 0.75)]}
+    lb._update_live_hours({"k": case}, lb.cfg()["low_balance"])
+    assert case["hours_live"] == 2.25 and case["lessons_since"] == 1
+
+
+def test_package_growth_on_the_deal_adds_to_the_balance(monkeypatch):
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: 6.0)          # Kath bumped the PO from 4 to 6
+    case = _case(email_sent=None, hours=1.0, po_hours="4", opened_at=(NOW_UTC - dt.timedelta(days=2)).isoformat())
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    assert case["hours_live"] == 3.0
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_balance")
+    assert rec["po_hours_seen"] == 6.0
+    assert any("package grew by 2 h" in n for _t, n in h.notes)
+
+
+def test_zero_balance_is_high_priority_now_with_one_dm(monkeypatch):
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    case = _case(email_sent="x", day1_done=True, hours=0.75, owner="scheduler_a_l",
+                 opened_at=(NOW_UTC - dt.timedelta(days=2)).isoformat())           # day 2, not day 7
+    h.attended = {"taylor rodriguez": [((NOW_LA - dt.timedelta(hours=5)).replace(tzinfo=None).isoformat()[:19], 0.75)]}
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    risk = [p for m, path, p in h.patches if "/tickets/T1" in path and p["properties"].get("hs_ticket_priority") == "HIGH"]
+    assert risk and risk[0]["properties"]["retention_risk"] == "true"
+    assert case["escalated"] is True
+    assert any(r["action_taken"] == "low_balance_escalated" and r["reason"] == "zero_balance" for r in h.recs)
+    assert len(h.dms) == 1 and h.dms[0][0] == "UJA" and "0 HOURS LEFT" in h.dms[0][1]
+    assert ("64250037589", {"retention_stage": "retention_risk"}) in h.stamps
+    # next sweep, still zero: no second DM, no second flag
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    assert len(h.dms) == 1
+
+
+def test_trial_at_zero_is_flagged_on_the_first_sweep(monkeypatch):
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    case = _case(email_sent=None, hours=0.0, funding_type="trial", owner="charter_sales", charter=False,
+                 subject="Low balance: Abby Ulstrup (private pay), 0 hours left",
+                 opened_at=(NOW_UTC - dt.timedelta(hours=1)).isoformat())
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    assert h.dms and h.dms[0][0] == "UPAO" and "trial" in h.dms[0][1]
+    assert any("trial package used up" in n for _t, n in h.notes)

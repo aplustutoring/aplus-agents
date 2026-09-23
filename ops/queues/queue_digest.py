@@ -81,6 +81,19 @@ def pipeline_section(name: str, owners: dict) -> tuple[list[str], dict]:
                      f"(renewed {c.get('renewed', 0)}, not renewing {c.get('not renewing', 0)}, no response {c.get('no response', 0)}, per family)")
         risk = [t for t in open_ if (t.get("properties") or {}).get("retention_risk") == "true"]
         lines.append(f"  retention risk flagged: {len(risk)}")
+        # closest to zero first (Roman 2026-09-23: the board works by balance, not by age)
+        lowest = []
+        for t in open_:
+            p = t.get("properties") or {}
+            try:
+                lowest.append((float(p.get("hours_left")), p))
+            except (TypeError, ValueError):
+                continue
+        lowest.sort(key=lambda x: x[0])
+        if lowest:
+            lines.append("  lowest balances: " + "; ".join(
+                f"{p.get('subject', '').split(':', 1)[-1].split(',')[0].strip()} {h:g} h "
+                f"({owners.get(str(p.get('hubspot_owner_id')), 'unassigned')})" for h, p in lowest[:5]))
         # fleet-health defect: a charter or private-pay renewal owned by charter_sales
         cs = str((staff("charter_sales") or {}).get("hubspot_owner_id") or "")
         defects = [t for t in open_ if str((t.get("properties") or {}).get("hubspot_owner_id")) == cs

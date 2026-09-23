@@ -909,13 +909,15 @@ def test_day7_turns_the_ticket_into_a_retention_risk_once(monkeypatch):
     h0 = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={early["message_id"]: early})
     _active_deal(monkeypatch)
     lb.run_sweep()
-    assert not any("/tickets/T1" in path for _m, path, _p in h0.patches) and not h0.dms
+    # the hourly balance stamp may touch the ticket (hours_left); the risk flag must not
+    assert not any("/tickets/T1" in path and (p or {}).get("properties", {}).get("hs_ticket_priority")
+                   for _m, path, p in h0.patches) and not h0.dms
     case = _case(day1_done=True, hours=0.75, opened_at=(NOW_UTC - dt.timedelta(days=8)).isoformat())
     h = Harness(monkeypatch, _cfg(armed=True), deals=[], open_cases={case["message_id"]: case})
     _active_deal(monkeypatch)
     lb.run_sweep(force=True)
-    patch = next(p for m, path, p in h.patches if "/tickets/T1" in path)
-    assert patch["properties"] == {"hs_ticket_priority": "HIGH", "retention_risk": "true"}   # flag, no subject rewrite
+    patch = next(p for m, path, p in h.patches if "/tickets/T1" in path and (p or {}).get("properties", {}).get("hs_ticket_priority"))
+    assert patch["properties"] == {"hs_ticket_priority": "HIGH", "retention_risk": "true"}   # the flag; the title carries the hours separately
     assert h.stage() == ["retention_risk"]
     assert {u for u, _ in h.dms} == {"UPAO"} and "RETENTION RISK" in h.dms[0][1]     # the case owner only, not Roman
     assert any(r["action_taken"] == "low_balance_escalated" for r in h.recs)
