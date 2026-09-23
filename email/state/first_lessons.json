@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-22T23:36:25.990622+00:00",
+ "_last_run": "2026-09-23T06:45:17.700318+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -152,6 +152,15 @@
   "first": "2023-09-27",
   "name": "Layla Schnider",
   "tw_student_id": "1714302"
+ },
+ "in_person:shenon, emily": {
+  "checked": "2026-09-22",
+  "contact_id": "9144",
+  "deal_id": "20909266530",
+  "email": "natela@shenon.net",
+  "first": "2024-05-14",
+  "name": "Emily Shenon",
+  "tw_student_id": "1821499"
  },
  "in_person:smith, alaina": {
   "checked": "2026-09-20",
