@@ -65,10 +65,22 @@ hours") at **4 hours or fewer**. Recognised deterministically before the
 classifier. One case per student + package per school year; repeat alerts add
 a note, never a second message.
 
+**Sequence as of 2026-09-22 (Roman's go, replaces the 09-10 drip).**
+Teachworks' own family notice does the 4-hour nudge: at least three of the
+first thirteen renewals came in with no message from us. The case opens on
+the Teachworks alert and **waits**. Every hourly sweep reads the student's
+attended lessons since the alert from both Teachworks accounts and subtracts
+them from the alert's balance (`low_balance_balance` audit record + a ticket
+note when the number changes). The family outreach fires when the **live
+balance is 3 hours or fewer** (`fire_at_hours`), or **5 business days** after
+the alert with nothing burning it down (`fire_fallback_days`: a family with
+no lessons booked never reaches 3). Renewals took 0 to 6 days; a 45-minute
+student burns 3 hours in about a week at three sessions.
+
 | Day | Charter | Private pay (auto-renews at 2 hours) |
 |---|---|---|
-| 0 | **Email** to the parent from "A+ Tutoring" (admin@), reply-to paola@ (Roman 2026-09-11, Paola's point: a PO reminder is billing, not her sales line): hours are running low, tutor's first name, one true sentence from the last 30 days of lesson notes, "we would love to keep that progress going", please submit a new PO or ask your teacher of record to. Ticket opens for Paola. Deal → **Low Hours**. | **One upgrade email**: current tier and rate, the next tier and rate, "or keep going as you are and it renews on its own". No text, no teacher. Deal → Low Hours. |
-| 1, next business morning | If **no PO deal, no reply from the parent by email (paola@'s inbox) or by text (JustCall, since the case opened), and the ticket is still open**: **text** from the support line 818-869-1627 signed "A+ Tutoring" (same progress line; Paola is an agent on that line) and the **teacher email** from Paola's name (progress line, PO number, "could you issue a new PO"). Never for Level Up Terri teachers. Deal → Family Contacted / Teacher Contacted. Roman can pull the text forward to the same evening (`day1_now` workflow input, 2026-09-10); the teacher email then waits for the next business morning and still needs no PO and no reply. | nothing |
+| fire (3 h live, or fallback) | **Email and text together, same sweep.** Email to the parent from "A+ Tutoring" (admin@), reply-to the case owner (the scheduler; charter_sales for a trial): hours are running low, tutor's first name, one true sentence from the last 30 days of lesson notes, "we would love to keep that progress going", please submit a new PO or ask your teacher of record to. Text from the support line 818-869-1627 signed "A+ Tutoring", same progress line, only if the family has not already replied by email or by text on any JustCall line (JustCall unreadable = the text waits for the next sweep, never sent blind). Deal → **Family Contacted**. | **One upgrade email**: current tier and rate, the next tier and rate, "or keep going as you are and it renews on its own". No text, no teacher. Held until payment links exist (`private_pay.armed`). |
+| fire + 1 business day | If **still no PO deal, no reply, and the ticket is open**: the **teacher email** from the charter_sales seat (progress line, PO number, "could you issue a new PO"). The parent submits first, the teacher is the backup (Roman 2026-09-09); Roman declined a parallel teacher email on 2026-09-22. Never for Level Up Terri teachers. Deal → Teacher Contacted. | nothing |
 | any | **Reply watcher, every sweep:** a reply by email (paola@) or by text on any JustCall line is written to the audit log, posted on the ticket with the words, and DM'd to Paola within the hour. Day 1 and the teacher email skip a family that replied. | Paola answers. | 1 (built) |
 | 7 | No PO: the ticket **is the retention issue**. Subject "RETENTION RISK: …", priority HIGH, deal → **Retention Risk**, one DM to Paola and Roman. No task. | |
 | 28 | Still nothing: closed as **Lost** (`no_response`), re-engagement list. | same |

@@ -43,6 +43,29 @@ message handed back to us. So it is matched against what we actually sent that
 number, and a real reply cannot be swallowed because a real reply is not a
 verbatim echo of our words.
 
+Version 4.4 (2026-09-22) widened the quote class. A Russian tapback quoting our
+own message went uncaught because the client used a straight quote and the
+shape matcher only knew typographic ones. Not a language gap: the same text in
+curly quotes matched. Clients differ on quote characters and on whether they
+pair them, so any of them opens and any of them closes.
+
+Version 4.3 (2026-09-20) made a truncated read say so. The pager stops on an
+empty `next_page_link`, so a page that arrives short ends the walk and the
+result LOOKS complete, with no error anywhere. Every page reports
+`total_count`, so the walk now checks its own work, retries once, and raises
+`ShortRead` rather than reporting a number it cannot stand behind. A family
+missing from a truncated read looks like a family who is fine, which is the
+dangerous direction to be wrong in. Prompted by two JustCall read timeouts that
+morning; the walk had no way to tell a short page from a finished one.
+
+Version 4.2 (2026-09-18, same evening) stopped starving the echo rule. It was
+reading our own outbound from the same narrow window as the question, so on a
+two hour look-back `Reacted 💖 to "..."` had nothing to match against and was
+reported as a parent waiting two hours. Our side is now read over three days
+whatever the question asks about. Same evening, a second gap: a pleasantry that
+does not START the message ("Well! Thank you.") now counts when the whole
+message is short and asks nothing.
+
 Output splits three ways and the third matters: WAITING, answered, and CANNOT
 TELL when a number does not resolve to a contact. An unresolved number is a
 confident wrong answer, not a blank.
@@ -56,6 +79,10 @@ Two open questions Roman has not settled, both of which change the count:
     needs either stated hours or an after-hours auto-acknowledgement that buys
     the real reply until the morning.
 """
+# Annotations as strings: this runs on the system python 3.9, where
+# `int | None` in a signature is a TypeError at import time.
+from __future__ import annotations
+
 import datetime
 import os
 import re
@@ -93,10 +120,17 @@ TAPBACK = re.compile(
 # can we move Wednesday to 5?" opens with thanks and is a real request; an
 # earlier version swallowed it, which is the direction of error that hides a
 # family instead of inventing one.
-CLOSING = re.compile(
-    r"^\s*(thank you|thanks|thx|ty|ok(ay)?|got it|great|perfect|wonderful|"
-    r"excellent|awesome|sounds good|will do|no problem|yes|yep|yup|you too|"
-    r"👍|😊|❤️|​👍​|​❤️​)", re.IGNORECASE)
+_CLOSING_WORDS = (r"(thank you|thanks|thx|ty|ok(ay)?|got it|great|perfect|"
+                  r"wonderful|excellent|awesome|sounds good|will do|no problem|"
+                  r"yes|yep|yup|you too|👍|😊|❤️|​👍​|​❤️​)")
+CLOSING = re.compile(r"^\s*" + _CLOSING_WORDS, re.IGNORECASE)
+# The same vocabulary, unanchored, for the short-message rule below. CLOSING
+# itself is anchored, so .search() on it would still only match the start.
+CLOSING_ANY = re.compile(_CLOSING_WORDS, re.IGNORECASE)
+
+# A message this short that contains a pleasantry and asks nothing is a
+# pleasantry wherever the words sit in it.
+_SHORT = 40
 
 # What may trail a pleasantry and still leave it a pleasantry.
 _TRAILING = " \t.!,…~-–—:;)\u200b👍😊❤️🙏😀🙂"
@@ -105,11 +139,25 @@ _TRAILING = " \t.!,…~-–—:;)\u200b👍😊❤️🙏😀🙂"
 # and nothing after it. Hannah Thorn's phone sent the Spanish tapback
 # `Le gusta “Okay thank you, I offered Angelo 2:30 pm today...”` two hours after
 # the Chinese one was fixed by adding Chinese. Enumerating languages loses.
+# Quote characters vary by client, not just by language. Alina's phone used a
+# straight quote on 2026-09-22 and the whole rule missed, even though the
+# quoted text was our own message word for word. Curly, straight, angled and
+# low-9 all count, and the closing quote is any of them rather than the
+# matching pair: clients are not consistent about pairing them.
+_Q = "“”\"«»„‟‘’"
 TAPBACK_SHAPE = re.compile(
-    r"^\s*\S{1,18}(?:\s+\S{1,18}){0,3}\s*[:：]?\s*[“\u201c](.+)[”\u201d]\s*$",
+    r"^\s*\S{1,18}(?:\s+\S{1,18}){0,3}\s*[:：]?\s*[" + _Q + r"](.+)[" + _Q + r"]\s*$",
     re.DOTALL)
 
 _ECHO_KEEP = 60          # characters of our message to compare; tapbacks truncate
+
+# How far back to read OUR OWN messages, whatever window the question asks
+# about. A tapback quotes something we said, and on 2026-09-18 a two hour
+# look-back could not recognise `Reacted 💖 to "..."` because the message being
+# quoted had been sent earlier that afternoon and was not in the index. The
+# echo rule was right and starved. Reading our side wide costs one more page of
+# JustCall and makes the rule work at any window size.
+ECHO_LOOKBACK_HOURS = 72
 
 INTERNAL_DOMAIN = "@wetutorathome.com"
 
@@ -141,6 +189,12 @@ def is_courtesy(body: str) -> bool:
         return True
     m = CLOSING.match(b)
     if not m:
+        # "Well! Thank you." is a closing pleasantry that does not open the
+        # message. Allowed only when the whole message is short and asks
+        # nothing, so "The tutor never showed up. Thanks for nothing." and
+        # "Thanks, but can we move Wednesday to 5?" both survive.
+        if "?" not in b and len(b) <= _SHORT and CLOSING_ANY.search(b):
+            return True
         return False
     rest = b[m.end():].strip(_TRAILING)
     if "?" in rest:
@@ -195,23 +249,57 @@ def fmt_age(minutes: int) -> str:
     return f"{h}h {m:02d}m" if h else f"{m}m"
 
 
-def pull(kind: str, jh: dict, since_s: str) -> list:
-    """JustCall v2.1 paging starts at ZERO. `page=1` skips the newest hundred
-    rows and makes a narrow window look empty; that broke the SMS monitor for
-    about ten hours on 2026-09-12 while six families were writing in."""
-    out, page = [], 0
+class ShortRead(Exception):
+    """The walk ended with fewer rows than the API said exist."""
+
+
+def _walk(kind: str, jh: dict, since_s: str) -> tuple[list, int | None]:
+    """One pass. Returns (rows, total the API claims) so the caller can check.
+
+    JustCall v2.1 paging starts at ZERO. `page=1` skips the newest hundred rows
+    and makes a narrow window look empty; that broke the SMS monitor for about
+    ten hours on 2026-09-12 while six families were writing in.
+    """
+    out, page, total = [], 0, None
     while page <= 60:
         r = requests.get(f"https://api.justcall.io/v2.1/{kind}", headers=jh, timeout=60,
                          params={"per_page": 100, "page": page, "from_datetime": since_s})
         if r.status_code >= 300:
             raise SystemExit(f"JustCall {kind} HTTP {r.status_code}: {r.text[:200]}")
         j = r.json()
+        if total is None:
+            try:
+                total = int(j.get("total_count"))
+            except (TypeError, ValueError):
+                total = None
         rows = j.get("data") or []
         out += rows
         if not rows or not j.get("next_page_link"):
             break
         page += 1
-    return out
+    return out, total
+
+
+def pull(kind: str, jh: dict, since_s: str, attempts: int = 2) -> list:
+    """Every row in the window, or an exception. Never a partial answer.
+
+    The walk stops on an empty `next_page_link`, so a page that arrives short
+    or link-less ends it early and the result LOOKS complete, with no error
+    raised anywhere. A family missing from a truncated read looks like a family
+    who is fine, which is the dangerous direction to be wrong in.
+
+    Every page reports `total_count`, so the walk checks its own work. An
+    over-count is fine (the window can gain rows while we page); an under-count
+    is a short read, retried once and then refused.
+    """
+    last = 0
+    for _ in range(max(1, attempts)):
+        rows, total = _walk(kind, jh, since_s)
+        if total is None or len(rows) >= total:
+            return rows
+        last = len(rows)
+    raise ShortRead(f"{kind}: read {last} of {total} rows the API reports. "
+                    f"Refusing to answer on a partial read.")
 
 
 def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
@@ -219,6 +307,11 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
 
     Calls count. Reading texts alone is what made three phoned-back families
     look neglected.
+
+    The window is whatever the caller already asked JustCall for. Do NOT filter
+    timestamps here: rows carry the account's clock and a local cutoff string
+    compared against them silently widened a two hour check by the UTC offset
+    on 2026-09-18.
     """
     newest_in, newest_out = {}, {}
     for t in texts:
@@ -233,9 +326,6 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
             if n not in newest_in or w > newest_in[n][0]:
                 newest_in[n] = (w, body, t.get("contact_name") or "")
         else:
-            # Keep what we SAID, not just when. A tapback quotes it back at us,
-            # and comparing against it is the only language-proof way to tell.
-            OUR_WORDS.setdefault(n, []).append(body)
             if n not in newest_out or w > newest_out[n]:
                 newest_out[n] = w
     for c in calls:
@@ -249,6 +339,26 @@ def newest_each_way(texts: list, calls: list) -> tuple[dict, dict]:
         if n not in newest_out or w > newest_out[n]:
             newest_out[n] = w
     return newest_in, newest_out
+
+
+def load_our_words(texts: list) -> None:
+    """Fill OUR_WORDS from a WIDE pull of the feed.
+
+    Kept separate from the question's window on purpose. A tapback quotes
+    something we said, and on a two hour check the message being quoted is
+    usually older than that, so the echo rule starves and reports a reaction as
+    a parent waiting.
+    """
+    OUR_WORDS.clear()
+    for t in texts:
+        if str(t.get("direction", "")).lower().startswith("in"):
+            continue
+        n = digits(t.get("contact_number"))
+        if not n:
+            continue
+        info = t.get("sms_info") or {}
+        OUR_WORDS.setdefault(n, []).append(
+            ((info.get("body")) or "").replace("\n", " ").strip())
 
 
 def outbound_email_after(number: str, when: str, h: dict):
@@ -299,10 +409,19 @@ def outbound_email_after(number: str, when: str, h: dict):
 def main(hours: float = 14.0) -> int:
     """Prints the three buckets. Returns how many are past the one-hour bar."""
     jh, h = _headers()
-    since_s = (datetime.datetime.now()
-               - datetime.timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")
-    newest_in, newest_out = newest_each_way(pull("texts", jh, since_s),
-                                            pull("calls", jh, since_s))
+    now = datetime.datetime.now()
+    # A ShortRead here must reach the caller. Catching it and carrying on would
+    # turn "I could not read the line" into "nobody is waiting", which is the
+    # single failure this script keeps having.
+    ask_from = (now - datetime.timedelta(hours=hours)).strftime("%Y-%m-%d %H:%M:%S")
+    newest_in, newest_out = newest_each_way(pull("texts", jh, ask_from),
+                                            pull("calls", jh, ask_from))
+    # Our own side, read wider, so a tapback quoting something we said this
+    # morning is still recognisable on a two hour check.
+    wide_from = (now - datetime.timedelta(
+        hours=max(hours, ECHO_LOOKBACK_HOURS))).strftime("%Y-%m-%d %H:%M:%S")
+    load_our_words(pull("texts", jh, wide_from) if hours < ECHO_LOOKBACK_HOURS
+                   else pull("texts", jh, ask_from))
 
     waiting, courtesy = [], 0
     for n, (when, body, name) in sorted(newest_in.items(), key=lambda x: x[1][0]):

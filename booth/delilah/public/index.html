@@ -107,10 +107,13 @@
   #print-area{display:none;}
   @media print{
     body>*{display:none !important;}
-    #print-area{display:block !important;position:static;}
-    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
-    @page{margin:0;}
-    html,body{margin:0 !important;padding:0 !important;}
+    /* The card is exactly 2:3. Pin the page to 4x6 and fill it, so Safari does
+       not size the image to the screen viewport (which cropped the bottom band
+       on the Selphy, 2026-09-11). */
+    @page{size:4in 6in;margin:0;}
+    html,body{margin:0 !important;padding:0 !important;height:100% !important;overflow:visible !important;}
+    #print-area{display:block !important;position:static;width:100%;height:100%;}
+    #print-area img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;}
   }
   @media (prefers-reduced-motion:reduce){.attract-cta,.count-pop,.spinner{animation:none;}}
 </style>
@@ -126,7 +129,8 @@ const CONFIG = {
   DATE_LABEL: "9.11.26",
   HEBREW_YEAR: "5787",
   AUTO_PRINT: true,       // every kept photo prints (party favor)
-  STORYBOOK: true,        // second print: guests repainted into a Rosh Hashanah storybook (Gemini)
+  STORYBOOK: true,        // guests repainted into a Rosh Hashanah storybook (Gemini), sent by TEXT
+  STORYBOOK_PRINT: false, // Roman 2026-09-11: the painting is never printed, it eats paper. Text only.
   STORYBOOK_BANNER: "Once upon a Shana Tova",
   IDLE_RESET_MS: 90000,
   DONE_RESET_MS: 8000
@@ -171,15 +175,16 @@ const CONFIG = {
 <div class="screen light" id="screen-form">
   <button class="back-link" data-back="review">&larr; Back</button>
   <div class="step-eyebrow">Almost done</div>
-  <h2 class="step-title">Want it texted to you too?</h2>
+  <h2 class="step-title">How do you want it?</h2>
   <form id="lead-form" autocomplete="off">
     <div class="field"><label for="f-name">Your name (goes on the album)</label><input id="f-name" type="text" placeholder="Bubbe &amp; Zayde" maxlength="40"></div>
-    <div class="field"><label for="f-phone">Cell number</label><input id="f-phone" type="tel" inputmode="tel" placeholder="(818) 555-0123"></div>
+    <div class="field"><label for="f-phone">Cell number (for the text)</label><input id="f-phone" type="tel" inputmode="tel" placeholder="(818) 555-0123"></div>
     <div id="form-error"></div>
-    <div class="form-note">Two prints are coming either way: your photo and a storybook version. The text is a bonus.</div>
+    <div class="form-note">Text gets you the photo plus a storybook painting of it. Print is a 4x6 to take home.</div>
     <div class="form-actions">
-      <button class="btn btn-ghost" type="button" id="btn-skip">Just print it</button>
-      <button class="btn btn-primary" type="submit">Print + text me</button>
+      <button class="btn btn-ghost" type="button" data-deliver="text">Text me</button>
+      <button class="btn btn-ghost" type="button" data-deliver="print">Print it</button>
+      <button class="btn btn-primary" type="button" data-deliver="both">Both</button>
     </div>
   </form>
 </div>
@@ -195,7 +200,7 @@ const CONFIG = {
 <div class="screen" id="screen-painting">
   <div class="spinner"></div>
   <h2 class="display" style="font-size:38px;">Painting your storybook&hellip;</h2>
-  <div class="done-sub">Grab your first print. A second one is being painted for you, about 20 seconds.</div>
+  <div class="done-sub">Grab your print. A storybook painting of it is on its way to your phone, about 20 seconds.</div>
   <img id="painting-preview" alt="" style="height:38vh;border-radius:16px;margin-top:26px;box-shadow:0 16px 50px rgba(0,0,0,.35);">
 </div>
 
@@ -422,18 +427,20 @@ const CONFIG = {
   window.addEventListener("afterprint",()=>{document.title="Delilah is 5 Photo Booth";});
 
   // ---------- Form ----------
-  $("btn-skip").addEventListener("click",()=>submitAll({ name:$("f-name").value.trim(), phone:"" }));
-  $("lead-form").addEventListener("submit", e=>{
-    e.preventDefault();
+  // Text / Print / Both (Roman 2026-09-11: print is not mandatory, some guests
+  // only want the text). Text needs a cell; print needs nothing.
+  $("lead-form").addEventListener("submit", e=>e.preventDefault());
+  document.querySelectorAll("[data-deliver]").forEach(b=>b.addEventListener("click",()=>{
     const err=$("form-error");
-    const phone=$("f-phone").value.trim();
-    if(phone.replace(/\D/g,"").length<10){
-      err.textContent="That number looks short. Add your area code, or tap Just print it."; err.style.display="block";
+    const mode=b.dataset.deliver, wantText=mode!=="print", wantPrint=mode!=="text";
+    const phone=wantText ? $("f-phone").value.trim() : "";
+    if(wantText && phone.replace(/\D/g,"").length<10){
+      err.textContent="Add your cell with the area code for the text, or tap Print it."; err.style.display="block";
       return;
     }
     err.style.display="none";
-    submitAll({ name:$("f-name").value.trim(), phone });
-  });
+    submitAll({ name:$("f-name").value.trim(), phone, wantText, wantPrint });
+  }));
 
   // ---------- Print + send ----------
   function printPhoto(dataUrl){
@@ -444,6 +451,9 @@ const CONFIG = {
     });
   }
 
+  function logError(stage, name, error){
+    try{ fetch(CONFIG.WORKER_URL+"/log",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ stage, name, error }), keepalive:true }).catch(()=>{}); }catch(e){}
+  }
   async function postSubmit(payload){
     const res=await fetch(CONFIG.WORKER_URL+"/submit",{
       method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
@@ -451,50 +461,47 @@ const CONFIG = {
     return res.ok ? await res.json() : null;
   }
 
-  async function submitAll({name, phone}){
+  async function submitAll({name, phone, wantText=true, wantPrint=true}){
     show("sending");
+    $("screen-sending").querySelector("h2").textContent = wantPrint ? "Printing your photo…" : "Sending your photo…";
+    $("screen-sending").querySelector(".done-sub").textContent = wantPrint ? "Grab it from the printer in a moment" : "It is on its way to your phone";
+    $("screen-painting").querySelector(".done-sub").textContent = wantPrint ? "Grab your print. A storybook painting of it is on its way to your phone, about 20 seconds." : "Your photo is on its way. The storybook painting follows in about 20 seconds.";
     const photo=state.photoDataUrl, raw=state.rawDataUrl;
     state.album.push({ name, at:new Date().toISOString(), dataUrl:photo, kind:"photo" });
 
-    // Favor 1: the real photo. Print first (no network), then archive + text.
-    if(CONFIG.AUTO_PRINT) await printPhoto(photo);
-    let texted=false, storyTexted=false, storyOk=false;
-    try{
-      const out=await postSubmit({ name, phone, photo, kind:"photo" });
-      texted=!!(out && out.text && out.text.sent);
-    }catch(e){}
+    // The real photo. Print first if asked (no network), then archive, and text if asked.
+    if(wantPrint && CONFIG.AUTO_PRINT) await printPhoto(photo);
+    let texted=false, storyTexted=false, storyOk=false, photoOk=false;
+    // Two attempts, and every failure is reported to the Worker so it shows at /errors.
+    for(let attempt=1; attempt<=2 && !photoOk; attempt++){
+      try{
+        // `raw` (the un-framed capture) rides along so the Worker paints and
+        // texts the storybook itself, after this response, with no further
+        // help from the iPad.
+        const out=await postSubmit({ name, phone: wantText ? phone : "", photo, kind:"photo", raw: (CONFIG.STORYBOOK && wantText && phone) ? raw : undefined });
+        if(out && out.ok && out.archive && out.archive.url){ photoOk=true; texted=!!(out.text && out.text.sent); storyOk=!!(out.storybook && out.storybook.queued); storyTexted=storyOk; if(wantText && phone && !texted) logError("photo-text", name, JSON.stringify(out.text||{})); }
+        else logError("photo-submit", name, "attempt "+attempt+": "+JSON.stringify(out||null).slice(0,200));
+      }catch(e){ logError("photo-submit", name, "attempt "+attempt+": "+String(e)); }
+      if(!photoOk && attempt===1) await new Promise(r=>setTimeout(r,1500));
+    }
 
-    // Favor 2: the storybook repaint. Best effort; the guest already has print 1.
-    if(CONFIG.STORYBOOK && raw){
+    // The storybook painting is made and texted by the Worker in the background
+    // (see worker.js paintAndText). Nothing here depends on the iPad any more.
+    // A short painting screen keeps the guest informed while it happens.
+    if(storyOk){
       $("painting-preview").src=photo;
       show("painting");
-      try{
-        const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),75000);
-        const res=await fetch(CONFIG.WORKER_URL+"/storybook",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({ raw, name }), signal:ctl.signal
-        });
-        clearTimeout(t);
-        const out=res.ok ? await res.json() : null;
-        if(out && out.image){
-          const story=await frameStorybook(out.image);
-          storyOk=true;
-          state.album.push({ name, at:new Date().toISOString(), dataUrl:story, kind:"storybook" });
-          if(CONFIG.AUTO_PRINT) await printPhoto(story);
-          try{
-            const o2=await postSubmit({ name, phone, photo:story, kind:"storybook" });
-            storyTexted=!!(o2 && o2.text && o2.text.sent);
-          }catch(e){}
-        }
-      }catch(e){}
+      await new Promise(r=>setTimeout(r,4000));
     }
 
     const first=(name||"").split(/\s+/)[0]||"friend";
+    const lead = wantPrint ? `Your print is coming out, ${first}.` : `Thanks, ${first}.`;
     let msg;
-    if(storyOk) msg=`Two prints are coming out, ${first}: your photo and your storybook.`;
-    else if(CONFIG.STORYBOOK) msg=`Your print is coming out, ${first}. The storybook painter was busy, so ask Roman for it later.`;
-    else msg=`Enjoy your print, ${first}!`;
-    if(phone) msg+= (texted||storyTexted) ? " Check your phone too." : " The text did not go through, so ask Roman to resend it.";
+    if(!wantText) msg=`${lead} Enjoy it.`;
+    else if(!texted) msg=`${lead} The text did not go through, so ask Roman to resend it.`;
+    else if(storyOk && storyTexted) msg=`${lead} Your photo and your storybook painting are on their way to your phone.`;
+    else if(storyOk) msg=`${lead} Your photo is on your phone. The storybook text did not go through, so ask Roman to resend it.`;
+    else msg=`${lead} Your photo is on your phone. The storybook painter was busy, so ask Roman for it later.`;
     $("done-msg").textContent=msg;
     show("done");
     setTimeout(fullReset, CONFIG.DONE_RESET_MS);

@@ -165,3 +165,163 @@ def test_the_explicit_prefixes_still_cover_unquoted_forms():
     """The Chinese tapback carries no quotes at all, so the word list earns its
     keep alongside the echo check."""
     assert w.is_courtesy("赞了：No worries at all. Thank you for the update.")
+
+
+# ── the echo rule must not be starved by the question's window ─────────────
+def test_our_words_come_from_a_wider_pull_than_the_question():
+    """2026-09-18: a two hour look-back could not recognise a tapback because
+    the message it quoted had been sent earlier that afternoon. The rule was
+    right and starved."""
+    wide = [
+        _text("8185551234", "2026-09-18 09:00:00",
+              "Your words mean so much to me! Thank you for your kindness.",
+              direction="outgoing"),
+        _text("8185551234", "2026-09-18 16:45:00",
+              'Reacted 💖 to “Your words mean so much to me! Thank you for your kindness.”'),
+    ]
+    w.load_our_words(wide)
+    assert w.OUR_WORDS["8185551234"] == [
+        "Your words mean so much to me! Thank you for your kindness."]
+    reaction = wide[1]["sms_info"]["body"]
+    assert w.echoes_our_message(reaction, w.OUR_WORDS["8185551234"])
+
+
+def test_load_our_words_never_keeps_their_messages():
+    """Echoing THEIR words back would make any repeated phrase look like a
+    tapback."""
+    w.load_our_words([_text("8185551234", "2026-09-18 09:00:00", "their question")])
+    assert w.OUR_WORDS.get("8185551234", []) == []
+
+
+def test_the_question_window_is_left_to_the_api():
+    """A local cutoff string compared against the account's clock widened a two
+    hour check by the UTC offset on 2026-09-18."""
+    import inspect
+    src = inspect.getsource(w.newest_each_way)
+    assert "inbound_since" not in src
+
+
+def test_the_outbound_lookback_is_wider_than_any_normal_window():
+    assert w.ECHO_LOOKBACK_HOURS >= 48
+
+
+# ── a pleasantry that does not open the message ────────────────────────────
+def test_a_short_message_that_is_only_thanks_is_a_courtesy():
+    assert w.is_courtesy("Well! Thank you.")
+    assert w.is_courtesy("Oh wonderful, thank you")
+
+
+def test_a_long_message_containing_thanks_is_still_a_message():
+    assert not w.is_courtesy("The tutor never showed up. Thanks for nothing.")
+
+
+def test_a_question_containing_thanks_is_still_a_question():
+    assert not w.is_courtesy("Thanks, but can we move Wednesday to 5?")
+    assert not w.is_courtesy("Ok thank you, can she do Tuesday?")
+
+
+# ── quote characters vary by client, not only by language ──────────────────
+OURS_RU = ["Hi Alina, no we don't until Stephanie confirms she's ready to start again."]
+
+
+def test_a_straight_quote_tapback_is_caught():
+    """2026-09-22: Alina's client used a straight quote and the whole rule
+    missed, even though the quoted text was our own message word for word."""
+    body = ('Реакция ❤️ на " Hi Alina, no we don\'t until Stephanie confirms '
+            'she\'s ready to start again. "')
+    assert w.echoes_our_message(body, OURS_RU)
+
+
+def test_every_common_quote_character_opens_a_tapback():
+    inner = OURS_RU[0]
+    for o, c in (("“", "”"), ('"', '"'), ("«", "»"),
+                 ("„", "“"), ("‘", "’")):
+        assert w.echoes_our_message(f"Liked {o}{inner}{c}", OURS_RU), (o, c)
+
+
+def test_mismatched_quote_characters_still_count():
+    """Clients are not consistent about pairing them."""
+    assert w.echoes_our_message(f'Liked "{OURS_RU[0]}”', OURS_RU)
+
+
+def test_widening_the_quote_class_did_not_swallow_real_messages():
+    assert not w.echoes_our_message('She told me "bring the workbook" but which one?', OURS_RU)
+    assert not w.echoes_our_message('"My tutor never emailed the homework"', OURS_RU)
+
+# ── a short read must say so, not look like a quiet line ───────────────────
+class _Resp:
+    def __init__(self, rows, total, nxt):
+        self.status_code = 200
+        self._j = {"data": rows, "total_count": total, "next_page_link": nxt}
+
+    def json(self):
+        return self._j
+
+
+def _pager(pages, calls=None):
+    """A fake JustCall that serves the given pages in order."""
+    def _get(url, headers=None, timeout=None, params=None):
+        if calls is not None:
+            calls.append(params.get("page"))
+        i = params.get("page", 0)
+        return pages[i] if i < len(pages) else _Resp([], pages[0]._j["total_count"], "")
+    return _get
+
+
+def test_a_complete_read_returns_every_row(monkeypatch):
+    rows = [{"n": i} for i in range(150)]
+    monkeypatch.setattr(w.requests, "get", _pager([
+        _Resp(rows[:100], 150, "next"), _Resp(rows[100:], 150, "")]))
+    assert len(w.pull("texts", {}, "since")) == 150
+
+
+def test_paging_starts_at_zero(monkeypatch):
+    """page=1 skips the newest hundred rows. That broke the monitor for ten
+    hours on 2026-09-12 while six families were writing in."""
+    calls = []
+    monkeypatch.setattr(w.requests, "get", _pager([_Resp([{"n": 1}], 1, "")], calls))
+    w.pull("texts", {}, "since")
+    assert calls[0] == 0
+
+
+def test_a_truncated_walk_raises_rather_than_answering(monkeypatch):
+    """A short page ends the walk with no error raised anywhere. A family
+    missing from a truncated read looks like a family who is fine."""
+    monkeypatch.setattr(w.requests, "get",
+                        _pager([_Resp([{"n": i} for i in range(19)], 22, "")]))
+    try:
+        w.pull("texts", {}, "since")
+    except w.ShortRead as e:
+        assert "19 of 22" in str(e)
+    else:
+        raise AssertionError("a short read must not return quietly")
+
+
+def test_a_short_read_is_retried_before_refusing(monkeypatch):
+    state = {"attempt": 0}
+
+    def _get(url, headers=None, timeout=None, params=None):
+        if params.get("page", 0) == 0:
+            state["attempt"] += 1
+            if state["attempt"] == 1:
+                return _Resp([{"n": i} for i in range(19)], 22, "")   # short
+            return _Resp([{"n": i} for i in range(22)], 22, "")       # recovered
+        return _Resp([], 22, "")
+    monkeypatch.setattr(w.requests, "get", _get)
+    assert len(w.pull("texts", {}, "since")) == 22
+    assert state["attempt"] == 2
+
+
+def test_more_rows_than_claimed_is_fine(monkeypatch):
+    """The window keeps gaining rows while we page. Only UNDER-counting is a
+    short read."""
+    monkeypatch.setattr(w.requests, "get",
+                        _pager([_Resp([{"n": i} for i in range(25)], 22, "")]))
+    assert len(w.pull("texts", {}, "since")) == 25
+
+
+def test_a_missing_total_is_trusted_rather_than_blocking(monkeypatch):
+    """If the envelope stops carrying total_count, answer rather than refuse to
+    run at all. Losing the check is bad; losing the monitor is worse."""
+    monkeypatch.setattr(w.requests, "get", _pager([_Resp([{"n": 1}], None, "")]))
+    assert len(w.pull("texts", {}, "since")) == 1

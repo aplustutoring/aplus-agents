@@ -30,6 +30,67 @@ from .classifier import parse_classification  # reuse the tolerant JSON parser
 from .config import ANTHROPIC_API_KEY, DRY_RUN, cfg, staff
 from .names import first_name
 
+
+# Money never reaches the deal description (Roman 2026-09-23): the HubSpot
+# workflow behind should_this_deal_be_posted_to_a_slack_channel_ posts the
+# description to the tutor channel, and tutors must never see the PO value or
+# our hourly rate. Amount and rate stay on their own properties and the ticket.
+_MONEY_PATTERNS = [
+    # "at $75/hour", "@ $75 per hour", "at 75.00/hr", "at $60 per 45-minute session"
+    # ("at 1/2 hour per week" and "at 1 hour per week" are cadence, not price: kept)
+    re.compile(r",?\s*(?:at|@|for)(?!\s*\d+/\d+\s*(?:hour|hr))(?!\s*\d+\s+(?:hour|hr)s?\s+per\s+(?:week|month))"
+               r"\s*\$?\s?\d(?:[\d,]*\d)?(?:\.\d+)?\s*(?:/|per)\s*(?:\d+[- ]?(?:min(?:ute)?s?)?\s*)?"
+               r"(?:hour|hr|session|lesson|class|week|month)\b(?:\s*(?:rate|each))?", re.I),
+    # "totaling $300", "for a total of $300", "worth $300", "valued at $300.00"
+    # "totaling $300", "PO total $300", "Total authorization is $750", "for a total of $300", "worth $300"
+    # "with a value of $525.00 (Order Total $525.00)", "Each PO is valued at $150.00" (2026-09-23 live run)
+    re.compile(r",?\s*(?:with\s+an?\s+)?(?:each\s+)?(?:PO\s+|Order\s+)?(?:is\s+)?(?:totaling|totalling|for\s+a\s+total\s+of|"
+               r"(?:total|value|amount|cost|worth|valued)(?:\s+(?:PO|certificate|authorized|authorization|combined|"
+               r"value|cost|amount|is|of|at))*)\s*[:=]?\s*\$?\s?\d(?:[\d,]*\d)?(?:\.\d+)?\b", re.I),
+    # "Value 150.00", "Total Cost: 300", "payout 140.00", "hourly rate of 75"
+    re.compile(r"\b(?:total\s+cost|total\s+value|po\s+value|value|payout|amount|hourly\s+rate|rate)\s*(?:of|:|=)?\s*"
+               r"\$?\s?\d[\d,]*(?:\.\d{2})?\b(?:\s*(?:/|per)\s*(?:hour|hr))?", re.I),
+    # any dollar figure left, with or without a per-unit tail
+    re.compile(r"\$\s?\d(?:[\d,]*\d)?(?:\.\d+)?(?:\s*(?:/|per)\s*(?:hour|hr|session|lesson|class|week|month|day))?", re.I),
+]
+
+
+def no_money(text: str) -> str:
+    """The PO summary with every dollar figure and per-hour price removed:
+    'PO #3114264191 covers 4 hours ... for September 2026 at $75/hour,
+    totaling $300.' becomes 'PO #3114264191 covers 4 hours ... for
+    September 2026.' Hours and PO numbers stay."""
+    s = text or ""
+    for pat in _MONEY_PATTERNS:
+        s = pat.sub("", s)
+    s = re.sub(r"\(\s*[,;:]?\s*", "(", s)               # "($150, one session" → "(one session"
+    s = re.sub(r"\s*[,;:]?\s*\)", ")", s)               # "session, $150)" → "session)"
+    s = re.sub(r"\(\s*\)", "", s)                       # emptied parentheses
+    # the money word left standing once its number is gone: "Total.", "at total.",
+    # "Total PO value is.", "= total.", "Total authorized:.", "PO value is.",
+    # "Total certificate value." (2026-09-23 dry run over 132 deals)
+    # Not before a comma: "no dollar amount, rate, hours ... are missing" is a
+    # sentence about missing data, not money (Gorman notices, 2026-09-23 live run).
+    s = re.sub(r"[,;]?\s*(?:at|=|for|of)?\s*(?:each\s+)?(?:PO\s+|Order\s+)?(?:is\s+)?(?:total|value|amount|cost)"
+               r"(?:\s+(?:PO|certificate|authorized|authorization|combined|value|cost|amount|is|of))*\s*[:=]?\s*(?=[.;()]|$)",
+               "", s, flags=re.I)
+    s = re.sub(r"\b(?:each\s+)?PO\s+is\s*(?=[.;)]|$)", "", s, flags=re.I)   # "Each PO is;" once its value is gone
+    s = re.sub(r"\s+(?:at|of|=|with\s+an?)\s*(?=[.;,)]|$)", "", s, flags=re.I)   # "for November at $525." → "for November."
+    s = re.sub(r"\(\s*likely\s+model\s*\)", "", s, flags=re.I)                 # "(likely $60/session model)"
+    # repairs for descriptions clipped by the first live pass (2026-09-23),
+    # so a second pass leaves them whole; harmless on clean text
+    s = re.sub(r"\s+with\s+an?\s*\(\s*Order\s*\)", "", s, flags=re.I)         # "Month: Dec with a (Order)."
+    s = re.sub(r"(?<=\.)\s*Order\s*\.", "", s)                                 # "September 2026. Order. Teacher"
+    s = re.sub(r"—\s*,\s*", "— ", s)                                           # "parsed —, rate, hours"
+    s = re.sub(r"\bno dollar,", "no dollar amount,", s, flags=re.I)            # "contains no dollar, rate"
+    s = re.sub(r"\(\s*\)", "", s)                       # parentheses emptied by the passes above
+    s = re.sub(r"\s*;\s*(?=[.;])", "", s)               # ";." → "."
+    s = re.sub(r"\s+([,.;:])", r"\1", s)                 # space before punctuation
+    s = re.sub(r",\s*([.;])", r"\1", s)                  # ", ." after a removed clause
+    s = re.sub(r"\.\s*\.", ".", s)
+    s = re.sub(r"[ \t]{2,}", " ", s)
+    return s.strip()
+
 PO_SYSTEM = (
     "Ground all reasoning and output in A+ CARE core values: ops/values/care-values.md. "
     "Before contacting a family, teacher, or tutor, read knowledge/journey/README.md "
@@ -43,6 +104,14 @@ PO_SYSTEM = (
     "parent_last, parent_email, "
     "parent_phone, tor_first, tor_last, tor_email, tutor_name, po_month, level_up (bool), "
     "summary, draft_reply, confidence (0-1)}. "
+    "summary = two or three plain sentences: school, student and grade, PO number, hours "
+    "and month covered, teacher of record, parent, approval status. NEVER a dollar "
+    "figure, PO value, total, or hourly/session price in the summary: it is shown to "
+    "tutors. Money goes in amount and rate only. "
+    "level_up = true when the PO / order agreement's service or program reads 'Level Up' "
+    "(OPS/iLEAD 'Level Up A+ Tutoring'); false otherwise. A Level Up PO is issued by the "
+    "Level Up teacher, so tor_first, tor_last and tor_email are REQUIRED on it: read them "
+    "from the form's teacher / EF line. "
     "tutor_name = the A+ tutor named on the PO/order agreement, if any (e.g. 'Jacquelyn Lemerond'). "
     "rate = the unit price stated in the PO (number only, e.g. 75). rate_unit = what that "
     "price buys: 'hour' when the PO prices per hour, 'session' when it prices per session/"
@@ -149,7 +218,20 @@ def po_extract(body: str, subject: str, sender: str,
     text = "".join(b.text for b in msg.content if getattr(b, "type", None) == "text")
     cleaned = re.sub(r"^```(?:json)?|```$", "", text.strip()).strip()
     start, end = cleaned.find("{"), cleaned.rfind("}")
-    return json.loads(cleaned[start:end + 1])
+    return _level_up_backstop(json.loads(cleaned[start:end + 1]), body, subject)
+
+
+_LEVEL_UP_RE = re.compile(r"\blevel\s*-?\s*up\b", re.I)
+
+
+def _level_up_backstop(po: dict, body: str = "", subject: str = "") -> dict:
+    """A PO whose own words say 'Level Up' (email, subject, or the model's
+    summary of the document) is a Level Up PO whatever the model's flag said,
+    so it can never land in the Traditional pipeline (Roman 2026-09-23)."""
+    if isinstance(po, dict) and po.get("is_po") and not po.get("level_up"):
+        if _LEVEL_UP_RE.search(" ".join([body or "", subject or "", str(po.get("summary") or "")])):
+            po["level_up"] = True
+    return po
 
 
 def _attach_po_to_deal(deal_id, attachments: list[dict], po: dict,
@@ -523,22 +605,23 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
         key = f"po_watch:{po.get('po_number') or deal_id}"
         role, _why = ce.owner_for_support("po_watch")
+        # Money lives on the deal's Amount only (Roman 2026-09-23): no value or
+        # rate on the ticket, the task, the note or the channel.
         desc = (f"PO received; convert it to a Teachworks invoice, then stamp Invoice # on the deal.\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\nPO #: {po.get('po_number') or 'n/a'}\n"
-                f"Amount: ${po.get('amount')}\nHours: {po.get('hours') or 'n/a'}"
-                + (f" @ ${po.get('rate')}/hr" if po.get("rate") else "") + "\n"
+                f"Hours: {po.get('hours') or 'n/a'} (value on the deal's Amount)\n"
                 + (f"Submit to the school's ops system by {month_end.strftime('%b %-d, %Y')} (end of PO month).\n" if month_end
                    else "Service month not stated: confirm it and set Expected Lessons Fulfilled Date on the deal.\n")
                 + ("PO is PENDING school approval: confirm before invoicing.\n" if po.get("pending_approval") else "")
                 + f"HubSpot deal id: {deal_id}. This ticket closes on its own once Invoice # is on the deal.")
         try:
             t = ce.open_case("po_inbox", key, "support", "new",
-                             f"PO watch: {student} ({po.get('school') or '?'}, PO {po.get('po_number') or 'n/a'}, ${po.get('amount')})",
+                             f"PO watch: {student} ({po.get('school') or '?'}, PO {po.get('po_number') or 'n/a'})",
                              desc, role, deal_id=(deal_id if deal_id != "DRYRUN" else None),
                              props={"support_category": "po_watch", "ticket_source": "email_engine"},
                              priority="MEDIUM", category="new_deal_po", source="EMAIL")
-            note_parts.append(f"🧾 PO watch ticket {t.get('id')} for {(staff(role) or {}).get('name', 'Kath')} "
-                              f"(${po.get('amount')}); it closes itself when Invoice # lands on the deal.")
+            note_parts.append(f"🧾 PO watch ticket {t.get('id')} for {(staff(role) or {}).get('name', 'Kath')}; "
+                              f"it closes itself when Invoice # lands on the deal.")
         except Exception as e:  # noqa: BLE001 — the deal must survive a ticket failure
             print(f"  ⚠️  po_watch ticket failed (non-fatal): {e}")
             note_parts.append("🧾 Could not open the PO watch ticket — invoice manually.")
@@ -567,7 +650,7 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() or "student n/a"
         pending_line = ("\n⏳ PO is PENDING school approval (order agreement) — confirm it is "
                         "approved before submitting the invoice." if po.get("pending_approval") else "")
-        rate_bit = f" @ ${po.get('rate')}/hr" if po.get("rate") else ""
+        rate_bit = ""                                   # money lives on the deal's Amount only (Roman 2026-09-23)
         import re as _re
         po_disp = po.get("po_number") or "n/a"
         m = _re.match(r"^(.*?)-([A-Z][a-z]+(?:[A-Z][a-z]+)+)$", str(po_disp))
@@ -577,8 +660,8 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
         body = (f"STEP 1: convert this PO to a Teachworks invoice NOW (API can't — manual)."
                 f"{pending_line}\n"
                 f"Student: {student}\nSchool: {po.get('school') or 'n/a'}\n"
-                f"PO #: {po_disp}\nAmount: ${po.get('amount')}\n"
-                f"Hours: {po.get('hours') or 'n/a'}{rate_bit}\n"
+                f"PO #: {po_disp}\n"
+                f"Hours: {po.get('hours') or 'n/a'}{rate_bit} (value on the deal's Amount)\n"
                 f"{submit_line}\n"
                 f"THEN fill on the HubSpot deal: 'Invoice #' (the TW invoice number) and "
                 f"confirm 'Expected Lessons Fulfilled Date' (prefilled to the end of the "
@@ -586,11 +669,11 @@ def _invoice_task(deal_id, po: dict, note_parts: list[str]) -> None:
                 f"HubSpot deal id: {deal_id}. The PO PDF is attached to the deal; the family/"
                 f"student are created in Teachworks by the deal sync.")
         hs.create_task(f"Convert PO to TW invoice — {student} ({po.get('school') or '?'}, "
-                       f"PO {po.get('po_number') or 'n/a'}, ${po.get('amount')})",
+                       f"PO {po.get('po_number') or 'n/a'})",
                        body, owner.get("hubspot_owner_id"),
                        int(due.timestamp() * 1000), priority="HIGH")
         note_parts.append(f"🧾 Convert-to-TW-invoice task created for {owner.get('name', 'Kath')} "
-                          f"(${po.get('amount')}, due {due.strftime('%b %-d')}).")
+                          f"(due {due.strftime('%b %-d')}).")
     except Exception as e:  # noqa: BLE001 — the deal must survive a task failure
         print(f"  ⚠️  invoice task failed (non-fatal): {e}")
         note_parts.append("🧾 Could not create the Teachworks-invoice task — invoice manually.")
@@ -849,6 +932,10 @@ def _deal_name(po: dict, parent_name: str, note_parts: list[str]) -> str:
     run, incremented per name issued — re-searching per sibling double-counts
     as the index catches up (the Zackarias 1,2,4,7,9 bug)."""
     short, mapped = _school_short(po.get("school") or "")
+    if po.get("level_up") and short:
+        # Level Up is its own program with its own pipeline and its own count
+        # (Roman 2026-09-23): "iLead Level Up 1", never "iLead 4"
+        short = f"{short} Level Up"
     year = _school_year_tag(po)
     student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip()
     # keyed per STUDENT too — a multi-student certificate numbers each kid's
@@ -1690,9 +1777,11 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
         extra = {"po_number": po_num,
                  "should_this_deal_be_posted_to_a_slack_channel_": "true"}
         # Deal Description carries the extraction summary (Roman 2026-09-04:
-        # the deal itself should say what the PO says, not just the ticket)
-        if (po.get("summary") or "").strip():
-            extra["description"] = po["summary"].strip()[:1500]
+        # the deal itself should say what the PO says, not just the ticket),
+        # minus every dollar figure and hourly price (Roman 2026-09-23: the
+        # description is what the tutor channel sees)
+        if no_money(po.get("summary") or "").strip():
+            extra["description"] = no_money(po["summary"]).strip()[:1500]
         if po.get("hours"):
             extra["number_of_hours_in_this_po"] = po["hours"]
         # Resolve the PARENT contact FIRST — the deal name leads with the parent
@@ -1877,7 +1966,14 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
             if pc.get("levelup_pipeline_id"):
                 pipeline_id = pc["levelup_pipeline_id"]
                 stage_id = pc.get("levelup_stage_id") or stage_id
-                note_parts.append("⤴️ LEVEL UP PO → Level Up A pipeline.")
+                note_parts.append("⤴️ LEVEL UP PO → Level Up pipeline (Amy; Terri's resumes November 2026).")
+                # the Level Up TEACHER issues these POs ($300 a month cap), so the
+                # deal must carry the teacher's name and email (Roman 2026-09-23)
+                t_name = f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
+                if not t_name or not (po.get("tor_email") or "").strip():
+                    note_parts.append("⚠️ LEVEL UP PO without the teacher's "
+                                      + ("name" if not t_name else "email")
+                                      + " — the Level Up teacher issues the next PO: get them on the deal.")
             else:
                 note_parts.append("⚠️ LEVEL UP detected but po_inbox.levelup_pipeline_id is "
                                   "not configured — deal created in the default Charter "
@@ -2044,7 +2140,7 @@ def _handle_cancellation(po: dict, note_parts: list[str]) -> None:
             try:
                 hs.add_deal_note(deal_id,
                                  f"🛑 PO {po_num} CANCELLED by the school "
-                                 f"({(po.get('summary') or '')[:300]}). Deal stopped, amount "
+                                 f"({no_money(po.get('summary') or '')[:300]}). Deal stopped, amount "
                                  f"and hours zeroed by the PO agent. Do NOT schedule lessons "
                                  f"against this PO. Any Teachworks invoice for it must be "
                                  f"voided.")
@@ -2221,7 +2317,7 @@ def process_po_message(stub_id: str, force: bool = False) -> dict | None:
             f"Parent: {po.get('parent_first', '')} {po.get('parent_last', '')} "
             f"<{po.get('parent_email') or 'no email'}> {po.get('parent_phone') or ''}\n"
             f"Attachments read: {', '.join(a['filename'] for a in attachments) or 'none'}\n"
-            f"Summary: {po.get('summary')}\n" + "\n".join(note_parts)
+            f"Summary: {no_money(po.get('summary') or '')}\n" + "\n".join(note_parts)
             + f"\nSLA due: {sla_due.isoformat()}")
     ticket = hs.create_ticket(subject, ticket_owner["hubspot_owner_id"],
                               cfg()["hubspot"]["ticket_stages"]["needs_approval"], desc, None,

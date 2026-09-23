@@ -1020,1007 +1020,113 @@
     416822267,
     416823172,
     416823379,
-    416827244
+    416827244,
+    416834264,
+    416837259,
+    416842645,
+    416845625,
+    416886171,
+    416889743,
+    416918817,
+    416928101,
+    416953718,
+    416971493,
+    417233868,
+    417267543,
+    417272187,
+    417310756,
+    417350261,
+    417350782,
+    417377775,
+    417380694,
+    417397017,
+    417408060,
+    417410867,
+    417417666,
+    417417939,
+    417420938,
+    417423171,
+    417423793,
+    417448648,
+    417450875,
+    417451554,
+    417453059,
+    417454775,
+    417456694,
+    417458895,
+    417460381,
+    417461878,
+    417462571,
+    417465693,
+    417485268,
+    417494797,
+    417503681,
+    417509815,
+    417510788,
+    417511483,
+    417512179,
+    417526008,
+    417694487,
+    417693772,
+    417720512,
+    417746301,
+    417747598,
+    417771429,
+    417773392,
+    417787032,
+    417797863,
+    417808885,
+    417808928,
+    417809253,
+    417825893,
+    417829749,
+    417833269,
+    417834234,
+    417880683,
+    417901548,
+    417901383,
+    417926361,
+    417926227,
+    417924377,
+    417936571,
+    417951828,
+    417977706,
+    418179936,
+    418215813,
+    418311876,
+    418343728,
+    418348852,
+    418398846,
+    418400015,
+    418415147
   ],
-  "last_run_utc": "2026-09-18T23:01:50.503413+00:00",
+  "last_run_utc": "2026-09-23T21:45:29.911155+00:00",
   "pending_digest": [
     {
-      "call_id": 416659219,
-      "number": "13105006987",
-      "time_pt": "9:38 AM",
-      "matched": true,
-      "contact_label": "Miriam Menkin",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Miriam Menkin regarding her earlier interest in tutoring. The call went to voicemail and Paola left a message asking Miriam to confirm continued interest and share a good callback time. No new information about the student or need was obtained.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for Miriam Menkin following up on her prior tutoring interest \u2014 no answer, no new details. Miriam's current lead status is 'Using Someone Else' and how-did-you-hear shows 'From my Charter School'. She now expects a callback opportunity; if she doesn't respond, plan another gentle follow-up in a few days. Suggested opener: 'Hi Miriam, this is [name] from A+ Tutoring following up on the voicemail Paola left \u2014 just wanted to check whether tutoring is still something you're exploring for your family.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Outbound call reached voicemail only; no conversation occurred, so existing 'Using Someone Else' status should not be changed based on a one-way message.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time.",
-          "what_we_can_do_to_help": "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Outbound follow-up call from Paola went to voicemail. Left a message asking Miriam to confirm continued interest in tutoring and share a good callback time."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Wait for Miriam's callback; if no response, try another follow-up attempt (call/text/email) to re-engage and learn her family's current tutoring needs."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await Miriam's callback; if no response in a few days, attempt another follow-up (call/text/email) to gauge continued interest.",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416666147,
-      "number": "13104977863",
-      "time_pt": "9:50 AM",
-      "matched": true,
-      "contact_label": "Jacqueline McClain",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda from A+ Tutoring called Jacqueline McClain to follow up on her son Prince and propose a trial session with tutor Ayesha on Friday at 9 AM. The call went to voicemail; Yolanda left a message asking Jacqueline to confirm availability and said she would call back around 4 PM the same day.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Yolanda left a voicemail for Jacqueline McClain (parent of Prince, 5th grade) proposing a trial session with tutor Ayesha on Friday at 9 AM. Yolanda promised to call back around 4 PM today. Jacqueline expects a return call to confirm the trial time. Open with: 'Hi Jacqueline, this is [name] from A+ Tutoring following up on Yolanda's message about setting Prince up for a trial with Ayesha on Friday at 9 AM \u2014 does that time still work for you?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Contact is already in an OPEN_DEAL pipeline stage; status is owned by the deal pipeline and should not be demoted.",
-        "student_or_school_names_mentioned": [
-          "Prince"
-        ],
-        "record_updates": {
-          "whats_going_on": "Yolanda left voicemail proposing a trial session with tutor Ayesha for Prince on Friday at 9 AM. Awaiting Jacqueline's confirmation.",
-          "what_we_can_do_to_help": "Set up trial session with Ayesha on Friday at 9 AM pending parent confirmation; Yolanda to call back around 4 PM today.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Yolanda left voicemail proposing a trial session with tutor Ayesha for Prince on Friday at 9 AM. Awaiting Jacqueline's confirmation."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Set up trial session with Ayesha on Friday at 9 AM pending parent confirmation; Yolanda to call back around 4 PM today."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Yolanda to call Jacqueline back around 4 PM today to confirm Friday 9 AM trial session with Ayesha for Prince",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416690184,
-      "number": "18183840009",
-      "time_pt": "10:33 AM",
-      "matched": true,
-      "contact_label": "Hermine Torosyan",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Hermine Torosyan regarding prior interest in tutoring for her daughter. The call was screened by a voicemail/assistant system and Hermine was unavailable. Paola left a voicemail asking Hermine to confirm if she's still interested and offering to follow up.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for Hermine Torosyan following up on her prior interest in tutoring for her daughter (no student details on file). No conversation occurred \u2014 call was screened by an assistant and rolled to voicemail. Hermine now knows we're interested in reconnecting; she may call back. If no response in a few days, try again \u2014 open with: 'Hi Hermine, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 we wanted to check in about tutoring for your daughter and see how we can help.' Current record has her as 'Using Someone Else,' so be ready to ask whether her current arrangement is still working.",
-        "lead_status": "no_change",
-        "lead_status_reason": "No live conversation \u2014 voicemail only. Current status 'Using Someone Else' should remain until we actually connect and learn more.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter.",
-          "what_we_can_do_to_help": "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Paola placed an outbound follow-up call; reached voicemail/screening system and did not speak with Hermine. Left a message referencing prior interest in tutoring for her daughter."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Attempt another follow-up contact in a few days if no callback; aim to learn whether she still needs tutoring for her daughter and whether her current provider situation has changed."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await callback from Hermine; if no response in a few days, attempt another follow-up contact regarding tutoring for her daughter.",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416707056,
-      "number": "13236363579",
-      "time_pt": "11:02 AM",
-      "matched": true,
-      "contact_label": "Karen Chung",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Janelle called Karen Chung back after missing her call. Karen's daughter Yura had a 10:30 AM online trial today but the microphone wasn't working on the tutoring platform, even though Karen confirmed her mic/camera work fine elsewhere. The tutor left and told Karen to contact the office to reschedule. Karen asked Janelle to call back at 12:30\u20131:00 PM so her husband can help troubleshoot, and then we can move forward.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Call Karen back at 12:30\u20131:00 PM today to troubleshoot the microphone/permission settings on the tutoring platform and get Yura connected.",
-            "owner_hint": "Janelle",
-            "route": "scheduling"
-          },
-          {
-            "item": "Reschedule Yura's free 1-hour online trial (originally today at 11 AM / attempted 10:30) once the mic issue is resolved.",
-            "owner_hint": null,
-            "route": "scheduling"
-          },
-          {
-            "item": "Coordinate with the assigned tutor about the failed trial and the reschedule.",
-            "owner_hint": null,
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "Karen Chung (mom of Yura, 6yo, 1st grade, Blue Ridge Academy charter, online ESL/ELA) had her free trial today but the platform microphone wouldn't work on her end \u2014 she confirmed her mic/camera work fine for her regular weekday use, so she suspects a permission setting on our platform. The tutor ended the session and told her to call the office to reschedule. Karen was patient but a little frustrated. Janelle committed to calling her back today at 12:30\u20131:00 PM when her husband can help troubleshoot. Open with: \"Hi Karen, it's [name] from A+ Tutoring following up as Janelle promised \u2014 is now a good time to try the mic again with your husband there?\" Walk her through browser permission settings for mic/camera on the tutoring platform, then reschedule the trial and re-share the tutor's info. Tone: apologetic and hands-on; she's a charter family with ~$2,000 in funds ready to go, so we want to recover this quickly.",
-        "lead_status": "no_change",
-        "lead_status_reason": "Karen is an existing customer already in an open deal (trial booked, charter funds in motion); status is owned by the deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Yura Chung",
-          "Blue Ridge Academy"
-        ],
-        "record_updates": {
-          "whats_going_on": "Karen's daughter Yura's free online trial today failed because the microphone wasn't working on the tutoring platform. Karen confirmed her mic and camera work fine for her regular weekday use, so she suspects a permissions issue on our end. The tutor ended the session and told Karen to call the office to reschedule.",
-          "what_we_can_do_to_help": "Janelle to call Karen back today at 12:30\u20131:00 PM (when her husband can help troubleshoot) to walk through platform mic/camera permissions, then reschedule the free trial and re-coordinate with the tutor. Keep tone apologetic and hands-on \u2014 this is a charter family with ~$2,000 in funds ready to deploy.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Karen's daughter Yura's free online trial today failed because the microphone wasn't working on the tutoring platform. Karen confirmed her mic and camera work fine for her regular weekday use, so she suspects a permissions issue on our end. The tutor ended the session and told Karen to call the office to reschedule."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Janelle to call Karen back today at 12:30\u20131:00 PM (when her husband can help troubleshoot) to walk through platform mic/camera permissions, then reschedule the free trial and re-coordinate with the tutor. Keep tone apologetic and hands-on \u2014 this is a charter family with ~$2,000 in funds ready to deploy."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Call Karen back at 12:30\u20131:00 PM today to troubleshoot the microphone/permission settings on the tutoring platform and get Yura connected.",
-          80047202,
-          "scheduling"
-        ],
-        [
-          "Reschedule Yura's free 1-hour online trial (originally today at 11 AM / attempted 10:30) once the mic issue is resolved.",
-          81494333,
-          "scheduling"
-        ],
-        [
-          "Coordinate with the assigned tutor about the failed trial and the reschedule.",
-          81494333,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416724091,
-      "number": "18317475108",
-      "time_pt": "11:32 AM",
-      "matched": true,
-      "contact_label": "Pamela Richardson",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda called Pamela Richardson to confirm scheduling for Eli's tutoring with proposed tutor Jonathan. They worked around Eli's class schedule and confirmed Mondays at 11 AM and Thursdays at 12 PM (adjusted from 11 AM due to a class conflict). Pamela was agreeable and the schedule is now locked in.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Book Eli's recurring 45-min sessions with Jonathan on Mondays at 11 AM and Thursdays at 12 PM",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          },
-          {
-            "item": "Confirm Jonathan's availability for Thursdays at 12 PM (shifted from 11 AM)",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          },
-          {
-            "item": "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "Pamela (warm, cooperative) confirmed scheduling for Eli with tutor Jonathan. Locked in Mondays at 11 AM and Thursdays at 12 PM (Thursday shifted from 11 AM because Eli has a class 11-12). PO is already in hand for 2x/week 45-min sessions. Pamela expects sessions to be booked on those days/times. Next: verify Jonathan can do Thu 12 PM, then send Pamela a confirmation. Open with: 'Hi Pamela, just confirming Eli's sessions with Jonathan are set for Mondays 11 AM and Thursdays 12 PM starting [date].'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing customer with PO in hand and open deal; status owned by deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Eli",
-          "Jonathan",
-          "Pamela Richardson"
-        ],
-        "record_updates": {
-          "whats_going_on": "[call] Reached Pamela to confirm scheduling for Eli with tutor Jonathan. Worked around Eli's class schedule: Mondays 11 AM works, but Thursday 11 AM conflicts with a class, so shifted Thursday to 12 PM. Schedule locked in.",
-          "what_we_can_do_to_help": "Yolanda to confirm Jonathan's availability for Thursdays at 12 PM (instead of 11 AM), then book Eli's recurring 2x/week 45-min sessions on Mon 11 AM and Thu 12 PM and send Pamela a confirmation.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "[call] Reached Pamela to confirm scheduling for Eli with tutor Jonathan. Worked around Eli's class schedule: Mondays 11 AM works, but Thursday 11 AM conflicts with a class, so shifted Thursday to 12 PM. Schedule locked in."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Yolanda to confirm Jonathan's availability for Thursdays at 12 PM (instead of 11 AM), then book Eli's recurring 2x/week 45-min sessions on Mon 11 AM and Thu 12 PM and send Pamela a confirmation."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Book Eli's recurring 45-min sessions with Jonathan on Mondays at 11 AM and Thursdays at 12 PM",
-          86868539,
-          "scheduling"
-        ],
-        [
-          "Confirm Jonathan's availability for Thursdays at 12 PM (shifted from 11 AM)",
-          86868539,
-          "scheduling"
-        ],
-        [
-          "Send Pamela confirmation of the finalized Mon 11 AM / Thu 12 PM schedule",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416739598,
-      "number": "18433687726",
-      "time_pt": "12:03 PM",
-      "matched": true,
-      "contact_label": "Hannah Thorn",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda from A+ called tutor Hannah Thorn because she appears to be missing/late for a session with student Angelo (scheduled either 11:30 or 2:30). Call went to Hannah's voicemail; Yolanda asked Hannah to reach out to the family and call A+ back.",
-        "caller_type": "tutor applicant",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Confirm with Angelo's family whether Hannah showed up for the session and whether it was the 11:30 or 2:30 slot",
-            "owner_hint": null,
-            "route": "scheduling"
-          },
-          {
-            "item": "Follow up with Hannah Thorn once she calls back to confirm she connected with Angelo's family",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "Yolanda left a voicemail for tutor Hannah Thorn \u2014 she appears to be missing/late for a session today with student Angelo, and we weren't sure whether the session was at 11:30 or 2:30. Angelo's family reached out looking for her. Hannah is expected to call the family directly and then call A+ back. Please also check in with Angelo's family to confirm Hannah connected and the session happened. Open with: 'Hi Hannah, just following up on the voicemail Yolanda left about Angelo's session today \u2014 were you able to reach the family?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Contact is an active A+ tutor; status is owned by tutor pipeline, not lead status.",
-        "student_or_school_names_mentioned": [
-          "Angelo"
-        ],
-        "record_updates": {
-          "whats_going_on": "Yolanda called tutor Hannah Thorn (reached voicemail) because Angelo's family was asking where she was for today's session (either 11:30 or 2:30). Left a message asking Hannah to contact the family and call A+ back.",
-          "what_we_can_do_to_help": "Confirm with Angelo's family whether Hannah showed and the session occurred; follow up with Hannah when she returns the call to verify she reached the family and clarify the correct session time going forward.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Yolanda called tutor Hannah Thorn (reached voicemail) because Angelo's family was asking where she was for today's session (either 11:30 or 2:30). Left a message asking Hannah to contact the family and call A+ back."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Confirm with Angelo's family whether Hannah showed and the session occurred; follow up with Hannah when she returns the call to verify she reached the family and clarify the correct session time going forward."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Confirm with Angelo's family whether Hannah showed up for the session and whether it was the 11:30 or 2:30 slot",
-          81494333,
-          "scheduling"
-        ],
-        [
-          "Follow up with Hannah Thorn once she calls back to confirm she connected with Angelo's family",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416771215,
-      "number": "13233389789",
-      "time_pt": "1:05 PM",
-      "matched": true,
-      "contact_label": "Jacqueline Venegas",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring called Jacqueline Venegas to follow up on her prior inquiry. Jacqueline was at the library and couldn't talk, and said she would call back. No details about the student or tutoring needs were discussed.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await Jacqueline's callback; if no callback within a couple of days, attempt outreach again to discuss tutoring needs.",
-            "owner_hint": null,
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola reached Jacqueline Venegas on an outbound follow-up call. Jacqueline was at the library and asked to call us back \u2014 polite but brief, no details discussed about student, grade, or subject need. Her record indicates she came in via a charter school. If she doesn't call back within a couple of days, try her again at a better time (afternoon/evening). Suggested opener: 'Hi Jacqueline, this is [name] from A+ Tutoring following up from Paola's call \u2014 is now a better time to chat about what you're looking for?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Call was too brief to qualify \u2014 no substantive conversation about tutoring needs occurred. Leaving status as-is until we actually connect.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Outbound follow-up call reached Jacqueline but she was at the library and could not talk. She said she would call us back.",
-          "what_we_can_do_to_help": "Wait for her callback; if none within a couple of days, try again at a better time of day to learn about her student's tutoring needs.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Outbound follow-up call reached Jacqueline but she was at the library and could not talk. She said she would call us back."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Wait for her callback; if none within a couple of days, try again at a better time of day to learn about her student's tutoring needs."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await Jacqueline's callback; if no callback within a couple of days, attempt outreach again to discuss tutoring needs.",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416775613,
-      "number": "13236363579",
-      "time_pt": "1:13 PM",
-      "matched": true,
-      "contact_label": "Karen Chung",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Janelle called Karen Chung to follow up on the failed trial lesson from 9/18. Karen confirmed the microphone issue has resolved itself \u2014 she rechecked the platform and it's clear now. She needs to reschedule the trial for next week but wants to check her schedule and text Janelle back with times. Warm, easy call; no immediate booking made.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Wait for Karen's text with her availability next week and rebook Yura's free online trial lesson, then re-coordinate with the tutor.",
-            "owner_hint": "Janelle",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Karen Chung (mom of Yura, 6, Blue Ridge Academy charter, first-grade ESL support) was friendly and easy on this callback. Mic issue that killed the 9/18 trial has resolved on its own \u2014 she rechecked the platform, no permissions block anymore. She can't do the trial today; she'll text us next week with times that work. When her text comes in, confirm a slot, resend the platform link, and re-coordinate the early-elementary ESL tutor. Suggested opener when she texts: 'Hi Karen \u2014 thanks for sending times! Let's lock in [day/time] for Yura's trial. I'll resend the link and loop in the tutor.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Karen is an active family in an open deal (trial being rescheduled) \u2014 status is owned by the deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Yura Chung",
-          "Blue Ridge Academy"
-        ],
-        "record_updates": {
-          "whats_going_on": "[callback] Janelle reached Karen to reschedule the trial. Karen reported the mic issue has resolved \u2014 she rechecked the platform and it's clear now. She can't do the trial today and will text Janelle next week with times that work.",
-          "what_we_can_do_to_help": "[callback] Janelle to watch for Karen's text with next-week availability, then rebook the free online trial, resend the platform link, and re-coordinate with the matched early-elementary ESL tutor.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "[callback] Janelle reached Karen to reschedule the trial. Karen reported the mic issue has resolved \u2014 she rechecked the platform and it's clear now. She can't do the trial today and will text Janelle next week with times that work."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "[callback] Janelle to watch for Karen's text with next-week availability, then rebook the free online trial, resend the platform link, and re-coordinate with the matched early-elementary ESL tutor."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Wait for Karen's text with her availability next week and rebook Yura's free online trial lesson, then re-coordinate with the tutor.",
-          80047202,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416776895,
-      "number": "18189391570",
-      "time_pt": "1:16 PM",
-      "matched": true,
-      "contact_label": "Sophie Crespel",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Sophie Crespel about tutoring for her family. The call was intercepted by a call-screening service; Sophie was not available. Paola left a voicemail asking Sophie to confirm continued interest and share a good time to reach her.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Try Sophie Crespel again in a few days if no callback, to gauge continued interest and gather student details (grade, school, subject).",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Sophie Crespel is a prospective parent we've been trying to reach about tutoring for her son. Second outbound attempt today \u2014 screened again by her call-screening service and rolled to voicemail; Paola left a message asking Sophie to confirm interest and share a good callback time. No new details gathered (no grade, school, or subject yet). If she calls back, open warmly with: 'Hi Sophie, this is [name] from A+ Tutoring returning your call \u2014 Paola mentioned you were looking into tutoring for your son. Can you tell me a bit about him and what you're hoping to work on?' If no callback in a couple of days, try her again.",
-        "lead_status": "no_change",
-        "lead_status_reason": "Left voicemail via screening service; did not actually speak with Sophie, so lead status shouldn't change based on this attempt.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Second outbound follow-up attempt to Sophie. Screened again by call-screening service; left another voicemail asking her to confirm interest and share a good time to connect. Still no new details on the student.",
-          "what_we_can_do_to_help": "If Sophie doesn't call back in a few days, try again to reach her live and gather son's grade, school, and subject needs so we can recommend a tutoring plan.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Second outbound follow-up attempt to Sophie. Screened again by call-screening service; left another voicemail asking her to confirm interest and share a good time to connect. Still no new details on the student."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "If Sophie doesn't call back in a few days, try again to reach her live and gather son's grade, school, and subject needs so we can recommend a tutoring plan."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Try Sophie Crespel again in a few days if no callback, to gauge continued interest and gather student details (grade, school, subject).",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416777529,
-      "number": "18184718591",
-      "time_pt": "1:17 PM",
-      "matched": true,
-      "contact_label": "Fabiola Mort",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Yolanda placed an outbound call to Fabiola Mort to confirm Angeline's 4pm online tutoring session today with Sonia. Fabiola needs to check with her mom whether they'll be home to log in at 4pm and will call Yolanda back to confirm. Yolanda also reminded Fabiola to use the payment link to purchase the lesson beforehand so Sonia's time is secured. Fabiola was cooperative; no confirmation or cancellation yet.",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Await Fabiola's callback confirming whether Angeline can do the 4pm session with Sonia today; if not heard back soon, follow up with Fabiola to confirm or reschedule.",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          },
-          {
-            "item": "Confirm Sonia's availability once Fabiola confirms, and ensure payment link has been used before the session starts.",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Yolanda called Fabiola to confirm Angeline's 4pm online session today with tutor Sonia. Fabiola needs to check with her mom whether they'll be home at 4pm to help Angeline log in and said she'd call back (either the main line or Yolanda's scheduling number ending 1627). Fabiola also seemed briefly confused about who the session was with \u2014 clarified Sonia is the tutor and Yolanda is scheduling. Fabiola still needs to use the payment link to buy the hours before the lesson. If she hasn't called back within ~1 hour of the 4pm start, reach out to confirm or reschedule. Open with: 'Hi Fabiola, just circling back on Angeline's 4pm session with Sonia today \u2014 were you able to check with your mom about being home to log in?'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing customer with a booked first session; scheduling confirmation call, status owned by deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Angeline Mort",
-          "Sonia"
-        ],
-        "record_updates": {
-          "whats_going_on": "[Outbound call] Yolanda called Fabiola to confirm Angeline's 4pm online session today with tutor Sonia. Fabiola needs to check with her mom whether they'll be home at 4pm to help Angeline log in and will call Yolanda back to confirm.",
-          "what_we_can_do_to_help": "Hold the 4pm slot with Sonia pending Fabiola's callback; remind Fabiola to use the payment link to purchase hours before the lesson starts. Yolanda gave Fabiola her scheduling line (ends 1627) as an alternate callback number.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "[Outbound call] Yolanda called Fabiola to confirm Angeline's 4pm online session today with tutor Sonia. Fabiola needs to check with her mom whether they'll be home at 4pm to help Angeline log in and will call Yolanda back to confirm."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Hold the 4pm slot with Sonia pending Fabiola's callback; remind Fabiola to use the payment link to purchase hours before the lesson starts. Yolanda gave Fabiola her scheduling line (ends 1627) as an alternate callback number."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Await Fabiola's callback confirming whether Angeline can do the 4pm session with Sonia today; if not heard back soon, follow up with Fabiola to confirm or reschedule.",
-          86868539,
-          "scheduling"
-        ],
-        [
-          "Confirm Sonia's availability once Fabiola confirms, and ensure payment link has been used before the session starts.",
-          86868539,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416782696,
-      "number": "14044930579",
-      "time_pt": "1:27 PM",
-      "matched": true,
-      "contact_label": "Caller 404-493-0579",
-      "no_next_step": false,
-      "summary": {
-        "summary": "O'Neil Sagesse called because he completed his tutor training module yesterday and tried to schedule his onboarding call, but the system showed no available times. Janelle apologized, verified the spelling of his name, and promised to look into the scheduling issue and get back to him with an update today. O'Neil was patient and understanding.",
-        "caller_type": "tutor applicant",
-        "intent": "scheduling",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Investigate why no onboarding call times are available for O'Neil Sagesse after he completed his training module, and get back to him today with an available onboarding slot.",
-            "owner_hint": "Janelle",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [
-          {
-            "wrong": "Onion Sogsse",
-            "correct": "O'Neil Sagesse"
-          }
-        ],
-        "follow_up_needed": true,
-        "next_step_scheduled": true,
-        "handoff_note": "O'Neil Sagesse (tutor applicant, phone 404-493-0579) called because he finished his training module yesterday but the onboarding scheduler shows no available times. Janelle promised him an update TODAY with a working onboarding slot. He was calm and patient. Please check the onboarding calendar/system, open a slot for him, and reach out today. Suggested opener: 'Hi O'Neil, this is ___ from A+ following up on the onboarding scheduling issue you flagged with Janelle \u2014 I've got some times for you now.'",
-        "lead_status": "Tutor-Active",
-        "lead_status_reason": "Caller is a tutor applicant who has completed the training module and is trying to schedule onboarding.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Tutor applicant O'Neil Sagesse called: completed training module yesterday and tried to book his onboarding call, but the scheduler showed no available times.",
-          "what_we_can_do_to_help": "Investigate the onboarding scheduler, open availability for O'Neil, and follow up with him today with a bookable time.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Tutor applicant O'Neil Sagesse called: completed training module yesterday and tried to book his onboarding call, but the scheduler showed no available times."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Investigate the onboarding scheduler, open availability for O'Neil, and follow up with him today with a bookable time."
-        ],
-        [
-          "lead_status",
-          "New (Inbox)",
-          "Tutors"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Investigate why no onboarding call times are available for O'Neil Sagesse after he completed his training module, and get back to him today with an available onboarding slot.",
-          80047202,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 416790981,
-      "number": "16264225974",
-      "time_pt": "1:46 PM",
-      "matched": true,
-      "contact_label": "Valerie Carney",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to Valerie Carney regarding her prior interest in tutoring for her son. The call went to voicemail; Paola left a message asking Valerie to confirm continued interest and share a good callback time. No new information was gathered and no next step was locked in.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Attempt another follow-up contact with Valerie Carney if no callback is received in a few days",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Valerie Carney did not answer \u2014 Paola left a voicemail following up on her earlier interest in tutoring for her son. We have no student details on file yet (name, grade, school, subject all unknown). Valerie now expects a callback opportunity; if she doesn't respond in a few days, try again. Open with: 'Hi Valerie, this is [name] from A+ Tutoring following up on the message Paola left about tutoring for your son \u2014 wanted to see if you're still looking for support and learn a bit more about what he needs.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Left voicemail only \u2014 never actually connected with Valerie, so prior ATTEMPTED_TO_CONTACT status still applies.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Outbound follow-up call from Paola went to voicemail. Valerie had previously expressed interest in tutoring for her son; no additional details known yet.",
-          "what_we_can_do_to_help": "Left a voicemail inviting Valerie to call back with a good time to talk. Will attempt another follow-up if no response.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Outbound follow-up call from Paola went to voicemail. Valerie had previously expressed interest in tutoring for her son; no additional details known yet."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Left a voicemail inviting Valerie to call back with a good time to talk. Will attempt another follow-up if no response."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Attempt another follow-up contact with Valerie Carney if no callback is received in a few days",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 416811482,
-      "number": "16618784656",
-      "time_pt": "2:38 PM",
-      "matched": true,
-      "contact_label": "Lakaisha Moore",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Lakaisha Moore, a returning charter-school parent, called to re-enroll her twin daughters Kali and Morgan with A+ Tutoring. She initially requested Lisa Rose but Yolanda explained Lisa is pending charter certifications, so Lakaisha agreed to continue with Krista. They agreed on 30-minute sessions twice a week (Mon/Tue afternoons) per child, and Yolanda will submit a request to her charter teacher Desiree Doyle for approximately four weeks of tutoring (~$300/student). Lakaisha also asked about returning-customer discounts; Yolanda explained the referral program (30 min free per referral trial + 30 min if they enroll).",
-        "caller_type": "parent",
-        "intent": "scheduling",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Submit charter PO request to Desiree Doyle for twins Kali and Morgan \u2014 30-minute sessions, 2x/week (Mon/Tue afternoons), ~4 weeks of tutoring with Krista",
-            "owner_hint": "Yolanda",
-            "route": "scheduling"
-          },
-          {
-            "item": "Once PO comes in, send automated confirmation text to Lakaisha to confirm days/times and schedule sessions with Krista starting per PO date",
-            "owner_hint": null,
-            "route": "scheduling"
-          },
-          {
-            "item": "Check status of Lisa Rose's charter certifications so we know when she can take charter students again (family preferred her as a future option)",
-            "owner_hint": null,
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Returning charter family \u2014 Lakaisha Moore, warm and easy to work with. She wants to re-enroll her twin daughters Kali and Morgan (4th/5th grade, iLEAD) for 30-min sessions 2x/week on Mondays and Tuesdays, afternoons, with Krista. Their charter teacher is Desiree Doyle; each twin gets ~$300 (~4 weeks/4 hours). She originally asked for Lisa Rose but accepted Krista after we explained Lisa is pending charter certifications \u2014 flag Lisa as a future preference. Yolanda promised to submit the PO request to Desiree and told Lakaisha she'll get an automated text to confirm once the PO comes back; start date follows the PO. She asked about a returning-customer discount \u2014 we only offered the referral program (30 min free per referred trial + 30 min if they enroll). Open with: \"Hi Lakaisha, following up on the PO request we sent to Desiree for Kali and Morgan with Krista \u2014 wanted to let you know where it stands.\"",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing/returning customer in an OPEN_DEAL; status owned by deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Kali Moore",
-          "Morgan Moore",
-          "iLEAD",
-          "Desiree Doyle",
-          "Krista",
-          "Lisa Rose"
-        ],
-        "record_updates": {
-          "whats_going_on": "Returning charter family \u2014 mom Lakaisha called to re-enroll twins Kali and Morgan. Wants 30-min sessions 2x/week (Mon/Tue afternoons) per child with Krista. Charter teacher is Desiree Doyle; ~$300/student covers about 4 weeks, then they'll pause and resubmit when funds refresh. Originally requested Lisa Rose but accepted Krista since Lisa is pending charter certifications.",
-          "what_we_can_do_to_help": "Submit PO request to Desiree Doyle for both twins with Krista, 30 min 2x/week Mon/Tue PM. Once PO returns, confirm schedule via automated text and start per PO date. Track Lisa Rose's charter certification status as a future preferred tutor for this family.",
-          "student_first_name": null,
-          "student_last_name": "Moore",
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Returning charter family \u2014 mom Lakaisha called to re-enroll twins Kali and Morgan. Wants 30-min sessions 2x/week (Mon/Tue afternoons) per child with Krista. Charter teacher is Desiree Doyle; ~$300/student covers about 4 weeks, then they'll pause and resubmit when funds refresh. Originally requested Lisa Rose but accepted Krista since Lisa is pending charter certifications."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Submit PO request to Desiree Doyle for both twins with Krista, 30 min 2x/week Mon/Tue PM. Once PO returns, confirm schedule via automated text and start per PO date. Track Lisa Rose's charter certification status as a future preferred tutor for this family."
-        ],
-        [
-          "student_last_name",
-          "(blank)",
-          "Moore"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Submit charter PO request to Desiree Doyle for twins Kali and Morgan \u2014 30-minute sessions, 2x/week (Mon/Tue afternoons), ~4 weeks of tutoring with Krista",
-          86868539,
-          "scheduling"
-        ],
-        [
-          "Once PO comes in, send automated confirmation text to Lakaisha to confirm days/times and schedule sessions with Krista starting per PO date",
-          81494333,
-          "scheduling"
-        ],
-        [
-          "Check status of Lisa Rose's charter certifications so we know when she can take charter students again (family preferred her as a future option)",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 416811986,
+      "call_id": 418215813,
       "number": "13236320815",
-      "time_pt": "2:39 PM",
+      "time_pt": "8:58 AM",
       "matched": true,
       "contact_label": "Jeff Werner",
       "no_next_step": true,
       "summary": {
-        "summary": "Roman Slavinski from A+ Tutoring returned Jeff Werner's call to discuss his daughter Iris's ISEE/private-school practice test analysis. Roman explained her scores: below-average in math, average elsewhere, with math being the primary concern; verbal can be improved via Greek/Latin roots, reading comprehension via deductive reasoning work. Jeff noted this was Iris's first practice test and she had food poisoning that week. The call cut out mid-conversation and Jeff asked Roman to call him back.",
+        "summary": "Roman called Jeff Werner back with the hand-graded results of Iris's ISEE math practice test: 20/47 correct, with most 'knew it' answers right and most 'don't know' answers wrong. Roman recommended a high-dosage tutoring model (3x/week, 45 min) targeting a mid-November ISEE and mid-December backup, and quoted a 20-hour prepaid package at $1,660. Jeff was warm and enthusiastic, said he'll check with Iris's mom on schedule and expects to confirm and purchase by end of day (hopefully before lunch). Roman sent the pricing graphic with a Get Started Now link during the call.",
         "caller_type": "parent",
         "intent": "new inquiry",
         "sentiment": "positive",
         "action_items": [
           {
-            "item": "Call Jeff Werner back \u2014 call dropped mid-conversation while Roman was explaining the math section format; continue the discussion of Iris's practice test analysis and next steps for tutoring.",
+            "item": "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
             "owner_hint": "Roman",
             "route": "follow_up"
           },
           {
-            "item": "Investigate internally why prior emails from Jeff Werner were missed by the team (Roman already flagged this to Jeff and apologized).",
+            "item": "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
             "owner_hint": "Roman",
             "route": "follow_up"
           }
@@ -2028,118 +1134,16 @@
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Roman was on a callback with Jeff Werner (dad, warm/easygoing tone, was driving) about his daughter Iris's private-school entrance practice test analysis (she's a 6th grader being evaluated for incoming 7th grade). Roman had walked Jeff through his assessment: math is below average and the main concern; verbal and reading comp are in the average range and can be lifted with Greek/Latin roots work and deductive-reasoning practice. Jeff shared Iris had food poisoning (ER for fluids) the week she took the test, so the score may not fully reflect her ability. Roman had already apologized that earlier emails to us were missed and said he's investigating internally. The call cut out while Roman was starting to explain the math section format, and Jeff asked us to call him back. Open with: 'Hi Jeff, it's [name] from A+ \u2014 sorry we got cut off with Roman. He filled me in on where you left off with Iris's analysis; want to pick up where he was going on the math section and talk through what a tutoring plan would look like?' No pricing or plan has been quoted yet.",
+        "handoff_note": "Jeff Werner (dad of Iris, 6th grade testing into 7th at private schools) is warm, engaged, and effectively ready to buy. Roman just walked him through Iris's hand-graded ISEE math practice results (20/47; goal to reach 30-32/47 next run) and recommended our high-dosage model \u2014 3x/week, 45 min \u2014 with one tutor covering all four sections. Roman quoted a 20-hour prepaid package at $1,660 and emailed the pricing graphic with the Get Started Now link during the call. Testing plan remains Sandy's: mid-Nov ISEE + mid-Dec backup. Jeff will confer with Iris's mom on schedule and expects to come back with a yes and preferred times by end of day today (hopefully before lunch). If he calls or emails, open with: 'Hi Jeff \u2014 Roman filled me in, congrats on moving forward with Iris. Let's lock in the three weekly 45-minute slots that work for you and mom and get her started with our tutor this week.' Still need to cross-check target-school application deadlines against Nov/Dec ISEE dates before finalizing test registration.",
         "lead_status": "no_change",
-        "lead_status_reason": "Existing open deal / active customer relationship (current_lead_status OPEN_DEAL); status is owned by the deal pipeline.",
-        "student_or_school_names_mentioned": [
-          "Iris",
-          "Larchmont",
-          "LA SchoolScout",
-          "Sandy"
-        ],
-        "record_updates": {
-          "whats_going_on": "Iris (6th grade, testing for incoming 7th at private schools) took her first ISEE-style practice test while recovering from food poisoning (was in ER for fluids days before). Per Roman's analysis: math is below average and the primary concern; verbal and reading comprehension are in the average range. Family working with Sandy at LA SchoolScout as their school consultant.",
-          "what_we_can_do_to_help": "Tutor Iris for private-school entrance testing: math foundations (fractions, decimals, percents, operations), verbal via Greek/Latin roots and prefixes, reading comprehension via deductive reasoning / author's-purpose work. Call dropped mid-conversation \u2014 Roman to call Jeff back to continue explaining the math section and outline a tutoring plan.",
-          "student_first_name": "Iris",
-          "student_last_name": null,
-          "grade_level": "6",
-          "student_school": null,
-          "subject_need": "Other",
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Iris (6th grade, testing for incoming 7th at private schools) took her first ISEE-style practice test while recovering from food poisoning (was in ER for fluids days before). Per Roman's analysis: math is below average and the primary concern; verbal and reading comprehension are in the average range. Family working with Sandy at LA SchoolScout as their school consultant."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Tutor Iris for private-school entrance testing: math foundations (fractions, decimals, percents, operations), verbal via Greek/Latin roots and prefixes, reading comprehension via deductive reasoning / author's-purpose work. Call dropped mid-conversation \u2014 Roman to call Jeff back to continue explaining the math section and outline a tutoring plan."
-        ],
-        [
-          "grade_level",
-          "5",
-          "6"
-        ],
-        [
-          "subject_need",
-          "(blank)",
-          "Other"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Call Jeff Werner back \u2014 call dropped mid-conversation while Roman was explaining the math section format; continue the discussion of Iris's practice test analysis and next steps for tutoring.",
-          81494333,
-          "follow_up"
-        ],
-        [
-          "Investigate internally why prior emails from Jeff Werner were missed by the team (Roman already flagged this to Jeff and apologized).",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 416813718,
-      "number": "13236320815",
-      "time_pt": "2:45 PM",
-      "matched": true,
-      "contact_label": "Jeff Werner",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Jeff Werner (dad of Iris, 6th grader prepping for private-school ISEE) reconnected with Roman after the earlier dropped call. Roman explained Iris's ~25% math score is statistically equivalent to random guessing and proposed sending a math-only ISEE practice test for Iris to take fresh tomorrow morning. They aligned on consultant Sandy's plan: target a mid-November ISEE and a mid-December backup, pending cross-reference with target-school application deadlines. Jeff will email results back; Roman is available over the weekend but not Monday. Warm, trusting tone \u2014 Jeff said he feels in good hands.",
-        "caller_type": "parent",
-        "intent": "other",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Send Jeff a math-only ISEE practice test (sections 2 and 4) for Iris to take fresh tomorrow morning",
-            "owner_hint": "Roman",
-            "route": "follow_up"
-          },
-          {
-            "item": "After Jeff emails results back, review the actual math questions to pinpoint Iris's specific struggle areas and shape the tutoring plan",
-            "owner_hint": "Roman",
-            "route": "follow_up"
-          },
-          {
-            "item": "Cross-reference target private-school application deadlines against the Nov/Dec ISEE test dates before locking the testing schedule",
-            "owner_hint": "Roman",
-            "route": "follow_up"
-          },
-          {
-            "item": "Be available to connect with Jeff over the weekend (Roman off Monday) to discuss results",
-            "owner_hint": "Roman",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Roman just spoke with Jeff Werner (dad, warm and trusting \u2014 said he feels in good hands) about daughter Iris (6th grade, testing for 7th-grade private school entry via ISEE). Roman promised to send a math-ONLY ISEE practice test (sections 2 and 4); Jeff will have Iris take it fresh tomorrow morning and email results back. Roman will then analyze the actual questions to identify struggle areas and build the tutoring plan. Plan aligned with consultant Sandy (LA SchoolScout): mid-November ISEE + mid-December backup so family has two scores to choose from \u2014 but still need to cross-reference target schools' application deadlines before locking dates. Roman is available this weekend, NOT Monday. Jeff now expects (1) the math practice test in his inbox today/tonight and (2) a follow-up conversation after he emails results back. If opening with Jeff, try: 'Hi Jeff \u2014 Roman here, sending over that math-only ISEE section for Iris now; take your time tomorrow morning and shoot the results back whenever you're done.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing customer in an OPEN_DEAL \u2014 status is owned by the deal pipeline, not to be changed from this call.",
+        "lead_status_reason": "Existing/returning customer with an open deal in the pipeline; deal stage owns status.",
         "student_or_school_names_mentioned": [
           "Iris Werner",
-          "Sandy (LA SchoolScout)",
-          "Larchmont"
+          "Stanford University"
         ],
         "record_updates": {
-          "whats_going_on": "Reconnected after earlier dropped call. Roman confirmed Iris's ~25% ISEE math score is statistically equivalent to random guessing across every question \u2014 not a specific grade-level placement. Jeff understood and is aligned on tackling math first, verbal second, per Sandy's plan (mid-Nov ISEE + mid-Dec backup for two scores to choose from). Jeff warm and confident in A+; called from the car.",
-          "what_we_can_do_to_help": "Roman to send a math-only ISEE practice test (sections 2 and 4); Jeff will have Iris take it fresh tomorrow morning and email results back. Roman will then review the actual questions to identify specific struggle areas and shape the tutoring plan. Still need to cross-reference target private-school application deadlines against Nov/Dec ISEE dates before locking the testing schedule. Roman available over the weekend, off Monday.",
+          "whats_going_on": "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup.",
+          "what_we_can_do_to_help": "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -2157,112 +1161,28 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Reconnected after earlier dropped call. Roman confirmed Iris's ~25% ISEE math score is statistically equivalent to random guessing across every question \u2014 not a specific grade-level placement. Jeff understood and is aligned on tackling math first, verbal second, per Sandy's plan (mid-Nov ISEE + mid-Dec backup for two scores to choose from). Jeff warm and confident in A+; called from the car."
+          "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Roman to send a math-only ISEE practice test (sections 2 and 4); Jeff will have Iris take it fresh tomorrow morning and email results back. Roman will then review the actual questions to identify specific struggle areas and shape the tutoring plan. Still need to cross-reference target private-school application deadlines against Nov/Dec ISEE dates before locking the testing schedule. Roman available over the weekend, off Monday."
+          "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Send Jeff a math-only ISEE practice test (sections 2 and 4) for Iris to take fresh tomorrow morning",
+          "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
           81494333,
           "follow_up"
         ],
         [
-          "After Jeff emails results back, review the actual math questions to pinpoint Iris's specific struggle areas and shape the tutoring plan",
+          "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
           81494333,
-          "follow_up"
+          "scheduling"
         ],
         [
-          "Cross-reference target private-school application deadlines against the Nov/Dec ISEE test dates before locking the testing schedule",
-          81494333,
-          "follow_up"
-        ],
-        [
-          "Be available to connect with Jeff over the weekend (Roman off Monday) to discuss results",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "incoming"
-    },
-    {
-      "call_id": 416823379,
-      "number": "19493553715",
-      "time_pt": "3:33 PM",
-      "matched": true,
-      "contact_label": "Krista Camacho",
-      "no_next_step": false,
-      "summary": {
-        "summary": "Paola placed an outbound call to Krista Camacho (charter TOR/EF) to follow up on Krista's earlier inquiry about a student named Maddie. The call went to Krista's voicemail. Paola left a message saying she would also send an email to find a good time to connect and discuss Maddie.",
-        "caller_type": "school/charter contact",
-        "intent": "school partnership",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Send Krista an email asking for the best time to connect by phone to discuss Maddie",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          },
-          {
-            "item": "Attempt another call to Krista once she replies with a preferred time",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola called Krista Camacho (charter TOR/EF at JCS) to follow up on Krista's earlier inquiry about a student named Maddie, and reached voicemail. Paola left a message saying she'd send a follow-up email asking when is best to talk. Krista now expects an email from Paola proposing times to connect. Next contact: send that email today; open with 'Hi Krista, following up on my voicemail \u2014 let me know a good time this coming week to hop on a quick call about Maddie and how A+ can support her through the charter funds process.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Krista is a charter school TOR/EF and already carries that status; nothing on this voicemail-only call changes that.",
-        "student_or_school_names_mentioned": [
-          "Maddie",
-          "Krista Camacho"
-        ],
-        "record_updates": {
-          "whats_going_on": "Paola called Krista to follow up on the Maddie inquiry and reached Krista's voicemail. Paola left a message letting Krista know she'd send an email to coordinate a good time to connect.",
-          "what_we_can_do_to_help": "Send Krista a follow-up email offering times to talk, then reconnect by phone to learn Maddie's grade, subject needs, and modality and map out a plan that fits the charter's instructional funds process.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Paola called Krista to follow up on the Maddie inquiry and reached Krista's voicemail. Paola left a message letting Krista know she'd send an email to coordinate a good time to connect."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Send Krista a follow-up email offering times to talk, then reconnect by phone to learn Maddie's grade, subject needs, and modality and map out a plan that fits the charter's instructional funds process."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Send Krista an email asking for the best time to connect by phone to discuss Maddie",
-          81494333,
-          "follow_up"
-        ],
-        [
-          "Attempt another call to Krista once she replies with a preferred time",
+          "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
           81494333,
           "follow_up"
         ]
@@ -2272,47 +1192,39 @@
       "direction": "outgoing"
     },
     {
-      "call_id": 416827244,
-      "number": "18052564656",
-      "time_pt": "3:47 PM",
+      "call_id": 418398846,
+      "number": "19173252075",
+      "time_pt": "2:01 PM",
       "matched": true,
-      "contact_label": "Megan Haskins",
+      "contact_label": "Matthew Ferrigno",
       "no_next_step": true,
       "summary": {
-        "summary": "Paola from A+ called Megan Haskins to discuss tutoring for her two homeschooled kids (7th grade son, 5th grade daughter) enrolled through Blue Ridge charter. Both need math support (Singapore Primary Math US edition) to build confidence and fill gaps. Paola quoted charter rates ($75/hr, $60/45min), and Megan wants ~1x/week for daughter and possibly 2x/week for son. Megan will place the PO through Procurify; her homeschool teacher is Judy Anderson. Paola will email Megan and Judy with rates and details.",
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Matthew Ferrigno regarding his inquiry about tutoring for his daughter. Call went to voicemail; Paola left a message asking him to return the call to find a good time to connect. No new information was gathered.",
         "caller_type": "parent",
         "intent": "new inquiry",
-        "sentiment": "positive",
+        "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Send Megan and Judy Anderson (Blue Ridge homeschool teacher) an email with A+ charter rates ($75/hr, $60/45min), program info, and the proposed schedule (~1x/week for daughter, up to 2x/week for son) so Megan can submit a PO via Procurify.",
+            "item": "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
             "owner_hint": "Paola",
             "route": "follow_up"
-          },
-          {
-            "item": "Once Blue Ridge approves the PO, begin tutor matching for both kids (Singapore Primary Mathematics US Edition) and have scheduling text Megan to set up sessions.",
-            "owner_hint": null,
-            "route": "scheduling"
           }
         ],
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Megan Haskins (warm, engaged parent) homeschools through Blue Ridge charter. Two kids need math support with Singapore Primary Mathematics US Edition: son (7th, age 12) and daughter (5th, age 10) \u2014 both a bit behind grade level, goal is confidence + filling gaps. Quoted charter rates: $75/hr and $60/45min. Megan wants roughly 1 session/week for daughter and up to 2/week for son (son has more funds). Her Blue Ridge homeschool teacher is Judy Anderson (already in our records). At Blue Ridge, the PARENT submits the PO via Procurify and the teacher approves. Paola promised to email Megan (and cc Judy) with rates + program info so Megan can place the PO. Megan expects that email shortly; after PO approval, scheduling will text her to match tutors and set sessions. Opener: 'Hi Megan, following up on your call with Paola \u2014 here are the rates and program details to attach to your Procurify order...'",
-        "lead_status": "QTL - Charter",
-        "lead_status_reason": "Homeschool charter family (Blue Ridge) planning to pay via charter instructional funds / PO through Procurify.",
-        "student_or_school_names_mentioned": [
-          "Blue Ridge",
-          "Judy Anderson"
-        ],
+        "handoff_note": "Matthew Ferrigno (Yelp lead) inquired about tutoring for his daughter. Paola called and left a voicemail asking him to call back to find a time to connect \u2014 no details on daughter's grade, subject, or needs yet. Matthew now expects a callback opportunity; if he doesn't respond, try again in a day or two. Suggested opener: 'Hi Matthew, this is [name] from A+ Tutoring following up on Paola's message about tutoring for your daughter \u2014 I'd love to learn a bit about what she needs help with.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail only; did not actually connect with the parent, so keep status as NEW until we speak.",
+        "student_or_school_names_mentioned": [],
         "record_updates": {
-          "whats_going_on": "Megan homeschools two kids through Blue Ridge charter: son (7th grade, age 12) and daughter (5th grade, age 10). Both are behind grade level in math (using Singapore Primary Mathematics US Edition) and she wants tutoring to build confidence and fill gaps. Wants ~1x/week for daughter and possibly 2x/week for son (son has more funds available).",
-          "what_we_can_do_to_help": "Quoted charter rates ($75/hr, $60/45min). Paola to email Megan and Blue Ridge homeschool teacher Judy Anderson with rates and program details so Megan can submit a PO via Procurify. Once Blue Ridge approves the PO, match tutors familiar with Singapore Math and have scheduling text Megan to set sessions.",
+          "whats_going_on": "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect.",
+          "what_we_can_do_to_help": "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
-          "student_school": "Blue Ridge",
-          "subject_need": "Math",
+          "student_school": null,
+          "subject_need": null,
           "online_or_in_person": null,
           "how_did_you_hear": null,
           "referral_name": null,
@@ -2325,40 +1237,20 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Megan homeschools two kids through Blue Ridge charter: son (7th grade, age 12) and daughter (5th grade, age 10). Both are behind grade level in math (using Singapore Primary Mathematics US Edition) and she wants tutoring to build confidence and fill gaps. Wants ~1x/week for daughter and possibly 2x/week for son (son has more funds available)."
+          "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Quoted charter rates ($75/hr, $60/45min). Paola to email Megan and Blue Ridge homeschool teacher Judy Anderson with rates and program details so Megan can submit a PO via Procurify. Once Blue Ridge approves the PO, match tutors familiar with Singapore Math and have scheduling text Megan to set sessions."
-        ],
-        [
-          "student_school",
-          "(blank)",
-          "Blue Ridge"
-        ],
-        [
-          "subject_need",
-          "(blank)",
-          "Math"
-        ],
-        [
-          "lead_status",
-          "Meeting Booked",
-          "QTL - Charter"
+          "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Send Megan and Judy Anderson (Blue Ridge homeschool teacher) an email with A+ charter rates ($75/hr, $60/45min), program info, and the proposed schedule (~1x/week for daughter, up to 2x/week for son) so Megan can submit a PO via Procurify.",
+          "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
           81494333,
           "follow_up"
-        ],
-        [
-          "Once Blue Ridge approves the PO, begin tutor matching for both kids (Singapore Primary Mathematics US Edition) and have scheduling text Megan to set up sessions.",
-          81494333,
-          "scheduling"
         ]
       ],
       "ticket_id": null,
@@ -2368,23 +1260,23 @@
   ],
   "pending_skipped": [
     {
-      "number": "18622381623",
-      "time_pt": "9:47 AM",
+      "number": "16615217803",
+      "time_pt": "11:34 AM",
       "reason": "hang-up"
     },
     {
-      "number": "17472673496",
-      "time_pt": "9:51 AM",
+      "number": "13109903032",
+      "time_pt": "12:26 PM",
+      "reason": "spam gate: 5s call from an unknown number with no caller-ID"
+    },
+    {
+      "number": "19093011696",
+      "time_pt": "12:34 PM",
       "reason": "hang-up"
     },
     {
-      "number": "13072076448",
-      "time_pt": "1:09 PM",
-      "reason": "no transcript"
-    },
-    {
-      "number": "13236320815",
-      "time_pt": "2:23 PM",
+      "number": "19173252075",
+      "time_pt": "2:04 PM",
       "reason": "hang-up"
     }
   ],

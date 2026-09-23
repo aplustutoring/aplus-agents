@@ -359,7 +359,8 @@ def test_invoice_task_created_with_po_fields(monkeypatch):
                         tasks.append((subj, body, priority)) or {"id": "T1"})
     notes = []
     po._handle_deal(_po(), notes)
-    assert tasks and "Convert PO to TW invoice" in tasks[0][0] and "$1500" in tasks[0][0]
+    assert tasks and "Convert PO to TW invoice" in tasks[0][0] and "PO 4471" in tasks[0][0]
+    assert "$" not in tasks[0][0] and "$" not in tasks[0][1]      # money lives on the deal's Amount only (2026-09-23)
     assert "PO #: 4471" in tasks[0][1] and tasks[0][2] == "HIGH"
     assert any("Convert-to-TW-invoice task created" in n for n in notes)
 
@@ -1574,7 +1575,7 @@ def test_hours_computed_from_amount_and_rate(monkeypatch):
     po._handle_deal(_po(hours="", rate="75", amount="150"), notes)
     assert captured[0]["number_of_hours_in_this_po"] == "2"
     assert any("Hours computed" in n and "$150 ÷ $75/hr = 2 hrs" in n for n in notes)
-    assert tasks and "Hours: 2 @ $75/hr" in tasks[0]
+    assert tasks and "Hours: 2 " in tasks[0] and "$" not in tasks[0]   # the rate stays off the task (2026-09-23)
     assert "Invoice #" in tasks[0] and "Expected Lessons Fulfilled Date" in tasks[0]
 
 
@@ -2472,6 +2473,86 @@ def test_cancellation_closes_the_convert_task(monkeypatch):
                              "billable_stated": "0"}, notes)
     assert closed == ["77"]
     assert any("convert-to-invoice task" in n for n in notes)
+
+
+# ── iLEAD Level Up: its own program (Roman 2026-09-23) ───────────────────────
+# POs go to the Level Up pipeline, are named with their own count, must carry
+# the Level Up teacher (who issues the next PO, $300 a month cap), and can
+# never be mistaken for a Traditional PO when the document itself says Level Up.
+
+def _wire_level_up(monkeypatch, created, existing=()):
+    monkeypatch.setattr(po.hs, "search_deals_by_student", lambda first, last=None: list(existing))
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: {"id": "C1", "properties": {"firstname": "Maria", "lastname": "Diaz"}})
+    monkeypatch.setattr(po.hs, "create_deal",
+                        lambda name, pl, st, amt=None, **k: created.append((name, pl, st)) or {"id": "D"})
+
+
+def test_level_up_po_is_named_and_counted_as_its_own_program(monkeypatch):
+    created = []
+    # the student already has two TRADITIONAL iLead deals this year: the Level Up count starts at 1
+    _wire_level_up(monkeypatch, created, existing=[_deal("D0", "Maria Diaz - Ana Diaz - iLead 1 - 26/27"),
+                                                   _deal("D1", "Maria Diaz - Ana Diaz - iLead 2 - 26/27")])
+    notes = []
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", po_month="2026-09", level_up=True,
+                        tor_first="Mary", tor_last="Nieves", tor_email="mary.nieves@ileadexploration.org"), notes)
+    pc = po.cfg()["po_inbox"]
+    assert created == [("Maria Diaz - Ana Diaz - iLead Level Up 1 - 26/27", pc["levelup_pipeline_id"], pc["levelup_stage_id"])]
+    assert any("LEVEL UP PO" in n for n in notes) and not any("without the teacher" in n for n in notes)
+    # a second Level Up PO counts on from the first
+    created.clear()
+    po._RUN_SEQ.clear()
+    _wire_level_up(monkeypatch, created, existing=[_deal("D2", "Maria Diaz - Ana Diaz - iLead Level Up 1 - 26/27"),
+                                                   _deal("D0", "Maria Diaz - Ana Diaz - iLead 1 - 26/27")])
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", po_month="2026-10", level_up=True,
+                        tor_first="Mary", tor_last="Nieves", tor_email="mary.nieves@ileadexploration.org"), [])
+    assert created[0][0] == "Maria Diaz - Ana Diaz - iLead Level Up 2 - 26/27"
+
+
+def test_level_up_po_without_the_teacher_is_flagged(monkeypatch):
+    created = []
+    _wire_level_up(monkeypatch, created)
+    notes = []
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", po_month="2026-09", level_up=True,
+                        tor_first="", tor_last="", tor_email=""), notes)
+    assert created and "Level Up" in created[0][0]
+    assert any(n.startswith("⚠️ LEVEL UP PO without the teacher's name") for n in notes)
+
+
+def test_traditional_po_naming_and_pipeline_untouched_by_level_up(monkeypatch):
+    created = []
+    _wire_level_up(monkeypatch, created)
+    po._handle_deal(_po(po_number="", parent_email="mom@x.com", po_month="2026-09"), [])
+    assert created[0][0] == "Maria Diaz - Ana Diaz - iLead 1 - 26/27"
+    assert created[0][1] == po.cfg()["po_inbox"]["deal_pipeline_id"]
+
+
+def test_level_up_backstop_reads_the_documents_own_words():
+    flagged = po._level_up_backstop({"is_po": True, "level_up": False,
+                                     "summary": "PO #3114264191 covers 4 hours of Level Up A+ Tutoring for September 2026."})
+    assert flagged["level_up"] is True
+    assert po._level_up_backstop({"is_po": True, "level_up": False, "summary": "4 hours of tutoring."},
+                                 body="Vendor Agreement", subject="New PO")["level_up"] is False
+    assert po._level_up_backstop({"is_po": True, "level_up": False, "summary": ""},
+                                 subject="iLEAD Level-Up order agreement")["level_up"] is True
+    assert po._level_up_backstop({"is_po": False, "level_up": False, "summary": "Level Up invoice question"})["level_up"] is False
+
+
+def test_po_watch_ticket_and_notes_carry_no_money(monkeypatch):
+    from src import case_engine as ce
+    opened = []
+    monkeypatch.setattr(ce, "open_case",
+                        lambda client, key, pipe, stage, subject, desc, role, **k: opened.append((subject, desc)) or {"id": "T1"})
+    monkeypatch.setattr(ce, "owner_for_support", lambda cat: ("charter_admin", "why"))
+    cfgv = po.cfg()
+    cfgv["po_inbox"]["invoice_task"]["mode"] = "ticket"
+    monkeypatch.setattr(po, "cfg", lambda: cfgv)
+    notes = []
+    po._invoice_task("D9", _po(amount="300", rate="75", hours="4", po_number="4471"), notes)
+    assert opened and "$" not in opened[0][0] and "$" not in opened[0][1]
+    assert "PO 4471" in opened[0][0] and "Hours: 4" in opened[0][1]
+    assert all("$" not in n for n in notes)
 
 
 def test_synthesized_po_shows_school_number_in_invoice_task(monkeypatch):

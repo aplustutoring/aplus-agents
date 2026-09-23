@@ -237,6 +237,34 @@ case_engine:
       scheduling: split
       default: operations
     tutor: operations
+  # Scheduling TASK routing (Paola 2026-09-22). The owner rules above answer
+  # "who owns this ticket?" by category; this one answers "who owns this task?"
+  # by what the task says. A task about an EXISTING schedule — confirming a
+  # session, a reschedule or cancellation, a no-show, an address / unit /
+  # access correction, tutor-student scheduling details — is scheduler work,
+  # owned by the FAMILY surname split, never care and never the tutor's
+  # surname. Care keeps a scheduling-looking task only when it asks for
+  # Student Success / Care follow-up (care_keywords beat keywords).
+  task_routing:
+    enabled: true
+    # Only tasks that would otherwise land on these seats are re-owned. A task
+    # already aimed at charter_admin (billing, PO->invoice) or operations is
+    # not scheduling work that went astray; leave it where its client put it.
+    applies_to: [charter_sales, quality]
+    # The A-L / M-Z boundary itself is NOT redeclared here: case_engine.split_role
+    # reads owner_rules.renewals.split, the one place it lives.
+    # Matched against the task SUBJECT, lowercased. Subject only: the body of a
+    # "Reply: ..." task carries the drafted email, and a draft that happens to
+    # say "availability" is not a scheduling task.
+    # An explicit label wins over everything, including care_keywords: a human
+    # who typed "[Scheduling]" has already answered the question.
+    labels: ["[scheduling]"]
+    keywords: [reschedule, cancellation, cancel, no-show, "no show", missed session,
+               confirm session, session details, session time, session address,
+               unit number, access instruction, gate code, schedule change,
+               tutor schedule, student schedule, scheduling]
+    care_keywords: ["student success", care coordinator, care follow-up, care call,
+                    re-engage, win-back, renewal, payment, invoice, review]
   # Working draft (Roman 2026-09-16), business days per stage. Missing = no clock.
   service_levels:
     renewals: { waiting_on_family: 3, needs_scheduler: 1, needs_invoice: 1 }
@@ -303,14 +331,24 @@ low_balance:
   owner: charter_sales
   notify: [charter_sales]
   escalate_to: visionary
-  # The sequence (Roman 2026-09-10): day 0 EMAIL only; the next business
-  # morning, if no PO and no reply, the TEXT and the TEACHER draft; day 7 with
-  # no PO the ticket becomes the retention issue (RETENTION RISK, priority
-  # HIGH, DM to the seat + escalate_to); 21 days after that, Lost + the
-  # re-engagement list. No HubSpot task: the ticket is the case.
+  # The sequence (Roman 2026-09-22, replaces the 09-10 drip): Teachworks'
+  # own family notice does the 4-hour nudge. The case opens on that alert and
+  # WAITS. The hourly sweep subtracts attended lessons since the alert from
+  # the alert's balance (both Teachworks accounts); when the live balance is
+  # at fire_at_hours or fewer, or fire_fallback_days business days have
+  # passed with nothing burning it down (a family with no lessons booked
+  # never reaches 3), the family EMAIL and TEXT go together. The TEACHER
+  # email follows family_text_after_days business days later, only if still
+  # no PO and no reply (Roman 2026-09-09: the parent submits first, the
+  # teacher is the backup). Day 7 with 1 hour or less = RETENTION RISK;
+  # 21 days after that, No response + the re-engagement list.
+  fire_at_hours: 3                # family outreach fires at this live balance or fewer (alert already there = fires after email_delay_minutes)
+  fire_fallback_days: 5           # ... or this many business days after the alert, whichever comes first
+  text_with_email: true           # the day-0 text leaves in the same sweep as the email (false = next business morning, the 09-10 drip)
+  lesson_hours_default: 1.0       # a Teachworks lesson with no readable start/end pair counts this many hours
   email_delay_minutes: 60         # day-0 email waits this long so siblings' alerts (minutes apart) become ONE email
   text_reply_window_days: 14      # JustCall lookback for "did the family text us since the case opened" (day-1 gate)
-  family_text_after_days: 1       # business days after the day-0 email
+  family_text_after_days: 1       # business days after the family send until the teacher email (and the text, when text_with_email is off)
   retention_risk_days: 7
   retention_risk_hours: 1              # risk = later of day 7 AND balance at this many hours or fewer
   # 2026-09-16: no visionary DM; the case owner (scheduler / charter_sales) gets it
@@ -319,9 +357,11 @@ low_balance:
   draft_unsent_nag_hours: 24      # teacher draft still in Drafts → one nag
   sla_hours: 8
   priority: normal
-  # Level Up Terri (Charter Terri pipeline) teachers cannot issue additional
-  # POs (Roman 2025-10-29): family only, never the teacher.
-  no_teacher_email_pipelines: ["72281989"]
+  # Roman 2026-09-23: Level Up teachers CAN issue Level Up POs (capped at
+  # $300 a month), so the teacher email goes out on Level Up cases in both
+  # Level Up pipelines. (Supersedes 2025-10-29 "Terri teachers cannot issue
+  # additional POs", which kept 72281989 here.) Empty = no pipeline excluded.
+  no_teacher_email_pipelines: []
   # A deal whose teacher email is a generic school inbox (ap@, accounts@,
   # office@ ...) has no teacher to write to: the family is still contacted,
   # the case is flagged, no personal note goes to a payables desk.
@@ -789,7 +829,15 @@ po_inbox:
   label_processed: "A+ Agent/Processed"
   label_review: "A+ Agent/Needs Review"
   # LEVEL UP POs route to "Amy - Charter - iLead - Level Up" (Level Up A).
-  # Verified against the portal 2026-07-31.
+  # Verified against the portal 2026-07-31. Roman 2026-09-23: "Terri - Charter
+  # - iLead - Level Up" (72281989) is dormant, NOT retired; it resumes in
+  # November 2026 (a site rule for which Level Up POs go there is still to be
+  # set). Level Up deals are named "<School> Level Up N" with their own count;
+  # the Level Up teacher issues these POs ($300 a month cap), so a Level Up PO
+  # without the teacher's name and email is flagged on the ticket. The HubSpot
+  # form workflow "New Level Up Charter Deal iLEAD" (513259427), which created
+  # Level Up deals in the Traditional pipeline, was turned OFF 2026-09-23: the
+  # PO agent is the only thing that creates Level Up deals.
   levelup_pipeline_id: "88841552"
   levelup_stage_id: "164922249"    # its Pre-Lesson stage
   # Deal naming (Roman, 2026-08-10): "Parent - Student - School N - YY/YY".
@@ -1014,6 +1062,11 @@ reasoner:
   supervisor_after_hours: 48
   last_resort_after_hours: 96
   repeat_every_hours: 24      # daily drumbeat once the ladder starts
+  # Who the nudge appears to come from. "visionary" posts with that seat's
+  # Slack USER token (secret SLACK_USER_TOKEN_VISIONARY), so Kath or Emily
+  # sees a DM from Roman, not from a bot (Roman 2026-09-18: "I want the
+  # pestering to look like a direct message from me"). Token unset = bot DM.
+  pester_as: visionary
 
 # ── Tutoring texts on the visionary's personal line ───────────────
 # Inna Volodinsky was told in writing on 2026-09-17 that the support line was

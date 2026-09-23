@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>A+ Booth, APLUS+ Conference 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0F17; --panel:#151B29; --panel-2:#1E2536; --line:#2B3349; --ink:#F6F7FA; --ink-2:#A9B2C7;
+    --accent:#F05829; --accent-ink:#FFFFFF; --navy:#1B2D4F; --ok:#1E8E5A; --warn:#C77700;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+  body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);}
+  h1,h2,.display{font-family:'Sora','IBM Plex Sans',sans-serif;}
+  .screen{position:fixed;inset:0;display:none;flex-direction:column;padding:max(18px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;gap:12px;}
+  .screen.on{display:flex;}
+  .eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--accent);}
+  h2{font-size:24px;font-weight:700;line-height:1.15;}
+  p.sub{color:var(--ink-2);font-size:14px;}
+  .big{font:inherit;font-family:'Sora',sans-serif;font-weight:700;font-size:18px;padding:17px;border-radius:14px;border:none;background:var(--accent);color:#fff;cursor:pointer;}
+  .big.ghost{background:transparent;border:2px solid var(--line);color:#fff;}
+  .big:disabled{opacity:.45;}
+  .big:active{transform:scale(.98);}
+  .bottom{margin-top:auto;display:flex;flex-direction:column;gap:10px;}
+
+  /* start */
+  #s-start{justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 20%,#233252 0%,var(--bg) 60%);}
+  #s-start .logos{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:6px;}
+  #s-start .logos img{height:44px;width:auto;}
+  #s-start .logos img.aplus{filter:brightness(0) invert(1);}
+  #s-start h1{font-size:40px;font-weight:800;line-height:1.05;}
+  #s-start h1 em{font-style:normal;color:var(--accent);}
+  #s-start .big{margin:16px auto 0;width:min(360px,90vw);}
+  #s-start .foot{color:var(--ink-2);font-size:13px;margin-top:10px;}
+  #s-start .album{position:absolute;top:0;right:0;width:110px;height:110px;}
+
+  /* camera */
+  #s-cam{padding:0;gap:0;background:#000;}
+  .cam{position:relative;flex:1;}
+  #video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#000;}
+  .guide{position:absolute;inset:24px 16px 130px;border:3px dashed rgba(255,255,255,.5);border-radius:22px;pointer-events:none;}
+  .hint{position:absolute;top:max(44px,env(safe-area-inset-top));left:0;right:0;text-align:center;font-weight:700;font-size:15px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
+  #shutter{position:absolute;bottom:max(26px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:88px;height:88px;border-radius:50%;background:var(--accent);border:6px solid #fff;cursor:pointer;}
+  #cam-back{position:absolute;bottom:max(40px,env(safe-area-inset-bottom));left:22px;background:rgba(0,0,0,.45);color:#fff;border:none;font:inherit;font-weight:700;padding:12px 16px;border-radius:999px;}
+  #count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);}
+  #count.on{display:flex;}
+  #count span{font-family:'Sora';font-weight:800;font-size:150px;color:#fff;text-shadow:0 6px 30px rgba(0,0,0,.5);}
+  #cam-error{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:30px;text-align:center;color:#fff;font-size:17px;line-height:1.5;}
+  #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .3s;}
+
+  /* pick */
+  .burst{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .burst button{border:3px solid transparent;border-radius:12px;overflow:hidden;background:#000;padding:0;cursor:pointer;aspect-ratio:3/4;}
+  .burst button img{width:100%;height:100%;object-fit:cover;display:block;}
+  .burst button[aria-pressed="true"]{border-color:var(--accent);}
+  #pick-preview{width:100%;max-height:44vh;object-fit:contain;border-radius:12px;background:#000;}
+
+  /* copies */
+  .qbar{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:12px;padding:11px 12px;font-size:14px;color:var(--ink-2);}
+  .qbar b{color:#fff;}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:blink 1s infinite;flex-shrink:0;}
+  .dot.idle{background:var(--ok);animation:none;}
+  @keyframes blink{50%{opacity:.25}}
+  @media (prefers-reduced-motion:reduce){.dot{animation:none;}}
+  .rows{display:flex;flex-direction:column;gap:10px;}
+  .row{background:var(--panel-2);border-radius:14px;padding:12px;display:grid;gap:8px;border:1.5px solid var(--line);}
+  .row.done{border-color:#1E8E5A66;}
+  .row input{font:inherit;font-size:17px;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:#fff;width:100%;user-select:text;-webkit-user-select:text;}
+  .row input:focus{outline:none;border-color:var(--accent);}
+  .row input:disabled{opacity:.7;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .roles{display:flex;gap:6px;}
+  .roles button{flex:1;font:inherit;font-weight:700;font-size:13px;padding:9px 4px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink-2);}
+  .roles button[aria-pressed="true"]{border-color:var(--accent);color:#fff;background:#2A2320;}
+  .schoolline{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);min-height:26px;flex-wrap:wrap;}
+  .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-weight:700;font-size:12.5px;background:var(--line);color:#fff;}
+  .pill.ok{background:var(--ok);}
+  .pill.warn{background:var(--warn);}
+  .pill.print{background:var(--accent);}
+  .row select{font:inherit;font-size:15px;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:#fff;width:100%;}
+  .act{display:flex;gap:8px;align-items:center;justify-content:space-between;}
+  .act button{font:inherit;font-family:'Sora';font-weight:700;font-size:15px;padding:11px 18px;border-radius:10px;border:none;background:var(--accent);color:#fff;}
+  .act button:disabled{background:var(--line);color:var(--ink-2);}
+  .err{font-size:13px;color:#FFB59C;font-weight:600;}
+
+  /* done + album */
+  #s-done{justify-content:center;text-align:center;background:radial-gradient(ellipse at 50% 20%,#233252 0%,var(--bg) 60%);}
+  #s-done h2{font-size:34px;}
+  #s-done h2 em{font-style:normal;color:var(--accent);}
+  .album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+  .album-item{background:var(--panel-2);border-radius:12px;overflow:hidden;border:1.5px solid var(--line);}
+  .album-item img{width:100%;display:block;aspect-ratio:2/3;object-fit:cover;}
+  .album-item .cap{font-size:12px;font-weight:700;padding:6px 8px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .album-item button{width:100%;border:none;background:var(--accent);color:#fff;font:inherit;font-weight:700;padding:9px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:6px 6px;border-bottom:1px solid var(--line);}
+  td{padding:7px 6px;border-bottom:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<script>
+const CONFIG = {
+  API: location.origin,
+  EVENT_NAME: "APLUS+ NETWORK",
+  EVENT_LINE2: "23rd ANNUAL CONFERENCE",
+  EVENT_SUB: "Anaheim. October 21 to 23, 2026",
+  FOOT_LINE: "Together in person",
+  CREDIT: "A+ Tutoring, Preferred Partner. wetutorathome.com",
+  BURST: 3,                 // frames per shutter
+  BURST_GAP_MS: 450,
+  DEFAULT_ROLE: "administrator",
+  IDLE_RESET_MS: 120000,
+  DONE_RESET_MS: 6000
+};
+</script>
+
+<!-- START -->
+<div class="screen on" id="s-start">
+  <div class="album" id="album-hot" aria-hidden="true"></div>
+  <div class="logos"><img src="aplus-network-logo.png" alt="APLUS+ Network"><img class="aplus" src="aplus-tutoring-logo.png" alt="A+ Tutoring"></div>
+  <div class="eyebrow">APLUS+ Conference 2026</div>
+  <h1>Team photo?<br><em>Squeeze in.</em></h1>
+  <p class="sub">One print for everyone who wants one.</p>
+  <button class="big" id="start">Take the team photo</button>
+  <div class="foot">A+ Tutoring, table PC6</div>
+</div>
+
+<!-- CAMERA -->
+<div class="screen" id="s-cam">
+  <div class="cam">
+    <video id="video" autoplay playsinline muted></video>
+    <div class="guide"></div>
+    <div class="hint">Everyone in. Tap the orange button.</div>
+    <div id="cam-error">Camera is off for this site. Settings, Safari, Camera, Allow. Then reload.</div>
+    <button id="cam-back" type="button">Back</button>
+    <button id="shutter" aria-label="Take the burst"></button>
+    <div id="count"><span>3</span></div>
+  </div>
+</div>
+
+<!-- PICK -->
+<div class="screen" id="s-pick">
+  <div class="eyebrow">Pick the one</div>
+  <img id="pick-preview" alt="Selected shot">
+  <div class="burst" id="burst"></div>
+  <div class="bottom">
+    <button class="big ghost" id="retake">Retake</button>
+    <button class="big" id="use">Use this one</button>
+  </div>
+</div>
+
+<!-- COPIES -->
+<div class="screen" id="s-copies">
+  <div class="eyebrow">Copies</div>
+  <h2>Who is taking a print?</h2>
+  <p class="sub">Each copy needs a name and email. First one starts printing now.</p>
+  <div class="qbar" id="qbar"><span class="dot idle"></span><span>Printer idle. Add the first name.</span></div>
+  <div class="rows" id="rows"></div>
+  <div class="bottom">
+    <button class="big ghost" id="addrow" type="button">Add another person</button>
+    <button class="big" id="finish" type="button">Done</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div class="screen" id="s-done">
+  <h2>Thanks, <em>see you in the hall.</em></h2>
+  <p class="sub" id="done-msg"></p>
+  <p class="sub" style="margin-top:20px;">Resetting for the next group</p>
+</div>
+
+<!-- ALBUM (host: press and hold top-right of the start screen) -->
+<div class="screen" id="s-album">
+  <div class="eyebrow">Host view</div>
+  <h2>Print queue</h2>
+  <table><thead><tr><th>#</th><th>For</th><th>School</th><th>Status</th></tr></thead><tbody id="qtable"></tbody></table>
+  <h2 style="margin-top:8px;">Group photos</h2>
+  <div class="album-grid" id="album"></div>
+  <div class="bottom">
+    <button class="big ghost" id="album-refresh" type="button">Refresh</button>
+    <button class="big" id="album-back" type="button">Back to booth</button>
+  </div>
+</div>
+
+<div id="flash"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = { stream:null, frames:[], pick:0, framed:null, groupId:null, key:null, groupSchool:null, groupRole:CONFIG.DEFAULT_ROLE, rows:[], queue:[] };
+  let SCHOOLS = [];
+  const domainIndex = new Map();
+  fetch("schools.json").then(r => r.json()).then(list => {
+    SCHOOLS = list;
+    list.forEach(s => (s.domains || []).forEach(d => { if (!domainIndex.has(d)) domainIndex.set(d, []); domainIndex.get(d).push(s); }));
+  }).catch(() => {});
+
+  // ---------- navigation + idle ----------
+  const screens = ["start","cam","pick","copies","done","album"];
+  let idle = null;
+  function show(name){
+    screens.forEach(s => $("s-" + s).classList.toggle("on", s === name));
+    clearTimeout(idle);
+    if (!["start","album","cam"].includes(name)) idle = setTimeout(reset, CONFIG.IDLE_RESET_MS);
+    if (name === "cam") startCamera(); else stopCamera();
+  }
+  function reset(){
+    state.frames = []; state.framed = null; state.groupId = null; state.key = null; state.groupSchool = null; state.groupRole = CONFIG.DEFAULT_ROLE; state.rows = [];
+    $("rows").innerHTML = ""; show("start");
+  }
+  $("start").addEventListener("click", () => show("cam"));
+  $("cam-back").addEventListener("click", () => show("start"));
+  $("retake").addEventListener("click", () => show("cam"));
+  $("album-back").addEventListener("click", () => show("start"));
+
+  // host hotspot: hold top-right of the start screen
+  let hold = null;
+  const hot = $("album-hot");
+  const startHold = e => { e.stopPropagation(); hold = setTimeout(() => { hold = null; openAlbum(); }, 1100); };
+  const endHold = () => { if (hold) { clearTimeout(hold); hold = null; } };
+  hot.addEventListener("touchstart", startHold, { passive:true }); hot.addEventListener("mousedown", startHold);
+  hot.addEventListener("touchend", endHold); hot.addEventListener("mouseup", endHold);
+
+  // ---------- fonts for the canvas ----------
+  if (document.fonts && document.fonts.load) ["800 44px Sora","700 30px Sora","600 22px 'IBM Plex Sans'"].forEach(f => document.fonts.load(f).catch(() => {}));
+  const LOGOS = { conf:new Image(), aplus:new Image() };
+  LOGOS.conf.src = "aplus-network-logo.png"; LOGOS.aplus.src = "aplus-tutoring-logo.png";
+  const ready = im => im.complete && im.naturalWidth > 0;
+
+  // ---------- camera ----------
+  async function startCamera(){
+    try{
+      if (!state.stream) state.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user", width:{ ideal:1920 }, height:{ ideal:1440 } }, audio:false });
+      $("video").srcObject = state.stream; $("cam-error").style.display = "none";
+    }catch(e){ $("cam-error").style.display = "flex"; }
+  }
+  function stopCamera(){ if (state.stream) { state.stream.getTracks().forEach(t => t.stop()); state.stream = null; } }
+
+  $("shutter").addEventListener("click", async () => {
+    const c = $("count"), n = c.querySelector("span"); c.classList.add("on");
+    for (const k of [3,2,1]) { n.textContent = k; await new Promise(r => setTimeout(r, 850)); }
+    c.classList.remove("on");
+    state.frames = [];
+    for (let i = 0; i < CONFIG.BURST; i++) {
+      $("flash").style.opacity = "1"; setTimeout(() => { $("flash").style.opacity = "0"; }, 120);
+      state.frames.push(grabFrame());
+      await new Promise(r => setTimeout(r, CONFIG.BURST_GAP_MS));
+    }
+    renderPick();
+    show("pick");
+  });
+  // Raw frame: mirrored so it matches what the group saw on screen.
+  function grabFrame(){
+    const v = $("video"), c = document.createElement("canvas");
+    c.width = v.videoWidth || 1080; c.height = v.videoHeight || 1440;
+    const x = c.getContext("2d"); x.translate(c.width, 0); x.scale(-1, 1); x.drawImage(v, 0, 0);
+    return c;
+  }
+
+  // ---------- pick ----------
+  function renderPick(){
+    state.pick = Math.min(1, state.frames.length - 1);
+    const b = $("burst"); b.innerHTML = "";
+    state.frames.forEach((f, i) => {
+      const btn = document.createElement("button"); btn.setAttribute("aria-pressed", i === state.pick ? "true" : "false");
+      const img = document.createElement("img"); img.src = f.toDataURL("image/jpeg", .7); img.alt = "Shot " + (i + 1);
+      btn.appendChild(img); btn.addEventListener("click", () => { state.pick = i; [...b.children].forEach((x, k) => x.setAttribute("aria-pressed", k === i ? "true" : "false")); $("pick-preview").src = img.src; });
+      b.appendChild(btn);
+    });
+    $("pick-preview").src = b.children[state.pick].querySelector("img").src;
+  }
+  $("use").addEventListener("click", async () => {
+    $("use").disabled = true;
+    state.framed = drawCard(state.frames[state.pick], state.groupSchool ? state.groupSchool.label : "");
+    show("copies");
+    $("use").disabled = false;
+    if (!state.rows.length) addRow();
+    // Archive the group photo now; copies reference it by key.
+    try{
+      const res = await fetch(CONFIG.API + "/group", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ photo:state.framed, school:{ label:state.groupSchool ? state.groupSchool.label : "" } }) });
+      const out = await res.json(); state.groupId = out.groupId; state.key = out.key;
+      flushPending();
+    }catch(e){ setBar("warn", "No connection. Check the hotspot, then tap Print again."); }
+  });
+
+  // ---------- the 4x6 card ----------
+  function drawCard(frame, schoolLabel){
+    const W = 1200, H = 1800, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+    x.fillStyle = "#FFFFFF"; x.fillRect(0, 0, W, H);
+    // band
+    x.fillStyle = "#1B2D4F"; x.fillRect(0, 0, W, 250);
+    x.fillStyle = "#F05829"; x.fillRect(0, 250, W, 14);
+    if (ready(LOGOS.conf)) { const h = 110, w = h * LOGOS.conf.naturalWidth / LOGOS.conf.naturalHeight; x.drawImage(LOGOS.conf, 60, 70, w, h); }
+    if (ready(LOGOS.aplus)) { const h = 120, w = h; x.save(); x.filter = "brightness(0) invert(1)"; x.drawImage(LOGOS.aplus, W - 60 - w, 65, w, h); x.restore(); }
+    x.textAlign = "center"; x.fillStyle = "#EAF0FA";
+    x.font = "800 44px 'Sora','IBM Plex Sans',sans-serif"; x.fillText(CONFIG.EVENT_NAME, W / 2, 100);
+    x.font = "700 36px 'Sora','IBM Plex Sans',sans-serif"; x.fillText(CONFIG.EVENT_LINE2, W / 2, 150);
+    x.font = "600 24px 'IBM Plex Sans',sans-serif"; x.fillStyle = "#BCCBE6"; x.fillText(CONFIG.EVENT_SUB.toUpperCase(), W / 2, 205);
+    // photo window
+    const pad = 48, top = 300, ph = 1240, pw = W - pad * 2;
+    const vr = frame.width / frame.height, tr = pw / ph; let sw, sh, sx, sy;
+    if (vr > tr) { sh = frame.height; sw = sh * tr; sx = (frame.width - sw) / 2; sy = 0; } else { sw = frame.width; sh = sw / tr; sx = 0; sy = (frame.height - sh) / 2; }
+    x.save(); roundRect(x, pad, top, pw, ph, 22); x.clip(); x.drawImage(frame, sx, sy, sw, sh, pad, top, pw, ph); x.restore();
+    // foot
+    x.fillStyle = "#1B2D4F"; fitText(x, schoolLabel || "APLUS+ Network member school", 1060, 46, "700", "'Sora','IBM Plex Sans',sans-serif"); x.fillText(schoolLabel || "APLUS+ Network member school", W / 2, 1625);
+    x.fillStyle = "#F05829"; x.font = "700 24px 'IBM Plex Sans',sans-serif"; x.fillText(CONFIG.FOOT_LINE.toUpperCase().split("").join(String.fromCharCode(8202)), W / 2, 1672);
+    x.fillStyle = "#667085"; x.font = "500 20px 'IBM Plex Sans',sans-serif"; x.fillText(CONFIG.CREDIT, W / 2, 1740);
+    return c.toDataURL("image/jpeg", .9);
+  }
+  function fitText(x, text, maxW, size, weight, family){ for (let px = size; px >= 18; px -= 2) { x.font = `${weight} ${px}px ${family}`; if (x.measureText(text).width <= maxW) return; } }
+  function roundRect(x, a, b, w, h, r){ x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+
+  // ---------- copies ----------
+  function matchEmail(email){
+    const d = (email.split("@")[1] || "").toLowerCase().trim(); if (!d) return null;
+    if (domainIndex.has(d)) return { list:domainIndex.get(d), how:"from " + d };
+    const parts = d.split("."); if (parts.length > 2) { const base = parts.slice(-2).join("."); if (domainIndex.has(base)) return { list:domainIndex.get(base), how:"from " + d }; }
+    return null;
+  }
+  function setBar(kind, text){ $("qbar").innerHTML = `<span class="dot ${kind === "idle" ? "idle" : ""}"></span><span>${text}</span>`; }
+
+  function addRow(){
+    const el = document.createElement("div"); el.className = "row";
+    el.innerHTML = `<input type="text" placeholder="First name" aria-label="First name" autocomplete="off">
+      <input type="email" placeholder="Email" aria-label="Email" inputmode="email" autocapitalize="off" autocomplete="off">
+      <input type="tel" placeholder="Cell (optional, we text the photo)" aria-label="Cell number" inputmode="tel" autocomplete="off">
+      <div class="roles"><button type="button" data-role="administrator">Admin</button><button type="button" data-role="teacher">Teacher</button><button type="button" data-role="support_staff">Staff</button></div>
+      <div class="schoolline"><span class="pill">School: type an email</span></div>
+      <div class="act"><span class="pill" data-state>Ready</span><button type="button">Print</button></div>`;
+    const [name, email, phone] = el.querySelectorAll("input"); const line = el.querySelector(".schoolline"); const btn = el.querySelector(".act button"); const st = el.querySelector("[data-state]");
+    const r = { el, name, email, phone, role:state.groupRole, school:state.groupSchool, how:state.groupSchool ? "same group" : null, alts:null, unknown:false, sent:false };
+    state.rows.push(r); $("rows").appendChild(el);
+    el.querySelectorAll(".roles button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.role === r.role ? "true" : "false"); b.addEventListener("click", () => { r.role = b.dataset.role; state.groupRole = r.role; el.querySelectorAll(".roles button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); }); });
+    const render = () => {
+      if (r.school) {
+        line.innerHTML = `<span class="pill ok">${r.school.label}</span><span>${r.how}</span>`;
+        if (r.alts && r.alts.length > 1) { const sel = document.createElement("select"); sel.setAttribute("aria-label", "Which campus"); sel.innerHTML = r.alts.map((s, k) => `<option value="${k}" ${s === r.school ? "selected" : ""}>${s.label}</option>`).join(""); sel.addEventListener("change", () => { r.school = r.alts[+sel.value]; r.how = "campus picked"; state.groupSchool = r.school; r.alts = null; render(); }); line.appendChild(sel); }
+      } else if (r.unknown) {
+        line.innerHTML = `<span class="pill warn">Pick the school</span>`;
+        const sel = document.createElement("select"); sel.innerHTML = '<option value="">Choose a school</option>' + SCHOOLS.map((s, k) => `<option value="${k}">${s.label}</option>`).join("");
+        sel.addEventListener("change", () => { r.school = SCHOOLS[+sel.value]; r.how = "picked from list"; state.groupSchool = r.school; render(); }); line.appendChild(sel);
+      } else line.innerHTML = '<span class="pill">School: type an email</span>';
+    };
+    email.addEventListener("input", () => {
+      const m = matchEmail(email.value);
+      if (m) { r.school = m.list[0]; r.how = m.how; r.alts = m.list.length > 1 ? m.list : null; r.unknown = false; state.groupSchool = r.school; }
+      else if (email.value.includes("@") && (email.value.split("@")[1] || "").includes(".")) { r.school = state.groupSchool; r.how = state.groupSchool ? "same group" : null; r.unknown = !state.groupSchool; }
+      render();
+    });
+    render();
+    btn.addEventListener("click", () => {
+      if (!name.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) { st.textContent = "Name and email first"; st.className = "pill warn"; return; }
+      if (!r.school) { r.unknown = true; render(); st.textContent = "Pick the school"; st.className = "pill warn"; return; }
+      r.sent = true; btn.disabled = true; name.disabled = email.disabled = phone.disabled = true; el.classList.add("done");
+      st.textContent = "Sending"; st.className = "pill";
+      submitCopy(r, st);
+      if (state.rows.every(x => x.sent)) addRow();
+    });
+    name.focus();
+  }
+  $("addrow").addEventListener("click", addRow);
+
+  const pendingCopies = [];
+  function flushPending(){ while (pendingCopies.length) { const f = pendingCopies.shift(); f(); } }
+  function submitCopy(r, st){
+    const go = async () => {
+      try{
+        const res = await fetch(CONFIG.API + "/copy", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ groupId:state.groupId, key:state.key, firstName:r.name.value.trim(), email:r.email.value.trim(), phone:r.phone.value.trim(), role:r.role, school:{ label:r.school.label } }) });
+        const out = await res.json();
+        if (!res.ok || !out.ok) throw new Error(out.error || res.status);
+        st.textContent = out.ahead ? `Queued, ${out.ahead} ahead` : "Printing"; st.className = out.ahead ? "pill" : "pill print";
+        r.queueId = out.queueId;
+        if (r.phone.value.trim() && !(out.text && out.text.sent)) st.textContent += ", text failed";
+        pollQueue();
+      }catch(e){ st.textContent = "Failed, tap Print again"; st.className = "pill warn"; r.sent = false; r.el.querySelector(".act button").disabled = false; r.name.disabled = r.email.disabled = r.phone.disabled = false; r.el.classList.remove("done"); }
+    };
+    if (state.key) go(); else pendingCopies.push(go);
+  }
+
+  // queue status on the iPad: what is printing, what is waiting
+  let pollTimer = null;
+  async function pollQueue(){
+    clearTimeout(pollTimer);
+    try{
+      const out = await (await fetch(CONFIG.API + "/queue?status=all")).json();
+      state.queue = out.queue;
+      const printing = out.queue.find(q => q.status === "printing"), waiting = out.queue.filter(q => q.status === "queued").length;
+      if (printing) setBar("on", `<b>${printing.name}</b> printing${waiting ? `, <b>${waiting}</b> waiting` : ""}`);
+      else if (waiting) setBar("on", `<b>${waiting}</b> waiting for the printer`);
+      else setBar("idle", "Printer idle. Add the next name.");
+      state.rows.forEach(r => { const q = out.queue.find(x => x.id === r.queueId); if (!q) return; const st = r.el.querySelector("[data-state]"); if (q.status === "done") { st.textContent = "Printed"; st.className = "pill ok"; } else if (q.status === "printing") { st.textContent = "Printing"; st.className = "pill print"; } else if (q.status === "failed") { st.textContent = "Printer problem, retrying"; st.className = "pill warn"; } });
+      if (printing || waiting) pollTimer = setTimeout(pollQueue, 4000);
+    }catch(e){ pollTimer = setTimeout(pollQueue, 6000); }
+  }
+
+  $("finish").addEventListener("click", () => {
+    const n = state.rows.filter(r => r.sent).length;
+    $("done-msg").textContent = n ? `${n} print${n === 1 ? "" : "s"} on the way. Grab them at the A+ table.` : "No copies this time.";
+    show("done"); setTimeout(reset, CONFIG.DONE_RESET_MS);
+  });
+
+  // ---------- host album ----------
+  async function openAlbum(){ show("album"); await loadAlbum(); }
+  $("album-refresh").addEventListener("click", loadAlbum);
+  async function loadAlbum(){
+    try{
+      const q = (await (await fetch(CONFIG.API + "/queue?status=all")).json()).queue.slice(-40).reverse();
+      $("qtable").innerHTML = q.map((j, i) => `<tr><td>${q.length - i}</td><td>${j.name}</td><td>${j.school || ""}</td><td>${j.status}${j.error ? " (" + j.error + ")" : ""}</td></tr>`).join("") || '<tr><td colspan="4">Nothing printed yet.</td></tr>';
+      const ph = (await (await fetch(CONFIG.API + "/photos")).json()).photos.slice(-40).reverse();
+      const g = $("album"); g.innerHTML = "";
+      ph.forEach(p => { const el = document.createElement("div"); el.className = "album-item"; el.innerHTML = `<img src="${p.url}" alt=""><div class="cap">${p.school || "Group"} · ${p.copies} print${p.copies === 1 ? "" : "s"}</div>`; const b = document.createElement("button"); b.textContent = "Print one more"; b.addEventListener("click", async () => { b.disabled = true; await fetch(CONFIG.API + "/queue", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ key:p.key, name:"Reprint", school:p.school }) }); b.textContent = "Queued"; }); el.appendChild(b); g.appendChild(el); });
+    }catch(e){ $("qtable").innerHTML = '<tr><td colspan="4">No connection.</td></tr>'; }
+  }
+})();
+</script>
+</body>
+</html>
