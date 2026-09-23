@@ -1100,9 +1100,10 @@
     418400015,
     418415147,
     418432770,
-    418433938
+    418433938,
+    418438778
   ],
-  "last_run_utc": "2026-09-23T22:43:05.778940+00:00",
+  "last_run_utc": "2026-09-23T23:02:57.129223+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1361,6 +1362,87 @@
           "Once Katie shares available charter fund balances, help build a schedule (e.g., 30-min weekly sessions) for both boys",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418438778,
+      "number": "18185704203",
+      "time_pt": "3:55 PM",
+      "matched": true,
+      "contact_label": "Ashley Beedle",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to prospective parent Ashley Beedle regarding her interest in tutoring. The call went to voicemail; Paola left a message asking Ashley to call back and said she would also send a follow-up email to book a call.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send Ashley a follow-up email offering times to book a discovery call",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Attempt another outreach to Ashley if no response to voicemail/email",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Paola left a voicemail for prospective parent Ashley Beedle following up on her tutoring inquiry and promised to send an email to schedule a discovery call. No details yet on student, grade, subject, or modality \u2014 record is empty on those. Ashley now expects an email from us with times to connect. Open with: 'Hi Ashley, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 I'd love to find a quick time to learn about your family's tutoring needs.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Outbound follow-up to prospective family; left voicemail only, no live conversation, but this is a prospective family we're actively working \u2014 moving from ATTEMPTED_TO_CONTACT to We Connected is not warranted since no live contact occurred.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Paola placed an outbound follow-up call to Ashley regarding her tutoring inquiry; reached voicemail and left a message. No new details about the student or need yet.",
+          "what_we_can_do_to_help": "Send follow-up email with scheduling options for a discovery call, and continue outreach cadence until we connect live to learn about the student's needs.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Paola placed an outbound follow-up call to Ashley regarding her tutoring inquiry; reached voicemail and left a message. No new details about the student or need yet."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send follow-up email with scheduling options for a discovery call, and continue outreach cadence until we connect live to learn about the student's needs."
+        ],
+        [
+          "lead_status",
+          "Attempting to Contact",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send Ashley a follow-up email offering times to book a discovery call",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Attempt another outreach to Ashley if no response to voicemail/email",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
