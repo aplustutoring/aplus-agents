@@ -33306,3 +33306,15 @@
 {"message_id": "low-balance:26/27:ethan-dai:charter-ilead-45min:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "j\u2026@msn.com", "subject": "Ethan's tutoring hours are running low", "siblings": 1, "ticket_id": "48639407733", "timestamp": "2026-09-23T00:45:11.069363+00:00"}
 {"message_id": "low-balance:26/27:charli-rajewich:charter-heartland:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "c\u2026@gmail.com", "subject": "Charli's tutoring hours are running low", "siblings": 1, "ticket_id": "48673031807", "timestamp": "2026-09-23T00:45:11.635659+00:00"}
 {"message_id": "low-balance:26/27:ayden-botts:charter-ilead:email", "source": "low_balance", "action_taken": "low_balance_email_held", "to": "b\u2026@gmail.com", "subject": "Ayden's tutoring hours are running low", "siblings": 1, "ticket_id": "48653877790", "timestamp": "2026-09-23T00:45:12.215881+00:00"}
+{"ticket_id": "48675542106", "thread_id": "11216909716", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-23T00:50:54.597420+00:00"}
+{"ticket_id": "48661998703", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:53.511405+00:00"}
+{"ticket_id": "48648393537", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:53.972392+00:00"}
+{"ticket_id": "48673649263", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:54.583456+00:00"}
+{"ticket_id": "48648410433", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:55.045475+00:00"}
+{"ticket_id": "48648410440", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:55.479575+00:00"}
+{"ticket_id": "48672564060", "category": "new_po", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:55.897119+00:00"}
+{"ticket_id": "48662483507", "category": "school_partner", "owner": "danielle", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-23T00:54:56.659321+00:00"}
+{"ticket_id": "48663567754", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:57.128642+00:00"}
+{"ticket_id": "48648880425", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:57.745690+00:00"}
+{"ticket_id": "48677716816", "category": "cancellation", "owner": "janelle", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:58.169780+00:00"}
+{"ticket_id": "48670857901", "category": "tutor_document", "owner": "kath", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-23T00:54:58.630914+00:00"}
