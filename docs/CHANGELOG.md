@@ -7,6 +7,35 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — Money lives on the deal's Amount only; iLEAD Level Up is its own program
+
+**What changed** (`email/src/po_inbox.py`, `email/config.yaml`,
+`ops/hubspot-schema/scrub_deal_descriptions_2026_09_23.py`, tests)
+- **Money:** the PO watch ticket, the convert-to-invoice task, their bodies,
+  the ticket "Summary:" note and the cancellation note no longer carry the PO
+  value or the rate; hours stay ("value on the deal's Amount"). `no_money()`
+  tuned on the 2026-09-23 live pass (clipped sentences repaired, cadence
+  phrases kept, sentences about missing data kept). The one-off script now
+  has three steps: descriptions, open PO-agent tickets and tasks, Level Up
+  deal names. Dry run: 12 descriptions, 9 tickets, 2 tasks, 2 deals change.
+- **Level Up (Roman's answers 2026-09-23):** Terri's pipeline is dormant, not
+  retired, and resumes November 2026 (site rule still to set); Level Up
+  teachers CAN issue Level Up POs (capped at $300 a month), so
+  `low_balance.no_teacher_email_pipelines` is now empty; Level Up posting to
+  #charter-tutoring stays. Level Up deals are named "<School> Level Up N"
+  with their own count; the extraction prompt defines `level_up` and requires
+  the teacher's name and email on a Level Up PO; `_level_up_backstop` flags
+  any PO whose own words say "Level Up" whatever the model returned; a Level
+  Up deal without the teacher gets a ⚠️ note (reaches the missing-info DM).
+  HubSpot form workflow "New Level Up Charter Deal iLEAD" (513259427), which
+  created Level Up deals in the Traditional pipeline, turned OFF via the API.
+
+**Why.** Roman 2026-09-23: "make sure that the only place where money stays
+is in the deal amount"; Level Up POs must never look like Traditional ones
+and must always name the teacher who issues the next PO.
+
+---
+
 ## 2026-09-23 — PO deal description carries no money (the tutor channel reads it)
 
 **What changed** (`email/src/po_inbox.py`, `email/tests/test_po_no_money.py`)
