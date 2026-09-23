@@ -1101,9 +1101,11 @@
     418415147,
     418432770,
     418433938,
-    418438778
+    418438778,
+    418441657,
+    418440858
   ],
-  "last_run_utc": "2026-09-23T23:02:57.129223+00:00",
+  "last_run_utc": "2026-09-23T23:11:43.117577+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1443,6 +1445,185 @@
           "Attempt another outreach to Ashley if no response to voicemail/email",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418441657,
+      "number": "18189193389",
+      "time_pt": "4:02 PM",
+      "matched": true,
+      "contact_label": "Sharona Kaikov",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ Tutoring called Sharona Kaikov to follow up on her inquiry for tutoring for her 5th-grade daughter Emily at Dixie. Emily is strong in all subjects except math (testing at 9th grade in others but behind in math fundamentals like multiplication and long division), likely due to a school change. Sharona wants in-person only (not open to online, though Paola offered a free online trial), had a poor prior experience with Mathnasium, and asked about pricing and success rates. Paola quoted $130/hr in-person and the 8-hour package at $115/hr ($920), and committed to emailing package info and checking in-person tutor availability in ZIP 91607.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Sharona the in-person pricing/package information (8-hour package at $115/hr = $920, plus larger packages) and text her to confirm receipt since a prior email apparently didn't arrive.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check in-person tutor availability in ZIP 91607 for 5th-grade math support (fundamentals: multiplication, division, long division) and follow up with Sharona with options.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Sharona Kaikov (warm, engaged) is looking for in-person math tutoring for her 5th-grade daughter Emily at Dixie in ZIP 91607. Emily tests at ~9th grade in non-math subjects but is behind in math fundamentals (multiplication, long division) \u2014 mom attributes gaps to a school change. Mom had a poor Mathnasium experience and declined online (Paola offered a free online trial but she prefers in-person; she'd 'try' but is skeptical). Paola quoted $130/hr in-person and the 8-hour package at $115/hr ($920), noted packages don't expire, and promised to (1) email package info to sharonapro@gmail.com and text to confirm receipt (a previous email didn't arrive), and (2) source an in-person tutor in 91607 experienced with younger kids. Sharona expects the email shortly and a follow-up with tutor options. Suggested opener: 'Hi Sharona, this is [Name] following up from Paola \u2014 I wanted to make sure the pricing email came through and share an in-person tutor we found for Emily.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke with prospective family; not charter-funded and no diagnostic/test-prep evaluation required \u2014 standard connected lead.",
+        "student_or_school_names_mentioned": [
+          "Emily",
+          "Dixie",
+          "Mathnasium"
+        ],
+        "record_updates": {
+          "whats_going_on": "5th-grade daughter Emily (at Dixie) is strong across subjects (testing ~9th grade in non-math) but behind in math fundamentals \u2014 multiplication, division, long division \u2014 likely due to gaps from a school change. Prior Mathnasium experience was not good. Mom wants in-person only in ZIP 91607 and a tutor experienced with younger kids.",
+          "what_we_can_do_to_help": "Source an in-person math tutor in 91607 experienced with elementary students to fill in fundamental gaps. Emailed pricing/packages ($130/hr in-person; 8-hr package $115/hr = $920; packages don't expire). Optionally offered a free online trial if she changes her mind.",
+          "student_first_name": "Emily",
+          "student_last_name": null,
+          "grade_level": "5",
+          "student_school": "Dixie",
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "5th-grade daughter Emily (at Dixie) is strong across subjects (testing ~9th grade in non-math) but behind in math fundamentals \u2014 multiplication, division, long division \u2014 likely due to gaps from a school change. Prior Mathnasium experience was not good. Mom wants in-person only in ZIP 91607 and a tutor experienced with younger kids."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Source an in-person math tutor in 91607 experienced with elementary students to fill in fundamental gaps. Emailed pricing/packages ($130/hr in-person; 8-hr package $115/hr = $920; packages don't expire). Optionally offered a free online trial if she changes her mind."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Emily"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Dixie"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Sharona the in-person pricing/package information (8-hour package at $115/hr = $920, plus larger packages) and text her to confirm receipt since a prior email apparently didn't arrive.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check in-person tutor availability in ZIP 91607 for 5th-grade math support (fundamentals: multiplication, division, long division) and follow up with Sharona with options.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418440858,
+      "number": "18183395667",
+      "time_pt": "4:04 PM",
+      "matched": true,
+      "contact_label": "Christa",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called tutor Christa to confirm whether she is available to start tutoring Tejas and Rashni today at 5 PM, with 5 PM as the ongoing session time moving forward. The call went to voicemail and Yolanda left a message asking Christa to call back.",
+        "caller_type": "tutor applicant",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Christa's callback confirming 5 PM availability for Tejas and Rashni; if no response, follow up to confirm today's start time",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Yolanda called tutor Christa (818-339-5667) to confirm she can start today at 5 PM with students Tejas and Rashni, with 5 PM as the ongoing time going forward. Call went to voicemail; Yolanda left a message. Christa is expected to call back to confirm. If she hasn't responded within an hour or two, follow up by text as well since we need to confirm today's 5 PM start. Suggested opener: 'Hi Christa, just following up on Yolanda's voicemail \u2014 can you confirm you're good to start with Tejas and Rashni today at 5 PM?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Christa is an active tutor; her Tutor-Active status is correct and should not be changed based on a scheduling voicemail.",
+        "student_or_school_names_mentioned": [
+          "Tejas",
+          "Rashni"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda called Christa to confirm she can start tutoring Tejas and Rashni today at 5 PM, with 5 PM as the ongoing session time moving forward. Reached voicemail and left a message requesting a callback.",
+          "what_we_can_do_to_help": "Confirm Christa's 5 PM availability for today and lock in 5 PM as the recurring session time for Tejas and Rashni.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda called Christa to confirm she can start tutoring Tejas and Rashni today at 5 PM, with 5 PM as the ongoing session time moving forward. Reached voicemail and left a message requesting a callback."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Christa's 5 PM availability for today and lock in 5 PM as the recurring session time for Tejas and Rashni."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Christa's callback confirming 5 PM availability for Tejas and Rashni; if no response, follow up to confirm today's start time",
+          86868539,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
