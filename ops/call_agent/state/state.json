@@ -1095,9 +1095,11 @@
     418215813,
     418311876,
     418343728,
-    418348852
+    418348852,
+    418398846,
+    418400015
   ],
-  "last_run_utc": "2026-09-23T19:41:30.224684+00:00",
+  "last_run_utc": "2026-09-23T21:08:43.954161+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1187,6 +1189,72 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 418398846,
+      "number": "19173252075",
+      "time_pt": "2:01 PM",
+      "matched": true,
+      "contact_label": "Matthew Ferrigno",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Matthew Ferrigno regarding his inquiry about tutoring for his daughter. Call went to voicemail; Paola left a message asking him to return the call to find a good time to connect. No new information was gathered.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Matthew Ferrigno (Yelp lead) inquired about tutoring for his daughter. Paola called and left a voicemail asking him to call back to find a time to connect \u2014 no details on daughter's grade, subject, or needs yet. Matthew now expects a callback opportunity; if he doesn't respond, try again in a day or two. Suggested opener: 'Hi Matthew, this is [name] from A+ Tutoring following up on Paola's message about tutoring for your daughter \u2014 I'd love to learn a bit about what she needs help with.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Left voicemail only; did not actually connect with the parent, so keep status as NEW until we speak.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect.",
+          "what_we_can_do_to_help": "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
@@ -1203,6 +1271,11 @@
     {
       "number": "19093011696",
       "time_pt": "12:34 PM",
+      "reason": "hang-up"
+    },
+    {
+      "number": "19173252075",
+      "time_pt": "2:04 PM",
       "reason": "hang-up"
     }
   ],
