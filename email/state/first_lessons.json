@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-23T06:45:17.700318+00:00",
+ "_last_run": "2026-09-23T16:11:23.704147+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -44,6 +44,15 @@
   "name": "Lily Chi",
   "no_deal_until": "2026-09-14",
   "tw_student_id": "2191315"
+ },
+ "in_person:david, sam": {
+  "checked": "2026-09-23",
+  "contact_id": "241079937561",
+  "deal_id": "65027682862",
+  "email": "pilatesbyshay@live.com",
+  "first": "2026-09-22",
+  "name": "Sam David",
+  "tw_student_id": "2353943"
  },
  "in_person:elyshkevich, sophia": {
   "checked": "2026-09-13",
@@ -1171,7 +1180,7 @@
   "tw_student_id": "2114528"
  },
  "online:mejia, sofia": {
-  "checked": "2026-09-22",
+  "checked": "2026-09-23",
   "deal_id": "64217686953",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-31",
@@ -1179,7 +1188,7 @@
   "tw_student_id": "2209726"
  },
  "online:mejia, velena": {
-  "checked": "2026-09-22",
+  "checked": "2026-09-23",
   "deal_id": "64201523521",
   "email": "mejiarebeca33@yahoo.com",
   "first": "2026-03-11",
@@ -1700,12 +1709,12 @@
   "tw_student_id": "2213150"
  },
  "online:schwartz, roslyn": {
-  "checked": "2026-09-20",
+  "checked": "2026-09-23",
   "contact_id": "199699140690",
   "email": "brooklyn77@mac.com",
   "first": "2026-09-15",
   "name": "Roslyn Schwartz",
-  "no_deal_until": "2026-09-23",
+  "no_deal_until": "2026-09-26",
   "tw_student_id": "2348247"
  },
  "online:seeley, ember": {
@@ -2112,6 +2121,15 @@
   "first": "2024-10-17",
   "name": "Jo Yi",
   "tw_student_id": "1907816"
+ },
+ "online:zamora, maya": {
+  "checked": "2026-09-23",
+  "contact_id": "195028956442",
+  "deal_id": "54323397534",
+  "email": "yamilemvdriver@outlook.com",
+  "first": "2026-02-10",
+  "name": "Maya Zamora",
+  "tw_student_id": "2183190"
  },
  "online:zamora, mia": {
   "checked": "2026-09-17",
