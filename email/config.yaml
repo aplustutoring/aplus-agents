@@ -1109,6 +1109,29 @@ inbound_watch:
     promise_pushes_due_days: 7       # a promised PO moves the chase out this far, then it resurfaces
     max_per_run: 25
 
+# ── Tutoring texts on the visionary's personal line ───────────────
+# Inna Volodinsky was told in writing on 2026-09-17 that the support line was
+# the best number. On 2026-09-18 at 8:30 AM she replied on Roman's personal
+# line anyway, because that is where the conversation already was, and said she
+# was afraid her son would be overwhelmed and crack. Nobody saw it for eight
+# and a half hours. A redirect does not move a conversation; the line needs a
+# watcher.
+#
+# This agent reads a PERSONAL phone. Tutoring messages go to a scheduler.
+# Everything else is never logged, never summarised, never sent anywhere, and
+# an unsure classifier counts as personal. Silence about a tutoring text costs
+# an hour. Relaying a private message cannot be undone.
+personal_line:
+  enabled: false             # shadow first. Flip after a DRY_RUN pass Roman has read.
+  line: "+18185736293"       # the line being watched
+  lookback_days: 2           # JustCall window; state, not the window, prevents repeats
+  grace_minutes: 20          # he answers his own phone; do not DM a scheduler over his shoulder
+  min_confidence: 0.7        # below this the message is treated as personal and left alone
+  max_relays_per_run: 8      # blast ceiling (the 2026-08-25 aging sweep fired 80 DMs in a dry run)
+  fallback_role: charter_sales   # when no surname is available to split on
+  model: "claude-opus-4-7"   # repo standard
+  max_tokens: 400
+
 aging_sweep:
   # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
   # hours, 59 of them from this sweep, and zero replies from her in the last 400
