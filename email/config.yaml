@@ -1085,6 +1085,30 @@ deal_closed:
     - "closed lost"
     - "lost"
 
+# ── Inbound messages that bear on work already open ───────────────
+# Two things families do that nothing heard until 2026-09-18.
+#   Ashley Clay texted the answer to the exact question her open PO task was
+#   waiting on, and the task stayed blind and due that day.
+#   Jeff Werner chased twice over five days. Triage scored his chases 0.30 and
+#   0.52 confidence and did nothing, because "just following up" carries no new
+#   information. That reading is backwards: a customer repeating themselves is
+#   the strongest signal we get that we are late.
+inbound_watch:
+  enabled: false             # shadow first. Flip after a DRY_RUN pass Roman has read.
+  sms_lookback_days: 30      # JustCall window; state, not the window, prevents repeats
+  digest_channel: ""         # ONE digest per run. Empty = print only, never a DM per item.
+  chase:
+    enabled: true
+    min_messages: 2          # one unanswered message is a queue; two is them telling us we are late
+    after_hours: 4           # ...and the oldest of them has waited at least this long
+    repeat_every_hours: 24   # re-arm at most once a day per ticket
+    max_per_run: 10          # blast ceiling (the 2026-08-25 aging sweep fired 80 DMs in a dry run)
+  answers:
+    enabled: true
+    task_prefixes: ["PO request:"]   # tasks whose open question a text can answer
+    promise_pushes_due_days: 7       # a promised PO moves the chase out this far, then it resurfaces
+    max_per_run: 25
+
 aging_sweep:
   # OFF since 2026-08-28. Measured on Kath's DM channel: 88 bot messages in 24
   # hours, 59 of them from this sweep, and zero replies from her in the last 400

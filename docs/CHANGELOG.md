@@ -454,6 +454,69 @@ dry run and set repo variable `REASONER_LIVE=true`.
 **Files:** .github/workflows/ticket-reasoner.yml, email/src/{config,slack_client,ticket_reasoner}.py,
 email/config.yaml, email/tests/test_pester_as_visionary.py (new), docs/CHANGELOG.md.
 
+<<<<<<< HEAD
+## 2026-09-18 — inbound_watch: messages that bear on work already open
+
+**Two failures on the same day, same shape.**
+
+*Jeff Werner.* 9/12 he emails about ISEE prep for his daughter. Triage files a
+HIGH ticket and a reply task inside 42 minutes. 9/13 he sends the practice test
+results. Monday 9/14 the SLA ladder breaches and fires all three escalation
+levels between 12:38 and 16:23 PT, levels 1 and 2 inside the same minute, then
+by design never speaks again. Tuesday 9/15 the reply task is marked COMPLETED
+with no reply ever sent. Jeff chases 9/15 and again 9/17. Triage reads both,
+scores them 0.30 and 0.52 confidence, and does nothing, because "just following
+up" carries no new information. Roman answered it himself on 9/18, five days and
+one hour after the email Jeff was waiting on.
+
+*Ashley Clay.* 9/18 she texts that her school is approving and will send the
+purchase order directly. Her open task "PO request: Ashley Clay - Trace" was due
+that same day with the body "Awaiting email confirmation from EF." The answer
+arrived; the task waiting for it never heard.
+
+**The common failure.** An inbound message that bears on open work reaches
+nobody who is holding that work. One case was an answer, the other a chase.
+
+**What changed** (`email/src/inbound_watch.py`,
+`email/tests/test_inbound_watch.py`, `email/config.yaml`, `email/src/audit.py`,
+`.github/workflows/email-inbound-watch.yml`):
+
+- **Chase leg.** Two or more inbound messages with nothing outbound since, the
+  oldest past a 4-hour bar, re-arms the ticket: a note with the customer's own
+  words, a DM to the owner and the last-resort seat, and any `Reply:` task that
+  was marked COMPLETED *while they were still waiting* is reopened with the
+  reason written into its body. Outbound means text, call or email, so a phone
+  call back still counts as an answer (version 1 of the waiting checker read
+  only texts and called three families neglected while Paola was on the phone
+  with them).
+- **Answer leg.** An inbound text matching a purchase-order promise gets stamped
+  onto the open PO task verbatim and moves its due date out 7 days, so the chase
+  resurfaces when it is useful instead of expiring unread the same day.
+- Both legs switch independently. One digest per run, never a DM per item.
+  A JustCall failure aborts the run rather than treating a blind index as
+  silence.
+
+Shipped OFF (`inbound_watch.enabled: false`).
+
+**Deliberately not done:** the agent never replies, never closes, and never
+judges whether the customer is right. It puts what they said where the work
+lives and makes sure a person sees it.
+
+**Two things Roman still owns, both surfaced by the Werner thread:**
+
+1. `ticket-reasoner.yml` has **no schedule**. It is `workflow_dispatch` only and
+   last ran 2026-08-29. `aging_sweep` was switched off on 2026-08-28 with the
+   comment "the reasoning sweep supersedes this", and the reasoning sweep was
+   never given a cron. It is the component whose whole job is BALL_IN_COURT →
+   pester, and it never looked at Jeff's ticket. Arming it means arming a sweep
+   that can close tickets (`reasoner.allow_close: true`), so it is not armed
+   here. The queue is not rotting in general: 113 open tickets, only 2 untouched
+   for 3+ days.
+2. The escalation ladder spends levels 1 and 2 in the same minute on any
+   category with a short SLA (scheduling is 1.5h, and the sweep runs hourly).
+   A supervisor ping that arrives simultaneously with the owner ping is not an
+   escalation.
+=======
 ## 2026-09-18 — When a deal stops, its future work stops with it
 
 **What happened.** On 2026-09-15 Annie Wolfstein texted the sales line asking to
@@ -505,6 +568,7 @@ own unanswered asks to them.
 **Still manual:** the five stale Wolfstein tasks are still open. Closing them
 from this session was blocked by the write classifier, so they wait for the
 sweep to be armed or for a human.
+>>>>>>> origin/main
 
 ---
 ## 2026-09-16 — call agent: every line transcribed, a spam gate built from real traffic, contacts created for real callers
