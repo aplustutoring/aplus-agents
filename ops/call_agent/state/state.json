@@ -1092,9 +1092,10 @@
     417951828,
     417977706,
     418179936,
-    418215813
+    418215813,
+    418311876
   ],
-  "last_run_utc": "2026-09-23T16:10:54.744623+00:00",
+  "last_run_utc": "2026-09-23T18:42:01.643729+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1186,6 +1187,12 @@
       "direction": "outgoing"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "16615217803",
+      "time_pt": "11:34 AM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
