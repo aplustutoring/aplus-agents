@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-23T16:11:23.704147+00:00",
+ "_last_run": "2026-09-23T23:15:44.894220+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -225,6 +225,15 @@
   "name": "Luke Aarvik",
   "tw_student_id": "1758500"
  },
+ "online:agin, cadence": {
+  "checked": "2026-09-23",
+  "contact_id": "248729084025",
+  "deal_id": "65027181710",
+  "email": "jonas.agin@gmail.com",
+  "first": "2026-09-23",
+  "name": "Cadence Agin",
+  "tw_student_id": "2354222"
+ },
  "online:aguila, johnny": {
   "checked": "2026-09-21",
   "contact_id": "166823063828",
@@ -242,6 +251,15 @@
   "first": "2023-11-27",
   "name": "Paxton Ahn",
   "tw_student_id": "1744276"
+ },
+ "online:aldoud, eleana": {
+  "checked": "2026-09-23",
+  "contact_id": "248871953265",
+  "deal_id": "65074665052",
+  "email": "abeeraldaoud3@gmail.com",
+  "first": "2026-09-23",
+  "name": "Eleana Aldoud",
+  "tw_student_id": "2354723"
  },
  "online:anderson, kate": {
   "checked": "2026-09-11",
@@ -728,6 +746,15 @@
   "first": "2026-04-30",
   "name": "Tony Fiore",
   "tw_student_id": "2239079"
+ },
+ "online:gallegos, yuliza": {
+  "checked": "2026-09-23",
+  "contact_id": "248880176407",
+  "deal_id": "65074404751",
+  "email": "reynagallegos2@icloud.com",
+  "first": "2026-09-23",
+  "name": "Yuliza Gallegos",
+  "tw_student_id": "2354722"
  },
  "online:ganzburg, chaya tova": {
   "checked": "2026-09-13",
@@ -1303,6 +1330,15 @@
   "name": "Darius Noll",
   "tw_student_id": "2255557"
  },
+ "online:nordhal, brooklyn": {
+  "checked": "2026-09-23",
+  "contact_id": "248880325472",
+  "deal_id": "65074701917",
+  "email": "kerriberrie72@gmail.com",
+  "first": "2026-09-23",
+  "name": "Brooklyn Nordhal",
+  "tw_student_id": "2354718"
+ },
  "online:nourn bernard, dahlia": {
   "checked": "2026-09-10",
   "contact_id": "3255351",
@@ -1536,6 +1572,15 @@
   "first": "2024-01-30",
   "name": "Jiselle Richardson",
   "tw_student_id": "1758775"
+ },
+ "online:riddell, scarlett": {
+  "checked": "2026-09-23",
+  "contact_id": "248870245541",
+  "deal_id": "65074724482",
+  "email": "riddellfam4@gmail.com",
+  "first": "2026-09-23",
+  "name": "Scarlett Riddell",
+  "tw_student_id": "2354719"
  },
  "online:rivas, amelia \"milly\"": {
   "checked": "2026-09-13",
