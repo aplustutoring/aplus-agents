@@ -33544,3 +33544,30 @@
 {"message_id": "error:deal:65027703332", "source": "deal_sync", "deal_id": "65027703332", "action_taken": "error", "error": "403 Client Error: Forbidden for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-23T18:50:26.900113+00:00"}
 {"message_id": "error:deal:65076660598", "source": "deal_sync", "deal_id": "65076660598", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-23T18:51:07.261702+00:00"}
 {"message_id": "error:deal:65113758114", "source": "deal_sync", "deal_id": "65113758114", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/customers/family", "timestamp": "2026-09-23T18:51:21.112989+00:00"}
+{"task_id": "117114957607", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:52:52.242293+00:00"}
+{"task_id": "117075644986", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:52:52.242460+00:00"}
+{"task_id": "117114999933", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:52:52.242557+00:00"}
+{"task_id": "117108790546", "owner": "janelle", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:52:52.242624+00:00"}
+{"task_id": "117077216151", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733435+00:00"}
+{"task_id": "117109043364", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733585+00:00"}
+{"task_id": "117107605008", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733650+00:00"}
+{"task_id": "117110421615", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733698+00:00"}
+{"task_id": "117073535586", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733745+00:00"}
+{"task_id": "117076243870", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733798+00:00"}
+{"task_id": "117073615287", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733841+00:00"}
+{"task_id": "117112877208", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733880+00:00"}
+{"task_id": "117116227643", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733921+00:00"}
+{"task_id": "117118616196", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733960+00:00"}
+{"task_id": "117073019208", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.733999+00:00"}
+{"task_id": "117152830362", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734036+00:00"}
+{"task_id": "117151722079", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734074+00:00"}
+{"task_id": "117117018439", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734111+00:00"}
+{"task_id": "117134992506", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734149+00:00"}
+{"task_id": "117116581522", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734186+00:00"}
+{"task_id": "117116297300", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734223+00:00"}
+{"task_id": "117152697173", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734260+00:00"}
+{"task_id": "117117010440", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734297+00:00"}
+{"task_id": "117087430793", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734335+00:00"}
+{"task_id": "117102139530", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734372+00:00"}
+{"task_id": "117115337064", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734409+00:00"}
+{"task_id": "117116422710", "owner": "paola", "action_taken": "task_nag", "days_overdue": 3, "timestamp": "2026-09-23T18:54:14.734446+00:00"}
