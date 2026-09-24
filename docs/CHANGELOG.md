@@ -7,6 +7,24 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Live balance: stamp until stamped, escalate at zero until escalated
+
+**What changed** (`email/src/low_balance.py`, tests)
+The first sweeps after #283 stamped only 2 of 28 open Renewals tickets and
+flagged none of the three zero cases. The stamp and the zero rule both ran
+only when the balance CHANGED that hour; every case recorded before #283 had
+not changed, so it never got its title or `hours_left`, and Abby Ulstrup and
+Cadence Agin (already at 0) were never escalated. The audit record now
+carries `stamped: true`; `open_cases` folds it; a case is skipped only when
+nothing moved AND it is already stamped AND it is not sitting at zero
+unflagged. First stamp of an unchanged case is silent (no note).
+
+**Why.** Roman 2026-09-24: "can you do the check now". Investigation rule:
+the failure class (state recorded before a feature existed never
+re-processed) is closed by keying on "done" flags, not on "changed".
+
+---
+
 ## 2026-09-23 — ops/unanswered was blind for a week: a cursor on the wrong clock
 
 **What changed** (`ops/unanswered/unanswered.py`, `ops/checkin/checkin.py`,
