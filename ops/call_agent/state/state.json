@@ -1117,9 +1117,10 @@
     418755311,
     418768611,
     418772130,
-    418777562
+    418777562,
+    418798246
   ],
-  "last_run_utc": "2026-09-24T18:00:34.913667+00:00",
+  "last_run_utc": "2026-09-24T18:34:26.100458+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1600,6 +1601,97 @@
           "Check tutor availability in the 91602 area for a 1st-grade math student and reply to Katrina via the same email thread",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418798246,
+      "number": "13109105142",
+      "time_pt": "11:24 AM",
+      "matched": true,
+      "contact_label": "Charlene Wetzell",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Charlene Wetzell (existing customer) called back to finalize scheduling for Keanu's tutoring with Katie Holiday. She wants to keep the two iLEAD-funded 30-min sessions and add two 45-min out-of-pocket sessions per week (total 4 days/week), using a 9-hour/12-session package to bridge through mid-November. Yolanda will check Katie's availability (possibly starting 15 min earlier on existing days) and text Charlene to confirm.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check Katie Holiday's availability for two additional 45-min out-of-pocket sessions per week for Keanu (potentially starting 15 min earlier on currently scheduled days) and text Charlene to confirm.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once Charlene confirms, book Keanu on 4x/week schedule: 2x 30-min iLEAD-funded + 2x 45-min out-of-pocket (12-session/9-hour package) running through mid-November.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Loop in Paola to send/confirm the out-of-pocket 12-session 45-min package invoice for Charlene once schedule is locked.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Charlene Wetzell (returning iLEAD family, son Keanu, 1st grade, tutor Katie Holiday) called in upbeat and ready to move forward. She wants to run 4 sessions/week: keep her 2 currently scheduled 30-min iLEAD-funded sessions AND add 2 more days at 45 min out-of-pocket, using a 9-hour/12-session package (~6 weeks, taking her through mid-November \u2014 she wants to stop before December because iLEAD funds drop ~Dec 2). Yolanda promised to check Katie's availability for the two extra 45-min slots (Katie's schedule is tight; may need to start 15 min earlier on existing days) and text Charlene back. Charlene now expects a text from Yolanda with proposed days/times for the two added 45-min sessions. Open with: 'Hi Charlene \u2014 checked with Katie, here are the 45-min slots she can offer on top of your current Mon/Wed times\u2026' then confirm and hand to Paola for the out-of-pocket invoice.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (Keanu already tutoring with Katie); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Keanu",
+          "Katie Holiday",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Charlene called back to lock in the expanded schedule for Keanu. She wants 4 sessions/week with tutor Katie Holiday: keep the 2 currently scheduled 30-min iLEAD-funded sessions, and add 2 more days at 45 min out-of-pocket via a 9-hour/12-session package (~6 weeks, running through mid-November). She wants to stop before December because iLEAD funds drop ~Dec 2. Yolanda to check Katie's availability (may need to start 15 min earlier on existing days) and text Charlene to confirm.",
+          "what_we_can_do_to_help": "[Call] Yolanda to confirm Katie Holiday's availability for two additional 45-min sessions/week for Keanu and text Charlene with proposed times. Once approved, book the 4x/week hybrid schedule (2x 30-min iLEAD-funded + 2x 45-min out-of-pocket, 12-session package through mid-November) and hand off to Paola to issue the out-of-pocket package invoice.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Charlene called back to lock in the expanded schedule for Keanu. She wants 4 sessions/week with tutor Katie Holiday: keep the 2 currently scheduled 30-min iLEAD-funded sessions, and add 2 more days at 45 min out-of-pocket via a 9-hour/12-session package (~6 weeks, running through mid-November). She wants to stop before December because iLEAD funds drop ~Dec 2. Yolanda to check Katie's availability (may need to start 15 min earlier on existing days) and text Charlene to confirm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Yolanda to confirm Katie Holiday's availability for two additional 45-min sessions/week for Keanu and text Charlene with proposed times. Once approved, book the 4x/week hybrid schedule (2x 30-min iLEAD-funded + 2x 45-min out-of-pocket, 12-session package through mid-November) and hand off to Paola to issue the out-of-pocket package invoice."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check Katie Holiday's availability for two additional 45-min out-of-pocket sessions per week for Keanu (potentially starting 15 min earlier on currently scheduled days) and text Charlene to confirm.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Once Charlene confirms, book Keanu on 4x/week schedule: 2x 30-min iLEAD-funded + 2x 45-min out-of-pocket (12-session/9-hour package) running through mid-November.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Loop in Paola to send/confirm the out-of-pocket 12-session 45-min package invoice for Charlene once schedule is locked.",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
