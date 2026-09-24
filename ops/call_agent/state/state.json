@@ -1112,9 +1112,10 @@
     418455238,
     418714757,
     418720187,
-    418727859
+    418727859,
+    418746007
   ],
-  "last_run_utc": "2026-09-24T16:39:54.650314+00:00",
+  "last_run_utc": "2026-09-24T17:08:53.382656+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1234,6 +1235,76 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 418746007,
+      "number": "18184623808",
+      "time_pt": "9:59 AM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inna Volodinsky called in a panic because her home internet is down and she's worried Myron won't be able to do his tutoring session tonight with Calvin. Yolanda suggested trying the session by phone as a backup, and walked Inna through possibly using T-Mobile cell data or a hotspot from her phone to a tablet/Chromebook. Inna is going to try to sort it out (husband handles the tech and is at work) and will call back if needed. No session change was actually made.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Check in with Inna before Myron's session tonight (Thu 7pm physics with Calvin) to confirm whether internet is working or if session needs to happen by phone/hotspot, and give Calvin a heads up either way.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Inna Volodinsky (mom of Myron, 9th, Granada Hills HS \u2014 existing customer on the 50-hr package with Calvin) called stressed because her home internet is out and Myron has his Thursday 7-9pm physics session with Calvin tonight. Yolanda offered options: try the session by phone, or use T-Mobile cell data / hotspot to a tablet or Chromebook. Inna's husband handles the tech and is at work; she'll try to resolve it and call back if she can't. Please check in with her a bit before 7pm to confirm whether Calvin should plan for a normal online session, a hotspot connection, or a phone-only session, and brief Calvin accordingly. Open with: 'Hi Inna, just checking in before Myron's session tonight \u2014 were you able to get the internet sorted, or should we have Calvin plan for a phone session?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (50-hr package in progress) \u2014 status owned by deal pipeline, not to be changed.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Granada Hills HS"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Inna called stressed that her home internet is down ahead of Myron's Thu 7pm physics session with Calvin. She doesn't know her ISP and her husband (who handles tech) is at work. Yolanda offered phone-session backup and walked her through T-Mobile hotspot/data options; Inna will try to resolve and call back if needed.",
+          "what_we_can_do_to_help": "[Call] Proactively check in with Inna before 7pm tonight to confirm connectivity plan for Myron's physics session, and brief Calvin whether to expect normal online, hotspot, or phone-only. Keep phone-session as fallback so Myron doesn't miss the hour.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Inna called stressed that her home internet is down ahead of Myron's Thu 7pm physics session with Calvin. She doesn't know her ISP and her husband (who handles tech) is at work. Yolanda offered phone-session backup and walked her through T-Mobile hotspot/data options; Inna will try to resolve and call back if needed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Proactively check in with Inna before 7pm tonight to confirm connectivity plan for Myron's physics session, and brief Calvin whether to expect normal online, hotspot, or phone-only. Keep phone-session as fallback so Myron doesn't miss the hour."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in with Inna before Myron's session tonight (Thu 7pm physics with Calvin) to confirm whether internet is working or if session needs to happen by phone/hotspot, and give Calvin a heads up either way.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": "48705172393",
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [],
