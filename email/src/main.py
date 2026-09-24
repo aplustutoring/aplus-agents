@@ -516,10 +516,10 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         for d in _rp_domains)
     contact = hs.find_contact_by_email(email) if email else None
     new_contact = False
-    if not contact and email and not platform_sender:
-        contact = hs.create_contact(email)
-        new_contact = True
     contact_id = contact.get("id") if contact else None
+    # A missing sender is created AFTER classification and routing (below), so
+    # the record is born with its persona, owning seat and lifecycle instead
+    # of a bare email address (creation contract, Roman 2026-09-24).
 
     # ── Enrich (HubSpot CRM + Teachworks) ──
     hs_enrich = hs.contact_enrichment(contact_id) if contact_id else {}
@@ -564,6 +564,23 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         key = key or icfg.get("fallback", "visionary")
         decision.owner_key, decision.owner, decision.review = key, staff_map.get(key), False
         internal_routed = True
+
+    # ── Create the sender's contact under the creation contract: persona from
+    #    the category, owner = the seat routing just chose, lifecycle lead. Junk
+    #    never becomes a contact. An unknown category gets no persona and a
+    #    note asking a human to set it (a guess is worse than a blank). ──
+    if not contact and email and not platform_sender and not decision.auto_archive:
+        cc = cfg().get("contact_creation", {}) or {}
+        persona = (cc.get("persona_by_category") or {}).get(decision.category)
+        lifecycle = (cc.get("lifecycle_by_persona") or {}).get(persona or "", "lead")
+        lead_status = (cc.get("lead_status_by_persona") or {}).get(persona or "")
+        owner_role = decision.owner_key or cc.get("fallback_owner_role", "visionary")
+        if not persona:
+            decision.notes.append("persona unknown from the email — set A+ Persona on the contact")
+        contact = hs.create_contact(email, persona=persona, owner_role=owner_role,
+                                    lead_status=lead_status, lifecycle=lifecycle)
+        new_contact = True
+        contact_id = contact.get("id") if contact else None
 
     # #3 Teachworks notice → link the ticket to the FAMILY contact (so the owner can
     # email the family straight from the ticket), not the no-reply Teachworks address.

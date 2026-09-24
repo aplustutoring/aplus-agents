@@ -7,6 +7,48 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Contact-creation contract: every agent-made contact is born with persona, owner seat, lifecycle
+
+**Roman:** "Our properties are properly set from the get-go, like the A-plus
+personas and all of that." (Goldzweig had texted "too pricey"; the agent saw
+an open deal gone quiet. Wolgemuth, Habibi, Krantz arrived by email 9/19-9/22
+with no persona, no owner, no lead status, so every agent downstream guessed.)
+
+**Before:** four creation paths, four contracts. PO intake set a persona;
+booths set persona + lead status by role; the call agent set a lead status
+only; email triage created the sender with an email address and NOTHING else
+(`hs.create_contact(email)`), before it had even classified the message.
+
+**Now:**
+- `hubspot_client.creation_props()` + `create_contact(..., *, persona,
+  owner_role, lead_status=None, lifecycle="lead")`: persona and owner ROLE are
+  keyword-only and required, the role resolves to a HubSpot owner id via
+  `staff()`, unknown personas and unresolvable roles raise, `extra_props`
+  cannot override the contract. persona=None is allowed only when the
+  caller cannot tell and must be paired with a ticket note.
+- Email triage creates the sender AFTER classify + route: persona from
+  `contact_creation.persona_by_category` (config), owner = the seat routing
+  chose, lifecycle/lead status by persona (Family: lead + NEW). Junk never
+  becomes a contact. `unknown` creates the contact persona-less with the note
+  "persona unknown from the email — set A+ Persona on the contact". A test
+  fails if any routed category other than junk/unknown is missing from the map.
+- PO intake: families = Family / charter_sales / lifecycle customer; teachers
+  = Teacher of Record/EF/ES / sales (#AP046) / TOR lead status.
+- Call agent: created callers get owner = `created_contact_owner` (Paola, who
+  does all call follow-up) + lifecycle lead at birth; the persona is stamped
+  right after the summary names the caller type (parent → Family,
+  school/charter contact → TOR, tutor applicant → Tutors; vendor/spam/other
+  stay blank). Never from telco caller-ID.
+- Tests: email/tests/test_contact_creation_contract.py (6),
+  ops/call_agent/tests/test_contact_creation.py (2); 844 green.
+
+**Not in this PR (next, one at a time):** the reasoner reading persona /
+lifecycle / lead status before it reads messages; a fill-rate audit of the
+139 declared properties (30 intake-era ones are referenced by no code).
+
+**Files:** email/src/{hubspot_client,main,po_inbox}.py, email/config.yaml,
+ops/call_agent/{call_agent.py,config.yml}, tests, docs/CHANGELOG.md.
+
 ## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now
 
 **What changed** (`email/src/low_balance.py`, `email/src/case_engine.py`,
