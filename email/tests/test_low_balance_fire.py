@@ -226,3 +226,46 @@ def test_trial_at_zero_is_flagged_on_the_first_sweep(monkeypatch):
     lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
     assert h.dms and h.dms[0][0] == "UPAO" and "trial" in h.dms[0][1]
     assert any("trial package used up" in n for _t, n in h.notes)
+
+
+# ── 2026-09-24: cases recorded before the stamp existed still get stamped; zero still escalates ──
+
+def test_unchanged_case_without_a_stamp_is_stamped_once(monkeypatch):
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    # balance already recorded by the pre-#283 code (no title, no property), nothing moved since
+    case = _case(email_sent="x", hours=3.5, hours_live=3.5, lessons_since=0, hours_stamped=False,
+                 subject="Low balance: Taylor Rodriguez (iLead), 3.5 hours left",
+                 opened_at=(NOW_UTC - dt.timedelta(days=2)).isoformat())
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    patch = next(p for m, path, p in h.patches if "/tickets/T1" in path)
+    assert patch["properties"] == {"subject": "Low balance: Taylor Rodriguez (iLead), 3.5 h left", "hours_left": "3.5"}
+    assert not h.notes                                                # nothing moved: no note
+    assert next(r for r in h.recs if r["action_taken"] == "low_balance_balance")["stamped"] is True
+    # second sweep, still unchanged and now stamped: silent
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    assert sum(1 for r in h.recs if r["action_taken"] == "low_balance_balance") == 1
+
+
+def test_case_already_at_zero_is_escalated_even_if_unchanged(monkeypatch):
+    h = Harness(monkeypatch, _fire_cfg())
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    case = _case(email_sent="x", day1_done=True, hours=0.0, hours_live=0.0, lessons_since=0, hours_stamped=True,
+                 funding_type="trial", owner="charter_sales", charter=False,
+                 opened_at=(NOW_UTC - dt.timedelta(days=1)).isoformat())
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    assert h.dms and h.dms[0][0] == "UPAO" and "0 HOURS LEFT" in h.dms[0][1]
+    assert case["escalated"] is True
+    lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
+    assert len(h.dms) == 1
+
+
+def test_open_cases_folds_the_stamped_flag(monkeypatch):
+    recs = [{"message_id": "k", "action_taken": "low_balance_opened", "hours": 4.0, "contact_id": "C",
+             "to_email": "a@b.com", "parent_email": "a@b.com", "phone": "+15550000000", "opened_at": NOW_UTC.isoformat()},
+            {"message_id": "k:balance", "action_taken": "low_balance_balance", "hours_live": 3.0, "lessons_since": 1},
+            {"message_id": "k:balance", "action_taken": "low_balance_balance", "hours_live": 3.0, "lessons_since": 1, "stamped": True}]
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs[:2]))
+    assert lb.open_cases()["k"].get("hours_stamped") is False
+    monkeypatch.setattr(lb.audit, "_iter_records", lambda: iter(recs))
+    assert lb.open_cases()["k"]["hours_stamped"] is True

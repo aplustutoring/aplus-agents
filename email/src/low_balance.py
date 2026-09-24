@@ -194,7 +194,8 @@ def open_cases() -> dict:
         elif act == "low_balance_balance":
             base = key.rsplit(":balance", 1)[0]
             if base in opened:
-                opened[base].update(hours_live=r.get("hours_live"), lessons_since=r.get("lessons_since"))
+                opened[base].update(hours_live=r.get("hours_live"), lessons_since=r.get("lessons_since"),
+                                    hours_stamped=bool(r.get("stamped")))
                 if r.get("po_hours_seen") is not None:
                     opened[base]["po_hours_seen"] = r.get("po_hours_seen")
     _rehydrate_contacts(opened)
@@ -1583,12 +1584,20 @@ def _update_live_hours(cases: dict, lb: dict) -> None:
         if po_now is not None and po_known and po_now > po_known:
             grew = round(po_now - po_known, 2)
         live = max(0.0, round(base + grew - sum(h for _t, h in burned), 2))
+        # zero is judged every sweep, changed or not: a case that was already
+        # at 0 when the rule shipped (Abby Ulstrup, Cadence Agin, 2026-09-24)
+        # must still be flagged once
+        if live <= 0 and not c.get("escalated"):
+            zero_hits[key] = c
         first = c.get("hours_live") is None
-        if not first and float(c["hours_live"]) == live and c.get("lessons_since") == len(burned):
+        unchanged = not first and float(c["hours_live"]) == live and c.get("lessons_since") == len(burned)
+        # a case stamped by the pre-#283 code carries a balance record but no
+        # title / hours_left yet: write it once (26 of 28 tickets, 2026-09-24)
+        if unchanged and c.get("hours_stamped"):
             continue
-        c["hours_live"], c["lessons_since"] = live, len(burned)
+        c["hours_live"], c["lessons_since"], c["hours_stamped"] = live, len(burned), True
         rec = {"message_id": f"{key}:balance", "source": "low_balance", "action_taken": "low_balance_balance",
-               "hours_live": live, "lessons_since": len(burned), "ticket_id": c.get("ticket_id")}
+               "hours_live": live, "lessons_since": len(burned), "ticket_id": c.get("ticket_id"), "stamped": True}
         if grew:
             rec["po_hours_seen"] = po_now
             c["po_hours_seen"] = po_now
@@ -1606,7 +1615,7 @@ def _update_live_hours(cases: dict, lb: dict) -> None:
                 print(f"  ⚠️  hours_left ticket update failed (non-fatal): {e}")
             # the first stamp of an untouched case populates the property
             # silently; a note only when a lesson or a package edit moved it
-            if burned or grew:
+            if (burned or grew) and not unchanged:
                 note = (f"⏳ Live balance {live:g} h: {len(burned)} attended lesson(s) since the alert"
                         + (f", package grew by {grew:g} h on the deal" if grew else "") + ".")
                 if not c.get("email_sent"):
@@ -1617,8 +1626,6 @@ def _update_live_hours(cases: dict, lb: dict) -> None:
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  balance note failed (non-fatal): {e}")
         _stamp_deal(c.get("deal_id"), {"retention_hours_left": str(live)})
-        if live <= 0 and not c.get("escalated"):
-            zero_hits[key] = c
     if zero_hits:
         _zero_balance(zero_hits, lb)
 
