@@ -7,6 +7,57 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Remediation: the billing desks come off the deals
+
+**What changed** (`scripts/fix_tor_billing_inboxes.py`, new)
+- One-off remediation for the data PR #294 stops creating. Dry by default,
+  idempotent, `--execute` to write.
+- DEALS: for each deal carrying a school billing desk as the teacher, resolve
+  the real teacher by name through `po_inbox._tor_by_name` (the same lookup the
+  PO flow uses when a PO has no teacher email) and require the result to pass
+  `_why_not_the_teacher`. Single confident match: stamp the real address,
+  associate the real teacher via `hs.associate_contact_to_deal`, drop the
+  billing contact. Zero or several: change nothing, print it.
+- CONTACTS: stamp `generic_inbox = true` (the documented exclusion from every
+  teacher outreach list) and remove the Teacher of Record persona.
+
+**Why**
+The reach was larger than the 54 first counted. Searching on the addresses
+themselves rather than on recent deals finds **71 deals** across five schools.
+
+Dry run, 2026-09-24:
+
+    deals corrected : 27
+    deals left alone: 44
+    contacts fixed  : 5
+
+The 27 resolve cleanly and plausibly: Ruth Hernandez to rhernandez@, Brynika
+Jackson to bjackson@, Tamara Radford to tradford@, Chloe Frisby to cfrisby@,
+Angela Cloud to angela@heartwoodcharterschool.org, Austin Haney to
+austin.haney@heartlandcharterschool.com, Sheila Villalobos to svillalobos@,
+Tiffany Broussard to tbroussard@, Beth Segal to beth.segal@pacificcharters.org.
+
+The 44 are the real finding. Every one reports zero name matches, and checking
+by hand showed why: **those teachers do not exist in HubSpot at all**, not even
+under a different persona. Catherine Peloso, Colbie Van Horn, Stephanie
+Negrete-Claar, Dianna Gregorie and Janna Morbitz have no contact record of any
+kind. That is the second-order damage from the same bug. Because the PO flow
+stamped the school's billing desk as the teacher, it never created the teacher,
+so the deal points at accounts payable and the actual person was never recorded.
+
+Nothing was guessed for those 44. Elite spells addresses firstinitial+lastname
+and Heartland spells them first.last@, so the pattern is obvious and inventing
+an address to email a school on is exactly the wrong move. Five teachers'
+addresses unblock all 44 deals, and that is a question for a human.
+
+Deliberately untouched: eight deals whose teacher address is a personal
+gmail/yahoo bearing somebody else's name. A different fault, needing a person
+to say which half is wrong.
+
+**Blocked:** the `--execute` pass is refused by the auto-mode write classifier,
+as bulk HubSpot writes have been before. Roman runs the one command.
+
+---
 ## 2026-09-24 — A teacher's email has to carry the teacher's name
 
 **What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)
