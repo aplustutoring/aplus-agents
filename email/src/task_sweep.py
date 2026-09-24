@@ -22,11 +22,115 @@ finished work is how a queue stops being read at all.
 from __future__ import annotations
 
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from . import audit, hubspot_client as hs, slack_client
-from .business_hours import now_la
+from .business_hours import _is_business_day, now_la
 from .config import cfg
+
+
+RATION_DUE_HOUR = 9   # rationed tasks come due at 9 AM PT on their day
+
+
+def _next_business_day(d):
+    d = d + timedelta(days=1)
+    while not _is_business_day(d):
+        d = d + timedelta(days=1)
+    return d
+
+
+def _ration_bulk_tasks(tasks: list[dict], owners: dict[str, str], now: datetime,
+                       rcfg: dict) -> list[str]:
+    """Turn bulk workflow call lists into a daily ration.
+
+    A workflow enrolling a list creates one CALL task per contact, every one
+    due the day it lands: charter_sales received 98 on 2026-09-01 and 189 on
+    2026-09-04 and had 426 overdue tasks nine days later. Nobody works a list
+    of 287 same-day calls; the digest just reports the whole thing overdue
+    and the DM nags about it forever. So: for each owner, every workflow with
+    at least min_batch open tasks of the configured types is pooled into ONE
+    queue (workflows matching `order` first, then oldest first) and re-dated
+    per_day per business day starting today. Recomputed on every run from the
+    same ordering, so finished calls pull the remaining ones forward and a
+    task is only rewritten when its date actually changes. Mutates the
+    in-memory hs_timestamp too, so this run's buckets see the new dates.
+    Returns digest lines (one per rationed owner)."""
+    if not rcfg.get("enabled"):
+        return []
+    per_day = max(1, int(rcfg.get("per_day", 15)))
+    min_batch = int(rcfg.get("min_batch", 25))
+    types = {str(t).upper() for t in (rcfg.get("task_types") or ["CALL"])}
+    sources = {str(s).upper() for s in (rcfg.get("sources") or ["AUTOMATION_PLATFORM"])}
+    order = [str(s).lower() for s in (rcfg.get("order") or [])]
+    groups: dict[str, dict[str, list[dict]]] = {}   # owner → workflow → tasks
+    for t in tasks:
+        p = t.get("properties") or {}
+        key = owners.get(str(p.get("hubspot_owner_id") or ""))
+        if not key:
+            continue
+        if (p.get("hs_task_type") or "").upper() not in types:
+            continue
+        if (p.get("hs_object_source") or "").upper() not in sources:
+            continue
+        wf = p.get("hs_object_source_detail_1") or "(unnamed workflow)"
+        groups.setdefault(key, {}).setdefault(wf, []).append(t)
+
+    def _rank(wf: str) -> int:
+        """Position of the first `order` entry the workflow name contains;
+        workflows named nowhere in `order` go last."""
+        low = wf.lower()
+        for i, needle in enumerate(order):
+            if needle in low:
+                return i
+        return len(order)
+
+    staff = cfg()["staff"]
+    start = now.date()
+    while not _is_business_day(start):
+        start = start + timedelta(days=1)
+    lines, updates = [], []
+    for key, by_wf in sorted(groups.items()):
+        # The ration is per OWNER: four bulk lists at 15/day each is still 60
+        # calls a day (the live dry run on 2026-09-10 had exactly that). One
+        # queue per person, hot workflows first, then oldest first.
+        kept = {wf: ts for wf, ts in by_wf.items() if len(ts) >= min_batch}
+        if not kept:
+            continue
+        queue = [t for wf, ts in kept.items() for t in ts]
+        queue.sort(key=lambda t: (_rank((t.get("properties") or {}).get("hs_object_source_detail_1") or ""),
+                                  (t.get("properties") or {}).get("hs_createdate") or "",
+                                  str(t.get("id"))))
+        day, moved = start, 0
+        for i, t in enumerate(queue):
+            if i and i % per_day == 0:
+                day = _next_business_day(day)
+            p = t["properties"]
+            due = _parse_ts(p.get("hs_timestamp"), now)
+            if due and due.date() == day:
+                continue
+            target = datetime.combine(day, time(RATION_DUE_HOUR), tzinfo=now.tzinfo)
+            updates.append((str(t["id"]), int(target.timestamp() * 1000)))
+            p["hs_timestamp"] = target.isoformat()
+            moved += 1
+        name = (staff.get(key) or {}).get("name", key)
+        breakdown = ", ".join(f"'{wf}' {len(ts)}"
+                              for wf, ts in sorted(kept.items(), key=lambda kv: _rank(kv[0])))
+        lines.append(f"🗂 *{name}*: {len(queue)} bulk call tasks rationed to "
+                     f"{per_day}/day ({breakdown}) — last batch due "
+                     f"{day.strftime('%b %-d')} ({moved} re-dated this run)")
+        audit.append({"message_id": f"tasks-rationed:{key}:{now.date().isoformat()}",
+                      "source": "task_sweep", "action_taken": "tasks_rationed",
+                      "owner": key, "workflows": {wf: len(ts) for wf, ts in kept.items()},
+                      "count": len(queue), "moved": moved, "per_day": per_day,
+                      "last_due": day.isoformat()})
+    if updates:
+        try:
+            hs.batch_update_task_due(updates)
+            print(f"  🗂 re-dated {len(updates)} bulk call task(s)")
+        except Exception as e:  # noqa: BLE001 — a failed re-date must not kill the sweep
+            print(f"  ⚠️  ration batch update failed: {e}")
+            return []
+    return lines
 
 
 def _parse_ts(raw: str | None, now: datetime) -> datetime | None:
@@ -230,6 +334,9 @@ def run() -> None:
     closed = _autoclose_done_tasks(tasks, tcfg)
     if closed:
         tasks = [t for t in tasks if str(t["id"]) not in closed]
+    # Spread bulk workflow call lists over business days BEFORE bucketing, so
+    # only today's ration counts as due and nothing in the list is "overdue".
+    ration_lines = _ration_bulk_tasks(tasks, owners, now, tcfg.get("ration") or {})
     buckets = _bucket_open_tasks(tasks, owners, now,
                                  int(tcfg.get("horizon_days", 30)))
 
@@ -238,6 +345,8 @@ def run() -> None:
     if now.weekday() == int(tcfg.get("weekly_stats_weekday", 0)):
         lines += _weekly_stats_lines(owners, now)
         lines += _stale_lines(buckets)
+    if ration_lines:
+        lines += [""] + ration_lines
     if lines:
         header = f"📋 *Task sweep* ({now.strftime('%a %b %-d')})"
         slack_client.post_message(tcfg.get("channel", ""), "\n".join([header] + lines))
