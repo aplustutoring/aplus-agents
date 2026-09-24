@@ -34325,3 +34325,5 @@
 {"ticket_id": "48717196702", "thread_id": "11227993884", "category": "scheduling", "action_taken": "auto_handled", "timestamp": "2026-09-24T22:37:45.634143+00:00"}
 {"ticket_id": "48701164353", "category": "scheduling", "owner": "yolanda", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-24T22:40:49.836338+00:00"}
 {"ticket_id": "48710055322", "category": "scheduling", "owner": "janelle", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-24T22:40:50.685649+00:00"}
+{"message_id": "parent-chase-resolved:65236638579", "source": "po_inbox", "action_taken": "parent_chase_resolved", "deal_id": "65236638579", "thread_id": "1a0d4ec03dc7dbb8", "resolved_via": "deal no longer NEEDS PARENT (human fixed)", "timestamp": "2026-09-24T22:41:10.845916+00:00"}
+{"message_id": "deal:65236638579", "source": "deal_sync", "deal_id": "65236638579", "deal_name": "Laura Magallon - Save Salazar - iLead Level Up 1 - 26/27", "tw_account": "online", "charter": true, "owner": null, "tw_customer_id": 2181716, "tw_action": "created", "tw_student_created": "Save", "action_taken": "tw_synced", "timestamp": "2026-09-24T22:41:12.217864+00:00"}
