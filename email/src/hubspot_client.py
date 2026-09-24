@@ -579,8 +579,43 @@ def find_family_contact(student_first: str, lastname: str) -> list[dict]:
     return parents  # ambiguous → caller leaves it for manual linking
 
 
+PERSONAS = ("Decision Maker/Director", "Teacher of Record/EF/ES", "Family", "Tutors", "Student")
+
+
+def creation_props(persona: str | None, owner_role: str, lead_status: str | None = None,
+                   lifecycle: str | None = "lead") -> dict:
+    """The contact-creation contract (Roman 2026-09-24): every contact an agent
+    makes carries its A+ persona, an owner (a ROLE, resolved here), a lifecycle
+    stage and, when the seat has one, a lead status, from the moment it exists.
+    Until now email triage created contacts with an email address and nothing
+    else, so every agent downstream (routing, the reasoner, the pester ladder)
+    was guessing who Wolgemuth, Habibi and Krantz were. persona=None is allowed
+    only when the caller genuinely cannot tell (unknown email category) and
+    must be paired with a note on the ticket asking a human to set it."""
+    if persona is not None and persona not in PERSONAS:
+        raise ValueError(f"unknown A+ persona {persona!r}; one of {PERSONAS}")
+    if not owner_role:
+        raise ValueError("owner_role is required: the seat that owns this contact")
+    owner = staff(owner_role) or {}
+    if not owner.get("hubspot_owner_id"):
+        raise ValueError(f"owner_role {owner_role!r} resolves to no HubSpot owner in config staff/roles")
+    props = {"hubspot_owner_id": str(owner["hubspot_owner_id"])}
+    if persona:
+        props["a_persona"] = persona
+    if lifecycle:
+        props["lifecyclestage"] = lifecycle
+    if lead_status:
+        props["hs_lead_status"] = lead_status
+    return props
+
+
 def create_contact(email: str, firstname: str | None = None, lastname: str | None = None,
-                   phone: str | None = None, extra_props: dict | None = None) -> dict:
+                   phone: str | None = None, extra_props: dict | None = None, *,
+                   persona: str | None, owner_role: str, lead_status: str | None = None,
+                   lifecycle: str | None = "lead") -> dict:
+    """Create a contact under the creation contract: `persona` and `owner_role`
+    are keyword-only and REQUIRED so no caller can forget them (see
+    creation_props). extra_props may add fields but never override the contract."""
     props = {"email": email}
     if firstname:
         props["firstname"] = firstname
@@ -591,6 +626,7 @@ def create_contact(email: str, firstname: str | None = None, lastname: str | Non
     for k, v in (extra_props or {}).items():
         if v not in (None, ""):
             props[k] = v
+    props.update(creation_props(persona, owner_role, lead_status, lifecycle))
     return _write("POST", "/crm/v3/objects/contacts", {"properties": props})
 
 
