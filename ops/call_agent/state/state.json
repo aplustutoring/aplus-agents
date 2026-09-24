@@ -1113,9 +1113,10 @@
     418714757,
     418720187,
     418727859,
-    418746007
+    418746007,
+    418755311
   ],
-  "last_run_utc": "2026-09-24T17:08:53.382656+00:00",
+  "last_run_utc": "2026-09-24T17:24:30.265704+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1303,6 +1304,93 @@
         ]
       ],
       "ticket_id": "48705172393",
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418755311,
+      "number": "18186481937",
+      "time_pt": "10:12 AM",
+      "matched": true,
+      "contact_label": "Sergei Arutunov",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Sergei Arutunov called about his 7th-grade son Alexander ('Alek'), a high-achieving LAUSD GATE student at Louis Armstrong Middle School in Sherman Oaks who wants to apply to the Science Academy STEM Magnet for 8th grade (exam in ~December). Sergei is specifically looking for test prep \u2014 not general schoolwork help \u2014 with a concern that the exam covers chemistry concepts up to 10th grade that Alek hasn't been exposed to. Paola explained the online-only test prep model, the math diagnostic first step, and the student-specialist results meeting. Sergei gave sase0505@gmail.com and noted mom will likely respond and may prefer a different email.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Sergei current rates/packages for Science Academy STEM Magnet test prep and the 7th-grade math diagnostic exam link, plus booking link for the results meeting with the student specialist.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send Sergei a confirmation text after the email goes out to verify receipt.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Watch for a reply from Alek's mom (possibly from a different email) and loop her into the thread.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Alexander \"Alek\"",
+            "correct": "Alexander \"Alek\" Arutunov"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Sergei Arutunov (dad, warm and engaged, slight language barrier) called about his 7th-grade son Alexander 'Alek' Arutunov at Louis Armstrong Middle School in Sherman Oaks (LAUSD GATE/high-achievement, already in Math Academy doing Algebra 1). Family wants test prep ONLY for the Science Academy STEM Magnet 8th-grade entrance exam (~December, ~3 months out). Concern: exam reportedly covers chemistry through 10th grade and Alek hasn't been exposed to that content yet. Paola promised to email rates/packages, the 7th-grade math diagnostic, and a link to book the student-specialist results meeting, then send a confirmation text. Explained our test prep is online-only via Lesson Space, one-on-one. Sergei says mom will likely be the one to respond and may use a different email \u2014 sase0505@gmail.com is his. No pricing quoted yet, no diagnostic or meeting booked yet. Suggested opener: 'Hi Sergei, this is ___ from A+ Tutoring following up on your call with Paola about Alek's Science Academy STEM Magnet prep \u2014 just making sure you and Alek's mom got the rates, diagnostic, and booking link we sent.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "lead_status",
+          "QTL - NEW",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Sergei current rates/packages for Science Academy STEM Magnet test prep and the 7th-grade math diagnostic exam link, plus booking link for the results meeting with the student specialist.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Sergei a confirmation text after the email goes out to verify receipt.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Watch for a reply from Alek's mom (possibly from a different email) and loop her into the thread.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
       "coached": true,
       "direction": "incoming"
     }
