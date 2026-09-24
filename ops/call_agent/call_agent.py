@@ -1290,6 +1290,68 @@ def _is_cnam_name(name):
                 and last.upper() in US_STATE_ABBRS)
 
 
+def create_contact_from_call(call, cfg, dry_run):
+    """A minimal contact for a caller we had a real conversation with.
+
+    Deliberately thin: the phone number, the line they called, and a lead
+    status. No name is invented from the telco caller-ID — that is exactly
+    how the 838 CallRail shells got made in July 2026, and a contact called
+    "Sherman Oaks Ca" is worse than one called by its number.
+    """
+    number = call.get("contact_number") or ""
+    digits = re.sub(r"\D", "", str(number))[-10:]
+    if not digits:
+        return None
+    line = _line_name(call.get("justcall_number"), cfg)
+    props = {
+        "phone": f"+1{digits}",
+        "lastname": f"Caller {digits[:3]}-{digits[3:6]}-{digits[6:]}",
+        "hs_lead_status": cfg["hubspot"].get("created_contact_lead_status", "NEW"),
+    }
+    if dry_run:
+        log.info(f"  DRY RUN — would create contact for {number} ({line})")
+        return None
+    try:
+        res = hs_post("crm/v3/objects/contacts", {"properties": props})
+    except Exception as e:                                   # noqa: BLE001
+        log.warning(f"  could not create contact for {number}: {e}")
+        return None
+    cid = res.get("id")
+    log.info(f"  created contact {cid} for {number} — first call on {line}")
+    return {"id": cid, "properties": props}
+
+
+def looks_like_spam(call, cfg, contact_known):
+    """True when an answered inbound call is almost certainly junk.
+
+    Built from 30 days of real traffic (2026-08-17 to 09-16), not guessed. Of
+    362 inbound calls, 166 were "abandoned" — hung up in the IVR, the robocall
+    signature — and never reach here. Of the 132 answered, junk has one shape:
+    SHORT and no caller-ID name. Every call this dropped in that window was
+    under 20 seconds with a blank caller-ID, longest 18s. Real conversations
+    look nothing like it: of 58 answered calls over three minutes, 52 carried
+    a human-looking name.
+
+    All three conditions must hold. A short call from a known family survives,
+    and a long call from a blank caller-ID survives. The PSAT parent, whose
+    caller-ID was JustCall's "New JustCall Contact" placeholder, survives on
+    duration alone (37s and 223s) — which is the case this gate must not break.
+    """
+    sg = cfg.get("spam_gate") or {}
+    if not sg.get("enabled"):
+        return False, ""
+    if contact_known and sg.get("require_unknown_to_hubspot", True):
+        return False, ""
+    dur = (call.get("call_duration") or {}).get("total_duration") or 0
+    if dur >= int(sg.get("min_seconds", 20)):
+        return False, ""
+    name = (call.get("contact_name") or "").strip()
+    if name and not _is_cnam_name(name) and name.lower() != "new justcall contact":
+        return False, ""
+    return True, (f"{dur}s call from an unknown number with "
+                  f"{'no caller-ID' if not name else 'a caller-ID shell'}")
+
+
 def _is_callrail_junk_contact(contact):
     """CallRail auto-created caller-ID shell: sourced from CallRail, no email,
     and named after the CNAM string. Real families keep matching — any email
@@ -1315,16 +1377,37 @@ def _first_real_contact(results):
 
 def find_contact_by_phone(caller_number):
     """
-    HubSpot contact by phone. Tier 1: exact IN-match on phone/mobilephone
-    variants. Tier 2: CONTAINS_TOKEN on the wildcarded 10-digit number.
-    CallRail caller-ID shell contacts are skipped (see _is_callrail_junk_contact),
-    so a number whose only match is a shell counts as unknown.
-    Returns contact dict or None.
+    HubSpot contact by phone. Tier 0: HubSpot's own normalised phone index,
+    which holds the bare digits however the number was typed. Tier 1: exact
+    IN-match on phone/mobilephone variants. Tier 2: CONTAINS_TOKEN on the
+    wildcarded 10-digit number. CallRail caller-ID shell contacts are skipped
+    (see _is_callrail_junk_contact), so a number whose only match is a shell
+    counts as unknown. Returns contact dict or None.
+
+    Tier 0 added 2026-09-16: variant guessing missed Maddy Zamany, whose
+    number is stored "(310)456-4963" with no space after the paren. Guessing
+    formats is always one punctuation style behind whoever typed it.
     """
     e164, variants = phone_variants(caller_number)
     if not variants:
         return None
     props = KEY_PROPERTIES + ["hs_object_source_detail_1"]
+
+    norm = re.sub(r"\D", "", e164)[-10:]
+    if len(norm) == 10:
+        res = hs_post("crm/v3/objects/contacts/search", {
+            "filterGroups": [
+                {"filters": [{"propertyName": "hs_searchable_calculated_phone_number",
+                              "operator": "EQ", "value": norm}]},
+                {"filters": [{"propertyName": "hs_searchable_calculated_mobile_number",
+                              "operator": "EQ", "value": norm}]},
+            ],
+            "properties": props,
+            "limit": 5,
+        })
+        contact = _first_real_contact(res.get("results") or [])
+        if contact:
+            return contact
 
     payload = {
         "filterGroups": [
@@ -1742,6 +1825,15 @@ def process_call(call, cfg, dry_run, now_utc):
         log.info(f"  call {cid}: no recording — skipped (consent guardrail)")
         return "skipped", {"number": number, "time_pt": time_pt, "reason": "no recording"}
 
+    # Spam gate BEFORE transcription: junk should cost nothing to ignore.
+    # The lookup result is reused below, so this adds no extra HubSpot call.
+    contact = find_contact_by_phone(number)
+    is_spam, why_spam = looks_like_spam(call, cfg, contact is not None)
+    if is_spam:
+        log.info(f"  call {cid}: {why_spam} — skipped (spam gate)")
+        return "skipped", {"number": number, "time_pt": time_pt,
+                           "reason": f"spam gate: {why_spam}"}
+
     transcript = fetch_transcript(cid, jc["ai_fetch_pause_seconds"])
     if not transcript:
         log.info(f"  call {cid}: recording but no transcript — skipped")
@@ -1752,8 +1844,15 @@ def process_call(call, cfg, dry_run, now_utc):
         log.info(f"  call {cid}: {len(transcript)}-char transcript — hang-up, skipped")
         return "skipped", {"number": number, "time_pt": time_pt, "reason": "hang-up"}
 
-    # Match BEFORE summarizing so the current record feeds the prompt.
-    contact = find_contact_by_phone(number)
+    # `contact` was resolved above, before the spam gate, so the current
+    # record feeds the prompt without a second lookup.
+    if contact is None and (cfg["hubspot"].get("auto_create_contacts")):
+        # This call cleared the spam gate AND produced a real transcript, so
+        # somebody had a conversation with us. A caller with no record leaves
+        # no trace: the PSAT parent talked to Roman for 3m43s and was still a
+        # stranger 18 days later when he followed up. Far narrower than the
+        # CallRail auto-create that made 838 junk contacts in July 2026.
+        contact = create_contact_from_call(call, cfg, dry_run)
     contact_label = None
     if contact:
         p = contact.get("properties", {})

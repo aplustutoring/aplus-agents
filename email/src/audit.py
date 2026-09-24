@@ -23,9 +23,37 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+# Keys whose values are a person's phone or email. The log is committed to
+# the repo and read by every collaborator; nothing in the fleet needs the raw
+# value back out of it (dedupe keys on contact/deal ids), so it is masked at
+# the one choke point every writer uses (Roman 2026-09-16, FERPA pass).
+REDACT_KEYS = ("to", "welcome_email_to", "email", "phone", "mobilephone",
+               "parent_email", "parent_phone", "to_email", "from_email")
+
+
+def redact(value):
+    """'+18183844845' → '…4845'; 'roman@wetutorathome.com' → 'r…@wetutorathome.com';
+    lists element-wise; anything else unchanged. Idempotent."""
+    if isinstance(value, list):
+        return [redact(v) for v in value]
+    if not isinstance(value, str) or not value or value.startswith("…") or "…@" in value:
+        return value
+    s = value.strip()
+    if "@" in s:
+        local, _, domain = s.partition("@")
+        return f"{local[:1]}…@{domain}"
+    digits = "".join(ch for ch in s if ch.isdigit())
+    if 10 <= len(digits) <= 15 and len(digits) >= len(s) * 0.5:   # a phone, not a date or an id
+        return f"…{digits[-4:]}"
+    return value
+
+
 def append(record: dict) -> None:
     """Append one decision/action to the audit log (skipped in DRY_RUN)."""
     record.setdefault("timestamp", _now_iso())
+    for k in REDACT_KEYS:
+        if k in record:
+            record[k] = redact(record[k])
     if DRY_RUN:
         print(f"[DRY_RUN] audit << {json.dumps(record, default=str)}")
         return
@@ -125,3 +153,69 @@ def write_cursor(data: dict) -> None:
         return
     STATE_DIR.mkdir(exist_ok=True)
     CURSOR.write_text(json.dumps(data, indent=2, default=str))
+
+
+def deals_closed_swept() -> set[str]:
+    """Deal ids the stopped-deal sweep has already handled, so a deal that stays
+    in a stop stage is not re-swept (and its owner not re-DMed) on every run."""
+    ids: set[str] = set()
+    for r in _iter_records():
+        if r.get("action_taken") == "deal_closed_swept" and r.get("deal_id"):
+            ids.add(str(r["deal_id"]))
+    return ids
+
+def last_inbound_chase(ticket_id: str) -> str | None:
+    """When the inbound watch last re-armed this ticket, so a customer who keeps
+    writing does not produce a DM per message."""
+    latest = None
+    for r in _iter_records():
+        if r.get("ticket_id") == ticket_id and r.get("action_taken") == "inbound_chase":
+            ts = r.get("timestamp")
+            if ts and (latest is None or str(ts) > str(latest)):
+                latest = ts
+    return latest
+
+
+def inbound_answers_stamped() -> set[str]:
+    """`task_id:message_time` pairs already written onto a task, so the same
+    answer is never stamped twice and the due date never walks forward on
+    every run."""
+    keys: set[str] = set()
+    for r in _iter_records():
+        if r.get("action_taken") == "inbound_answer_stamped" and r.get("answer_key"):
+            keys.add(str(r["answer_key"]))
+    return keys
+
+
+def last_inbound_chase(ticket_id: str) -> str | None:
+    """When the inbound watch last re-armed this ticket, so a customer who keeps
+    writing does not produce a DM per message."""
+    latest = None
+    for r in _iter_records():
+        if r.get("ticket_id") == ticket_id and r.get("action_taken") == "inbound_chase":
+            ts = r.get("timestamp")
+            if ts and (latest is None or str(ts) > str(latest)):
+                latest = ts
+    return latest
+
+
+def inbound_answers_stamped() -> set[str]:
+    """`task_id:message_time` pairs already written onto a task, so the same
+    answer is never stamped twice and the due date never walks forward on
+    every run."""
+    keys: set[str] = set()
+    for r in _iter_records():
+        if r.get("action_taken") == "inbound_answer_stamped" and r.get("answer_key"):
+            keys.add(str(r["answer_key"]))
+    return keys
+
+def personal_line_seen() -> set[str]:
+    """Message ids the personal-line watch has already judged, so a message is
+    classified once and a scheduler is told about it once. Personal messages
+    are in here too: that is the only trace they leave, and it is what stops
+    them being re-read on every run."""
+    ids: set[str] = set()
+    for r in _iter_records():
+        if r.get("source") == "personal_line" and r.get("message_id"):
+            ids.add(str(r["message_id"])[3:])   # strip the "pl:" prefix
+    return ids

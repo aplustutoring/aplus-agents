@@ -333,6 +333,11 @@ def run(dry_run: bool = False, limit: int | None = None,
     now = datetime.now(timezone.utc)
 
     tickets = hs.search_open_tickets()
+    # Low-balance renewal cases have their own lifecycle (email/src/low_balance.py
+    # closes them when the school's PO lands and escalates the stalled ones);
+    # to the reasoner they look like a Teachworks notice nobody replied to.
+    tickets = [t for t in tickets
+               if not ((t.get("properties") or {}).get("subject") or "").startswith("Low balance:")]
     if limit:
         tickets = tickets[:limit]
     invoiced = hs.invoiced_po_numbers()
@@ -398,14 +403,32 @@ def _close(ev: dict, v: dict) -> None:
                   "confidence": v.get("confidence"), "reason": v.get("reason")})
 
 
+def pester_text(first_name: str, ev: dict, v: dict, url: str) -> str:
+    """The nudge, in the visionary's own voice (Roman 2026-09-18: it should read
+    like a DM from him). Plain sentences, first name, no bot markers, no
+    verdict codes, and never an em dash."""
+    days = max(1, round(ev["age_hours"] / 24))
+    subject = ev["subject"][:70]
+    reason = (v.get("reason") or "").strip().rstrip(".")
+    why = f" {reason}." if reason else ""
+    text = (f"{first_name}, this ticket has been open {days} day{'s' if days != 1 else ''} "
+            f"and I still see it sitting there: {subject}.{why} "
+            f"Where are we on it? {url}")
+    return text.replace(" — ", " - ").replace("—", "-").replace("--", "-")
+
+
 def _pester(ev: dict, v: dict, targets: list[str]) -> None:
     url = hs.ticket_url(ev["ticket_id"])
-    msg = (f"⏰ Open {ev['age_hours'] / 24:.0f}d — *{ev['subject'][:70]}*\n"
-           f"{v['verdict']}: {v.get('reason', '')}\n{url}")
+    as_role = (cfg().get("reasoner", {}) or {}).get("pester_as")
     for key in targets:
         s = staff(key)
         if s.get("slack_user_id"):
-            slack_client.dm(s["slack_user_id"], msg)
+            first = (s.get("name") or key).split()[0]
+            text = pester_text(first, ev, v, url)
+            if as_role:
+                slack_client.dm(s["slack_user_id"], text, as_role=as_role)
+            else:
+                slack_client.dm(s["slack_user_id"], text)
     audit.append({"ticket_id": ev["ticket_id"], "source": "ticket_reasoner",
                   "action_taken": "reasoner_pester", "verdict": v["verdict"],
                   "targets": targets, "age_hours": ev["age_hours"]})

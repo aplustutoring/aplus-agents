@@ -20,6 +20,7 @@ uncheck Email); this sweeper is the fleet's alerting now.
 
 import logging
 import os
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -38,6 +39,20 @@ LOOKBACK_HOURS = 24       # runs older than this are history, not incidents
 ALERT_WINDOW_MIN = 25     # alert only for runs whose final failure is fresher
                           # than one sweep interval (so each exhaustion alerts once)
 RETRYABLE = {"failure", "timed_out", "startup_failure"}
+
+# Two failure shapes a rerun can only make WORSE, so they are alerted, never
+# retried (2026-09-10, the day the call relay went live and queued runs):
+#
+#  - the run did its work and only the state commit-back lost a race with
+#    another run's commit. rerun-failed-jobs re-executes the whole job, so
+#    the agent step runs again on top of whatever state is on main and
+#    re-does the work (16 duplicate HubSpot tickets/tasks/notes that day,
+#    four rounds of them per failed run). Steps named in STATE_COMMIT_STEPS
+#    are that commit-back step in every state-writing workflow.
+#  - a 4xx from an upstream API (Teachworks 400 on deal 64842808888, retried
+#    four times, identical each time). 429 is the one 4xx that IS transient.
+STATE_COMMIT_STEPS = {"Commit state changes", "Persist state"}
+DETERMINISTIC_4XX = re.compile(r"\b4(?!29\b)\d\d Client Error\b")
 
 # Never auto-retried:
 #   - this sweeper itself (a failing watchdog retrying itself is a siren loop)
@@ -93,6 +108,44 @@ def post_slack(channel, text):
         raise RuntimeError(f"Slack error: {r.json().get('error')}")
 
 
+def failed_steps(run_id):
+    """[(job_id, step name)] for every failed step of a run."""
+    jobs = (gh("GET", f"/repos/{REPO}/actions/runs/{run_id}/jobs") or {}).get("jobs") or []
+    return [(j["id"], s["name"]) for j in jobs
+            for s in (j.get("steps") or []) if s.get("conclusion") == "failure"]
+
+
+def only_state_commit_failed(step_names):
+    """True when the run's work finished and only the state commit-back failed."""
+    return bool(step_names) and all(n in STATE_COMMIT_STEPS for n in step_names)
+
+
+def looks_deterministic(log_text):
+    """A non-429 4xx from an upstream API — the same request fails the same way."""
+    return bool(DETERMINISTIC_4XX.search(log_text or ""))
+
+
+def job_log(job_id):
+    r = requests.get(f"https://api.github.com/repos/{REPO}/actions/jobs/{job_id}/logs",
+                     headers={"Authorization": f"Bearer {GH_TOKEN}",
+                              "Accept": "application/vnd.github+json"},
+                     timeout=30, allow_redirects=True)
+    return r.text if r.ok else ""
+
+
+def no_retry_reason(run_id):
+    """Why this failed run must NOT be rerun, or None if a retry is fine."""
+    steps = failed_steps(run_id)
+    names = [n for _, n in steps]
+    if only_state_commit_failed(names):
+        return ("state commit-back lost a race with another run — the work is done; "
+                "a rerun would re-do it and duplicate tickets/tasks")
+    for job_id, name in steps:
+        if name not in STATE_COMMIT_STEPS and looks_deterministic(job_log(job_id)):
+            return f"4xx client error in `{name}` — deterministic, a rerun repeats it"
+    return None
+
+
 def main():
     dry_run = "--dry-run" in sys.argv
     if not GH_TOKEN:
@@ -110,13 +163,24 @@ def main():
         if len(batch) < 100:
             break
 
-    retried, exhausted = [], []
+    retried, exhausted, held = [], [], []
     for r in runs:
         if r["conclusion"] not in RETRYABLE or r["name"] in EXCLUDE_WORKFLOWS:
             continue
         attempt = r.get("run_attempt", 1)
         if attempt < MAX_ATTEMPTS:
             label = f"{r['name']} (run {r['id']}, attempt {attempt})"
+            try:
+                reason = no_retry_reason(r["id"])
+            except Exception as e:  # noqa: BLE001 — classification is best-effort
+                log.warning(f"could not classify {label}: {e}; treating as retryable")
+                reason = None
+            if reason:
+                log.info(f"NOT retried: {label} — {reason}")
+                updated = datetime.fromisoformat(r["updated_at"].replace("Z", "+00:00"))
+                if now - updated <= timedelta(minutes=ALERT_WINDOW_MIN):
+                    held.append((r, reason))
+                continue
             if dry_run:
                 log.info(f"[dry-run] would retry: {label}")
             else:
@@ -145,7 +209,20 @@ def main():
             post_slack(channel, text)
             log.info(f"alerted on {len(exhausted)} exhausted run(s)")
 
-    log.info(f"sweep done: {len(retried)} retried, {len(exhausted)} exhausted, "
+    if held:
+        channel, mentions = alert_targets()
+        lines = [f"{mentions} — fleet alert: {len(held)} failed run(s) deliberately NOT retried:".strip()]
+        for r, reason in held:
+            lines.append(f"• *{r['name']}* — {reason} — <{r['html_url']}|log>")
+        lines.append("Needs eyes, not a rerun.")
+        text = "\n".join(lines)
+        if dry_run or not channel:
+            log.info(f"[dry-run/no-channel] alert would be:\n{text}")
+        else:
+            post_slack(channel, text)
+            log.info(f"alerted on {len(held)} held run(s)")
+
+    log.info(f"sweep done: {len(retried)} retried, {len(held)} held, {len(exhausted)} exhausted, "
              f"{len(runs)} completed runs scanned")
 
 

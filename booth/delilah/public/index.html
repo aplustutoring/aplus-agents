@@ -107,10 +107,13 @@
   #print-area{display:none;}
   @media print{
     body>*{display:none !important;}
-    #print-area{display:block !important;position:static;}
-    #print-area img{width:100%;max-height:100vh;object-fit:contain;}
-    @page{margin:0;}
-    html,body{margin:0 !important;padding:0 !important;}
+    /* The card is exactly 2:3. Pin the page to 4x6 and fill it, so Safari does
+       not size the image to the screen viewport (which cropped the bottom band
+       on the Selphy, 2026-09-11). */
+    @page{size:4in 6in;margin:0;}
+    html,body{margin:0 !important;padding:0 !important;height:100% !important;overflow:visible !important;}
+    #print-area{display:block !important;position:static;width:100%;height:100%;}
+    #print-area img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;}
   }
   @media (prefers-reduced-motion:reduce){.attract-cta,.count-pop,.spinner{animation:none;}}
 </style>
@@ -126,6 +129,9 @@ const CONFIG = {
   DATE_LABEL: "9.11.26",
   HEBREW_YEAR: "5787",
   AUTO_PRINT: true,       // every kept photo prints (party favor)
+  STORYBOOK: true,        // guests repainted into a Rosh Hashanah storybook (Gemini), sent by TEXT
+  STORYBOOK_PRINT: false, // Roman 2026-09-11: the painting is never printed, it eats paper. Text only.
+  STORYBOOK_BANNER: "Once upon a Shana Tova",
   IDLE_RESET_MS: 90000,
   DONE_RESET_MS: 8000
 };
@@ -169,15 +175,16 @@ const CONFIG = {
 <div class="screen light" id="screen-form">
   <button class="back-link" data-back="review">&larr; Back</button>
   <div class="step-eyebrow">Almost done</div>
-  <h2 class="step-title">Want it texted to you too?</h2>
+  <h2 class="step-title">How do you want it?</h2>
   <form id="lead-form" autocomplete="off">
     <div class="field"><label for="f-name">Your name (goes on the album)</label><input id="f-name" type="text" placeholder="Bubbe &amp; Zayde" maxlength="40"></div>
-    <div class="field"><label for="f-phone">Cell number</label><input id="f-phone" type="tel" inputmode="tel" placeholder="(818) 555-0123"></div>
+    <div class="field"><label for="f-phone">Cell number (for the text)</label><input id="f-phone" type="tel" inputmode="tel" placeholder="(818) 555-0123"></div>
     <div id="form-error"></div>
-    <div class="form-note">Your print is coming out either way. The text is a bonus.</div>
+    <div class="form-note">Text gets you the photo plus a storybook painting of it. Print is a 4x6 to take home.</div>
     <div class="form-actions">
-      <button class="btn btn-ghost" type="button" id="btn-skip">Just print it</button>
-      <button class="btn btn-primary" type="submit">Print + text me</button>
+      <button class="btn btn-ghost" type="button" data-deliver="text">Text me</button>
+      <button class="btn btn-ghost" type="button" data-deliver="print">Print it</button>
+      <button class="btn btn-primary" type="button" data-deliver="both">Both</button>
     </div>
   </form>
 </div>
@@ -187,6 +194,14 @@ const CONFIG = {
   <div class="spinner"></div>
   <h2 class="display" style="font-size:38px;">Printing your photo&hellip;</h2>
   <div class="done-sub">Grab it from the printer in a moment</div>
+</div>
+
+<!-- ============ PAINTING (storybook) ============ -->
+<div class="screen" id="screen-painting">
+  <div class="spinner"></div>
+  <h2 class="display" style="font-size:38px;">Painting your storybook&hellip;</h2>
+  <div class="done-sub">Grab your print. A storybook painting of it is on its way to your phone, about 20 seconds.</div>
+  <img id="painting-preview" alt="" style="height:38vh;border-radius:16px;margin-top:26px;box-shadow:0 16px 50px rgba(0,0,0,.35);">
 </div>
 
 <!-- ============ DONE ============ -->
@@ -214,10 +229,10 @@ const CONFIG = {
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const state = { photoDataUrl:null, stream:null, album:[] };
+  const state = { photoDataUrl:null, rawDataUrl:null, stream:null, album:[] };
 
   // ---------- Navigation ----------
-  const screens = ["attract","camera","review","form","sending","done","album"];
+  const screens = ["attract","camera","review","form","sending","painting","done","album"];
   function show(name){
     screens.forEach(s => $("screen-"+s).classList.toggle("active", s===name));
     resetIdleTimer(name);
@@ -231,7 +246,7 @@ const CONFIG = {
   let idleTimer=null;
   function resetIdleTimer(current){
     clearTimeout(idleTimer);
-    if(current && !["attract","sending","album"].includes(current)){
+    if(current && !["attract","sending","painting","album"].includes(current)){
       idleTimer=setTimeout(fullReset, CONFIG.IDLE_RESET_MS);
     }
   }
@@ -242,7 +257,7 @@ const CONFIG = {
     }, {passive:true}));
 
   function fullReset(){
-    state.photoDataUrl=null;
+    state.photoDataUrl=null; state.rawDataUrl=null;
     $("lead-form").reset();
     $("form-error").style.display="none";
     show("attract");
@@ -298,62 +313,81 @@ const CONFIG = {
 
   // ---------- Frame ----------
   // 1200x1800 (2:3, 4x6 print). Cream card, pomegranate double border,
-  // honey/apple corner sprigs, headline on top, Shana Tova banner below.
-  function capture(){
-    const video=$("video");
-    const W=1200, H=1800;
+  // honey mat, headline on top, banner below. Used for both prints: the real
+  // photo (banner: Shana Tova) and the Gemini storybook (banner: Once upon...).
+  const CARD={ W:1200, H:1800, photoTop:250, photoH:1250, photoPad:60 };
+  function coverCrop(srcW,srcH,dstW,dstH){
+    const vr=srcW/srcH, tr=dstW/dstH;
+    let sw,sh,sx,sy;
+    if(vr>tr){ sh=srcH; sw=sh*tr; sx=(srcW-sw)/2; sy=0; }
+    else{ sw=srcW; sh=sw/tr; sx=0; sy=(srcH-sh)/2; }
+    return {sx,sy,sw,sh};
+  }
+  function drawCard(source, srcW, srcH, {mirror=false, banner}){
+    const {W,H,photoTop,photoH,photoPad}=CARD;
+    const pw=W-photoPad*2;
     const canvas=document.createElement("canvas");
     canvas.width=W; canvas.height=H;
     const ctx=canvas.getContext("2d");
+    const {sx,sy,sw,sh}=coverCrop(srcW,srcH,pw,photoH);
 
-    const photoTop=250, photoH=1250, photoPad=60;
-    const pw=W-photoPad*2;
-    const vr=video.videoWidth/video.videoHeight, tr=pw/photoH;
-    let sw,sh,sx,sy;
-    if(vr>tr){ sh=video.videoHeight; sw=sh*tr; sx=(video.videoWidth-sw)/2; sy=0; }
-    else{ sw=video.videoWidth; sh=sw/tr; sx=0; sy=(video.videoHeight-sh)/2; }
-
-    // Card + confetti
     ctx.fillStyle="#FFF7E8"; ctx.fillRect(0,0,W,H);
     confetti(ctx,W,H);
     ctx.strokeStyle="#C2383F"; ctx.lineWidth=16; ctx.strokeRect(22,22,W-44,H-44);
     ctx.strokeStyle="#F2B33D"; ctx.lineWidth=5;  ctx.strokeRect(48,48,W-96,H-96);
 
-    // Photo, mirrored to match the preview, with a rounded honey mat
     ctx.save();
     ctx.fillStyle="#F2B33D"; roundRect(ctx,photoPad-14,photoTop-14,pw+28,photoH+28,34); ctx.fill();
     roundRect(ctx,photoPad,photoTop,pw,photoH,24); ctx.clip();
-    ctx.translate(W,0); ctx.scale(-1,1);
-    ctx.drawImage(video,sx,sy,sw,sh, photoPad,photoTop,pw,photoH);
+    if(mirror){ ctx.translate(W,0); ctx.scale(-1,1); }
+    ctx.drawImage(source,sx,sy,sw,sh, photoPad,photoTop,pw,photoH);
     ctx.restore();
 
-    // Headline
     ctx.textAlign="center"; ctx.textBaseline="alphabetic";
     ctx.fillStyle="#2B1B2E";
     const title=`${CONFIG.NAME} is ${CONFIG.AGE}!`;
     fitText(ctx, title, 640, 118, "700", "'Fredoka','Nunito',sans-serif");
     ctx.fillText(title, W/2, 170);
-    // Corner sprigs (emoji render via the system emoji font on iPad)
     ctx.font="88px 'Apple Color Emoji','Segoe UI Emoji',sans-serif";
-    ctx.fillText("🍎🍯", 150, 172);   // apple + honey, left
-    ctx.fillText("🎂🎈", W-150, 172); // cake + balloon, right
+    ctx.fillText("🍎🍯", 150, 172);
+    ctx.fillText("🎂🎈", W-150, 172);
 
-    // Banner
     const bannerY=photoTop+photoH+96;
     ctx.fillStyle="#C2383F";
     roundRect(ctx, W/2-470, bannerY-58, 940, 100, 50); ctx.fill();
     ctx.fillStyle="#FFF7E8";
-    fitText(ctx, `Shana Tova ${CONFIG.HEBREW_YEAR}  •  Sweet New Year`, 860, 58, "700", "'Fredoka','Nunito',sans-serif");
-    ctx.fillText(`Shana Tova ${CONFIG.HEBREW_YEAR}  •  Sweet New Year`, W/2, bannerY+3);
+    fitText(ctx, banner, 860, 58, "700", "'Fredoka','Nunito',sans-serif");
+    ctx.fillText(banner, W/2, bannerY+3);
 
-    // Footer
     ctx.fillStyle="#9E2A31";
-    fitText(ctx, `${CONFIG.NAME}'s ${CONFIG.AGE}th Birthday  •  ${CONFIG.DATE_LABEL}`, 1000, 34, "900", "'Nunito',sans-serif");
-    ctx.fillText(`${CONFIG.NAME}'s ${CONFIG.AGE}th Birthday  •  ${CONFIG.DATE_LABEL}`, W/2, H-78);
+    const foot=`${CONFIG.NAME}'s ${CONFIG.AGE}th Birthday  •  ${CONFIG.DATE_LABEL}`;
+    fitText(ctx, foot, 1000, 34, "900", "'Nunito',sans-serif");
+    ctx.fillText(foot, W/2, H-78);
+    return canvas.toDataURL("image/jpeg",0.9);
+  }
 
-    state.photoDataUrl=canvas.toDataURL("image/jpeg",0.9);
+  function capture(){
+    const video=$("video");
+    const vw=video.videoWidth, vh=video.videoHeight;
+    // Framed print
+    state.photoDataUrl=drawCard(video, vw, vh, {mirror:true, banner:`Shana Tova ${CONFIG.HEBREW_YEAR}  •  Sweet New Year`});
+    // Un-framed crop (mirrored like the print) for the storybook repaint
+    const pw=CARD.W-CARD.photoPad*2, ph=CARD.photoH;
+    const raw=document.createElement("canvas"); raw.width=pw; raw.height=ph;
+    const rc=raw.getContext("2d"); const {sx,sy,sw,sh}=coverCrop(vw,vh,pw,ph);
+    rc.translate(pw,0); rc.scale(-1,1); rc.drawImage(video,sx,sy,sw,sh,0,0,pw,ph);
+    state.rawDataUrl=raw.toDataURL("image/jpeg",0.85);
     $("review-img").src=state.photoDataUrl;
     show("review");
+  }
+  // Base64 jpeg from Gemini -> framed storybook print
+  function frameStorybook(b64){
+    return new Promise((res,rej)=>{
+      const img=new Image();
+      img.onload=()=>res(drawCard(img, img.naturalWidth, img.naturalHeight, {banner:CONFIG.STORYBOOK_BANNER}));
+      img.onerror=rej;
+      img.src="data:image/jpeg;base64,"+b64;
+    });
   }
   function confetti(ctx,W,H){
     // Deterministic scatter so every print matches the preview
@@ -393,18 +427,20 @@ const CONFIG = {
   window.addEventListener("afterprint",()=>{document.title="Delilah is 5 Photo Booth";});
 
   // ---------- Form ----------
-  $("btn-skip").addEventListener("click",()=>submitAll({ name:$("f-name").value.trim(), phone:"" }));
-  $("lead-form").addEventListener("submit", e=>{
-    e.preventDefault();
+  // Text / Print / Both (Roman 2026-09-11: print is not mandatory, some guests
+  // only want the text). Text needs a cell; print needs nothing.
+  $("lead-form").addEventListener("submit", e=>e.preventDefault());
+  document.querySelectorAll("[data-deliver]").forEach(b=>b.addEventListener("click",()=>{
     const err=$("form-error");
-    const phone=$("f-phone").value.trim();
-    if(phone.replace(/\D/g,"").length<10){
-      err.textContent="That number looks short. Add your area code, or tap Just print it."; err.style.display="block";
+    const mode=b.dataset.deliver, wantText=mode!=="print", wantPrint=mode!=="text";
+    const phone=wantText ? $("f-phone").value.trim() : "";
+    if(wantText && phone.replace(/\D/g,"").length<10){
+      err.textContent="Add your cell with the area code for the text, or tap Print it."; err.style.display="block";
       return;
     }
     err.style.display="none";
-    submitAll({ name:$("f-name").value.trim(), phone });
-  });
+    submitAll({ name:$("f-name").value.trim(), phone, wantText, wantPrint });
+  }));
 
   // ---------- Print + send ----------
   function printPhoto(dataUrl){
@@ -415,31 +451,57 @@ const CONFIG = {
     });
   }
 
-  async function submitAll({name, phone}){
+  function logError(stage, name, error){
+    try{ fetch(CONFIG.WORKER_URL+"/log",{ method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ stage, name, error }), keepalive:true }).catch(()=>{}); }catch(e){}
+  }
+  async function postSubmit(payload){
+    const res=await fetch(CONFIG.WORKER_URL+"/submit",{
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)
+    });
+    return res.ok ? await res.json() : null;
+  }
+
+  async function submitAll({name, phone, wantText=true, wantPrint=true}){
     show("sending");
-    const photo=state.photoDataUrl;
-    // Local album (IndexedDB-free: localStorage of thumbnails is too small, so keep
-    // full data URLs in memory + the Worker archive as the durable copy).
-    state.album.push({ name, at:new Date().toISOString(), dataUrl:photo });
+    $("screen-sending").querySelector("h2").textContent = wantPrint ? "Printing your photo…" : "Sending your photo…";
+    $("screen-sending").querySelector(".done-sub").textContent = wantPrint ? "Grab it from the printer in a moment" : "It is on its way to your phone";
+    $("screen-painting").querySelector(".done-sub").textContent = wantPrint ? "Grab your print. A storybook painting of it is on its way to your phone, about 20 seconds." : "Your photo is on its way. The storybook painting follows in about 20 seconds.";
+    const photo=state.photoDataUrl, raw=state.rawDataUrl;
+    state.album.push({ name, at:new Date().toISOString(), dataUrl:photo, kind:"photo" });
 
-    if(CONFIG.AUTO_PRINT) await printPhoto(photo);
+    // The real photo. Print first if asked (no network), then archive, and text if asked.
+    if(wantPrint && CONFIG.AUTO_PRINT) await printPhoto(photo);
+    let texted=false, storyTexted=false, storyOk=false, photoOk=false;
+    // Two attempts, and every failure is reported to the Worker so it shows at /errors.
+    for(let attempt=1; attempt<=2 && !photoOk; attempt++){
+      try{
+        // `raw` (the un-framed capture) rides along so the Worker paints and
+        // texts the storybook itself, after this response, with no further
+        // help from the iPad.
+        const out=await postSubmit({ name, phone: wantText ? phone : "", photo, kind:"photo", raw: (CONFIG.STORYBOOK && wantText && phone) ? raw : undefined });
+        if(out && out.ok && out.archive && out.archive.url){ photoOk=true; texted=!!(out.text && out.text.sent); storyOk=!!(out.storybook && out.storybook.queued); storyTexted=storyOk; if(wantText && phone && !texted) logError("photo-text", name, JSON.stringify(out.text||{})); }
+        else logError("photo-submit", name, "attempt "+attempt+": "+JSON.stringify(out||null).slice(0,200));
+      }catch(e){ logError("photo-submit", name, "attempt "+attempt+": "+String(e)); }
+      if(!photoOk && attempt===1) await new Promise(r=>setTimeout(r,1500));
+    }
 
-    let sendOk=true, texted=false;
-    try{
-      const res=await fetch(CONFIG.WORKER_URL+"/submit",{
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ name, phone, photo })
-      });
-      const out=res.ok ? await res.json() : null;
-      sendOk=!!out;
-      texted=!!(out && out.text && out.text.sent);
-    }catch(e){ sendOk=false; }
+    // The storybook painting is made and texted by the Worker in the background
+    // (see worker.js paintAndText). Nothing here depends on the iPad any more.
+    // A short painting screen keeps the guest informed while it happens.
+    if(storyOk){
+      $("painting-preview").src=photo;
+      show("painting");
+      await new Promise(r=>setTimeout(r,4000));
+    }
 
     const first=(name||"").split(/\s+/)[0]||"friend";
+    const lead = wantPrint ? `Your print is coming out, ${first}.` : `Thanks, ${first}.`;
     let msg;
-    if(phone && texted) msg=`Check your phone, ${first}. Your photo is on its way, and your print is coming out now.`;
-    else if(phone && !texted) msg=`Your print is coming out now, ${first}. The text did not go through, so ask Roman to resend it later.`;
-    else msg=`Enjoy your print, ${first}! Sweet new year.`;
+    if(!wantText) msg=`${lead} Enjoy it.`;
+    else if(!texted) msg=`${lead} The text did not go through, so ask Roman to resend it.`;
+    else if(storyOk && storyTexted) msg=`${lead} Your photo and your storybook painting are on their way to your phone.`;
+    else if(storyOk) msg=`${lead} Your photo is on your phone. The storybook text did not go through, so ask Roman to resend it.`;
+    else msg=`${lead} Your photo is on your phone. The storybook painter was busy, so ask Roman for it later.`;
     $("done-msg").textContent=msg;
     show("done");
     setTimeout(fullReset, CONFIG.DONE_RESET_MS);
@@ -457,16 +519,16 @@ const CONFIG = {
     try{
       const res=await fetch(CONFIG.WORKER_URL+"/photos");
       const out=await res.json();
-      items=out.photos.map(p=>({ name:p.name, at:p.at, src:p.url }));
+      items=out.photos.map(p=>({ name:p.name, at:p.at, src:p.url, kind:p.kind }));
     }catch(e){
-      items=state.album.map(p=>({ name:p.name, at:p.at, src:p.dataUrl }));
+      items=state.album.map(p=>({ name:p.name, at:p.at, src:p.dataUrl, kind:p.kind }));
     }
     $("album-count").textContent=items.length ? `${items.length} photo${items.length===1?"":"s"}` : "No photos yet";
     items.forEach((p,i)=>{
       const el=document.createElement("div"); el.className="album-item";
       const img=document.createElement("img"); img.src=p.src; img.alt=p.name||`Photo ${i+1}`;
       const cap=document.createElement("div"); cap.className="cap";
-      cap.textContent=(p.name||"Guest")+" · "+new Date(p.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+      cap.textContent=(p.name||"Guest")+(p.kind==="storybook"?" (storybook)":"")+" · "+new Date(p.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
       const btn=document.createElement("button"); btn.textContent="Reprint";
       btn.addEventListener("click",()=>printPhoto(p.src));
       el.append(img,cap,btn); grid.appendChild(el);

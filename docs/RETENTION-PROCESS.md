@@ -1,0 +1,160 @@
+# The A+ retention journey — the process, who owns what, what the agents do
+
+Source of truth for retention, the way `PO-PROCESS.md` is for purchase orders.
+Agreed with Roman on 2026-09-10 (question by question). If the code changes,
+change this file in the same PR. Lives in HubSpot only: Monday is retired
+(quarterly goal), Zapier flows are replaced step by step.
+
+Retention starts at the **first lesson**, not at the renewal. Every family
+walks the same skeleton; charter and private pay branch only where the money
+comes from (a school PO versus a package), and spotlights are charter only.
+
+## The journey
+
+| Day | Trigger | Agent | Human | Build step |
+|---|---|---|---|---|
+| 0 | Tutor posts lesson-one notes in Teachworks | **Brief** as a note on the family's contact record (tutor, what was covered, next session). **Quality-check text** from the charter_sales seat's line the next morning, inside the 8am to 8pm PT window. Never at night. | Paola reads the brief. | 2 |
+| 0 + 48h | Lesson-one notes still missing | Quality text goes **anyway**. **Ticket to charter_admin (Kath)**, associated to the **tutor's** contact, so the naughty list builds itself. | Kath chases the tutor. | 2 |
+| 1 | After the first text | **What-to-expect email** (lesson notes are coming, attendance matters). Today a HubSpot workflow; moves into the agent. | | 3 |
+| 14 | Check-in call | **Ticket for Paola with the brief inside**: lesson-notes summary, attendance so far, tutor-issue flags. Her outbound call logged in HubSpot as **No answer**, **Left voicemail** or **Busy** fires the follow-up **text from her line**; **Connected** or **Texted instead** does not. | Paola calls. | 3 |
+| 21 | NPS survey (earliest) | Sent only after **reasoning**: no open ticket, no unresolved conversation, no no-show streak, no tutor-issue flag. Otherwise **held with the reason** and Paola told. Score stamped on the contact. Survey copy to be refreshed. | | 4 |
+| 30 | Referral email | From Paola's name. **Free half hour for both sides** (the live referral page). Only if the day-14 call was Connected or the family replied to a text. | | 4 |
+| 45 | Care call | Same as day 14. Private pay: the brief carries the **package upgrade math** so Paola can pitch it live. | Paola calls. | 3 |
+| 75 | Spotlight, **charter only** | Once Paola submits **her HubSpot form** (existing; activates workflows): teacher message, parent ask for scores and photos, replies tracked, "folder ready" ping. The Drive watcher and the spotlight pipeline take it from there. | Paola submits the form, drops the folder in Drive. | 5 |
+| any | **Low balance**, 4 hours or fewer | See below. | | 1 (built) |
+| any | Deal moved to Stopped, or 21 days of silence after Retention Risk | Case closed as **Lost** with a reason (agent writes `no_response` or `stopped`; Paola picks moved on / cost / schedule / tutor fit / school funding when she knows). **Family enrolled in re-engagement** (the charter SMS round 2 and private-pay win-back campaigns). The journey does not stop. | Paola sets the reason when she knows it. | 5 |
+
+## The queues (2026-09-16): tickets live in the Renewals pipeline
+
+Every low-balance case is a ticket in the **Renewals** pipeline (see
+docs/CASE-ENGINE.md): Waiting on family -> Needs scheduler (a reply) ->
+Needs invoice (PO in) -> Renewed, or Not renewing / No response. Owner =
+the scheduler by family surname split (trial = charter_sales). Retention
+risk is a flag + priority High, not a stage. The Renewal Chase deal view
+below still works (the deal properties are still stamped); the ticket board
+is the working queue.
+
+## Where the lists live (HubSpot saved deal views, Roman 2026-09-10)
+
+Monday is retired; the working lists are two shared deal views owned by Roman,
+Paola added by name. HubSpot has no API for saved views (every
+`/crm/v3/views` variant 404s), so they were built in the UI; change them there.
+
+| View | Id | What it shows | Filter |
+|---|---|---|---|
+| **Renewal Chase** | 72185740 | Every family that still owes a PO after a low-balance alert. A deal leaves on its own when the new PO lands (Renewed) or the deal stops (Not Renewing). | `[Agent] Retention stage` is any of Low Hours, Family Contacted, Teacher Contacted, Retention Risk. Columns: the five retention properties, PO number, student, teacher of record. |
+| **New Starts (Care Calls)** | 72186918 | Families whose tutoring started in the last 60 days, for the day-14 and day-45 calls. Sorted oldest first. All pipelines. | Charter: stage Post-Lesson or Invoice Submitted, date entered Post-Lesson under 60 days ago, deal name contains `1 - 26/27` (the season's first PO, so a family's 2nd to 5th pre-created deals do not repeat it). Gold Tutoring and In-Person: stage Post-Lesson, date entered Post-Lesson under 60 days ago. Columns add the three "date entered Post-Lesson" fields, Last Contacted, Next Activity Date. |
+
+**The first-lesson date (gap closed 2026-09-10, `email/src/first_lesson.py`):**
+"date entered Post-Lesson" is when a human moved the deal, in batches, with
+every pre-created sibling deal at once, so it lags the real first lesson by
+days. The first-lesson sweep (deal-sync cycle, every 6 hours) reads attended
+lessons from both Teachworks accounts and stamps each student's FIRST attended
+lesson ever as `[Agent] First lesson date` on the season's earliest deal and
+on the family contact (earliest across siblings). Once the backfill has run,
+New Starts filters on that one property (first lesson under 60 days ago, any
+pipeline) and the day-14 / day-45 calls count from the lesson, not the stage
+move. Payment-link deals named "Charter Private Pay - ... via Payment Link"
+still show no family name in the title; the deal's contact carries it.
+
+## Low balance (step 1, built 2026-09-08 to 10, `email/src/low_balance.py`)
+
+Trigger: Teachworks' Package Balance Alerts email ("...package balance for
+<student> has reached the level of N hours and is currently at N unused
+hours") at **4 hours or fewer**. Recognised deterministically before the
+classifier. One case per student + package per school year; repeat alerts add
+a note, never a second message.
+
+**Sequence as of 2026-09-22 (Roman's go, replaces the 09-10 drip).**
+Teachworks' own family notice does the 4-hour nudge: at least three of the
+first thirteen renewals came in with no message from us. The case opens on
+the Teachworks alert and **waits**. Every hourly sweep reads the student's
+attended lessons since the alert from both Teachworks accounts and subtracts
+them from the alert's balance (`low_balance_balance` audit record + a ticket
+note when the number changes). The family outreach fires when the **live
+balance is 3 hours or fewer** (`fire_at_hours`), or **5 business days** after
+the alert with nothing burning it down (`fire_fallback_days`: a family with
+no lessons booked never reaches 3). Renewals took 0 to 6 days; a 45-minute
+student burns 3 hours in about a week at three sessions.
+
+| Day | Charter | Private pay (auto-renews at 2 hours) |
+|---|---|---|
+| fire (3 h live, or fallback) | **Email and text together, same sweep.** Email to the parent from "A+ Tutoring" (admin@), reply-to the case owner (the scheduler; charter_sales for a trial): hours are running low, tutor's first name, one true sentence from the last 30 days of lesson notes, "we would love to keep that progress going", please submit a new PO or ask your teacher of record to. Text from the support line 818-869-1627 signed "A+ Tutoring", same progress line, only if the family has not already replied by email or by text on any JustCall line (JustCall unreadable = the text waits for the next sweep, never sent blind). Deal → **Family Contacted**. | **One upgrade email**: current tier and rate, the next tier and rate, "or keep going as you are and it renews on its own". No text, no teacher. Held until payment links exist (`private_pay.armed`). |
+| fire + 1 business day | If **still no PO deal, no reply, and the ticket is open**: the **teacher email** from the charter_sales seat (progress line, PO number, "could you issue a new PO"). The parent submits first, the teacher is the backup (Roman 2026-09-09); Roman declined a parallel teacher email on 2026-09-22. Never for Level Up Terri teachers. Deal → Teacher Contacted. | nothing |
+| any | **Reply watcher, every sweep:** a reply by email (paola@) or by text on any JustCall line is written to the audit log, posted on the ticket with the words, and DM'd to Paola within the hour. Day 1 and the teacher email skip a family that replied. | Paola answers. | 1 (built) |
+| every hour | **Live balance (2026-09-23).** The ticket title always carries the current hours ("..., 1.75 h left") and `[Agent] Hours left` on ticket and deal is sortable. Balance = the latest Teachworks alert (authoritative, resets on a repeat alert) minus attended lessons since, plus any growth in the deal's PO hours (a package Kath adjusted). Manual package edits are otherwise invisible: the Teachworks API has no package balance endpoint. | same |
+| 0 h | **Zero, no new PO:** priority HIGH + the risk flag now, one DM to the case owner, no day-7 wait. Lessons past zero cannot be invoiced. A trial at 0 flags on its first sweep for charter_sales: the conversion moment. | same |
+| 7 | No PO and 1 hour or less: the ticket **is the retention issue**. Priority HIGH + the risk flag, deal → **Retention Risk**, one DM to the case owner. No task, no subject rewrite beyond the hours. | |
+| 28 | Still nothing: closed as **Lost** (`no_response`), re-engagement list. | same |
+| any | New PO deal → ticket closed, deal → **Renewed**. Deal Stopped → **Not Renewing**. | Any new deal → Renewed. |
+
+**Scope (Roman 2026-09-10, later):** charter service codes only, out of
+pocket excluded (`low_balance.charter_only: true`). A private-pay or
+out-of-pocket alert is not this agent's: no case, no email; it takes the
+ordinary inbox triage path. The private-pay column below describes dormant
+code for when that switch is flipped.
+
+**Two more gates from the Aug 1 → Sep 10 pool:** an alert on a PO created
+before `season_start` (2026-08-01) is last season's leftover package and
+goes to charter_admin as an archive question, not a chase; an alert whose
+numbers say nothing was used on the PO and whose student Teachworks shows
+with no attended lesson is parked until the first lesson (a safety net; the
+pool showed the alert already fires with the first lesson). Renewals in the
+pool arrived in 0 to 6 days or not at all, which is why Retention Risk is
+day 7.
+
+**Grouping (Roman 2026-09-10):** siblings alert minutes apart (the three
+Melaras, one hour between them), so the day-0 email is sent by the sweep
+after `email_delay_minutes` (60) as **one email per family naming every
+student**; day 1 is **one text per family** and **one draft per teacher**
+naming every student that teacher has running low. **Backfill:** the
+email-triage workflow input `backfill_days=N` opens a case for every alert
+of the last N days that has none (skipping students whose newer PO deal
+already exists) and sends the day-0 emails at once; the rest follows the
+normal clock. **Private pay on pre-2026 service codes** (the Teachworks
+package name carries the pricing year) gets a ticket but no upgrade email:
+that renewal is a rate conversation for the seat.
+
+Copy rules, all locked by Roman on 2026-09-09: "4 hours or less", never the
+exact balance; **first names for everyone** (student, parent, tutor, teacher);
+**no school name and no teacher name** in family copy; **parent submits the
+PO first**, the teacher of record is the unnamed backup; the progress sentence
+is **derived from lesson notes of the last month or does not exist**, never
+imagined; no em dashes.
+
+## Where it lives (HubSpot)
+
+- **Ticket per case**, owner charter_sales. Where Paola works it.
+- **Deal properties** (`ops/hubspot-schema/properties.yml`, group Retention
+  journey): `retention_stage`, `retention_lost_reason`,
+  `retention_low_balance_alert_date`, `retention_last_notice_sent`,
+  `retention_last_touch`. The later journey steps write the same fields.
+- **Saved deal view "Renewal Chase"**: `retention_stage` not in Renewed / Not
+  Renewing / Lost, sorted by alert date. This is the list.
+- **Audit log** (`email/state/audit_log.jsonl`): every case event. Feeds the
+  scorecard: renewal rate within 14 days, retention rate month over month,
+  cases open past 7 days.
+- **Email performance**: every agent-sent template tracked for opens, clicks
+  and replies (build step 4).
+
+## What it replaces (each switched off only after its replacement ran clean)
+
+Zapier first-lesson text · HubSpot "What to Expect" workflow · Monday
+"Retention" board · Monday "A+ Charter Low Balance Alerts" board · HubSpot
+"Low Balance Alerts - Charter" flow (already off).
+
+## Pricing the agents may quote (2026 sheets)
+
+Charter: $60 per 45-minute session (recommended), $75 per 60-minute session,
+covered in full by charter funds. Private pay online: Improvement 8h $88,
+Prep 20h $83, Success 50h $73, Soar 100h $68, single sessions $95 per hour.
+In person: 8h $115, 20h $108, 50h $103, 100h $93, single $130. Larger
+packages, lower rates.
+
+## Build order
+
+1. Low balance, staged, plus the deal properties and the view. **Built.**
+2. Lesson-one brief, quality text, missing-notes ticket to Kath. Kills the Zapier flow.
+3. Day-14 and day-45 briefs, call-outcome text, What-to-expect email moved in.
+4. NPS with reasoning, day-30 referral, email performance tracking.
+5. Spotlight handoff from Paola's form, Lost stage, re-engagement enrollment.

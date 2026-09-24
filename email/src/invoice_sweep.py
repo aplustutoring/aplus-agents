@@ -139,6 +139,10 @@ def _overdue_items(deals: list[dict], now, active_patterns: list[str], grace_day
             amt = float(p.get("amount") or 0)
         except (TypeError, ValueError):
             amt = 0.0
+        if amt <= 0:
+            # $0 deals carry Teachworks TRACKING invoices (IEM HSA cohort
+            # students at $0/hr, spec §5.5); there is nothing to submit.
+            continue
         items.append({"deal_id": d["id"], "dealname": dealname, "po": p.get("po_number") or "n/a",
                       "invoice": inv, "amount": amt, "due": due.strftime("%b %-d"), "late": late})
     items.sort(key=lambda i: -i["late"])

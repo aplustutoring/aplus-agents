@@ -1,38 +1,151 @@
-# booth — Sage Oak BTSC 2026 photo booth
+# booth — the A+ photo booth (Sage Oak BTSC 2026, Sage Oak Park Day 2026)
 
-Event capture for the A+ photo booth: attendees pick a photo banner, choose
-photo delivery, and opt in/out of A+ resources. Writes the four `events`-group
-contact properties (PR #65, portal 6312752) and emails photos via Resend.
+Event capture for the A+ photo booth: attendees pick a photo banner, take a
+framed photo, choose delivery (print / email / text), and opt in or out of A+
+resources. Writes the `events`-group contact properties (portal 6312752),
+emails photos via Resend, texts them via JustCall MMS, prints on the Selphy.
+
+## One Worker, one row per event
+
+The Worker is named `sage-oak-booth` after the first event it served and keeps
+that name on purpose: its four secrets and the KV photo archive live with the
+name. A new event is a row in `worker.js` `EVENTS` (all the copy: email
+subject, SMS body, timeline note, default role) plus a page under `public/`,
+never a new Worker with secrets to re-enter the morning of the event.
+
+| Event | Tag | Page | Served from |
+| --- | --- | --- | --- |
+| Sage Oak BTSC 2026 | `sage_oak_btsc_2026` | `index.html` | Cloudflare Pages `sage-oak-booth` (historical) |
+| Sage Oak Park Day 2026 | `sage_oak_park_2026` | `public/sage-oak-park/index.html` | the Worker itself via `[assets]`: https://sage-oak-booth.nameless-mountain-bafa.workers.dev/sage-oak-park/ |
+
+`GET /` on the Worker redirects to `/sage-oak-park/`, so the tablet can open the bare
+Worker URL. The page posts to `/submit` same-origin, so CORS never enters into
+it. (Delilah lesson, 2026-09-10: a Pages project and a Worker of the same name
+collide on current wrangler; serve new event pages from the Worker.)
 
 ## Pieces
 
 | File | What | Where it runs |
 | --- | --- | --- |
-| `worker.js` | Cloudflare Worker `sage-oak-booth` — `/submit` endpoint: upserts the HubSpot contact (events-group props) and sends the photo email | Cloudflare Workers |
-| `index.html` | Booth front-end — deployed to Cloudflare Pages as `sage-oak-booth`; posts to the Worker (`CONFIG.WORKER_URL`) | Cloudflare Pages |
-| `wrangler.toml` | Worker config: `RESEND_FROM`, `ALLOWED_ORIGIN` (the Pages URL) | — |
+| `worker.js` | Cloudflare Worker `sage-oak-booth`: `POST /submit` upserts the HubSpot contact (append-only event tag, #AP032), archives the photo in KV, sends email and/or MMS. `GET /photo/<key>` serves the archive. | Cloudflare Workers |
+| `public/sage-oak-park/index.html` | Park day booth front end; everything that names the event is in its `CONFIG` block | served by the Worker |
+| `index.html` | Sage Oak BTSC booth front end (historical) | Cloudflare Pages |
+| `wrangler.toml` | `ALLOWED_ORIGIN` (comma-separated), `RESEND_FROM`, `JUSTCALL_FROM`, owner seats, `[assets]` | — |
+| `test-worker.mjs` | `node booth/test-worker.mjs` | local / CI |
 
-## Contact properties written (labels for dropdowns, per fleet rule)
+## Contact properties written
 
-- `aplus_event_tag` — value `sage_oak_btsc_2026` (multi-checkbox; future events append options)
-- `aplus_booth_goal` — banner text (free text)
-- `aplus_booth_delivery` — Email / Print / Both
-- `aplus_marketing_consent` — Yes / No
+- `aplus_event_tag`: the event's tag, APPENDED to whatever is there (#AP032)
+- `aplus_event_role`: `parent` / `teacher` / `student` / `administrator` / `support_staff` (internal VALUES, never labels)
+- `aplus_booth_goal`: banner text
+- `aplus_booth_delivery`: `email` / `print` / `text` / `all`
+- `aplus_marketing_consent`: `"true"` / `"false"`
+- CREATE-ONLY: `a_persona` by role (parent -> Family, teacher -> TOR, student -> Student), `hs_lead_status` for teachers, and `hubspot_owner_id` by seat (teachers and staff -> sales, families -> charter sales). An existing contact is never re-personaed or reassigned.
+
+If the schema has not been synced yet (a new tag option), HubSpot rejects the
+tag and the Worker retries the write without it, so the contact is still
+captured; the response carries `dropped: ["aplus_event_tag"]` so it shows in
+`wrangler tail`.
+
+## Sage Oak Park Day 2026: what is different from the BTSC booth
+
+More parents than teachers, so: the role pills are Parent, Teacher, Student
+with Parent first; `@gmail.com` / `@outlook.com` / `@yahoo.com` are one-tap
+chips on the email field (a chip replaces whatever follows the `@`); the email
+field carries a no-spam line; the phone field is optional and says it is only
+for texting the photo. Print is the first delivery card. There is no consent
+checkbox (Roman 2026-09-17: "they consent by coming to us"); every submission
+carries `aplus_marketing_consent: true`, and the no-spam line under the email
+field is the acknowledgment. No em dashes anywhere a family reads.
+Under the family chips, a full-width "Sage Oak staff: + @sageoak.education"
+bar fills the school domain for teachers (`sageoak.education` is the verified
+Sage Oak domain in `ops/hubspot-schema/school-aliases.yml`; a test pins it).
+
+**Group photos (2026-09-17).** One capture can carry several people. On the
+"Where should we send it?" step, fill the fields and tap "+ Add another person
+from this photo"; the person becomes a chip above the form and the fields
+clear. "Next: delivery" takes whatever is still typed as one more person, or,
+with an empty form under the chips, means "that's everyone". On delivery the
+page posts `/submit` once per person with the same photo, so each gets their
+own HubSpot contact, tag, role, persona, seat and email. Texts go only to the
+people who gave a phone, and "Text it" needs at least one phone in the group.
+The same email cannot be added twice; idle reset clears the group. The Worker
+is unchanged. Trade-offs: the photo is archived once per person, and a group
+still gets one print per capture.
+
+The event name, card header, banner choices and the partner logo (Sage Oak,
+drawn on the card and the attract screen) are all in
+`public/sage-oak-park/index.html` `CONFIG`. To rename the event or swap the
+logo, edit that block only.
+
+## Photos mirror to the A+ Events shared drive (2026-09-18)
+
+Every archived photo is copied to one Google Drive folder the moment it is
+archived, in the background, named like `2026-09-18 14.05.12 Ari Cohen.jpg`
+(Los Angeles time, guest name). Same mechanism as `booth/delilah`: the Worker
+signs a service-account JWT with the `GOOGLE_SA_JSON` secret (spotlight-watcher
+SA), caches the token in KV for 50 minutes, and multipart-uploads into
+`DRIVE_FOLDER_ID` with `supportsAllDrives=true`. Marker keys `drive/<key>` in KV
+hold the Drive file id. The upload runs in `ctx.waitUntil`, so the iPad never
+waits on Drive and a Drive outage never costs a family their photo.
+
+Park Day 2026 folder: **"Sage Oak Park Day 2026-09-18"** inside the
+**A+ Events** shared drive (`0ABqrqCiZrGoVUk9PVA`):
+
+https://drive.google.com/drive/folders/1baGJt4VUj5FZB4JCOzLLgPGd6wvsADnp
+
+**It must be a folder inside a Shared Drive.** Service accounts have no My
+Drive quota (Delilah lesson, 2026-09-11). For the next event, create a new
+folder in A+ Events and point `DRIVE_FOLDER_ID` at it.
+
+Catch-up (photos archived before the mirror shipped, or during a Drive outage):
+
+```bash
+curl -s -X POST https://sage-oak-booth.nameless-mountain-bafa.workers.dev/drive-backfill
+```
+
+Defaults to today's photos. KV keys carry the UTC date, so an evening photo in
+LA sits under tomorrow's key; the default covers both days. Pass
+`?prefix=2026-09-01` for another day. Returns `{ uploaded, skipped, failed }`
+and is safe to run any number of times. The MMS fallback copies (bare UUID
+keys, 7-day TTL) are never mirrored.
 
 ## Deploy
 
+The Worker is already deployed with its secrets and KV. Shipping the park day is one
+command from a machine where wrangler is logged in (Roman's Mac):
+
 ```bash
 cd booth
-npx wrangler deploy                                  # Worker
-npx wrangler secret put HUBSPOT_TOKEN                # HubSpot private app token
-npx wrangler secret put RESEND_API_KEY               # Resend
-npx wrangler pages deploy . --project-name sage-oak-booth   # Pages (index.html)
+node test-worker.mjs          # the gate
+npx wrangler deploy           # Worker + the public/ pages together
+# Drive mirror, once: paste the spotlight-watcher service-account JSON as ONE line
+python3 -c "import json;print(json.dumps(json.load(open('/path/to/a-plus-spotlight-watcher-1323d431f814.json')),separators=(',',':')))" | npx wrangler secret put GOOGLE_SA_JSON
 ```
 
-`ALLOWED_ORIGIN` in `wrangler.toml` must match the deployed Pages URL;
-`CONFIG.WORKER_URL` in `index.html` must point at the deployed Worker's
-`/submit` URL. Chicken-and-egg on first deploy: deploy the Worker, create the
-Pages project, then set both values and redeploy.
+Then open https://sage-oak-booth.nameless-mountain-bafa.workers.dev/ on the
+iPad; it lands on `/sage-oak-park/`. Before the schema sync has run, submissions still
+capture (see above); after it, the event tag lands too.
+
+**Schema gate:** `ops/hubspot-schema/properties.yml` gains the
+`sage_oak_park_2026` option on `aplus_event_tag`. Merge, then run
+`.github/workflows/hubspot-schema.yml` (dry run first: expect exactly one
+option add).
+
+**Day-of on the iPad:** Settings > Safari > Camera > Allow for the Worker
+host. Add `/sage-oak-park/` to the Home Screen so it runs full screen. Printing goes
+through the iPad print dialog to the Selphy over AirPrint, 4x6 (the card is
+2:3, 1200x1800). One test print before the first family.
+
+### First-time deploy of a NEW Worker (not needed for the park day)
+
+```bash
+npx wrangler deploy
+npx wrangler secret put HUBSPOT_TOKEN
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put JUSTCALL_API_KEY
+npx wrangler secret put JUSTCALL_API_SECRET
+```
 
 ## Every event booth gets a SUNSET (mandatory)
 

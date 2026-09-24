@@ -1,0 +1,15 @@
+<!-- Low-balance email to a PRIVATE-PAY family (email/src/low_balance.py).
+     Private pay auto-renews at 2 hours, so nothing is running out: this is a
+     soft offer of the next package up, from the charter_sales seat, with the
+     tutor's first name and one true sentence from the last month of lesson
+     notes when there is one. First names only; no em dashes. Tokens:
+     {first_name} {student} {personal_line} {progress} {upgrade_line}
+     {current_tier} {next_tier} {next_hours} {next_rate} {sender_name}. -->
+<p style="text-align: left;">Hi {first_name},</p>
+<p>&nbsp;</p>
+<p>{student}'s current tutoring package is almost used up.{personal_line} We would love to keep {progress} going.</p>
+<p>&nbsp;</p>
+<p>{upgrade_line} Reply here and we will set it up, or keep going as you are and it renews on its own.</p>
+<p>&nbsp;</p>
+<p>Warm regards,</p>
+<p>{sender_name}<br>A+ Tutoring<br><a href="tel:+18188691627" rel="noopener">(818) 869-1627</a> (call or text)</p>

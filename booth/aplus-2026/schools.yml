@@ -1,0 +1,1033 @@
+conference:
+  name: APLUS+ Network 23rd Annual Conference 2026
+  dates: 2026-10-21 to 2026-10-23
+  venue: Sheraton Park Hotel at Anaheim Resort, Anaheim CA
+  organizer: Jeff Rice, Founder/Director, APLUS+ (jeff@theaplus.org)
+  aplus_booth: PC6 (Exhibitor + Preferred Partner)
+  attendees:
+  - Danielle Brodetsky
+  - Roman Slavinsky
+  - Emily Shulman
+generated: '2026-09-11'
+member_schools:
+- name: Alder Grove Charter School
+  region: Upper Northern California
+  network: null
+  website: aldergrovecharter.org
+  email_domains:
+  - aldergrovecharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: CORE Butte Charter School
+  region: Upper Northern California
+  network: null
+  website: corebutte.org
+  email_domains:
+  - corebutte.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Evergreen Institute of Excellence
+  region: Upper Northern California
+  network: null
+  website: eie.evergreenusd.org
+  email_domains:
+  - eie.evergreenusd.org
+  - evergreenusd.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Golden Eagle Charter School
+  region: Upper Northern California
+  network: null
+  website: gecs.org
+  email_domains:
+  - gecs.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Northern Summit Academy
+  region: Upper Northern California
+  network: null
+  website: ns-academy.org
+  email_domains:
+  - ns-academy.org
+  - nsa-academy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Northern United - Siskiyou Charter School
+  region: Upper Northern California
+  network: Northern United
+  website: nucharters.org
+  email_domains:
+  - nucharters.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Northern United - Humboldt Charter School
+  region: Upper Northern California
+  network: Northern United
+  website: nucharters.org
+  email_domains:
+  - nucharters.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Phoenix Charter Academy
+  region: Upper Northern California
+  network: null
+  website: ourpca.org
+  email_domains:
+  - ourpca.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Shasta Charter Academy
+  region: Upper Northern California
+  network: null
+  website: sca-edu.org
+  email_domains:
+  - sca-edu.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: CalPac Sonoma Charter School
+  region: Lower Northern California
+  network: CalPac
+  website: cal-pacs.org
+  email_domains:
+  - cal-pacs.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Choices Charter School
+  region: Lower Northern California
+  network: null
+  website: choicescharter.org
+  email_domains:
+  - choicescharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Circle of Independent Learning (COIL)
+  region: Lower Northern California
+  network: null
+  website: coilk12.net
+  email_domains:
+  - coilk12.net
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Compass Charter Schools of Yolo
+  region: Lower Northern California
+  network: Compass
+  website: compasscharters.org
+  email_domains:
+  - compasscharters.org
+  - compasscharter.org
+  in_hubspot_tor_contacts: 108
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Connecting Waters East Bay Charter School
+  region: Lower Northern California
+  network: Connecting Waters
+  website: eastbay.connectingwaters.org
+  email_domains:
+  - eastbay.connectingwaters.org
+  - connectingwaters.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: CORE Charter School
+  region: Lower Northern California
+  network: null
+  website: corecharter.org
+  email_domains:
+  - corecharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Forest Charter School
+  region: Lower Northern California
+  network: null
+  website: forestcharter.com
+  email_domains:
+  - forestcharter.com
+  in_hubspot_tor_contacts: 4
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Heritage Peak Charter School
+  region: Lower Northern California
+  network: Pacific Charter Institute
+  website: pacificcharters.org
+  email_domains:
+  - pacificcharters.org
+  in_hubspot_tor_contacts: 12
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Marconi Learning Academy, Powered by Learn4Life
+  region: Lower Northern California
+  network: Learn4Life
+  website: marconilearning.org
+  email_domains:
+  - marconilearning.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Ocean Grove Charter School
+  region: Lower Northern California
+  network: IEM
+  website: ogcs.org
+  email_domains:
+  - ogcs.org
+  - ieminc.org
+  in_hubspot_tor_contacts: 620
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Pathways Charter School
+  region: Lower Northern California
+  network: null
+  website: pathwayscharter.org
+  email_domains:
+  - pathwayscharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: South Sutter Charter School
+  region: Lower Northern California
+  network: IEM
+  website: southsuttercs.org
+  email_domains:
+  - southsuttercs.org
+  - ieminc.org
+  in_hubspot_tor_contacts: 594
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Sutter Peak Charter Academy
+  region: Lower Northern California
+  network: Pacific Charter Institute
+  website: sutterpeak.org
+  email_domains:
+  - sutterpeak.org
+  - pacificcharters.org
+  in_hubspot_tor_contacts: 12
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: The Cottonwood School
+  region: Lower Northern California
+  network: null
+  website: cottonwoodk12.org
+  email_domains:
+  - cottonwoodk12.org
+  in_hubspot_tor_contacts: 7
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Twin Ridges Home Study Charter School
+  region: Lower Northern California
+  network: null
+  website: twinridgeshomestudy.org
+  email_domains:
+  - twinridgeshomestudy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Ambassador Phillip V. Sanchez II Public Charter School, Powered by Learn4Life
+  region: Central California
+  network: Learn4Life
+  website: ambsanchezcharter2.org
+  email_domains:
+  - ambsanchezcharter2.org
+  - cvcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Connecting Waters Central Valley
+  region: Central California
+  network: Connecting Waters
+  website: centralvalley.connectingwaters.org
+  email_domains:
+  - centralvalley.connectingwaters.org
+  - connectingwaters.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Connecting Waters Charter School
+  region: Central California
+  network: Connecting Waters
+  website: connectingwaters.org
+  email_domains:
+  - connectingwaters.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Crescent Valley Public Charter School II, Powered by Learn4Life
+  region: Central California
+  network: Learn4Life
+  website: crescentvalley2.org
+  email_domains:
+  - crescentvalley2.org
+  - cvcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Crescent View South Public Charter School II, Powered by Learn4Life
+  region: Central California
+  network: Learn4Life
+  website: cvsouth2.org
+  email_domains:
+  - cvsouth2.org
+  - cvcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Crescent View West Charter High School, Powered by Learn4Life
+  region: Central California
+  network: Learn4Life
+  website: cvwest.org
+  email_domains:
+  - cvwest.org
+  - cvcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Endeavor Charter School
+  region: Central California
+  network: null
+  website: endeavorcharter.org
+  email_domains:
+  - endeavorcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Glacier High School Charter
+  region: Central California
+  network: null
+  website: glacierhighcharter.org
+  email_domains:
+  - glacierhighcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Kings Valley Academy II, Powered by Learn4Life
+  region: Central California
+  network: Learn4Life
+  website: kingsvalleycharter2.org
+  email_domains:
+  - kingsvalleycharter2.org
+  - cvcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Monarch River Academy (MRA)
+  region: Central California
+  network: null
+  website: monarchriveracademy.org
+  email_domains:
+  - monarchriveracademy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Mountain Home School Charter
+  region: Central California
+  network: null
+  website: mountainhomecharter.org
+  email_domains:
+  - mountainhomecharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Rio Valley Charter School
+  region: Central California
+  network: Pacific Charter Institute
+  website: riovalley.org
+  email_domains:
+  - riovalley.org
+  - pacificcharters.org
+  in_hubspot_tor_contacts: 25
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Sierra Charter School
+  region: Central California
+  network: null
+  website: sierracharter.org
+  email_domains:
+  - sierracharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Valley View Charter Prep
+  region: Central California
+  network: Pacific Charter Institute
+  website: pacificcharters.org
+  email_domains:
+  - pacificcharters.org
+  in_hubspot_tor_contacts: 12
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: W.E.B. DuBois Charter School
+  region: Central California
+  network: null
+  website: agapeschools.org
+  email_domains:
+  - agapeschools.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Yosemite Valley Charter School (YVCS)
+  region: Central California
+  network: null
+  website: yosemitevalleycharter.org
+  email_domains:
+  - yosemitevalleycharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Family Partnership Charter School
+  region: Central Coast California
+  network: null
+  website: fpcharter.org
+  email_domains:
+  - fpcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Golden Valley Charter School
+  region: Central Coast California
+  network: null
+  website: goldenvcs.org
+  email_domains:
+  - goldenvcs.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Olive Grove Charter-Orcutt/Santa Maria
+  region: Central Coast California
+  network: null
+  website: olivegrovecharter.org
+  email_domains:
+  - olivegrovecharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: River Oaks Academy Charter School
+  region: Central Coast California
+  network: null
+  website: riveroakscharter.com
+  email_domains:
+  - riveroakscharter.com
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Trivium Charter School
+  region: Central Coast California
+  network: Trivium
+  website: triviumcharter.org
+  email_domains:
+  - triviumcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: 'Trivium Charter School: Adventure'
+  region: Central Coast California
+  network: Trivium
+  website: triviumcharter.org
+  email_domains:
+  - triviumcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: 'Trivium Charter School: Voyage'
+  region: Central Coast California
+  network: Trivium
+  website: triviumcharter.org
+  email_domains:
+  - triviumcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Vista Real Charter High School, Powered by Learn4Life
+  region: Central Coast California
+  network: Learn4Life
+  website: vrchs.org
+  email_domains:
+  - vrchs.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: CalPac San Diego Charter School
+  region: Lower Southern California
+  network: CalPac
+  website: cal-pacs.org
+  email_domains:
+  - cal-pacs.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Citrus Springs Charter School
+  region: Lower Southern California
+  network: Springs Charter Schools
+  website: springscs.org
+  email_domains:
+  - springscs.org
+  in_hubspot_tor_contacts: 14
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Compass Charter Schools of San Diego
+  region: Lower Southern California
+  network: Compass
+  website: compasscharters.org
+  email_domains:
+  - compasscharters.org
+  - compasscharter.org
+  in_hubspot_tor_contacts: 108
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Diego Hills Central Public Charter High School, Powered by Learn4Life
+  region: Lower Southern California
+  network: Learn4Life
+  website: dhcentralcharter.org
+  email_domains:
+  - dhcentralcharter.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: low
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Diego Valley East Public Charter School, Powered by Learn4Life
+  region: Lower Southern California
+  network: Learn4Life
+  website: diegovalleyeast.org
+  email_domains:
+  - diegovalleyeast.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Empire Springs Charter School
+  region: Lower Southern California
+  network: Springs Charter Schools
+  website: springscs.org
+  email_domains:
+  - springscs.org
+  in_hubspot_tor_contacts: 14
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Epic California Academy
+  region: Lower Southern California
+  network: null
+  website: epiccalifornia.org
+  email_domains:
+  - epiccalifornia.org
+  - epiccharterschools.org
+  in_hubspot_tor_contacts: 2
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Excel Academy
+  region: Lower Southern California
+  network: null
+  website: excelacademy.education
+  email_domains:
+  - excelacademy.education
+  in_hubspot_tor_contacts: 26
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Harbor Springs Charter School
+  region: Lower Southern California
+  network: Springs Charter Schools
+  website: springscs.org
+  email_domains:
+  - springscs.org
+  in_hubspot_tor_contacts: 14
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Motivated Youth (MY) Academy
+  region: Lower Southern California
+  network: null
+  website: myacademy.org
+  email_domains:
+  - myacademy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Options for Youth - San Juan
+  region: Lower Southern California
+  network: Options for Youth
+  website: ofy-sj.org
+  email_domains:
+  - ofy-sj.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Opportunities for Learning - Capistrano
+  region: Lower Southern California
+  network: Opportunities for Learning
+  website: ofl-sjc.org
+  email_domains:
+  - ofl-sjc.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Orange County Innovation High School, Powered by Learn4Life
+  region: Lower Southern California
+  network: Learn4Life
+  website: innovationhigh.org
+  email_domains:
+  - innovationhigh.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Pacific Springs Charter School
+  region: Lower Southern California
+  network: Springs Charter Schools
+  website: springscs.org
+  email_domains:
+  - springscs.org
+  in_hubspot_tor_contacts: 14
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Pacific View Charter School
+  region: Lower Southern California
+  network: null
+  website: pacificview.org
+  email_domains:
+  - pacificview.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: River Springs Charter School
+  region: Lower Southern California
+  network: Springs Charter Schools
+  website: springscs.org
+  email_domains:
+  - springscs.org
+  in_hubspot_tor_contacts: 14
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: San Diego Workforce Innovation High School, Powered by Learn4Life
+  region: Lower Southern California
+  network: Learn4Life
+  website: innovationsandiego.org
+  email_domains:
+  - innovationsandiego.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: The Learning Choice Academy
+  region: Lower Southern California
+  network: Learning Choice
+  website: learningchoice.org
+  email_domains:
+  - learningchoice.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: The Learning Choice Academy Chula Vista
+  region: Lower Southern California
+  network: Learning Choice
+  website: learningchoice.org
+  email_domains:
+  - learningchoice.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: The Learning Choice Academy East County
+  region: Lower Southern California
+  network: Learning Choice
+  website: learningchoice.org
+  email_domains:
+  - learningchoice.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Vista Springs Charter School
+  region: Lower Southern California
+  network: Springs Charter Schools
+  website: springscs.org
+  email_domains:
+  - springscs.org
+  in_hubspot_tor_contacts: 14
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Alta Vista Innovation High School, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: innovationaltavista.org
+  email_domains:
+  - innovationaltavista.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Antelope Valley Learning Academy, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: avlearning.org
+  email_domains:
+  - avlearning.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Assurance Learning Academy, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: assurancelearning.org
+  email_domains:
+  - assurancelearning.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: CalPac Los Angeles Charter School
+  region: Upper Southern California
+  network: CalPac
+  website: cal-pacs.org
+  email_domains:
+  - cal-pacs.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Compass Charter Schools of Los Angeles
+  region: Upper Southern California
+  network: Compass
+  website: compasscharters.org
+  email_domains:
+  - compasscharters.org
+  - compasscharter.org
+  in_hubspot_tor_contacts: 108
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Desert Sands Charter High School, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: dschs.org
+  email_domains:
+  - dschs.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Empower Generations Charter School
+  region: Upper Southern California
+  network: null
+  website: empowergenerations.org
+  email_domains:
+  - empowergenerations.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Excel Academy East
+  region: Upper Southern California
+  network: Excel Academy
+  website: excelacademy.education
+  email_domains:
+  - excelacademy.education
+  in_hubspot_tor_contacts: 26
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Gorman Learning Center San Bernardino/Santa Clarita
+  region: Upper Southern California
+  network: Gorman
+  website: gormanlcn.org
+  email_domains:
+  - gormanlcn.org
+  - gormanlc.org
+  in_hubspot_tor_contacts: 15
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Gorman Learning Charter School
+  region: Upper Southern California
+  network: Gorman
+  website: gormanlcn.org
+  email_domains:
+  - gormanlcn.org
+  - gormanlc.org
+  in_hubspot_tor_contacts: 15
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Granite Mountain Charter School
+  region: Upper Southern California
+  network: null
+  website: granitemountainschool.com
+  email_domains:
+  - granitemountainschool.com
+  in_hubspot_tor_contacts: 10
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: iLEAD Hybrid Charter School
+  region: Upper Southern California
+  network: iLEAD
+  website: ileadhybrid.org
+  email_domains:
+  - ileadhybrid.org
+  - ileadexploration.org
+  - ileadexploration.com
+  - ileadlancaster.org
+  - ileadcalifornia.org
+  - ileadav.org
+  - ileadaguadulce.org
+  in_hubspot_tor_contacts: 248
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: iLEAD Online Charter School
+  region: Upper Southern California
+  network: iLEAD
+  website: ileadonline.org
+  email_domains:
+  - ileadonline.org
+  - ileadexploration.org
+  - ileadexploration.com
+  - ileadlancaster.org
+  - ileadcalifornia.org
+  - ileadav.org
+  - ileadaguadulce.org
+  in_hubspot_tor_contacts: 248
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Mission Academy High School, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: missionacademyhs.org
+  email_domains:
+  - missionacademyhs.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Mission View Public Charter, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: missionview.org
+  email_domains:
+  - missionview.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Options for Youth - Acton
+  region: Upper Southern California
+  network: Options for Youth
+  website: ofy.org
+  email_domains:
+  - ofy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Options for Youth - Duarte
+  region: Upper Southern California
+  network: Options for Youth
+  website: ofy-d.org
+  email_domains:
+  - ofy-d.org
+  - ofy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Options for Youth - San Gabriel
+  region: Upper Southern California
+  network: Options for Youth
+  website: lions.ofy.org
+  email_domains:
+  - lions.ofy.org
+  - ofy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Options for Youth - San Bernardino
+  region: Upper Southern California
+  network: Options for Youth
+  website: saints.ofy.org
+  email_domains:
+  - saints.ofy.org
+  - ofy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Options for Youth - Victor Valley
+  region: Upper Southern California
+  network: Options for Youth
+  website: mustangs.ofy.org
+  email_domains:
+  - mustangs.ofy.org
+  - ofy.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Opportunities for Learning - Baldwin Park
+  region: Upper Southern California
+  network: Opportunities for Learning
+  website: ofl-bp.org
+  email_domains:
+  - ofl-bp.org
+  - oflschools.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Opportunities for Learning - Duarte
+  region: Upper Southern California
+  network: Opportunities for Learning
+  website: ofl-d.org
+  email_domains:
+  - ofl-d.org
+  - oflschools.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Opportunities for Learning - William S. Hart
+  region: Upper Southern California
+  network: Opportunities for Learning
+  website: ofl-wsh.org
+  email_domains:
+  - ofl-wsh.org
+  - oflschools.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: medium
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Sage Oak Charter School
+  region: Upper Southern California
+  network: null
+  website: sageoak.education
+  email_domains:
+  - sageoak.education
+  in_hubspot_tor_contacts: 74
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Sky Mountain Charter School
+  region: Upper Southern California
+  network: IEM
+  website: skymountaincs.org
+  email_domains:
+  - skymountaincs.org
+  - ieminc.org
+  in_hubspot_tor_contacts: 594
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+- name: Vista Norte Public Charter School, Powered by Learn4Life
+  region: Upper Southern California
+  network: Learn4Life
+  website: vistanortecharter.org
+  email_domains:
+  - vistanortecharter.org
+  - learn4life.org
+  in_hubspot_tor_contacts: 0
+  domain_confidence: high
+  source: APLUS+ member list 2026-09 + web search + HubSpot TOR emails
+other_aplus_tutoring_partner_schools:
+- name: Elite Academic Academy
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - eliteacademic.com
+  in_hubspot_tor_contacts: 38
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Visions In Education
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - viedu.org
+  in_hubspot_tor_contacts: 32
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Blue Ridge Academy
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - theblueridgeacademy.com
+  in_hubspot_tor_contacts: 31
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Heartland Charter School
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - gmail.com
+  - heartlandcharterschool.com
+  in_hubspot_tor_contacts: 22
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Julian Charter School
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - jcs-inc.org
+  in_hubspot_tor_contacts: 15
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Pacific Coast Academy
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - pacificcoastacademy.org
+  in_hubspot_tor_contacts: 15
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Suncoast Preparatory Academy
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - suncoastprep.org
+  in_hubspot_tor_contacts: 13
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Heartwood Charter School
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - heartwoodcharterschool.org
+  in_hubspot_tor_contacts: 10
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Horizon Charter Schools
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - hcs.12.ca.us
+  - hcs.k12.ca.us
+  in_hubspot_tor_contacts: 9
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Taylion Homeschool
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - taylion.com
+  in_hubspot_tor_contacts: 9
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: BEST Academy
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - bestacademycs.com
+  in_hubspot_tor_contacts: 5
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Brighton Hall School
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - brightonhallschool.org
+  in_hubspot_tor_contacts: 1
+  domain_confidence: high
+  source: HubSpot TOR emails
+- name: Arete Charter Academy
+  region: (not an APLUS+ member)
+  network: null
+  website: null
+  email_domains:
+  - prsd.us
+  in_hubspot_tor_contacts: 1
+  domain_confidence: high
+  source: HubSpot TOR emails

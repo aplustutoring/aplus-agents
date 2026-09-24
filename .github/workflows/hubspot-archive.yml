@@ -1,0 +1,51 @@
+name: HubSpot — archive objects by id (manual)
+
+# Manual cleanup tool: soft-deletes the listed CRM objects, printing each one
+# before it goes so the run log is the audit trail (recoverable from HubSpot's
+# recycle bin for 90 days). Not scheduled, not watched, never dispatched by
+# an agent without a human go. See ops/hubspot-schema/archive_objects.py.
+
+on:
+  workflow_dispatch:
+    inputs:
+      object_type:
+        description: "tickets | tasks | notes | deals | contacts"
+        required: true
+        type: choice
+        options: [tickets, tasks, notes, deals, contacts]
+      ids:
+        description: "Comma-separated numeric object ids"
+        required: true
+        type: string
+      dry_run:
+        description: "Only list what would be archived"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -q requests
+      - name: Archive
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          OBJECT_TYPE: ${{ inputs.object_type }}
+          IDS: ${{ inputs.ids }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            python3 ops/hubspot-schema/archive_objects.py --object-type "$OBJECT_TYPE" --ids "$IDS" --dry-run
+          else
+            python3 ops/hubspot-schema/archive_objects.py --object-type "$OBJECT_TYPE" --ids "$IDS"
+          fi

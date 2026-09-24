@@ -34,16 +34,32 @@ level-up flag, and a summary.
 
 | Decision | Rule |
 |---|---|
-| Is it a PO? | A new PO or funding authorization = yes. **Order agreements stamped "THIS IS NOT A PO" (OPS/iLEAD) = yes**, flagged `pending_approval` — confirm approved in the school's portal before service. **Portal approval takes ≥14 days** (Roman 2026-08-26), so the pending sweep nags only after `pending_portal_approval_days` (14 calendar days), not hours. Invoices, payment reminders, vendor admin = no → review ticket only, no deal. |
+| Is it a PO? | A new PO or funding authorization = yes. **Order agreements stamped "THIS IS NOT A PO" (OPS/iLEAD) = yes**, flagged `pending_approval` (confirm approved in the school's portal before service). The flag reaches the ticket, the deal note and the invoice task; **nothing nags** (Roman 2026-09-12 removed the pending-approval follow-up sweep: portal verification moves to ops with Kath). Invoices, payment reminders, vendor admin = no → review ticket only, no deal. |
 | Non-PO disposition | Every non-PO gets a `category_hint` that sets the ticket: **`vendor_compliance`** (unsigned agreements, invoicing-rule changes — these block or reshape POs) → **HIGH, owned by `po_inbox.compliance_owner` (sales seat)**; **`scam`** (advance-fee shape) → LOW, sender **never** captured as a parent contact; **`marketing_junk`** → LOW; `family_inquiry` / `other` → MEDIUM to Kath as before. (Roman 2026-08-26, after the Epic California C&CP signature request sat as a generic MEDIUM ticket.) |
 | PO number | Stored **bare** — any "PO"/"P.O.#" prefix is stripped. Letters that are part of the number (PF593736) are kept. |
 | Multiple POs in one email | One deal **per PO number** (schools issue one per service month). |
 | Hours | As stated in the PO — **always stored as HOURS**. Two offerings (Roman 2026-08-26): **$75/hour** (the 99% case) and **$60 per 45-minute session** (a 4-session PO stamps **3** hours). Rate + unit stated → computed (per-session rates convert ×0.75). **No rate stated → computed only when exactly ONE offering divides the amount cleanly** ($150 → 2 hrs; $60 → 1 session = 0.75 hrs). $300 fits both (4 hrs OR 5 sessions = 3.75) → hours stay **blank + 🚩 flagged**, never guessed. Offerings live in `po_inbox.service_offerings`. |
 | Cancellation | A school PO-cancellation notice (0 billable, or unstated) → the deal is moved to its pipeline's **Stopped** stage, **amount and hours zeroed**, a note pinned; DMs to Kath (+Roman via `missing_info_dms`) and the deal's owner; **HIGH task to Kath: void the TW invoice** (API can't). **Partial** cancellation (billable > 0 stated) → **nothing auto-changes**; Kath adjusts by hand off the alert. A cancelled PO number re-arriving is announced as a **re-issue**, not a duplicate. |
 
-**Duplicate check** (before anything else): the `po_number` property is
-searched; a match = no new deal + urgent DM to Kath. On a pending order
-agreement, this alert doubles as "the school approved and issued the real PO."
+**Duplicate check** (before anything else, and it FAILS CLOSED. Roman
+2026-09-12: "I just want the no duplicate po option being firm as possible").
+Three independent checks, any one of which stops the deal:
+
+1. **HubSpot**: the `po_number` property, tried as the bare number, the raw
+   string, `PO<number>`, and both cases (old deals still carry a "PO" prefix);
+   matches are confirmed on normalized equality. Deal-NAME CONTAINS is the
+   backstop for deals created before the property existed.
+2. **The audit ledger** (`po_deal_created`, and legacy `po_processed` rows in
+   category `new_po`). HubSpot's search index is eventually consistent, so a
+   deal created seconds ago is invisible to check 1.
+3. **The numbers created earlier in this run**, so a multi-PO email cannot create
+   two deals for one number.
+
+A hit = **no new deal** + urgent DM to Kath. So is a PO with **no readable
+number** (`require_po_number`: dedupe is impossible without one) and a lookup
+that **could not be completed** (`dedupe_fail_closed`); both are audited
+(`po_refused_no_number`, `po_refused_dedupe_unavailable`) and handed to a human.
+Both flags default to the safe value when absent from config.
 
 ## Stage 2 — Parent resolution (before naming — the deal name leads with the parent)
 
@@ -79,7 +95,19 @@ Tried in order; the first hit wins:
    the send (unsent after 4 business hours → 🚩 nag), the reply auto-creates
    the contact, renames the deal, fires the Teachworks sync, and arms the
    family's SMS. Open chases also **self-resolve** if the family contact
-   appears on its own. No reply 2 business days after the SEND → escalation DM.
+   appears on its own, and a deal a human un-NEEDS-PARENTs by hand gets its
+   Teachworks sync run by the sweep (the creation-time sync is **deferred**
+   while the parent is unknown; nothing is ever synced or texted to the
+   school's staffer, 2026-09-11). No reply 2 business days after the SEND →
+   escalation DM.
+   **Can't get the info** (the school replies without it, e.g. Heartland's
+   "privacy laws, we cannot share it") → the **charter sales seat is asked to
+   assist** right then (audit `parent_chase_assist_requested`; seat in
+   `parent_chase.assist_seat`, Roman 2026-09-11: a teacher about a specific
+   student is that seat). That ask and the 24h "still missing" ping are the
+   SAME one DM per deal, whichever fires first. Every open chase is also listed
+   in the 6 PM **PO day report** until it resolves, so nothing falls through
+   without anyone getting another DM.
 
 Why it matters: the Teachworks sync keys the family on the deal's parent
 contact email — no parent contact means no TW family, no scheduling, no
@@ -105,7 +133,7 @@ invoice hour-tracking.
 | `should_this_deal_be_posted_to_a_slack_channel_` | true | **Always** — the HubSpot workflow behind the checkbox posts the deal to the per-pipeline Slack channel. |
 | `is_the_family_currently_being_tutored_by_us_` | Yes / No / unset | **Yes** = the student has a TW lesson booked **in the PO's service month** (month unparseable → any upcoming lesson). **No** = that month is unbooked — including student not in TW at all. **Unset** = couldn't verify (no parent email / TW error) → 🚩 gap DM, never guessed. Routes the SMS flow: **both values text**; "No" adds an internal staff alert + delay first. |
 | `schedule_preferences` | Wednesdays 3:30 PM with Sarah Lee | The student's live TW schedule — upcoming slots first, else the recent 30-day pattern. Feeds the SMS's `{{schedule_preference}}` token. Underivable → unset + 🚩 gap DM (the text would end in a blank). |
-| `student_first_name` | Isaac | From the PO (separate non-fatal stamp). |
+| `student_first_name` | Isaac | From the PO (separate non-fatal stamp). On a multi-student PO each deal is stamped from its OWN `pos[]` entry. ⚠️ Live HubSpot workflow 34950163 "Contact to Deal Properties" (2020) overwrites this AND `student_grade` on EVERY deal of an enrolled contact with the contact's single `student_last_name` / grade, so siblings all get one name (Melara, 2026-09-04). Replaced 2026-09-10 by the fill-only stamp in `email/src/student_stamp.py` (deal_sync); the workflow is retired by `ops/fleet-health/audit/retire_contact_to_deal_workflows.py`. |
 | `student_last_name_if_diff_from_parent` | Jaramillo | From the PO. |
 | `student_grade` | 3 | From the PO. |
 | `student_school` | iCC1 for iLEAD Hybrid Exploration | From the PO (full extracted name). |
@@ -194,6 +222,28 @@ service month ends: submit the TW invoice to the school's ops system, then
 **stamp `invoice_submitted_date` and move the deal to Invoice Submitted**.
 Deals missing that stamp are what the sweep counts as unbilled.
 
+## Stage 6b — Hours run low: the renewal chase (`email/src/low_balance.py`)
+
+Teachworks' Package Balance Alerts add-on emails admin@ (via info@) when a
+student's unused package hours reach the alert level ("...package balance for
+Taylor Rodriguez has reached the level of 4 hours and is currently at 4.0
+unused hours" + parent name/email/phone). The triage pass recognises that
+wording **before the classifier** and opens one renewal case per student +
+package per school year:
+
+This is step 1 of the retention journey; the full process, the copy rules and
+the HubSpot fields are in `docs/RETENTION-PROCESS.md`. In short:
+
+| When | Rule |
+|---|---|
+| Day 0 | Ticket `Low balance: <student> (<school>), N hours left`, owner **charter_sales**, linked to the family and the alert. **Email only** to the parent from the seat's name (tutor first name, one sentence from the last month of lesson notes, "please submit a new PO or ask your teacher of record to"). Deal `retention_stage` → Low Hours. Repeated alerts add a note, never a second message. |
+| Day 1, next business morning | No PO, no reply in the seat's inbox, ticket still open → **text** from the seat's line and the **teacher draft** in the seat's Gmail (never for Level Up Terri, pipeline 72281989). Deal → Family / Teacher Contacted. |
+| Day 7 | No PO → the ticket is the retention issue: "RETENTION RISK", priority HIGH, deal → Retention Risk, one DM to the seat and the visionary role. No task. |
+| Day 28 | Still nothing → closed as Lost (`no_response`), family to the re-engagement list. |
+| Any day | New PO deal (Stage 3) → ticket closed, deal → Renewed. Deal Stopped → Not Renewing. |
+| Private pay | One upgrade email (auto-renews at 2 hours); no text, no teacher. |
+| `armed: false` | The default until Roman flips it: ticket + note showing exactly what would be sent + DM; nothing reaches a family or teacher. |
+
 ## Stage 7 — Payment
 
 School pays → deal moves to closed/won manually. (No agent watches this stage
@@ -206,4 +256,5 @@ yet — open roadmap item.)
 | **Agent** | Everything in Stages 0–4; all property stamping above except the two Kath fields. |
 | **Kath** | Convert PO → TW invoice; fill `Invoice #`; confirm the due date; submit at month end + stamp `invoice_submitted_date`; confirm pending OAs in school portals; send parent-chase drafts from Gmail Drafts. |
 | **Schedulers (Janelle / Yolanda)** | Get lessons booked within the 72-hr Post-Lesson window; deals arrive in their queue + DM. |
+| **Paola (charter_sales)** | Owns every low-balance renewal case (Stage 6b): sends the teacher draft from Gmail Drafts, works the follow-up task, handles anything the case flags. |
 | **Roman** | Gets every 🚩 missing-info DM and the CC of Kath's pings; owns rule changes (this doc + Decision Log). |

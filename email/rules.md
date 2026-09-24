@@ -155,7 +155,7 @@ school buying tutoring — that's `school_partner`). **Any staff-referred outrea
 Distinguish from `junk`: a mass cold blast (SEO/leadgen/templates, no real knowledge of
 A+) is junk; an individualized, genuine proposal or anything staff-referred is business_dev.
 
-### `tutor_issue` — 90 min → Mandy
+### `tutor_issue` — 90 min → the scheduling lead
 Family is unhappy with the tutor, reports a problem with them, or wants a different tutor.
 A switch usually SAVES the account, so route it fast. Examples:
 - "We'd like to request a different tutor for our son."
@@ -178,6 +178,13 @@ Examples:
 - "Do you have openings for Spanish tutors? Here's my resume."
 - "How do I apply to become an A+ tutor?"
 
+### `low_balance` — 8 business hrs → charter sales (family follow-up)
+An automated Teachworks **package balance** alert: "...package balance for <student> has
+reached the level of N hours and is currently at N unused hours", followed by CUSTOMER
+DETAILS (parent name, email, phone, student). Normally caught before you see it
+(deterministic detector in main.py → the low-balance renewal agent); if one reaches
+you, classify it here, never `junk`, `unknown` or `scheduling`. Set
+`parent_last_name` / `student_first_name` from the details block. No draft.
 ### `review_received` — a customer review landed, 8 business hrs → Paola
 An AUTOMATED notification from a review platform (Google Business Profile, Yelp, or
 similar) saying someone left A+ a review. The sender is the platform's no-reply
@@ -197,7 +204,7 @@ notifications about a posted review.
 Spam, cold vendor pitches, marketing blasts, SEO/lead-gen solicitations, unrelated mail,
 **and automated transactional/finance notifications**.
 **NEVER junk a staff referral**: if the sender says they spoke with / were referred by a
-named A+ team member (Paola, Mandy, Danielle, Roman, etc.), it is NOT junk no matter how
+named A+ team member (Paola, Danielle, Roman, etc.), it is NOT junk no matter how
 much it resembles a cold pitch — a human invited that contact. Classify it `unknown`
 (or a fitting category) so a person reviews it, and say so in `reason`.
 Examples:

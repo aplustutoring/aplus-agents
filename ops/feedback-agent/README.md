@@ -13,8 +13,9 @@ This is the mechanism behind two standing promises:
 - "anyone affected can demote an agent instantly" (#AP011) — the DEMOTE fast
   path, honored FIRST and reviewed after.
 
-Staff only for v1 — tutors are not invited; their path stays through Mandy
-until this agent graduates and Roman revisits.
+Staff only for v1 — tutors are not invited; their path stays through the
+tutor quality seat (`roles.tutor_quality_owner`) until this agent graduates
+and Roman revisits.
 
 ## What happens when the doorbell rings
 

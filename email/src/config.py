@@ -31,6 +31,11 @@ RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 JUSTCALL_API_KEY = os.getenv("JUSTCALL_API_KEY", "")
 JUSTCALL_API_SECRET = os.getenv("JUSTCALL_API_SECRET", "")
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN", "")
+# Slack USER token (xoxp) for the visionary seat. When set, ticket pesters are
+# posted by that user, so the DM reads as from Roman, not the bot (Roman
+# 2026-09-18: "I want the pestering to look like a direct message from me").
+# Role-named on purpose: the seat, never the person, is what the code knows.
+SLACK_USER_TOKEN_VISIONARY = os.getenv("SLACK_USER_TOKEN_VISIONARY", "")
 MONDAY_TOKEN = os.getenv("MONDAY_TOKEN", "")
 GOOGLE_SHEETS_CREDS = os.getenv("GOOGLE_SHEETS_CREDS", "")
 

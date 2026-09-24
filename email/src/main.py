@@ -11,16 +11,18 @@ FERPA: only the email body + the structured enrichment summary go to Claude.
 """
 from __future__ import annotations
 
+import os
 import sys
 import traceback
 from datetime import date, datetime, time, timedelta, timezone
 from types import SimpleNamespace
 
-from . import audit, hubspot_client as hs, po_sources, slack_client, teachworks_client as tw
+from . import (audit, case_engine, hubspot_client as hs, low_balance, po_sources,
+               slack_client, teachworks_client as tw)
 from .business_hours import LA, add_business_hours, now_la
 from .classifier import classify
 from .config import DRY_RUN, ROOT, cfg, require, staff
-from .router import resolve
+from .router import is_notification_sender, resolve
 
 DOC_RECEIPT = "tutor_document"  # the only category permitted to send an outbound MESSAGE
 
@@ -109,6 +111,31 @@ def _parent_last_name(contact: dict | None, tw_enrich: dict, result: dict | None
         if ln:
             return ln
     return tw_enrich.get("parent_last_name")
+
+
+def _predeal_lead(decision, hs_enrich: dict, tw_enrich: dict, notification: bool) -> bool:
+    """Should a scheduler-routed thread go to charter sales instead?
+
+    The A-L/M-Z split assumes an active family; a lead with no deal and no
+    Teachworks account isn't one, and scheduler-routing them drops the sale
+    (Roman 2026-07-20, after the Deanna Smith miss).
+
+    A notification sender is exempt (Paola 2026-09-21). The no-reply address a
+    Teachworks notice comes from has no deal and no Teachworks account of its
+    own and never will, so this test answered "pre-deal lead" for EVERY notice
+    and took the cancellation, reschedule and scheduling notices away from the
+    scheduler: 43 of the 76 notices triaged in September, Sam Sterling's 9/20
+    cancellation among them (S is M-Z, so Yolanda's). A family Teachworks
+    writes about is an active family by definition.
+    """
+    split = cfg()["scheduler_split"]
+    if decision.owner_key not in (split["a_to_l"], split["m_to_z"]):
+        return False
+    if notification:
+        return False
+    return bool((hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
+                and not hs_enrich.get("associated_deals")
+                and not tw_enrich.get("teachworks_match"))
 
 
 def _cancellation_deal_action(family_cid, result: dict) -> tuple[str, dict | None]:
@@ -301,7 +328,7 @@ def _handle_followup(thread_id: str, message: dict, prior: dict, result: dict,
 
     # Re-draft the reply as an internal comment (same rules as a fresh ticket).
     draft_text = result.get("draft_reply") or ""
-    is_teachworks = (email or "").lower().endswith("@teachworks.com")
+    is_teachworks = is_notification_sender(email)
     if decision.should_draft and draft_text.strip() and not is_teachworks:
         hs.post_comment(thread_id, f"[A+ draft reply — review & send]\n\n{draft_text}")
         record["draft_posted"] = True
@@ -454,6 +481,19 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     if po_reason:
         return _po_handoff(thread_id, message, po_reason)
 
+    # ── Teachworks package-balance alerts are a renewal trigger, not a support
+    #    email. Recognised deterministically (sender + the alert's fixed wording)
+    #    so the classifier never files them as unknown/scheduling again (55 of
+    #    81 alerts since June went to the Stuck queue). ──
+    if low_balance.is_teachworks_sender(_sender_addrs(message)):
+        lb_alert = low_balance.parse_alert(body)
+        if lb_alert:
+            lb_rec = low_balance.handle_alert(thread_id, message, lb_alert)
+            if lb_rec is not None:
+                return lb_rec
+            # not a charter service code: the agent declines it and the alert
+            # takes the ordinary triage path below (classifier → ticket)
+
     # ── Teachworks system notices are machine mail: no person wrote them and
     #    nobody can reply. Archive BEFORE the classifier. It rated them junk at
     #    0.82 (< the 0.9 archive bar), held them as unknown, and 35 "Reply:
@@ -494,16 +534,12 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     decision = resolve(result["category"], result["confidence"], last_name)
     contact_name = email.split("@")[0] if email else "unknown"
 
-    # Pre-deal leads own their thread with sales support until a deal exists.
-    # The A-L/M-Z split assumes an active family; a lead with no deal and no
-    # Teachworks account isn't one, and scheduler-routing them drops the sale
-    # (per Roman 2026-07-20, after the Deanna Smith miss).
-    split = cfg()["scheduler_split"]
+    # Pre-deal leads own their thread with sales support until a deal exists
+    # (see _predeal_lead — a Teachworks notice is not a lead, it is mail ABOUT
+    # an active family, and keeps the scheduler the split picked).
+    is_teachworks = is_notification_sender(email)
     predeal_intake = False
-    if (decision.owner_key in (split["a_to_l"], split["m_to_z"])
-            and (hs_enrich.get("properties") or {}).get("lifecyclestage") == "lead"
-            and not hs_enrich.get("associated_deals")
-            and not tw_enrich.get("teachworks_match")):
+    if _predeal_lead(decision, hs_enrich, tw_enrich, is_teachworks):
         role_key = cfg().get("roles", {}).get("charter_sales", "charter_sales")
         decision.owner_key = role_key
         decision.owner = (staff(role_key) or None)
@@ -533,7 +569,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     # email the family straight from the ticket), not the no-reply Teachworks address.
     ticket_contact_id = contact_id
     family_email = email   # who to enroll / email; the sender, unless we resolve the family
-    if email.lower().endswith("@teachworks.com") and last_name:
+    if is_teachworks and last_name:
         fam = hs.find_family_contact(result.get("student_first_name") or "", last_name)
         if len(fam) == 1:
             ticket_contact_id = fam[0]["id"]
@@ -694,7 +730,6 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     #     for Teachworks the draft still lives in the ticket note so the owner emails the
     #     family from the ticket) ──
     draft_text = result.get("draft_reply") or ""
-    is_teachworks = email.lower().endswith("@teachworks.com")
     if decision.should_draft and draft_text.strip() and not is_teachworks:
         hs.post_comment(thread_id, f"[A+ draft reply — review & send]\n\n{draft_text}")
         record["draft_posted"] = True
@@ -790,7 +825,7 @@ def process_message(thread_id: str, message: dict) -> dict | None:
 
     # ── HubSpot Task for the owner (due-dated to-do with reminders) ──
     owner_name = (decision.owner or {}).get("name") or decision.owner_key or "unassigned"
-    task_line = ""
+    task_line, task_owner_name, task_owner_slack = "", owner_name, None
     if cfg().get("owner_task", {}).get("enabled") and owner_id and sla_due:
         tbody = (
             f"{result.get('reason')}\n"
@@ -798,11 +833,27 @@ def process_message(thread_id: str, message: dict) -> dict | None:
             + f"\nTicket: {hs.ticket_url(ticket_id) if ticket_id else ''}\n"
             f"Proposed reply:\n{draft_text or '(none — handle manually)'}"
         )
+        task_subject = f"Reply: {decision.category} — {contact_name}"
+        task_owner_id = owner_id
+        # Session logistics belong to the scheduler for the family's surname,
+        # whatever category the thread classified as (Paola 2026-09-22). The
+        # pre-deal-lead override is exempt: that family has no deal yet, so the
+        # thread is a sale, not a schedule (Roman 2026-07-20).
+        if not predeal_intake:
+            role, why = case_engine.owner_for_task(task_subject, last_name or "", owner_id)
+            if role:
+                who = staff(role) or {}
+                if who.get("hubspot_owner_id"):
+                    task_owner_id = who["hubspot_owner_id"]
+                    task_owner_name = who.get("name") or role
+                    task_owner_slack = who.get("slack_user_id")
+                    record["task_rerouted"] = why
+                    decision.notes.append(f"task → {task_owner_name} ({why})")
         try:
-            hs.create_task(f"Reply: {decision.category} — {contact_name}", tbody,
-                           owner_id, int(sla_due.timestamp() * 1000), hs_priority, ticket_contact_id)
+            hs.create_task(task_subject, tbody,
+                           task_owner_id, int(sla_due.timestamp() * 1000), hs_priority, ticket_contact_id)
             record["task_created"] = True
-            task_line = f"\n✅ A HubSpot Task was created for {owner_name}, due {record['sla_due']} — check your Tasks queue."
+            task_line = f"\n✅ A HubSpot Task was created for {task_owner_name}, due {record['sla_due']} — check your Tasks queue."
         except Exception as e:  # noqa: BLE001 — task is best-effort, never block triage
             print(f"  ⚠️  task create failed (non-fatal): {e}")
             record["task_created"] = False
@@ -821,7 +872,9 @@ def process_message(thread_id: str, message: dict) -> dict | None:
     # ── owner Slack DM (+ CC) ──
     flag = " ⚠️ REVIEW (no draft)" if not record["draft_posted"] else ""
     reason_bit = f" Cancellation reason: {cancel_reason}." if cancel_reason else ""
-    task_bit = " 📋 Task created." if record.get("task_created") else ""
+    task_bit = (f" 📋 Task created for {task_owner_name} ({record['task_rerouted']})."
+                if record.get("task_rerouted") and record.get("task_created")
+                else (" 📋 Task created." if record.get("task_created") else ""))
     deal_bit = (f" 💸 {len(deal_rec['moves'])} deal(s) auto-moved (undo if wrong)." if deal_rec
                 else (" 💸 check deal stage." if deal_line else ""))
     followup_bit = " 📆 re-engagement follow-up scheduled." if followup_line else ""
@@ -835,6 +888,14 @@ def process_message(thread_id: str, message: dict) -> dict | None:
         f"Due {record['sla_due']}. {hs.ticket_url(ticket_id) if ticket_id else ''}"
     )
     _notify_owner(decision, notify_text)
+    # The task went to a seat that does not own the ticket — tell them, or the
+    # task is a to-do nobody was told about.
+    if record.get("task_rerouted") and record.get("task_created") and task_owner_slack:
+        slack_client.dm(task_owner_slack,
+                        f"📋 Scheduling task for you ({record['task_rerouted']}), due "
+                        f"{record['sla_due']}: {task_subject}. The *{decision.category}* "
+                        f"ticket stays with {owner_name}. "
+                        f"{hs.ticket_url(ticket_id) if ticket_id else ''}")
 
     record["action_taken"] = "ticket_created"
     audit.append(record)
@@ -907,4 +968,17 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    # A single Teachworks low-balance alert can be replayed through the agent
+    # instead of a poll (workflow input replay_thread; DRY_RUN prints the
+    # rendered text / email / teacher draft). Nothing else runs in that mode.
+    _replay = (os.environ.get("LOW_BALANCE_REPLAY_THREAD") or "").strip()
+    _backfill = (os.environ.get("LOW_BALANCE_BACKFILL_DAYS") or "").strip()
+    if _replay:
+        _sim = (os.environ.get("LOW_BALANCE_SIMULATE_DAYS") or "").strip()
+        low_balance.replay_thread(_replay, int(_sim) if _sim.isdigit() else None)
+    elif _backfill.isdigit():
+        low_balance.backfill(int(_backfill))
+    elif os.environ.get("LOW_BALANCE_DAY1_NOW") == "1":
+        low_balance.day1_now()
+    else:
+        run()

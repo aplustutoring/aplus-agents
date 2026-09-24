@@ -25,6 +25,10 @@ on:
         required: false
         type: string
         default: ""
+      first_lesson_backfill_days:
+        description: "First-lesson stamp: sweep the last N days of Teachworks lessons now (pair with dry_run to preview)"
+        required: false
+        default: ""
       contact_email:
         description: "With deal_id: HubSpot contact email to associate to the deal + sync as the family"
         required: false
@@ -50,6 +54,8 @@ jobs:
         working-directory: email
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # branch TIP at job start, not the dispatch-time SHA: a run queued behind another run of this concurrency group must see that run's state commit, or it re-does the work and its own state commit collides (2026-09-10: 16 duplicate tickets/tasks/notes)
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -68,13 +74,19 @@ jobs:
           FORCE_DEAL_ID: ${{ inputs.deal_id }}
           FORCE_CONTACT_EMAIL: ${{ inputs.contact_email }}
           FORCE_STUDENT_FIRST: ${{ inputs.student_first }}
-        run: python -m src.deal_sync
+          FIRST_LESSON_BACKFILL_DAYS: ${{ inputs.first_lesson_backfill_days }}
+        run: |
+          if [ -n "${{ inputs.first_lesson_backfill_days }}" ]; then
+            python -m src.first_lesson
+          else
+            python -m src.deal_sync
+          fi
       - name: Commit state changes
         if: ${{ inputs.dry_run != true }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/sync_cursor.json state/audit_log.jsonl
+          git add state/sync_cursor.json state/audit_log.jsonl state/first_lessons.json
           if git diff --cached --quiet; then
             echo "no state changes to commit"
           else
@@ -82,6 +94,7 @@ jobs:
             for attempt in 1 2 3; do
               git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}" && git push && break
               echo "state push attempt $attempt rejected; retrying..."
+              git rebase --abort 2>/dev/null || true
               sleep $((attempt * 3))
             done
             # Silent fall-through here LOST a run's audit records on 2026-08-31
