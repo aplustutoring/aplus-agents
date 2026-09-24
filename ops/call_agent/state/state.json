@@ -1116,9 +1116,10 @@
     418746007,
     418755311,
     418768611,
-    418772130
+    418772130,
+    418777562
   ],
-  "last_run_utc": "2026-09-24T17:51:31.363369+00:00",
+  "last_run_utc": "2026-09-24T18:00:34.913667+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1489,6 +1490,116 @@
           "Update contact record with parent name and student details once obtained \u2014 currently only phone number on file.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418777562,
+      "number": "13104783711",
+      "time_pt": "10:50 AM",
+      "matched": true,
+      "contact_label": "Caller 310-478-3711",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Katrina Harper called seeking in-person math tutoring for her first-grade child attending Colfax, in the 91602 area. Paola quoted $130/hr for in-person tutoring and explained package options; Katrina noted weekly may be cost-prohibitive and asked for details by email. Paola collected her email (katrina.l.harper@gmail.com) and said she would check tutor availability in the area and follow up via email. Katrina is awaiting the pricing email and tutor-availability confirmation.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Katrina Harper the in-person tutoring pricing and package information at katrina.l.harper@gmail.com",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check tutor availability in the 91602 area for a 1st-grade math student and reply to Katrina via the same email thread",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Katrina Harper (mom, friendly and engaged) called about in-person math tutoring for her 1st grader at Colfax (ZIP 91602). Paola quoted $130/hr in-person and mentioned package discounts for weekly/monthly commitments; Katrina said weekly might be too much and is considering biweekly. Paola promised to email pricing details to katrina.l.harper@gmail.com and confirm tutor availability in her area. Katrina expects that email with pricing plus an availability answer, and will reply to move forward. Suggested opener: 'Hi Katrina, following up on your call with Paola \u2014 here's the pricing info and our availability for a 1st-grade math tutor in the Colfax / 91602 area.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with a prospective family about a standard 1st-grade math tutoring inquiry; not charter-funded and no diagnostic needed.",
+        "student_or_school_names_mentioned": [
+          "Colfax",
+          "Katrina Harper"
+        ],
+        "record_updates": {
+          "whats_going_on": "Katrina Harper called seeking in-person math tutoring for her 1st grader at Colfax (ZIP 91602). Open to weekly but may go biweekly due to cost. Asked about tutor experience level.",
+          "what_we_can_do_to_help": "Email pricing/package info ($130/hr in-person, package discounts) and check tutor availability in the 91602 area for 1st-grade math, then hand off to scheduling once she confirms interest.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "1",
+          "student_school": "Colfax",
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Katrina Harper called seeking in-person math tutoring for her 1st grader at Colfax (ZIP 91602). Open to weekly but may go biweekly due to cost. Asked about tutor experience level."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Email pricing/package info ($130/hr in-person, package discounts) and check tutor availability in the 91602 area for 1st-grade math, then hand off to scheduling once she confirms interest."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "1"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "Colfax"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Katrina Harper the in-person tutoring pricing and package information at katrina.l.harper@gmail.com",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check tutor availability in the 91602 area for a 1st-grade math student and reply to Katrina via the same email thread",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
