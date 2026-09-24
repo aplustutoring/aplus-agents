@@ -43,6 +43,23 @@ message handed back to us. So it is matched against what we actually sent that
 number, and a real reply cannot be swallowed because a real reply is not a
 verbatim echo of our words.
 
+Version 4.5 (2026-09-23) stopped reading a YES as a question. On 2026-09-18 we
+told Maricris Tiu "I have added the lesson to 12:30 pm" and three minutes later
+she wrote "Yes thats fine. We'll take it. Thank you!". This script called that
+a 90 hour breach, and on 09-22 I repeated it by name in #support-team, in front
+of the team, as one of four cases of neglect. All four were wrong. She has
+since told us she will recommend us.
+
+The courtesy rule could not have saved it and must not be stretched to: "Yes"
+does match the closing vocabulary, but 36 characters follow and the tail rule
+caps that at 25. Every previous fix that raised a threshold or added a word
+bought hours, not months. So this one is structural. An acceptance points
+BACKWARD at something we just said; a request points FORWARD and always shows
+it. A message counts as an acceptance only when it opens with an affirmation,
+asks nothing, follows something WE sent inside three hours, and contains no
+time or day we did not ourselves put on the table. That last clause is what
+keeps "Yes that's fine, can we do 5pm instead?" on the list where it belongs.
+
 Version 4.4 (2026-09-22) widened the quote class. A Russian tapback quoting our
 own message went uncaught because the client used a straight quote and the
 shape matcher only knew typographic ones. Not a language gap: the same text in
@@ -74,6 +91,7 @@ confident wrong answer, not a blank.
 
 Two open questions Roman has not settled, both of which change the count:
   - does a closing "thank you" need acknowledging? They are filtered out here.
+    So is a yes to something we already did, as of 4.5.
   - overnight. On 2026-09-16 the line went quiet at 21:31 and reopened at
     08:50, so six people breached a flat one-hour rule by morning. The rule
     needs either stated hours or an after-hours auto-acknowledgement that buys
@@ -164,6 +182,33 @@ INTERNAL_DOMAIN = "@wetutorathome.com"
 # number -> the bodies we sent it inside the window, filled by newest_each_way
 OUR_WORDS: dict = {}
 
+# number -> [(when, body)] for the same messages. The echo rule only needs the
+# words; the acceptance rule needs to know WHICH of our messages a reply came
+# straight after, so it is the timestamped twin of OUR_WORDS, filled in the
+# same pass so the two cannot drift.
+OUR_SAID: dict = {}
+
+# How long after our message a reply still reads as an answer to it. Long
+# enough for a parent to put the phone down and come back, short enough that
+# tomorrow morning's new request is not mistaken for tonight's yes.
+REPLY_WINDOW_MIN = 180
+
+# An ask points forward and wants something from us. None of these appear in
+# an acceptance, and all of them appear in the messages an acceptance must
+# never swallow.
+ASK = re.compile(
+    r"\b(can|could|would|will|do)\s+(you|we|u|i)\b|\bplease\b|\blet me know\b"
+    r"|\bcall me\b|\bwhat time\b|\bwhen\b|\bwhere\b|\bwhy\b|\bhow (much|many|long)\b"
+    r"|\bneed\b|\bwant\b|\binstead\b|\bbut\b|\bhowever\b|\bthough\b",
+    re.IGNORECASE)
+
+# Times and days. A time we did not propose is a counter-offer, not a yes.
+WHEN_TOKEN = re.compile(
+    r"\b\d{1,2}\s*:\s*\d{2}\s*(?:am|pm)?\b|\b\d{1,2}\s*(?:am|pm)\b"
+    r"|\b(?:mon|tues?|wed(?:nes)?|thur?s?|fri|sat(?:ur)?|sun)(?:day)?\b"
+    r"|\b(?:today|tonight|tomorrow|morning|afternoon|evening|weekend)\b",
+    re.IGNORECASE)
+
 
 def _headers() -> tuple[dict, dict]:
     """Built at call time, not import time, so the pure helpers below can be
@@ -203,6 +248,64 @@ def is_courtesy(body: str) -> bool:
     # move Wednesday" does not, and the difference is that the message keeps
     # going.
     return len(rest) <= 25
+
+
+def accepts_what_we_did(body: str, when: str, said: list) -> bool:
+    """Is this a yes to the message we sent just before it?
+
+    Maricris Tiu, 2026-09-18. We wrote "I have added the lesson to 12:30 pm".
+    Three minutes later she wrote "Yes thats fine. We'll take it. Thank you!".
+    This checker called that a 90 hour breach, and on 2026-09-22 I said so by
+    name in #support-team in front of the whole team. The thread was finished.
+    Nothing was waiting on anyone. She has since said she will recommend us.
+
+    is_courtesy could not save it and should not be stretched to: "Yes" does
+    match the closing vocabulary, but 36 characters follow and the tail rule
+    caps that at 25. Raising the cap is the word-list treadmill this file has
+    already lost five times in one day.
+
+    The durable difference is direction. An acceptance points BACKWARD at
+    something we just said. A request points FORWARD, and it shows it: a
+    question mark, an ask, or a time we never proposed. So all four must hold.
+
+      1. it opens with an affirmation (the closing vocabulary, reused)
+      2. it asks nothing
+      3. we said something to them inside REPLY_WINDOW_MIN before it
+      4. every time or day in it is one WE put on the table
+
+    Rule 4 is what keeps this honest. "Yes that's fine, but can we do 5pm
+    instead?" opens with a yes and is a live request; it carries a time we
+    never offered, and two ask words besides.
+    """
+    b = (body or "").strip()
+    if not b or "?" in b:
+        return False
+    if not CLOSING.match(b):          # must OPEN with the yes, not bury it
+        return False
+    if ASK.search(b):
+        return False
+    ours = [(w, o) for w, o in (said or []) if o and w[:19] <= when[:19]]
+    if not ours:
+        return False                  # nothing of ours to be accepting
+    w_last, _ = max(ours)
+    if _minutes_between(w_last, when) > REPLY_WINDOW_MIN:
+        return False                  # too long after us to be an answer to us
+    recent = _squash(" ".join(o for w, o in ours
+                              if _minutes_between(w, when) <= REPLY_WINDOW_MIN))
+    for tok in {m.group(0).lower() for m in WHEN_TOKEN.finditer(b)}:
+        if tok not in recent:
+            return False              # a time we did not propose is a new ask
+    return True
+
+
+def _minutes_between(a: str, b: str) -> float:
+    """Minutes from a to b, both 'YYYY-MM-DD HH:MM:SS' on the same clock."""
+    f = "%Y-%m-%d %H:%M:%S"
+    try:
+        return abs((datetime.datetime.strptime(b[:19], f)
+                    - datetime.datetime.strptime(a[:19], f)).total_seconds()) / 60
+    except ValueError:
+        return float("inf")
 
 
 def _squash(s: str) -> str:
@@ -350,6 +453,7 @@ def load_our_words(texts: list) -> None:
     a parent waiting.
     """
     OUR_WORDS.clear()
+    OUR_SAID.clear()
     for t in texts:
         if str(t.get("direction", "")).lower().startswith("in"):
             continue
@@ -357,8 +461,11 @@ def load_our_words(texts: list) -> None:
         if not n:
             continue
         info = t.get("sms_info") or {}
-        OUR_WORDS.setdefault(n, []).append(
-            ((info.get("body")) or "").replace("\n", " ").strip())
+        body = ((info.get("body")) or "").replace("\n", " ").strip()
+        when = (f"{t.get('sms_date') or info.get('sms_date')} "
+                f"{t.get('sms_time') or info.get('sms_time')}")
+        OUR_WORDS.setdefault(n, []).append(body)
+        OUR_SAID.setdefault(n, []).append((when, body))
 
 
 def outbound_email_after(number: str, when: str, h: dict):
@@ -428,7 +535,9 @@ def main(hours: float = 14.0) -> int:
         out = newest_out.get(n, "")
         if out and out[:19] >= when[:19]:
             continue                               # texted or called back
-        if is_courtesy(body) or echoes_our_message(body, OUR_WORDS.get(n, [])):
+        if (is_courtesy(body)
+                or echoes_our_message(body, OUR_WORDS.get(n, []))
+                or accepts_what_we_did(body, when, OUR_SAID.get(n, []))):
             courtesy += 1
             continue
         answered, label = outbound_email_after(n, when, h)

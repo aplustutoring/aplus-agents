@@ -325,3 +325,104 @@ def test_a_missing_total_is_trusted_rather_than_blocking(monkeypatch):
     run at all. Losing the check is bad; losing the monitor is worse."""
     monkeypatch.setattr(w.requests, "get", _pager([_Resp([{"n": 1}], None, "")]))
     assert len(w.pull("texts", {}, "since")) == 1
+
+# ── accepting what we already did ───────────────────────────────────────────
+#
+# Every message below is verbatim from the Maricris Tiu thread of 2026-09-18
+# to 09-23, the thread this checker called a 90 hour breach and I repeated by
+# name in #support-team. The direction of error that matters is the second
+# block: a rule that hides a family is far worse than one that flags a
+# thank-you, so most of these tests exist to prove it hides nobody.
+
+OURS_SAID = [("2026-09-19 01:42:53",
+              "Hi Maricris, I have added the lesson to 12:30 pm. "
+              "Since Hannah has a student until 12:30.")]
+
+
+def test_the_message_that_caused_the_false_accusation():
+    """"Yes thats fine. We'll take it. Thank you!", three minutes after we told
+    her the lesson was added. There was nothing waiting on us."""
+    assert w.accepts_what_we_did(
+        "Yes thats fine. We'll take it. Thank you!",
+        "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_a_plain_yes_to_a_question_we_asked():
+    ours = [("2026-09-22 20:20:40",
+             "Hi Maricris, hope all is well. Just wanted to check in and see "
+             "if you received the lesson notes for the session")]
+    assert w.accepts_what_we_did("Yes we did.", "2026-09-22 20:21:22", ours)
+
+
+def test_accepting_the_time_we_ourselves_offered():
+    assert w.accepts_what_we_did("Yes, 12:30 pm works. Thank you!",
+                                 "2026-09-19 01:45:45", OURS_SAID)
+
+
+# ── the ones it must never swallow ──────────────────────────────────────────
+
+def test_a_yes_that_counter_offers_a_time_we_never_gave():
+    """The whole reason rule 4 exists. It opens with a yes and is a live ask."""
+    assert not w.accepts_what_we_did("Yes that's fine, can we do 5pm instead?",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_a_yes_carrying_a_day_we_never_proposed():
+    assert not w.accepts_what_we_did("Ok. He can only do Saturday morning.",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_a_yes_that_still_asks():
+    assert not w.accepts_what_we_did("Ok thank you. Please call me.",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+    assert not w.accepts_what_we_did("Great, let me know when it is confirmed",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_a_complaint_is_never_an_acceptance():
+    assert not w.accepts_what_we_did("The tutor never showed up. Thanks for nothing.",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_a_yes_with_a_but_stays_open():
+    assert not w.accepts_what_we_did("Yes that works but he needs the workbook",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_nothing_of_ours_to_accept():
+    """An affirmation out of nowhere is not an answer to us."""
+    assert not w.accepts_what_we_did("Yes thats fine. We'll take it. Thank you!",
+                                     "2026-09-19 01:45:45", [])
+
+
+def test_too_long_after_us_to_be_a_reply_to_us():
+    """Tomorrow morning's message is a new thread, whatever it opens with."""
+    assert not w.accepts_what_we_did("Yes thats fine. We'll take it. Thank you!",
+                                     "2026-09-20 09:00:00", OURS_SAID)
+
+
+def test_only_counts_our_messages_sent_BEFORE_it():
+    later = [("2026-09-19 02:00:00", "Hi Maricris, I have added the lesson to 12:30 pm")]
+    assert not w.accepts_what_we_did("Yes thats fine. We'll take it. Thank you!",
+                                     "2026-09-19 01:45:45", later)
+
+
+def test_a_question_is_never_an_acceptance():
+    assert not w.accepts_what_we_did("Yes. Does she have any open schedules today?",
+                                     "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_the_yes_must_open_the_message():
+    """"...but yes" is not an acceptance, it is the tail of an argument."""
+    assert not w.accepts_what_we_did(
+        "We waited forty minutes and nobody came, yes we still want the lesson",
+        "2026-09-19 01:45:45", OURS_SAID)
+
+
+def test_load_our_words_fills_the_timestamped_twin():
+    """OUR_WORDS and OUR_SAID come from one pass so they cannot drift."""
+    w.load_our_words([_text("8185551234", "2026-09-18 09:00:00", "we said this", "outbound"),
+                      _text("8185551234", "2026-09-18 10:00:00", "and this", "outbound")])
+    assert w.OUR_WORDS["8185551234"] == ["we said this", "and this"]
+    assert w.OUR_SAID["8185551234"] == [("2026-09-18 09:00:00", "we said this"),
+                                        ("2026-09-18 10:00:00", "and this")]

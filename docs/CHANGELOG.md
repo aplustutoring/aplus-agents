@@ -70,6 +70,45 @@ schedulers by last names of families." The schedulers own the family
 conversation and the ticket; the metric is Paola's to oversee.
 
 ---
+## 2026-09-23 — waiting.py 4.5: a yes to what we already did is not a question
+
+**What changed** (`scripts/waiting.py`, `scripts/tests/test_waiting.py`)
+- New `accepts_what_we_did(body, when, said)`. An inbound counts as an
+  acceptance, not an open thread, only when all four hold: it opens with an
+  affirmation, it asks nothing, we sent that number something inside
+  `REPLY_WINDOW_MIN` (180) before it, and every time or day in it is one we
+  ourselves proposed.
+- `OUR_SAID`, the timestamped twin of `OUR_WORDS`, filled in the same pass of
+  `load_our_words` so the two cannot drift.
+- 14 tests. Three prove the rule fires, eleven prove it swallows nobody.
+
+**Why**
+On 2026-09-18 we told Maricris Tiu "I have added the lesson to 12:30 pm". Three
+minutes later she wrote "Yes thats fine. We'll take it. Thank you!". This
+checker read that as a thread waiting on us, aged it to 90 hours, and on 09-22
+it went into #support-team by name as one of four cases of neglect. All four
+were wrong. Maricris has since said she will recommend us. The correction is
+posted in the same thread.
+
+`is_courtesy` could not have caught it and must not be stretched to. "Yes" does
+match the closing vocabulary, but 36 characters follow and the tail rule caps
+that at 25. Raising the cap is the treadmill this file lost five times in a
+single day (Chinese tapbacks, Spanish tapbacks, straight quotes, "Well! Thank
+you.", zero-width spaces). Word lists and thresholds have a half-life in hours;
+the rules built on our own prior message have held.
+
+So the signal is structural. An acceptance points backward at something we just
+said. A request points forward and shows it, with a question mark, an ask word,
+or a time we never offered. The time-subset clause is what keeps "Yes that's
+fine, can we do 5pm instead?" on the waiting list where it belongs.
+
+Measured on the live 7-day feed: 125 numbers wrote in, 11 still waiting, and
+exactly 1 message reclassified. The yield is small on purpose. The rule is
+narrow because the expensive direction of error is hiding a family, not
+flagging a thank-you, and this change was bought by an incident where the
+checker accused four people who had done nothing wrong.
+
+---
 ## 2026-09-24 — Ticket reasoner reads the contact record before any message
 
 **Roman:** "We just need to set it up in a way where we know what's going on."
