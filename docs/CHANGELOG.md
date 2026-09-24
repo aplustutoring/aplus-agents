@@ -7,6 +7,52 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — ops/unanswered was blind for a week: a cursor on the wrong clock
+
+**What changed** (`ops/unanswered/unanswered.py`, `ops/checkin/checkin.py`,
+`.github/workflows/unanswered-asks.yml`, `ops/unanswered/tests/test_unanswered.py`)
+- `fetch_inbound_texts` builds its JustCall cursor on the ACCOUNT clock
+  (`justcall.account_timezone`, already declared in `config.yml`) instead of a
+  naive `datetime.now()`.
+- New `assert_window_really_empty`: when the window returns nothing, ask the
+  one question the cursor cannot influence, what is the newest text in the
+  account. If it landed after the window opened, the run raises instead of
+  reporting peace.
+- `unanswered-asks.yml` gets `TZ: America/Los_Angeles`, which every other
+  state-writing workflow in the repo already had. Belt and braces now that the
+  code derives the clock itself.
+- The same naive cursor in `ops/checkin/checkin.py` fixed before it ships.
+- Three tests, the first of which forces `TZ=UTC` so it fails on a PT laptop
+  where the bug cannot reproduce.
+
+**Why**
+`from_datetime` is read in the account clock (PT) while the rows come back
+stamped UTC. The workflow set no TZ, so `datetime.now()` on the runner was UTC
+and every run asked for a window seven hours in the future. JustCall answered
+HTTP 200 with 0 of 0. From 2026-09-17 to 2026-09-23 the agent logged
+`scanned 0 inbound texts` on every run, `seen.json` stayed `[]`, `open.json`
+stayed `{}`, and all ~500 runs were green.
+
+Measured, not inferred. The same call on 2026-09-23 at 19:12 PT: a UTC cursor
+returned 0 rows of 0, a PT cursor returned 66 rows (27 inbound). Re-run of the
+fixed agent under `TZ=UTC`, dry: `scanned 28 inbound texts`. Over a 48-hour
+window the detector matched 7 real asks for a person, including "I didn't get
+the link can you call now?" and "Good Morning Yolanda, I am checking in to see
+how finding a tutor for Hudson is coming along" — every one of them invisible
+to the agent built to catch exactly that.
+
+The knowledge was not missing. The call agent hit this trap on 2026-07-17 and
+documented it in place (`ops/call_agent/call_agent.py:209`), and this agent's
+own `config.yml` carries the line "from_datetime is read in the ACCOUNT
+timezone". The code simply never read the key. Writing a trap down does not
+defend against it; a test that stands where the runner stands does.
+
+Second lesson, the one that cost the week: a safety net that reports zero is
+indistinguishable from a safety net that is working, and nothing here could
+tell the difference. Hence the sanity check. An agent that cannot fail loudly
+is not a safety net.
+
+---
 ## 2026-09-23 — Renewals oversight: Paola sees all, schedulers own their split
 
 **What changed** (`ops/queues/queue_digest.py`, `email/config.yaml`)

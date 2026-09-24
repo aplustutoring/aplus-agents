@@ -170,3 +170,98 @@ def test_inbound_fetch_starts_at_page_zero(cfg, monkeypatch):
     monkeypatch.setattr(ua.requests, "get", fake)
     ua.fetch_inbound_texts(cfg)
     assert seen[0] == 0
+
+
+def test_cursor_is_built_in_the_account_clock(cfg, monkeypatch):
+    """The bug that blinded this agent for a week.
+
+    from_datetime is read in the account clock (PT); the rows come back UTC.
+    The workflow set no TZ, so datetime.now() on the runner was UTC and every
+    run asked for a window 7 hours in the future. JustCall answered HTTP 200
+    with 0 of 0, so 2026-09-17 to 09-23 is a week of green runs, seen.json
+    empty, and nobody watching the thing that was meant to be watching.
+
+    Reproduced live 2026-09-23: the same call with a UTC cursor returned 0
+    rows, with a PT cursor 66 rows (27 inbound).
+    """
+    import time as _time
+    from datetime import datetime, timedelta, timezone
+    from zoneinfo import ZoneInfo
+
+    # Stand where the runner stands. On a PT laptop the old naive now() would
+    # have passed this test while still being broken in production.
+    monkeypatch.setenv("TZ", "UTC")
+    _time.tzset()
+
+    seen = []
+
+    class R:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"data": []}
+
+    def fake(url, headers=None, timeout=None, params=None):
+        if "from_datetime" in (params or {}):
+            seen.append(params["from_datetime"])
+        return R()
+
+    monkeypatch.setattr(ua.requests, "get", fake)
+    ua.fetch_inbound_texts(cfg)
+
+    tz = ZoneInfo(cfg["justcall"]["account_timezone"])
+    want = (datetime.now(timezone.utc).astimezone(tz)
+            - timedelta(minutes=int(cfg["justcall"]["lookback_minutes"])))
+    asked = datetime.strptime(seen[0], "%Y-%m-%d %H:%M:%S")
+    _time.tzset()   # monkeypatch restores TZ; make the process agree again
+    assert abs((asked - want.replace(tzinfo=None)).total_seconds()) < 120, (
+        "cursor %s is not on the account clock (expected near %s)" % (asked, want))
+
+
+def test_empty_window_with_a_fresh_text_in_the_account_goes_red(cfg, monkeypatch):
+    """Never report peace on a window you cannot trust.
+
+    The week of silence was survivable only because nothing complained. An
+    empty window is believable when the account is quiet too, and a lie when
+    the newest text landed after the window opened.
+    """
+    class R:
+        status_code = 200
+
+        def __init__(self, data):
+            self._d = data
+
+        def json(self):
+            return {"data": self._d}
+
+    fresh = [{"sms_date": "2099-01-01", "sms_time": "12:00:00",
+              "direction": "Incoming"}]
+
+    def fake(url, headers=None, timeout=None, params=None):
+        # the windowed walk is empty; the unbounded sanity check is not
+        return R([] if "from_datetime" in (params or {}) else fresh)
+
+    monkeypatch.setattr(ua.requests, "get", fake)
+    with pytest.raises(RuntimeError, match="cursor"):
+        ua.fetch_inbound_texts(cfg)
+
+
+def test_empty_window_is_accepted_when_the_account_is_quiet_too(cfg, monkeypatch):
+    class R:
+        status_code = 200
+
+        def __init__(self, data):
+            self._d = data
+
+        def json(self):
+            return {"data": self._d}
+
+    stale = [{"sms_date": "2000-01-01", "sms_time": "12:00:00",
+              "direction": "Incoming"}]
+
+    def fake(url, headers=None, timeout=None, params=None):
+        return R([] if "from_datetime" in (params or {}) else stale)
+
+    monkeypatch.setattr(ua.requests, "get", fake)
+    assert ua.fetch_inbound_texts(cfg) == []
