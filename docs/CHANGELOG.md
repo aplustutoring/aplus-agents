@@ -1361,6 +1361,26 @@ Roman rather than a bug to silently "fix".
 `email/tests/test_po_inbox.py`. 584 tests pass.
 
 ---
+## 2026-09-18 — Park Day print, third pass: physical inches, WORKING
+
+**What happened:** the 100vh print rule from the second pass printed two
+pages. iPad Safari measures `vh` in print against the screen, not the paper,
+so a "100vh" card was taller than a 4x6 sheet and paginated.
+
+**Fix (`booth/public/sage-oak-park/index.html`):** the print area, the image
+and html/body are all `4in x 6in` in physical units with `@page{size:4in
+6in;margin:0}`. One page on any paper. Deployed `df78d3f8`. Roman at the
+booth, 11:15: "It works, it just takes a second for print preview to re
+align." The share-sheet path from the second pass stays as the primary route
+where Web Share can take files; this rule is the fallback that now also
+works.
+
+**Lesson for the other booth pages:** never size a print sheet in `vh` or
+`%` on iPad; use inches. `booth/index.html` (BTSC) and
+`booth/delilah/public/index.html` still carry the width:100%/100vh rule and
+should get this same block before their next use.
+
+---
 ## 2026-09-18 — Park Day print: one page on any paper size
 
 **What happened (Roman, 10:05 AM at the booth):** the first Selphy print
