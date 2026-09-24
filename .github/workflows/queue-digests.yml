@@ -1,0 +1,62 @@
+name: Queue digests (Monday queues + daily fleet recap)
+
+# Roman 2026-09-16 (STEP 7). Both post to the Leadership team channel
+# (case_engine.digest.channel). Crons are UTC: 16:00 UTC = 9:00 AM PDT.
+env:
+  TZ: America/Los_Angeles
+
+on:
+  schedule:
+    - cron: "0 16 * * *"        # daily fleet recap, 9:00 AM PT
+    - cron: "5 16 * * 1"        # Monday queue digest, 9:05 AM PT
+  workflow_dispatch:
+    inputs:
+      which:
+        description: "queues | recap | both"
+        required: false
+        default: "both"
+      dry_run:
+        description: "Print, post nothing"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r email/requirements.txt
+      - name: Decide what runs
+        id: which
+        run: |
+          W="${{ inputs.which }}"
+          if [ -z "$W" ]; then
+            if [ "$(date -u +%u)" = "1" ] && [ "$(date -u +%H)" = "16" ] && [ "$(date -u +%M)" -ge 5 ]; then W="queues"; else W="recap"; fi
+          fi
+          echo "which=$W" >> "$GITHUB_OUTPUT"
+      - name: Daily fleet recap
+        if: ${{ steps.which.outputs.which == 'recap' || steps.which.outputs.which == 'both' }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python ops/fleet-health/daily_recap.py
+      - name: Monday queue digest
+        if: ${{ steps.which.outputs.which == 'queues' || steps.which.outputs.which == 'both' }}
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: python ops/queues/queue_digest.py

@@ -1,10 +1,11 @@
 # booth/delilah — Delilah's 5th birthday + Rosh Hashanah 5787 (2026-09-11)
 
 Personal home-party photo booth. iPad on a stand, Canon Selphy over AirPrint.
-Every kept shot produces TWO prints (the party favors): the real photo, and a
-storybook version where Gemini repaints the guests into a Rosh Hashanah
-pomegranate orchard with faces preserved. Guests can optionally type a cell
-number to get both texted as well.
+After the shot the guest picks **Text me, Print it, or Both**. Print is one 4x6
+of the real photo. Text (needs a cell) is the photo plus a storybook painting
+of it (Gemini repaints the guests into a Rosh Hashanah pomegranate orchard,
+faces preserved). The painting is text only, never printed, and is only painted
+when a text is going out (Roman, 2026-09-11).
 
 Forked from `booth/` (Sage Oak) with HubSpot, email, consent and roles removed.
 No cron, so no SUNSET is needed: nothing runs unattended.
@@ -22,17 +23,28 @@ No cron, so no SUNSET is needed: nothing runs unattended.
   for about a second. Every archived photo shows with a Reprint button, plus
   Print all.
 - **Auto-print off:** set `AUTO_PRINT: false` in `CONFIG` inside `public/index.html`.
-- **Storybook off:** set `STORYBOOK: false` in the same `CONFIG` (one print per guest again).
+- **Storybook off:** set `STORYBOOK: false` in the same `CONFIG`.
+- **Storybook to paper:** `STORYBOOK_PRINT` is `false` and stays false. Roman:
+  printing the painting is a waste of paper. Text only.
+- **Failures:** `GET /errors` on the Worker lists every storybook paint that
+  failed after retries (name, time, Gemini error), 30-day memory. Workers Logs
+  in the Cloudflare dashboard keep the same lines.
 
-## Storybook print (favor 2)
+## Storybook painting (by text)
 
 Flow per guest: real photo prints and is texted, then a "Painting your storybook"
 screen while the Worker calls `gemini-3.1-flash-image` with the capture as a
 reference image and the prompt in `worker.js` (`STORYBOOK_PROMPT`). About 10 s.
 The page frames the result in the same card with the banner "Once upon a Shana
-Tova", prints it, archives it (`kind: storybook` in the album) and texts it with
-`STORYBOOK_SMS_BODY`. Any Gemini failure is skipped silently: the guest already
-has print 1 and the done screen says to ask Roman for the storybook later.
+Tova", archives it (`kind: storybook` in the album) and texts it with
+`STORYBOOK_SMS_BODY`. It is not printed.
+
+Retries: the Worker makes two Gemini attempts per request and the page makes
+two requests, so a transient Gemini error or a dropped Wi-Fi request does not
+lose the painting. If all four fail the done screen says to ask Roman, and the
+failure is recorded (`/errors`). To recover one by hand: download the guest's
+photo from the album, POST it to `/storybook`, and POST the result to `/submit`
+with `kind: "storybook"` and the guest's phone (see the 2026-09-11 changelog).
 Secret: `wrangler secret put GEMINI_API_KEY`. Model is `GEMINI_MODEL` in
 `wrangler.toml`.
 

@@ -88,6 +88,22 @@ touch; the funds question is never conditional (every charter student has
 funds). Private pay: capture online or in person and package interest; pricing
 comes from the seat on the call, not from a template.
 
+**Charter cohort (IEM HSA, DRAFT 2026-09-15).** The family never inquired: the
+school placed the student in a group with a fixed slot. First touch is
+therefore not a lead touch. The deal exists before the first message, so the
+support line applies (Identity map above), and the message confirms, it does
+not ask: no cohort text or email may ask for or offer to change the schedule
+(LOCKED Roman 9/15). Three sends, all on existing rails, in one run of
+`agents/cohort_intake` (spec `docs/specs/cohort-intake-spec.md` §5.6, §8):
+one text + one welcome email per family from the SMS sweep (`hsa_*` copy,
+`templates/welcome_hsa.html`), one email per ES per group through
+`ops/messenger/one_to_few --channel email` (purpose `cohort_welcome`), and the
+scheduler handoff DM with the no-class dates listed as skip dates. A parent
+who asks to change the time is routed to the ES, never rescheduled by A+.
+Owner seat for the deal is by group parity (odd A-L, even M-Z), not by last
+name. Gap: no owner for a family whose text is skipped beyond the one DM the
+intake agent sends to the deal owner (`refresh.py`).
+
 ## Handoff out
 
 - Family to charter_sales: ticket with the 90-minute SLA for customer-facing

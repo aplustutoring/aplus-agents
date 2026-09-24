@@ -16,7 +16,7 @@ Usage:
   python3 scripts/b2b/fix-links.py --all-staged [--apply]
 Default is dry-run; --apply patches the HubSpot postBody.
 """
-import os, re, sys, json, argparse, time
+import os, re, sys, json, argparse, time, html as htmllib
 from urllib.parse import urlparse
 import requests
 from dotenv import load_dotenv
@@ -33,9 +33,16 @@ LINK_RE = re.compile(r'<a\b[^>]*?href="([^"]+)"[^>]*?>(.*?)</a>', re.I | re.S)
 
 
 def http_kind(url):
-    """Return (status_code, kind) where kind in ok/dead/generic/keep."""
+    """Return (status_code, kind) where kind in ok/dead/generic/keep.
+
+    `url` arrives straight out of the HTML, so its ampersands are entity-encoded
+    (`?a=1&amp;b=2`). Requesting that literally sends the server a parameter
+    named `amp;b`, which is a different URL than the one the post links to: a
+    live source with a query string could come back 404 and get UNLINKED as
+    "dead". Unescape before the check, keep the escaped form as the key.
+    """
     try:
-        r = requests.get(url, headers=UA, allow_redirects=True, timeout=15)
+        r = requests.get(htmllib.unescape(url), headers=UA, allow_redirects=True, timeout=15)
         code = r.status_code
         final = r.url
     except Exception:
@@ -55,6 +62,7 @@ def strip_tags(s):
 
 
 def find_replacement(anchor, context, old_url, client, same_domain=False):
+    old_url = htmllib.unescape(old_url)  # show the model the real URL, not the escaped one
     prompt = (
         f"A hyperlink in an A+ Tutoring blog post is broken or too generic and must be replaced.\n"
         f'Anchor text: "{anchor}"\nClaim/context: "{context}"\nOld (bad) URL: {old_url}\n\n'
@@ -89,7 +97,15 @@ def find_replacement(anchor, context, old_url, client, same_domain=False):
 
 
 def process_post(pid, apply, client):
-    d = requests.get(f"{HUBSPOT}/cms/v3/blogs/posts/{pid}", headers=HHEAD, timeout=30).json()
+    """Returns (changes, ok). ok=False means the run could not be trusted."""
+    g = requests.get(f"{HUBSPOT}/cms/v3/blogs/posts/{pid}", headers=HHEAD, timeout=30)
+    if g.status_code != 200:
+        # An unchecked GET used to leave html="" here, which found zero links and
+        # printed "all links ok" — a clean bill of health for a post we never read.
+        print(f"\n=== {pid} ===", file=sys.stderr)
+        print(f"   ERROR fetching post (HTTP {g.status_code}): {g.text[:800]}", file=sys.stderr)
+        return [], False
+    d = g.json()
     html = d.get("postBody", "") or ""
     print(f"\n=== {pid}  {d.get('name','')[:64]} ===")
     decided = {}
@@ -116,7 +132,11 @@ def process_post(pid, apply, client):
     changes = []
     for url, (action, repl, code, kind) in decided.items():
         if action == "replace":
-            new_html = new_html.replace(f'href="{url}"', f'href="{repl}"')
+            # Escape on the way back in. A replacement URL with a bare "&" in a
+            # query string is not valid in an href attribute, and a bare quote
+            # would terminate the attribute early and leave a malformed <a>.
+            safe = htmllib.escape(repl, quote=True)
+            new_html = new_html.replace(f'href="{url}"', f'href="{safe}"')
             changes.append(f"[{kind} {code}] REPLACE\n        {url}\n     -> {repl}")
         elif action == "unlink":
             new_html = LINK_RE.sub(lambda mm: strip_tags(mm.group(2)) if mm.group(1) == url else mm.group(0), new_html)
@@ -131,7 +151,16 @@ def process_post(pid, apply, client):
     if apply and changes:
         r = requests.patch(f"{HUBSPOT}/cms/v3/blogs/posts/{pid}", headers=HHEAD, json={"postBody": new_html}, timeout=60)
         print("   PATCH postBody:", r.status_code)
-    return changes
+        if r.status_code not in (200, 201):
+            # This used to be printed and forgotten: the status was never checked,
+            # main() always returned 0, and content-build.py only looks at the
+            # return code. A rejected patch left the draft half-repaired with
+            # nobody told. Surface HubSpot's own message and fail the run.
+            print(f"   ERROR: HubSpot rejected the postBody patch (HTTP {r.status_code}):",
+                  file=sys.stderr)
+            print("   " + r.text[:1500], file=sys.stderr)
+            return changes, False
+    return changes, True
 
 
 def main():
@@ -148,9 +177,15 @@ def main():
         print("no post ids (use --post-id or --all-staged)")
         return 1
     client = anthropic.Anthropic()
+    failed = []
     for pid in pids:
-        process_post(pid, a.apply, client)
+        _, ok = process_post(pid, a.apply, client)
+        if not ok:
+            failed.append(pid)
     print("\nDONE", "(applied)" if a.apply else "(dry-run)")
+    if failed:
+        print(f"FAILED on {len(failed)} post(s): {', '.join(map(str, failed))}", file=sys.stderr)
+        return 1
     return 0
 
 

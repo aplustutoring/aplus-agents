@@ -117,8 +117,10 @@ verified in the repo (open item).
 - The high-dosage recommendation (Roman: three sessions a week, 45 minutes) is
   not written anywhere in the repo.
 - Private-pay pricing lives only with the seats.
-- Portal approval of a pending PO can take 14 or more days; the PO agent nags
-  after `pending_portal_approval_days`.
+- Portal approval of a pending PO can take 14 or more days, and since
+  2026-09-12 NOTHING chases it: the PO agent's pending-approval sweep was
+  removed (Roman: "we will work on Kath verifying in ops later"). The deal,
+  ticket and invoice task still say the PO is pending; a human has to look.
 
 ## Related
 

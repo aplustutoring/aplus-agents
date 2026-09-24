@@ -1,0 +1,122 @@
+# ops/unanswered — someone asked for a PERSON and nobody got back to them.
+# Secrets live in env vars (repo secrets on Actions) — never here.
+#
+# Why this exists (Roman, 2026-09-16). Over three days four people texted
+# asking for a named human: Inna Volodinsky ("Dear Roman... can you give me a
+# call"), Annie Wolfstein ("Please feel free to call me at 661-904-3139"), a
+# parent opening "Hey Roman" about PSAT prep, and Mary Gonzalez ("Janelle can
+# you please call me", then "Yes can you call me now please").
+#
+# The team answered all of them, by phone, one within 68 seconds. Nothing
+# WATCHED that, so the only way to know was to go and look. The call agent
+# already does this properly for a missed call: Slack alert plus a same-day
+# HIGH call-back task, two minutes after the miss. A text asking for a person
+# had no equivalent. This is that equivalent.
+#
+# It is deliberately self-healing. The alert closes itself the moment anyone
+# touches the contact on ANY channel, because the failure mode being fixed is
+# false alarms that accuse the team of neglect while they are on the phone.
+
+registry_id: unanswered-asks
+
+justcall:
+  # from_datetime is read in the ACCOUNT timezone, which is PT.
+  account_timezone: "America/Los_Angeles"
+  lookback_minutes: 240      # overlap window; idempotency comes from state
+  line_names:
+    "+18188506284": "Main line"
+    "+18188691627": "Support line"
+    "+18185736644": "Sales line"
+    "+18185736293": "Roman's line"
+
+detect:
+  # A message counts as an ask for a PERSON when it does either of these.
+  # Both are literal. Inferring "this sounds like they want a human" would
+  # put a neglect alert on a thread that is going fine.
+  #
+  # 1. It asks to be called.
+  call_phrases:
+    - "call me"
+    - "give me a call"
+    - "can you call"
+    - "could you call"
+    - "please call"
+    - "call back"
+    - "callback"
+    - "ring me"
+    - "reach me at"
+    - "my number is"
+  # 2. It names a member of staff. First names only, lowercased, matched on
+  #    a word boundary so "romantic" and "kathy" do not trip it.
+  staff_first_names:
+    - roman
+    - paola
+    - janelle
+    - yolanda
+    - melanie
+    - melaney
+    - danielle
+    - kath
+    - emily
+    # Kept after her 2026-09-17 departure ON PURPOSE. Families and tutors
+    # still write "Mandy said..." and that ask now has nobody behind it, so
+    # it needs answering more urgently, not less.
+    - mandy
+  # Messages that name staff but are plainly not an ask. A thank-you naming
+  # the person who just helped is the commonest false positive.
+  ignore_if_starts_with:
+    - "thank"
+    - "thanks"
+    - "ty "
+    - "liked “"
+    - "loved “"
+    - "​👍​"
+    - "​❤️​"
+
+resolve:
+  # How long the team gets before an ask counts as unanswered. Short enough to
+  # matter, long enough that a normal reply lands first. The call agent's
+  # equivalent is immediate, but a call ringing out is a harder signal than a
+  # text that someone may be mid-reply to.
+  grace_minutes: 25
+  # "Has anyone got back to them" is NOT a per-channel question. HubSpot's
+  # notes_last_contacted aggregates calls, emails, texts and meetings, and
+  # reading it is the whole reason this agent does not repeat the 2026-09-14
+  # false alarms. Never narrow this to one channel.
+  touch_property: notes_last_contacted
+  # An ask from a number we cannot resolve is MORE urgent, not less: it is a
+  # stranger asking us to call them. Alert, and say the number is unknown.
+  alert_unknown_numbers: true
+
+hubspot:
+  owners:
+    roman: 38681249
+    paola: 81494333
+    janelle: 80047202
+    yolanda: 86868539
+  # Who gets the task when the message does not name anyone. Paola does the
+  # follow-up (Roman 2026-08-13).
+  default_owner: paola
+  # When the message DOES name someone with an owner id here, it goes to them.
+  route_to_named_person: true
+  task_priority: HIGH
+
+slack:
+  channel: "#calls"          # same room the missed-call alerts land in
+  slack_user_ids:
+    roman: U05NA7UMSSV
+    paola: U094B5DRZBR
+    janelle: U08S3CG8XNY
+    yolanda: U0A6XGBU7QT
+
+guards:
+  # The aging-sweep near-miss of 2026-08-25 fired 80 DMs in a dry run. Refuse
+  # to act rather than flood.
+  max_alerts_per_run: 8
+  # One open ask per contact at a time; a second text does not double-alert.
+  one_open_ask_per_contact: true
+  # First run with no state/baseline.json stamps everything already qualifying
+  # and creates NOTHING. Not configurable off.
+
+state:
+  path: "ops/unanswered/state"

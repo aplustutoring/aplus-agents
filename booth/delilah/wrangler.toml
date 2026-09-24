@@ -2,6 +2,11 @@ name = "delilah-booth"
 main = "worker.js"
 compatibility_date = "2026-08-11"
 
+# Workers Logs: keeps console.error("storybook failed", ...) in the dashboard
+# (Workers & Pages > delilah-booth > Logs) so a failed paint is never invisible.
+[observability]
+enabled = true
+
 # Personal event booth: Delilah's 5th birthday + Rosh Hashanah 5787, 2026-09-11.
 # No HubSpot, no email, no cron (so no SUNSET needed: nothing runs unattended).
 

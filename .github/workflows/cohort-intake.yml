@@ -1,0 +1,102 @@
+name: Cohort intake — IEM HSA (sheet → HubSpot deals → first touch → scheduler)
+
+# Fleet convention: agents think in Pacific Time.
+env:
+  TZ: America/Los_Angeles
+
+# Manual only (spec docs/specs/cohort-intake-spec.md §4): Danielle or Roman
+# dispatch it once a group's rows are marked Ready on the A+ intake sheet.
+# Dry run is the default and prints/DMs the plan; execute=true writes after
+# the Slack stop window (wait_minutes; 0 = the human already reviewed the
+# dry run). Checks out the DISPATCHED ref, so a feature branch can be test-
+# run before merge (the Step-2 TEST-001 flow).
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: "Write to HubSpot, send the ES email, DM the scheduler (default: dry run)"
+        type: boolean
+        default: false
+      only_row:
+        description: "Process only this Student ID (e.g. TEST-001)"
+        type: string
+        default: ""
+      group_label:
+        description: "Process only this group, e.g. C1-G4"
+        type: string
+        default: ""
+      sheet_id:
+        description: "Override the A+ intake sheet id (never IEM's sheet)"
+        type: string
+        default: ""
+      wait_minutes:
+        description: "Stop window before writing (blank = config default 15; 0 = none)"
+        type: string
+        default: ""
+      refresh:
+        description: "Only read the rails back into the sheet (Teachworks ID, Text/Welcome Sent)"
+        type: boolean
+        default: false
+      list:
+        description: "Only print every Intake row with its status (no writes)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # audit_log + messenger send-log commit-back
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    concurrency:
+      # Own group: the agent keeps its own state file (agents/cohort_intake/state),
+      # so it never queues behind the relay-fired deal-sync runs. On 2026-09-16
+      # the group-3 execute was evicted from the shared queue and never ran.
+      group: aplus-cohort-intake
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r email/requirements.txt
+
+      - name: Run cohort_intake
+        env:
+          HUBSPOT_PRIVATE_APP_TOKEN: ${{ secrets.HUBSPOT_PRIVATE_APP_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          # the pre-send gate verifies JustCall thread history before ANY send,
+          # email included; without these it HOLDS (first live run 2026-09-16)
+          JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
+          JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+          GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}   # aplus-retention@ service account, Editor on the sheet
+          HSA_INTAKE_SHEET_ID: ${{ inputs.sheet_id }}
+        run: |
+          FLAGS=""
+          if [ "${{ inputs.execute }}" = "true" ]; then FLAGS="$FLAGS --execute"; fi
+          if [ "${{ inputs.refresh }}" = "true" ]; then FLAGS="$FLAGS --refresh"; fi
+          if [ "${{ inputs.list }}" = "true" ]; then FLAGS="$FLAGS --list"; fi
+          if [ -n "${{ inputs.only_row }}" ]; then FLAGS="$FLAGS --only-row '${{ inputs.only_row }}'"; fi
+          if [ -n "${{ inputs.group_label }}" ]; then FLAGS="$FLAGS --group-label '${{ inputs.group_label }}'"; fi
+          if [ -n "${{ inputs.wait_minutes }}" ]; then FLAGS="$FLAGS --wait-minutes ${{ inputs.wait_minutes }}"; fi
+          echo "python -m agents.cohort_intake $FLAGS --by '${{ github.actor }}'"
+          eval python -m agents.cohort_intake $FLAGS --by "'${{ github.actor }}'"
+
+      - name: Commit state (execute runs only)
+        if: ${{ inputs.execute == true }}
+        run: |
+          git config user.name "aplus-agents[bot]"
+          git config user.email "agents@wetutorathome.com"
+          git add agents/cohort_intake/state ops/messenger/state 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no state changes"; exit 0; fi
+          git commit -m "cohort-intake: persist state for $(date -u +%Y-%m-%dT%H:%M)"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}" && exit 0
+            git rebase --abort || true
+            sleep $((i * 5))
+          done
+          echo "::error::state commit-back failed after 3 attempts"; exit 1

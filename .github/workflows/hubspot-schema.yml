@@ -44,3 +44,17 @@ jobs:
             ARGS="--dry-run"
           fi
           python3 ops/hubspot-schema/create_properties.py $ARGS
+      # Roman 2026-09-22: every event gets a HubSpot segment. The schema sync is
+      # the moment a new event exists in the portal (its aplus_event_tag
+      # option lands here), so the list is made in the same run. Idempotent:
+      # one active list per option, matched by name, never recreated.
+      - name: Ensure one active list per event
+        if: ${{ !inputs.check_only }}
+        env:
+          HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_API_KEY }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="--dry-run"
+          fi
+          python3 ops/hubspot-schema/event_lists.py $ARGS

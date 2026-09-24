@@ -24,15 +24,21 @@ hubspot:
   # ROLES, not names (Roman 2026-08-14). role -> staff key; staff block is
   # the only home for people.
   roles:
-    operations: mandy        # ticket owner on EVERY tutor-issue ticket (Aug 26 decision: escalations land on Operations)
-    fallback_scheduler: mandy  # scheduler pings when the student (and so the A-L/M-Z split) is unknown
+    # ── THE ONE LINE TO CHANGE WHEN THE TUTOR QUALITY LEAD IS HIRED ──
+    # Mandy left 2026-09-17. Emily holds the seat in the interim. Swap this
+    # value when the Mexico-based Tutor Quality Lead starts.
+    tutor_quality_owner: emily
+    operations: emily        # ticket owner on EVERY tutor-issue ticket; was mandy until 2026-09-17
+    fallback_scheduler: emily  # scheduler pings when the student (and so the A-L/M-Z split) is unknown
 
 staff:
   # hubspot_owner_id verified against /crm/v3/owners 2026-08-26.
   # slack_id verified against the workspace 2026-08-26.
-  mandy:
-    hubspot_owner_id: "80047201"
-    slack_id: "U08S3CHE93N"
+  # mandy REMOVED 2026-09-17 (terminated). Every ticket this engine created
+  # between her departure and this change was assigned to a dead queue.
+  emily:
+    hubspot_owner_id: "39191217"
+    slack_id: "U05MXK1MC5Q"
   janelle:
     hubspot_owner_id: "80047202"
     slack_id: "U08S3CG8XNY"
@@ -70,6 +76,22 @@ detectors:
     # In Teachworks these are TUTOR-attributable only when the per-student
     # status says so; the sweep counts per-tutor events.
     no_show_statuses: ["no_show", "missed", "no show"]
+
+    # OFF since 2026-09-10. A Teachworks participant status says THIS STUDENT
+    # did not attend. It does not say why, and cannot separate a student who
+    # flaked from a tutor who never showed. Every event that ever produced a
+    # ticket here was a student marked "missed", and 5 of the 12 tutors those
+    # tickets named are rated Highly Effective on every dimension of their real
+    # evaluation (Monday board 8900831153). Meanwhile the genuinely struggling
+    # tutors on that board have no tickets at all.
+    #
+    # The events are still collected and reported, for the per-tutor attendance
+    # rate and the repeat-pattern trigger that opens an evaluation. They just no
+    # longer assert fault. A missed lesson becomes a tutor issue when a FAMILY
+    # reports it, which the inbound leg handles.
+    #
+    # Turning this back on re-asserts blame the data cannot support.
+    sweep_auto_ticket: false
     # Events per tutor per week required to open a ticket. 1 = every missed
     # lesson is ticket-worthy (recurrence in the same week updates the one
     # ticket rather than spawning more).
@@ -133,6 +155,59 @@ late_reports:
   # "Student FIRST Name" in ops/hubspot-schema/properties.yml, so routing on
   # it would split the schedulers by first initial.
 
+# Slack did not reach the tutor, so we texted them (Roman 2026-09-14: "the
+# tutors that don't respond in Slack need a ticket created, we resorted to
+# text messages but we need to know about that so we can sort them out").
+#
+# Detection is deliberately literal. We only count an outbound text that
+# ITSELF mentions Slack, because that text is us saying, in our own words,
+# that Slack did not work. Inferring "this looks like a chase" would put a
+# quality ticket on a tutor's record from a hunch.
+#
+# The fuller detector (asked in the tutor's channel, no reply in N hours)
+# needs the bot invited to the private #first-last channels; it is not, so
+# conversations.history cannot see them. Invite the bot and that leg becomes
+# buildable. Until then this catches the fallback itself, which is the part
+# Roman asked to know about.
+slack_fallback:
+  enabled: true
+  lookback_minutes: 1440     # overlap window; idempotency comes from state, not the window
+  markers: ["slack"]         # substring, case-insensitive, matched on the body we sent
+  # A tutor in a lesson is not a tutor ignoring us. Hannah Thorn, 2026-09-15:
+  # "you messaged me on slack at 12:12 and texted at 12:21, but I was in the
+  # session." Nine minutes is not going quiet, and a ticket there blames a
+  # tutor for teaching. The engine cannot read the private tutor channels, so
+  # it cannot measure the real gap between the Slack ask and the text; it can
+  # only require that the CHASE ITSELF names an urgent deadline, or that the
+  # same tutor was chased more than once. A single unhurried text is not
+  # evidence of silence and is skipped.
+  require_urgency_or_repeat: true
+  # Phrases that show the sender had already waited and needed an answer.
+  urgency_markers:
+    - "following up"
+    - "follow up"
+    - "gently"
+    - "i need to know"
+    - "need to know today"
+    - "by today"
+    - "still waiting"
+    - "haven't heard"
+    - "have not heard"
+    - "second time"
+  # Bulk/auto templates that can mention Slack without being a chase.
+  ignore_bodies_starting:
+    - "hi, this is a+ tutoring. we saw your call"
+    - "hi, this is a+ tutoring. we were assisting"
+    - "hey"                  # applicant confirmations open "Hey <name>, ... application"
+  # Tutors who have no Slack by policy (Roman 2026-09-08): texting them is the
+  # normal channel, not a failure. Numbers, because the SMS-only tutors are
+  # exactly the ones with thin contact records (Christa has two).
+  sms_only_tutors: ["+18183395667"]
+  # Only ticket tutors who are actually on the roster. "Not found" and
+  # "Inactive" are applicants and leavers; chasing them is not a quality
+  # signal. Prefix match against the tutor_roster_status LABEL.
+  roster_status_prefixes: ["active"]
+
 # Priority defaulted by type (stated in the PR; hs_ticket_priority values).
 priority_by_type:
   missed_lesson_or_late: HIGH        # family was stood up — retention risk now
@@ -140,6 +215,7 @@ priority_by_type:
   tech_issue_unreported: MEDIUM      # process breach, not yet a family-facing failure
   scheduling_flip_flop: MEDIUM       # churn pattern — needs a conversation, not a fire drill
   notes_not_completed: LOW           # compliance lag; the scorecard already tracks the aggregate
+  unresponsive_in_slack: MEDIUM      # a student went unplaced while we chased; pattern matters more than one instance
 
 # Dedupe periods — ONE open ticket per tutor per issue type per period;
 # recurrence updates the existing ticket. Weekly for the Teachworks
@@ -151,6 +227,9 @@ dedupe_period:
   tutor_change_requested: rolling_30d
   scheduling_flip_flop: rolling_30d
   tech_issue_unreported: rolling_30d
+  # Rolling 30 days: three chases in a month is the signal, and it should land
+  # on ONE ticket that shows all three rather than three separate ones.
+  unresponsive_in_slack: rolling_30d
 
 # NOTIFICATION GUARDS (non-negotiable — the aging-sweep near-miss of
 # 2026-08-25 fired 80 DMs in a dry run; this engine must refuse to act

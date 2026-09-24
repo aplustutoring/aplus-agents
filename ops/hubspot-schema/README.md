@@ -39,3 +39,21 @@ secret. The private app needs the `crm.schemas.tickets.write` scope.
 
 Schema changes are deliberate: edit `properties.yml` in a PR, merge, then run
 the workflow — the file is the review surface.
+
+## Event segments (Roman 2026-09-22)
+
+Every event gets a HubSpot segment: one **active list per `aplus_event_tag`
+option**, named `Event: <option label>` (e.g. `Event: Sage Oak Park Day
+2026`), filtered on the contact carrying that tag. Active, not static, so a
+late booth submission or a backfill joins the list on its own.
+
+```bash
+python3 event_lists.py --dry-run   # plan: which options lack a list
+python3 event_lists.py             # create the missing ones
+```
+
+The options are read from the PORTAL, not from `properties.yml`, so an option
+added by hand still gets its list. The workflow runs this right after the
+property sync, so a new event's list exists the moment its tag does. Existing
+lists are matched by name and left alone; renaming a list in HubSpot means
+the script makes a fresh one, so don't.
