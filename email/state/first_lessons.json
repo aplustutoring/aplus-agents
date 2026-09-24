@@ -1,5 +1,5 @@
 {
- "_last_run": "2026-09-24T12:57:28.937244+00:00",
+ "_last_run": "2026-09-24T19:40:57.721631+00:00",
  "in_person:ahmed, skye": {
   "checked": "2026-09-13",
   "contact_id": "1523951",
@@ -1995,6 +1995,15 @@
   "first": "2026-09-21",
   "name": "Abby Ulstrup",
   "tw_student_id": "2355574"
+ },
+ "online:uriostegui, zuri": {
+  "checked": "2026-09-24",
+  "contact_id": "206755616036",
+  "deal_id": "65112521788",
+  "email": "mist90r.mr@gmail.com",
+  "first": "2026-03-17",
+  "name": "Zuri Uriostegui",
+  "tw_student_id": "2210949"
  },
  "online:van reuter, elias": {
   "checked": "2026-09-11",
