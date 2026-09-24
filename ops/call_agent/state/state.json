@@ -1114,9 +1114,11 @@
     418720187,
     418727859,
     418746007,
-    418755311
+    418755311,
+    418768611,
+    418772130
   ],
-  "last_run_utc": "2026-09-24T17:24:30.265704+00:00",
+  "last_run_utc": "2026-09-24T17:46:00.054610+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1386,6 +1388,105 @@
         ],
         [
           "Watch for a reply from Alek's mom (possibly from a different email) and loop her into the thread.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418768611,
+      "number": "526644928295",
+      "time_pt": "10:34 AM",
+      "matched": true,
+      "contact_label": "Caller 664-492-8295",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Spanish/English inbound call from a prospective family wanting to use PCH Charter School instructional funds for tutoring. Paola quoted the charter rate of $60/hour (vs. $75 standard) and they discussed roughly 1 hour per week. The call ended with Paola indicating next steps once A+ receives the charter funding paperwork. Transcript is fragmented but the family clearly qualifies as a charter-funded lead.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with the family once PCH Charter School funding request is received; confirm enrollment paperwork and next steps.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once charter funding is confirmed, schedule the first tutoring session (~1 hour/week at $60/hr charter rate).",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Update contact record with parent name and student details once obtained \u2014 currently only phone number on file.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Spanish-speaking parent (phone 664-492-8295) called in wanting to use PCH Charter School instructional funds for tutoring. Paola quoted the $60/hr charter rate and they discussed about 1 hour/week. No student name, grade, subject, or schedule was captured on the call \u2014 transcript was fragmented. Family expects A+ to move forward once the charter funding paperwork comes through from PCH. Open with: 'Hola, soy [name] de A+ Tutoring, llamando para dar seguimiento sobre el tutoring con fondos de PCH Charter \u2014 \u00bfme puede confirmar el nombre y grado del estudiante y las materias que necesita?' Paola is the point of contact they spoke with.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Parent explicitly stated they want to pay using PCH Charter School instructional funds \u2014 qualifies as a charter-funded lead.",
+        "student_or_school_names_mentioned": [
+          "PCH Charter School"
+        ],
+        "record_updates": {
+          "whats_going_on": "Spanish-speaking parent called in to set up tutoring using PCH Charter School instructional funds. Discussed ~1 hour/week. Student name, grade, and subject were not captured on the call.",
+          "what_we_can_do_to_help": "Quoted the $60/hr charter rate to the family. Next step is to follow up once PCH Charter funding paperwork is received, then confirm student details and schedule the first session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Spanish-speaking parent called in to set up tutoring using PCH Charter School instructional funds. Discussed ~1 hour/week. Student name, grade, and subject were not captured on the call."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted the $60/hr charter rate to the family. Next step is to follow up once PCH Charter funding paperwork is received, then confirm student details and schedule the first session."
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Follow up with the family once PCH Charter School funding request is received; confirm enrollment paperwork and next steps.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once charter funding is confirmed, schedule the first tutoring session (~1 hour/week at $60/hr charter rate).",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Update contact record with parent name and student details once obtained \u2014 currently only phone number on file.",
           81494333,
           "follow_up"
         ]
