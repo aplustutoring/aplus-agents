@@ -137,6 +137,10 @@ hubspot:
   # Lead status stamped on a contact this agent creates, so they are
   # distinguishable from intake-captured records.
   created_contact_lead_status: "NEW"
+  # Owner SEAT for a contact this agent creates (key into owners: below).
+  # Paola does 100% of call follow-up (Roman 2026-08-13), so she owns the
+  # caller too. Falls back to default_task_owner when unset.
+  created_contact_owner: paola
 
   # Owner IDs (HubSpot owner ids, not user ids) for task/ticket assignment.
   owners:
