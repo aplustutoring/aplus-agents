@@ -67,6 +67,25 @@ def cfg() -> dict:
     return c
 
 
+MODEL_TIERS = ("customer_copy", "internal_reasoning", "classify")
+
+
+def model_for(tier: str) -> str:
+    """The model id for a risk tier (see `models:` in config.yaml).
+
+    Never hardcode a model id in an agent. Name the tier and let this resolve
+    it, so a fleet-wide upgrade is one line in one file. Unknown tiers raise
+    rather than silently falling back: a typo must not quietly downgrade the
+    model an agent talks to customers with.
+    """
+    if tier not in MODEL_TIERS:
+        raise ValueError(f"unknown model tier {tier!r}; expected one of {MODEL_TIERS}")
+    mid = (cfg().get("models") or {}).get(tier)
+    if not mid:
+        raise ValueError(f"model tier {tier!r} is not set in email/config.yaml `models:`")
+    return str(mid)
+
+
 def staff(key: str) -> dict:
     """Resolve a ROLE title (accountability-chart seat: charter_admin,
     scheduler_a_l, visionary, …) OR a legacy staff key to the staff record.

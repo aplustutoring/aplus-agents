@@ -385,6 +385,33 @@ staff:
 # 2026-09-09, after the Gonzalez double-thread). email/src/presend.py.
 # enabled false = SHADOW: engines log the decision as presend_shadow and keep
 # their old behaviour. Flip after a week of clean audit.
+# ── Model policy (fleet-wide, Roman 2026-09-24) ───────────────────
+# ONE place. Every agent that calls Claude names a TIER here, never a model id
+# of its own. Before this block there were 17 hardcoded model strings across 11
+# files and nobody could answer "what are we running" without a grep.
+#
+# Tiers are by RISK, not by agent. The question is what it costs to be wrong:
+#
+#   customer_copy       writes or decides what a CUSTOMER reads, or moves a
+#                       record a human will trust. A bad sentence here costs a
+#                       family. Always the current frontier model.
+#   internal_reasoning  summarises, scores, extracts, or drafts for a human to
+#                       review before anything ships. A bad output here costs
+#                       someone five minutes.
+#   classify            narrow, verifiable, high volume. Gradeable against
+#                       ground truth, so cheaper is fine and measurable.
+#
+# The values below are exactly what each agent runs TODAY, so adopting the
+# block changes no behaviour. Upgrading the fleet is then one line here.
+#
+# NOT a cost lever at our volume (~40 leads/month): the bill is pennies at any
+# tier. Choose by risk. If you ever want to move something DOWN a tier, build
+# an eval for it first — none of these agents has one yet.
+models:
+  customer_copy:      "claude-opus-5"
+  internal_reasoning: "claude-opus-4-7"
+  classify:           "claude-sonnet-4-6"
+
 presend:
   enabled: false
   season_start: "2026-08-15"        # a deal created on/after this = scheduling owns the family

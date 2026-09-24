@@ -66,13 +66,13 @@ python3 -m pytest tests/ -q              # 20 guardrail tests, no network
 
 ## Model
 
-`claude-opus-5`, adaptive thinking, effort `high`, structured output against a
-fixed decision schema so the answer is never prose we have to parse. The system
-prompt and the CARE values are one cached prefix, so the per-lead cost is the
-dossier only.
+`model_tier: customer_copy`, resolved from `models:` in `email/config.yaml` —
+the one place the fleet declares what it runs. This engine writes live customer
+copy, so it sits in the top tier by risk.
 
-The rest of the fleet is on `claude-opus-4-7`. This engine reasons about live
-customer copy, so it runs current on purpose.
+Adaptive thinking, effort `high`, structured output against a fixed decision
+schema so the answer is never prose we have to parse. The system prompt and the
+CARE values are one cached prefix, so the per-lead cost is the dossier only.
 
 ## Relationship to ops/lead_intake
 

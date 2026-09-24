@@ -52,6 +52,9 @@ jobs:
         if: github.event_name == 'pull_request'
         run: python3 ops/fleet-health/registry_check.py --warn
 
+      - name: Model policy (drift fails, hardcoded warns)
+        run: python3 ops/fleet-health/model_check.py
+
       - name: Regenerate docs/FLEET.md
         if: github.event_name != 'pull_request'
         run: python3 ops/fleet-health/fleet_brief.py
@@ -74,3 +77,6 @@ jobs:
       - name: Registry check (advisory)
         if: github.event_name != 'pull_request'
         run: python3 ops/fleet-health/registry_check.py --warn
+
+      - name: Model policy (drift fails, hardcoded warns)
+        run: python3 ops/fleet-health/model_check.py

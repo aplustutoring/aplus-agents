@@ -218,13 +218,14 @@ def decide(dossier: dict, c: dict) -> dict:
     """Ask Claude for the one next right thing. Structured output, so the
     answer is a decision object and never prose we have to parse."""
     import anthropic
+    from src.config import model_for                 # the one model policy
 
     client = anthropic.Anthropic(max_retries=3)
     system = (HERE / "prompts" / "decide.md").read_text()
     care = (ROOT / "ops" / "values" / "care-values.md").read_text()
 
     resp = client.messages.create(
-        model=c.get("model") or "claude-opus-5",
+        model=model_for(c.get("model_tier") or "customer_copy"),
         max_tokens=int(c.get("max_tokens") or 8000),
         thinking={"type": "adaptive"},
         output_config={"effort": c.get("effort") or "high",

@@ -7,6 +7,56 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — One model policy for the fleet: tiers by risk, drift made impossible
+
+**What:** Roman: "i believe we should have one optimized version of claude that
+all the agents run on, or are different agents better with different versions."
+Answer: not one model, one POLICY, in one file. Added `models:` to
+`email/config.yaml`, `model_for(tier)` to `email/src/config.py`, and
+`ops/fleet-health/model_check.py` wired into the fleet-docs CI job.
+
+Before this there were **17 hardcoded model strings across 11 files** and
+nobody could answer "what are we running" without a grep.
+
+Tiers are by RISK, not by agent — the question is what it costs to be wrong:
+
+| tier | for | today |
+|---|---|---|
+| `customer_copy` | writes or decides what a CUSTOMER reads, or moves a record a human will trust | `claude-opus-5` |
+| `internal_reasoning` | summarises, scores, extracts, drafts for human review | `claude-opus-4-7` |
+| `classify` | narrow, verifiable, high volume, gradeable against ground truth | `claude-sonnet-4-6` |
+
+**The values are exactly what each agent ran already, so adopting the block
+changed no behaviour.** Verified: `model_check.py` reports **zero drift** —
+every model string in the fleet already matches a declared tier.
+
+`model_check.py` distinguishes two things on purpose. **DRIFT** (fails CI) is a
+model string matching no declared tier: an agent nobody knows the model of,
+which is the state this policy exists to end. **HARDCODED** (warns) is a string
+that is correct today but written longhand, so it will not follow the next
+upgrade.
+
+**Migrated:** `ops/lead_agent` now carries `model_tier: customer_copy` and
+resolves through `model_for()`. 20 tests green.
+
+**Deliberately NOT migrated in this change — 10 strings, and why:** none of
+`ops/call_agent`, `ops/feedback-agent`, `ops/tutor-issues` or the six
+`marketing/scripts` import `email/src` today, so pointing them at the resolver
+adds a new import dependency to four live engines. That is a per-agent PR with
+that agent's own tests, not a drive-by. They are listed by the checker on every
+CI run so they cannot be forgotten, and they are correct today either way.
+
+**Not a cost lever.** At ~40 leads/month the bill is pennies at any tier; the
+constraint is quality on customer-facing copy. Moving anything DOWN a tier
+should wait for an eval, and none of these agents has one — noted as the real
+next gap.
+
+**Files:** `email/config.yaml`, `email/src/config.py`,
+`ops/fleet-health/model_check.py` (new), `.github/workflows/fleet-docs.yml`,
+`ops/lead_agent/config.yml`, `ops/lead_agent/lead_agent.py`,
+`ops/lead_agent/README.md`, `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-22 — `ops/lead_agent`: leads get a reasoning engine, not a sequence (BUILT, draft-only)
 
 **What:** Roman: "build a new workflow or even better an agentic model that
