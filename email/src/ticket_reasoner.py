@@ -390,6 +390,10 @@ def run(dry_run: bool = False, limit: int | None = None,
     evs = mark_duplicates(evs)
 
     tally, closed, pestered, lines = Counter(), 0, 0, []
+    # A ceiling per PERSON per run. The ladder is meant to escalate, not to
+    # deliver a morning's reading. 2026-09-23 dry run: 26 for one scheduler.
+    cap = int(rc.get("max_pesters_per_person", 5))
+    per_person, review, capped = Counter(), [], 0
     for ev in evs:
         v = reason(ev)
         tally[v["verdict"]] += 1
@@ -402,24 +406,49 @@ def run(dry_run: bool = False, limit: int | None = None,
             if not dry_run and rc.get("allow_close"):
                 _close(ev, v)
                 closed += 1
+        elif v["verdict"] in CLOSEABLE:
+            # Believed done, not provably done. A glance, never a nag: the 64-DM
+            # dry run of 2026-09-23 would have chased Kath about Hope McLendon
+            # (RESOLVED) and Janelle about a lesson-note notice (NO_ACTION).
+            # "Pestering someone about finished work is how a bot gets muted."
+            act = "REVIEW"
+            review.append({"ticket": ev["ticket_id"], "owner": owner_key,
+                           "verdict": v["verdict"], "confidence": v.get("confidence"),
+                           "subject": ev["subject"][:60]})
         elif pester and ev["age_hours"] >= float(rc.get("owner_after_hours", 24)):
             targets = pester_targets(ev["age_hours"], owner_key)
+            targets = [k for k in targets if per_person[k] < cap]
             if targets and _due_for_pester(ev["ticket_id"], now):
                 act = "PESTER " + ",".join(targets)
+                for k in targets:
+                    per_person[k] += 1
                 if not dry_run:
                     _pester(ev, v, targets)
                     pestered += 1
+            elif not targets:
+                act = "capped"
+                capped += 1
 
         lines.append({"ticket": ev["ticket_id"], "subject": ev["subject"][:56],
                       "age_h": ev["age_hours"], "owner": owner_key,
                       "verdict": v["verdict"], "confidence": v.get("confidence"),
                       "reason": v.get("reason", "")[:150], "action": act})
 
+    if review:
+        print(f"\n{len(review)} believed done but unproven — for a glance, nobody was nagged:")
+        for r in review:
+            print(f"  {r['ticket']}  {r['owner'] or 'unassigned':10s} "
+                  f"{r['verdict']:10s} {r['confidence']}  {r['subject']}")
+    if capped:
+        print(f"\n{capped} ticket(s) held back by the {cap}-per-person ceiling; "
+              f"they come round on the next run.")
     if dry_run:
         _print_dry_run(lines, tally)
     else:
-        print(f"reasoner: {dict(tally)} | closed {closed} | pestered {pestered}")
-    return {"tally": dict(tally), "lines": lines, "closed": closed, "pestered": pestered}
+        print(f"reasoner: {dict(tally)} | closed {closed} | pestered {pestered} "
+              f"| review {len(review)} | capped {capped}")
+    return {"tally": dict(tally), "lines": lines, "closed": closed,
+            "pestered": pestered, "review": review, "capped": capped}
 
 
 def _close(ev: dict, v: dict) -> None:

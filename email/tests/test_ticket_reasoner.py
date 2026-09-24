@@ -370,6 +370,30 @@ def _run_one(monkeypatch, verdict_json, dry_run, cfg=None, hours=48):
     return out, closed, dms
 
 
+def _run_many(monkeypatch, verdicts, dry_run, cfg=None, hours=48):
+    """Same harness, N tickets, so the per-person ceiling can be exercised."""
+    cfg = cfg or CFG
+    closed, dms = [], []
+    tickets = [_ticket(tid=f"T{i}", hours=hours) for i in range(len(verdicts))]
+    monkeypatch.setattr(tr, "cfg", lambda: cfg)
+    monkeypatch.setattr(tr, "staff", lambda k: (cfg["staff"].get(k) or {}))
+    monkeypatch.setattr(tr.hs, "search_open_tickets", lambda: tickets)
+    monkeypatch.setattr(tr.hs, "invoiced_po_numbers", lambda: set())
+    monkeypatch.setattr(tr.hs, "get_ticket_emails", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_notes", lambda t: [])
+    monkeypatch.setattr(tr.hs, "get_ticket_contacts", lambda t: [])
+    monkeypatch.setattr(tr.hs, "ticket_url", lambda t: "u")
+    monkeypatch.setattr(tr.hs, "update_ticket_stage", lambda t, s: closed.append((t, s)))
+    monkeypatch.setattr(tr.hs, "add_ticket_note", lambda t, b: None)
+    monkeypatch.setattr(tr.jc, "index_by_number", lambda since_days=90: {})
+    monkeypatch.setattr(tr.audit, "append", lambda r: None)
+    monkeypatch.setattr(tr.audit, "last_reasoner_pester", lambda t: None)
+    monkeypatch.setattr(tr.slack_client, "dm", lambda u, m: dms.append(u))
+    seq = iter(verdicts)
+    monkeypatch.setattr(tr, "reason", lambda ev, client=None: next(seq))
+    return tr.run(dry_run=dry_run), closed, dms
+
+
 HIGH = {"verdict": "RESOLVED", "confidence": 0.95, "reason": "invoice exists"}
 LOW = {"verdict": "RESOLVED", "confidence": 0.6, "reason": "probably fine"}
 BALL = {"verdict": "BALL_IN_COURT", "confidence": 0.8, "reason": "they asked twice"}
@@ -387,8 +411,25 @@ def test_close_happens_when_allowed(monkeypatch):
 
 
 def test_low_confidence_is_never_closed(monkeypatch):
+    out, closed, _dms = _run_one(monkeypatch, LOW, dry_run=False)
+    assert closed == [] and out["closed"] == 0
+
+
+def test_believed_done_but_unproven_is_reviewed_never_nagged(monkeypatch):
+    """CHANGED 2026-09-23. This used to DM the owner and the supervisor.
+
+    The dry pass that morning judged 127 tickets and would have sent 64 DMs,
+    seven of them about finished work, because the pester branch was an `elif`
+    and any CLOSEABLE verdict under the threshold fell through to it. Kath would
+    have been chased about a RESOLVED ticket, Janelle about a lesson-note
+    notice. This module's own docstring is the reason it is now a review line:
+    "Pestering someone about finished work is how a bot gets muted."
+    """
     out, closed, dms = _run_one(monkeypatch, LOW, dry_run=False)
-    assert closed == [] and dms == ["UK", "UM"]   # 48h -> owner + supervisor
+    assert dms == []
+    assert closed == []
+    assert out["lines"][0]["action"] == "REVIEW"
+    assert [r["ticket"] for r in out["review"]] == ["T1"]
 
 
 def test_allow_close_off_means_no_writes(monkeypatch):
@@ -443,3 +484,19 @@ def test_waiting_still_pesters(monkeypatch):
     waiting = {"verdict": "WAITING", "confidence": 0.9, "reason": "family went quiet"}
     out, closed, dms = _run_one(monkeypatch, waiting, dry_run=False)
     assert closed == [] and dms == ["UK", "UM"]
+
+
+# ── the per-person ceiling ─────────────────────────────────────────────────
+def test_one_person_is_not_handed_a_mornings_reading(monkeypatch):
+    """2026-09-23: the dry pass would have sent 26 DMs to one scheduler in a
+    single run. That is a wall of text, not an escalation."""
+    out, _closed, dms = _run_many(monkeypatch, [BALL] * 9, dry_run=False)
+    assert len(dms) <= 5 * 2          # owner + supervisor, five apiece at most
+    assert out["capped"] >= 1
+
+
+def test_held_back_tickets_are_reported_not_silently_dropped(monkeypatch):
+    out, _closed, _dms = _run_many(monkeypatch, [BALL] * 9, dry_run=False)
+    actions = [ln["action"] for ln in out["lines"]]
+    assert "capped" in actions
+    assert out["capped"] == actions.count("capped")

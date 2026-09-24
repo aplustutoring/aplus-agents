@@ -142,6 +142,43 @@ lifecycle / lead status before it reads messages; a fill-rate audit of the
 **Files:** email/src/{hubspot_client,main,po_inbox}.py, email/config.yaml,
 ops/call_agent/{call_agent.py,config.yml}, tests, docs/CHANGELOG.md.
 
+## 2026-09-23 — reasoner: never nag anyone about work that is already done
+
+The reasoning sweep now has a cron and ran a dry pass this morning over **127
+open tickets**. Its judgement is good: it found a 70-day School Partner ticket
+and a 45-day GMAT client for whom no tutor was ever matched, and it explains
+itself in sentences.
+
+Its first live run would have sent **64 DMs**, plus the escalation seat on every
+one, and **26 to a single scheduler**. Seven of those were about finished work:
+
+    35d kath     RESOLVED   0.72  Hope McLendon
+    28d kath     RESOLVED   0.82  Solis, Franny — School Partner
+     9d janelle  NO_ACTION  0.82  [Tutor Issue] Lesson notes not completed: Jon Bax
+
+The pester branch was an `elif`, so any CLOSEABLE verdict sitting below the
+0.85 close threshold fell straight through into a DM. This module's own
+docstring says why that is the wrong direction: "Pestering someone about
+finished work is how a bot gets muted." It is also what switched the aging
+sweep off in August after 88 messages in a day on one person's channel.
+
+**What changed** (`email/src/ticket_reasoner.py`, `email/config.yaml`,
+`email/tests/test_ticket_reasoner.py`):
+
+- A CLOSEABLE verdict under the threshold is now **REVIEW**, never PESTER. It is
+  work we believe is done but cannot prove, so it prints as a short list for a
+  glance and nobody is chased.
+- **`max_pesters_per_person: 5`** per run. Held-back tickets are reported as
+  `capped` and come round on the next run rather than being dropped.
+- `run()` returns `review` and `capped` alongside the existing counters.
+
+`test_low_confidence_is_never_closed` used to assert the old behaviour and has
+been rewritten to the new contract, with the reason recorded in its docstring.
+
+**Still Roman's call:** flipping `REASONER_LIVE`. The recommended order is one
+`--no-pester` pass first (63 closes, no DMs), then the ladder on.
+
+---
 ## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now
 
 **What changed** (`email/src/low_balance.py`, `email/src/case_engine.py`,
