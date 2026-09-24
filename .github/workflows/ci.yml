@@ -1,0 +1,96 @@
+name: Fleet — tests
+
+# Runs every pytest suite in the repo on every pull request.
+#
+# Why this exists (2026-09-23): 75 test files had been written and none of them
+# ran anywhere but a laptop. The registry-lockstep test for tutor-issues was
+# written specifically to catch the #213 enum outage and, as wired, could not.
+# Every guard added in September (429 retry, audit redaction, low-balance
+# rehydrate) shipped unverified on push.
+#
+# How it works: each directory holding test_*.py is run as its own pytest
+# invocation, rooted at the area (email, ops/<agent>, agents/<agent>, scripts).
+# One invocation per area is deliberate — every area's conftest.py inserts its
+# own sys.path and forces DRY_RUN, and the hyphenated ops dirs are not packages,
+# so a single repo-wide `pytest` would collide on module names. Discovery is
+# automatic: a new agent that ships with tests is covered without editing this
+# file.
+#
+# Blocking: a red run only blocks a merge once main has branch protection
+# requiring the "tests" check. Until Roman flips that setting this is a loud
+# signal on the PR, not a gate.
+#
+# No secrets. The conftests block live HTTP; anything that needs the network
+# is a bug in the test, not a missing secret.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TZ: America/Los_Angeles
+  DRY_RUN: "true"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            email/requirements.txt
+            ops/scorecard/requirements.txt
+            ops/call_agent/requirements.txt
+
+      # Union of what the tested modules import. Verified in a clean venv on
+      # 2026-09-23: 1,147 tests across 12 areas pass with exactly this set.
+      - name: Install
+        run: |
+          pip install -q pytest \
+            -r email/requirements.txt \
+            -r ops/scorecard/requirements.txt \
+            -r ops/call_agent/requirements.txt \
+            openpyxl
+
+      - name: Run every test area
+        run: |
+          set -u
+          find . -name 'test_*.py' \
+              -not -path './.claude/*' \
+              -not -path './archive/*' \
+              -not -path '*/node_modules/*' \
+            | sed -E 's#/[^/]+$##; s#/tests$##; s#^\./##' \
+            | sort -u > /tmp/test-areas
+          echo "areas:"; sed 's/^/  /' /tmp/test-areas
+          failed=""
+          # read-loop, not `for x in $var`: zsh does not word-split unquoted
+          # variables, so the same script must not depend on the shell.
+          while IFS= read -r area; do
+            [ -n "$area" ] || continue
+            echo "::group::$area"
+            if python -m pytest "$area" -q -p no:cacheprovider; then
+              echo "::endgroup::"
+            else
+              echo "::endgroup::"
+              echo "::error title=tests failed::$area"
+              failed="$failed $area"
+            fi
+          done < /tmp/test-areas
+          if [ -n "$failed" ]; then
+            echo "FAILED:$failed"
+            exit 1
+          fi
+          echo "all areas green"

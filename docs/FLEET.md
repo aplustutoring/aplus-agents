@@ -2,7 +2,7 @@
 
 **Generated from `registry.yml` — do not edit by hand.** Regenerated on every merge to `main` by `ops/fleet-health/fleet_brief.py`. Self-contained on purpose: paste the whole thing into a Claude chat (or hand it to a new person) and it is everything needed to reason about the fleet, current as of the last merge.
 
-**65 registered agents** — 44 active · 18 manual · 3 deprecated · across 13 engines.
+**66 registered agents** — 45 active · 18 manual · 3 deprecated · across 13 engines.
 
 ## What this is
 
@@ -43,7 +43,7 @@ outranks those two. HubSpot is where humans act.
 | Call agent | 2 | 2 |
 | Messenger | 2 | 1 |
 | Feedback agent | 3 | 3 |
-| Fleet health | 10 | 7 |
+| Fleet health | 11 | 8 |
 | Charter analysis | 10 | 2 |
 | Events | 5 | 4 |
 | Cohort intake | 1 | 1 |
@@ -56,7 +56,7 @@ The distinction that matters most, and it does not follow engine lines.
 
 **Writes to live systems on its own (27):** `content-build`, `spotlight-orchestrator`, `scorecard-weekly-sync`, `retention-sync`, `missed-lessons-sync`, `call-agent`, `feedback-fix`, `fleet-retry`, `email-triage`, `email-sla-sweep`, `email-po-inbox`, `email-deal-sync`, `case-engine`, `email-low-balance`, `email-first-lesson`, `teacher-sequence-enroll`, `sage-oak-booth`, `eo-booth-agent`, `spotlight-drive-watcher`, `feedback-slack-relay`, `campaign-launch`, `tutor-issues`, `cohort-intake`, `tw-invoice-due-sync`, `claude-code-action`, `blue-ridge-booth`, `unanswered-asks`.
 
-**Reports, drafts, or waits for a human (17):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `queue-digests`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `pr-merge-nudge`, `branch-hygiene`, `delilah-booth`.
+**Reports, drafts, or waits for a human (18):** `topic-gen`, `blog-metrics`, `deal-sync-relay`, `call-agent-webhook-relay`, `feedback-agent`, `task-completion-sweep`, `email-weekly-digest`, `email-daily-summary`, `email-hourly-update`, `queue-digests`, `email-po-daily-report`, `email-draft-feedback`, `credential-expiry`, `fleet-docs`, `ci-tests`, `pr-merge-nudge`, `branch-hygiene`, `delilah-booth`.
 
 **Manual dispatch only (18):** `rerender-textstory`, `backfill-logsheet`, `verify-logsheet`, `charter-gap-analysis`, `teacher-outreach-2026-09`, `tw-tutor-active-check`, `tw-invoice-status`, `tw-invoice-xref`, `tw-invoice-backfill`, `hubspot-schema`, `hubspot-archive`, `bulk-messenger`, `ticket-reasoner`, `email-backfill-deal-props`, `tutor-roster-check`, `campaign-revenue-report`, `automation-audit`, `booth-deploy`.
 
@@ -169,6 +169,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 | Agent | Runs | Status | Reads | Writes |
 |---|---|---|---|---|
 | **branch-hygiene**<br>Fleet — branch hygiene (Mon 9 AM PT) | 09:00 PDT / 08:00 PST Mon | active | git | Slack |
+| **ci-tests**<br>Fleet — tests (every pytest suite, every PR) | event | active | git: the PR head, every */tests/test_*.py and */test_*.py outside .claude/ and archive/ | one Actions check run named `tests` on the PR (red = at least one area failed); nothing outside the PR |
 | **claude-code-action**<br>Claude Code | event | active | GitHub: the issue or PR thread + the repo | GitHub: branch + PR, or PR updates (never merges) |
 | **credential-expiry**<br>Credential expiry check (#AP044) | manual | active | knowledge/credentials.yml | Slack: warning to CREDENTIAL_ALERT_CHANNEL when a credential is within 180 days of expiry |
 | **fleet-docs**<br>Fleet — registry check + FLEET.md | event | active | registry.yml, .github/workflows/, docs/FLEET.md | docs/FLEET.md |
@@ -184,6 +185,7 @@ Note: *writes to live systems* includes agents whose only write is a **draft** (
 - **credential-expiry** — NEVER REMEDIATES
 - **hubspot-schema** — Idempotent + additive only
 - **fleet-docs** — ROLLOUT: PR runs use --warn, so an unregistered workflow annotates the PR without blocking the merge
+- **ci-tests** — Built 2026-09-23
 - **pr-merge-nudge** — NEVER MERGES
 - **branch-hygiene** — Catches work stranded outside main (2026-08-05 incidents: PR #47 sat unmerged for a week; a CallRail matching fix sat unpushed locally for 16 days)
 - **automation-audit** — A census, not a monitor, so deliberately unscheduled
