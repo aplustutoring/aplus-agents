@@ -291,6 +291,10 @@ case_engine:
     probation_days: 30
   digest:
     channel: "C0AL86J4Y9Y"                 # Leadership team
+    # Roman 2026-09-23: charter_sales oversees renewals (the schedulers own
+    # their split by family surname). Monday: the per-scheduler renewals brief
+    # goes to this seat by DM alongside the channel digest.
+    renewals_oversight: charter_sales
 
 # ── Low-balance renewal agent (Roman 2026-09-08) ─────────────────
 # A Teachworks "package balance ... has reached the level of N hours" email
@@ -1044,6 +1048,40 @@ thresholds:
 # SLA escalation chain. 1x breach → the owner. 2x → level2 (supervisor who watches the
 # owners). 3x → level3 (last resort) + ticket moved to Stuck. level2 is skipped if the
 # supervisor is already the owner (no double-ping).
+# Contact-creation contract (Roman 2026-09-24): a contact an agent creates is
+# born with persona, owner seat, lifecycle and (families) a lead status. Email
+# triage derives the persona from the category it classified; PO intake and
+# the booths already know theirs. Categories missing here create the contact
+# with NO persona and a ticket note asking a human to set it.
+contact_creation:
+  persona_by_category:
+    scheduling: Family
+    reschedule: Family
+    cancellation: Family
+    complaint: Family
+    tutor_issue: Family               # a family reporting a tutor is a family
+    payment_dispute: Family
+    campaign_family: Family
+    low_balance: Family
+    review_received: Family
+    tor_inquiry: Teacher of Record/EF/ES
+    new_po: Teacher of Record/EF/ES
+    school_partner: Teacher of Record/EF/ES
+    campaign_school: Teacher of Record/EF/ES
+    charter_newsletter: Teacher of Record/EF/ES
+    business_dev: Decision Maker/Director
+    recruitment: Tutors
+    tutor_document: Tutors
+  lifecycle_by_persona:
+    Family: lead                      # no deal yet; deal_sync/PO intake promote to customer
+    Tutors: lead
+    Decision Maker/Director: lead
+    Teacher of Record/EF/ES: ""       # teachers are neither leads nor customers
+  lead_status_by_persona:
+    Family: "NEW"
+    Teacher of Record/EF/ES: "Charter School Teacher TOR/EF"
+  fallback_owner_role: visionary      # only when routing produced no seat
+
 escalation:
   # level2 DELETED 2026-09-17. It was the Operations Lead step, and Roman's
   # instruction on Mandy's departure was explicit: "Ticket escalations as a
@@ -1082,6 +1120,13 @@ reasoner:
   # sees a DM from Roman, not from a bot (Roman 2026-09-18: "I want the
   # pestering to look like a direct message from me"). Token unset = bot DM.
   pester_as: visionary
+  # Lead status LABELS (never values) that mean the contact is not live work
+  # right now: the reasoner closes the ticket as PARKED without reading a
+  # single message (Roman 2026-09-24: the record decides). Daniella Stein and
+  # Mahfam Mohseni sat as "waiting families" for weeks with this status set.
+  parked_lead_statuses:
+    - "Check Back Quarterly"
+    - "Dead Opportunity/Unqualified"
 
   # A ceiling per PERSON per run. The 2026-09-23 dry pass would have sent 64
   # DMs, 26 of them to one scheduler, which is a morning's reading rather than

@@ -237,7 +237,7 @@ def test_parent_from_po_creates_contact(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None:
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw:
                         created_contact.append((e, f, l, phone)) or {"id": "C9"})
     monkeypatch.setattr(po.hs, "find_family_contact",
                         lambda sf, ln: (_ for _ in ()).throw(AssertionError("must not fall back")))
@@ -298,7 +298,7 @@ def test_tor_associated_to_created_deal(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None:
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw:
                         created_contacts.append(e) or {"id": f"C-{e}"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
     notes = []
@@ -584,7 +584,7 @@ def test_sync_runs_from_create_path_with_family(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": f"C-{e}"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw: {"id": f"C-{e}"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
     monkeypatch.setattr(po.hs, "associate_contacts",
                         lambda f, t, type_id=15, category="USER_DEFINED":
@@ -602,14 +602,18 @@ def test_persona_stamped_on_created_tor_and_parent(monkeypatch):
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None:
-                        created.update({e: extra_props}) or {"id": f"C-{e}"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw:
+                        created.update({e: kw}) or {"id": f"C-{e}"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com", tor_email="terri@school.org"), notes)
-    assert created["mom@x.com"] == {"a_persona": "Family"}
-    assert created["terri@school.org"] == {"hs_lead_status": "Charter School Teacher TOR/EF",
-                                           "a_persona": "Teacher of Record/EF/ES"}
+    # creation contract: persona + owning seat + lifecycle, not just a persona
+    assert created["mom@x.com"] == {"persona": "Family", "owner_role": "charter_sales",
+                                    "lifecycle": "customer"}
+    assert created["terri@school.org"] == {"persona": "Teacher of Record/EF/ES",
+                                           "owner_role": "sales",
+                                           "lead_status": "Charter School Teacher TOR/EF",
+                                           "lifecycle": None}
 
 
 def test_existing_contacts_never_persona_patched(monkeypatch):
@@ -810,7 +814,7 @@ def test_deal_name_parent_student_school_seq_year(monkeypatch):
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C9"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw: {"id": "C9"})
     monkeypatch.setattr(po.hs, "create_deal",
                         lambda name, pl, st, amt=None, **k: created.append(name) or {"id": "D1"})
     notes = []
@@ -915,7 +919,7 @@ def test_parent_reply_resolves_chase(monkeypatch):
     monkeypatch.setattr(po.hs, "find_contact_by_email",
                         lambda e, properties=None: None if e == "mom@x.com" else {"id": "C-tor"})
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C-mom"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw: {"id": "C-mom"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
     monkeypatch.setattr(po.hs, "_write",
                         lambda m_, p_, payload=None: patches.append((p_, payload)) or {})
@@ -1859,7 +1863,7 @@ def test_chase_resolution_arms_parent_sms(monkeypatch):
              "pipeline": "907748", "po_number": "4471", "thread_id": "TH9"}
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C-mom"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw: {"id": "C-mom"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
     monkeypatch.setattr(po.hs, "_write",
                         lambda m_, p_, payload=None: patches.append((p_, payload)) or {})
@@ -2112,7 +2116,7 @@ def test_resolve_renames_from_live_deal_not_stale_audit(monkeypatch):
                                                    "NEEDS PARENT - Charlotte Czaja - Heartland 1 - 26/27"}})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: None)
     monkeypatch.setattr(po.hs, "create_contact",
-                        lambda e, f=None, l=None, phone=None, extra_props=None: {"id": "C-mom"})
+                        lambda e, f=None, l=None, phone=None, extra_props=None, **kw: {"id": "C-mom"})
     monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: {})
     monkeypatch.setattr(po.hs, "_write",
                         lambda m_, p_, payload=None: patches.append((p_, payload)) or {})

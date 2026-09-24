@@ -376,9 +376,12 @@ def _no_lessons_alert(po: dict, deal_name: str, note_parts: list[str],
 # multi-select checkbox; a single value is a plain string, multiple are
 # semicolon-separated). Existing contacts are never overwritten — the checkbox
 # may already carry other personas.
-TOR_CREATE_PROPS = {"hs_lead_status": "Charter School Teacher TOR/EF",
-                    "a_persona": "Teacher of Record/EF/ES"}
-FAMILY_CREATE_PROPS = {"a_persona": "Family"}
+# Creation contract (hubspot_client.create_contact): persona + owning SEAT +
+# lifecycle at birth. Teachers belong to the sales seat (#AP046); a family
+# named on a purchase order is a customer of the charter_sales seat.
+TOR_CREATE = dict(persona="Teacher of Record/EF/ES", owner_role="sales",
+                  lead_status="Charter School Teacher TOR/EF", lifecycle=None)
+FAMILY_CREATE = dict(persona="Family", owner_role="charter_sales", lifecycle="customer")
 
 
 def _sync_family_tor(family_id, tor_id, tor_label: str, note_parts: list[str]) -> None:
@@ -458,8 +461,8 @@ def _heal_tor_contact(tor: dict, note_parts: list[str]) -> None:
         return
     vals = [v for v in (props.get("a_persona") or "").split(";") if v]
     fixes = {}
-    if TOR_CREATE_PROPS["a_persona"] not in vals:
-        fixes["a_persona"] = ";".join(vals + [TOR_CREATE_PROPS["a_persona"]])
+    if TOR_CREATE["persona"] not in vals:
+        fixes["a_persona"] = ";".join(vals + [TOR_CREATE["persona"]])
     if "hs_lead_status" in props and "Family" not in vals \
             and props.get("hs_lead_status") != hs.TOR_LEAD_STATUS:
         fixes["hs_lead_status"] = hs.TOR_LEAD_STATUS
@@ -515,7 +518,7 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
             if not tor:
                 tor = hs.create_contact(t_email, po.get("tor_first") or None,
                                         po.get("tor_last") or None,
-                                        extra_props=TOR_CREATE_PROPS)
+                                        **TOR_CREATE)
                 note_parts.append(f"🧑‍🏫 CREATED TOR contact <{t_email}> (persona + lead "
                                   f"status stamped) — if this teacher already exists under "
                                   f"a personal email, merge manually.")
@@ -1158,7 +1161,7 @@ def _resolve_parent_chase(chase: dict, po: dict, note_parts: list[str]) -> None:
             c = hs.create_contact(p_email, po.get("parent_first") or None,
                                   po.get("parent_last") or None,
                                   phone=po.get("parent_phone") or None,
-                                  extra_props=FAMILY_CREATE_PROPS)
+                                  **FAMILY_CREATE)
             created = True
         cid = c.get("id")
         if not cid or cid == "DRYRUN":
@@ -1809,7 +1812,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                     created_c = hs.create_contact(p_email, po.get("parent_first") or None,
                                                   po.get("parent_last") or None,
                                                   phone=po.get("parent_phone") or None,
-                                                  extra_props=FAMILY_CREATE_PROPS)
+                                                  **FAMILY_CREATE)
                     contact_id = created_c.get("id")
                     parent_name = f"{po.get('parent_first', '')} {po.get('parent_last', '')}".strip()
                     contact_bit = (f"CREATED HubSpot contact {po.get('parent_first', '')} "
@@ -1839,7 +1842,7 @@ def _handle_one_po(po: dict, note_parts: list[str], attachments: list[dict] | No
                         created_c = hs.create_contact(fam["email"], fam.get("parent_first") or None,
                                                       fam.get("parent_last") or None,
                                                       phone=fam.get("phone") or None,
-                                                      extra_props=FAMILY_CREATE_PROPS)
+                                                      **FAMILY_CREATE)
                         contact_id = created_c.get("id")
                         parent_name = f"{fam['parent_first']} {fam['parent_last']}".strip()
                     parent_email_res = fam["email"]

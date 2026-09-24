@@ -110,8 +110,15 @@ def jc_texts(hours, max_pages=40):
     Paging is ZERO-indexed and order=asc puts the OLDEST page first, so a
     single unpaginated call returns stale rows and misses everything recent
     (both verified live 2026-09-14). Start at 0 and walk next_page_link.
+
+    from_datetime is read in the ACCOUNT clock (PT) while the rows come back
+    stamped UTC. This script is run by hand from a Mac that is already on PT,
+    so a naive now() happened to work here, but the same line on a UTC runner
+    blinded ops/unanswered for a week (2026-09-17 to 09-23). Derive the clock
+    rather than inherit it.
     """
-    since = datetime.now() - timedelta(hours=hours)
+    tz = ZoneInfo("America/Los_Angeles")
+    since = datetime.now(timezone.utc).astimezone(tz) - timedelta(hours=hours)
     out, page = [], 0
     while page < max_pages:
         r = requests.get(f"{JC}/v2.1/texts", headers=_jc_headers(), timeout=40,

@@ -7,6 +7,141 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — ops/unanswered was blind for a week: a cursor on the wrong clock
+
+**What changed** (`ops/unanswered/unanswered.py`, `ops/checkin/checkin.py`,
+`.github/workflows/unanswered-asks.yml`, `ops/unanswered/tests/test_unanswered.py`)
+- `fetch_inbound_texts` builds its JustCall cursor on the ACCOUNT clock
+  (`justcall.account_timezone`, already declared in `config.yml`) instead of a
+  naive `datetime.now()`.
+- New `assert_window_really_empty`: when the window returns nothing, ask the
+  one question the cursor cannot influence, what is the newest text in the
+  account. If it landed after the window opened, the run raises instead of
+  reporting peace.
+- `unanswered-asks.yml` gets `TZ: America/Los_Angeles`, which every other
+  state-writing workflow in the repo already had. Belt and braces now that the
+  code derives the clock itself.
+- The same naive cursor in `ops/checkin/checkin.py` fixed before it ships.
+- Three tests, the first of which forces `TZ=UTC` so it fails on a PT laptop
+  where the bug cannot reproduce.
+
+**Why**
+`from_datetime` is read in the account clock (PT) while the rows come back
+stamped UTC. The workflow set no TZ, so `datetime.now()` on the runner was UTC
+and every run asked for a window seven hours in the future. JustCall answered
+HTTP 200 with 0 of 0. From 2026-09-17 to 2026-09-23 the agent logged
+`scanned 0 inbound texts` on every run, `seen.json` stayed `[]`, `open.json`
+stayed `{}`, and all ~500 runs were green.
+
+Measured, not inferred. The same call on 2026-09-23 at 19:12 PT: a UTC cursor
+returned 0 rows of 0, a PT cursor returned 66 rows (27 inbound). Re-run of the
+fixed agent under `TZ=UTC`, dry: `scanned 28 inbound texts`. Over a 48-hour
+window the detector matched 7 real asks for a person, including "I didn't get
+the link can you call now?" and "Good Morning Yolanda, I am checking in to see
+how finding a tutor for Hudson is coming along" — every one of them invisible
+to the agent built to catch exactly that.
+
+The knowledge was not missing. The call agent hit this trap on 2026-07-17 and
+documented it in place (`ops/call_agent/call_agent.py:209`), and this agent's
+own `config.yml` carries the line "from_datetime is read in the ACCOUNT
+timezone". The code simply never read the key. Writing a trap down does not
+defend against it; a test that stands where the runner stands does.
+
+Second lesson, the one that cost the week: a safety net that reports zero is
+indistinguishable from a safety net that is working, and nothing here could
+tell the difference. Hence the sanity check. An agent that cannot fail loudly
+is not a safety net.
+
+---
+## 2026-09-23 — Renewals oversight: Paola sees all, schedulers own their split
+
+**What changed** (`ops/queues/queue_digest.py`, `email/config.yaml`)
+- `renewals_oversight()`: a per-scheduler brief (open, lowest balance, at zero,
+  flagged, answered-but-unscheduled, oldest, 4-week renewal rate) DM'd to
+  `case_engine.digest.renewals_oversight` (charter_sales) every Monday with
+  the channel digest.
+- HubSpot (portal, no code): Renewals board cards show Hours left / Owner /
+  Funding type / Retention risk, columns sort by Hours left ascending; saved
+  views "Renewals: Janelle (A-L)", "Renewals: Yolanda (M-Z)", "Renewals: zero
+  and risk". Paola's default is the whole pipeline.
+
+**Why.** Roman 2026-09-23: "Paola has default view of all of them and
+schedulers by last names of families." The schedulers own the family
+conversation and the ticket; the metric is Paola's to oversee.
+
+---
+## 2026-09-24 — Ticket reasoner reads the contact record before any message
+
+**Roman:** "We just need to set it up in a way where we know what's going on."
+Daniella Stein and Mahfam Mohseni were both marked "Check Back Quarterly"
+(value `Using Someone Else`) in HubSpot and the reasoner still pestered their
+tickets as "waiting families" for weeks: it read emails, texts, calls and
+invoices, never the contact itself.
+
+**Now:**
+- `get_ticket_contacts` also fetches `lifecyclestage`, `hs_lead_status`,
+  `hubspot_owner_id`; `hubspot_client.lead_status_label()` maps the stored
+  value to the option LABEL (cached, one properties read), per the fleet rule
+  that agents read labels, never values.
+- `gather()` carries `contact_record` {persona, lifecycle, lead_status label}
+  and `contact_gaps` (persona / lead status missing on a lead).
+- New deterministic verdict PARKED (in CLOSEABLE): a lead status label in
+  `reasoner.parked_lead_statuses` ("Check Back Quarterly", "Dead
+  Opportunity/Unqualified") closes the ticket at 0.95 with no model call:
+  "<name>'s lead status is 'Check Back Quarterly', so this is not live work;
+  the record decides".
+- The model sees `contact_record` in its evidence and is told to read it
+  first.
+- The pester adds one line when the record is incomplete: "Also set the A+
+  Persona and lead status on the contact." That is how the creation
+  contract's gaps on older contacts get closed by humans over time.
+- 5 tests in `email/tests/test_reasoner_reads_contact.py`; 784 green.
+
+**Files:** email/src/{hubspot_client,ticket_reasoner}.py, email/config.yaml,
+email/tests/test_reasoner_reads_contact.py (new), docs/CHANGELOG.md.
+
+## 2026-09-24 — Contact-creation contract: every agent-made contact is born with persona, owner seat, lifecycle
+
+**Roman:** "Our properties are properly set from the get-go, like the A-plus
+personas and all of that." (Goldzweig had texted "too pricey"; the agent saw
+an open deal gone quiet. Wolgemuth, Habibi, Krantz arrived by email 9/19-9/22
+with no persona, no owner, no lead status, so every agent downstream guessed.)
+
+**Before:** four creation paths, four contracts. PO intake set a persona;
+booths set persona + lead status by role; the call agent set a lead status
+only; email triage created the sender with an email address and NOTHING else
+(`hs.create_contact(email)`), before it had even classified the message.
+
+**Now:**
+- `hubspot_client.creation_props()` + `create_contact(..., *, persona,
+  owner_role, lead_status=None, lifecycle="lead")`: persona and owner ROLE are
+  keyword-only and required, the role resolves to a HubSpot owner id via
+  `staff()`, unknown personas and unresolvable roles raise, `extra_props`
+  cannot override the contract. persona=None is allowed only when the
+  caller cannot tell and must be paired with a ticket note.
+- Email triage creates the sender AFTER classify + route: persona from
+  `contact_creation.persona_by_category` (config), owner = the seat routing
+  chose, lifecycle/lead status by persona (Family: lead + NEW). Junk never
+  becomes a contact. `unknown` creates the contact persona-less with the note
+  "persona unknown from the email — set A+ Persona on the contact". A test
+  fails if any routed category other than junk/unknown is missing from the map.
+- PO intake: families = Family / charter_sales / lifecycle customer; teachers
+  = Teacher of Record/EF/ES / sales (#AP046) / TOR lead status.
+- Call agent: created callers get owner = `created_contact_owner` (Paola, who
+  does all call follow-up) + lifecycle lead at birth; the persona is stamped
+  right after the summary names the caller type (parent → Family,
+  school/charter contact → TOR, tutor applicant → Tutors; vendor/spam/other
+  stay blank). Never from telco caller-ID.
+- Tests: email/tests/test_contact_creation_contract.py (6),
+  ops/call_agent/tests/test_contact_creation.py (2); 844 green.
+
+**Not in this PR (next, one at a time):** the reasoner reading persona /
+lifecycle / lead status before it reads messages; a fill-rate audit of the
+139 declared properties (30 intake-era ones are referenced by no code).
+
+**Files:** email/src/{hubspot_client,main,po_inbox}.py, email/config.yaml,
+ops/call_agent/{call_agent.py,config.yml}, tests, docs/CHANGELOG.md.
+
 ## 2026-09-23 — reasoner: never nag anyone about work that is already done
 
 The reasoning sweep now has a cron and ran a dry pass this morning over **127
@@ -1307,6 +1442,26 @@ Roman rather than a bug to silently "fix".
 **Files:** `email/src/names.py` (new), `email/src/po_inbox.py`,
 `email/src/low_balance.py`, `email/tests/test_names.py` (new),
 `email/tests/test_po_inbox.py`. 584 tests pass.
+
+---
+## 2026-09-18 — Park Day print, third pass: physical inches, WORKING
+
+**What happened:** the 100vh print rule from the second pass printed two
+pages. iPad Safari measures `vh` in print against the screen, not the paper,
+so a "100vh" card was taller than a 4x6 sheet and paginated.
+
+**Fix (`booth/public/sage-oak-park/index.html`):** the print area, the image
+and html/body are all `4in x 6in` in physical units with `@page{size:4in
+6in;margin:0}`. One page on any paper. Deployed `df78d3f8`. Roman at the
+booth, 11:15: "It works, it just takes a second for print preview to re
+align." The share-sheet path from the second pass stays as the primary route
+where Web Share can take files; this rule is the fallback that now also
+works.
+
+**Lesson for the other booth pages:** never size a print sheet in `vh` or
+`%` on iPad; use inches. `booth/index.html` (BTSC) and
+`booth/delilah/public/index.html` still carry the width:100%/100vh rule and
+should get this same block before their next use.
 
 ---
 ## 2026-09-18 — Park Day print: one page on any paper size

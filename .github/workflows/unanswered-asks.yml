@@ -23,6 +23,14 @@ on:
         type: boolean
         default: true
 
+# Every other state-writing workflow in this repo sets this. Without it the
+# runner clock is UTC, and on 2026-09-17 that silently pushed this agent's
+# JustCall cursor 7 hours into the future: a week of green runs, every one
+# reporting "scanned 0 inbound texts". The cursor now derives the account
+# clock itself, so this is belt and braces, not the fix.
+env:
+  TZ: America/Los_Angeles
+
 concurrency:
   group: aplus-state-write
   cancel-in-progress: false

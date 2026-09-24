@@ -16,6 +16,10 @@ ticket is actually in, and only then acts:
                                                     pester regardless of who
                                                     owes what)
   UNCLEAR         evidence does not settle it     → pester, never close
+  PARKED          the contact's own record says this is not live work
+                  (lead status in reasoner.parked_lead_statuses, by LABEL,
+                  e.g. "Check Back Quarterly") → close, no model call.
+                  Roman 2026-09-24: the record is read before any message.
 
 Closing is gated on `reasoner.allow_close`. Run with --dry-run first: it prints
 every verdict with the evidence behind it and writes nothing.
@@ -32,7 +36,7 @@ from . import (audit, gmail_client as gm, hubspot_client as hs,
                justcall_client as jc, slack_client)
 from .config import ANTHROPIC_API_KEY, cfg, staff
 
-CLOSEABLE = {"RESOLVED", "NO_ACTION", "DUPLICATE"}
+CLOSEABLE = {"RESOLVED", "NO_ACTION", "DUPLICATE", "PARKED"}
 AGENT_PREFIXES = ("po_inbox", "new_po")
 
 
@@ -101,6 +105,17 @@ def gather(ticket: dict, sms_index: dict | None = None) -> dict:
     if contacts:
         cp = contacts[0].get("properties") or {}
         ev["contact"] = f"{cp.get('firstname','')} {cp.get('lastname','')}".strip()
+        # The record itself, read BEFORE any message (Roman 2026-09-24): who
+        # this is and where they stand. Missing fields are named so the pester
+        # can ask for them and the creation contract's gaps stay visible.
+        ev["contact_record"] = {
+            "persona": cp.get("a_persona") or "",
+            "lifecycle": cp.get("lifecyclestage") or "",
+            "lead_status": hs.lead_status_label(cp.get("hs_lead_status")),
+        }
+        ev["contact_gaps"] = [k for k in ("persona", "lead_status")
+                              if not ev["contact_record"][k]
+                              and ev["contact_record"]["lifecycle"] in ("", "lead")]
         phone = _norm_phone(cp.get("mobilephone") or cp.get("phone"))
         if phone and sms_index is not None:
             hit = sms_index.get(phone) or {}
@@ -240,8 +255,24 @@ Rules that matter here:
 - `phone_evidence: UNAVAILABLE` means the SMS/call pull FAILED. An empty sms or
   calls list then proves nothing — never read it as "no contact happened", and
   never exceed 0.6 confidence on a ticket whose story would live in texts.
+- `contact_record` is the HubSpot contact itself: persona, lifecycle stage,
+  lead status LABEL. Read it before the messages. A family whose lead status
+  says they are not buying now outranks a polite email that went quiet.
 - Only use confidence above 0.85 when a second system proves it.
 Be terse and concrete. Quote what you saw."""
+
+
+def parked_reason(ev: dict) -> str | None:
+    """The contact's lead status label says this is not live work → the reason
+    to close, else None. Labels come from config (reasoner.parked_lead_statuses)."""
+    rec = ev.get("contact_record") or {}
+    label = (rec.get("lead_status") or "").strip()
+    parked = [str(x).strip().casefold()
+              for x in (cfg().get("reasoner", {}).get("parked_lead_statuses") or [])]
+    if label and label.casefold() in parked:
+        who = ev.get("contact") or "the contact"
+        return f"{who}'s lead status is '{label}', so this is not live work; the record decides"
+    return None
 
 
 def reason(ev: dict, client=None) -> dict:
@@ -253,6 +284,9 @@ def reason(ev: dict, client=None) -> dict:
     if ev.get("invoice_proof"):
         return {"verdict": "RESOLVED", "confidence": 0.95,
                 "reason": ev["invoice_proof"], "owed_to": "nobody"}
+    parked = parked_reason(ev)
+    if parked:
+        return {"verdict": "PARKED", "confidence": 0.95, "reason": parked, "owed_to": "nobody"}
 
     from anthropic import Anthropic  # lazy so tests need no SDK
 
@@ -260,7 +294,7 @@ def reason(ev: dict, client=None) -> dict:
     c = cfg()["classifier"]
     payload = {k: ev.get(k) for k in
                ("subject", "description", "age_hours", "quiet_hours",
-                "emails", "notes", "sms", "calls", "invoice_proof",
+                "contact_record", "emails", "notes", "sms", "calls", "invoice_proof",
                 "phone_evidence", "gmail_thread")}
     msg = client.messages.create(
         model=c["model"], max_tokens=400, system=SYSTEM,
@@ -440,9 +474,14 @@ def pester_text(first_name: str, ev: dict, v: dict, url: str) -> str:
     subject = ev["subject"][:70]
     reason = (v.get("reason") or "").strip().rstrip(".")
     why = f" {reason}." if reason else ""
+    gaps = ev.get("contact_gaps") or []
+    ask = ""
+    if gaps:
+        names = {"persona": "A+ Persona", "lead_status": "lead status"}
+        ask = " Also set the " + " and ".join(names[g] for g in gaps) + " on the contact."
     text = (f"{first_name}, this ticket has been open {days} day{'s' if days != 1 else ''} "
             f"and I still see it sitting there: {subject}.{why} "
-            f"Where are we on it? {url}")
+            f"Where are we on it?{ask} {url}")
     return text.replace(" — ", " - ").replace("—", "-").replace("--", "-")
 
 

@@ -445,6 +445,17 @@ def has_recording(call):
 # ─── Claude summarization ─────────────────────────────────────────────────────
 
 CALLER_TYPES = ["parent", "school/charter contact", "tutor applicant", "vendor", "spam", "other"]
+# caller_type → A+ persona for a contact this agent created (creation contract).
+# vendor / spam / other stay blank: a guess is worse than a blank.
+PERSONA_BY_CALLER_TYPE = {
+    "parent": "Family",
+    "school/charter contact": "Teacher of Record/EF/ES",
+    "tutor applicant": "Tutors",
+}
+
+
+def persona_for_caller_type(caller_type):
+    return PERSONA_BY_CALLER_TYPE.get(caller_type or "")
 INTENTS = ["new inquiry", "scheduling", "billing", "complaint", "school partnership", "other"]
 SENTIMENTS = ["positive", "neutral", "negative"]
 
@@ -493,6 +504,7 @@ LEAD_STATUS_LABELS = {
 }
 
 FIELD_LABELS = {
+    "a_persona": "A+ Persona",
     "whats_going_on": "What's going on?",
     "what_we_can_do_to_help": "What we can do to help",
     "student_first_name": "Student first name",
@@ -1307,7 +1319,15 @@ def create_contact_from_call(call, cfg, dry_run):
         "phone": f"+1{digits}",
         "lastname": f"Caller {digits[:3]}-{digits[3:6]}-{digits[6:]}",
         "hs_lead_status": cfg["hubspot"].get("created_contact_lead_status", "NEW"),
+        # Creation contract (Roman 2026-09-24): owner seat + lifecycle at birth.
+        # The persona is stamped right after the summary names the caller type
+        # (see persona_for_caller_type) — the transcript knows, the telco doesn't.
+        "lifecyclestage": "lead",
     }
+    owner_key = cfg["hubspot"].get("created_contact_owner") or cfg["hubspot"].get("default_task_owner")
+    owner_id = (cfg["hubspot"].get("owners") or {}).get(owner_key)
+    if owner_id:
+        props["hubspot_owner_id"] = str(owner_id)
     if dry_run:
         log.info(f"  DRY RUN — would create contact for {number} ({line})")
         return None
@@ -1853,6 +1873,9 @@ def process_call(call, cfg, dry_run, now_utc):
         # stranger 18 days later when he followed up. Far narrower than the
         # CallRail auto-create that made 838 junk contacts in July 2026.
         contact = create_contact_from_call(call, cfg, dry_run)
+        created_now = contact is not None
+    else:
+        created_now = False
     contact_label = None
     if contact:
         p = contact.get("properties", {})
@@ -1911,6 +1934,12 @@ def process_call(call, cfg, dry_run, now_utc):
             log_call_to_hubspot(contact["id"], call, summary, transcript)
             applied, skipped_updates = apply_record_updates(
                 contact, summary["record_updates"], call_date_pt)
+            persona = persona_for_caller_type(summary.get("caller_type"))
+            if created_now and persona and not (contact.get("properties") or {}).get("a_persona"):
+                hs_patch(f"crm/v3/objects/contacts/{contact['id']}",
+                         {"properties": {"a_persona": persona}})
+                contact.setdefault("properties", {})["a_persona"] = persona
+                applied.append(("a_persona", "(blank)", persona))
             new_status = summary["lead_status"]
             current_status = (contact.get("properties") or {}).get("hs_lead_status") or ""
             if new_status != "no_change" and new_status != current_status:
