@@ -271,6 +271,25 @@ def stage_label(pipeline_id: str, stage_id: str) -> str:
     return _deal_pipelines().get(pipeline_id, {}).get(stage_id, "")
 
 
+@functools.lru_cache(maxsize=1)
+def _lead_status_labels() -> dict:
+    """{value: label} for hs_lead_status. Agents read option LABELS, never
+    internal values (the portal stores "Using Someone Else" for the label
+    "Check Back Quarterly")."""
+    d = _get("/crm/v3/properties/contacts/hs_lead_status")
+    return {o.get("value"): (o.get("label") or o.get("value") or "")
+            for o in d.get("options", []) if o.get("value")}
+
+
+def lead_status_label(value: str | None) -> str:
+    if not value:
+        return ""
+    try:
+        return _lead_status_labels().get(value, value)
+    except Exception:  # noqa: BLE001 — unknown stays the raw value, never blank
+        return value
+
+
 def find_stop_stage(pipeline_id: str, patterns: list[str]):
     """The (stage_id, label) in a pipeline whose label matches a stop pattern, else (None, None)."""
     for sid, label in _deal_pipelines().get(pipeline_id, {}).items():
@@ -1021,7 +1040,8 @@ def get_ticket_contacts(ticket_id: str) -> list[dict]:
     for r in (assoc.get("results") or [])[:5]:
         try:
             out.append(_get(f"/crm/v3/objects/contacts/{r['toObjectId']}",
-                            {"properties": "firstname,lastname,email,phone,mobilephone,a_persona"}))
+                            {"properties": "firstname,lastname,email,phone,mobilephone,"
+                                           "a_persona,lifecyclestage,hs_lead_status,hubspot_owner_id"}))
         except requests.HTTPError:
             continue
     return out

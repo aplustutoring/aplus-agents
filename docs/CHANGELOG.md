@@ -24,6 +24,36 @@ schedulers by last names of families." The schedulers own the family
 conversation and the ticket; the metric is Paola's to oversee.
 
 ---
+## 2026-09-24 — Ticket reasoner reads the contact record before any message
+
+**Roman:** "We just need to set it up in a way where we know what's going on."
+Daniella Stein and Mahfam Mohseni were both marked "Check Back Quarterly"
+(value `Using Someone Else`) in HubSpot and the reasoner still pestered their
+tickets as "waiting families" for weeks: it read emails, texts, calls and
+invoices, never the contact itself.
+
+**Now:**
+- `get_ticket_contacts` also fetches `lifecyclestage`, `hs_lead_status`,
+  `hubspot_owner_id`; `hubspot_client.lead_status_label()` maps the stored
+  value to the option LABEL (cached, one properties read), per the fleet rule
+  that agents read labels, never values.
+- `gather()` carries `contact_record` {persona, lifecycle, lead_status label}
+  and `contact_gaps` (persona / lead status missing on a lead).
+- New deterministic verdict PARKED (in CLOSEABLE): a lead status label in
+  `reasoner.parked_lead_statuses` ("Check Back Quarterly", "Dead
+  Opportunity/Unqualified") closes the ticket at 0.95 with no model call:
+  "<name>'s lead status is 'Check Back Quarterly', so this is not live work;
+  the record decides".
+- The model sees `contact_record` in its evidence and is told to read it
+  first.
+- The pester adds one line when the record is incomplete: "Also set the A+
+  Persona and lead status on the contact." That is how the creation
+  contract's gaps on older contacts get closed by humans over time.
+- 5 tests in `email/tests/test_reasoner_reads_contact.py`; 784 green.
+
+**Files:** email/src/{hubspot_client,ticket_reasoner}.py, email/config.yaml,
+email/tests/test_reasoner_reads_contact.py (new), docs/CHANGELOG.md.
+
 ## 2026-09-24 — Contact-creation contract: every agent-made contact is born with persona, owner seat, lifecycle
 
 **Roman:** "Our properties are properly set from the get-go, like the A-plus

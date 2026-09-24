@@ -1120,6 +1120,13 @@ reasoner:
   # sees a DM from Roman, not from a bot (Roman 2026-09-18: "I want the
   # pestering to look like a direct message from me"). Token unset = bot DM.
   pester_as: visionary
+  # Lead status LABELS (never values) that mean the contact is not live work
+  # right now: the reasoner closes the ticket as PARKED without reading a
+  # single message (Roman 2026-09-24: the record decides). Daniella Stein and
+  # Mahfam Mohseni sat as "waiting families" for weeks with this status set.
+  parked_lead_statuses:
+    - "Check Back Quarterly"
+    - "Dead Opportunity/Unqualified"
 
 # ── Deals that stop, and the work that should stop with them ──────
 # Born from the Wolfstein cancellation of 2026-09-15: the family said no, the
