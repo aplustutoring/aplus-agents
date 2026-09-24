@@ -7,6 +7,36 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now
+
+**What changed** (`email/src/low_balance.py`, `email/src/case_engine.py`,
+`ops/hubspot-schema/properties.yml`, `ops/queues/queue_digest.py`, tests)
+- Every change in a case's live balance rewrites the ticket subject
+  ("..., 1.75 h left", quarter-hour precision, always hours) and writes the
+  numeric `[Agent] Hours left` on the ticket (`hours_left`, new, sortable)
+  and the deal (`retention_hours_left`, new, Renewal Chase column). A
+  repeat Teachworks alert does the same from the alert figure.
+- Precedence: the latest Teachworks alert is authoritative and resets the
+  anchor (`hours_at`); attended lessons after it subtract; growth in the
+  deal's PO hours since the alert (Kath adjusted the package) adds back.
+  Manual package edits are otherwise invisible: the Teachworks API has no
+  package balance endpoint.
+- Zero or below with no new PO: priority High + the risk flag immediately,
+  one DM to the case owner, no day-7 wait (once per case; the day-7 rule
+  then skips it). A trial at 0.0 flags on its first sweep for charter_sales.
+- Monday queue digest lists the five lowest balances with their owner.
+- The first stamp of an untouched case writes the property silently; a note
+  only when a lesson or a package edit moved the number.
+
+**Why.** Roman 2026-09-23: "i want the ticket title to always carry the most
+current hours balance ... zero hour triggers are high priority, especially
+with free trials."
+
+**Schema:** two new properties; run the hubspot-schema workflow
+(`dry_run=false`) before the next hourly sweep or the stamps 4xx harmlessly.
+
+---
+
 ## 2026-09-23 — Money lives on the deal's Amount only; iLEAD Level Up is its own program
 
 **What changed** (`email/src/po_inbox.py`, `email/config.yaml`,

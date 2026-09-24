@@ -174,7 +174,11 @@ def open_cases() -> dict:
                 opened[base]["tor_replied"] = True
         elif act == "low_balance_repeat":
             if key in opened and r.get("hours") is not None:
-                opened[key]["hours"] = r.get("hours")          # the latest balance drives the risk rule
+                # a Teachworks alert is authoritative: it resets the balance and
+                # the point from which attended lessons subtract (2026-09-23)
+                opened[key]["hours"] = r.get("hours")
+                opened[key]["hours_at"] = r.get("timestamp")
+                opened[key]["hours_live"] = None
         elif act == "low_balance_escalated":
             base = key.rsplit(":escalated", 1)[0]
             if base in opened:
@@ -191,6 +195,8 @@ def open_cases() -> dict:
             base = key.rsplit(":balance", 1)[0]
             if base in opened:
                 opened[base].update(hours_live=r.get("hours_live"), lessons_since=r.get("lessons_since"))
+                if r.get("po_hours_seen") is not None:
+                    opened[base]["po_hours_seen"] = r.get("po_hours_seen")
     _rehydrate_contacts(opened)
     return opened
 
@@ -874,6 +880,10 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
                                             f"{_fmt_hours(alert['hours'], alert['unit'])} on "
                                             f"{alert['package']}. Case already open; no new outreach.")
                     hs.link_thread_to_ticket(thread_id, tid)
+                    # the alert is authoritative: the title and hours_left follow it now
+                    ce.set_props(tid, {"subject": _subject_with_hours(prior.get("subject") or "", float(alert["hours"])),
+                                       "hours_left": str(float(alert["hours"]))})
+                    _stamp_deal(prior.get("deal_id"), {"retention_hours_left": str(float(alert["hours"]))})
                 except Exception as e:  # noqa: BLE001
                     print(f"  ⚠️  repeat-alert note failed (non-fatal): {e}")
             record.update(action_taken="low_balance_repeat", ticket_id=tid)
@@ -1047,7 +1057,7 @@ def handle_alert(thread_id: str, message: dict, alert: dict) -> dict:
         print(f"  ⚠️  tutor-ticket link failed (non-fatal): {e}")
     now_iso = datetime.now(timezone.utc).isoformat()
     record.update(ticket_id=tid, contact_id=contact_id, deal_id=(deal or {}).get("id"),
-                  pipeline=pipeline, school=ctx["school"], tor_email=tor_email,
+                  pipeline=pipeline, school=ctx["school"], tor_email=tor_email, subject=subject,
                   tor_blocked=tor_blocked, charter=charter, armed=armed,
                   sla_due=sla_due.isoformat(), opened_at=now_iso, flags=flags)
     if tid and tid != "DRYRUN":
@@ -1505,11 +1515,43 @@ def _attended_since(since_date: str, lb: dict) -> dict:
     return out
 
 
+def _hours_label(h: float) -> str:
+    """Quarter-hour precision, in hours (Roman 2026-09-23: 'i want it in
+    hours'): 1.75 → '1.75 h left', 0 → '0 h left'."""
+    q = round(max(0.0, float(h)) * 4) / 4
+    return f"{q:g} h left"
+
+
+def _subject_with_hours(subject: str, live: float) -> str:
+    """'Low balance: Ember Seeley (iLead), 2.5 hours left' → '..., 1.75 h left'.
+    The ticket title always carries the current balance."""
+    base = re.sub(r",\s*[\d.]+\s*(?:h|hours?|lessons?)\s+left\s*$", "", subject or "", flags=re.I)
+    return f"{base}, {_hours_label(live)}"
+
+
+def _deal_po_hours(case: dict) -> float | None:
+    """The deal's PO hours right now (Kath edits the deal when a package is
+    adjusted); None when unreadable."""
+    did = case.get("deal_id")
+    if not did or did == "DRYRUN":
+        return None
+    try:
+        v = (hs._get(f"/crm/v3/objects/deals/{did}", {"properties": "number_of_hours_in_this_po"})
+             .get("properties") or {}).get("number_of_hours_in_this_po")
+        return float(v) if v not in (None, "") else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _update_live_hours(cases: dict, lb: dict) -> None:
-    """Hourly: the live balance of every open case = the alert's balance minus
-    the student's attended lessons since the alert (Roman 2026-09-22: fire at
-    3 hours, not at Teachworks' 4). Audited and noted on the ticket only when
-    the number changes; a Teachworks failure leaves every case as it was."""
+    """Hourly: the live balance of every open case = the latest authoritative
+    balance (the Teachworks alert, or its repeat) minus the student's attended
+    lessons since that alert, plus any growth in the deal's PO hours since
+    (Kath adjusted the package). Every change rewrites the ticket subject and
+    the numeric hours_left on ticket and deal (Roman 2026-09-23: the title
+    always carries the current balance). Zero or below = High priority now,
+    one DM to the owner, no day-7 wait. A Teachworks failure leaves every
+    case as it was."""
     from .business_hours import LA
     if not cases:
         return
@@ -1520,6 +1562,7 @@ def _update_live_hours(cases: dict, lb: dict) -> None:
         print(f"  ⚠️  Teachworks lessons unreadable ({str(e)[:80]}): live balances unchanged this sweep")
         return
     fire_at = float(lb.get("fire_at_hours", 3))
+    zero_hits: dict = {}
     for key, c in cases.items():
         opened = c.get("opened_at")
         if not opened or c.get("hours") is None:
@@ -1528,22 +1571,87 @@ def _update_live_hours(cases: dict, lb: dict) -> None:
             base = float(c["hours"])
         except (TypeError, ValueError):
             continue
-        cutoff = datetime.fromisoformat(opened).astimezone(LA).replace(tzinfo=None).isoformat()[:19]
+        anchor = c.get("hours_at") or opened
+        cutoff = datetime.fromisoformat(anchor).astimezone(LA).replace(tzinfo=None).isoformat()[:19]
         burned = [(t, h) for t, h in attended.get(_student_key(c.get("student") or ""), []) if t > cutoff]
-        live = max(0.0, round(base - sum(h for _t, h in burned), 2))
-        if c.get("hours_live") is not None and float(c["hours_live"]) == live and c.get("lessons_since") == len(burned):
+        # package adjusted on the deal since the alert: the growth is new balance
+        grew, po_now = 0.0, _deal_po_hours(c)
+        try:
+            po_known = float(c.get("po_hours_seen") if c.get("po_hours_seen") is not None else (c.get("po_hours") or 0))
+        except (TypeError, ValueError):
+            po_known = 0.0
+        if po_now is not None and po_known and po_now > po_known:
+            grew = round(po_now - po_known, 2)
+        live = max(0.0, round(base + grew - sum(h for _t, h in burned), 2))
+        first = c.get("hours_live") is None
+        if not first and float(c["hours_live"]) == live and c.get("lessons_since") == len(burned):
             continue
         c["hours_live"], c["lessons_since"] = live, len(burned)
-        audit.append({"message_id": f"{key}:balance", "source": "low_balance", "action_taken": "low_balance_balance",
-                      "hours_live": live, "lessons_since": len(burned), "ticket_id": c.get("ticket_id")})
+        rec = {"message_id": f"{key}:balance", "source": "low_balance", "action_taken": "low_balance_balance",
+               "hours_live": live, "lessons_since": len(burned), "ticket_id": c.get("ticket_id")}
+        if grew:
+            rec["po_hours_seen"] = po_now
+            c["po_hours_seen"] = po_now
+        audit.append(rec)
         tid = c.get("ticket_id")
-        if tid and tid != "DRYRUN" and not c.get("email_sent"):
+        if tid and tid != "DRYRUN":
             try:
-                hs.add_ticket_note(tid, f"⏳ Live balance {live:g} h after {len(burned)} attended lesson(s) since the "
-                                        f"alert. Family outreach fires at {fire_at:g} h or fewer, or "
-                                        f"{int(lb.get('fire_fallback_days', 5))} business days after the alert.")
+                # cases opened before 2026-09-23 have no subject on the record:
+                # rebuild the same shape (student + school, or the funding kind)
+                fallback = (f"Low balance: {c.get('student')} "
+                            f"({c.get('school') or ('private pay' if c.get('private_pay') else 'school unknown')})")
+                ce.set_props(tid, {"subject": _subject_with_hours(c.get("subject") or fallback, live),
+                                   "hours_left": str(live)})
             except Exception as e:  # noqa: BLE001
-                print(f"  ⚠️  balance note failed (non-fatal): {e}")
+                print(f"  ⚠️  hours_left ticket update failed (non-fatal): {e}")
+            # the first stamp of an untouched case populates the property
+            # silently; a note only when a lesson or a package edit moved it
+            if burned or grew:
+                note = (f"⏳ Live balance {live:g} h: {len(burned)} attended lesson(s) since the alert"
+                        + (f", package grew by {grew:g} h on the deal" if grew else "") + ".")
+                if not c.get("email_sent"):
+                    note += (f" Family outreach fires at {fire_at:g} h or fewer, or "
+                             f"{int(lb.get('fire_fallback_days', 5))} business days after the alert.")
+                try:
+                    hs.add_ticket_note(tid, note)
+                except Exception as e:  # noqa: BLE001
+                    print(f"  ⚠️  balance note failed (non-fatal): {e}")
+        _stamp_deal(c.get("deal_id"), {"retention_hours_left": str(live)})
+        if live <= 0 and not c.get("escalated"):
+            zero_hits[key] = c
+    if zero_hits:
+        _zero_balance(zero_hits, lb)
+
+
+def _zero_balance(hits: dict, lb: dict) -> None:
+    """0 h left and no new PO (Roman 2026-09-23): High priority + the risk
+    flag NOW, one DM to the case owner, no day-7 wait. Lessons on a charter
+    package at zero cannot be invoiced; a trial at zero is the conversion
+    moment. Once per case (the escalated flag), the day-7 rule then skips it."""
+    for key, c in hits.items():
+        tid = c.get("ticket_id")
+        trial = (c.get("funding_type") or "") == "trial" or bool(c.get("trial"))
+        why = ("trial package used up: convert the family now" if trial
+               else "the package is at zero and lessons are still on the calendar: nothing past this can be invoiced")
+        if tid and tid != "DRYRUN":
+            try:
+                ce.mark_risk(tid, f"🚩 0 h left, no new PO: {why}. Priority High.")
+            except Exception as e:  # noqa: BLE001
+                print(f"  ⚠️  zero-balance ticket update failed (non-fatal): {e}")
+        _stamp_deal(c.get("deal_id"), {"retention_stage": STAGE_RISK})
+        c["escalated"] = True
+        audit.append({"message_id": f"{key}:escalated", "source": "low_balance", "action_taken": "low_balance_escalated",
+                      "reason": "zero_balance", "ticket_id": tid})
+    by_owner: dict = {}
+    for key, c in hits.items():
+        by_owner.setdefault(c.get("owner") or lb.get("owner", "charter_sales"), []).append(c)
+    for role, group in by_owner.items():
+        lines = [f"• {c.get('student')} ({c.get('school') or c.get('package') or '?'})"
+                 + (" · trial" if (c.get("funding_type") or "") == "trial" else "")
+                 + (f" · {hs.ticket_url(c['ticket_id'])}" if c.get("ticket_id") and c["ticket_id"] != "DRYRUN" else "")
+                 for c in group]
+        ce.dm_role(role, f"🚩 0 HOURS LEFT, no new PO ({len(group)}):\n" + "\n".join(lines)
+                         + "\nLessons past this point cannot be invoiced. Get the PO or pause the schedule today.")
 
 
 def _fire_ready(case: dict, lb: dict, now_utc) -> bool:

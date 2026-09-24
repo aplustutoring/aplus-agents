@@ -170,6 +170,17 @@ properties:
           label: "Yes"
         - value: "false"
           label: "No"
+    - name: hours_left
+      label: "[Agent] Hours left"
+      group: case_engine
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by email/src/low_balance.py every hour on
+        Renewals tickets: the student's current package balance = the latest
+        Teachworks alert minus attended lessons since, plus any growth in the
+        deal's PO hours. The ticket subject carries the same number ("1.75 h
+        left"). 0 = priority High now. Sort the board on it.
     - name: support_category
       label: "[Agent] Support category"
       group: case_engine
@@ -1033,6 +1044,16 @@ properties:
           label: "Tutor fit"
         - value: school_funding
           label: "School stopped funding"
+    - name: retention_hours_left
+      label: "[Agent] Hours left"
+      group: retention
+      type: number
+      fieldType: number
+      description: >-
+        AGENT PROPERTY — written by email/src/low_balance.py every hour while
+        a renewal case is open: the student's current package balance (same
+        number as the Renewals ticket's [Agent] Hours left). Column on the
+        Renewal Chase view.
     - name: retention_low_balance_alert_date
       label: "[Agent] Low balance alert date"
       group: retention
