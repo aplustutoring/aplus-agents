@@ -1107,9 +1107,10 @@
     418442608,
     418447728,
     418450136,
-    418452497
+    418452497,
+    418461041
   ],
-  "last_run_utc": "2026-09-24T00:15:22.725148+00:00",
+  "last_run_utc": "2026-09-24T00:25:45.956619+00:00",
   "pending_digest": [
     {
       "call_id": 418215813,
@@ -1793,6 +1794,92 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 418461041,
+      "number": "18182771873",
+      "time_pt": "5:17 PM",
+      "matched": true,
+      "contact_label": "Dayan,Patricia N/A",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Patricia Dayan called to inquire about in-person tutoring for her 11th-grade daughter in Algebra 2 (ZIP 91356). Paola gathered basics but Patricia declined to share the student's name upfront. When Paola quoted the $130/hour rate, Patricia reacted with sticker shock and politely ended the call. No next step was scheduled.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Log the inquiry in CRM and, if appropriate, follow up in a few days with any lower-cost options or value framing for Algebra 2 in-person tutoring in the 91356 area.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "handoff_note": "Patricia Dayan (818-277-1873) called inquiring about in-person tutoring for her 11th-grade daughter in Algebra 2, ZIP 91356. She declined to share the student's name. Paola quoted $130/hr and Patricia reacted with sticker shock ('Oh, wow\u2026 No, thank you') and ended the call \u2014 tone went from curious to disappointed. No next step booked. If following up, open warmly and acknowledge the rate concern: 'Hi Patricia, this is ___ from A+ Tutoring \u2014 I know our rate caught you off guard when you called in. I wanted to check back in and share a bit more about what's included and see if there's a fit for your daughter's Algebra 2 support.' Be ready to explain value (tutor vetting, in-person match in Tarzana area) and ask about her goals/timeline.",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with about standard Algebra 2 tutoring \u2014 not charter-funded and no diagnostic/test prep need indicated.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Patricia called inquiring about in-person Algebra 2 tutoring for her 11th-grade daughter in ZIP 91356. She declined to share the student's name and ended the call after hearing the $130/hr rate \u2014 clear price sensitivity.",
+          "what_we_can_do_to_help": "Check in-person tutor availability in the 91356 (Tarzana) area for Algebra 2, and follow up with Patricia to address the rate concern, share value/what's included, and explore fit before she goes elsewhere.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "11",
+          "student_school": null,
+          "subject_need": "Math",
+          "online_or_in_person": "In-Person Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Patricia called inquiring about in-person Algebra 2 tutoring for her 11th-grade daughter in ZIP 91356. She declined to share the student's name and ended the call after hearing the $130/hr rate \u2014 clear price sensitivity."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Check in-person tutor availability in the 91356 (Tarzana) area for Algebra 2, and follow up with Patricia to address the rate concern, share value/what's included, and explore fit before she goes elsewhere."
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "11"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "In-Person Tutoring"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Log the inquiry in CRM and, if appropriate, follow up in a few days with any lower-cost options or value framing for Algebra 2 in-person tutoring in the 91356 area.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": "48696951125",
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
