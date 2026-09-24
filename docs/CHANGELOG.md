@@ -7,6 +7,65 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — A teacher's email has to carry the teacher's name
+
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)
+- New `_why_not_the_teacher(addr, first, last)`, which replaces the bare
+  `_robot_tor_addr` check at the TOR association site. It returns why an
+  address cannot be the teacher's, or "" if it can.
+- New `_addr_carries_name()` and `_fold()`. Accents are folded, not stripped;
+  every token of a compound surname is tried; the usual initial-plus-surname
+  shapes pass.
+- With no teacher name on the PO the rule abstains, so it can only ADD
+  rejections where there is evidence.
+- 7 tests, including the real addresses from all five schools. One existing
+  test was pinning the bug and is corrected in place.
+
+**Why**
+Roman, on the Joseph Ramirez PO: "I did notice that you used the accounts
+payable email not the teachers."
+
+He was right, and it was not one deal. Five schools were past the old guard:
+`acctspayable@` (Elite), `ap@` (Heartland), `vendorinfo@` (Heartwood),
+`providers@` (Compass), and our own `charter@wetutorathome.com`. Four of those
+mailboxes existed as CONTACTS carrying the persona "Teacher of Record/EF/ES",
+one of them named literally "Teacher", and every one had been emailed by us.
+54 deals carry an address that is not the teacher's.
+
+The old guard was a list of local-parts (vendorsupport, procurify, orders@,
+billing@). It works where it matches: the six Visions deals all predate it by
+hours and nothing has slipped through on that address since. But a list cannot
+win here, because each school invents its own spelling for the same mailbox and
+we only learn the spelling after it has been stamped on a family's deal as
+their child's teacher. `providers@compasscharters.org` is the proof: no list of
+billing words would ever have contained it.
+
+So the rule asks the question the list was standing in for. The PO names the
+teacher. A teacher's address carries the teacher's name; a school's billing
+desk carries the school's function.
+
+The same PO pair proves the fallback works. Neither the Ramirez nor the Zamora
+PDF contains a teacher's address at all, only accounts payable. Ramirez came
+out right because the no-email path matched "Ruth Hernandez" by name to the
+contact we already had. Zamora came out wrong because the model handed over the
+only address on the page and the word list did not stop it. A rejection now
+routes every PO down the path that was already getting it right.
+
+**Measured before shipping**, on all 137 distinct (teacher, address) pairs on
+our deals: 122 pass, 15 are held. Twelve of the fifteen are the generic inboxes
+above. The other three are personal addresses from April carrying somebody
+else's name, which deserve a human look too.
+
+That measurement also caught a bug in the rule itself. The first draft stripped
+non-ascii characters instead of folding them, turning Veronique Fabre's own
+first name into "vronique", so it rejected her real address at
+`veronique.gaeta@ileadexploration.org`. Reading the code would not have found
+it; running it against every teacher we have did.
+
+**Still open:** the 54 existing deals and the four contacts wearing the Teacher
+of Record persona need correcting. This change stops new ones.
+
+---
 ## 2026-09-23 — ops/unanswered was blind for a week: a cursor on the wrong clock
 
 **What changed** (`ops/unanswered/unanswered.py`, `ops/checkin/checkin.py`,

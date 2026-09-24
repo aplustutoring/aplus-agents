@@ -1045,8 +1045,15 @@ def test_vendor_robot_mailbox_is_never_teacher_of_record(monkeypatch):
     assert po._robot_tor_addr("vendorsupport@viedu.org")
     assert po._robot_tor_addr("notifications@mailer.procurify.com")
     assert po._robot_tor_addr("orders@sageoak.education")
-    assert not po._robot_tor_addr("ap@heartlandcharterschool.com")
     assert not po._robot_tor_addr("kwolven@sageoak.education")
+    # This line used to read `assert not po._robot_tor_addr(
+    # "ap@heartlandcharterschool.com")`, and it was pinning the bug: that is
+    # Heartland's accounts payable desk, and it sat on 12 deals as somebody's
+    # Teacher of Record. The list-based guard still cannot see it, which is
+    # the point. _why_not_the_teacher can, because it has the name.
+    assert not po._robot_tor_addr("ap@heartlandcharterschool.com")
+    assert po._why_not_the_teacher("ap@heartlandcharterschool.com",
+                                   "Austin", "Haney")
     created, associated, notes = [], [], []
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, **k: None)
     monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
@@ -2668,3 +2675,92 @@ def test_po_watch_sweep_closes_when_invoice_is_on_the_deal(monkeypatch):
         return {"properties": {"invoice__": "", "dealname": "C - D"}}
     monkeypatch.setattr(po.hs, "_get", fake_get)
     assert po.po_watch_sweep() == 1 and closed == [("PW1", "resolved")]
+
+
+# ── the teacher's email has to carry the teacher's name ─────────────────────
+#
+# Roman, 2026-09-24, on the Joseph Ramirez PO: "I did notice that you used the
+# accounts payable email not the teachers." Every address below is real, from
+# our own deals.
+
+def test_every_school_billing_desk_we_have_stamped_as_a_teacher():
+    """Five schools, 40 deals, four of them contacts wearing the Teacher of
+    Record persona. None of these local-parts is in the old word list, and
+    each school spells it differently, which is why the list kept losing."""
+    for addr, first, last in (
+            ("acctspayable@eliteacademic.com", "Ruth", "Hernandez"),
+            ("acctspayable@eliteacademic.com", "Stephanie", "Negrete-Claar"),
+            ("ap@heartlandcharterschool.com", "Colbie", "Van Horn"),
+            ("vendorinfo@heartwoodcharterschool.org", "Angela", "Cloud"),
+            ("providers@compasscharters.org", "Sheila", "Villalobos"),
+            ("charter@wetutorathome.com", "Kath", "Hitosis")):
+        assert po._why_not_the_teacher(addr, first, last), addr
+
+
+def test_real_teachers_still_pass():
+    """The PO that started this got Ruth right by name. Keep it that way."""
+    for addr, first, last in (
+            ("rhernandez@eliteacademic.com", "Ruth", "Hernandez"),
+            ("kwolven@sageoak.education", "Kristin", "Wolven"),
+            ("ruth.hernandez@eliteacademic.com", "Ruth", "Hernandez"),
+            ("hernandezr@eliteacademic.com", "Ruth", "Hernandez"),
+            ("ruthh@eliteacademic.com", "Ruth", "Hernandez"),
+            ("snegrete@eliteacademic.com", "Stephanie", "Negrete-Claar"),
+            ("vanhorn.c@heartlandcharterschool.com", "Colbie", "Van Horn")):
+        assert not po._why_not_the_teacher(addr, first, last), addr
+
+
+def test_an_accent_is_not_a_reason_to_reject_a_teacher():
+    """First draft of this rule stripped accents instead of folding them, so
+    Veronique Fabre's own first name became "vronique" and stopped matching
+    veronique.gaeta@ileadexploration.org. Caught by measuring, not by reading."""
+    assert not po._why_not_the_teacher(
+        "veronique.gaeta@ileadexploration.org", "V\u00e9ronique", "Fabre")
+
+
+def test_no_name_means_no_opinion():
+    """The rule may only add rejections where there is evidence. A PO with no
+    teacher name must behave exactly as it did before."""
+    assert not po._why_not_the_teacher("anything@school.org", "", "")
+    assert po._why_not_the_teacher("vendorsupport@viedu.org", "", "")
+
+
+def test_the_accounts_payable_address_never_becomes_a_contact(monkeypatch):
+    """The Zamora half of the 2026-09-24 Elite run. Same teacher, same school,
+    same PDF shape as the Ramirez one, and it created accounts payable as the
+    Teacher of Record because the PDF's only address was the billing desk."""
+    created, associated, notes = [], [], []
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, **k: None)
+    monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: created.append(a) or {"id": "T9"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda d, c: associated.append((d, c)))
+    monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [])
+    p = {"tor_email": "acctspayable@eliteacademic.com", "tor_first": "Ruth",
+         "tor_last": "Hernandez", "parent_email": "mom@x.com"}
+    po._associate_tor("D1", p, notes)
+    assert not created and not associated
+    assert p["tor_email"] == ""
+    assert any("carries no part of the name" in n for n in notes)
+
+
+def test_rejecting_the_billing_desk_falls_through_to_the_teacher_by_name(monkeypatch):
+    """A rejection is not a dead end. This is the path that got Ruth Hernandez
+    right on the Ramirez PO, whose PDF also contained only accounts payable."""
+    associated, notes = [], []
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not create from a billing desk")))
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda d, c: associated.append((d, c)))
+    monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [
+        {"id": "62158080641",
+         "properties": {"email": "rhernandez@eliteacademic.com",
+                        "firstname": "Ruth", "lastname": "Hernandez"}}])
+    monkeypatch.setattr(po, "_heal_tor_contact", lambda tor, notes: None)
+    p = {"tor_email": "acctspayable@eliteacademic.com", "tor_first": "Ruth",
+         "tor_last": "Hernandez", "parent_email": "mom@x.com"}
+    po._associate_tor("D1", p, notes)
+    assert associated == [("D1", "62158080641")]
+    assert p["tor_email"] == "rhernandez@eliteacademic.com"

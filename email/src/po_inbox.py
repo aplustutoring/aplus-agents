@@ -21,6 +21,7 @@ import json
 import re
 import sys
 import traceback
+import unicodedata
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 
@@ -495,8 +496,10 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
     t_email = (po.get("tor_email") or "").strip().lower()
     p_email = (po.get("parent_email") or "").strip().lower()
     t_name = f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
-    if t_email and _robot_tor_addr(t_email):
-        note_parts.append(f"\U0001f916 TOR email <{t_email}> is a portal/vendor mailbox, not a "
+    why = _why_not_the_teacher(t_email, po.get("tor_first") or "",
+                               po.get("tor_last") or "")
+    if why:
+        note_parts.append(f"\U0001f916 TOR email <{t_email}> is {why}, not a "
                           f"teacher; NOT associated as Teacher of Record"
                           + (f" (name '{t_name}' tried instead)." if t_name else "."))
         t_email = ""
@@ -968,6 +971,84 @@ _ROBOT_TOR_RE = re.compile(r"vendor-?support|vendor-?desk|procurify|launchpad\.v
 def _robot_tor_addr(addr: str) -> bool:
     a = (addr or "").strip().lower()
     return bool(a) and (not _human_addr(a) or bool(_ROBOT_TOR_RE.search(a)))
+
+
+def _fold(s: str) -> str:
+    """Accents folded, not deleted. Deleting them turned Veronique Fabre's own
+    first name into "vronique", which then failed to match
+    veronique.gaeta@ileadexploration.org: the rule rejected a real teacher for
+    having an accent in her name."""
+    s = unicodedata.normalize("NFKD", s or "")
+    return "".join(c for c in s if not unicodedata.combining(c)).lower()
+
+
+def _addr_carries_name(first: str, last: str, addr: str) -> bool:
+    """Does this address bear any part of this teacher's name?
+
+    Every token of a compound surname is tried on its own, so Negrete-Claar
+    still matches snegrete@, and the usual initial-plus-surname shapes are
+    allowed because rhernandez@ is how half of them are spelled.
+
+    With no name to judge against this answers True: the rule may only ADD
+    rejections where there is evidence, never reject for lack of it.
+    """
+    local = re.sub(r"[^a-z0-9]", "", _fold((addr or "").split("@")[0]))
+    firsts = re.findall(r"[a-z]+", _fold(first))
+    lasts = re.findall(r"[a-z]+", _fold(last))
+    if not local or not (firsts or lasts):
+        return True
+    for tok in lasts + firsts:
+        if len(tok) >= 3 and tok in local:
+            return True
+    for f in firsts:
+        for l in lasts:
+            if (f[:1] + l) in local or (l + f[:1]) in local \
+                    or (f + l[:1]) in local or (f + l) in local:
+                return True
+    return False
+
+
+def _why_not_the_teacher(addr: str, first: str, last: str) -> str:
+    """"" if this address can be the teacher's, otherwise why it cannot.
+
+    The old guard was a list of local-parts (vendorsupport, procurify,
+    orders@, billing@...). Lists lose here, because every school invents its
+    own spelling for the same mailbox and we only learn the spelling after it
+    has been stamped on a family's deal as their child's teacher. By
+    2026-09-24 five schools were past it: acctspayable@ (Elite, 17 deals),
+    ap@ (Heartland, 12), vendorinfo@ (Heartwood, 9), providers@ (Compass), and
+    our own charter@wetutorathome.com. Four of those mailboxes existed as
+    contacts carrying the persona "Teacher of Record/EF/ES", one of them named
+    literally "Teacher", and we had emailed all four.
+
+    Roman found it from the other end on 2026-09-24: "I did notice that you
+    used the accounts payable email not the teachers."
+
+    So stop enumerating mailboxes and ask the question the list was standing in
+    for. The PO names the teacher. A teacher's address carries the teacher's
+    name; a school's billing desk carries the school's function. That test
+    needs no maintenance as schools add mailboxes, and it caught providers@,
+    which no list of billing words would have.
+
+    Measured over all 137 distinct (teacher, address) pairs on our deals: 122
+    pass, 15 are rejected, and 12 of those 15 are the generic inboxes above.
+    The other three are personal addresses from April carrying somebody else's
+    name, which is worth a human look too. A rejection is not a dead end: the
+    caller falls through to matching the teacher BY NAME against contacts we
+    already have, which is the path that got Ruth Hernandez right on the very
+    PO that exposed this.
+    """
+    a = (addr or "").strip().lower()
+    if not a:
+        return ""
+    if not _human_addr(a):
+        return "a no-reply mailbox"
+    if _ROBOT_TOR_RE.search(a):
+        return "a portal or vendor mailbox"
+    if (first or last) and not _addr_carries_name(first, last, a):
+        who = f"{first or ''} {last or ''}".strip()
+        return f"a mailbox that carries no part of the name '{who}'"
+    return ""
 
 
 def _sender_addr(msg: dict) -> str:
