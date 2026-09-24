@@ -7,6 +7,24 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-23 — Renewals oversight: Paola sees all, schedulers own their split
+
+**What changed** (`ops/queues/queue_digest.py`, `email/config.yaml`)
+- `renewals_oversight()`: a per-scheduler brief (open, lowest balance, at zero,
+  flagged, answered-but-unscheduled, oldest, 4-week renewal rate) DM'd to
+  `case_engine.digest.renewals_oversight` (charter_sales) every Monday with
+  the channel digest.
+- HubSpot (portal, no code): Renewals board cards show Hours left / Owner /
+  Funding type / Retention risk, columns sort by Hours left ascending; saved
+  views "Renewals: Janelle (A-L)", "Renewals: Yolanda (M-Z)", "Renewals: zero
+  and risk". Paola's default is the whole pipeline.
+
+**Why.** Roman 2026-09-23: "Paola has default view of all of them and
+schedulers by last names of families." The schedulers own the family
+conversation and the ticket; the metric is Paola's to oversee.
+
+---
+
 ## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now
 
 **What changed** (`email/src/low_balance.py`, `email/src/case_engine.py`,
