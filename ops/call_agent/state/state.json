@@ -1120,9 +1120,10 @@
     418777562,
     418798246,
     418827810,
-    418862027
+    418862027,
+    418912156
   ],
-  "last_run_utc": "2026-09-24T20:22:23.517992+00:00",
+  "last_run_utc": "2026-09-24T22:11:47.296118+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1701,6 +1702,12 @@
       "direction": "incoming"
     }
   ],
-  "pending_skipped": [],
+  "pending_skipped": [
+    {
+      "number": "13154963286",
+      "time_pt": "3:04 PM",
+      "reason": "hang-up"
+    }
+  ],
   "pending_failures": []
 }
