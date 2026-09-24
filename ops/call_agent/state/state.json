@@ -1111,10 +1111,131 @@
     418461041,
     418455238,
     418714757,
-    418720187
+    418720187,
+    418727859
   ],
-  "last_run_utc": "2026-09-24T16:28:13.181676+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-24T16:39:54.650314+00:00",
+  "pending_digest": [
+    {
+      "call_id": 418727859,
+      "number": "18184623808",
+      "time_pt": "9:16 AM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Inna to clarify Myron's tutoring schedule with Calvin \u2014 confirmed 2 hours of physics on Thursdays 7-9pm and 1 hour of geometry Mondays at 8pm, all with Calvin. Inna, anxious about Myron's 9th-grade struggles at Granada Hills HS, decided to purchase a 50-hour package for $3,650 and provided two credit cards to split the payment ($1,600 on card ending 1448, remainder ~$2,050 on card ending 9769). She also asked about college counseling and future SAT prep tutoring. Yolanda offered to send a college counselor contact and said A+ can help find an SAT tutor next year.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Charge $1,600 to card ending 1448 (exp 12/27, CVV 836, under Inna's name) and remaining ~$2,050 to card ending 9769 (exp 7/28, CVV 939) for the 50-hour package ($3,650 total)",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Book Myron's recurring sessions with Calvin: Thursdays 7-9pm (2 hrs physics) and Mondays 8pm (1 hr geometry), starting today",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Brief Calvin that Myron has shared syllabi for both physics and geometry so he can prep accordingly",
+            "owner_hint": "Calvin",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Inna the contact info for the college counselor A+ works with",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Flag for next year: source an SAT prep tutor for Myron (vocabulary/English focus)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Inna (mom, returning customer, very anxious about 9th-grader Myron at Granada Hills HS struggling in geometry and AP Physics) committed on this call to a 50-hour package at $3,650, split across two credit cards: $1,600 on Visa/MC ending 1448 (exp 12/27, CVV 836) and the remaining ~$2,050 on card ending 9769 (exp 7/28, CVV 939), both under her name. She expects (1) both cards to be charged and the 50 hours loaded to her account (hours don't expire, no refunds \u2014 she was told), (2) Myron's schedule with Calvin to start today: Thursdays 7-9pm for physics (2 hrs) and Mondays at 8pm for geometry (1 hr), (3) Calvin to prep from the syllabi she already sent him, and (4) a college counselor contact from us. She also floated SAT prep tutoring for next year (Myron's English is weaker). Open with: \"Hi Inna, Yolanda passed along that you're all set for the 50-hour package \u2014 I wanted to confirm both cards went through and that Calvin is locked in for tonight/Thursday.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal \u2014 status is owned by the deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Jacob",
+          "Granada Hills HS",
+          "Nobel",
+          "Calvin",
+          "Notre Dame"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Inna committed to a 50-hour package at $3,650 for Myron, split across two credit cards ($1,600 on card ending 1448, exp 12/27; remainder ~$2,050 on card ending 9769, exp 7/28). Confirmed Myron's recurring schedule with Calvin: Thursdays 7-9pm physics (2 hrs) + Mondays 8pm geometry (1 hr), starting today. Inna remains very anxious about Myron's 9th-grade workload at Granada Hills HS and is already thinking ahead to SAT prep next year and possibly college counseling.",
+          "what_we_can_do_to_help": "[Call] Run both credit cards for the 50-hour package and load hours to account (no refunds, hours don't expire \u2014 Inna was informed). Schedule Calvin recurring Thu 7-9pm (physics) and Mon 8pm (geometry) for Myron; brief Calvin to prep from the syllabi Inna already sent him. Send Inna the college counselor contact. Flag for next year: identify an SAT prep tutor (English/vocab focus) for Myron.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Granada Hills HS",
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Inna committed to a 50-hour package at $3,650 for Myron, split across two credit cards ($1,600 on card ending 1448, exp 12/27; remainder ~$2,050 on card ending 9769, exp 7/28). Confirmed Myron's recurring schedule with Calvin: Thursdays 7-9pm physics (2 hrs) + Mondays 8pm geometry (1 hr), starting today. Inna remains very anxious about Myron's 9th-grade workload at Granada Hills HS and is already thinking ahead to SAT prep next year and possibly college counseling."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Run both credit cards for the 50-hour package and load hours to account (no refunds, hours don't expire \u2014 Inna was informed). Schedule Calvin recurring Thu 7-9pm (physics) and Mon 8pm (geometry) for Myron; brief Calvin to prep from the syllabi Inna already sent him. Send Inna the college counselor contact. Flag for next year: identify an SAT prep tutor (English/vocab focus) for Myron."
+        ],
+        [
+          "student_school",
+          "balboa magnet",
+          "Granada Hills HS"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Charge $1,600 to card ending 1448 (exp 12/27, CVV 836, under Inna's name) and remaining ~$2,050 to card ending 9769 (exp 7/28, CVV 939) for the 50-hour package ($3,650 total)",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Book Myron's recurring sessions with Calvin: Thursdays 7-9pm (2 hrs physics) and Mondays 8pm (1 hr geometry), starting today",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Brief Calvin that Myron has shared syllabi for both physics and geometry so he can prep accordingly",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Inna the contact info for the college counselor A+ works with",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Flag for next year: source an SAT prep tutor for Myron (vocabulary/English focus)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    }
+  ],
   "pending_skipped": [],
   "pending_failures": []
 }
