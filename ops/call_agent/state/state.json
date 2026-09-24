@@ -1123,9 +1123,10 @@
     418862027,
     418912156,
     418920921,
-    418924939
+    418924939,
+    418934776
   ],
-  "last_run_utc": "2026-09-24T23:01:28.689914+00:00",
+  "last_run_utc": "2026-09-24T23:39:10.545159+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1697,6 +1698,107 @@
           "Loop in Paola to send/confirm the out-of-pocket 12-session 45-min package invoice for Charlene once schedule is locked.",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418934776,
+      "number": "18184623808",
+      "time_pt": "4:30 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inna Volodinsky called Janelle to change Myron's tutoring schedule with Calvin. Per her husband, the Thursday 7-9pm two-hour physics block is too much; they want to reduce Thursdays to a single hour (7-8pm) starting tonight and add a second session on Saturday (Calvin emailed that he's available). Monday geometry stays 8-9pm. Janelle confirmed and said the team will finalize the Saturday time and keep Inna posted.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Update Myron's Thursday recurring session with Calvin from 7-9pm to 7-8pm (1 hr), effective tonight.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Coordinate with Calvin to schedule a second 1-hour session on Saturdays for Myron (Calvin indicated availability by email) and confirm the specific time back to Inna.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Keep Monday 8-9pm geometry session with Calvin as-is; confirm no other changes.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Brief Calvin on the new cadence: Mon 8-9pm geometry, Thu 7-8pm physics, plus a Saturday 1-hr session TBD.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Existing customer Inna Volodinsky (mom of Myron, 9th, Granada Hills HS) called to rework Calvin's schedule \u2014 her husband felt 2 hrs back-to-back on Thursdays is too much. New plan she expects us to implement: Thu 7-8pm physics (1 hr, starting tonight) instead of 7-9pm; Mon 8-9pm geometry unchanged; add a Saturday 1-hr session with Calvin (Calvin already emailed he's available Saturday). She expects us to lock the Saturday time and text/email her back to confirm. Tone was apologetic but calm. Open with: \"Hi Inna, following up on your call with Janelle \u2014 Myron's Thursday is now 7-8pm starting tonight, and Calvin can do [X time] Saturday, does that work?\" Also make sure Calvin is briefed before 7pm tonight so he doesn't plan a 2-hour block.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (OPEN_DEAL) calling about ongoing service \u2014 status owned by deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Calvin",
+          "Granada Hills HS"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Inna called to adjust Myron's schedule with Calvin \u2014 per her husband, 2 hrs back-to-back on Thursdays is too much. New plan: Thu reduced to 7-8pm (1 hr) starting tonight, Mon 8-9pm geometry unchanged, and add a Saturday 1-hr session (Calvin already emailed he's available Saturday). Family will play the Saturday time by ear week to week.",
+          "what_we_can_do_to_help": "[Call] Update Calvin's recurring calendar: Thu 7-8pm (not 7-9pm) effective tonight, keep Mon 8-9pm, and coordinate a Saturday 1-hr slot with Calvin then confirm the time back to Inna. Brief Calvin on the new cadence before tonight's session so he doesn't prep a 2-hour block.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Inna called to adjust Myron's schedule with Calvin \u2014 per her husband, 2 hrs back-to-back on Thursdays is too much. New plan: Thu reduced to 7-8pm (1 hr) starting tonight, Mon 8-9pm geometry unchanged, and add a Saturday 1-hr session (Calvin already emailed he's available Saturday). Family will play the Saturday time by ear week to week."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Update Calvin's recurring calendar: Thu 7-8pm (not 7-9pm) effective tonight, keep Mon 8-9pm, and coordinate a Saturday 1-hr slot with Calvin then confirm the time back to Inna. Brief Calvin on the new cadence before tonight's session so he doesn't prep a 2-hour block."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Update Myron's Thursday recurring session with Calvin from 7-9pm to 7-8pm (1 hr), effective tonight.",
+          80047202,
+          "scheduling"
+        ],
+        [
+          "Coordinate with Calvin to schedule a second 1-hour session on Saturdays for Myron (Calvin indicated availability by email) and confirm the specific time back to Inna.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Keep Monday 8-9pm geometry session with Calvin as-is; confirm no other changes.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Brief Calvin on the new cadence: Mon 8-9pm geometry, Thu 7-8pm physics, plus a Saturday 1-hr session TBD.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
