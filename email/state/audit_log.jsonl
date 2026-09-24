@@ -33781,3 +33781,6 @@
 {"ticket_id": "48675542106", "category": "scheduling", "owner": "paola", "action_taken": "escalation", "breach_level": 1, "timestamp": "2026-09-24T05:08:53.084149+00:00"}
 {"ticket_id": "48661010198", "category": "unknown", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-24T05:08:54.195776+00:00"}
 {"ticket_id": "48698371366", "category": "recruitment", "owner": "emily", "action_taken": "escalation", "breach_level": 3, "timestamp": "2026-09-24T05:08:56.418458+00:00"}
+{"message_id": "error:deal:65027703332", "source": "deal_sync", "deal_id": "65027703332", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-24T06:47:08.169774+00:00"}
+{"message_id": "error:deal:65076660598", "source": "deal_sync", "deal_id": "65076660598", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/students", "timestamp": "2026-09-24T06:47:45.533055+00:00"}
+{"message_id": "error:deal:65113758114", "source": "deal_sync", "deal_id": "65113758114", "action_taken": "error", "error": "400 Client Error: Bad Request for url: https://api.teachworks.com/v1/customers/family", "timestamp": "2026-09-24T06:47:57.744092+00:00"}
