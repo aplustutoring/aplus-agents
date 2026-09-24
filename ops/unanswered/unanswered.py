@@ -36,6 +36,7 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 import yaml
@@ -97,15 +98,26 @@ def _jc_headers():
 def fetch_inbound_texts(cfg, max_pages=40):
     """Inbound texts in the window, across every line.
 
-    Two JustCall traps, both of which return the WRONG rows silently rather
-    than erroring (verified live 2026-09-14):
+    Three JustCall traps, all of which return the WRONG rows silently rather
+    than erroring:
       - paging is ZERO-indexed, so page=1 skips the newest 100 texts and a
-        short window comes back empty;
-      - with order=asc the first page is the OLDEST 100 in the window.
-    So: start at page 0 and walk next_page_link.
+        short window comes back empty (verified live 2026-09-14);
+      - with order=asc the first page is the OLDEST 100 in the window;
+      - from_datetime is read in the ACCOUNT clock (PT) while the rows come
+        back stamped UTC, so a UTC cursor asks for a window 7 hours in the
+        future and the API answers 0 of 0 with HTTP 200.
+
+    That third one blinded this agent from 2026-09-17 to 2026-09-23. The
+    workflow sets no TZ, so datetime.now() on the runner was UTC; every run
+    for a week logged "scanned 0 inbound texts" and seen.json stayed []. The
+    call agent hit the same trap on 2026-07-17 and fixed it
+    (ops/call_agent/call_agent.py:209); config.yml here even carries the note
+    "from_datetime is read in the ACCOUNT timezone". The code just never read
+    the key. So read it, and never build this cursor from a naive clock.
     """
     mins = int(cfg["justcall"]["lookback_minutes"])
-    since = datetime.now() - timedelta(minutes=mins)
+    tz = ZoneInfo(cfg["justcall"].get("account_timezone", "America/Los_Angeles"))
+    since = datetime.now(timezone.utc).astimezone(tz) - timedelta(minutes=mins)
     out, page = [], 0
     while page < max_pages:
         r = requests.get(f"{JC_BASE}/v2.1/texts", headers=_jc_headers(), timeout=40,
@@ -122,7 +134,38 @@ def fetch_inbound_texts(cfg, max_pages=40):
         if not rows or not d.get("next_page_link"):   # NOT next_page_url
             break
         page += 1
+    if not out:
+        assert_window_really_empty(since.replace(tzinfo=tz))
     return [t for t in out if str(t.get("direction", "")).lower().startswith("in")]
+
+
+def assert_window_really_empty(since_aware):
+    """An empty window is believable only if the account is also quiet.
+
+    A silent zero is what a broken cursor looks like, and this agent wrote
+    "scanned 0" for a week without anyone noticing. So when the window comes
+    back empty, ask one more question the cursor cannot influence: what is the
+    newest text in the account, ever? If it landed AFTER the window opened,
+    the window is lying and the run must go red rather than report peace.
+    """
+    r = requests.get(f"{JC_BASE}/v2.1/texts", headers=_jc_headers(), timeout=40,
+                     params={"per_page": 1, "page": 0, "order": "desc"})
+    if r.status_code >= 300:
+        log.warning(f"  empty window, and the sanity check itself failed "
+                    f"(HTTP {r.status_code}) — treating as quiet")
+        return
+    rows = (r.json() or {}).get("data") or []
+    if not rows:
+        return
+    newest = text_when(rows[0])                       # UTC, per the row
+    opened = since_aware.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    if newest > opened:
+        raise RuntimeError(
+            f"window returned nothing, but the newest text in the account is "
+            f"{newest} UTC and the window opened at {opened} UTC. The cursor "
+            f"is wrong, not the inbox. (from_datetime is read in the account "
+            f"clock; see fetch_inbound_texts.)")
+    log.info(f"  window empty and the account agrees (newest text {newest} UTC)")
 
 
 def text_body(t):
