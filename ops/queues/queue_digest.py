@@ -146,14 +146,64 @@ def build() -> str:
     return "\n".join(out)
 
 
+def renewals_oversight(owners: dict) -> str:
+    """The renewals brief for the seat that oversees the metric (Roman
+    2026-09-23: Paola sees all of them, the schedulers own their own split).
+    Per scheduler: open cases, lowest balance, zero / risk count, cases the
+    family answered that still wait on a scheduler, and the trailing 4-week
+    renewal rate per family. Facts only; the conversation is hers."""
+    labels = _stage_labels("renewals")
+    open_ = ce.open_tickets("renewals")
+    closed4 = ce.tickets_closed_since("renewals", _week_ms(28))
+    by_owner: dict = collections.defaultdict(list)
+    for t in open_:
+        by_owner[owners.get(str((t.get("properties") or {}).get("hubspot_owner_id")), "unassigned")].append(t.get("properties") or {})
+    rate_by_owner: dict = collections.defaultdict(lambda: collections.Counter())
+    for t in closed4:
+        p = t.get("properties") or {}
+        rate_by_owner[owners.get(str(p.get("hubspot_owner_id")), "unassigned")][labels.get(str(p.get("hs_pipeline_stage")), "?")] += 1
+    lines = [f"*Renewals this week, {now_la().strftime('%b %-d')}* ({len(open_)} open)"]
+    for who in sorted(by_owner, key=lambda w: -len(by_owner[w])):
+        ps = by_owner[who]
+        hours = []
+        for p in ps:
+            try:
+                hours.append((float(p.get("hours_left")), p))
+            except (TypeError, ValueError):
+                continue
+        hours.sort(key=lambda x: x[0])
+        zero = sum(1 for h, _p in hours if h <= 0)
+        risk = sum(1 for p in ps if p.get("retention_risk") == "true")
+        needs = sum(1 for p in ps if labels.get(str(p.get("hs_pipeline_stage"))) == "needs scheduler")
+        oldest = max((ce.age_days(p.get("createdate")) for p in ps), default=0)
+        c = rate_by_owner.get(who) or collections.Counter()
+        denom = c.get("renewed", 0) + c.get("not renewing", 0) + c.get("no response", 0)
+        rate = f"{c.get('renewed', 0) / denom:.0%}" if denom else "n/a"
+        lowest = (f"{hours[0][1].get('subject', '').split(':', 1)[-1].split(',')[0].strip()} {hours[0][0]:g} h"
+                  if hours else "no balance stamped")
+        lines.append(f"• *{who}*: {len(ps)} open · lowest {lowest} · {zero} at zero · {risk} flagged"
+                     + (f" · {needs} answered, waiting on scheduling" if needs else "")
+                     + f" · oldest {oldest}d · 4-week rate {rate}")
+    return "\n".join(lines)
+
+
 def main() -> None:
     text = build()
-    channel = ((cfg().get("case_engine") or {}).get("digest") or {}).get("channel") or ""
+    dcfg = (cfg().get("case_engine") or {}).get("digest") or {}
+    channel = dcfg.get("channel") or ""
     print(text)
+    brief = ""
+    try:
+        brief = renewals_oversight(_owners())
+        print("\n" + brief)
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️  renewals oversight brief failed (non-fatal): {e}")
     if DRY_RUN or not channel or os.environ.get("QUEUE_DIGEST_PRINT_ONLY") == "1":
         print("[DRY_RUN] not posted")
         return
     slack_client.post_message(channel, text)
+    if brief and dcfg.get("renewals_oversight"):
+        ce.dm_role(dcfg["renewals_oversight"], brief)
 
 
 if __name__ == "__main__":
