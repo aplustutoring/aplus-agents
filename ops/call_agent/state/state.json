@@ -1128,9 +1128,10 @@
     418938147,
     418956065,
     418960677,
-    418961297
+    418961297,
+    418962106
   ],
-  "last_run_utc": "2026-09-25T01:31:23.776192+00:00",
+  "last_run_utc": "2026-09-25T01:34:03.443245+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1880,6 +1881,86 @@
       "ticket_id": null,
       "coached": true,
       "direction": "outgoing"
+    },
+    {
+      "call_id": 418962106,
+      "number": "17738426987",
+      "time_pt": "6:28 PM",
+      "matched": true,
+      "contact_label": "Gino Calantoni",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Gino Calantoni called in because he was scheduled for a 7PM tutoring session today for his daughter Elvina with tutor Stephanie but had not received the connection link. Roman confirmed the session and resent the lesson link to a new email address (gcaliy@msn.com) at Gino's request, replacing the united_santaro@yahoo.com address on file. Gino confirmed receipt of the email and said they would join Stephanie momentarily.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Update Gino's email on file to gcaliy@msn.com (confirmed working \u2014 he received the resent lesson link) and ensure future session links go there.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Alvina",
+            "correct": "Elvina"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Gino Calantoni called in ~before his 7PM session today with Stephanie for his daughter Elvina \u2014 he hadn't received the join link. Roman resent the lesson link to a new email (gcaliy@msn.com) at Gino's request; the old united_santaro@yahoo.com address should be replaced. Gino confirmed he got the email and was joining momentarily. Tone was calm and appreciative. Please update his contact email in HubSpot to gcaliy@msn.com and make sure all future session links/comms go there. No further action expected from Gino tonight.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active session already booked \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Elvina",
+          "Stephanie"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Inbound call] Gino called just before Elvina's 7PM session with Stephanie because he hadn't received the connection link. Roman confirmed the session and resent the lesson link to a new preferred email (gcaliy@msn.com); Gino confirmed receipt and said they'd join momentarily.",
+          "what_we_can_do_to_help": "Update Gino's contact email to gcaliy@msn.com going forward and route all session links and communications there rather than to the yahoo address.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": "gcaliy@msn.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Inbound call] Gino called just before Elvina's 7PM session with Stephanie because he hadn't received the connection link. Roman confirmed the session and resent the lesson link to a new preferred email (gcaliy@msn.com); Gino confirmed receipt and said they'd join momentarily."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Update Gino's contact email to gcaliy@msn.com going forward and route all session links and communications there rather than to the yahoo address."
+        ],
+        [
+          "email_correction",
+          "united_santaro@yahoo.com",
+          "gcaliy@msn.com"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Update Gino's email on file to gcaliy@msn.com (confirmed working \u2014 he received the resent lesson link) and ensure future session links go there.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
     }
   ],
   "pending_skipped": [
