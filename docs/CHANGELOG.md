@@ -7,6 +7,23 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Deal-sync workflow gets the Gmail credentials: email replies were invisible to the low-balance sweep since 9/16
+
+**What changed** (`.github/workflows/email-deal-sync.yml`)
+`GOOGLE_SHEETS_CREDS: secrets.RETENTION_SA_JSON` added to the sync job's env,
+the same secret `email-triage.yml` already passes.
+
+**Why.** PR #252 (9/16) moved the hourly low-balance sweep from triage into
+deal-sync, but the sweep's Gmail reads (`_parent_replied`, `_tor_replied`)
+never got the credentials there: every hourly run printed "reply check
+failed ... 'NoneType' object has no attribute 'keys'" for every case with an
+email on file and treated it as no reply. Since 9/16: 7 text replies caught,
+0 email replies (1 before the move). A family who answered the day-0 email
+by email was texted anyway the next morning; teacher replies were never
+DM'd to charter_sales. Found on Roman's "do the check now", 2026-09-24.
+
+---
+
 ## 2026-09-24 — Live balance: stamp until stamped, escalate at zero until escalated
 
 **What changed** (`email/src/low_balance.py`, tests)
