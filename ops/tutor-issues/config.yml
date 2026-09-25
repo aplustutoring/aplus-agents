@@ -130,6 +130,11 @@ inbound:
   # ("otherwise they do it on their own").
   min_confidence: 0.75
   max_scan_per_run: 30       # cost/blast ceiling on LLM extraction calls
+  # A Claude reply with no JSON verdict is NOT "not a tutor issue". The
+  # report stays unprocessed and is retried next run; at this many attempts
+  # it is marked processed and the fallback scheduler is asked to read it.
+  # (Before 2026-09-24 such a report was silently dropped.)
+  max_extract_attempts: 2
 
 intake:
   # Structured manual intake for types 2/4/5 in #tutor-issues:

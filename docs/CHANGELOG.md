@@ -7,6 +7,455 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Every agent-made Teachworks family gets email reminders, lesson notes and SMS reminders ON
+
+**Roman:** "make sure when any agent creates a Teachworks profile for a parent
+that email reminders and SMS reminders and lesson notes are enabled."
+
+**Before:** deal_sync (the only agent that creates Teachworks families) sent
+name, email, phone and address, so every family got whatever the Teachworks
+account default happened to be. The field names were not in the repo; read
+today from the Teachworks API docs (Postman, Customers → Create a Family):
+`email_lesson_reminders`, `email_lesson_notes`, `sms_lesson_reminders`, all
+booleans; the email flags require an email and the SMS flag a mobile.
+
+**Now:** `_tw_fields()` adds `family_notification_flags(email, mobile)`: the
+two email switches whenever the family has an email, the SMS switch whenever
+it has a mobile (phone counts). The same dict is sent on UPDATE, so every
+existing family is healed the next time its deal syncs. 3 tests; 792 green.
+
+**Students (Roman, same day): email only.** `student_notification_fields()`
+sends `sms_lesson_reminders: false` on every student deal_sync creates, and
+`email_lesson_reminders` + `email_lesson_notes` true with the student's own
+address when intake captured one (`student_email_address`, fetched with the
+deal contact; used only when the deal names ONE student, since a sibling deal
+cannot say whose address it is).
+
+**Teacher of record as a Teachworks additional contact: stays manual.** The
+fleet already tested this in August (spec §5.5 spike): Teachworks /v1 has no
+additional-contacts endpoint, `POST customers/{id}/additional_contacts`
+returns 404. hsa_sync falls back to a task for the deal owner; deal_sync does
+not create that task yet.
+
+**Also today, by hand in Chrome:** HubSpot workflows "SMS - New Year Check
+in" (304831533) and "SMS - Summer Boost" (375925546) turned OFF. Neither
+sent SMS any more: each had no enrollment conditions and one action, set
+contact owner to Danielle.
+
+**Files:** email/src/deal_sync.py, email/tests/test_deal_sync.py, docs/CHANGELOG.md.
+
+## 2026-09-24 — Trial conversion cutoff is the trial deal; the 15-minute email pass skips converted trials
+
+**What changed** (`email/src/low_balance.py`, tests)
+- `_trial_converted`: "after the trial" now means after the TRIAL deal's
+  create date (else this season's start), and the case's own matched deal is
+  no longer excluded. Cody Topcu's trial alert had matched her newest charter
+  PO as "the deal", so the 9/21 cutoff hid the 9/18 PO and the 9/21 PO was
+  excluded as the case's own: not converted.
+- `_drop_converted_trials`: the :15/:30/:45 email pass, which has no resolve
+  step, drops converted trials before sending.
+
+**Why.** At 19:30 PT on 9/24 the email pass sent Angela Topcu "Cody's
+tutoring hours are running low, please submit a PO" by email and text, with
+two Valley View POs already on file. Teacher email was pending for the next
+morning; the hourly resolve pass now closes the case first.
+
+---
+
+## 2026-09-24 — Zero-balance trials: converted when real deals follow the trial, escalated only when the trial is all there is
+
+**What changed** (`email/src/low_balance.py`, tests)
+- `_trial_converted(case)`: for a `funding_type = trial` case, the student's
+  deals outside the trial and tracking pipelines created on or after the
+  trial deal. Any found → the sweep's resolve pass closes the ticket as
+  Renewed outright (no Needs invoice wait) with the deal names in the note;
+  no High flag, no DM.
+- The zero-balance escalation for a trial now says "the free trial is used
+  up and it is the only deal on file" on the ticket and in the DM.
+
+**Why.** Roman 2026-09-24: "if they are zero balance alerts for free trials
+you are to check if they have any other deals in our system and include that
+information. topcu has 2 deals that came in after free trial. so shes
+already converted. sofia matiu. had only free trial, that is different."
+Cody Topcu had been escalated High by the zero rule on 9/24 despite two
+Valley View POs after the trial; the next sweep closes that case.
+
+---
+
+## 2026-09-24 — The low-balance sweep never ran on the cron; now the scheduled run always sweeps, and a dispatch can force it
+
+**What changed** (`email/src/low_balance.py`, `.github/workflows/email-deal-sync.yml`, tests)
+- `run_sweep`: the full hourly branch runs when `GITHUB_EVENT_NAME` is
+  `schedule`, when `LOW_BALANCE_FORCE_SWEEP=1`, or (as before) when the run
+  starts in the first quarter hour.
+- `email-deal-sync.yml`: new dispatch input `force_sweep` (boolean) → that
+  env var, so a manual run does the whole sweep whatever the minute.
+
+**Why.** The deal-sync cron fires at :45 and the sweep's gate was
+`minute < 15` only (written for the triage poll that ran four times an
+hour). Since #252 moved the sweep to deal-sync (9/16) the scheduled run has
+never swept; the sweep ran only when a doorbell dispatch happened to land
+before :15: five hours on 9/23, four on 9/24, against 24 expected. Balances,
+reply checks, risk and the needs-invoice close were all that intermittent.
+Found on Roman's "why cant you just do the sweep manually to check now".
+
+---
+
+## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
+
+**What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains
+917641511 (TSP Teachers) and 918901819 (TSP Families), matching the exclude
+the first-lesson stamp already had.
+
+**Why.** Every Teachworks 403 in the audit log for the last week (131) came
+from three deals in the TSP Teachers pipeline (Elva Mikhail, Christy Gore,
+Desiree Doyle): the sync treated the teacher tracking deal as a tutoring
+deal and tried to create a Teachworks student named after the teacher every
+15 minutes; Teachworks refused each time and charter_admin got the error DM
+per deal. A scholarship family reaches Teachworks through its scheduling
+deal, never through the tracking deal. Roman 2026-09-24: "do it".
+
+---
+
+## 2026-09-24 — tutor-issues: a Claude reply with no verdict is no longer "not a tutor issue"
+
+**Why.** Found by sabotage on 2026-09-23 while proving the new CI suite: with
+the extractor replaced by `return None`, all 55 tutor-issues tests stayed
+green. The cause was in `_handle_report`: `extract_report` returned `None` on
+any reply it could not parse (prose, a refusal, a truncated JSON object), the
+caller tested `if not ex or not ex.get("is_tutor_issue")`, and both "Claude
+could not answer" and "Claude read it and said no" took the same silent exit,
+after the report had already been appended to `processed`. A parent's "the
+tutor never showed" email or text would be marked handled, with no ticket, no
+refusal line, no Slack notice, and no retry. Only the inbound family-report
+path; the Monday Teachworks sweep is deterministic and unaffected. Roman:
+"whats the tutor issue blind spot" → "go".
+
+**What.** `parse_verdict()` (pure) raises `ExtractUnparseable` instead of
+returning `None`; `_reply_text()` joins the reply's text blocks so an empty or
+refused reply is unparseable rather than an IndexError. `_handle_report`
+routes that exception to `_flag_unparseable()`: the report is NOT marked
+processed and is retried next run; at `inbound.max_extract_attempts` (2, new
+config key) it is marked processed, the attempt counter cleared, and the
+fallback scheduler receives one notification asking them to read it. Every
+attempt is a `plan.refusals` line in the run digest. Attempts persist in
+`ops/tutor-issues/state/extract_failures.json` (the workflow already commits
+`state/` as a directory). The read-no path is unchanged and still silent.
+
+**Tests.** 9 new in `ops/tutor-issues/tests/test_tutor_issues.py` (64 total).
+Four fail against the old semantics and pass against the new, verified by
+reverting the branch in place and re-running. One of them keeps the sabotage
+check itself: a dead extractor must surface as a refusal.
+
+**Not done, on purpose.** Structured outputs (`output_config` json_schema, the
+way call-agent and feedback-agent already call Claude) would make an
+unparseable reply nearly impossible in the first place. That is the fleet-wide
+LLM helper in the 2.0 plan, not this PR. This PR makes the failure visible and
+bounded whichever way the call is made.
+
+**Files.** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
+`ops/tutor-issues/tests/test_tutor_issues.py`, `ops/tutor-issues/README.md`,
+`registry.yml` (notes), `docs/FLEET.md` (regenerated), `docs/CHANGELOG.md`.
+
+---
+## 2026-09-24 — Deal-sync workflow gets the Gmail credentials: email replies were invisible to the low-balance sweep since 9/16
+
+**What changed** (`.github/workflows/email-deal-sync.yml`)
+`GOOGLE_SHEETS_CREDS: secrets.RETENTION_SA_JSON` added to the sync job's env,
+the same secret `email-triage.yml` already passes.
+
+**Why.** PR #252 (9/16) moved the hourly low-balance sweep from triage into
+deal-sync, but the sweep's Gmail reads (`_parent_replied`, `_tor_replied`)
+never got the credentials there: every hourly run printed "reply check
+failed ... 'NoneType' object has no attribute 'keys'" for every case with an
+email on file and treated it as no reply. Since 9/16: 7 text replies caught,
+0 email replies (1 before the move). A family who answered the day-0 email
+by email was texted anyway the next morning; teacher replies were never
+DM'd to charter_sales. Found on Roman's "do the check now", 2026-09-24.
+
+---
+
+## 2026-09-24 — Live balance: stamp until stamped, escalate at zero until escalated
+
+**What changed** (`email/src/low_balance.py`, tests)
+The first sweeps after #283 stamped only 2 of 28 open Renewals tickets and
+flagged none of the three zero cases. The stamp and the zero rule both ran
+only when the balance CHANGED that hour; every case recorded before #283 had
+not changed, so it never got its title or `hours_left`, and Abby Ulstrup and
+Cadence Agin (already at 0) were never escalated. The audit record now
+carries `stamped: true`; `open_cases` folds it; a case is skipped only when
+nothing moved AND it is already stamped AND it is not sitting at zero
+unflagged. First stamp of an unchanged case is silent (no note).
+
+**Why.** Roman 2026-09-24: "can you do the check now". Investigation rule:
+the failure class (state recorded before a feature existed never
+re-processed) is closed by keying on "done" flags, not on "changed".
+
+---
+
+## 2026-09-24 — A teacher who is also a parent has two addresses, and one record
+
+**What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/tests/test_po_inbox.py`)
+- `_work_address()`: when a matched teacher's own
+  `teacher_of_record_email_address` names themselves, that is their SCHOOL
+  address and it beats the personal `email` they gave us as a parent. Gated on
+  the same name test, so an ordinary family's field (which names their child's
+  teacher) is correctly ignored.
+- `_same_person_any_persona()`: before creating a teacher from a name, look
+  again WITHOUT the TOR persona filter. Ambiguity creates rather than guesses.
+- `find_tor_contacts_by_lastname` returns `teacher_of_record_email_address`.
+- The association note shows the address actually stamped.
+
+**Why**
+Roman, 2026-09-24: "remember kristy is both a parent and a teacher."
+
+Kristy Doyal is one contact wearing both personas, with 38 associated deals:
+
+    email                            kristydoyal@gmail.com               parent
+    teacher_of_record_email_address  kristy.doyal@heartland...com        teacher
+
+Two bugs, one shape.
+
+First, `_tor_by_name` would have matched her and stamped `email` on the deal,
+sending school business about somebody else's child to the personal inbox she
+gave us as Cooper's mother. She is the only dual-persona contact in the portal
+today, which is exactly why nobody would have noticed.
+
+Second, and worse for the future: `_tor_by_name` searches TOR-FLAGGED contacts
+only. A teacher we already hold as a PARENT looks like a stranger to it, and
+yesterday's change would then have created a second record for a person with 38
+deals on the first. Kristy happens to carry both personas so she is found, but
+the next teacher-parent will not be so tidy.
+
+**Verified live** (dry, `SEARCH_PASSTHROUGH` on), a PO naming Kristy as another
+child's teacher of record: her existing record 95643687311 is reused, no second
+contact, and the deal is stamped
+`kristy.doyal@heartlandcharterschool.com`, not the gmail.
+
+807 tests pass, 6 new.
+
+---
+## 2026-09-24 — Ask the family record before inventing a teacher
+
+**What changed** (`email/src/po_inbox.py`, `scripts/fix_tor_billing_inboxes.py`,
+`email/tests/test_po_inbox.py`)
+- New `_tor_from_family()`, tried after the name lookup and BEFORE creating a
+  name-only stub. Reads the family contact's `teacher_of_record_email_address`
+  and uses it only when it passes `_why_not_the_teacher` against the teacher
+  the PO names.
+- The remediation script gets the same second source.
+
+**Why**
+Roman, 2026-09-24: "kath has not had this many issues when doing this manually
+on finding the teachers or families in hubspot. if the family is in hubspot,
+you can check their property for teacher of record name and email too."
+
+He was right and my first check was wrong. I queried `teacher_of_record_email`,
+which does not exist on contacts, got blanks everywhere and read that as "the
+families do not have it". The real property is
+**`teacher_of_record_email_address`**, and **497 contacts carry it**. The PO
+flow had never looked at it.
+
+It cannot be taken on trust, though, because it is intake capture and it
+drifts. On the same audit the families under Colbie Van Horn's POs named five
+different teachers (Alissa Helm, Jessica Hiltscher, Kristy Doyal, Lindsey
+Hatton, Megan Teixeira) and the family under Dianna Gregorie's named Ruth
+Hernandez. Believing it would put the wrong teacher on the deal, which is the
+fault this whole thread is about. So it is admitted only when it corroborates
+the name on the PO, by the same test the PO's own address must pass. That is
+exactly enough to catch the case where the family just spells the name
+differently.
+
+**Verified live** (dry, `SEARCH_PASSTHROUGH` on):
+
+    Stephanie Negrete-Claar  family <sclaar@eliteacademic.com>        USED
+                             (the family spells her "Stephanie Claar")
+    Janna Morbitz            family <janna@heartwoodcharterschool.org> USED
+    Dianna Gregorie          family says Ruth Hernandez               REFUSED
+    Colbie Van Horn          family says Kristy Doyal                 REFUSED
+    Catherine Peloso         no family address                        falls through
+
+Remediation dry run moves from 27 corrected / 44 left to **31 corrected / 40
+left**. The teachers still needing a human drop from five to three: Catherine
+Peloso (9 deals), Colbie Van Horn (9), Dianna Gregorie (2). The remaining 16
+are ours or placeholders ("No EF Info" 13, Kath 3).
+
+801 tests pass, 6 new. Two of them were written wrong at first: the stub
+returned the family record for every email lookup including the teacher's own,
+which is a mistake the real code cannot make.
+
+---
+## 2026-09-24 — A PO that names a teacher we do not have now produces that teacher
+
+**What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_inbox.py`)
+- `_create_named_tor()`: when a PO names a teacher and no TOR contact matches,
+  create them from the name with NO email, associate them to the deal, and open
+  one case asking a human for the address.
+- `_open_tor_email_case()`: a Support case keyed `tor_email:<name>`, so six POs
+  for the same teacher open one case, owned by `charter_sales` via the new
+  `owner_rules.support.tor_missing_email`.
+- `_is_placeholder_name()`: "No EF Info" sits on 13 deals as the teacher of
+  record. A form field nobody filled in does not become a contact.
+- `_TOR_THIS_RUN`: HubSpot's search index lags, so a school sending six POs in
+  one batch would otherwise create the same teacher six times.
+- `hs.create_contact` no longer sends `email: ""` when there is no address.
+- Ambiguity still refuses: two people share a surname, a human picks.
+
+**Why**
+Roman asked the right question after the accounts payable find: can we list the
+schools and check whether their POs give teacher info at all.
+
+Measured across **152 purchase orders from 19 schools**: 122 name the teacher
+and **2 give an address**. One Ocean Grove, one Pacific Coast, both one-offs.
+iLEAD 67 POs and zero addresses, Elite 20 and zero, Heartwood 14 and zero.
+
+That reframes the whole thing. A purchase order is a procurement document: it
+carries the school's accounts payable contact because that is who pays the
+invoice, and the teacher's name at most. Expecting a teacher's email on a PO
+was the wrong expectation, and matching a named teacher against contacts we
+already hold is not a fallback, it is the only road. PR #294 is therefore
+guarding the main route, not an edge case.
+
+It also explains the 44 orphaned deals exactly. Until now a named teacher we
+did not already have dead-ended: the code wrote a line on the ticket and
+associated nothing, so the school's billing desk stayed on the deal as the
+child's Teacher of Record and the real person was recorded nowhere. Catherine
+Peloso, Colbie Van Horn, Stephanie Negrete-Claar, Dianna Gregorie and Janna
+Morbitz have no HubSpot record of any kind. That is not five unlucky schools,
+it is what happened to every new teacher.
+
+A name with no address is not nothing. As a contact it puts the right person on
+the deal, and it makes every LATER PO for that teacher match by name instead of
+failing the same way.
+
+Deliberately not done: guessing the address. Elite spells them
+firstinitial+lastname and Heartland first.last@, so it is guessable, and
+emailing a school on a guessed address reaches the wrong person or nobody. The
+case asks a human.
+
+**Verified against the live portal** (dry, with `SEARCH_PASSTHROUGH` on so the
+lookups are real):
+- Colbie Van Horn, unknown: billing desk refused, contact created name-only.
+- Ruth Hernandez, known: billing desk refused, matched by name to
+  `rhernandez@eliteacademic.com`, associated, lead status healed.
+- "No EF Info": billing desk refused, nothing created.
+
+795 tests pass. Two existing tests were pinning the old give-up behaviour and
+are rewritten onto the new contract.
+
+---
+## 2026-09-24 — Remediation: the billing desks come off the deals
+
+**What changed** (`scripts/fix_tor_billing_inboxes.py`, new)
+- One-off remediation for the data PR #294 stops creating. Dry by default,
+  idempotent, `--execute` to write.
+- DEALS: for each deal carrying a school billing desk as the teacher, resolve
+  the real teacher by name through `po_inbox._tor_by_name` (the same lookup the
+  PO flow uses when a PO has no teacher email) and require the result to pass
+  `_why_not_the_teacher`. Single confident match: stamp the real address,
+  associate the real teacher via `hs.associate_contact_to_deal`, drop the
+  billing contact. Zero or several: change nothing, print it.
+- CONTACTS: stamp `generic_inbox = true` (the documented exclusion from every
+  teacher outreach list) and remove the Teacher of Record persona.
+
+**Why**
+The reach was larger than the 54 first counted. Searching on the addresses
+themselves rather than on recent deals finds **71 deals** across five schools.
+
+Dry run, 2026-09-24:
+
+    deals corrected : 27
+    deals left alone: 44
+    contacts fixed  : 5
+
+The 27 resolve cleanly and plausibly: Ruth Hernandez to rhernandez@, Brynika
+Jackson to bjackson@, Tamara Radford to tradford@, Chloe Frisby to cfrisby@,
+Angela Cloud to angela@heartwoodcharterschool.org, Austin Haney to
+austin.haney@heartlandcharterschool.com, Sheila Villalobos to svillalobos@,
+Tiffany Broussard to tbroussard@, Beth Segal to beth.segal@pacificcharters.org.
+
+The 44 are the real finding. Every one reports zero name matches, and checking
+by hand showed why: **those teachers do not exist in HubSpot at all**, not even
+under a different persona. Catherine Peloso, Colbie Van Horn, Stephanie
+Negrete-Claar, Dianna Gregorie and Janna Morbitz have no contact record of any
+kind. That is the second-order damage from the same bug. Because the PO flow
+stamped the school's billing desk as the teacher, it never created the teacher,
+so the deal points at accounts payable and the actual person was never recorded.
+
+Nothing was guessed for those 44. Elite spells addresses firstinitial+lastname
+and Heartland spells them first.last@, so the pattern is obvious and inventing
+an address to email a school on is exactly the wrong move. Five teachers'
+addresses unblock all 44 deals, and that is a question for a human.
+
+Deliberately untouched: eight deals whose teacher address is a personal
+gmail/yahoo bearing somebody else's name. A different fault, needing a person
+to say which half is wrong.
+
+**Blocked:** the `--execute` pass is refused by the auto-mode write classifier,
+as bulk HubSpot writes have been before. Roman runs the one command.
+
+---
+## 2026-09-24 — A teacher's email has to carry the teacher's name
+
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)
+- New `_why_not_the_teacher(addr, first, last)`, which replaces the bare
+  `_robot_tor_addr` check at the TOR association site. It returns why an
+  address cannot be the teacher's, or "" if it can.
+- New `_addr_carries_name()` and `_fold()`. Accents are folded, not stripped;
+  every token of a compound surname is tried; the usual initial-plus-surname
+  shapes pass.
+- With no teacher name on the PO the rule abstains, so it can only ADD
+  rejections where there is evidence.
+- 7 tests, including the real addresses from all five schools. One existing
+  test was pinning the bug and is corrected in place.
+
+**Why**
+Roman, on the Joseph Ramirez PO: "I did notice that you used the accounts
+payable email not the teachers."
+
+He was right, and it was not one deal. Five schools were past the old guard:
+`acctspayable@` (Elite), `ap@` (Heartland), `vendorinfo@` (Heartwood),
+`providers@` (Compass), and our own `charter@wetutorathome.com`. Four of those
+mailboxes existed as CONTACTS carrying the persona "Teacher of Record/EF/ES",
+one of them named literally "Teacher", and every one had been emailed by us.
+54 deals carry an address that is not the teacher's.
+
+The old guard was a list of local-parts (vendorsupport, procurify, orders@,
+billing@). It works where it matches: the six Visions deals all predate it by
+hours and nothing has slipped through on that address since. But a list cannot
+win here, because each school invents its own spelling for the same mailbox and
+we only learn the spelling after it has been stamped on a family's deal as
+their child's teacher. `providers@compasscharters.org` is the proof: no list of
+billing words would ever have contained it.
+
+So the rule asks the question the list was standing in for. The PO names the
+teacher. A teacher's address carries the teacher's name; a school's billing
+desk carries the school's function.
+
+The same PO pair proves the fallback works. Neither the Ramirez nor the Zamora
+PDF contains a teacher's address at all, only accounts payable. Ramirez came
+out right because the no-email path matched "Ruth Hernandez" by name to the
+contact we already had. Zamora came out wrong because the model handed over the
+only address on the page and the word list did not stop it. A rejection now
+routes every PO down the path that was already getting it right.
+
+**Measured before shipping**, on all 137 distinct (teacher, address) pairs on
+our deals: 122 pass, 15 are held. Twelve of the fifteen are the generic inboxes
+above. The other three are personal addresses from April carrying somebody
+else's name, which deserve a human look too.
+
+That measurement also caught a bug in the rule itself. The first draft stripped
+non-ascii characters instead of folding them, turning Veronique Fabre's own
+first name into "vronique", so it rejected her real address at
+`veronique.gaeta@ileadexploration.org`. Reading the code would not have found
+it; running it against every teacher we have did.
+
+**Still open:** the 54 existing deals and the four contacts wearing the Teacher
+of Record persona need correcting. This change stops new ones.
+
+---
 ## 2026-09-23 — ops/unanswered was blind for a week: a cursor on the wrong clock
 
 **What changed** (`ops/unanswered/unanswered.py`, `ops/checkin/checkin.py`,
@@ -216,6 +665,39 @@ been rewritten to the new contract, with the reason recorded in its docstring.
 
 **Still Roman's call:** flipping `REASONER_LIVE`. The recommended order is one
 `--no-pester` pass first (63 closes, no DMs), then the ladder on.
+
+---
+## 2026-09-23 — Tests run in CI: every pytest suite on every PR
+
+**Why:** 75 test files existed on main and none of them ran anywhere but a
+laptop. `grep pytest .github/workflows/` returned nothing. The tutor-issues
+registry-lockstep test was written to catch the #213 enum outage and, as wired,
+could not catch a repeat; the 429 retry, the FERPA redaction, and the
+low-balance rehydrate all shipped this month with tests that never ran on push.
+Roman, 2026-09-23, on the fleet re-read: "let's do the tests."
+
+**What:** `.github/workflows/ci.yml` runs on every pull request (and dispatch).
+It discovers every directory holding `test_*.py` outside `.claude/` and
+`archive/`, and runs pytest once per area rooted at that area (`email`,
+`agents/cohort_intake`, `ops/<agent>`, `scripts`). One invocation per area is
+deliberate: each area's `conftest.py` sets its own `sys.path` and forces
+`DRY_RUN`, and the hyphenated `ops/` dirs are not packages, so a single
+repo-wide `pytest` collides on module names. A new agent that ships with tests
+is covered without editing the workflow. Dependencies are the union of
+`email/`, `ops/scorecard/`, `ops/call_agent/` requirements plus `openpyxl`,
+verified in a clean venv: 12 areas, 1,147 tests, all green, about 25 seconds.
+No secrets are passed; the conftests block live HTTP.
+
+**Not yet blocking.** `main` has no branch protection and no rulesets (checked
+via the API the same day), so a red `tests` check shows on the PR but cannot
+stop a merge. Making it a gate is one repo setting: Settings → Branches →
+protect `main` → require status checks → `tests`. Roman's call.
+
+**Not done, on purpose:** registry_check still runs `--warn`; the workflow lint
+for the commit-state block is Layer 0 items 2 and 3, separate PRs.
+
+**Files:** `.github/workflows/ci.yml` (new), `registry.yml` (`ci-tests` entry),
+`docs/FLEET.md` (regenerated), `docs/CHANGELOG.md`.
 
 ---
 ## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now

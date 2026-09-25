@@ -224,7 +224,12 @@ def find_tor_contacts_by_lastname(lastname: str) -> list[dict]:
                               "value": TOR_LEAD_STATUS}]},
         {"filters": [name_f, {"propertyName": "a_persona", "operator": "EQ",
                               "value": "Teacher of Record/EF/ES"}]},
-    ], "properties": ["email", "firstname", "lastname", "a_persona", "hs_lead_status"],
+        # teacher_of_record_email_address comes back because a contact can be a
+        # parent AND a teacher (Kristy Doyal, Roman 2026-09-24): `email` is then
+        # the personal address she gave us as a mother, and this one is her
+        # school address. po_inbox._work_address picks between them.
+    ], "properties": ["email", "firstname", "lastname", "a_persona", "hs_lead_status",
+                      "teacher_of_record_email_address"],
         "limit": 10}
     res = _write("POST", "/crm/v3/objects/contacts/search", body)
     return res.get("results", []) if isinstance(res, dict) else []
@@ -635,7 +640,11 @@ def create_contact(email: str, firstname: str | None = None, lastname: str | Non
     """Create a contact under the creation contract: `persona` and `owner_role`
     are keyword-only and REQUIRED so no caller can forget them (see
     creation_props). extra_props may add fields but never override the contract."""
-    props = {"email": email}
+    # An empty string is not an address. A PO names the teacher and almost
+    # never gives their email (2 of 152 POs, measured 2026-09-24), so a
+    # name-only TOR contact is a normal thing to create and must not carry
+    # `email: ""`, which HubSpot stores as a real, blank, unique-ish value.
+    props = {"email": email} if email else {}
     if firstname:
         props["firstname"] = firstname
     if lastname:
@@ -677,7 +686,7 @@ def get_deal_contacts(deal_id: str) -> list[dict]:
     for cid in ids[:10]:
         try:
             out.append(_get(f"/crm/v3/objects/contacts/{cid}",
-                            {"properties": "email,firstname,lastname,a_persona"}))
+                            {"properties": "email,firstname,lastname,a_persona,student_email_address"}))
         except requests.HTTPError:
             continue
     return out

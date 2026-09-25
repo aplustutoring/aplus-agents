@@ -39,6 +39,11 @@ on:
         required: false
         type: string
         default: ""
+      force_sweep:
+        description: "Run the full low-balance sweep now (live balances, replies, risk), whatever the minute"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -70,11 +75,13 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           JUSTCALL_API_KEY: ${{ secrets.JUSTCALL_API_KEY }}
           JUSTCALL_API_SECRET: ${{ secrets.JUSTCALL_API_SECRET }}
+          GOOGLE_SHEETS_CREDS: ${{ secrets.RETENTION_SA_JSON }}   # Gmail reads in the low-balance sweep (family + teacher reply checks); missing since #252 moved the sweep here
           DRY_RUN: ${{ inputs.dry_run }}
           FORCE_DEAL_ID: ${{ inputs.deal_id }}
           FORCE_CONTACT_EMAIL: ${{ inputs.contact_email }}
           FORCE_STUDENT_FIRST: ${{ inputs.student_first }}
           FIRST_LESSON_BACKFILL_DAYS: ${{ inputs.first_lesson_backfill_days }}
+          LOW_BALANCE_FORCE_SWEEP: ${{ inputs.force_sweep && '1' || '' }}
         run: |
           if [ -n "${{ inputs.first_lesson_backfill_days }}" ]; then
             python -m src.first_lesson

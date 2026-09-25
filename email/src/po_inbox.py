@@ -21,6 +21,7 @@ import json
 import re
 import sys
 import traceback
+import unicodedata
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 
@@ -449,6 +450,239 @@ def _tor_by_name(first: str, last: str) -> list[dict]:
     return cands if len(cands) == 1 else []
 
 
+def _work_address(tor: dict, first: str, last: str, note_parts: list) -> str:
+    """Which of this teacher's addresses is the TEACHER one?
+
+    Roman 2026-09-24: "remember kristy is both a parent and a teacher."
+
+    Kristy Doyal is one contact wearing both personas, and her two addresses
+    are not interchangeable:
+
+        email                           kristydoyal@gmail.com         parent
+        teacher_of_record_email_address kristy.doyal@heartland...com  teacher
+
+    `email` is the address she gave us as Cooper's mother. Matching her by name
+    and stamping that on a deal would send school business about somebody
+    else's child to her personal inbox. Her own
+    teacher_of_record_email_address holds the school address, because she is
+    her own child's teacher of record.
+
+    That only generalises when the field names the contact THEMSELVES, so it
+    is gated on the same name test everything else here uses. On an ordinary
+    family the field names a different person and this correctly declines.
+    """
+    props = tor.get("properties") or {}
+    personal = (props.get("email") or "").strip().lower()
+    work = (props.get(FAM_TOR_EMAIL) or "").strip().lower()
+    if not work or work == personal:
+        return personal
+    # is the work address theirs, rather than their child's teacher's?
+    who_first = (props.get("firstname") or first or "")
+    who_last = (props.get("lastname") or last or "")
+    if _why_not_the_teacher(work, who_first, who_last):
+        return personal
+    note_parts.append(f"🧑‍🏫 {who_first} {who_last} is a parent AND a teacher; using "
+                      f"their school address <{work}>, not the personal one "
+                      f"<{personal}> they gave us as a parent.")
+    return work
+
+
+# The family's own intake capture. Roman 2026-09-24: "if the family is in
+# hubspot, you can check their property for teacher of record name and email
+# too" — which is how Kath resolves these by hand without any of this trouble.
+# 497 contacts carry the address field, and the PO flow never once looked at it.
+FAM_TOR_NAME = "teacher_of_record_name"
+FAM_TOR_EMAIL = "teacher_of_record_email_address"
+
+
+def _tor_from_family(po: dict, p_email: str, family_contact_id, note_parts: list):
+    """The teacher's address off the FAMILY record, but only when it agrees.
+
+    This field is intake capture, not source of truth, and it drifts: on the
+    2026-09-24 audit the families under Colbie Van Horn's POs named five
+    different teachers (Alissa Helm, Jessica Hiltscher, Kristy Doyal, Lindsey
+    Hatton, Megan Teixeira), and the family under Dianna Gregorie's named Ruth
+    Hernandez. Taking it on trust would put the wrong teacher on the deal,
+    which is the fault we are here to fix.
+
+    So it is admitted only when it CORROBORATES the teacher the PO names, by
+    the same test the PO's own address has to pass. That is enough to resolve
+    the cases where the family simply spells the name differently:
+
+        PO "Stephanie Negrete-Claar" + family <sclaar@eliteacademic.com>   ✓
+        PO "Janna Morbitz"           + family <janna@heartwoodcharter...>  ✓
+        PO "Dianna Gregorie"         + family <rhernandez@...>             ✗
+
+    A hit here also means the teacher gets a real contact with a real address
+    instead of a name-only stub, so every later PO resolves at step two.
+    """
+    first = (po.get("tor_first") or "").strip()
+    last = (po.get("tor_last") or "").strip()
+    if not (first or last) or _is_placeholder_name(first, last):
+        return None
+    fam = None
+    if family_contact_id and family_contact_id != "DRYRUN":
+        try:
+            fam = hs._get(f"/crm/v3/objects/contacts/{family_contact_id}",
+                          {"properties": f"{FAM_TOR_NAME},{FAM_TOR_EMAIL}"})
+        except Exception:  # noqa: BLE001 — fall back to the parent email below
+            fam = None
+    if not fam and p_email:
+        fam = hs.find_contact_by_email(
+            p_email, properties=[FAM_TOR_NAME, FAM_TOR_EMAIL])
+    props = (fam or {}).get("properties") or {}
+    addr = (props.get(FAM_TOR_EMAIL) or "").strip().lower()
+    if not addr:
+        return None
+    if _why_not_the_teacher(addr, first, last):
+        note_parts.append(f"🧑‍🏫 The family record names a different teacher "
+                          f"<{addr}> (family says '{props.get(FAM_TOR_NAME) or '?'}', "
+                          f"the PO says '{first} {last}'); NOT used.")
+        return None
+    tor = hs.find_contact_by_email(
+        addr, properties=["email", "firstname", "lastname", "a_persona",
+                          "hs_lead_status"])
+    if not tor:
+        tor = hs.create_contact(addr, first or None, last or None, **TOR_CREATE)
+        note_parts.append(f"🧑‍🏫 CREATED TOR contact <{addr}> from the FAMILY record "
+                          f"(the PO named {first} {last} and gave no address).")
+    else:
+        note_parts.append(f"🧑‍🏫 TOR {first} {last} resolved from the FAMILY record "
+                          f"<{addr}> (the PO gave no address).")
+    return tor
+
+
+# Names that are not names. "No EF Info" sits on 13 deals as the teacher of
+# record; creating a contact called that would be worse than creating nothing.
+_NOT_A_NAME = {"no", "na", "n/a", "none", "null", "unknown", "unkown", "tbd",
+               "tba", "pending", "teacher", "info", "n\\a", "-", "?"}
+
+# Teachers created by name inside THIS run, so a school sending six POs in one
+# batch does not create the same teacher six times before HubSpot's search
+# index catches up.
+_TOR_THIS_RUN: dict = {}
+
+
+def _is_placeholder_name(first: str, last: str) -> bool:
+    """Is this a person, or a form field nobody filled in?"""
+    toks = [x for x in re.findall(r"[a-z]+", _fold(f"{first} {last}")) if x]
+    real = [x for x in toks if x not in _NOT_A_NAME and len(x) > 1]
+    return len(real) < 2
+
+
+def _same_person_any_persona(first: str, last: str):
+    """This exact person, whatever persona they wear. None if not found or
+    ambiguous: two Doyals is a question for a human, not a guess."""
+    try:
+        cands = hs.find_contacts_by_lastname(last)
+    except Exception:  # noqa: BLE001 — best effort; creating is the fallback
+        return None
+    ff = _fold_name(first)
+    exact = [c for c in cands
+             if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+    return exact[0] if len(exact) == 1 else None
+
+
+def _create_named_tor(deal_id, po: dict, t_name: str, note_parts: list[str]):
+    """The PO names a teacher we have never seen. Create them.
+
+    Measured 2026-09-24 across 152 purchase orders from 19 schools: 122 name
+    the teacher and exactly 2 give an address. A PO is a procurement document.
+    It carries the school's accounts payable contact because that is who pays
+    the invoice, and the teacher's name at most.
+
+    So matching a named teacher against contacts we already have is not a
+    fallback, it is the only road, and until now it dead-ended for anyone new:
+    the code wrote a line on the ticket and associated nothing, which left the
+    school's billing desk sitting on the deal as the child's Teacher of Record
+    and the actual teacher recorded nowhere. On 2026-09-24 that was 44 deals
+    and five teachers (Catherine Peloso, Colbie Van Horn, Stephanie
+    Negrete-Claar, Dianna Gregorie, Janna Morbitz) who did not exist in HubSpot
+    in any form.
+
+    A name with no address is not nothing. Created as a contact it puts the
+    right person on the deal, and it makes every LATER PO for that teacher
+    match by name instead of failing the same way. The missing address becomes
+    one tracked case for the seat that talks to teachers about a specific
+    student, rather than an invisible hole.
+
+    What is deliberately NOT done here is guessing the address. Elite spells
+    them firstinitial+lastname and Heartland first.last@, so it is guessable,
+    and emailing a school on a guessed address reaches the wrong person or
+    nobody. The case asks a human for it.
+    """
+    first = (po.get("tor_first") or "").strip()
+    last = (po.get("tor_last") or "").strip()
+    if not last or _is_placeholder_name(first, last):
+        note_parts.append(f"🧑‍🏫 TOR '{t_name}' on the PO is not a usable name "
+                          f"(placeholder or surname missing); nothing created.")
+        return None
+
+    key = _fold(f"{first} {last}")
+    tor = _TOR_THIS_RUN.get(key)
+    if tor is None:
+        # A teacher can already be in HubSpot wearing a different hat. Kristy
+        # Doyal is a Heartland teacher AND Cooper's mother, on one record with
+        # both personas. _tor_by_name only searches TOR-FLAGGED contacts, so a
+        # teacher we hold as a parent looks like a stranger and we would make a
+        # second record of a person we already have. Look again without the
+        # persona filter before creating anything; _heal_tor_contact then adds
+        # the teacher persona to the record that exists (append-only, and it
+        # leaves dual-role lead status alone).
+        existing = _same_person_any_persona(first, last)
+        if existing is not None:
+            note_parts.append(f"🧑‍🏫 {t_name} is already in HubSpot under another "
+                              f"persona; using that record rather than creating a "
+                              f"second one.")
+            _TOR_THIS_RUN[key] = existing
+            _open_tor_email_case(deal_id, po, t_name, existing, note_parts)
+            return existing
+        tor = hs.create_contact("", first or None, last or None, **TOR_CREATE)
+        _TOR_THIS_RUN[key] = tor
+        note_parts.append(f"🧑‍🏫 CREATED TOR contact for {t_name} with NO email: the PO "
+                          f"named them and gave no address (2 of 152 POs ever do). "
+                          f"The next PO for this teacher will match by name.")
+    _open_tor_email_case(deal_id, po, t_name, tor, note_parts)
+    return tor
+
+
+def _open_tor_email_case(deal_id, po: dict, t_name: str, tor: dict,
+                         note_parts: list[str]) -> None:
+    """One case per teacher, asking a human for the address."""
+    if not deal_id or deal_id == "DRYRUN" or tor.get("id") in (None, "DRYRUN"):
+        return
+    from . import case_engine as ce
+    student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() \
+        or "student n/a"
+    school = po.get("school") or "school n/a"
+    role, _why = ce.owner_for_support("tor_missing_email")
+    desc = (f"The PO names {t_name} as the teacher of record and gives no email "
+            f"address for them, which is normal: 2 of 152 purchase orders ever "
+            f"carry one.\n\n"
+            f"Teacher: {t_name}\nSchool: {school}\nStudent: {student}\n"
+            f"PO #: {po.get('po_number') or 'n/a'}\n"
+            f"HubSpot contact: {tor.get('id')} (created from the PO, name only)\n"
+            f"HubSpot deal id: {deal_id}\n\n"
+            f"Please put their email on that contact. Do not guess it from the "
+            f"school's pattern; ask the school or the family. Once it is there, "
+            f"every future PO naming this teacher resolves on its own.")
+    try:
+        t = ce.open_case("po_inbox", f"tor_email:{_fold(t_name)}", "support", "new",
+                         f"Teacher email needed: {t_name} ({school})",
+                         desc, role, contact_ids=[tor["id"]],
+                         deal_id=deal_id,
+                         props={"support_category": "tor_missing_email",
+                                "ticket_source": "email_engine"},
+                         priority="MEDIUM", category="new_deal_po", source="EMAIL")
+        note_parts.append(f"📮 Case {t.get('id')} for "
+                          f"{(staff(role) or {}).get('name', role)}: get {t_name}'s "
+                          f"email address.")
+    except Exception as e:  # noqa: BLE001 — the deal must survive a ticket failure
+        print(f"  ⚠️  TOR email case failed (non-fatal): {e}")
+        note_parts.append(f"📮 Could not open the case for {t_name}'s email "
+                          f"address — chase it by hand.")
+
+
 def _heal_tor_contact(tor: dict, note_parts: list[str]) -> None:
     """Deal automations flip TOR lead status to customer values when a teacher
     lands on a deal (OPEN_DEAL — the Mary Nieves SMS incident, 2026-08-13).
@@ -495,8 +729,10 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
     t_email = (po.get("tor_email") or "").strip().lower()
     p_email = (po.get("parent_email") or "").strip().lower()
     t_name = f"{po.get('tor_first', '')} {po.get('tor_last', '')}".strip()
-    if t_email and _robot_tor_addr(t_email):
-        note_parts.append(f"\U0001f916 TOR email <{t_email}> is a portal/vendor mailbox, not a "
+    why = _why_not_the_teacher(t_email, po.get("tor_first") or "",
+                               po.get("tor_last") or "")
+    if why:
+        note_parts.append(f"\U0001f916 TOR email <{t_email}> is {why}, not a "
                           f"teacher; NOT associated as Teacher of Record"
                           + (f" (name '{t_name}' tried instead)." if t_name else "."))
         t_email = ""
@@ -526,21 +762,36 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
             matches = _tor_by_name(po.get("tor_first") or "", po.get("tor_last") or "")
             if len(matches) == 1:
                 tor = matches[0]
-                resolved = ((tor.get("properties") or {}).get("email") or "").strip().lower()
+                resolved = _work_address(tor, po.get("tor_first") or "",
+                                         po.get("tor_last") or "", note_parts)
                 if resolved:
                     # feeds the teacher_of_record_email deal stamp downstream
                     po["tor_email"] = resolved
                 note_parts.append(f"🧑‍🏫 TOR {t_name} matched by NAME (PO had no email) → "
                                   f"existing TOR contact <{resolved or '?'}>.")
-            else:
+            elif matches:
+                # Two or more people share the surname. Creating here would
+                # make a third. A human picks.
                 note_parts.append(f"🧑‍🏫 TOR '{t_name}' named in the PO without an email; "
-                                  f"{'multiple' if matches else 'no'} matching TOR "
-                                  f"contacts in HubSpot — associate manually.")
+                                  f"multiple matching TOR contacts in HubSpot — "
+                                  f"associate manually.")
                 return
+            else:
+                tor = (_tor_from_family(po, p_email, family_contact_id, note_parts)
+                       or _create_named_tor(deal_id, po, t_name, note_parts))
+                if tor is None:
+                    return
+                resolved = ((tor.get("properties") or {}).get("email") or "").strip().lower()
+                if resolved:
+                    po["tor_email"] = resolved
         if tor and tor.get("id") not in (None, "DRYRUN"):
             _heal_tor_contact(tor, note_parts)
             hs.associate_contact_to_deal(deal_id, tor["id"])
-            display = t_email or (tor.get("properties") or {}).get("email") or "no email"
+            # po["tor_email"] before the contact's own `email`: for a dual-role
+            # contact those differ, and the note must show the address we
+            # actually stamped, not the personal one we rejected.
+            display = (t_email or po.get("tor_email")
+                       or (tor.get("properties") or {}).get("email") or "no email")
             note_parts.append(f"🧑‍🏫 TOR {po.get('tor_first', '')} {po.get('tor_last', '')} "
                               f"<{display}> associated to the deal.")
             # #AP031 family→TOR sync: family id from the create path when known,
@@ -968,6 +1219,84 @@ _ROBOT_TOR_RE = re.compile(r"vendor-?support|vendor-?desk|procurify|launchpad\.v
 def _robot_tor_addr(addr: str) -> bool:
     a = (addr or "").strip().lower()
     return bool(a) and (not _human_addr(a) or bool(_ROBOT_TOR_RE.search(a)))
+
+
+def _fold(s: str) -> str:
+    """Accents folded, not deleted. Deleting them turned Veronique Fabre's own
+    first name into "vronique", which then failed to match
+    veronique.gaeta@ileadexploration.org: the rule rejected a real teacher for
+    having an accent in her name."""
+    s = unicodedata.normalize("NFKD", s or "")
+    return "".join(c for c in s if not unicodedata.combining(c)).lower()
+
+
+def _addr_carries_name(first: str, last: str, addr: str) -> bool:
+    """Does this address bear any part of this teacher's name?
+
+    Every token of a compound surname is tried on its own, so Negrete-Claar
+    still matches snegrete@, and the usual initial-plus-surname shapes are
+    allowed because rhernandez@ is how half of them are spelled.
+
+    With no name to judge against this answers True: the rule may only ADD
+    rejections where there is evidence, never reject for lack of it.
+    """
+    local = re.sub(r"[^a-z0-9]", "", _fold((addr or "").split("@")[0]))
+    firsts = re.findall(r"[a-z]+", _fold(first))
+    lasts = re.findall(r"[a-z]+", _fold(last))
+    if not local or not (firsts or lasts):
+        return True
+    for tok in lasts + firsts:
+        if len(tok) >= 3 and tok in local:
+            return True
+    for f in firsts:
+        for l in lasts:
+            if (f[:1] + l) in local or (l + f[:1]) in local \
+                    or (f + l[:1]) in local or (f + l) in local:
+                return True
+    return False
+
+
+def _why_not_the_teacher(addr: str, first: str, last: str) -> str:
+    """"" if this address can be the teacher's, otherwise why it cannot.
+
+    The old guard was a list of local-parts (vendorsupport, procurify,
+    orders@, billing@...). Lists lose here, because every school invents its
+    own spelling for the same mailbox and we only learn the spelling after it
+    has been stamped on a family's deal as their child's teacher. By
+    2026-09-24 five schools were past it: acctspayable@ (Elite, 17 deals),
+    ap@ (Heartland, 12), vendorinfo@ (Heartwood, 9), providers@ (Compass), and
+    our own charter@wetutorathome.com. Four of those mailboxes existed as
+    contacts carrying the persona "Teacher of Record/EF/ES", one of them named
+    literally "Teacher", and we had emailed all four.
+
+    Roman found it from the other end on 2026-09-24: "I did notice that you
+    used the accounts payable email not the teachers."
+
+    So stop enumerating mailboxes and ask the question the list was standing in
+    for. The PO names the teacher. A teacher's address carries the teacher's
+    name; a school's billing desk carries the school's function. That test
+    needs no maintenance as schools add mailboxes, and it caught providers@,
+    which no list of billing words would have.
+
+    Measured over all 137 distinct (teacher, address) pairs on our deals: 122
+    pass, 15 are rejected, and 12 of those 15 are the generic inboxes above.
+    The other three are personal addresses from April carrying somebody else's
+    name, which is worth a human look too. A rejection is not a dead end: the
+    caller falls through to matching the teacher BY NAME against contacts we
+    already have, which is the path that got Ruth Hernandez right on the very
+    PO that exposed this.
+    """
+    a = (addr or "").strip().lower()
+    if not a:
+        return ""
+    if not _human_addr(a):
+        return "a no-reply mailbox"
+    if _ROBOT_TOR_RE.search(a):
+        return "a portal or vendor mailbox"
+    if (first or last) and not _addr_carries_name(first, last, a):
+        who = f"{first or ''} {last or ''}".strip()
+        return f"a mailbox that carries no part of the name '{who}'"
+    return ""
 
 
 def _sender_addr(msg: dict) -> str:

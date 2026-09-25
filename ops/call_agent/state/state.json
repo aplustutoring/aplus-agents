@@ -1109,52 +1109,348 @@
     418450136,
     418452497,
     418461041,
-    418455238
+    418455238,
+    418714757,
+    418720187,
+    418727859,
+    418746007,
+    418755311,
+    418768611,
+    418772130,
+    418777562,
+    418798246,
+    418827810,
+    418862027,
+    418912156,
+    418920921,
+    418924939,
+    418934776,
+    418938147,
+    418956065,
+    418960677,
+    418961297,
+    418962106
   ],
-  "last_run_utc": "2026-09-24T00:47:19.729521+00:00",
+  "last_run_utc": "2026-09-25T01:41:41.472961+00:00",
   "pending_digest": [
     {
-      "call_id": 418215813,
-      "number": "13236320815",
-      "time_pt": "8:58 AM",
+      "call_id": 418727859,
+      "number": "18184623808",
+      "time_pt": "9:16 AM",
       "matched": true,
-      "contact_label": "Jeff Werner",
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Inna to clarify Myron's tutoring schedule with Calvin \u2014 confirmed 2 hours of physics on Thursdays 7-9pm and 1 hour of geometry Mondays at 8pm, all with Calvin. Inna, anxious about Myron's 9th-grade struggles at Granada Hills HS, decided to purchase a 50-hour package for $3,650 and provided two credit cards to split the payment ($1,600 on card ending 1448, remainder ~$2,050 on card ending 9769). She also asked about college counseling and future SAT prep tutoring. Yolanda offered to send a college counselor contact and said A+ can help find an SAT tutor next year.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Charge $1,600 to card ending 1448 (exp 12/27, CVV 836, under Inna's name) and remaining ~$2,050 to card ending 9769 (exp 7/28, CVV 939) for the 50-hour package ($3,650 total)",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Book Myron's recurring sessions with Calvin: Thursdays 7-9pm (2 hrs physics) and Mondays 8pm (1 hr geometry), starting today",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Brief Calvin that Myron has shared syllabi for both physics and geometry so he can prep accordingly",
+            "owner_hint": "Calvin",
+            "route": "scheduling"
+          },
+          {
+            "item": "Send Inna the contact info for the college counselor A+ works with",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Flag for next year: source an SAT prep tutor for Myron (vocabulary/English focus)",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Inna (mom, returning customer, very anxious about 9th-grader Myron at Granada Hills HS struggling in geometry and AP Physics) committed on this call to a 50-hour package at $3,650, split across two credit cards: $1,600 on Visa/MC ending 1448 (exp 12/27, CVV 836) and the remaining ~$2,050 on card ending 9769 (exp 7/28, CVV 939), both under her name. She expects (1) both cards to be charged and the 50 hours loaded to her account (hours don't expire, no refunds \u2014 she was told), (2) Myron's schedule with Calvin to start today: Thursdays 7-9pm for physics (2 hrs) and Mondays at 8pm for geometry (1 hr), (3) Calvin to prep from the syllabi she already sent him, and (4) a college counselor contact from us. She also floated SAT prep tutoring for next year (Myron's English is weaker). Open with: \"Hi Inna, Yolanda passed along that you're all set for the 50-hour package \u2014 I wanted to confirm both cards went through and that Calvin is locked in for tonight/Thursday.\"",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an open deal \u2014 status is owned by the deal pipeline, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Jacob",
+          "Granada Hills HS",
+          "Nobel",
+          "Calvin",
+          "Notre Dame"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Inna committed to a 50-hour package at $3,650 for Myron, split across two credit cards ($1,600 on card ending 1448, exp 12/27; remainder ~$2,050 on card ending 9769, exp 7/28). Confirmed Myron's recurring schedule with Calvin: Thursdays 7-9pm physics (2 hrs) + Mondays 8pm geometry (1 hr), starting today. Inna remains very anxious about Myron's 9th-grade workload at Granada Hills HS and is already thinking ahead to SAT prep next year and possibly college counseling.",
+          "what_we_can_do_to_help": "[Call] Run both credit cards for the 50-hour package and load hours to account (no refunds, hours don't expire \u2014 Inna was informed). Schedule Calvin recurring Thu 7-9pm (physics) and Mon 8pm (geometry) for Myron; brief Calvin to prep from the syllabi Inna already sent him. Send Inna the college counselor contact. Flag for next year: identify an SAT prep tutor (English/vocab focus) for Myron.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": "Granada Hills HS",
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Inna committed to a 50-hour package at $3,650 for Myron, split across two credit cards ($1,600 on card ending 1448, exp 12/27; remainder ~$2,050 on card ending 9769, exp 7/28). Confirmed Myron's recurring schedule with Calvin: Thursdays 7-9pm physics (2 hrs) + Mondays 8pm geometry (1 hr), starting today. Inna remains very anxious about Myron's 9th-grade workload at Granada Hills HS and is already thinking ahead to SAT prep next year and possibly college counseling."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Run both credit cards for the 50-hour package and load hours to account (no refunds, hours don't expire \u2014 Inna was informed). Schedule Calvin recurring Thu 7-9pm (physics) and Mon 8pm (geometry) for Myron; brief Calvin to prep from the syllabi Inna already sent him. Send Inna the college counselor contact. Flag for next year: identify an SAT prep tutor (English/vocab focus) for Myron."
+        ],
+        [
+          "student_school",
+          "balboa magnet",
+          "Granada Hills HS"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Charge $1,600 to card ending 1448 (exp 12/27, CVV 836, under Inna's name) and remaining ~$2,050 to card ending 9769 (exp 7/28, CVV 939) for the 50-hour package ($3,650 total)",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Book Myron's recurring sessions with Calvin: Thursdays 7-9pm (2 hrs physics) and Mondays 8pm (1 hr geometry), starting today",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Brief Calvin that Myron has shared syllabi for both physics and geometry so he can prep accordingly",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Send Inna the contact info for the college counselor A+ works with",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Flag for next year: source an SAT prep tutor for Myron (vocabulary/English focus)",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 418746007,
+      "number": "18184623808",
+      "time_pt": "9:59 AM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inna Volodinsky called in a panic because her home internet is down and she's worried Myron won't be able to do his tutoring session tonight with Calvin. Yolanda suggested trying the session by phone as a backup, and walked Inna through possibly using T-Mobile cell data or a hotspot from her phone to a tablet/Chromebook. Inna is going to try to sort it out (husband handles the tech and is at work) and will call back if needed. No session change was actually made.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "negative",
+        "action_items": [
+          {
+            "item": "Check in with Inna before Myron's session tonight (Thu 7pm physics with Calvin) to confirm whether internet is working or if session needs to happen by phone/hotspot, and give Calvin a heads up either way.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Inna Volodinsky (mom of Myron, 9th, Granada Hills HS \u2014 existing customer on the 50-hr package with Calvin) called stressed because her home internet is out and Myron has his Thursday 7-9pm physics session with Calvin tonight. Yolanda offered options: try the session by phone, or use T-Mobile cell data / hotspot to a tablet or Chromebook. Inna's husband handles the tech and is at work; she'll try to resolve it and call back if she can't. Please check in with her a bit before 7pm to confirm whether Calvin should plan for a normal online session, a hotspot connection, or a phone-only session, and brief Calvin accordingly. Open with: 'Hi Inna, just checking in before Myron's session tonight \u2014 were you able to get the internet sorted, or should we have Calvin plan for a phone session?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (50-hr package in progress) \u2014 status owned by deal pipeline, not to be changed.",
+        "student_or_school_names_mentioned": [
+          "Myron",
+          "Granada Hills HS"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Inna called stressed that her home internet is down ahead of Myron's Thu 7pm physics session with Calvin. She doesn't know her ISP and her husband (who handles tech) is at work. Yolanda offered phone-session backup and walked her through T-Mobile hotspot/data options; Inna will try to resolve and call back if needed.",
+          "what_we_can_do_to_help": "[Call] Proactively check in with Inna before 7pm tonight to confirm connectivity plan for Myron's physics session, and brief Calvin whether to expect normal online, hotspot, or phone-only. Keep phone-session as fallback so Myron doesn't miss the hour.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Inna called stressed that her home internet is down ahead of Myron's Thu 7pm physics session with Calvin. She doesn't know her ISP and her husband (who handles tech) is at work. Yolanda offered phone-session backup and walked her through T-Mobile hotspot/data options; Inna will try to resolve and call back if needed."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Proactively check in with Inna before 7pm tonight to confirm connectivity plan for Myron's physics session, and brief Calvin whether to expect normal online, hotspot, or phone-only. Keep phone-session as fallback so Myron doesn't miss the hour."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check in with Inna before Myron's session tonight (Thu 7pm physics with Calvin) to confirm whether internet is working or if session needs to happen by phone/hotspot, and give Calvin a heads up either way.",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": "48705172393",
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418755311,
+      "number": "18186481937",
+      "time_pt": "10:12 AM",
+      "matched": true,
+      "contact_label": "Sergei Arutunov",
       "no_next_step": true,
       "summary": {
-        "summary": "Roman called Jeff Werner back with the hand-graded results of Iris's ISEE math practice test: 20/47 correct, with most 'knew it' answers right and most 'don't know' answers wrong. Roman recommended a high-dosage tutoring model (3x/week, 45 min) targeting a mid-November ISEE and mid-December backup, and quoted a 20-hour prepaid package at $1,660. Jeff was warm and enthusiastic, said he'll check with Iris's mom on schedule and expects to confirm and purchase by end of day (hopefully before lunch). Roman sent the pricing graphic with a Get Started Now link during the call.",
+        "summary": "Sergei Arutunov called about his 7th-grade son Alexander ('Alek'), a high-achieving LAUSD GATE student at Louis Armstrong Middle School in Sherman Oaks who wants to apply to the Science Academy STEM Magnet for 8th grade (exam in ~December). Sergei is specifically looking for test prep \u2014 not general schoolwork help \u2014 with a concern that the exam covers chemistry concepts up to 10th grade that Alek hasn't been exposed to. Paola explained the online-only test prep model, the math diagnostic first step, and the student-specialist results meeting. Sergei gave sase0505@gmail.com and noted mom will likely respond and may prefer a different email.",
         "caller_type": "parent",
         "intent": "new inquiry",
         "sentiment": "positive",
         "action_items": [
           {
-            "item": "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
-            "owner_hint": "Roman",
+            "item": "Email Sergei current rates/packages for Science Academy STEM Magnet test prep and the 7th-grade math diagnostic exam link, plus booking link for the results meeting with the student specialist.",
+            "owner_hint": "Paola",
             "route": "follow_up"
           },
           {
-            "item": "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+            "item": "Send Sergei a confirmation text after the email goes out to verify receipt.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Watch for a reply from Alek's mom (possibly from a different email) and loop her into the thread.",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [
+          {
+            "wrong": "Alexander \"Alek\"",
+            "correct": "Alexander \"Alek\" Arutunov"
+          }
+        ],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Sergei Arutunov (dad, warm and engaged, slight language barrier) called about his 7th-grade son Alexander 'Alek' Arutunov at Louis Armstrong Middle School in Sherman Oaks (LAUSD GATE/high-achievement, already in Math Academy doing Algebra 1). Family wants test prep ONLY for the Science Academy STEM Magnet 8th-grade entrance exam (~December, ~3 months out). Concern: exam reportedly covers chemistry through 10th grade and Alek hasn't been exposed to that content yet. Paola promised to email rates/packages, the 7th-grade math diagnostic, and a link to book the student-specialist results meeting, then send a confirmation text. Explained our test prep is online-only via Lesson Space, one-on-one. Sergei says mom will likely be the one to respond and may use a different email \u2014 sase0505@gmail.com is his. No pricing quoted yet, no diagnostic or meeting booked yet. Suggested opener: 'Hi Sergei, this is ___ from A+ Tutoring following up on your call with Paola about Alek's Science Academy STEM Magnet prep \u2014 just making sure you and Alek's mom got the rates, diagnostic, and booking link we sent.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": null,
+          "what_we_can_do_to_help": null,
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "lead_status",
+          "QTL - NEW",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Sergei current rates/packages for Science Academy STEM Magnet test prep and the 7th-grade math diagnostic exam link, plus booking link for the results meeting with the student specialist.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send Sergei a confirmation text after the email goes out to verify receipt.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Watch for a reply from Alek's mom (possibly from a different email) and loop her into the thread.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418768611,
+      "number": "526644928295",
+      "time_pt": "10:34 AM",
+      "matched": true,
+      "contact_label": "Caller 664-492-8295",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Spanish/English inbound call from a prospective family wanting to use PCH Charter School instructional funds for tutoring. Paola quoted the charter rate of $60/hour (vs. $75 standard) and they discussed roughly 1 hour per week. The call ended with Paola indicating next steps once A+ receives the charter funding paperwork. Transcript is fragmented but the family clearly qualifies as a charter-funded lead.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Follow up with the family once PCH Charter School funding request is received; confirm enrollment paperwork and next steps.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once charter funding is confirmed, schedule the first tutoring session (~1 hour/week at $60/hr charter rate).",
             "owner_hint": null,
             "route": "scheduling"
           },
           {
-            "item": "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
-            "owner_hint": "Roman",
+            "item": "Update contact record with parent name and student details once obtained \u2014 currently only phone number on file.",
+            "owner_hint": null,
             "route": "follow_up"
           }
         ],
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Jeff Werner (dad of Iris, 6th grade testing into 7th at private schools) is warm, engaged, and effectively ready to buy. Roman just walked him through Iris's hand-graded ISEE math practice results (20/47; goal to reach 30-32/47 next run) and recommended our high-dosage model \u2014 3x/week, 45 min \u2014 with one tutor covering all four sections. Roman quoted a 20-hour prepaid package at $1,660 and emailed the pricing graphic with the Get Started Now link during the call. Testing plan remains Sandy's: mid-Nov ISEE + mid-Dec backup. Jeff will confer with Iris's mom on schedule and expects to come back with a yes and preferred times by end of day today (hopefully before lunch). If he calls or emails, open with: 'Hi Jeff \u2014 Roman filled me in, congrats on moving forward with Iris. Let's lock in the three weekly 45-minute slots that work for you and mom and get her started with our tutor this week.' Still need to cross-check target-school application deadlines against Nov/Dec ISEE dates before finalizing test registration.",
-        "lead_status": "no_change",
-        "lead_status_reason": "Existing/returning customer with an open deal in the pipeline; deal stage owns status.",
+        "reached_live": true,
+        "handoff_note": "Spanish-speaking parent (phone 664-492-8295) called in wanting to use PCH Charter School instructional funds for tutoring. Paola quoted the $60/hr charter rate and they discussed about 1 hour/week. No student name, grade, subject, or schedule was captured on the call \u2014 transcript was fragmented. Family expects A+ to move forward once the charter funding paperwork comes through from PCH. Open with: 'Hola, soy [name] de A+ Tutoring, llamando para dar seguimiento sobre el tutoring con fondos de PCH Charter \u2014 \u00bfme puede confirmar el nombre y grado del estudiante y las materias que necesita?' Paola is the point of contact they spoke with.",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Parent explicitly stated they want to pay using PCH Charter School instructional funds \u2014 qualifies as a charter-funded lead.",
         "student_or_school_names_mentioned": [
-          "Iris Werner",
-          "Stanford University"
+          "PCH Charter School"
         ],
         "record_updates": {
-          "whats_going_on": "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup.",
-          "what_we_can_do_to_help": "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates.",
+          "whats_going_on": "Spanish-speaking parent called in to set up tutoring using PCH Charter School instructional funds. Discussed ~1 hour/week. Student name, grade, and subject were not captured on the call.",
+          "what_we_can_do_to_help": "Quoted the $60/hr charter rate to the family. Next step is to follow up once PCH Charter funding paperwork is received, then confirm student details and schedule the first session.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -1172,127 +1468,66 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Roman delivered hand-graded ISEE math practice results to Jeff: 20/47 correct, with most confident answers right and most 'don't know' answers wrong \u2014 good diagnostic baseline. Jeff was warm, enthusiastic, and effectively ready to buy; just needs to confirm schedule with Iris's mom. Plan remains Sandy's mid-Nov ISEE + mid-Dec backup."
+          "Spanish-speaking parent called in to set up tutoring using PCH Charter School instructional funds. Discussed ~1 hour/week. Student name, grade, and subject were not captured on the call."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Recommended high-dosage model: 3x/week, 45-min sessions, one tutor Roman has in mind covering all four ISEE sections, with practice tests built into the runway. Quoted 20-hour prepaid package at $1,660 and emailed pricing graphic with Get Started Now link during the call. Jeff will confirm purchase and scheduling by end of day (hopefully before lunch); still need to cross-check target-school application deadlines against Nov/Dec ISEE test dates."
+          "Quoted the $60/hr charter rate to the family. Next step is to follow up once PCH Charter funding paperwork is received, then confirm student details and schedule the first session."
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Charter"
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Await Jeff's confirmation (expected by end of day, hopefully before lunch) on package purchase and schedule; be ready to onboard and match to the tutor Roman has in mind for all ISEE sections.",
+          "Follow up with the family once PCH Charter School funding request is received; confirm enrollment paperwork and next steps.",
           81494333,
           "follow_up"
         ],
         [
-          "Once Jeff confirms, coordinate scheduling for 3x/week, 45-min sessions with the identified tutor, factoring in mom's availability.",
+          "Once charter funding is confirmed, schedule the first tutoring session (~1 hour/week at $60/hr charter rate).",
           81494333,
           "scheduling"
         ],
         [
-          "Cross-reference target private-school application deadlines against mid-Nov and mid-Dec ISEE dates before locking the testing schedule.",
+          "Update contact record with parent name and student details once obtained \u2014 currently only phone number on file.",
           81494333,
           "follow_up"
         ]
       ],
       "ticket_id": null,
       "coached": true,
-      "direction": "outgoing"
+      "direction": "incoming"
     },
     {
-      "call_id": 418398846,
-      "number": "19173252075",
-      "time_pt": "2:01 PM",
+      "call_id": 418777562,
+      "number": "13104783711",
+      "time_pt": "10:50 AM",
       "matched": true,
-      "contact_label": "Matthew Ferrigno",
+      "contact_label": "Caller 310-478-3711",
       "no_next_step": true,
       "summary": {
-        "summary": "Outbound follow-up call from Paola at A+ Tutoring to Matthew Ferrigno regarding his inquiry about tutoring for his daughter. Call went to voicemail; Paola left a message asking him to return the call to find a good time to connect. No new information was gathered.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Matthew Ferrigno (Yelp lead) inquired about tutoring for his daughter. Paola called and left a voicemail asking him to call back to find a time to connect \u2014 no details on daughter's grade, subject, or needs yet. Matthew now expects a callback opportunity; if he doesn't respond, try again in a day or two. Suggested opener: 'Hi Matthew, this is [name] from A+ Tutoring following up on Paola's message about tutoring for your daughter \u2014 I'd love to learn a bit about what she needs help with.'",
-        "lead_status": "no_change",
-        "lead_status_reason": "Left voicemail only; did not actually connect with the parent, so keep status as NEW until we speak.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect.",
-          "what_we_can_do_to_help": "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Outbound follow-up on Yelp inquiry about tutoring for Matthew's daughter. Reached voicemail; Paola left a message asking Matthew to call back to set up a time to connect."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Once we reach Matthew, gather details on his daughter (grade, school, subject needs, online vs. in-person) and recommend a fit."
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Attempt another follow-up contact with Matthew Ferrigno if he does not return Paola's voicemail",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 418433938,
-      "number": "16614963125",
-      "time_pt": "3:30 PM",
-      "matched": true,
-      "contact_label": "Katie Wilson",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring called Katie Wilson to follow up on her booked meeting and learn about her family's tutoring needs. Katie has two sons (ages 11 and 13, in language arts curriculum levels 6 and 7) enrolled with Hartwood Charter, and is looking for help with essay writing. Paola quoted the $75/hr charter rate ($60 for 45 min) and explained the online Lessons Pay platform and tutor matching process. Katie asked whether both boys could share a session to stretch limited charter funds; Paola will check on that and send a confirmation email with rates. Katie will confirm available fund balances afterward.",
+        "summary": "Katrina Harper called seeking in-person math tutoring for her first-grade child attending Colfax, in the 91602 area. Paola quoted $130/hr for in-person tutoring and explained package options; Katrina noted weekly may be cost-prohibitive and asked for details by email. Paola collected her email (katrina.l.harper@gmail.com) and said she would check tutor availability in the area and follow up via email. Katrina is awaiting the pricing email and tutor-availability confirmation.",
         "caller_type": "parent",
         "intent": "new inquiry",
         "sentiment": "positive",
         "action_items": [
           {
-            "item": "Check whether both sons (ages 11 and 13) can be tutored together in the same session for language arts/essay writing",
+            "item": "Email Katrina Harper the in-person tutoring pricing and package information at katrina.l.harper@gmail.com",
             "owner_hint": "Paola",
             "route": "follow_up"
           },
           {
-            "item": "Send Katie a confirmation email including current charter rates ($75/hr, $60/45min) and next steps",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          },
-          {
-            "item": "Once Katie shares available charter fund balances, help build a schedule (e.g., 30-min weekly sessions) for both boys",
+            "item": "Check tutor availability in the 91602 area for a 1st-grade math student and reply to Katrina via the same email thread",
             "owner_hint": "Paola",
             "route": "scheduling"
           }
@@ -1300,205 +1535,21 @@
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Katie Wilson (warm, easygoing parent) is a Hartwood Charter family with two sons, ages 11 and 13, in language arts curriculum levels 6 and 7. Both need help with essay writing / building writing confidence. She has NOT filled out POs yet because she wants to confirm feasibility first. Paola quoted the charter rate of $75/hr and $60 for 45 min and explained the Lessons Pay platform and tutor matching. Key open question Katie is waiting on: can both boys share one session (even just doing an intro-to-essays topic together) since their charter funds are limited? Note the 13-year-old will be in high school next year and has a different charter teacher than the younger son. Katie expects an email from Paola with rates + an answer on the shared-session question. Suggested opener: \"Hi Katie, following up on your call with Paola \u2014 here are our charter rates and what we can do about running your two boys together...\" Also ask her to share fund balances so we can size sessions (30-min options are on the table).",
-        "lead_status": "QTL - Diagnostic Sent",
-        "lead_status_reason": "Charter-funded family (Hartwood Charter) paying via instructional funds \u2014 QTL - Charter fits best.",
+        "reached_live": true,
+        "handoff_note": "Katrina Harper (mom, friendly and engaged) called about in-person math tutoring for her 1st grader at Colfax (ZIP 91602). Paola quoted $130/hr in-person and mentioned package discounts for weekly/monthly commitments; Katrina said weekly might be too much and is considering biweekly. Paola promised to email pricing details to katrina.l.harper@gmail.com and confirm tutor availability in her area. Katrina expects that email with pricing plus an availability answer, and will reply to move forward. Suggested opener: 'Hi Katrina, following up on your call with Paola \u2014 here's the pricing info and our availability for a 1st-grade math tutor in the Colfax / 91602 area.'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Spoke live with a prospective family about a standard 1st-grade math tutoring inquiry; not charter-funded and no diagnostic needed.",
         "student_or_school_names_mentioned": [
-          "Hartwood Charter"
+          "Colfax",
+          "Katrina Harper"
         ],
         "record_updates": {
-          "whats_going_on": "Hartwood Charter family with two sons ages 11 and 13 (language arts curriculum levels 6 and 7). Both need support with essay writing \u2014 they have the basic building blocks but writing does not come naturally. Older son moves to high school next year and has a different charter teacher than the younger son. Charter funds are limited, so Katie is exploring whether both boys can share a session (even a general intro-to-essays topic) to stretch the budget.",
-          "what_we_can_do_to_help": "Confirm whether we can run both brothers in one shared session (or same-time/different-tutor) for language arts/essay writing. Send Katie an email with our charter rates ($75/hr, $60 for 45 min) and the Lessons Pay platform overview. Once she shares available fund balances, build a schedule \u2014 30-min weekly sessions are an option to fit budget and attention span.",
+          "whats_going_on": "Katrina Harper called seeking in-person math tutoring for her 1st grader at Colfax (ZIP 91602). Open to weekly but may go biweekly due to cost. Asked about tutor experience level.",
+          "what_we_can_do_to_help": "Email pricing/package info ($130/hr in-person, package discounts) and check tutor availability in the 91602 area for 1st-grade math, then hand off to scheduling once she confirms interest.",
           "student_first_name": null,
           "student_last_name": null,
-          "grade_level": null,
-          "student_school": "Hartwood Charter",
-          "subject_need": "English Language Arts",
-          "online_or_in_person": "Online Tutoring",
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Hartwood Charter family with two sons ages 11 and 13 (language arts curriculum levels 6 and 7). Both need support with essay writing \u2014 they have the basic building blocks but writing does not come naturally. Older son moves to high school next year and has a different charter teacher than the younger son. Charter funds are limited, so Katie is exploring whether both boys can share a session (even a general intro-to-essays topic) to stretch the budget."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Confirm whether we can run both brothers in one shared session (or same-time/different-tutor) for language arts/essay writing. Send Katie an email with our charter rates ($75/hr, $60 for 45 min) and the Lessons Pay platform overview. Once she shares available fund balances, build a schedule \u2014 30-min weekly sessions are an option to fit budget and attention span."
-        ],
-        [
-          "student_school",
-          "(blank)",
-          "Hartwood Charter"
-        ],
-        [
-          "subject_need",
-          "(blank)",
-          "English Language Arts"
-        ],
-        [
-          "online_or_in_person",
-          "(blank)",
-          "Online Tutoring"
-        ],
-        [
-          "lead_status",
-          "Meeting Booked",
-          "QTL - Diagnostic Sent"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Check whether both sons (ages 11 and 13) can be tutored together in the same session for language arts/essay writing",
-          81494333,
-          "follow_up"
-        ],
-        [
-          "Send Katie a confirmation email including current charter rates ($75/hr, $60/45min) and next steps",
-          81494333,
-          "follow_up"
-        ],
-        [
-          "Once Katie shares available charter fund balances, help build a schedule (e.g., 30-min weekly sessions) for both boys",
-          81494333,
-          "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 418438778,
-      "number": "18185704203",
-      "time_pt": "3:55 PM",
-      "matched": true,
-      "contact_label": "Ashley Beedle",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring placed an outbound follow-up call to prospective parent Ashley Beedle regarding her interest in tutoring. The call went to voicemail; Paola left a message asking Ashley to call back and said she would also send a follow-up email to book a call.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "neutral",
-        "action_items": [
-          {
-            "item": "Send Ashley a follow-up email offering times to book a discovery call",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          },
-          {
-            "item": "Attempt another outreach to Ashley if no response to voicemail/email",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Paola left a voicemail for prospective parent Ashley Beedle following up on her tutoring inquiry and promised to send an email to schedule a discovery call. No details yet on student, grade, subject, or modality \u2014 record is empty on those. Ashley now expects an email from us with times to connect. Open with: 'Hi Ashley, this is [name] from A+ Tutoring following up on Paola's voicemail \u2014 I'd love to find a quick time to learn about your family's tutoring needs.'",
-        "lead_status": "We Connected",
-        "lead_status_reason": "Outbound follow-up to prospective family; left voicemail only, no live conversation, but this is a prospective family we're actively working \u2014 moving from ATTEMPTED_TO_CONTACT to We Connected is not warranted since no live contact occurred.",
-        "student_or_school_names_mentioned": [],
-        "record_updates": {
-          "whats_going_on": "Paola placed an outbound follow-up call to Ashley regarding her tutoring inquiry; reached voicemail and left a message. No new details about the student or need yet.",
-          "what_we_can_do_to_help": "Send follow-up email with scheduling options for a discovery call, and continue outreach cadence until we connect live to learn about the student's needs.",
-          "student_first_name": null,
-          "student_last_name": null,
-          "grade_level": null,
-          "student_school": null,
-          "subject_need": null,
-          "online_or_in_person": null,
-          "how_did_you_hear": null,
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Paola placed an outbound follow-up call to Ashley regarding her tutoring inquiry; reached voicemail and left a message. No new details about the student or need yet."
-        ],
-        [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Send follow-up email with scheduling options for a discovery call, and continue outreach cadence until we connect live to learn about the student's needs."
-        ],
-        [
-          "lead_status",
-          "Attempting to Contact",
-          "QTL - NEW"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Send Ashley a follow-up email offering times to book a discovery call",
-          81494333,
-          "follow_up"
-        ],
-        [
-          "Attempt another outreach to Ashley if no response to voicemail/email",
-          81494333,
-          "follow_up"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 418441657,
-      "number": "18189193389",
-      "time_pt": "4:02 PM",
-      "matched": true,
-      "contact_label": "Sharona Kaikov",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola from A+ Tutoring called Sharona Kaikov to follow up on her inquiry for tutoring for her 5th-grade daughter Emily at Dixie. Emily is strong in all subjects except math (testing at 9th grade in others but behind in math fundamentals like multiplication and long division), likely due to a school change. Sharona wants in-person only (not open to online, though Paola offered a free online trial), had a poor prior experience with Mathnasium, and asked about pricing and success rates. Paola quoted $130/hr in-person and the 8-hour package at $115/hr ($920), and committed to emailing package info and checking in-person tutor availability in ZIP 91607.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Email Sharona the in-person pricing/package information (8-hour package at $115/hr = $920, plus larger packages) and text her to confirm receipt since a prior email apparently didn't arrive.",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          },
-          {
-            "item": "Check in-person tutor availability in ZIP 91607 for 5th-grade math support (fundamentals: multiplication, division, long division) and follow up with Sharona with options.",
-            "owner_hint": "Paola",
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Sharona Kaikov (warm, engaged) is looking for in-person math tutoring for her 5th-grade daughter Emily at Dixie in ZIP 91607. Emily tests at ~9th grade in non-math subjects but is behind in math fundamentals (multiplication, long division) \u2014 mom attributes gaps to a school change. Mom had a poor Mathnasium experience and declined online (Paola offered a free online trial but she prefers in-person; she'd 'try' but is skeptical). Paola quoted $130/hr in-person and the 8-hour package at $115/hr ($920), noted packages don't expire, and promised to (1) email package info to sharonapro@gmail.com and text to confirm receipt (a previous email didn't arrive), and (2) source an in-person tutor in 91607 experienced with younger kids. Sharona expects the email shortly and a follow-up with tutor options. Suggested opener: 'Hi Sharona, this is [Name] following up from Paola \u2014 I wanted to make sure the pricing email came through and share an in-person tutor we found for Emily.'",
-        "lead_status": "We Connected",
-        "lead_status_reason": "Spoke with prospective family; not charter-funded and no diagnostic/test-prep evaluation required \u2014 standard connected lead.",
-        "student_or_school_names_mentioned": [
-          "Emily",
-          "Dixie",
-          "Mathnasium"
-        ],
-        "record_updates": {
-          "whats_going_on": "5th-grade daughter Emily (at Dixie) is strong across subjects (testing ~9th grade in non-math) but behind in math fundamentals \u2014 multiplication, division, long division \u2014 likely due to gaps from a school change. Prior Mathnasium experience was not good. Mom wants in-person only in ZIP 91607 and a tutor experienced with younger kids.",
-          "what_we_can_do_to_help": "Source an in-person math tutor in 91607 experienced with elementary students to fill in fundamental gaps. Emailed pricing/packages ($130/hr in-person; 8-hr package $115/hr = $920; packages don't expire). Optionally offered a free online trial if she changes her mind.",
-          "student_first_name": "Emily",
-          "student_last_name": null,
-          "grade_level": "5",
-          "student_school": "Dixie",
+          "grade_level": "1",
+          "student_school": "Colfax",
           "subject_need": "Math",
           "online_or_in_person": "In-Person Tutoring",
           "how_did_you_hear": null,
@@ -1512,27 +1563,22 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "5th-grade daughter Emily (at Dixie) is strong across subjects (testing ~9th grade in non-math) but behind in math fundamentals \u2014 multiplication, division, long division \u2014 likely due to gaps from a school change. Prior Mathnasium experience was not good. Mom wants in-person only in ZIP 91607 and a tutor experienced with younger kids."
+          "Katrina Harper called seeking in-person math tutoring for her 1st grader at Colfax (ZIP 91602). Open to weekly but may go biweekly due to cost. Asked about tutor experience level."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Source an in-person math tutor in 91607 experienced with elementary students to fill in fundamental gaps. Emailed pricing/packages ($130/hr in-person; 8-hr package $115/hr = $920; packages don't expire). Optionally offered a free online trial if she changes her mind."
-        ],
-        [
-          "student_first_name",
-          "(blank)",
-          "Emily"
+          "Email pricing/package info ($130/hr in-person, package discounts) and check tutor availability in the 91602 area for 1st-grade math, then hand off to scheduling once she confirms interest."
         ],
         [
           "grade_level",
           "(blank)",
-          "5"
+          "1"
         ],
         [
           "student_school",
           "(blank)",
-          "Dixie"
+          "Colfax"
         ],
         [
           "subject_need",
@@ -1543,6 +1589,11 @@
           "online_or_in_person",
           "(blank)",
           "In-Person Tutoring"
+        ],
+        [
+          "a_persona",
+          "(blank)",
+          "Family"
         ],
         [
           "lead_status",
@@ -1553,52 +1604,160 @@
       "record_skipped": [],
       "tasks_created": [
         [
-          "Email Sharona the in-person pricing/package information (8-hour package at $115/hr = $920, plus larger packages) and text her to confirm receipt since a prior email apparently didn't arrive.",
+          "Email Katrina Harper the in-person tutoring pricing and package information at katrina.l.harper@gmail.com",
           81494333,
           "follow_up"
         ],
         [
-          "Check in-person tutor availability in ZIP 91607 for 5th-grade math support (fundamentals: multiplication, division, long division) and follow up with Sharona with options.",
+          "Check tutor availability in the 91602 area for a 1st-grade math student and reply to Katrina via the same email thread",
           81494333,
           "scheduling"
         ]
       ],
       "ticket_id": null,
       "coached": true,
-      "direction": "outgoing"
+      "direction": "incoming"
     },
     {
-      "call_id": 418440858,
-      "number": "18183395667",
-      "time_pt": "4:04 PM",
+      "call_id": 418798246,
+      "number": "13109105142",
+      "time_pt": "11:24 AM",
       "matched": true,
-      "contact_label": "Christa",
+      "contact_label": "Charlene Wetzell",
       "no_next_step": false,
       "summary": {
-        "summary": "Yolanda from A+ Tutoring called tutor Christa to confirm whether she is available to start tutoring Tejas and Rashni today at 5 PM, with 5 PM as the ongoing session time moving forward. The call went to voicemail and Yolanda left a message asking Christa to call back.",
-        "caller_type": "tutor applicant",
+        "summary": "Charlene Wetzell (existing customer) called back to finalize scheduling for Keanu's tutoring with Katie Holiday. She wants to keep the two iLEAD-funded 30-min sessions and add two 45-min out-of-pocket sessions per week (total 4 days/week), using a 9-hour/12-session package to bridge through mid-November. Yolanda will check Katie's availability (possibly starting 15 min earlier on existing days) and text Charlene to confirm.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Check Katie Holiday's availability for two additional 45-min out-of-pocket sessions per week for Keanu (potentially starting 15 min earlier on currently scheduled days) and text Charlene to confirm.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once Charlene confirms, book Keanu on 4x/week schedule: 2x 30-min iLEAD-funded + 2x 45-min out-of-pocket (12-session/9-hour package) running through mid-November.",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Loop in Paola to send/confirm the out-of-pocket 12-session 45-min package invoice for Charlene once schedule is locked.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Charlene Wetzell (returning iLEAD family, son Keanu, 1st grade, tutor Katie Holiday) called in upbeat and ready to move forward. She wants to run 4 sessions/week: keep her 2 currently scheduled 30-min iLEAD-funded sessions AND add 2 more days at 45 min out-of-pocket, using a 9-hour/12-session package (~6 weeks, taking her through mid-November \u2014 she wants to stop before December because iLEAD funds drop ~Dec 2). Yolanda promised to check Katie's availability for the two extra 45-min slots (Katie's schedule is tight; may need to start 15 min earlier on existing days) and text Charlene back. Charlene now expects a text from Yolanda with proposed days/times for the two added 45-min sessions. Open with: 'Hi Charlene \u2014 checked with Katie, here are the 45-min slots she can offer on top of your current Mon/Wed times\u2026' then confirm and hand to Paola for the out-of-pocket invoice.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing active customer (Keanu already tutoring with Katie); status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Keanu",
+          "Katie Holiday",
+          "iLEAD Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Call] Charlene called back to lock in the expanded schedule for Keanu. She wants 4 sessions/week with tutor Katie Holiday: keep the 2 currently scheduled 30-min iLEAD-funded sessions, and add 2 more days at 45 min out-of-pocket via a 9-hour/12-session package (~6 weeks, running through mid-November). She wants to stop before December because iLEAD funds drop ~Dec 2. Yolanda to check Katie's availability (may need to start 15 min earlier on existing days) and text Charlene to confirm.",
+          "what_we_can_do_to_help": "[Call] Yolanda to confirm Katie Holiday's availability for two additional 45-min sessions/week for Keanu and text Charlene with proposed times. Once approved, book the 4x/week hybrid schedule (2x 30-min iLEAD-funded + 2x 45-min out-of-pocket, 12-session package through mid-November) and hand off to Paola to issue the out-of-pocket package invoice.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Call] Charlene called back to lock in the expanded schedule for Keanu. She wants 4 sessions/week with tutor Katie Holiday: keep the 2 currently scheduled 30-min iLEAD-funded sessions, and add 2 more days at 45 min out-of-pocket via a 9-hour/12-session package (~6 weeks, running through mid-November). She wants to stop before December because iLEAD funds drop ~Dec 2. Yolanda to check Katie's availability (may need to start 15 min earlier on existing days) and text Charlene to confirm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[Call] Yolanda to confirm Katie Holiday's availability for two additional 45-min sessions/week for Keanu and text Charlene with proposed times. Once approved, book the 4x/week hybrid schedule (2x 30-min iLEAD-funded + 2x 45-min out-of-pocket, 12-session package through mid-November) and hand off to Paola to issue the out-of-pocket package invoice."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Check Katie Holiday's availability for two additional 45-min out-of-pocket sessions per week for Keanu (potentially starting 15 min earlier on currently scheduled days) and text Charlene to confirm.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Once Charlene confirms, book Keanu on 4x/week schedule: 2x 30-min iLEAD-funded + 2x 45-min out-of-pocket (12-session/9-hour package) running through mid-November.",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Loop in Paola to send/confirm the out-of-pocket 12-session 45-min package invoice for Charlene once schedule is locked.",
+          81494333,
+          "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 418934776,
+      "number": "18184623808",
+      "time_pt": "4:30 PM",
+      "matched": true,
+      "contact_label": "Inna Volodinsky",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Inna Volodinsky called Janelle to change Myron's tutoring schedule with Calvin. Per her husband, the Thursday 7-9pm two-hour physics block is too much; they want to reduce Thursdays to a single hour (7-8pm) starting tonight and add a second session on Saturday (Calvin emailed that he's available). Monday geometry stays 8-9pm. Janelle confirmed and said the team will finalize the Saturday time and keep Inna posted.",
+        "caller_type": "parent",
         "intent": "scheduling",
         "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Await Christa's callback confirming 5 PM availability for Tejas and Rashni; if no response, follow up to confirm today's start time",
-            "owner_hint": "Yolanda",
+            "item": "Update Myron's Thursday recurring session with Calvin from 7-9pm to 7-8pm (1 hr), effective tonight.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          },
+          {
+            "item": "Coordinate with Calvin to schedule a second 1-hour session on Saturdays for Myron (Calvin indicated availability by email) and confirm the specific time back to Inna.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Keep Monday 8-9pm geometry session with Calvin as-is; confirm no other changes.",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Brief Calvin on the new cadence: Mon 8-9pm geometry, Thu 7-8pm physics, plus a Saturday 1-hr session TBD.",
+            "owner_hint": null,
             "route": "scheduling"
           }
         ],
         "name_corrections": [],
         "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Yolanda called tutor Christa (818-339-5667) to confirm she can start today at 5 PM with students Tejas and Rashni, with 5 PM as the ongoing time going forward. Call went to voicemail; Yolanda left a message. Christa is expected to call back to confirm. If she hasn't responded within an hour or two, follow up by text as well since we need to confirm today's 5 PM start. Suggested opener: 'Hi Christa, just following up on Yolanda's voicemail \u2014 can you confirm you're good to start with Tejas and Rashni today at 5 PM?'",
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Existing customer Inna Volodinsky (mom of Myron, 9th, Granada Hills HS) called to rework Calvin's schedule \u2014 her husband felt 2 hrs back-to-back on Thursdays is too much. New plan she expects us to implement: Thu 7-8pm physics (1 hr, starting tonight) instead of 7-9pm; Mon 8-9pm geometry unchanged; add a Saturday 1-hr session with Calvin (Calvin already emailed he's available Saturday). She expects us to lock the Saturday time and text/email her back to confirm. Tone was apologetic but calm. Open with: \"Hi Inna, following up on your call with Janelle \u2014 Myron's Thursday is now 7-8pm starting tonight, and Calvin can do [X time] Saturday, does that work?\" Also make sure Calvin is briefed before 7pm tonight so he doesn't plan a 2-hour block.",
         "lead_status": "no_change",
-        "lead_status_reason": "Christa is an active tutor; her Tutor-Active status is correct and should not be changed based on a scheduling voicemail.",
+        "lead_status_reason": "Existing active customer (OPEN_DEAL) calling about ongoing service \u2014 status owned by deal pipeline, not lead status.",
         "student_or_school_names_mentioned": [
-          "Tejas",
-          "Rashni"
+          "Myron",
+          "Calvin",
+          "Granada Hills HS"
         ],
         "record_updates": {
-          "whats_going_on": "Yolanda called Christa to confirm she can start tutoring Tejas and Rashni today at 5 PM, with 5 PM as the ongoing session time moving forward. Reached voicemail and left a message requesting a callback.",
-          "what_we_can_do_to_help": "Confirm Christa's 5 PM availability for today and lock in 5 PM as the recurring session time for Tejas and Rashni.",
+          "whats_going_on": "[Call] Inna called to adjust Myron's schedule with Calvin \u2014 per her husband, 2 hrs back-to-back on Thursdays is too much. New plan: Thu reduced to 7-8pm (1 hr) starting tonight, Mon 8-9pm geometry unchanged, and add a Saturday 1-hr session (Calvin already emailed he's available Saturday). Family will play the Saturday time by ear week to week.",
+          "what_we_can_do_to_help": "[Call] Update Calvin's recurring calendar: Thu 7-8pm (not 7-9pm) effective tonight, keep Mon 8-9pm, and coordinate a Saturday 1-hr slot with Calvin then confirm the time back to Inna. Brief Calvin on the new cadence before tonight's session so he doesn't prep a 2-hour block.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -1616,149 +1775,76 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Yolanda called Christa to confirm she can start tutoring Tejas and Rashni today at 5 PM, with 5 PM as the ongoing session time moving forward. Reached voicemail and left a message requesting a callback."
+          "[Call] Inna called to adjust Myron's schedule with Calvin \u2014 per her husband, 2 hrs back-to-back on Thursdays is too much. New plan: Thu reduced to 7-8pm (1 hr) starting tonight, Mon 8-9pm geometry unchanged, and add a Saturday 1-hr session (Calvin already emailed he's available Saturday). Family will play the Saturday time by ear week to week."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Confirm Christa's 5 PM availability for today and lock in 5 PM as the recurring session time for Tejas and Rashni."
+          "[Call] Update Calvin's recurring calendar: Thu 7-8pm (not 7-9pm) effective tonight, keep Mon 8-9pm, and coordinate a Saturday 1-hr slot with Calvin then confirm the time back to Inna. Brief Calvin on the new cadence before tonight's session so he doesn't prep a 2-hour block."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Await Christa's callback confirming 5 PM availability for Tejas and Rashni; if no response, follow up to confirm today's start time",
-          86868539,
+          "Update Myron's Thursday recurring session with Calvin from 7-9pm to 7-8pm (1 hr), effective tonight.",
+          80047202,
           "scheduling"
-        ]
-      ],
-      "ticket_id": null,
-      "coached": true,
-      "direction": "outgoing"
-    },
-    {
-      "call_id": 418450136,
-      "number": "19173252075",
-      "time_pt": "4:35 PM",
-      "matched": true,
-      "contact_label": "Matthew Ferrigno",
-      "no_next_step": true,
-      "summary": {
-        "summary": "Paola made an outbound follow-up call to Matthew Ferrigno regarding his Yelp inquiry for tutoring his 5th-grade daughter Nyla at Sierra Canyon. Matthew wants weekly in-person homework support in Sherman Oaks (ZIP 91411), specified a female tutor, and noted the school uses Singapore math. Paola quoted $130/hr, explained packages don't expire and can be used across subjects, and agreed to email pricing. Matthew will review and reply by email or text if he wants to move forward.",
-        "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "positive",
-        "action_items": [
-          {
-            "item": "Email Matthew the current $130/hr rate and package options for his review, noting packages don't expire and are usable across subjects.",
-            "owner_hint": "Paola",
-            "route": "follow_up"
-          },
-          {
-            "item": "Check female tutor availability in ZIP 91411 (Sherman Oaks) for weekly in-person 5th grade homework support, ideally comfortable with Singapore math.",
-            "owner_hint": null,
-            "route": "scheduling"
-          }
-        ],
-        "name_corrections": [],
-        "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Matthew Ferrigno (warm, easy conversation) is a Yelp lead for his 5th-grade daughter Nyla at Sierra Canyon in Sherman Oaks (ZIP 91411). He wants a female tutor to come in-person about once a week for homework help and to keep her on track; school uses Singapore math. Paola quoted $130/hr, explained packages (don't expire, usable for any subject, professional/teacher tutors) and is emailing pricing after the call. Matthew was clear he won't buy a package until after a first session \u2014 he'll reply by email or text if he wants to move forward. Open with: 'Hi Matthew, just following up on the pricing Paola sent over for Nyla \u2014 happy to set up a first session with a female tutor in your area whenever you're ready.'",
-        "lead_status": "We Connected",
-        "lead_status_reason": "Spoke with prospective family; standard private-pay inquiry, no charter funds and no diagnostic needed.",
-        "student_or_school_names_mentioned": [
-          "Nyla",
-          "Sierra Canyon"
-        ],
-        "record_updates": {
-          "whats_going_on": "Connected with Matthew on Yelp follow-up. Daughter Nyla is a 5th grader at Sierra Canyon (Singapore math curriculum); family is in Sherman Oaks 91411 and wants a female tutor in-person about once a week for homework support and to keep her on track.",
-          "what_we_can_do_to_help": "Emailing $130/hr rate and package options (don't expire, usable across subjects). Source a female tutor in 91411 comfortable with 5th grade / Singapore math for weekly in-person homework help; Matthew wants a first session before committing to a package and will reply by email/text to move forward.",
-          "student_first_name": "Nyla",
-          "student_last_name": null,
-          "grade_level": "5",
-          "student_school": "Sierra Canyon",
-          "subject_need": "Math",
-          "online_or_in_person": "In-Person Tutoring",
-          "how_did_you_hear": "Yelp!",
-          "referral_name": null,
-          "email_correction": null,
-          "phone_correction": null
-        },
-        "_truncated": false
-      },
-      "record_applied": [
-        [
-          "whats_going_on",
-          "(appended to log)",
-          "Connected with Matthew on Yelp follow-up. Daughter Nyla is a 5th grader at Sierra Canyon (Singapore math curriculum); family is in Sherman Oaks 91411 and wants a female tutor in-person about once a week for homework support and to keep her on track."
         ],
         [
-          "what_we_can_do_to_help",
-          "(appended to log)",
-          "Emailing $130/hr rate and package options (don't expire, usable across subjects). Source a female tutor in 91411 comfortable with 5th grade / Singapore math for weekly in-person homework help; Matthew wants a first session before committing to a package and will reply by email/text to move forward."
-        ],
-        [
-          "student_school",
-          "(blank)",
-          "Sierra Canyon"
-        ],
-        [
-          "subject_need",
-          "(blank)",
-          "Math"
-        ],
-        [
-          "online_or_in_person",
-          "(blank)",
-          "In-Person Tutoring"
-        ]
-      ],
-      "record_skipped": [],
-      "tasks_created": [
-        [
-          "Email Matthew the current $130/hr rate and package options for his review, noting packages don't expire and are usable across subjects.",
+          "Coordinate with Calvin to schedule a second 1-hour session on Saturdays for Myron (Calvin indicated availability by email) and confirm the specific time back to Inna.",
           81494333,
-          "follow_up"
+          "scheduling"
         ],
         [
-          "Check female tutor availability in ZIP 91411 (Sherman Oaks) for weekly in-person 5th grade homework support, ideally comfortable with Singapore math.",
+          "Keep Monday 8-9pm geometry session with Calvin as-is; confirm no other changes.",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Brief Calvin on the new cadence: Mon 8-9pm geometry, Thu 7-8pm physics, plus a Saturday 1-hr session TBD.",
           81494333,
           "scheduling"
         ]
       ],
       "ticket_id": null,
       "coached": true,
-      "direction": "outgoing"
+      "direction": "incoming"
     },
     {
-      "call_id": 418452497,
-      "number": "17182888561",
-      "time_pt": "4:46 PM",
+      "call_id": 418956065,
+      "number": "16615217803",
+      "time_pt": "6:03 PM",
       "matched": true,
-      "contact_label": "Valerie Kameya",
-      "no_next_step": true,
+      "contact_label": "Carmesha Jones",
+      "no_next_step": false,
       "summary": {
-        "summary": "Outbound call from Roman at A+ Tutoring to Valerie Kameya, returning a missed call. Reached her voicemail; Roman apologized for missing her earlier call and left his callback number (818-573-6293). No substantive conversation occurred.",
+        "summary": "Janelle from A+ called Carmesha Jones to follow up on scheduling Riley's tutoring sessions and to check if Sonia's proposed availability worked. The call went to voicemail and Janelle left a message asking Carmesha to confirm a schedule or share her preferred times. No live conversation occurred.",
         "caller_type": "parent",
-        "intent": "new inquiry",
+        "intent": "scheduling",
         "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Try Valerie Kameya again if she doesn't call back after Roman's voicemail",
-            "owner_hint": "Roman",
-            "route": "follow_up"
+            "item": "Await Carmesha's callback with Riley's availability / confirmation of Sonia's proposed times; if no response in a couple of days, follow up again by call or text.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
           }
         ],
         "name_corrections": [],
         "follow_up_needed": true,
         "next_step_scheduled": false,
-        "handoff_note": "Roman called Valerie Kameya back after missing her earlier call and left a voicemail with his callback number (818-573-6293). We don't yet know what she's inquiring about \u2014 record shows an 11th grader referred by a friend, but no other details. If she calls back, open with: 'Hi Valerie, this is [name] with A+ Tutoring returning your call \u2014 thanks for reaching out, tell me a bit about your student and what you're looking for.' If no callback in a day or two, Roman should try her again.",
+        "reached_live": false,
+        "handoff_note": "Outbound scheduling call to Carmesha Jones (mom of Riley, iLEAD charter, Math + ELA via learner funds) went to voicemail. Janelle left a message asking Carmesha to (a) share Riley's availability and (b) confirm whether tutor Sonia's availability works. Carmesha still owes us the availability she said she'd emailed previously. Expect her to call/text back with times. If we don't hear back in ~2 days, try again \u2014 open with: 'Hi Carmesha, it's ___ from A+ following up on Riley's schedule \u2014 did Sonia's times work, or do you have preferred days/times in mind?'",
         "lead_status": "no_change",
-        "lead_status_reason": "Only reached voicemail \u2014 no conversation happened, so no basis to advance status beyond current null.",
-        "student_or_school_names_mentioned": [],
+        "lead_status_reason": "Existing charter family already in QTL - Charter with a PO in place; outbound voicemail doesn't change status.",
+        "student_or_school_names_mentioned": [
+          "Riley",
+          "iLEAD",
+          "Sonia",
+          "Carmesha Jones"
+        ],
         "record_updates": {
-          "whats_going_on": "Valerie called A+ earlier today; Roman missed the call and returned it but reached her voicemail. Left a message with his callback number. Reason for her inquiry still unknown.",
-          "what_we_can_do_to_help": "Await callback; if she doesn't respond, try her again to learn what she needs for her 11th grader.",
+          "whats_going_on": "[Outbound call] Janelle called Carmesha to follow up on Riley's scheduling and to see if tutor Sonia's availability works. Reached voicemail; left a message asking Carmesha to confirm the schedule or share her preferred times.",
+          "what_we_can_do_to_help": "Wait for Carmesha's callback with Riley's availability / confirmation on Sonia; if no reply in ~2 days, follow up again by call or text to lock in Math/ELA session times.",
           "student_first_name": null,
           "student_last_name": null,
           "grade_level": null,
@@ -1776,20 +1862,20 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Valerie called A+ earlier today; Roman missed the call and returned it but reached her voicemail. Left a message with his callback number. Reason for her inquiry still unknown."
+          "[Outbound call] Janelle called Carmesha to follow up on Riley's scheduling and to see if tutor Sonia's availability works. Reached voicemail; left a message asking Carmesha to confirm the schedule or share her preferred times."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Await callback; if she doesn't respond, try her again to learn what she needs for her 11th grader."
+          "Wait for Carmesha's callback with Riley's availability / confirmation on Sonia; if no reply in ~2 days, follow up again by call or text to lock in Math/ELA session times."
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Try Valerie Kameya again if she doesn't call back after Roman's voicemail",
-          81494333,
-          "follow_up"
+          "Await Carmesha's callback with Riley's availability / confirmation of Sonia's proposed times; if no response in a couple of days, follow up again by call or text.",
+          80047202,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
@@ -1797,43 +1883,52 @@
       "direction": "outgoing"
     },
     {
-      "call_id": 418461041,
-      "number": "18182771873",
-      "time_pt": "5:17 PM",
+      "call_id": 418962106,
+      "number": "17738426987",
+      "time_pt": "6:28 PM",
       "matched": true,
-      "contact_label": "Dayan,Patricia N/A",
-      "no_next_step": true,
+      "contact_label": "Gino Calantoni",
+      "no_next_step": false,
       "summary": {
-        "summary": "Patricia Dayan called to inquire about in-person tutoring for her 11th-grade daughter in Algebra 2 (ZIP 91356). Paola gathered basics but Patricia declined to share the student's name upfront. When Paola quoted the $130/hour rate, Patricia reacted with sticker shock and politely ended the call. No next step was scheduled.",
+        "summary": "Gino Calantoni called in because he was scheduled for a 7PM tutoring session today for his daughter Elvina with tutor Stephanie but had not received the connection link. Roman confirmed the session and resent the lesson link to a new email address (gcaliy@msn.com) at Gino's request, replacing the united_santaro@yahoo.com address on file. Gino confirmed receipt of the email and said they would join Stephanie momentarily.",
         "caller_type": "parent",
-        "intent": "new inquiry",
-        "sentiment": "negative",
+        "intent": "scheduling",
+        "sentiment": "neutral",
         "action_items": [
           {
-            "item": "Log the inquiry in CRM and, if appropriate, follow up in a few days with any lower-cost options or value framing for Algebra 2 in-person tutoring in the 91356 area.",
+            "item": "Update Gino's email on file to gcaliy@msn.com (confirmed working \u2014 he received the resent lesson link) and ensure future session links go there.",
             "owner_hint": null,
             "route": "follow_up"
           }
         ],
-        "name_corrections": [],
+        "name_corrections": [
+          {
+            "wrong": "Alvina",
+            "correct": "Elvina"
+          }
+        ],
         "follow_up_needed": true,
-        "next_step_scheduled": false,
-        "handoff_note": "Patricia Dayan (818-277-1873) called inquiring about in-person tutoring for her 11th-grade daughter in Algebra 2, ZIP 91356. She declined to share the student's name. Paola quoted $130/hr and Patricia reacted with sticker shock ('Oh, wow\u2026 No, thank you') and ended the call \u2014 tone went from curious to disappointed. No next step booked. If following up, open warmly and acknowledge the rate concern: 'Hi Patricia, this is ___ from A+ Tutoring \u2014 I know our rate caught you off guard when you called in. I wanted to check back in and share a bit more about what's included and see if there's a fit for your daughter's Algebra 2 support.' Be ready to explain value (tutor vetting, in-person match in Tarzana area) and ask about her goals/timeline.",
-        "lead_status": "We Connected",
-        "lead_status_reason": "Prospective family we spoke with about standard Algebra 2 tutoring \u2014 not charter-funded and no diagnostic/test prep need indicated.",
-        "student_or_school_names_mentioned": [],
+        "next_step_scheduled": true,
+        "reached_live": true,
+        "handoff_note": "Gino Calantoni called in ~before his 7PM session today with Stephanie for his daughter Elvina \u2014 he hadn't received the join link. Roman resent the lesson link to a new email (gcaliy@msn.com) at Gino's request; the old united_santaro@yahoo.com address should be replaced. Gino confirmed he got the email and was joining momentarily. Tone was calm and appreciative. Please update his contact email in HubSpot to gcaliy@msn.com and make sure all future session links/comms go there. No further action expected from Gino tonight.",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer with an active session already booked \u2014 status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Elvina",
+          "Stephanie"
+        ],
         "record_updates": {
-          "whats_going_on": "Patricia called inquiring about in-person Algebra 2 tutoring for her 11th-grade daughter in ZIP 91356. She declined to share the student's name and ended the call after hearing the $130/hr rate \u2014 clear price sensitivity.",
-          "what_we_can_do_to_help": "Check in-person tutor availability in the 91356 (Tarzana) area for Algebra 2, and follow up with Patricia to address the rate concern, share value/what's included, and explore fit before she goes elsewhere.",
+          "whats_going_on": "[Inbound call] Gino called just before Elvina's 7PM session with Stephanie because he hadn't received the connection link. Roman confirmed the session and resent the lesson link to a new preferred email (gcaliy@msn.com); Gino confirmed receipt and said they'd join momentarily.",
+          "what_we_can_do_to_help": "Update Gino's contact email to gcaliy@msn.com going forward and route all session links and communications there rather than to the yahoo address.",
           "student_first_name": null,
           "student_last_name": null,
-          "grade_level": "11",
+          "grade_level": null,
           "student_school": null,
-          "subject_need": "Math",
-          "online_or_in_person": "In-Person Tutoring",
+          "subject_need": null,
+          "online_or_in_person": null,
           "how_did_you_hear": null,
           "referral_name": null,
-          "email_correction": null,
+          "email_correction": "gcaliy@msn.com",
           "phone_correction": null
         },
         "_truncated": false
@@ -1842,77 +1937,37 @@
         [
           "whats_going_on",
           "(appended to log)",
-          "Patricia called inquiring about in-person Algebra 2 tutoring for her 11th-grade daughter in ZIP 91356. She declined to share the student's name and ended the call after hearing the $130/hr rate \u2014 clear price sensitivity."
+          "[Inbound call] Gino called just before Elvina's 7PM session with Stephanie because he hadn't received the connection link. Roman confirmed the session and resent the lesson link to a new preferred email (gcaliy@msn.com); Gino confirmed receipt and said they'd join momentarily."
         ],
         [
           "what_we_can_do_to_help",
           "(appended to log)",
-          "Check in-person tutor availability in the 91356 (Tarzana) area for Algebra 2, and follow up with Patricia to address the rate concern, share value/what's included, and explore fit before she goes elsewhere."
+          "Update Gino's contact email to gcaliy@msn.com going forward and route all session links and communications there rather than to the yahoo address."
         ],
         [
-          "grade_level",
-          "(blank)",
-          "11"
-        ],
-        [
-          "subject_need",
-          "(blank)",
-          "Math"
-        ],
-        [
-          "online_or_in_person",
-          "(blank)",
-          "In-Person Tutoring"
-        ],
-        [
-          "lead_status",
-          "(blank)",
-          "QTL - NEW"
+          "email_correction",
+          "united_santaro@yahoo.com",
+          "gcaliy@msn.com"
         ]
       ],
       "record_skipped": [],
       "tasks_created": [
         [
-          "Log the inquiry in CRM and, if appropriate, follow up in a few days with any lower-cost options or value framing for Algebra 2 in-person tutoring in the 91356 area.",
+          "Update Gino's email on file to gcaliy@msn.com (confirmed working \u2014 he received the resent lesson link) and ensure future session links go there.",
           81494333,
           "follow_up"
         ]
       ],
-      "ticket_id": "48696951125",
+      "ticket_id": null,
       "coached": true,
       "direction": "incoming"
     }
   ],
   "pending_skipped": [
     {
-      "number": "16615217803",
-      "time_pt": "11:34 AM",
+      "number": "13154963286",
+      "time_pt": "3:04 PM",
       "reason": "hang-up"
-    },
-    {
-      "number": "13109903032",
-      "time_pt": "12:26 PM",
-      "reason": "spam gate: 5s call from an unknown number with no caller-ID"
-    },
-    {
-      "number": "19093011696",
-      "time_pt": "12:34 PM",
-      "reason": "hang-up"
-    },
-    {
-      "number": "19173252075",
-      "time_pt": "2:04 PM",
-      "reason": "hang-up"
-    },
-    {
-      "number": "19173252075",
-      "time_pt": "4:30 PM",
-      "reason": "hang-up"
-    },
-    {
-      "number": "13072076448",
-      "time_pt": "4:57 PM",
-      "reason": "no transcript"
     }
   ],
   "pending_failures": []
