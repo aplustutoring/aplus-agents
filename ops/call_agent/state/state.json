@@ -1133,10 +1133,134 @@
     418981090,
     418981545,
     419193870,
-    419222137
+    419222137,
+    419276175
   ],
-  "last_run_utc": "2026-09-25T17:50:52.944020+00:00",
-  "pending_digest": [],
+  "last_run_utc": "2026-09-25T19:27:42.233574+00:00",
+  "pending_digest": [
+    {
+      "call_id": 419276175,
+      "number": "19096930255",
+      "time_pt": "12:16 PM",
+      "matched": true,
+      "contact_label": "Wireless Caller",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Nancy Medina called seeking online tutoring for her two children, Sebastian (4th grade, reading comprehension and math) and Emily (7th grade, reading comprehension). The family is enrolled in iLead Exploration charter school, with EF Jennifer Billig. Paola quoted rates ($75/hr or $64/45min) and agreed to email rate/availability info to both Nancy and the EF so they can initiate a PO request. No trial or session was booked; next step depends on PO submission.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email current rates and availability to Nancy Medina (nancy_er8914@yahoo.com) and CC/send to EF Jennifer Billig (jen.billig@ileadexploration.org) so she can request a PO with iLead Exploration for tutoring for Sebastian (4th) and Emily (7th).",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is received from iLead Exploration, text Nancy to confirm and gather preferred schedule, then begin tutor matching and share tutor profile.",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Nancy Medina (mom, warm and ready to move forward) called for online tutoring for her two kids through iLead Exploration charter. Sebastian is the 4th grader \u2014 needs reading comprehension AND math. Emily is the 7th grader \u2014 reading comprehension only. EF is Jennifer Billig (jen.billig@ileadexploration.org). Paola quoted $75/hr or $64/45-min session and promised to email rates + availability to Nancy (nancy_er8914@yahoo.com) and to Jennifer so Nancy can request a PO. Nancy now expects that email shortly and understands next steps: once PO comes in, we'll text her to confirm schedule, match a tutor, share the profile, and book. Suggested opener if following up: 'Hi Nancy, this is ___ from A+ Tutoring following up on your call with Paola \u2014 just want to make sure you and Jennifer got our rates and availability, and see if you have any questions before submitting the PO for Sebastian and Emily.'",
+        "lead_status": "QTL - Charter",
+        "lead_status_reason": "Family explicitly pays via iLead Exploration charter instructional funds and is initiating a PO request.",
+        "student_or_school_names_mentioned": [
+          "Sebastian Martinez",
+          "Emily Martinez",
+          "iLead Exploration",
+          "Jennifer Billig"
+        ],
+        "record_updates": {
+          "whats_going_on": "Nancy Medina called seeking online tutoring for her two children through iLead Exploration charter school. Sebastian (4th grade) needs reading comprehension and math; Emily (7th grade) needs reading comprehension. EF is Jennifer Billig (jen.billig@ileadexploration.org).",
+          "what_we_can_do_to_help": "Send rates ($75/hr or $64/45-min) and availability to Nancy and EF Jennifer Billig so family can request a PO from iLead Exploration. Once PO is received, confirm schedule with Nancy, match a tutor, share profile, and begin sessions.",
+          "student_first_name": "Sebastian",
+          "student_last_name": "Martinez",
+          "grade_level": "4",
+          "student_school": "iLead Exploration",
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": "nancy_er8914@yahoo.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Nancy Medina called seeking online tutoring for her two children through iLead Exploration charter school. Sebastian (4th grade) needs reading comprehension and math; Emily (7th grade) needs reading comprehension. EF is Jennifer Billig (jen.billig@ileadexploration.org)."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Send rates ($75/hr or $64/45-min) and availability to Nancy and EF Jennifer Billig so family can request a PO from iLead Exploration. Once PO is received, confirm schedule with Nancy, match a tutor, share profile, and begin sessions."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Sebastian"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Martinez"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "4"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "iLead Exploration"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "email_correction",
+          "9096930255@call.com",
+          "nancy_er8914@yahoo.com"
+        ],
+        [
+          "lead_status",
+          "(blank)",
+          "QTL - Charter"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email current rates and availability to Nancy Medina (nancy_er8914@yahoo.com) and CC/send to EF Jennifer Billig (jen.billig@ileadexploration.org) so she can request a PO with iLead Exploration for tutoring for Sebastian (4th) and Emily (7th).",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once PO is received from iLead Exploration, text Nancy to confirm and gather preferred schedule, then begin tutor matching and share tutor profile.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    }
+  ],
   "pending_skipped": [
     {
       "number": "16615217803",
