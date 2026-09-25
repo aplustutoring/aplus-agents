@@ -1138,9 +1138,10 @@
     419296107,
     419297712,
     419298009,
-    419298584
+    419298584,
+    419301246
   ],
-  "last_run_utc": "2026-09-25T20:06:53.870653+00:00",
+  "last_run_utc": "2026-09-25T20:11:38.067283+00:00",
   "pending_digest": [
     {
       "call_id": 419276175,
@@ -1256,6 +1257,96 @@
         ],
         [
           "Once PO is received from iLead Exploration, text Nancy to confirm and gather preferred schedule, then begin tutor matching and share tutor profile.",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 419301246,
+      "number": "13108096228",
+      "time_pt": "1:07 PM",
+      "matched": true,
+      "contact_label": "Julie Ulstrup",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Julie Ulstrup called to follow up after Abby's complimentary trial, which went well. She's working on the charter PO but had to build a syllabus mirroring Abby's community college chemistry class since charters won't fund community college coursework directly. She asked our charter rate; Yolanda confirmed $75/hour. Plan is to skip this Monday and resume the following Monday once the PO comes through.",
+        "caller_type": "parent",
+        "intent": "billing",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Watch for Abby Ulstrup's PO from iLead Exploration to come through (expected Monday midday) and confirm receipt",
+            "owner_hint": "Yolanda",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once PO is received, contact Julie to confirm the resumed Monday chemistry session (10am) the following week",
+            "owner_hint": null,
+            "route": "scheduling"
+          },
+          {
+            "item": "Confirm/correct the standing session time on file \u2014 Julie said 10am, Yolanda said 11am",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Julie Ulstrup (returning charter family, iLead Exploration) called in a positive, cooperative mood. Abby's complimentary chemistry trial went well and Julie wants to continue Mondays. She's submitting the PO today (Friday) \u2014 charters won't fund community college classes, so she built a syllabus mirroring the CC chemistry course to make it a high school elective. Yolanda quoted our charter rate of $75/hr, which Julie will put on the PO. Plan: skip this coming Monday, resume the following Monday once PO clears (POs typically hit us Monday midday). Time discrepancy to resolve: Yolanda said 11am, Julie said 10am \u2014 the record shows 10am, so confirm 10am with Julie. Open with: 'Hi Julie, just confirming we received Abby's PO from iLead and we're all set to resume chemistry Monday at 10am \u2014 does that still work?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in active deal pipeline (OPEN_DEAL) \u2014 status owned by deal, not lead status.",
+        "student_or_school_names_mentioned": [
+          "Abby Ulstrup",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Julie called to follow up after Abby's complimentary chemistry trial, which went well. She's submitting the iLead PO today but had to build a syllabus mirroring Abby's community college chemistry class because charters won't fund CC coursework directly \u2014 repackaging it as a high school elective. Julie asked our charter rate; Yolanda confirmed $75/hr. Plan is to skip this coming Monday and resume the following Monday once the PO clears.",
+          "what_we_can_do_to_help": "[call] Watch for the iLead PO to arrive Monday midday and confirm receipt with Julie. Once funded, reconfirm the standing Monday session \u2014 note time discrepancy to resolve: Julie said 10am, Yolanda referenced 11am; record shows 10am. Continue with the matched chemistry tutor from the trial.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Julie called to follow up after Abby's complimentary chemistry trial, which went well. She's submitting the iLead PO today but had to build a syllabus mirroring Abby's community college chemistry class because charters won't fund CC coursework directly \u2014 repackaging it as a high school elective. Julie asked our charter rate; Yolanda confirmed $75/hr. Plan is to skip this coming Monday and resume the following Monday once the PO clears."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Watch for the iLead PO to arrive Monday midday and confirm receipt with Julie. Once funded, reconfirm the standing Monday session \u2014 note time discrepancy to resolve: Julie said 10am, Yolanda referenced 11am; record shows 10am. Continue with the matched chemistry tutor from the trial."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Watch for Abby Ulstrup's PO from iLead Exploration to come through (expected Monday midday) and confirm receipt",
+          86868539,
+          "follow_up"
+        ],
+        [
+          "Once PO is received, contact Julie to confirm the resumed Monday chemistry session (10am) the following week",
+          81494333,
+          "scheduling"
+        ],
+        [
+          "Confirm/correct the standing session time on file \u2014 Julie said 10am, Yolanda said 11am",
           81494333,
           "scheduling"
         ]
