@@ -119,6 +119,16 @@ def upsert_list(name, ids):
     return lid
 
 
+def _junk_first_name(first, last=""):
+    """Shared with po_inbox so there is one answer, not a fifth list."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "email"))
+        from src.po_inbox import junk_person_name
+    except Exception:  # noqa: BLE001 — a missing import must not block a build
+        return False
+    return junk_person_name(first or "", last or "")
+
+
 def excluded_reason(p):
     email = (p.get("email") or "").strip().lower()
     if not email:
@@ -135,6 +145,10 @@ def excluded_reason(p):
         return "in Summit sequence"
     if not (p.get("school_canonical") or "").strip():
         return "no school"
+    # The greeting is the first thing a teacher reads, and firstname 'Teacher'
+    # renders as "Hi Teacher," (nine live cases, 2026-09-25).
+    if _junk_first_name(p.get("firstname"), p.get("lastname")):
+        return "first name is not a name"
     return None
 
 

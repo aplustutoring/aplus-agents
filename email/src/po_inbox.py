@@ -615,6 +615,26 @@ _NOT_A_NAME = {"no", "na", "n/a", "none", "null", "unknown", "unkown", "tbd",
 _TOR_THIS_RUN: dict = {}
 
 
+# A name field holding something that is not a person's name. Real values from
+# the portal: firstname 'Teacher', firstname 'Compass' / lastname 'Charter
+# Schools', firstname 'Excel Academy Charter School'. Distinct from
+# _NOT_A_NAME above, which is about a form field nobody filled in.
+JUNK_NAME = re.compile(r"\b(charter|academy|school|schools|learning cent|"
+                       r"teacher|vendor|office|admin|info|support|district|"
+                       r"education|unknown|n/?a)\b", re.I)
+
+
+def junk_person_name(first: str, last: str = "") -> bool:
+    """Is this name field holding a school, a job title, or a placeholder?
+
+    Teacher outreach renders {first_name} into a real greeting, so a contact
+    whose firstname is literally 'Teacher' gets "Hi Teacher," in an email to a
+    person. Nine sendable teachers were in exactly that state on 2026-09-25.
+    """
+    whole = f"{first or ''} {last or ''}".strip()
+    return bool(whole) and bool(JUNK_NAME.search(whole))
+
+
 def _is_placeholder_name(first: str, last: str) -> bool:
     """Is this a person, or a form field nobody filled in?"""
     toks = [x for x in re.findall(r"[a-z]+", _fold(f"{first} {last}")) if x]

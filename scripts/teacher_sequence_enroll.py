@@ -102,6 +102,16 @@ def _ts_ms(value):
         return None
 
 
+def _junk_first_name(first, last=""):
+    """Shared with po_inbox so there is one answer, not a fifth list."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "email"))
+        from src.po_inbox import junk_person_name
+    except Exception:  # noqa: BLE001 — a missing import must not block a send
+        return False
+    return junk_person_name(first or "", last or "")
+
+
 def ineligible(p, done, touch_cutoff_ms=None, touch_days=0):
     email = (p.get("email") or "").strip().lower()
     if not email:
@@ -125,6 +135,13 @@ def ineligible(p, done, touch_cutoff_ms=None, touch_days=0):
             return f"contacted by a seat in the last {touch_days} days"
     if not (p.get("firstname") or "").strip():
         return "no first name"       # the templates open "Hi {{ contact.firstname }}," — never send "Hi ,"
+    # ...and never send "Hi Teacher," either. On 2026-09-25 nine sendable
+    # teachers carried firstname 'Teacher', 'Teacher Polo', 'Teacher Kim' or a
+    # school's own name, every one of them inside this pool. The address was
+    # always fine; the NAME field was not. Roman: the greeting is the first
+    # thing a teacher reads.
+    if _junk_first_name(p.get("firstname"), p.get("lastname")):
+        return "first name is not a name"
     return None
 
 
