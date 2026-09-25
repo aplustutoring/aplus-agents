@@ -1293,6 +1293,39 @@ agents:
       both directions, required fields (incl. engine), unique ids, entrypoints
       exist, FLEET.md current. The main-branch commit carries [skip ci].
 
+  - id: ci-tests
+    runtime: github-actions
+    engine: Fleet health
+    name: Fleet — tests (every pytest suite, every PR)
+    owner: roman@wetutorathome.com
+    status: active
+    trigger:
+      type: event
+      events: [pull_request, workflow_dispatch]
+      source: >
+        Every pull request, any path. One pytest invocation per area that
+        holds test_*.py (email, agents/<agent>, ops/<agent>, scripts),
+        discovered at run time so a new agent's tests are covered without
+        editing the workflow.
+      workflow: .github/workflows/ci.yml
+    entrypoint: .github/workflows/ci.yml   # no script; the workflow is the agent
+    reads:
+      - "git: the PR head"
+      - "every */tests/test_*.py and */test_*.py outside .claude/ and archive/"
+    writes:
+      - "one Actions check run named `tests` on the PR (red = at least one area failed); nothing outside the PR"
+    depends_on:
+      - email/requirements.txt
+      - ops/scorecard/requirements.txt
+      - ops/call_agent/requirements.txt
+    notes: >
+      Built 2026-09-23. Before this, 75 test files existed and none ran in CI;
+      the tutor-issues registry-lockstep test written for the #213 outage could
+      not catch a repeat. No secrets: every area's conftest forces DRY_RUN and
+      blocks live HTTP. BLOCKING requires branch protection on main with
+      `tests` as a required check, which is a repo setting Roman flips; until
+      then a red run is a loud signal on the PR, not a gate.
+
   - id: pr-merge-nudge
     runtime: github-actions
     engine: Fleet health

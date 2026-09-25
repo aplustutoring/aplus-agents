@@ -197,6 +197,39 @@ been rewritten to the new contract, with the reason recorded in its docstring.
 `--no-pester` pass first (63 closes, no DMs), then the ladder on.
 
 ---
+## 2026-09-23 — Tests run in CI: every pytest suite on every PR
+
+**Why:** 75 test files existed on main and none of them ran anywhere but a
+laptop. `grep pytest .github/workflows/` returned nothing. The tutor-issues
+registry-lockstep test was written to catch the #213 enum outage and, as wired,
+could not catch a repeat; the 429 retry, the FERPA redaction, and the
+low-balance rehydrate all shipped this month with tests that never ran on push.
+Roman, 2026-09-23, on the fleet re-read: "let's do the tests."
+
+**What:** `.github/workflows/ci.yml` runs on every pull request (and dispatch).
+It discovers every directory holding `test_*.py` outside `.claude/` and
+`archive/`, and runs pytest once per area rooted at that area (`email`,
+`agents/cohort_intake`, `ops/<agent>`, `scripts`). One invocation per area is
+deliberate: each area's `conftest.py` sets its own `sys.path` and forces
+`DRY_RUN`, and the hyphenated `ops/` dirs are not packages, so a single
+repo-wide `pytest` collides on module names. A new agent that ships with tests
+is covered without editing the workflow. Dependencies are the union of
+`email/`, `ops/scorecard/`, `ops/call_agent/` requirements plus `openpyxl`,
+verified in a clean venv: 12 areas, 1,147 tests, all green, about 25 seconds.
+No secrets are passed; the conftests block live HTTP.
+
+**Not yet blocking.** `main` has no branch protection and no rulesets (checked
+via the API the same day), so a red `tests` check shows on the PR but cannot
+stop a merge. Making it a gate is one repo setting: Settings → Branches →
+protect `main` → require status checks → `tests`. Roman's call.
+
+**Not done, on purpose:** registry_check still runs `--warn`; the workflow lint
+for the commit-state block is Layer 0 items 2 and 3, separate PRs.
+
+**Files:** `.github/workflows/ci.yml` (new), `registry.yml` (`ci-tests` entry),
+`docs/FLEET.md` (regenerated), `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-23 — Renewals ticket title carries the live balance; zero hours is High now
 
 **What changed** (`email/src/low_balance.py`, `email/src/case_engine.py`,
