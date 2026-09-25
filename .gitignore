@@ -1,5 +1,13 @@
+# Claude Code. The shared brain is committed so every teammate's session
+# inherits it; personal and machine-local state stays out.
 .claude/*
 !.claude/commands/
+!.claude/skills/
+!.claude/agents/
+!.claude/settings.json
+!.claude/README.md
+.claude/settings.local.json
+.claude/worktrees/
 .DS_Store
 
 # Environment variables - never commit secrets
