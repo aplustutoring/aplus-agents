@@ -1145,9 +1145,10 @@
     419351518,
     419352459,
     419352979,
-    419356777
+    419356777,
+    419359177
   ],
-  "last_run_utc": "2026-09-25T22:57:57.084778+00:00",
+  "last_run_utc": "2026-09-25T23:11:05.573546+00:00",
   "pending_digest": [
     {
       "call_id": 419276175,
@@ -1461,6 +1462,93 @@
           "Once PO is received from Horizon, hand off to scheduling team to contact Candice, confirm preferred days/times, and send tutor profile match",
           81494333,
           "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419359177,
+      "number": "17182888561",
+      "time_pt": "4:01 PM",
+      "matched": true,
+      "contact_label": "Valerie Kameya",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ returned Valerie Kameya's inquiry call. Valerie is looking for online US History tutoring for her 11th grader. Paola explained the online model, hourly rate ($95/hr), package discounts, and non-expiring hours. Valerie asked for the rates/packages to be emailed and confirmed her email as vkameya@gmail.com. Call ended positively with Paola promising to send pricing info.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Valerie the current rates and packages for online tutoring",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Follow up with Valerie after she reviews pricing to collect preferred schedule and move toward booking a tutor for US History",
+            "owner_hint": null,
+            "route": "follow_up"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Valerie Kameya (parent, warm and positive) called about online US History tutoring for her 11th grader. Paola quoted $95/hr, explained package discounts starting at 8 hours, non-expiring hours usable across subjects, and typical weekly one-hour cadence. Valerie confirmed email vkameya@gmail.com and expects the rate card/packages by email today. No schedule collected yet. Open with: 'Hi Valerie, this is [name] from A+ \u2014 just following up on the pricing Paola sent over for US History tutoring. Did you get a chance to look it over, and can we grab your preferred days and times so we can start matching a tutor?'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with live; not charter-funded and no diagnostic needed for subject tutoring.",
+        "student_or_school_names_mentioned": [],
+        "record_updates": {
+          "whats_going_on": "Connected with Valerie on callback. She is seeking online US History tutoring for her 11th grader. Asked about rates, session length, and cadence; interested in weekly sessions and liked that package hours don't expire.",
+          "what_we_can_do_to_help": "Paola emailing current rates and packages to vkameya@gmail.com. Follow up to collect preferred schedule and match a US History tutor; recommend weekly 1-hour online sessions with a package for better hourly rate.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": "11",
+          "student_school": null,
+          "subject_need": "Other",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": "vkameya@gmail.com",
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Connected with Valerie on callback. She is seeking online US History tutoring for her 11th grader. Asked about rates, session length, and cadence; interested in weekly sessions and liked that package hours don't expire."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola emailing current rates and packages to vkameya@gmail.com. Follow up to collect preferred schedule and match a US History tutor; recommend weekly 1-hour online sessions with a package for better hourly rate."
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Other"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Valerie the current rates and packages for online tutoring",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Follow up with Valerie after she reviews pricing to collect preferred schedule and move toward booking a tutor for US History",
+          81494333,
+          "follow_up"
         ]
       ],
       "ticket_id": null,
