@@ -46,6 +46,63 @@ value of the three outstanding teachers to chase.
 ---
 ## 2026-09-25 — A compound surname is several surnames
 
+## 2026-09-24 — Trial conversion cutoff is the trial deal; the 15-minute email pass skips converted trials
+
+**What changed** (`email/src/low_balance.py`, tests)
+- `_trial_converted`: "after the trial" now means after the TRIAL deal's
+  create date (else this season's start), and the case's own matched deal is
+  no longer excluded. Cody Topcu's trial alert had matched her newest charter
+  PO as "the deal", so the 9/21 cutoff hid the 9/18 PO and the 9/21 PO was
+  excluded as the case's own: not converted.
+- `_drop_converted_trials`: the :15/:30/:45 email pass, which has no resolve
+  step, drops converted trials before sending.
+
+**Why.** At 19:30 PT on 9/24 the email pass sent Angela Topcu "Cody's
+tutoring hours are running low, please submit a PO" by email and text, with
+two Valley View POs already on file. Teacher email was pending for the next
+morning; the hourly resolve pass now closes the case first.
+
+---
+
+## 2026-09-24 — Zero-balance trials: converted when real deals follow the trial, escalated only when the trial is all there is
+
+**What changed** (`email/src/low_balance.py`, tests)
+- `_trial_converted(case)`: for a `funding_type = trial` case, the student's
+  deals outside the trial and tracking pipelines created on or after the
+  trial deal. Any found → the sweep's resolve pass closes the ticket as
+  Renewed outright (no Needs invoice wait) with the deal names in the note;
+  no High flag, no DM.
+- The zero-balance escalation for a trial now says "the free trial is used
+  up and it is the only deal on file" on the ticket and in the DM.
+
+**Why.** Roman 2026-09-24: "if they are zero balance alerts for free trials
+you are to check if they have any other deals in our system and include that
+information. topcu has 2 deals that came in after free trial. so shes
+already converted. sofia matiu. had only free trial, that is different."
+Cody Topcu had been escalated High by the zero rule on 9/24 despite two
+Valley View POs after the trial; the next sweep closes that case.
+
+---
+
+## 2026-09-24 — The low-balance sweep never ran on the cron; now the scheduled run always sweeps, and a dispatch can force it
+
+**What changed** (`email/src/low_balance.py`, `.github/workflows/email-deal-sync.yml`, tests)
+- `run_sweep`: the full hourly branch runs when `GITHUB_EVENT_NAME` is
+  `schedule`, when `LOW_BALANCE_FORCE_SWEEP=1`, or (as before) when the run
+  starts in the first quarter hour.
+- `email-deal-sync.yml`: new dispatch input `force_sweep` (boolean) → that
+  env var, so a manual run does the whole sweep whatever the minute.
+
+**Why.** The deal-sync cron fires at :45 and the sweep's gate was
+`minute < 15` only (written for the triage poll that ran four times an
+hour). Since #252 moved the sweep to deal-sync (9/16) the scheduled run has
+never swept; the sweep ran only when a doorbell dispatch happened to land
+before :15: five hours on 9/23, four on 9/24, against 24 expected. Balances,
+reply checks, risk and the needs-invoice close were all that intermittent.
+Found on Roman's "why cant you just do the sweep manually to check now".
+
+---
+
 **What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)
 - `_surname_variants()`: "Negrete-Claar" is also "Negrete" and "Claar".
   Particles (van, von, de, la, st, bin ...) are never searched alone.
@@ -499,6 +556,45 @@ is not a safety net.
 **Why.** Roman 2026-09-23: "Paola has default view of all of them and
 schedulers by last names of families." The schedulers own the family
 conversation and the ticket; the metric is Paola's to oversee.
+
+---
+## 2026-09-23 — waiting.py 4.5: a yes to what we already did is not a question
+
+**What changed** (`scripts/waiting.py`, `scripts/tests/test_waiting.py`)
+- New `accepts_what_we_did(body, when, said)`. An inbound counts as an
+  acceptance, not an open thread, only when all four hold: it opens with an
+  affirmation, it asks nothing, we sent that number something inside
+  `REPLY_WINDOW_MIN` (180) before it, and every time or day in it is one we
+  ourselves proposed.
+- `OUR_SAID`, the timestamped twin of `OUR_WORDS`, filled in the same pass of
+  `load_our_words` so the two cannot drift.
+- 14 tests. Three prove the rule fires, eleven prove it swallows nobody.
+
+**Why**
+On 2026-09-18 we told Maricris Tiu "I have added the lesson to 12:30 pm". Three
+minutes later she wrote "Yes thats fine. We'll take it. Thank you!". This
+checker read that as a thread waiting on us, aged it to 90 hours, and on 09-22
+it went into #support-team by name as one of four cases of neglect. All four
+were wrong. Maricris has since said she will recommend us. The correction is
+posted in the same thread.
+
+`is_courtesy` could not have caught it and must not be stretched to. "Yes" does
+match the closing vocabulary, but 36 characters follow and the tail rule caps
+that at 25. Raising the cap is the treadmill this file lost five times in a
+single day (Chinese tapbacks, Spanish tapbacks, straight quotes, "Well! Thank
+you.", zero-width spaces). Word lists and thresholds have a half-life in hours;
+the rules built on our own prior message have held.
+
+So the signal is structural. An acceptance points backward at something we just
+said. A request points forward and shows it, with a question mark, an ask word,
+or a time we never offered. The time-subset clause is what keeps "Yes that's
+fine, can we do 5pm instead?" on the waiting list where it belongs.
+
+Measured on the live 7-day feed: 125 numbers wrote in, 11 still waiting, and
+exactly 1 message reclassified. The yield is small on purpose. The rule is
+narrow because the expensive direction of error is hiding a family, not
+flagging a thank-you, and this change was bought by an incident where the
+checker accused four people who had done nothing wrong.
 
 ---
 ## 2026-09-24 — Ticket reasoner reads the contact record before any message

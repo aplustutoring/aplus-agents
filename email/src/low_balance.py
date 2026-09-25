@@ -1199,6 +1199,56 @@ def _renewal_deal(case: dict):
                  or not case.get("charter", True)), None)
 
 
+def _trial_converted(case: dict) -> list[dict]:
+    """A trial case's real tutoring deals: any deal for the student outside the
+    trial and tracking pipelines, created on or after the trial deal. Roman
+    2026-09-24: Cody Topcu had two charter POs after the free trial and was
+    escalated as a zero-balance trial anyway; a trial with later real deals is
+    converted, not at risk. Sofiia Matiukhina (trial only) is the other case."""
+    if (case.get("funding_type") or "") != "trial":
+        return []
+    c = cfg()
+    skip = set((c.get("first_lesson") or {}).get("trial_pipelines") or ["19120821"])
+    skip |= set((c.get("first_lesson") or {}).get("exclude_pipelines") or [])
+    skip |= set((c.get("deal_sync") or {}).get("exclude_pipelines") or [])
+    parts = (case.get("student") or "").split()
+    if not parts:
+        return []
+    deals = _student_deals(parts[0], " ".join(parts[1:]))
+    trials = set((c.get("first_lesson") or {}).get("trial_pipelines") or ["19120821"])
+    # "after the trial" = after the TRIAL deal, not after whatever deal the case
+    # matched (Cody Topcu's case matched her newest charter PO, which hid both
+    # POs, 2026-09-24). No trial deal on file: this season's deals count.
+    trial_dates = sorted((d.get("properties") or {}).get("createdate", "")[:10]
+                         for d in deals if (d.get("properties") or {}).get("pipeline") in trials)
+    since = trial_dates[0] if trial_dates and trial_dates[0] else str((cfg().get("low_balance") or {}).get("season_start") or "")[:10]
+    out = []
+    for d in deals:
+        p = d.get("properties") or {}
+        if p.get("pipeline") in skip:
+            continue
+        if since and (p.get("createdate") or "")[:10] < since:
+            continue
+        out.append(d)
+    return out
+
+
+def _drop_converted_trials(cases: dict) -> dict:
+    """The 15-minute email pass has no resolve step: a converted trial must
+    never get the day-0 email or text (Angela Topcu, 2026-09-24 19:30, two POs
+    in and a "please submit a PO" email anyway). Lookup failures keep the case."""
+    out = {}
+    for k, c in cases.items():
+        try:
+            if (c.get("funding_type") or "") == "trial" and _trial_converted(c):
+                print(f"  ⏭ {c.get('student')}: trial converted; no day-0 send, the hourly sweep closes it")
+                continue
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  trial conversion lookup failed for {k} (kept): {e}")
+        out[k] = c
+    return out
+
+
 _OUTCOME = {"renewed": "renewed", "not_renewing": "not_renewing", "lost": "no_response"}
 
 
@@ -1242,11 +1292,13 @@ def needs_invoice_sweep() -> int:
 
 
 def _resolve(key: str, case: dict, reason: str, stage: str, close_ticket: bool = True,
-             extra_props: dict | None = None) -> None:
+             extra_props: dict | None = None, direct_close: bool = False) -> None:
+    """direct_close: a converted trial has no invoice to wait for, so Renewed
+    closes the ticket outright instead of parking it in Needs invoice."""
     tid = case.get("ticket_id")
     if tid and tid != "DRYRUN" and close_ticket:
         try:
-            if stage == STAGE_RENEWED:
+            if stage == STAGE_RENEWED and not direct_close:
                 # Renewed waits in Needs invoice until the Teachworks invoice /
                 # package shows on the deal; needs_invoice_sweep closes it.
                 ce.move(tid, "renewals", "needs_invoice", f"✅ Renewed: {reason}. Waiting on the Teachworks invoice.")
@@ -1638,7 +1690,9 @@ def _zero_balance(hits: dict, lb: dict) -> None:
     for key, c in hits.items():
         tid = c.get("ticket_id")
         trial = (c.get("funding_type") or "") == "trial" or bool(c.get("trial"))
-        why = ("trial package used up: convert the family now" if trial
+        # converted trials were closed in the resolve pass, so a trial here has
+        # nothing but the trial on file (Roman 2026-09-24: say so)
+        why = ("the free trial is used up and it is the only deal on file: convert the family now" if trial
                else "the package is at zero and lessons are still on the calendar: nothing past this can be invoiced")
         if tid and tid != "DRYRUN":
             try:
@@ -1654,7 +1708,7 @@ def _zero_balance(hits: dict, lb: dict) -> None:
         by_owner.setdefault(c.get("owner") or lb.get("owner", "charter_sales"), []).append(c)
     for role, group in by_owner.items():
         lines = [f"• {c.get('student')} ({c.get('school') or c.get('package') or '?'})"
-                 + (" · trial" if (c.get("funding_type") or "") == "trial" else "")
+                 + (" · free trial, the only deal on file" if (c.get("funding_type") or "") == "trial" else "")
                  + (f" · {hs.ticket_url(c['ticket_id'])}" if c.get("ticket_id") and c["ticket_id"] != "DRYRUN" else "")
                  for c in group]
         ce.dm_role(role, f"🚩 0 HOURS LEFT, no new PO ({len(group)}):\n" + "\n".join(lines)
@@ -1947,6 +2001,17 @@ def _sweep(cases: dict, now, force: bool = False, texts_only: bool = False) -> N
     live: dict = {}
     # 1 + 2: renewed / stopped cases close before anything is sent
     for key, case in cases.items():
+        # a trial with real deals after it is converted (Roman 2026-09-24)
+        try:
+            conv = _trial_converted(case)
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  trial conversion lookup failed for {key}: {e}")
+            conv = []
+        if conv:
+            names = "; ".join(((d.get("properties") or {}).get("dealname") or str(d.get("id"))) for d in conv[:3])
+            _resolve(key, case, f"trial converted: {len(conv)} deal(s) on file after the free trial ({names})",
+                     STAGE_RENEWED, direct_close=True)
+            continue
         try:
             po_deal = _renewal_deal(case)
         except Exception as e:  # noqa: BLE001
@@ -2142,7 +2207,14 @@ def run_sweep(force: bool = False) -> None:
     if not lb.get("enabled", True):
         return
     now = now_la()
-    hourly = force or now.minute < 15
+    # The full sweep runs on the SCHEDULED deal-sync run (whatever minute the
+    # cron fires at), on a manual dispatch with force_sweep, or on any run that
+    # happens to start in the first quarter hour. 2026-09-24: the cron fires
+    # at :45 and the gate was minute < 15 only, so the scheduled run never
+    # swept; the sweep ran 4 or 5 hours a day, only when a doorbell dispatch
+    # happened to land early in an hour.
+    hourly = (force or os.environ.get("GITHUB_EVENT_NAME") == "schedule"
+              or os.environ.get("LOW_BALANCE_FORCE_SWEEP") == "1" or now.minute < 15)
     if hourly:
         try:
             _recheck_deferred(datetime.now(timezone.utc))
@@ -2154,6 +2226,7 @@ def run_sweep(force: bool = False) -> None:
     if not hourly:
         seat = staff(lb.get("owner", "charter_sales")) or {}
         armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
+        cases = _drop_converted_trials(cases)
         emailed = _send_pending_emails(cases, now, seat, lb, armed, False)
         for k in emailed:
             cases[k] = {**cases[k], "email_sent": cases[k].get("to_email")}
