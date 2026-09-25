@@ -7,6 +7,66 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — A PO that names a teacher we do not have now produces that teacher
+
+**What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_inbox.py`)
+- `_create_named_tor()`: when a PO names a teacher and no TOR contact matches,
+  create them from the name with NO email, associate them to the deal, and open
+  one case asking a human for the address.
+- `_open_tor_email_case()`: a Support case keyed `tor_email:<name>`, so six POs
+  for the same teacher open one case, owned by `charter_sales` via the new
+  `owner_rules.support.tor_missing_email`.
+- `_is_placeholder_name()`: "No EF Info" sits on 13 deals as the teacher of
+  record. A form field nobody filled in does not become a contact.
+- `_TOR_THIS_RUN`: HubSpot's search index lags, so a school sending six POs in
+  one batch would otherwise create the same teacher six times.
+- `hs.create_contact` no longer sends `email: ""` when there is no address.
+- Ambiguity still refuses: two people share a surname, a human picks.
+
+**Why**
+Roman asked the right question after the accounts payable find: can we list the
+schools and check whether their POs give teacher info at all.
+
+Measured across **152 purchase orders from 19 schools**: 122 name the teacher
+and **2 give an address**. One Ocean Grove, one Pacific Coast, both one-offs.
+iLEAD 67 POs and zero addresses, Elite 20 and zero, Heartwood 14 and zero.
+
+That reframes the whole thing. A purchase order is a procurement document: it
+carries the school's accounts payable contact because that is who pays the
+invoice, and the teacher's name at most. Expecting a teacher's email on a PO
+was the wrong expectation, and matching a named teacher against contacts we
+already hold is not a fallback, it is the only road. PR #294 is therefore
+guarding the main route, not an edge case.
+
+It also explains the 44 orphaned deals exactly. Until now a named teacher we
+did not already have dead-ended: the code wrote a line on the ticket and
+associated nothing, so the school's billing desk stayed on the deal as the
+child's Teacher of Record and the real person was recorded nowhere. Catherine
+Peloso, Colbie Van Horn, Stephanie Negrete-Claar, Dianna Gregorie and Janna
+Morbitz have no HubSpot record of any kind. That is not five unlucky schools,
+it is what happened to every new teacher.
+
+A name with no address is not nothing. As a contact it puts the right person on
+the deal, and it makes every LATER PO for that teacher match by name instead of
+failing the same way.
+
+Deliberately not done: guessing the address. Elite spells them
+firstinitial+lastname and Heartland first.last@, so it is guessable, and
+emailing a school on a guessed address reaches the wrong person or nobody. The
+case asks a human.
+
+**Verified against the live portal** (dry, with `SEARCH_PASSTHROUGH` on so the
+lookups are real):
+- Colbie Van Horn, unknown: billing desk refused, contact created name-only.
+- Ruth Hernandez, known: billing desk refused, matched by name to
+  `rhernandez@eliteacademic.com`, associated, lead status healed.
+- "No EF Info": billing desk refused, nothing created.
+
+795 tests pass. Two existing tests were pinning the old give-up behaviour and
+are rewritten onto the new contract.
+
+---
 ## 2026-09-24 — Remediation: the billing desks come off the deals
 
 **What changed** (`scripts/fix_tor_billing_inboxes.py`, new)

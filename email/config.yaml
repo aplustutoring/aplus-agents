@@ -248,6 +248,10 @@ case_engine:
     support:                               # by support_category; "split" = family surname split
       po_watch: charter_admin
       po_exception: charter_admin
+      # Roman 2026-08-25, locked: contacting a teacher about a SPECIFIC
+      # student is the charter_sales seat. This case asks for one teacher's
+      # email address so that student's PO can proceed.
+      tor_missing_email: charter_sales
       billing: charter_admin
       scheduling: split
       default: operations

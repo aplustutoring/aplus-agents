@@ -635,7 +635,11 @@ def create_contact(email: str, firstname: str | None = None, lastname: str | Non
     """Create a contact under the creation contract: `persona` and `owner_role`
     are keyword-only and REQUIRED so no caller can forget them (see
     creation_props). extra_props may add fields but never override the contract."""
-    props = {"email": email}
+    # An empty string is not an address. A PO names the teacher and almost
+    # never gives their email (2 of 152 POs, measured 2026-09-24), so a
+    # name-only TOR contact is a normal thing to create and must not carry
+    # `email: ""`, which HubSpot stores as a real, blank, unique-ish value.
+    props = {"email": email} if email else {}
     if firstname:
         props["firstname"] = firstname
     if lastname:

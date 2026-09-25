@@ -450,6 +450,108 @@ def _tor_by_name(first: str, last: str) -> list[dict]:
     return cands if len(cands) == 1 else []
 
 
+# Names that are not names. "No EF Info" sits on 13 deals as the teacher of
+# record; creating a contact called that would be worse than creating nothing.
+_NOT_A_NAME = {"no", "na", "n/a", "none", "null", "unknown", "unkown", "tbd",
+               "tba", "pending", "teacher", "info", "n\\a", "-", "?"}
+
+# Teachers created by name inside THIS run, so a school sending six POs in one
+# batch does not create the same teacher six times before HubSpot's search
+# index catches up.
+_TOR_THIS_RUN: dict = {}
+
+
+def _is_placeholder_name(first: str, last: str) -> bool:
+    """Is this a person, or a form field nobody filled in?"""
+    toks = [x for x in re.findall(r"[a-z]+", _fold(f"{first} {last}")) if x]
+    real = [x for x in toks if x not in _NOT_A_NAME and len(x) > 1]
+    return len(real) < 2
+
+
+def _create_named_tor(deal_id, po: dict, t_name: str, note_parts: list[str]):
+    """The PO names a teacher we have never seen. Create them.
+
+    Measured 2026-09-24 across 152 purchase orders from 19 schools: 122 name
+    the teacher and exactly 2 give an address. A PO is a procurement document.
+    It carries the school's accounts payable contact because that is who pays
+    the invoice, and the teacher's name at most.
+
+    So matching a named teacher against contacts we already have is not a
+    fallback, it is the only road, and until now it dead-ended for anyone new:
+    the code wrote a line on the ticket and associated nothing, which left the
+    school's billing desk sitting on the deal as the child's Teacher of Record
+    and the actual teacher recorded nowhere. On 2026-09-24 that was 44 deals
+    and five teachers (Catherine Peloso, Colbie Van Horn, Stephanie
+    Negrete-Claar, Dianna Gregorie, Janna Morbitz) who did not exist in HubSpot
+    in any form.
+
+    A name with no address is not nothing. Created as a contact it puts the
+    right person on the deal, and it makes every LATER PO for that teacher
+    match by name instead of failing the same way. The missing address becomes
+    one tracked case for the seat that talks to teachers about a specific
+    student, rather than an invisible hole.
+
+    What is deliberately NOT done here is guessing the address. Elite spells
+    them firstinitial+lastname and Heartland first.last@, so it is guessable,
+    and emailing a school on a guessed address reaches the wrong person or
+    nobody. The case asks a human for it.
+    """
+    first = (po.get("tor_first") or "").strip()
+    last = (po.get("tor_last") or "").strip()
+    if not last or _is_placeholder_name(first, last):
+        note_parts.append(f"🧑‍🏫 TOR '{t_name}' on the PO is not a usable name "
+                          f"(placeholder or surname missing); nothing created.")
+        return None
+
+    key = _fold(f"{first} {last}")
+    tor = _TOR_THIS_RUN.get(key)
+    if tor is None:
+        tor = hs.create_contact("", first or None, last or None, **TOR_CREATE)
+        _TOR_THIS_RUN[key] = tor
+        note_parts.append(f"🧑‍🏫 CREATED TOR contact for {t_name} with NO email: the PO "
+                          f"named them and gave no address (2 of 152 POs ever do). "
+                          f"The next PO for this teacher will match by name.")
+    _open_tor_email_case(deal_id, po, t_name, tor, note_parts)
+    return tor
+
+
+def _open_tor_email_case(deal_id, po: dict, t_name: str, tor: dict,
+                         note_parts: list[str]) -> None:
+    """One case per teacher, asking a human for the address."""
+    if not deal_id or deal_id == "DRYRUN" or tor.get("id") in (None, "DRYRUN"):
+        return
+    from . import case_engine as ce
+    student = f"{po.get('student_first', '')} {po.get('student_last', '')}".strip() \
+        or "student n/a"
+    school = po.get("school") or "school n/a"
+    role, _why = ce.owner_for_support("tor_missing_email")
+    desc = (f"The PO names {t_name} as the teacher of record and gives no email "
+            f"address for them, which is normal: 2 of 152 purchase orders ever "
+            f"carry one.\n\n"
+            f"Teacher: {t_name}\nSchool: {school}\nStudent: {student}\n"
+            f"PO #: {po.get('po_number') or 'n/a'}\n"
+            f"HubSpot contact: {tor.get('id')} (created from the PO, name only)\n"
+            f"HubSpot deal id: {deal_id}\n\n"
+            f"Please put their email on that contact. Do not guess it from the "
+            f"school's pattern; ask the school or the family. Once it is there, "
+            f"every future PO naming this teacher resolves on its own.")
+    try:
+        t = ce.open_case("po_inbox", f"tor_email:{_fold(t_name)}", "support", "new",
+                         f"Teacher email needed: {t_name} ({school})",
+                         desc, role, contact_ids=[tor["id"]],
+                         deal_id=deal_id,
+                         props={"support_category": "tor_missing_email",
+                                "ticket_source": "email_engine"},
+                         priority="MEDIUM", category="new_deal_po", source="EMAIL")
+        note_parts.append(f"📮 Case {t.get('id')} for "
+                          f"{(staff(role) or {}).get('name', role)}: get {t_name}'s "
+                          f"email address.")
+    except Exception as e:  # noqa: BLE001 — the deal must survive a ticket failure
+        print(f"  ⚠️  TOR email case failed (non-fatal): {e}")
+        note_parts.append(f"📮 Could not open the case for {t_name}'s email "
+                          f"address — chase it by hand.")
+
+
 def _heal_tor_contact(tor: dict, note_parts: list[str]) -> None:
     """Deal automations flip TOR lead status to customer values when a teacher
     lands on a deal (OPEN_DEAL — the Mary Nieves SMS incident, 2026-08-13).
@@ -535,11 +637,17 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
                     po["tor_email"] = resolved
                 note_parts.append(f"🧑‍🏫 TOR {t_name} matched by NAME (PO had no email) → "
                                   f"existing TOR contact <{resolved or '?'}>.")
-            else:
+            elif matches:
+                # Two or more people share the surname. Creating here would
+                # make a third. A human picks.
                 note_parts.append(f"🧑‍🏫 TOR '{t_name}' named in the PO without an email; "
-                                  f"{'multiple' if matches else 'no'} matching TOR "
-                                  f"contacts in HubSpot — associate manually.")
+                                  f"multiple matching TOR contacts in HubSpot — "
+                                  f"associate manually.")
                 return
+            else:
+                tor = _create_named_tor(deal_id, po, t_name, note_parts)
+                if tor is None:
+                    return
         if tor and tor.get("id") not in (None, "DRYRUN"):
             _heal_tor_contact(tor, note_parts)
             hs.associate_contact_to_deal(deal_id, tor["id"])

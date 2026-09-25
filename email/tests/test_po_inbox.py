@@ -1251,16 +1251,75 @@ def test_tor_name_only_unique_match_associates(monkeypatch):
     assert any("matched by NAME" in n for n in notes)
 
 
-def test_tor_name_only_no_match_flagged_not_silent(monkeypatch):
+def test_a_teacher_we_have_never_seen_is_created_from_the_name(monkeypatch):
+    """This used to assert "associate manually" and no association at all.
+
+    That WAS the behaviour, and it is the bug: 2 of 152 POs carry a teacher
+    address, so a teacher we do not already have dead-ended here. The billing
+    desk stayed on the deal as the child's Teacher of Record and the real
+    person was recorded nowhere. On 2026-09-24 that was 44 deals and five
+    teachers with no HubSpot record of any kind.
+    """
+    po._TOR_THIS_RUN.clear()
+    created, assoc, cases = [], [], []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
     monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
-    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
-                        lambda *a: (_ for _ in ()).throw(AssertionError("must not associate")))
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: created.append((a, k)) or {"id": "C-new"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
+    monkeypatch.setattr(po, "_open_tor_email_case",
+                        lambda d, p_, n, tor, notes: cases.append((d, n, tor["id"])))
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com", tor_first="Mary", tor_last="Nieves"), notes)
-    assert any("associate manually" in n and "Mary Nieves" in n for n in notes)
+
+    assert created, "the named teacher must be created"
+    args, kwargs = created[0]
+    assert args[0] == "", "created with NO email: the PO gave none"
+    assert args[1:3] == ("Mary", "Nieves")
+    assert kwargs["persona"] == "Teacher of Record/EF/ES"
+    assert ("D66", "C-new") in assoc, "and put on the deal"
+    assert cases == [("D66", "Mary Nieves", "C-new")], "and the address chased"
+    assert any("NO email" in n and "Mary Nieves" in n for n in notes)
+
+
+def test_a_placeholder_is_not_a_teacher(monkeypatch):
+    """"No EF Info" sits on 13 deals as the teacher of record. Creating a
+    contact called that would be worse than creating nothing."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not create a contact called that")))
+    for first, last in (("No", "EF Info"), ("N/A", ""), ("Unknown", "Teacher"),
+                        ("Mary", "")):
+        notes = []
+        po._handle_deal(_po(parent_email="mom@x.com", tor_first=first,
+                            tor_last=last), notes)
+        assert any("not a usable name" in n for n in notes) or not last, (first, last)
+
+
+def test_one_teacher_named_on_six_POs_is_created_once(monkeypatch):
+    """A school sends a batch. HubSpot's search index lags, so the run has to
+    remember what it just made or the same teacher arrives six times."""
+    po._TOR_THIS_RUN.clear()
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: created.append(a) or {"id": "C-new"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: None)
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    for _ in range(6):
+        po._handle_deal(_po(parent_email="mom@x.com", tor_first="Colbie",
+                            tor_last="Van Horn"), [])
+    assert len(created) == 1, f"created {len(created)} contacts for one teacher"
 
 
 def test_tor_name_only_ambiguous_flagged(monkeypatch):
@@ -2737,12 +2796,19 @@ def test_the_accounts_payable_address_never_becomes_a_contact(monkeypatch):
     monkeypatch.setattr(po.hs, "associate_contact_to_deal",
                         lambda d, c: associated.append((d, c)))
     monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [])
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._TOR_THIS_RUN.clear()
     p = {"tor_email": "acctspayable@eliteacademic.com", "tor_first": "Ruth",
          "tor_last": "Hernandez", "parent_email": "mom@x.com"}
     po._associate_tor("D1", p, notes)
-    assert not created and not associated
     assert p["tor_email"] == ""
     assert any("carries no part of the name" in n for n in notes)
+    # The billing desk is refused, and because the PO still NAMED a teacher we
+    # do not have, Ruth herself is created with no address rather than the
+    # deal being left pointing at accounts payable.
+    assert created and created[0][0] == "", "created, and with no email"
+    assert created[0][1:3] == ("Ruth", "Hernandez")
+    assert associated == [("D1", "T9")]
 
 
 def test_rejecting_the_billing_desk_falls_through_to_the_teacher_by_name(monkeypatch):
