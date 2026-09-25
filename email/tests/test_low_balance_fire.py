@@ -4,7 +4,7 @@ the teacher email one business day later if still no PO and no reply."""
 import datetime as dt
 
 from src import low_balance as lb
-from test_low_balance import Harness, NOW_LA, NOW_UTC, _active_deal, _case, _cfg
+from test_low_balance import DEAL, Harness, NOW_LA, NOW_UTC, _active_deal, _case, _cfg
 
 
 def _fire_cfg(**over):
@@ -225,7 +225,7 @@ def test_trial_at_zero_is_flagged_on_the_first_sweep(monkeypatch):
                  opened_at=(NOW_UTC - dt.timedelta(hours=1)).isoformat())
     lb._update_live_hours({case["message_id"]: case}, lb.cfg()["low_balance"])
     assert h.dms and h.dms[0][0] == "UPAO" and "trial" in h.dms[0][1]
-    assert any("trial package used up" in n for _t, n in h.notes)
+    assert any("only deal on file" in n for _t, n in h.notes)
 
 
 # ── 2026-09-24: cases recorded before the stamp existed still get stamped; zero still escalates ──
@@ -298,3 +298,52 @@ def test_scheduled_run_sweeps_whatever_the_minute(monkeypatch):
     monkeypatch.setenv("LOW_BALANCE_FORCE_SWEEP", "1")
     lb.run_sweep()
     assert calls == ["sweep"]                                         # force_sweep dispatch input
+
+
+# ── 2026-09-24: a trial with real deals after it is converted, not at risk ──
+
+def _trial_case(**over):
+    return _case(funding_type="trial", charter=False, owner="charter_sales", hours=0.0, email_sent="x", day1_done=True,
+                 deal_id="trial-1", po_created="2026-09-10", package="Promotion - First Trial Lesson",
+                 subject="Low balance: Taylor Rodriguez (private pay), 0 hours left", **over)
+
+
+def test_trial_with_charter_deals_after_it_closes_as_converted(monkeypatch):
+    later = [{"id": "c1", "properties": {**DEAL["properties"], "createdate": "2026-09-17T00:00:00Z",
+                                         "dealname": "Angela Topcu - Cody Topcu - Valley View 1 - 26/27"}},
+             {"id": "c2", "properties": {**DEAL["properties"], "createdate": "2026-09-22T00:00:00Z",
+                                         "dealname": "Angela Topcu - Cody Topcu - Valley View 2 - 26/27"}}]
+    case = _trial_case()
+    h = Harness(monkeypatch, _fire_cfg(), deals=later, open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    lb.run_sweep(force=True)
+    assert h.stage_updates == [("T1", "R4")]                          # Renewed, closed outright: no invoice to wait for
+    rec = next(r for r in h.recs if r["action_taken"] == "low_balance_resolved")
+    assert rec["stage"] == "renewed" and "2 deal(s) on file after the free trial" in rec["reason"] \
+        and "Valley View 1" in rec["reason"]
+    assert not h.dms and not any((p or {}).get("properties", {}).get("hs_ticket_priority") for _m, path, p in h.patches)
+
+
+def test_trial_with_only_the_trial_escalates_and_says_so(monkeypatch):
+    case = _trial_case()
+    h = Harness(monkeypatch, _fire_cfg(), deals=[], open_cases={case["message_id"]: case})
+    _active_deal(monkeypatch)
+    monkeypatch.setattr(lb, "_deal_po_hours", lambda c: None)
+    lb.run_sweep(force=True)
+    assert not h.stage_updates
+    assert h.dms and h.dms[0][0] == "UPAO" and "free trial, the only deal on file" in h.dms[0][1]
+    assert any("only deal on file" in n for _t, n in h.notes)
+
+
+def test_trial_conversion_ignores_trial_tracking_and_earlier_deals(monkeypatch):
+    monkeypatch.setattr(lb, "cfg", lambda: {**_fire_cfg(), "first_lesson": {"trial_pipelines": ["19120821"], "exclude_pipelines": ["917641511"]},
+                                            "deal_sync": {"exclude_pipelines": ["971802"]}})
+    deals = [{"id": "t2", "properties": {"pipeline": "19120821", "createdate": "2026-09-20T00:00:00Z", "dealname": "second trial"}},
+             {"id": "tsp", "properties": {"pipeline": "917641511", "createdate": "2026-09-20T00:00:00Z", "dealname": "teacher tracking"}},
+             {"id": "old", "properties": {"pipeline": "907748", "createdate": "2026-08-01T00:00:00Z", "dealname": "last season"}},
+             {"id": "trial-1", "properties": {"pipeline": "19120821", "createdate": "2026-09-10T00:00:00Z", "dealname": "the trial"}}]
+    monkeypatch.setattr(lb, "_student_deals", lambda f, l, after=None: deals)
+    assert lb._trial_converted(_trial_case()) == []
+    assert lb._trial_converted(_case(funding_type="charter")) == []       # charter cases never take this path
+    deals.append({"id": "real", "properties": {"pipeline": "907748", "createdate": "2026-09-15T00:00:00Z", "dealname": "real PO"}})
+    assert [d["id"] for d in lb._trial_converted(_trial_case())] == ["real"]
