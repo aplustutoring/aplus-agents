@@ -67,6 +67,10 @@
     "period": "2026-W36",
     "ticket_id": "48323321777"
   },
+  "3424451:unresponsive_in_slack": {
+    "period": "30d-from-2026-09-24",
+    "ticket_id": "48705028612"
+  },
   "3779901:notes_not_completed": {
     "period": "2026-W36",
     "ticket_id": "48578914609"
