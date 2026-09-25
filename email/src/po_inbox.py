@@ -427,16 +427,65 @@ def _fold_name(s: str) -> str:
                    if not unicodedata.combining(c)).strip().lower()
 
 
+# Surname particles. On their own they identify nobody, so "Van Horn" must
+# never be searched as "Van".
+_PARTICLES = {"van", "von", "de", "del", "della", "der", "den", "di", "da",
+              "dos", "das", "la", "le", "el", "san", "santa", "st", "bin",
+              "ibn", "af", "av", "ter", "ten"}
+
+
+def _surname_variants(last: str) -> list[str]:
+    """"Negrete-Claar" is also "Negrete" and "Claar".
+
+    Roman, 2026-09-25: "i thought stephanie claar was figured out." She was.
+    Contact 66680229431 is Stephanie Claar <sclaar@eliteacademic.com>, TOR
+    persona and all. But the PO writes her as "Stephanie Negrete-Claar", the
+    lookup searched `lastname EQ 'Negrete-Claar'`, and HubSpot holds her under
+    "Claar" — so four Desirae James deals sat on accounts payable next to a
+    contact that was right there. A person reading the two spellings knows
+    instantly; string equality does not.
+
+    Whole name first, so an exact hit still wins. Particles are dropped
+    because "Van" alone would drag in strangers.
+    """
+    whole = (last or "").strip()
+    if not whole:
+        return []
+    out = [whole]
+    for tok in re.split(r"[\s\-]+", whole):
+        tok = tok.strip()
+        if len(tok) >= 3 and _fold(tok) not in _PARTICLES and tok not in out:
+            out.append(tok)
+    return out
+
+
 def _tor_by_name(first: str, last: str) -> list[dict]:
     """Existing TOR contacts matching a bare name from the PO. Last name via
     HubSpot search (TOR-flagged only), first name compared accent-insensitively
-    here — the portal stores 'Véronique', the PDF says 'Veronique'."""
+    here — the portal stores 'Véronique', the PDF says 'Veronique'.
+
+    A compound surname is tried whole and then piece by piece. A piece-match
+    is held to a STRICTER standard than a whole-name match: the first name has
+    to be exactly right. "Claar" alone is weak evidence, "Stephanie Claar" is
+    not, and the variant path must not be the one that welds two people
+    together."""
     if not (last or "").strip():
         return []
-    try:
-        cands = hs.find_tor_contacts_by_lastname(last.strip())
-    except Exception:  # noqa: BLE001 — fallback lookup is best-effort
-        return []
+    variants = _surname_variants(last)
+    cands, strict = [], False
+    for i, v in enumerate(variants):
+        try:
+            cands = hs.find_tor_contacts_by_lastname(v)
+        except Exception:  # noqa: BLE001 — fallback lookup is best-effort
+            return []
+        if cands:
+            strict = i > 0
+            break
+    if strict:
+        ff = _fold_name(first)
+        exact = [c for c in cands
+                 if _fold_name((c.get("properties") or {}).get("firstname") or "") == ff]
+        return exact if len(exact) == 1 else []
     ff = _fold_name(first)
     if not ff:
         return cands
@@ -546,6 +595,9 @@ def _tor_from_family(po: dict, p_email: str, family_contact_id, note_parts: list
         tor = hs.create_contact(addr, first or None, last or None, **TOR_CREATE)
         note_parts.append(f"🧑‍🏫 CREATED TOR contact <{addr}> from the FAMILY record "
                           f"(the PO named {first} {last} and gave no address).")
+        _tell_sales_about_a_new_teacher(po, f"{first} {last}".strip(), tor,
+                                        "address taken from the family record",
+                                        note_parts)
     else:
         note_parts.append(f"🧑‍🏫 TOR {first} {last} resolved from the FAMILY record "
                           f"<{addr}> (the PO gave no address).")
@@ -642,8 +694,42 @@ def _create_named_tor(deal_id, po: dict, t_name: str, note_parts: list[str]):
         note_parts.append(f"🧑‍🏫 CREATED TOR contact for {t_name} with NO email: the PO "
                           f"named them and gave no address (2 of 152 POs ever do). "
                           f"The next PO for this teacher will match by name.")
+        _tell_sales_about_a_new_teacher(po, t_name, tor,
+                                        "name only, no address anywhere yet", note_parts)
     _open_tor_email_case(deal_id, po, t_name, tor, note_parts)
     return tor
+
+
+def _tell_sales_about_a_new_teacher(po: dict, t_name: str, tor: dict,
+                                    how: str, note_parts: list[str]) -> None:
+    """A new teacher in our system is news for the sales seat.
+
+    Roman, 2026-09-25: "danielle needs to be first point of contact with
+    teachers. if a new teacher is created in our system danielle needs to know
+    about it."
+
+    Teacher contacts are already OWNED by this seat (TOR_CREATE.owner_role),
+    so ownership was never the gap. Nobody was TOLD. A teacher would appear in
+    the portal because a PO named them, and the person whose job is the
+    relationship with that school found out only if she went looking.
+    """
+    seat = staff("sales") or {}
+    if not seat.get("slack_user_id"):
+        return
+    addr = ((tor.get("properties") or {}).get("email") or "").strip()
+    try:
+        slack_client.dm(
+            seat["slack_user_id"],
+            f"🧑‍🏫 New teacher of record in HubSpot: *{t_name}* "
+            f"({po.get('school') or 'school n/a'}), from PO "
+            f"{po.get('po_number') or 'n/a'}.\n"
+            f"{'Email: ' + addr if addr else 'We have no email address for them yet.'}"
+            f" · {how}\n"
+            f"{hs.contact_url(tor['id']) if tor.get('id') not in (None, 'DRYRUN') else ''}")
+        note_parts.append(f"📣 {seat.get('name', 'sales')} told about the new teacher "
+                          f"{t_name}.")
+    except Exception as e:  # noqa: BLE001 — a DM must never block the deal
+        print(f"  ⚠️  new-teacher DM failed (non-fatal): {e}")
 
 
 def _open_tor_email_case(deal_id, po: dict, t_name: str, tor: dict,
@@ -758,6 +844,8 @@ def _associate_tor(deal_id, po: dict, note_parts: list[str],
                 note_parts.append(f"🧑‍🏫 CREATED TOR contact <{t_email}> (persona + lead "
                                   f"status stamped) — if this teacher already exists under "
                                   f"a personal email, merge manually.")
+                _tell_sales_about_a_new_teacher(po, t_name, tor,
+                                                "address came on the PO", note_parts)
         else:
             matches = _tor_by_name(po.get("tor_first") or "", po.get("tor_last") or "")
             if len(matches) == 1:
