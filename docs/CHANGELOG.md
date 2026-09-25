@@ -99,6 +99,269 @@ re-processed) is closed by keying on "done" flags, not on "changed".
 
 ---
 
+## 2026-09-24 — A teacher who is also a parent has two addresses, and one record
+
+**What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/tests/test_po_inbox.py`)
+- `_work_address()`: when a matched teacher's own
+  `teacher_of_record_email_address` names themselves, that is their SCHOOL
+  address and it beats the personal `email` they gave us as a parent. Gated on
+  the same name test, so an ordinary family's field (which names their child's
+  teacher) is correctly ignored.
+- `_same_person_any_persona()`: before creating a teacher from a name, look
+  again WITHOUT the TOR persona filter. Ambiguity creates rather than guesses.
+- `find_tor_contacts_by_lastname` returns `teacher_of_record_email_address`.
+- The association note shows the address actually stamped.
+
+**Why**
+Roman, 2026-09-24: "remember kristy is both a parent and a teacher."
+
+Kristy Doyal is one contact wearing both personas, with 38 associated deals:
+
+    email                            kristydoyal@gmail.com               parent
+    teacher_of_record_email_address  kristy.doyal@heartland...com        teacher
+
+Two bugs, one shape.
+
+First, `_tor_by_name` would have matched her and stamped `email` on the deal,
+sending school business about somebody else's child to the personal inbox she
+gave us as Cooper's mother. She is the only dual-persona contact in the portal
+today, which is exactly why nobody would have noticed.
+
+Second, and worse for the future: `_tor_by_name` searches TOR-FLAGGED contacts
+only. A teacher we already hold as a PARENT looks like a stranger to it, and
+yesterday's change would then have created a second record for a person with 38
+deals on the first. Kristy happens to carry both personas so she is found, but
+the next teacher-parent will not be so tidy.
+
+**Verified live** (dry, `SEARCH_PASSTHROUGH` on), a PO naming Kristy as another
+child's teacher of record: her existing record 95643687311 is reused, no second
+contact, and the deal is stamped
+`kristy.doyal@heartlandcharterschool.com`, not the gmail.
+
+807 tests pass, 6 new.
+
+---
+## 2026-09-24 — Ask the family record before inventing a teacher
+
+**What changed** (`email/src/po_inbox.py`, `scripts/fix_tor_billing_inboxes.py`,
+`email/tests/test_po_inbox.py`)
+- New `_tor_from_family()`, tried after the name lookup and BEFORE creating a
+  name-only stub. Reads the family contact's `teacher_of_record_email_address`
+  and uses it only when it passes `_why_not_the_teacher` against the teacher
+  the PO names.
+- The remediation script gets the same second source.
+
+**Why**
+Roman, 2026-09-24: "kath has not had this many issues when doing this manually
+on finding the teachers or families in hubspot. if the family is in hubspot,
+you can check their property for teacher of record name and email too."
+
+He was right and my first check was wrong. I queried `teacher_of_record_email`,
+which does not exist on contacts, got blanks everywhere and read that as "the
+families do not have it". The real property is
+**`teacher_of_record_email_address`**, and **497 contacts carry it**. The PO
+flow had never looked at it.
+
+It cannot be taken on trust, though, because it is intake capture and it
+drifts. On the same audit the families under Colbie Van Horn's POs named five
+different teachers (Alissa Helm, Jessica Hiltscher, Kristy Doyal, Lindsey
+Hatton, Megan Teixeira) and the family under Dianna Gregorie's named Ruth
+Hernandez. Believing it would put the wrong teacher on the deal, which is the
+fault this whole thread is about. So it is admitted only when it corroborates
+the name on the PO, by the same test the PO's own address must pass. That is
+exactly enough to catch the case where the family just spells the name
+differently.
+
+**Verified live** (dry, `SEARCH_PASSTHROUGH` on):
+
+    Stephanie Negrete-Claar  family <sclaar@eliteacademic.com>        USED
+                             (the family spells her "Stephanie Claar")
+    Janna Morbitz            family <janna@heartwoodcharterschool.org> USED
+    Dianna Gregorie          family says Ruth Hernandez               REFUSED
+    Colbie Van Horn          family says Kristy Doyal                 REFUSED
+    Catherine Peloso         no family address                        falls through
+
+Remediation dry run moves from 27 corrected / 44 left to **31 corrected / 40
+left**. The teachers still needing a human drop from five to three: Catherine
+Peloso (9 deals), Colbie Van Horn (9), Dianna Gregorie (2). The remaining 16
+are ours or placeholders ("No EF Info" 13, Kath 3).
+
+801 tests pass, 6 new. Two of them were written wrong at first: the stub
+returned the family record for every email lookup including the teacher's own,
+which is a mistake the real code cannot make.
+
+---
+## 2026-09-24 — A PO that names a teacher we do not have now produces that teacher
+
+**What changed** (`email/src/po_inbox.py`, `email/src/hubspot_client.py`,
+`email/config.yaml`, `email/tests/test_po_inbox.py`)
+- `_create_named_tor()`: when a PO names a teacher and no TOR contact matches,
+  create them from the name with NO email, associate them to the deal, and open
+  one case asking a human for the address.
+- `_open_tor_email_case()`: a Support case keyed `tor_email:<name>`, so six POs
+  for the same teacher open one case, owned by `charter_sales` via the new
+  `owner_rules.support.tor_missing_email`.
+- `_is_placeholder_name()`: "No EF Info" sits on 13 deals as the teacher of
+  record. A form field nobody filled in does not become a contact.
+- `_TOR_THIS_RUN`: HubSpot's search index lags, so a school sending six POs in
+  one batch would otherwise create the same teacher six times.
+- `hs.create_contact` no longer sends `email: ""` when there is no address.
+- Ambiguity still refuses: two people share a surname, a human picks.
+
+**Why**
+Roman asked the right question after the accounts payable find: can we list the
+schools and check whether their POs give teacher info at all.
+
+Measured across **152 purchase orders from 19 schools**: 122 name the teacher
+and **2 give an address**. One Ocean Grove, one Pacific Coast, both one-offs.
+iLEAD 67 POs and zero addresses, Elite 20 and zero, Heartwood 14 and zero.
+
+That reframes the whole thing. A purchase order is a procurement document: it
+carries the school's accounts payable contact because that is who pays the
+invoice, and the teacher's name at most. Expecting a teacher's email on a PO
+was the wrong expectation, and matching a named teacher against contacts we
+already hold is not a fallback, it is the only road. PR #294 is therefore
+guarding the main route, not an edge case.
+
+It also explains the 44 orphaned deals exactly. Until now a named teacher we
+did not already have dead-ended: the code wrote a line on the ticket and
+associated nothing, so the school's billing desk stayed on the deal as the
+child's Teacher of Record and the real person was recorded nowhere. Catherine
+Peloso, Colbie Van Horn, Stephanie Negrete-Claar, Dianna Gregorie and Janna
+Morbitz have no HubSpot record of any kind. That is not five unlucky schools,
+it is what happened to every new teacher.
+
+A name with no address is not nothing. As a contact it puts the right person on
+the deal, and it makes every LATER PO for that teacher match by name instead of
+failing the same way.
+
+Deliberately not done: guessing the address. Elite spells them
+firstinitial+lastname and Heartland first.last@, so it is guessable, and
+emailing a school on a guessed address reaches the wrong person or nobody. The
+case asks a human.
+
+**Verified against the live portal** (dry, with `SEARCH_PASSTHROUGH` on so the
+lookups are real):
+- Colbie Van Horn, unknown: billing desk refused, contact created name-only.
+- Ruth Hernandez, known: billing desk refused, matched by name to
+  `rhernandez@eliteacademic.com`, associated, lead status healed.
+- "No EF Info": billing desk refused, nothing created.
+
+795 tests pass. Two existing tests were pinning the old give-up behaviour and
+are rewritten onto the new contract.
+
+---
+## 2026-09-24 — Remediation: the billing desks come off the deals
+
+**What changed** (`scripts/fix_tor_billing_inboxes.py`, new)
+- One-off remediation for the data PR #294 stops creating. Dry by default,
+  idempotent, `--execute` to write.
+- DEALS: for each deal carrying a school billing desk as the teacher, resolve
+  the real teacher by name through `po_inbox._tor_by_name` (the same lookup the
+  PO flow uses when a PO has no teacher email) and require the result to pass
+  `_why_not_the_teacher`. Single confident match: stamp the real address,
+  associate the real teacher via `hs.associate_contact_to_deal`, drop the
+  billing contact. Zero or several: change nothing, print it.
+- CONTACTS: stamp `generic_inbox = true` (the documented exclusion from every
+  teacher outreach list) and remove the Teacher of Record persona.
+
+**Why**
+The reach was larger than the 54 first counted. Searching on the addresses
+themselves rather than on recent deals finds **71 deals** across five schools.
+
+Dry run, 2026-09-24:
+
+    deals corrected : 27
+    deals left alone: 44
+    contacts fixed  : 5
+
+The 27 resolve cleanly and plausibly: Ruth Hernandez to rhernandez@, Brynika
+Jackson to bjackson@, Tamara Radford to tradford@, Chloe Frisby to cfrisby@,
+Angela Cloud to angela@heartwoodcharterschool.org, Austin Haney to
+austin.haney@heartlandcharterschool.com, Sheila Villalobos to svillalobos@,
+Tiffany Broussard to tbroussard@, Beth Segal to beth.segal@pacificcharters.org.
+
+The 44 are the real finding. Every one reports zero name matches, and checking
+by hand showed why: **those teachers do not exist in HubSpot at all**, not even
+under a different persona. Catherine Peloso, Colbie Van Horn, Stephanie
+Negrete-Claar, Dianna Gregorie and Janna Morbitz have no contact record of any
+kind. That is the second-order damage from the same bug. Because the PO flow
+stamped the school's billing desk as the teacher, it never created the teacher,
+so the deal points at accounts payable and the actual person was never recorded.
+
+Nothing was guessed for those 44. Elite spells addresses firstinitial+lastname
+and Heartland spells them first.last@, so the pattern is obvious and inventing
+an address to email a school on is exactly the wrong move. Five teachers'
+addresses unblock all 44 deals, and that is a question for a human.
+
+Deliberately untouched: eight deals whose teacher address is a personal
+gmail/yahoo bearing somebody else's name. A different fault, needing a person
+to say which half is wrong.
+
+**Blocked:** the `--execute` pass is refused by the auto-mode write classifier,
+as bulk HubSpot writes have been before. Roman runs the one command.
+
+---
+## 2026-09-24 — A teacher's email has to carry the teacher's name
+
+**What changed** (`email/src/po_inbox.py`, `email/tests/test_po_inbox.py`)
+- New `_why_not_the_teacher(addr, first, last)`, which replaces the bare
+  `_robot_tor_addr` check at the TOR association site. It returns why an
+  address cannot be the teacher's, or "" if it can.
+- New `_addr_carries_name()` and `_fold()`. Accents are folded, not stripped;
+  every token of a compound surname is tried; the usual initial-plus-surname
+  shapes pass.
+- With no teacher name on the PO the rule abstains, so it can only ADD
+  rejections where there is evidence.
+- 7 tests, including the real addresses from all five schools. One existing
+  test was pinning the bug and is corrected in place.
+
+**Why**
+Roman, on the Joseph Ramirez PO: "I did notice that you used the accounts
+payable email not the teachers."
+
+He was right, and it was not one deal. Five schools were past the old guard:
+`acctspayable@` (Elite), `ap@` (Heartland), `vendorinfo@` (Heartwood),
+`providers@` (Compass), and our own `charter@wetutorathome.com`. Four of those
+mailboxes existed as CONTACTS carrying the persona "Teacher of Record/EF/ES",
+one of them named literally "Teacher", and every one had been emailed by us.
+54 deals carry an address that is not the teacher's.
+
+The old guard was a list of local-parts (vendorsupport, procurify, orders@,
+billing@). It works where it matches: the six Visions deals all predate it by
+hours and nothing has slipped through on that address since. But a list cannot
+win here, because each school invents its own spelling for the same mailbox and
+we only learn the spelling after it has been stamped on a family's deal as
+their child's teacher. `providers@compasscharters.org` is the proof: no list of
+billing words would ever have contained it.
+
+So the rule asks the question the list was standing in for. The PO names the
+teacher. A teacher's address carries the teacher's name; a school's billing
+desk carries the school's function.
+
+The same PO pair proves the fallback works. Neither the Ramirez nor the Zamora
+PDF contains a teacher's address at all, only accounts payable. Ramirez came
+out right because the no-email path matched "Ruth Hernandez" by name to the
+contact we already had. Zamora came out wrong because the model handed over the
+only address on the page and the word list did not stop it. A rejection now
+routes every PO down the path that was already getting it right.
+
+**Measured before shipping**, on all 137 distinct (teacher, address) pairs on
+our deals: 122 pass, 15 are held. Twelve of the fifteen are the generic inboxes
+above. The other three are personal addresses from April carrying somebody
+else's name, which deserve a human look too.
+
+That measurement also caught a bug in the rule itself. The first draft stripped
+non-ascii characters instead of folding them, turning Veronique Fabre's own
+first name into "vronique", so it rejected her real address at
+`veronique.gaeta@ileadexploration.org`. Reading the code would not have found
+it; running it against every teacher we have did.
+
+**Still open:** the 54 existing deals and the four contacts wearing the Teacher
+of Record persona need correcting. This change stops new ones.
+
+---
 ## 2026-09-23 — ops/unanswered was blind for a week: a cursor on the wrong clock
 
 **What changed** (`ops/unanswered/unanswered.py`, `ops/checkin/checkin.py`,

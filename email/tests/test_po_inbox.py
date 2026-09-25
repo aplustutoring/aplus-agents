@@ -1045,8 +1045,15 @@ def test_vendor_robot_mailbox_is_never_teacher_of_record(monkeypatch):
     assert po._robot_tor_addr("vendorsupport@viedu.org")
     assert po._robot_tor_addr("notifications@mailer.procurify.com")
     assert po._robot_tor_addr("orders@sageoak.education")
-    assert not po._robot_tor_addr("ap@heartlandcharterschool.com")
     assert not po._robot_tor_addr("kwolven@sageoak.education")
+    # This line used to read `assert not po._robot_tor_addr(
+    # "ap@heartlandcharterschool.com")`, and it was pinning the bug: that is
+    # Heartland's accounts payable desk, and it sat on 12 deals as somebody's
+    # Teacher of Record. The list-based guard still cannot see it, which is
+    # the point. _why_not_the_teacher can, because it has the name.
+    assert not po._robot_tor_addr("ap@heartlandcharterschool.com")
+    assert po._why_not_the_teacher("ap@heartlandcharterschool.com",
+                                   "Austin", "Haney")
     created, associated, notes = [], [], []
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, **k: None)
     monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
@@ -1244,16 +1251,75 @@ def test_tor_name_only_unique_match_associates(monkeypatch):
     assert any("matched by NAME" in n for n in notes)
 
 
-def test_tor_name_only_no_match_flagged_not_silent(monkeypatch):
+def test_a_teacher_we_have_never_seen_is_created_from_the_name(monkeypatch):
+    """This used to assert "associate manually" and no association at all.
+
+    That WAS the behaviour, and it is the bug: 2 of 152 POs carry a teacher
+    address, so a teacher we do not already have dead-ended here. The billing
+    desk stayed on the deal as the child's Teacher of Record and the real
+    person was recorded nowhere. On 2026-09-24 that was 44 deals and five
+    teachers with no HubSpot record of any kind.
+    """
+    po._TOR_THIS_RUN.clear()
+    created, assoc, cases = [], [], []
     monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
     monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
     monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
     monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
-    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
-                        lambda *a: (_ for _ in ()).throw(AssertionError("must not associate")))
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: created.append((a, k)) or {"id": "C-new"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: assoc.append((d, c)))
+    monkeypatch.setattr(po, "_open_tor_email_case",
+                        lambda d, p_, n, tor, notes: cases.append((d, n, tor["id"])))
     notes = []
     po._handle_deal(_po(parent_email="mom@x.com", tor_first="Mary", tor_last="Nieves"), notes)
-    assert any("associate manually" in n and "Mary Nieves" in n for n in notes)
+
+    assert created, "the named teacher must be created"
+    args, kwargs = created[0]
+    assert args[0] == "", "created with NO email: the PO gave none"
+    assert args[1:3] == ("Mary", "Nieves")
+    assert kwargs["persona"] == "Teacher of Record/EF/ES"
+    assert ("D66", "C-new") in assoc, "and put on the deal"
+    assert cases == [("D66", "Mary Nieves", "C-new")], "and the address chased"
+    assert any("NO email" in n and "Mary Nieves" in n for n in notes)
+
+
+def test_a_placeholder_is_not_a_teacher(monkeypatch):
+    """"No EF Info" sits on 13 deals as the teacher of record. Creating a
+    contact called that would be worse than creating nothing."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not create a contact called that")))
+    for first, last in (("No", "EF Info"), ("N/A", ""), ("Unknown", "Teacher"),
+                        ("Mary", "")):
+        notes = []
+        po._handle_deal(_po(parent_email="mom@x.com", tor_first=first,
+                            tor_last=last), notes)
+        assert any("not a usable name" in n for n in notes) or not last, (first, last)
+
+
+def test_one_teacher_named_on_six_POs_is_created_once(monkeypatch):
+    """A school sends a batch. HubSpot's search index lags, so the run has to
+    remember what it just made or the same teacher arrives six times."""
+    po._TOR_THIS_RUN.clear()
+    created = []
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, properties=None: {"id": "C-mom"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: created.append(a) or {"id": "C-new"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: None)
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    for _ in range(6):
+        po._handle_deal(_po(parent_email="mom@x.com", tor_first="Colbie",
+                            tor_last="Van Horn"), [])
+    assert len(created) == 1, f"created {len(created)} contacts for one teacher"
 
 
 def test_tor_name_only_ambiguous_flagged(monkeypatch):
@@ -2668,3 +2734,301 @@ def test_po_watch_sweep_closes_when_invoice_is_on_the_deal(monkeypatch):
         return {"properties": {"invoice__": "", "dealname": "C - D"}}
     monkeypatch.setattr(po.hs, "_get", fake_get)
     assert po.po_watch_sweep() == 1 and closed == [("PW1", "resolved")]
+
+
+# ── the teacher's email has to carry the teacher's name ─────────────────────
+#
+# Roman, 2026-09-24, on the Joseph Ramirez PO: "I did notice that you used the
+# accounts payable email not the teachers." Every address below is real, from
+# our own deals.
+
+def test_every_school_billing_desk_we_have_stamped_as_a_teacher():
+    """Five schools, 40 deals, four of them contacts wearing the Teacher of
+    Record persona. None of these local-parts is in the old word list, and
+    each school spells it differently, which is why the list kept losing."""
+    for addr, first, last in (
+            ("acctspayable@eliteacademic.com", "Ruth", "Hernandez"),
+            ("acctspayable@eliteacademic.com", "Stephanie", "Negrete-Claar"),
+            ("ap@heartlandcharterschool.com", "Colbie", "Van Horn"),
+            ("vendorinfo@heartwoodcharterschool.org", "Angela", "Cloud"),
+            ("providers@compasscharters.org", "Sheila", "Villalobos"),
+            ("charter@wetutorathome.com", "Kath", "Hitosis")):
+        assert po._why_not_the_teacher(addr, first, last), addr
+
+
+def test_real_teachers_still_pass():
+    """The PO that started this got Ruth right by name. Keep it that way."""
+    for addr, first, last in (
+            ("rhernandez@eliteacademic.com", "Ruth", "Hernandez"),
+            ("kwolven@sageoak.education", "Kristin", "Wolven"),
+            ("ruth.hernandez@eliteacademic.com", "Ruth", "Hernandez"),
+            ("hernandezr@eliteacademic.com", "Ruth", "Hernandez"),
+            ("ruthh@eliteacademic.com", "Ruth", "Hernandez"),
+            ("snegrete@eliteacademic.com", "Stephanie", "Negrete-Claar"),
+            ("vanhorn.c@heartlandcharterschool.com", "Colbie", "Van Horn")):
+        assert not po._why_not_the_teacher(addr, first, last), addr
+
+
+def test_an_accent_is_not_a_reason_to_reject_a_teacher():
+    """First draft of this rule stripped accents instead of folding them, so
+    Veronique Fabre's own first name became "vronique" and stopped matching
+    veronique.gaeta@ileadexploration.org. Caught by measuring, not by reading."""
+    assert not po._why_not_the_teacher(
+        "veronique.gaeta@ileadexploration.org", "V\u00e9ronique", "Fabre")
+
+
+def test_no_name_means_no_opinion():
+    """The rule may only add rejections where there is evidence. A PO with no
+    teacher name must behave exactly as it did before."""
+    assert not po._why_not_the_teacher("anything@school.org", "", "")
+    assert po._why_not_the_teacher("vendorsupport@viedu.org", "", "")
+
+
+def test_the_accounts_payable_address_never_becomes_a_contact(monkeypatch):
+    """The Zamora half of the 2026-09-24 Elite run. Same teacher, same school,
+    same PDF shape as the Ramirez one, and it created accounts payable as the
+    Teacher of Record because the PDF's only address was the billing desk."""
+    created, associated, notes = [], [], []
+    monkeypatch.setattr(po.hs, "find_contact_by_email", lambda e, **k: None)
+    monkeypatch.setattr(po.hs, "find_contact_by_secondary_email", lambda e: None)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: created.append(a) or {"id": "T9"})
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda d, c: associated.append((d, c)))
+    monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [])
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._TOR_THIS_RUN.clear()
+    p = {"tor_email": "acctspayable@eliteacademic.com", "tor_first": "Ruth",
+         "tor_last": "Hernandez", "parent_email": "mom@x.com"}
+    po._associate_tor("D1", p, notes)
+    assert p["tor_email"] == ""
+    assert any("carries no part of the name" in n for n in notes)
+    # The billing desk is refused, and because the PO still NAMED a teacher we
+    # do not have, Ruth herself is created with no address rather than the
+    # deal being left pointing at accounts payable.
+    assert created and created[0][0] == "", "created, and with no email"
+    assert created[0][1:3] == ("Ruth", "Hernandez")
+    assert associated == [("D1", "T9")]
+
+
+def test_rejecting_the_billing_desk_falls_through_to_the_teacher_by_name(monkeypatch):
+    """A rejection is not a dead end. This is the path that got Ruth Hernandez
+    right on the Ramirez PO, whose PDF also contained only accounts payable."""
+    associated, notes = [], []
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not create from a billing desk")))
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal",
+                        lambda d, c: associated.append((d, c)))
+    monkeypatch.setattr(po, "_tor_by_name", lambda f, l: [
+        {"id": "62158080641",
+         "properties": {"email": "rhernandez@eliteacademic.com",
+                        "firstname": "Ruth", "lastname": "Hernandez"}}])
+    monkeypatch.setattr(po, "_heal_tor_contact", lambda tor, notes: None)
+    p = {"tor_email": "acctspayable@eliteacademic.com", "tor_first": "Ruth",
+         "tor_last": "Hernandez", "parent_email": "mom@x.com"}
+    po._associate_tor("D1", p, notes)
+    assert associated == [("D1", "62158080641")]
+    assert p["tor_email"] == "rhernandez@eliteacademic.com"
+
+
+# ── the family record is a source too (Roman 2026-09-24) ───────────────────
+#
+# "if the family is in hubspot, you can check their property for teacher of
+# record name and email too" — which is how Kath resolves these by hand. 497
+# contacts carry teacher_of_record_email_address and the PO flow never looked.
+# Every case below is real, from the 2026-09-24 audit.
+
+def _fam(email_addr, name):
+    return {"id": "C-mom", "properties": {"teacher_of_record_email_address": email_addr,
+                                          "teacher_of_record_name": name}}
+
+
+def test_family_record_supplies_the_address_when_it_agrees(monkeypatch):
+    """The family spells her "Stephanie Claar", the PO says "Stephanie
+    Negrete-Claar", and sclaar@ is the same person. 17 deals."""
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: (
+                            _fam("sclaar@eliteacademic.com", "Stephanie Claar")
+                            if e == "mom@x.com" else None))
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: {"id": "C-tor", "properties": {"email": a[0]}})
+    notes = []
+    tor = po._tor_from_family({"tor_first": "Stephanie", "tor_last": "Negrete-Claar"},
+                              "mom@x.com", None, notes)
+    assert tor and tor["properties"]["email"] == "sclaar@eliteacademic.com"
+    assert any("FAMILY record" in n for n in notes)
+
+
+def test_family_record_on_a_first_name_match(monkeypatch):
+    """janna@heartwoodcharterschool.org against "Janna Morbitz". 4 deals."""
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: (
+                            _fam("janna@heartwoodcharterschool.org", "Janna Morbitz")
+                            if e == "mom@x.com" else None))
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: {"id": "C-tor", "properties": {"email": a[0]}})
+    tor = po._tor_from_family({"tor_first": "Janna", "tor_last": "Morbitz"},
+                              "mom@x.com", None, [])
+    assert tor and tor["properties"]["email"] == "janna@heartwoodcharterschool.org"
+
+
+def test_family_record_is_refused_when_it_names_someone_else(monkeypatch):
+    """The whole reason this is gated. The family under Dianna Gregorie's PO
+    says Ruth Hernandez, and the families under Colbie Van Horn's name five
+    different teachers. Trusting the field would put the wrong teacher on the
+    deal, which is the fault we are fixing."""
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not take the family's word")))
+    for addr, fam_name, first, last in (
+            ("rhernandez@eliteacademic.com", "Ruth Hernandez", "Dianna", "Gregorie"),
+            ("kristy.doyal@heartlandcharterschool.com", "Kristy Doyal", "Colbie", "Van Horn"),
+            ("megan.teixeira@heartlandcharterschool.com", "Megan Teixeira", "Colbie", "Van Horn"),
+            ("gpackler@eliteacademic.com", "Gary Packler", "Stephanie", "Negrete-Claar")):
+        monkeypatch.setattr(po.hs, "find_contact_by_email",
+                            lambda e, properties=None, a=addr, n=fam_name: _fam(a, n))
+        notes = []
+        assert po._tor_from_family({"tor_first": first, "tor_last": last},
+                                   "mom@x.com", None, notes) is None, addr
+        assert any("names a different teacher" in n for n in notes)
+
+
+def test_family_record_reuses_an_existing_teacher_contact(monkeypatch):
+    """If that address is already a contact, use it; do not make a second."""
+    existing = {"id": "C-real", "properties": {"email": "janna@heartwoodcharterschool.org"}}
+
+    def find(e, properties=None):
+        return _fam("janna@heartwoodcharterschool.org", "Janna Morbitz") \
+            if e == "mom@x.com" else existing
+
+    monkeypatch.setattr(po.hs, "find_contact_by_email", find)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not duplicate")))
+    notes = []
+    tor = po._tor_from_family({"tor_first": "Janna", "tor_last": "Morbitz"},
+                              "mom@x.com", None, notes)
+    assert tor is existing
+    assert any("resolved from the FAMILY record" in n for n in notes)
+
+
+def test_blank_family_field_is_not_a_match(monkeypatch):
+    monkeypatch.setattr(po.hs, "find_contact_by_email",
+                        lambda e, properties=None: _fam("", ""))
+    assert po._tor_from_family({"tor_first": "Janna", "tor_last": "Morbitz"},
+                               "mom@x.com", None, []) is None
+
+
+def test_the_family_is_asked_before_a_name_only_stub_is_made(monkeypatch):
+    """Order matters: a real address beats a placeholder contact."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.hs, "search_deals_by_name", lambda t, p=None, s=None: [])
+    monkeypatch.setattr(po.hs, "create_deal", lambda *a, **k: {"id": "D66"})
+    monkeypatch.setattr(po.hs, "find_tor_contacts_by_lastname", lambda ln: [])
+    monkeypatch.setattr(po.hs, "associate_contact_to_deal", lambda d, c: None)
+    monkeypatch.setattr(po, "_open_tor_email_case",
+                        lambda *a: (_ for _ in ()).throw(
+                            AssertionError("no case needed, we found the address")))
+    made = []
+
+    def find(e, properties=None):
+        if e == "mom@x.com":
+            return _fam("janna@heartwoodcharterschool.org", "Janna Morbitz")
+        return None
+
+    monkeypatch.setattr(po.hs, "find_contact_by_email", find)
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: made.append(a[0]) or {"id": "C-tor",
+                                                              "properties": {"email": a[0]}})
+    rec = _po(parent_email="mom@x.com", tor_first="Janna", tor_last="Morbitz")
+    notes = []
+    po._handle_deal(rec, notes)
+    assert made == ["janna@heartwoodcharterschool.org"], made
+
+
+# ── a parent who is also a teacher (Roman 2026-09-24) ──────────────────────
+#
+# "remember kristy is both a parent and a teacher."
+#
+# Kristy Doyal is ONE contact wearing both personas, with two addresses that
+# are not interchangeable:
+#     email                           kristydoyal@gmail.com          parent
+#     teacher_of_record_email_address kristy.doyal@heartland....com  teacher
+# She has 38 associated deals.
+
+KRISTY = {"id": "C-kristy", "properties": {
+    "email": "kristydoyal@gmail.com",
+    "firstname": "Kristy", "lastname": "Doyal",
+    "a_persona": "Teacher of Record/EF/ES;Family",
+    "teacher_of_record_email_address": "kristy.doyal@heartlandcharterschool.com"}}
+
+
+def test_a_teacher_who_is_also_a_parent_is_contacted_at_school():
+    """Matching her by name and stamping `email` would send school business
+    about somebody else's child to her personal inbox."""
+    notes = []
+    assert po._work_address(KRISTY, "Kristy", "Doyal", notes) == \
+        "kristy.doyal@heartlandcharterschool.com"
+    assert any("parent AND a teacher" in n for n in notes)
+
+
+def test_an_ordinary_teacher_keeps_their_one_address():
+    plain = {"properties": {"email": "bjackson@eliteacademic.com",
+                            "firstname": "Brynika", "lastname": "Jackson"}}
+    assert po._work_address(plain, "Brynika", "Jackson", []) == \
+        "bjackson@eliteacademic.com"
+
+
+def test_a_parents_field_naming_their_CHILDS_teacher_is_not_their_work_address():
+    """The same field on an ordinary family names a different person. Taking it
+    would stamp the child's teacher as the parent's own address."""
+    mum = {"properties": {"email": "yamile@example.com",
+                          "firstname": "Yamile", "lastname": "Zamora",
+                          "teacher_of_record_email_address": "sclaar@eliteacademic.com"}}
+    assert po._work_address(mum, "Yamile", "Zamora", []) == "yamile@example.com"
+
+
+def test_a_teacher_held_as_a_parent_is_not_duplicated(monkeypatch):
+    """_tor_by_name searches TOR-FLAGGED contacts only, so a teacher we hold as
+    a parent looks like a stranger. Creating there would make a second record
+    of a person with 38 deals on the first."""
+    po._TOR_THIS_RUN.clear()
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [KRISTY])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not duplicate a person we hold")))
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    notes = []
+    tor = po._create_named_tor("D1", {"tor_first": "Kristy", "tor_last": "Doyal"},
+                               "Kristy Doyal", notes)
+    assert tor is KRISTY
+    assert any("another persona" in n for n in notes)
+
+
+def test_two_people_share_the_surname_so_nothing_is_reused(monkeypatch):
+    """Ambiguity creates rather than guesses: a wrong reuse silently welds two
+    people together, which is worse than an extra record."""
+    po._TOR_THIS_RUN.clear()
+    made = []
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [
+        {"id": "A", "properties": {"firstname": "Kristy", "lastname": "Doyal"}},
+        {"id": "B", "properties": {"firstname": "Kristy", "lastname": "Doyal"}}])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: made.append(a) or {"id": "C-new"})
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._create_named_tor("D1", {"tor_first": "Kristy", "tor_last": "Doyal"},
+                         "Kristy Doyal", [])
+    assert made, "ambiguous reuse must fall back to creating"
+
+
+def test_a_different_first_name_is_a_different_person(monkeypatch):
+    po._TOR_THIS_RUN.clear()
+    made = []
+    monkeypatch.setattr(po.hs, "find_contacts_by_lastname", lambda ln: [KRISTY])
+    monkeypatch.setattr(po.hs, "create_contact",
+                        lambda *a, **k: made.append(a) or {"id": "C-new"})
+    monkeypatch.setattr(po, "_open_tor_email_case", lambda *a: None)
+    po._create_named_tor("D1", {"tor_first": "Cooper", "tor_last": "Doyal"},
+                         "Cooper Doyal", [])
+    assert made, "Cooper is not Kristy"
