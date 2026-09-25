@@ -303,9 +303,11 @@ def test_scheduled_run_sweeps_whatever_the_minute(monkeypatch):
 # ── 2026-09-24: a trial with real deals after it is converted, not at risk ──
 
 def _trial_case(**over):
-    return _case(funding_type="trial", charter=False, owner="charter_sales", hours=0.0, email_sent="x", day1_done=True,
-                 deal_id="trial-1", po_created="2026-09-10", package="Promotion - First Trial Lesson",
-                 subject="Low balance: Taylor Rodriguez (private pay), 0 hours left", **over)
+    base = dict(funding_type="trial", charter=False, owner="charter_sales", hours=0.0, email_sent="x", day1_done=True,
+                deal_id="trial-1", po_created="2026-09-10", package="Promotion - First Trial Lesson",
+                subject="Low balance: Taylor Rodriguez (private pay), 0 hours left")
+    base.update(over)
+    return _case(**base)
 
 
 def test_trial_with_charter_deals_after_it_closes_as_converted(monkeypatch):
@@ -347,3 +349,31 @@ def test_trial_conversion_ignores_trial_tracking_and_earlier_deals(monkeypatch):
     assert lb._trial_converted(_case(funding_type="charter")) == []       # charter cases never take this path
     deals.append({"id": "real", "properties": {"pipeline": "907748", "createdate": "2026-09-15T00:00:00Z", "dealname": "real PO"}})
     assert [d["id"] for d in lb._trial_converted(_trial_case())] == ["real"]
+
+
+def test_trial_cutoff_is_the_trial_deal_not_the_deal_the_case_matched(monkeypatch):
+    # Cody Topcu, 2026-09-24: the trial alert's case matched her NEWEST charter PO
+    # (deal_id = the 9/21 PO, po_created 9/21), which hid the 9/18 PO and excluded
+    # the 9/21 one as "the case's own deal". Cutoff = the trial deal (9/11).
+    base = _fire_cfg(); base["low_balance"]["season_start"] = "2026-08-01"
+    monkeypatch.setattr(lb, "cfg", lambda: {**base, "first_lesson": {"trial_pipelines": ["19120821"]}, "deal_sync": {}})
+    deals = [{"id": "65162038831", "properties": {"pipeline": "907748", "createdate": "2026-09-21T00:00:00Z", "dealname": "Valley View 2"}},
+             {"id": "65120573597", "properties": {"pipeline": "907748", "createdate": "2026-09-18T00:00:00Z", "dealname": "Valley View 1"}},
+             {"id": "64986008067", "properties": {"pipeline": "19120821", "createdate": "2026-09-11T00:00:00Z", "dealname": "Angela Topcu - Cody Topcu"}}]
+    monkeypatch.setattr(lb, "_student_deals", lambda f, l, after=None: deals)
+    got = [d["id"] for d in lb._trial_converted(_trial_case(deal_id="65162038831", po_created="2026-09-21"))]
+    assert sorted(got) == ["65120573597", "65162038831"]
+    # no trial deal on file at all: this season's deals count, last season's do not
+    deals[:] = [{"id": "ls", "properties": {"pipeline": "907748", "createdate": "2026-05-01T00:00:00Z", "dealname": "last season"}},
+                {"id": "ts", "properties": {"pipeline": "907748", "createdate": "2026-09-02T00:00:00Z", "dealname": "this season"}}]
+    assert [d["id"] for d in lb._trial_converted(_trial_case())] == ["ts"]
+
+
+def test_fifteen_minute_pass_never_emails_a_converted_trial(monkeypatch):
+    later = [{"id": "c1", "properties": {**DEAL["properties"], "createdate": "2026-09-17T00:00:00Z"}}]
+    case = _trial_case(email_sent=None, day1_done=False)
+    h = Harness(monkeypatch, _fire_cfg(), deals=later, open_cases={case["message_id"]: case})
+    monkeypatch.setattr(lb, "now_la", lambda: NOW_LA.replace(minute=33))        # the :15/:30/:45 email pass
+    lb.run_sweep()
+    assert not h.emails and not h.sms
+    assert not any(r["action_taken"] in ("low_balance_email_sent", "low_balance_email_held") for r in h.recs)

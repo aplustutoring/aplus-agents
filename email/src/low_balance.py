@@ -1214,15 +1214,38 @@ def _trial_converted(case: dict) -> list[dict]:
     parts = (case.get("student") or "").split()
     if not parts:
         return []
-    since = (case.get("po_created") or "")[:10]
+    deals = _student_deals(parts[0], " ".join(parts[1:]))
+    trials = set((c.get("first_lesson") or {}).get("trial_pipelines") or ["19120821"])
+    # "after the trial" = after the TRIAL deal, not after whatever deal the case
+    # matched (Cody Topcu's case matched her newest charter PO, which hid both
+    # POs, 2026-09-24). No trial deal on file: this season's deals count.
+    trial_dates = sorted((d.get("properties") or {}).get("createdate", "")[:10]
+                         for d in deals if (d.get("properties") or {}).get("pipeline") in trials)
+    since = trial_dates[0] if trial_dates and trial_dates[0] else str((cfg().get("low_balance") or {}).get("season_start") or "")[:10]
     out = []
-    for d in _student_deals(parts[0], " ".join(parts[1:])):
+    for d in deals:
         p = d.get("properties") or {}
-        if p.get("pipeline") in skip or str(d.get("id")) == str(case.get("deal_id")):
+        if p.get("pipeline") in skip:
             continue
         if since and (p.get("createdate") or "")[:10] < since:
             continue
         out.append(d)
+    return out
+
+
+def _drop_converted_trials(cases: dict) -> dict:
+    """The 15-minute email pass has no resolve step: a converted trial must
+    never get the day-0 email or text (Angela Topcu, 2026-09-24 19:30, two POs
+    in and a "please submit a PO" email anyway). Lookup failures keep the case."""
+    out = {}
+    for k, c in cases.items():
+        try:
+            if (c.get("funding_type") or "") == "trial" and _trial_converted(c):
+                print(f"  ⏭ {c.get('student')}: trial converted; no day-0 send, the hourly sweep closes it")
+                continue
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️  trial conversion lookup failed for {k} (kept): {e}")
+        out[k] = c
     return out
 
 
@@ -2203,6 +2226,7 @@ def run_sweep(force: bool = False) -> None:
     if not hourly:
         seat = staff(lb.get("owner", "charter_sales")) or {}
         armed = bool(lb.get("armed")) or os.environ.get("LOW_BALANCE_FORCE_ARMED") == "1"
+        cases = _drop_converted_trials(cases)
         emailed = _send_pending_emails(cases, now, seat, lb, armed, False)
         for k in emailed:
             cases[k] = {**cases[k], "email_sent": cases[k].get("to_email")}
