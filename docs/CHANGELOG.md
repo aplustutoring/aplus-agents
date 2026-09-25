@@ -7,6 +7,34 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Every agent-made Teachworks family gets email reminders, lesson notes and SMS reminders ON
+
+**Roman:** "make sure when any agent creates a Teachworks profile for a parent
+that email reminders and SMS reminders and lesson notes are enabled."
+
+**Before:** deal_sync (the only agent that creates Teachworks families) sent
+name, email, phone and address, so every family got whatever the Teachworks
+account default happened to be. The field names were not in the repo; read
+today from the Teachworks API docs (Postman, Customers → Create a Family):
+`email_lesson_reminders`, `email_lesson_notes`, `sms_lesson_reminders`, all
+booleans; the email flags require an email and the SMS flag a mobile.
+
+**Now:** `_tw_fields()` adds `family_notification_flags(email, mobile)`: the
+two email switches whenever the family has an email, the SMS switch whenever
+it has a mobile (phone counts). The same dict is sent on UPDATE, so every
+existing family is healed the next time its deal syncs. 3 tests; 792 green.
+
+**Not changed:** the student records deal_sync creates carry the same three
+switches at student level (Teachworks students_attributes); left at account
+default until Roman says whether students (not parents) should get them.
+
+**Also today, by hand in Chrome:** HubSpot workflows "SMS - New Year Check
+in" (304831533) and "SMS - Summer Boost" (375925546) turned OFF. Neither
+sent SMS any more: each had no enrollment conditions and one action, set
+contact owner to Danielle.
+
+**Files:** email/src/deal_sync.py, email/tests/test_deal_sync.py, docs/CHANGELOG.md.
+
 ## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
 
 **What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains

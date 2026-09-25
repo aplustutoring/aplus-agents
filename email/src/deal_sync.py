@@ -67,18 +67,42 @@ def _deal_contact(deal_id: str, dealname: str = "") -> dict | None:
 
 
 def _tw_fields(props: dict) -> dict:
-    """HubSpot contact properties → Teachworks family fields (email = identity)."""
+    """HubSpot contact properties → Teachworks family fields (email = identity).
+
+    Roman 2026-09-24: every family an agent creates in Teachworks has email
+    lesson reminders, email lesson notes and SMS lesson reminders ON. The
+    Teachworks API requires an email for the two email flags and a mobile
+    number for the SMS flag, so each is sent only when its channel exists.
+    The same dict rides on UPDATE, so an existing family gets healed on its
+    next sync touch. (Field names per the Teachworks API: email_lesson_reminders,
+    email_lesson_notes, sms_lesson_reminders.)"""
+    email = (props.get("email") or "").lower()
+    mobile = props.get("mobilephone") or props.get("phone") or ""
     out = {
         "first_name": props.get("firstname") or "",
         "last_name": props.get("lastname") or "",
-        "email": (props.get("email") or "").lower(),
-        "mobile_phone": props.get("mobilephone") or props.get("phone") or "",
+        "email": email,
+        "mobile_phone": mobile,
         "address": props.get("address") or "",
         "city": props.get("city") or "",
         "state": props.get("state") or "",
         "zip": props.get("zip") or "",
     }
-    return {k: v for k, v in out.items() if v}
+    fields = {k: v for k, v in out.items() if v}
+    fields.update(family_notification_flags(email, mobile))
+    return fields
+
+
+def family_notification_flags(email: str, mobile: str) -> dict:
+    """The three Teachworks lesson-notification switches, on wherever the
+    channel exists (Roman 2026-09-24)."""
+    flags = {}
+    if email:
+        flags["email_lesson_reminders"] = True
+        flags["email_lesson_notes"] = True
+    if mobile:
+        flags["sms_lesson_reminders"] = True
+    return flags
 
 
 # Split only on a dash with a space on at least one side, so hyphenated names
