@@ -78,7 +78,8 @@
     "Ev0C3NTC4PAN",
     "Ev0C3SN3LFSQ",
     "Ev0C383XJLKH",
-    "Ev0C3JGVA4DB"
+    "Ev0C3JGVA4DB",
+    "Ev0C4DS1TR4K"
   ],
   "awaiting": {
     "1785537854.599709": {
@@ -542,6 +543,21 @@
       "ticket": null,
       "status": "resolved",
       "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790094666888569"
+    },
+    {
+      "date": "2026-09-25",
+      "ts": "1790367391.182559",
+      "channel": "C0BL05MCJ4B",
+      "reporter": "Roman",
+      "reporter_slack_id": "U05NA7UMSSV",
+      "agent": "email-triage",
+      "type": "IDEA",
+      "severity": "low",
+      "correction_path": "corrections/email-triage/2026-09-25-check-triage-for-sender.md",
+      "pr_url": "https://github.com/aplustutoring/aplus-agents/pull/307",
+      "ticket": null,
+      "status": "open",
+      "permalink": "https://atutoringworkspace.slack.com/archives/C0BL05MCJ4B/p1790367391182559"
     }
   ],
   "graduation": {
@@ -671,6 +687,23 @@
       "recommendation": "needs_human_input",
       "proposed_utc": "2026-09-02T17:30:29.319813+00:00",
       "reporter": "Danielle"
+    },
+    "1790367391.182559": {
+      "agent": "email-triage",
+      "agent_label": "Inbox triage",
+      "correction_path": "corrections/email-triage/2026-09-25-check-triage-for-sender.md",
+      "branch": "fix/email-triage-2026-09-25-182559",
+      "diagnosis": "Roman is asking a status/lookup question (has email from Nicole Wells been processed?), not reporting a bug. This is an ad-hoc query against inbox/ticket state, not a code defect in email-triage.",
+      "fix_plan": [
+        "Confirm with Roman whether he wants a one-shot lookup now (search HubSpot conversations/tickets for sender 'Nicole Wells') or a recurring capability.",
+        "For the one-shot: query HubSpot conversations via existing hubspot_client.py for sender name/email 'Nicole Wells' in the last N days and report ticket id + status in Slack.",
+        "If recurring: consider a small Slack slash-command or mention handler that wraps a lookup helper (e.g. new email/src/lookup.py using hubspot_client + slack_client) so Roman can ask 'did we catch X?' directly.",
+        "No code change until Roman confirms intent \u2014 this is a question, not a defect."
+      ],
+      "risk": "low",
+      "recommendation": "needs_human_input",
+      "proposed_utc": "2026-09-25T20:17:36.490942+00:00",
+      "reporter": "Roman"
     }
   }
 }
