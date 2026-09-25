@@ -656,6 +656,21 @@ Return ONLY a JSON object:
 """
 
 
+class ExtractUnparseable(Exception):
+    """Claude answered, but not with the JSON verdict the prompt asks for.
+
+    This is NOT "not a tutor issue" and must never be treated as one.
+    Before 2026-09-24 extract_report returned None here, the caller read
+    None as "nothing to do", marked the family's report processed, and the
+    report was gone: no ticket, no refusal, no Slack line, no retry. The
+    suite passed with the extractor disabled outright.
+    """
+
+    def __init__(self, raw):
+        self.raw = (raw or "")[:200]
+        super().__init__(f"no JSON verdict in Claude reply: {self.raw!r}")
+
+
 def extract_report(text, source, cfg):
     import anthropic
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, max_retries=3)
@@ -665,14 +680,29 @@ def extract_report(text, source, cfg):
         messages=[{"role": "user",
                    "content": EXTRACT_PROMPT.format(source=source, text=text[:6000])}],
     )
-    raw = resp.content[0].text.strip()
-    m = re.search(r"\{.*\}", raw, re.DOTALL)
+    raw = _reply_text(resp)
+    return parse_verdict(raw)
+
+
+def _reply_text(resp):
+    """Join the text blocks; a refusal or empty reply is an empty string,
+    which parse_verdict then reports as unparseable instead of crashing on
+    resp.content[0]."""
+    return "".join(getattr(b, "text", "") for b in (resp.content or [])).strip()
+
+
+def parse_verdict(raw):
+    """The JSON object in a Claude reply, or ExtractUnparseable. Pure."""
+    m = re.search(r"\{.*\}", raw or "", re.DOTALL)
     if not m:
-        return None
+        raise ExtractUnparseable(raw)
     try:
-        return json.loads(m.group(0))
+        v = json.loads(m.group(0))
     except json.JSONDecodeError:
-        return None
+        raise ExtractUnparseable(raw)
+    if not isinstance(v, dict):
+        raise ExtractUnparseable(raw)
+    return v
 
 
 # ─── Tutor resolution (refusal is a signal, a guess is a landmine) ───────────
@@ -1044,6 +1074,39 @@ def run_sweep(plan, cfg, state, employees, baseline_mode):
     return week_start, week_end, lessons
 
 
+def _flag_unparseable(plan, cfg, state, event_key, source_label, source_id, err):
+    """Claude gave no verdict. Three outcomes a family report can have are
+    ticket, refusal, or flag; "silently gone" is not one of them.
+
+    First failure: leave the report unprocessed so the next run retries
+    (a transient bad reply costs nothing but two hours). At
+    inbound.max_extract_attempts the report is marked processed and the
+    fallback scheduler is told to read it by hand, so a message Claude can
+    never parse does not re-flag forever.
+    """
+    attempts = state.setdefault("extract_failures", {})
+    n = attempts.get(event_key, 0) + 1
+    attempts[event_key] = n
+    limit = int(cfg["inbound"].get("max_extract_attempts", 2))
+    gave_up = n >= limit
+    plan.refusals.append({
+        "source": source_label,
+        "reason": (f"Claude reply unparseable (attempt {n}/{limit}"
+                   + (", giving up" if gave_up else ", will retry next run") + ")"),
+        "detail": f"{source_id}: {err.raw}"})
+    log.warning(f"extract unparseable for {event_key} ({source_label}, "
+                f"attempt {n}/{limit}): {err.raw!r}")
+    if not gave_up:
+        return
+    plan.processed_keys.append(event_key)
+    attempts.pop(event_key, None)
+    plan.notifications.append({
+        "scheduler": scheduler_for_student("", cfg),
+        "text": (f"Couldn't read a {source_label} ({source_id}) as a tutor issue "
+                 f"after {n} tries — the reasoning step returned no verdict. "
+                 f"Please read it and file manually if real.")})
+
+
 def _handle_report(plan, cfg, state, employees, *, event_key, source_label,
                    source_id, text, baseline_mode, sender_number=None,
                    quote=None):
@@ -1053,10 +1116,14 @@ def _handle_report(plan, cfg, state, employees, *, event_key, source_label,
     if baseline_mode:
         plan.processed_keys.append(event_key)
         return
-    ex = extract_report(text, source_label, cfg)
-    plan.processed_keys.append(event_key)
-    if not ex or not ex.get("is_tutor_issue"):
+    try:
+        ex = extract_report(text, source_label, cfg)
+    except ExtractUnparseable as e:
+        _flag_unparseable(plan, cfg, state, event_key, source_label, source_id, e)
         return
+    plan.processed_keys.append(event_key)
+    if not ex.get("is_tutor_issue"):
+        return   # Claude READ it and said no. Only this path is silent.
     issue_type = ex.get("issue_type")
     scheduler = scheduler_for_student(ex.get("student_name"), cfg)
     conf = float(ex.get("confidence") or 0)
@@ -1513,6 +1580,7 @@ def main():
         "processed": load_state("processed", []),
         "cursors": load_state("cursors", {}),
         "tickets": load_state("tickets", {}),
+        "extract_failures": load_state("extract_failures", {}),
     }
     baseline = load_state("baseline", None)
     baseline_mode = baseline is None
@@ -1600,6 +1668,7 @@ def main():
         save_state("processed", state["processed"], args.dry_run)
         save_state("cursors", state["cursors"], args.dry_run)
         save_state("tickets", state["tickets"], args.dry_run)
+        save_state("extract_failures", state.get("extract_failures", {}), args.dry_run)
 
     rep = report(plan, extra)
     rep["baseline_mode"] = baseline_mode

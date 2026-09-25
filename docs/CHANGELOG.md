@@ -23,6 +23,47 @@ deal, never through the tracking deal. Roman 2026-09-24: "do it".
 
 ---
 
+## 2026-09-24 — tutor-issues: a Claude reply with no verdict is no longer "not a tutor issue"
+
+**Why.** Found by sabotage on 2026-09-23 while proving the new CI suite: with
+the extractor replaced by `return None`, all 55 tutor-issues tests stayed
+green. The cause was in `_handle_report`: `extract_report` returned `None` on
+any reply it could not parse (prose, a refusal, a truncated JSON object), the
+caller tested `if not ex or not ex.get("is_tutor_issue")`, and both "Claude
+could not answer" and "Claude read it and said no" took the same silent exit,
+after the report had already been appended to `processed`. A parent's "the
+tutor never showed" email or text would be marked handled, with no ticket, no
+refusal line, no Slack notice, and no retry. Only the inbound family-report
+path; the Monday Teachworks sweep is deterministic and unaffected. Roman:
+"whats the tutor issue blind spot" → "go".
+
+**What.** `parse_verdict()` (pure) raises `ExtractUnparseable` instead of
+returning `None`; `_reply_text()` joins the reply's text blocks so an empty or
+refused reply is unparseable rather than an IndexError. `_handle_report`
+routes that exception to `_flag_unparseable()`: the report is NOT marked
+processed and is retried next run; at `inbound.max_extract_attempts` (2, new
+config key) it is marked processed, the attempt counter cleared, and the
+fallback scheduler receives one notification asking them to read it. Every
+attempt is a `plan.refusals` line in the run digest. Attempts persist in
+`ops/tutor-issues/state/extract_failures.json` (the workflow already commits
+`state/` as a directory). The read-no path is unchanged and still silent.
+
+**Tests.** 9 new in `ops/tutor-issues/tests/test_tutor_issues.py` (64 total).
+Four fail against the old semantics and pass against the new, verified by
+reverting the branch in place and re-running. One of them keeps the sabotage
+check itself: a dead extractor must surface as a refusal.
+
+**Not done, on purpose.** Structured outputs (`output_config` json_schema, the
+way call-agent and feedback-agent already call Claude) would make an
+unparseable reply nearly impossible in the first place. That is the fleet-wide
+LLM helper in the 2.0 plan, not this PR. This PR makes the failure visible and
+bounded whichever way the call is made.
+
+**Files.** `ops/tutor-issues/tutor_issues.py`, `ops/tutor-issues/config.yml`,
+`ops/tutor-issues/tests/test_tutor_issues.py`, `ops/tutor-issues/README.md`,
+`registry.yml` (notes), `docs/FLEET.md` (regenerated), `docs/CHANGELOG.md`.
+
+---
 ## 2026-09-24 — Deal-sync workflow gets the Gmail credentials: email replies were invisible to the low-balance sweep since 9/16
 
 **What changed** (`.github/workflows/email-deal-sync.yml`)
