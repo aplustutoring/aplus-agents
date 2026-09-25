@@ -46,6 +46,19 @@ value of the three outstanding teachers to chase.
 ---
 ## 2026-09-25 — A compound surname is several surnames
 
+## 2026-09-24 — Out-of-pocket rail ARMED; pre-existing out-of-pocket case re-filed
+
+**What changed** (`email/config.yaml`, `email/src/low_balance.py`, tests)
+- `low_balance.out_of_pocket.armed: true` (Roman: "yes!" on the copy).
+- `_refile_out_of_pocket` in `open_cases`: a case on the out-of-pocket
+  package opened before the funding type existed is re-filed on every read
+  (funding type, out-of-pocket subject and text, email pending) and its
+  ticket property patched once (audit `low_balance_refiled`). Angeline Mort
+  (opened 9/19 as private pay, nothing sent) gets the packs email and text on
+  the next sweep.
+
+---
+
 ## 2026-09-24 — Charter out of pocket is its own funding type, with the charter family packs
 
 **What changed** (`email/src/low_balance.py`, `email/config.yaml`,
