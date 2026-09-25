@@ -58,6 +58,13 @@ def test_notification_flags_follow_the_channels():
     assert f["sms_lesson_reminders"] is True
 
 
+def test_students_get_email_only():
+    assert dsy.student_notification_fields("") == {"sms_lesson_reminders": False}
+    assert dsy.student_notification_fields("Kid@X.com") == {
+        "sms_lesson_reminders": False, "email": "kid@x.com",
+        "email_lesson_reminders": True, "email_lesson_notes": True}
+
+
 def test_flags_ride_on_update_too(monkeypatch):
     """An existing family gets the switches on its next sync touch."""
     seen = {}

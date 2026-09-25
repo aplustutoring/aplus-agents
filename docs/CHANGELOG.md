@@ -24,9 +24,18 @@ two email switches whenever the family has an email, the SMS switch whenever
 it has a mobile (phone counts). The same dict is sent on UPDATE, so every
 existing family is healed the next time its deal syncs. 3 tests; 792 green.
 
-**Not changed:** the student records deal_sync creates carry the same three
-switches at student level (Teachworks students_attributes); left at account
-default until Roman says whether students (not parents) should get them.
+**Students (Roman, same day): email only.** `student_notification_fields()`
+sends `sms_lesson_reminders: false` on every student deal_sync creates, and
+`email_lesson_reminders` + `email_lesson_notes` true with the student's own
+address when intake captured one (`student_email_address`, fetched with the
+deal contact; used only when the deal names ONE student, since a sibling deal
+cannot say whose address it is).
+
+**Teacher of record as a Teachworks additional contact: stays manual.** The
+fleet already tested this in August (spec §5.5 spike): Teachworks /v1 has no
+additional-contacts endpoint, `POST customers/{id}/additional_contacts`
+returns 404. hsa_sync falls back to a task for the deal owner; deal_sync does
+not create that task yet.
 
 **Also today, by hand in Chrome:** HubSpot workflows "SMS - New Year Check
 in" (304831533) and "SMS - Summer Boost" (375925546) turned OFF. Neither

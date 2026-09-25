@@ -93,6 +93,17 @@ def _tw_fields(props: dict) -> dict:
     return fields
 
 
+def student_notification_fields(student_email: str) -> dict:
+    """Students get EMAIL only (Roman 2026-09-24): reminders + lesson notes to
+    the student's own address when we have one, never SMS. Teachworks rejects
+    an email flag on a student with no email, so the flags ride with it."""
+    out = {"sms_lesson_reminders": False}
+    if student_email:
+        out.update({"email": student_email.lower(),
+                    "email_lesson_reminders": True, "email_lesson_notes": True})
+    return out
+
+
 def family_notification_flags(email: str, mobile: str) -> dict:
     """The three Teachworks lesson-notification switches, on wherever the
     channel exists (Roman 2026-09-24)."""
@@ -288,6 +299,9 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
         billing = ps.get("student_billing") or (
             ds["charter_student_billing"] if is_charter else ds["private_student_billing"])
         made = []
+        # The intake student email belongs to ONE student; on a sibling deal we
+        # cannot tell whose, so it is used only when the deal names one student.
+        student_email = (props.get("student_email_address") or "").strip() if len(students) == 1 else ""
         for sf in students:
             if sf.lower() in have:
                 continue
@@ -295,6 +309,7 @@ def sync_deal(deal: dict, force: bool = False, contact_override: dict | None = N
                                "first_name": sf,
                                "last_name": fields.get("last_name", ""),
                                "billing_method": billing,
+                               **student_notification_fields(student_email),
                                **(ps.get("student_fields") or {})}, token)
             made.append(sf)
         if made:
