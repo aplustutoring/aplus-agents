@@ -1151,9 +1151,12 @@
     419364314,
     419364432,
     419364400,
-    419365216
+    419365216,
+    419366123,
+    419366370,
+    419366877
   ],
-  "last_run_utc": "2026-09-25T23:47:09.915648+00:00",
+  "last_run_utc": "2026-09-25T23:53:48.851376+00:00",
   "pending_digest": [
     {
       "call_id": 419276175,
@@ -1942,6 +1945,248 @@
       "tasks_created": [
         [
           "Yolanda to call Rebecca back on Monday to see if Zoey is ready to start tutoring next week and to reschedule the lesson with Amy",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419366123,
+      "number": "18186489664",
+      "time_pt": "4:46 PM",
+      "matched": true,
+      "contact_label": "Ekaterina Tumanova",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Ekaterina Tumanova to confirm scheduling preferences for her daughter Eva (Yeva) and to see if the family wanted to begin tutoring next week. The call went to voicemail; Yolanda left a message asking for schedule preferences so she could match Eva with a tutor and said she would follow up by text in five minutes.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send follow-up text to Ekaterina confirming schedule preferences for Eva and next-week start",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Once preferences received, begin matching Eva with a tutor",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Yolanda placed an outbound call to Ekaterina Tumanova (mom of Eva/Yeva, 1st grade at iLead Exploration, charter family) to lock in a schedule preference and confirm a next-week start so she can match a tutor. Call went to voicemail; Yolanda left a message and said she'd text in 5 minutes. Family expects a follow-up text from Yolanda asking for their preferred days/times. Suggested opener (text): 'Hi Ekaterina, this is Yolanda from A+ Tutoring following up on my voicemail \u2014 what days and times work best for Eva next week? Once I have that, I'll match her with a great tutor.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing family already in an open deal for tutoring services; scheduling call does not change lead status.",
+        "student_or_school_names_mentioned": [
+          "Eva (Yeva)",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda called to confirm schedule preferences for Eva and to see if the family wants to start tutoring next week; reached voicemail and left a message, will follow up by text.",
+          "what_we_can_do_to_help": "Once Ekaterina shares preferred days/times, match Eva with a tutor and begin sessions next week.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda called to confirm schedule preferences for Eva and to see if the family wants to start tutoring next week; reached voicemail and left a message, will follow up by text."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Once Ekaterina shares preferred days/times, match Eva with a tutor and begin sessions next week."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send follow-up text to Ekaterina confirming schedule preferences for Eva and next-week start",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Once preferences received, begin matching Eva with a tutor",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419366370,
+      "number": "18186489664",
+      "time_pt": "4:47 PM",
+      "matched": true,
+      "contact_label": "Ekaterina Tumanova",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda called Ekaterina to confirm scheduling preferences for her 7-year-old daughter Eva. Ekaterina confirmed Fridays at 11:30 or 12:00 for one hour, after Eva finishes morning classes at 11. She also requested a female tutor (or male) on the younger side so Eva can connect and pick up current language/slang. Yolanda will match a tutor and text over the tutor's info and availability.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Match Eva with a younger female (or younger male) tutor for Fridays at 11:30 or 12:00 for a one-hour session",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Text Ekaterina the tutor's profile/information and availability once matched",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Yolanda spoke live with Ekaterina (warm, engaged). Confirmed schedule for Eva (age 7, 1st grade, iLead Exploration, home language Russian, ~3 years in the US, needs conversational + academic English and general support): Fridays, 11:30 or 12:00, 1 hour, starting after Eva's morning classes end at 11. Parent requested a younger female tutor (younger male acceptable) so Eva connects and picks up current spoken language. Yolanda promised to match a tutor and text Ekaterina the tutor's info and availability \u2014 no specific day/time was locked for that text. Ekaterina now expects a text with tutor details soon. Suggested opener: 'Hi Ekaterina, following up on Yolanda's call \u2014 here's the tutor we'd like to match with Eva for Fridays at 11:30\u2026'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing open deal / active customer in scheduling stage \u2014 status owned by deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Eva",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Yolanda reached Ekaterina live to confirm scheduling for Eva. Parent confirmed Fridays at 11:30 or 12:00 for a 1-hour session (after Eva's morning classes end at 11). Parent requested a younger female tutor (younger male acceptable) so 7-year-old Eva can connect and absorb current spoken language.",
+          "what_we_can_do_to_help": "Match Eva with a younger female (or younger male) tutor available Fridays 11:30\u20131:00, then text Ekaterina the tutor's profile and availability to lock in the start.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Yolanda reached Ekaterina live to confirm scheduling for Eva. Parent confirmed Fridays at 11:30 or 12:00 for a 1-hour session (after Eva's morning classes end at 11). Parent requested a younger female tutor (younger male acceptable) so 7-year-old Eva can connect and absorb current spoken language."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Match Eva with a younger female (or younger male) tutor available Fridays 11:30\u20131:00, then text Ekaterina the tutor's profile and availability to lock in the start."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Match Eva with a younger female (or younger male) tutor for Fridays at 11:30 or 12:00 for a one-hour session",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Text Ekaterina the tutor's profile/information and availability once matched",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419366877,
+      "number": "13054973848",
+      "time_pt": "4:51 PM",
+      "matched": true,
+      "contact_label": "Beauty Reyna",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Beauty Reyna (mother of returning student Sade) after being referred internally by Mr. Christie. Beauty is a returning customer and requested her previous tutor Allison for Friday sessions between 10am-12pm, ideally 11-12. Yolanda confirmed Allison is available and will reach out to her, then circle back to Beauty via email (preferred over text) with confirmed availability.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Contact tutor Allison to confirm Friday 11am-12pm availability for returning student Sade",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Email Beauty Reyna with Allison's confirmed availability to book the Friday session",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Beauty Reyna (mom) is a returning A+ family \u2014 her daughter Sade previously worked with tutor Allison and Beauty specifically asked for Allison again. Referred internally by Mr. Christie. Preferred schedule: Friday mornings, ideally 11am-12pm (10-12 window works). Beauty prefers EMAIL over text (sadereyena44@gmail.com). Yolanda promised to reach out to Allison and email Beauty back with confirmed availability. Next step: confirm with Allison, then email Beauty to lock in the Friday 11-12 slot. Open with: 'Hi Beauty, following up from Yolanda's call \u2014 I spoke with Allison and here's her availability for Friday mornings...'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing/returning customer with an OPEN_DEAL status; scheduling call for a returning family, so status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Sade",
+          "Allison",
+          "Mr. Christie",
+          "iLead Exploration"
+        ],
+        "record_updates": {
+          "whats_going_on": "Returning family \u2014 Beauty (mom) called back wanting to resume tutoring for Sade with her previous tutor Allison. Referred internally by Mr. Christie. Requested Friday mornings, ideally 11am-12pm.",
+          "what_we_can_do_to_help": "Confirm Allison's Friday 11am-12pm availability and email Beauty (email preferred over text) to book the session.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Returning family \u2014 Beauty (mom) called back wanting to resume tutoring for Sade with her previous tutor Allison. Referred internally by Mr. Christie. Requested Friday mornings, ideally 11am-12pm."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Allison's Friday 11am-12pm availability and email Beauty (email preferred over text) to book the session."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Contact tutor Allison to confirm Friday 11am-12pm availability for returning student Sade",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Email Beauty Reyna with Allison's confirmed availability to book the Friday session",
           86868539,
           "scheduling"
         ]
