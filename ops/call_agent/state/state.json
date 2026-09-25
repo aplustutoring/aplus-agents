@@ -1146,9 +1146,10 @@
     419352459,
     419352979,
     419356777,
-    419359177
+    419359177,
+    419362694
   ],
-  "last_run_utc": "2026-09-25T23:11:05.573546+00:00",
+  "last_run_utc": "2026-09-25T23:31:28.024394+00:00",
   "pending_digest": [
     {
       "call_id": 419276175,
@@ -1549,6 +1550,116 @@
           "Follow up with Valerie after she reviews pricing to collect preferred schedule and move toward booking a tutor for US History",
           81494333,
           "follow_up"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419362694,
+      "number": "15616190237",
+      "time_pt": "4:19 PM",
+      "matched": true,
+      "contact_label": "Alisha Bass",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Paola from A+ made an outbound follow-up call to Alisha Bass about her prior tutoring inquiry. Alisha wants help for her stepdaughter Chloe (9th grade, Algebra 1 at El Camino) who is overwhelmed and losing confidence; a second 16-year-old stepdaughter may join later but isn't ready. Paola quoted $95/hr online, explained shareable non-expiring packages, and agreed to check in-person tutor availability in ZIP 91367 (Woodland Hills). Paola will email rates and confirmation on in-person options next.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Alisha the current rates/packages and confirm whether an in-person tutor is available in ZIP 91367 (Woodland Hills) for Chloe; otherwise confirm online option.",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Check tutor availability for in-person Algebra 1 tutoring in ZIP 91367.",
+            "owner_hint": "Paola",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Alisha Bass was warm and engaged on an outbound follow-up. She wants tutoring for her 9th-grade stepdaughter Chloe Bass in Algebra 1 at El Camino \u2014 Chloe feels overwhelmed by homework, is losing confidence, and recently moved from Portland so she may be behind CA pacing. Alisha has a 16-year-old stepdaughter who is also struggling but not yet open to tutoring; plan is to start with Chloe and possibly add sister later. Paola quoted $95/hr online and explained shareable, non-expiring packages. Alisha asked about in-person in Woodland Hills (ZIP 91367); Paola promised to check tutor availability and email rates + confirmation. Alisha expects that email soon. Open with: 'Hi Alisha, following up on your call with Paola \u2014 here are our rates, and here's what we found on in-person availability in 91367 for Chloe's Algebra 1\u2026'",
+        "lead_status": "We Connected",
+        "lead_status_reason": "Prospective family we spoke with live; standard tutoring need (Algebra 1 support), not charter-funded and no diagnostic required.",
+        "student_or_school_names_mentioned": [
+          "Chloe Bass",
+          "El Camino"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up reached Alisha. She wants tutoring for stepdaughter Chloe (9th grade, Algebra 1 at El Camino) \u2014 Chloe feels overwhelmed with homework, is losing confidence, and recently moved from Portland so may be behind CA pacing. A 16-year-old stepsister is also struggling but not yet open to tutoring; plan is to start with Chloe and revisit sister later.",
+          "what_we_can_do_to_help": "Quoted $95/hr online and explained shareable, non-expiring packages that can be split across siblings. Paola to email rates and check in-person tutor availability in ZIP 91367 (Woodland Hills); default to online if no in-person match.",
+          "student_first_name": "Chloe",
+          "student_last_name": "Bass",
+          "grade_level": "9",
+          "student_school": "El Camino",
+          "subject_need": "Math",
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up reached Alisha. She wants tutoring for stepdaughter Chloe (9th grade, Algebra 1 at El Camino) \u2014 Chloe feels overwhelmed with homework, is losing confidence, and recently moved from Portland so may be behind CA pacing. A 16-year-old stepsister is also struggling but not yet open to tutoring; plan is to start with Chloe and revisit sister later."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Quoted $95/hr online and explained shareable, non-expiring packages that can be split across siblings. Paola to email rates and check in-person tutor availability in ZIP 91367 (Woodland Hills); default to online if no in-person match."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Chloe"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Bass"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "9"
+        ],
+        [
+          "student_school",
+          "(blank)",
+          "El Camino"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Math"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - NEW"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Alisha the current rates/packages and confirm whether an in-person tutor is available in ZIP 91367 (Woodland Hills) for Chloe; otherwise confirm online option.",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Check tutor availability for in-person Algebra 1 tutoring in ZIP 91367.",
+          81494333,
+          "scheduling"
         ]
       ],
       "ticket_id": null,
