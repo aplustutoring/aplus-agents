@@ -7,6 +7,48 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-25 — low_balance asks the same question as everyone else
+
+**What changed** (`email/src/low_balance.py`, `email/config.yaml`,
+`email/tests/test_low_balance.py`)
+- New `_not_the_teacher(addr, tor_name)`, which delegates to
+  `po_inbox._why_not_the_teacher`. The deal names the teacher; a teacher's
+  address carries the teacher's name.
+- `generic_inbox_locals` survives ONLY for the case where the deal names no
+  teacher at all, so the shared rule has nothing to compare against. Labelled
+  legacy in config, with a note not to add to it.
+- 4 tests, including all five addresses that were live on deals as somebody's
+  child's teacher.
+
+**Why**
+This agent AUTO-SENDS to the teacher, and its guard was its own list of local
+parts: the fourth copy in this repo of the same failing idea. It caught `ap@`
+and missed `acctspayable@` (Elite), `vendorinfo@` (Heartwood), `providers@`
+(Compass) and our own `charter@wetutorathome.com`. All four were sitting on
+live deals as a child's teacher of record, which means a personal note about a
+family's tutoring balance was one low-balance alert away from an accounts
+payable queue.
+
+Verified against the three live deals that still resolve to a non-teacher:
+
+    64889165961  Joseph Cruz   Dianna Gregorie <acctspayable@…>  BLOCKED
+    65105654955  Joseph Cruz   Dianna Gregorie <acctspayable@…>  BLOCKED
+    63027625486  Londyn Brixey Kath Hitosis <charter@wetutor…>   BLOCKED
+
+The family is still contacted in every case; only the teacher note is held,
+and the case says why.
+
+836 tests pass. Verified falsifiable: disabling the shared rule fails exactly
+the test carrying those five addresses.
+
+**Still open on those two Joseph Cruz deals.** Dianna Gregorie now has the TOR
+persona (the domain sweep gave it to her) but the deals still carry accounts
+payable, because `lastname EQ 'Gregorie'` returns nothing: her record has dirty
+whitespace. Her real address, `dgregorie@eliteacademic.com`, was emailed to us
+by Delina on 2026-08-26 at 19:50 and we asked the previous teacher for the PO
+three hours later.
+
+---
 ## 2026-09-25 — Danielle is the first point of contact with teachers
 
 **What changed** (`email/config.yaml`, `email/src/po_inbox.py`,

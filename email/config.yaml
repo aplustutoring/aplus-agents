@@ -390,6 +390,11 @@ low_balance:
   # A deal whose teacher email is a generic school inbox (ap@, accounts@,
   # office@ ...) has no teacher to write to: the family is still contacted,
   # the case is flagged, no personal note goes to a payables desk.
+  # LEGACY, and only consulted when the deal names no teacher at all. The
+  # real guard is po_inbox._why_not_the_teacher: a teacher's address carries
+  # the teacher's name. This list caught ap@ and missed acctspayable@,
+  # vendorinfo@, providers@ and charter@wetutorathome.com, all live on deals
+  # as somebody's child's teacher (Roman 2026-09-25). Do not add to it.
   generic_inbox_locals: [ap, accounts, accountspayable, payables, billing, invoices, office, admin, info, hello, support, purchasing, orders]
   # Copy. Tokens: {first_name} {student} {student_full} {hours} {tor_name}
   # {tor_first} {tor_or_ef} {school} {po_number} {sender_first} {sender_name}
