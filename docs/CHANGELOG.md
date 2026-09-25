@@ -8535,3 +8535,47 @@ L10 feed to HubSpot per the 2026-09-10 Monday-retired decision, Roman's call).
 **Files:** ops/scorecard/aplus_weekly_sync.py,
 ops/scorecard/aplus_missed_lessons_sync.py, email/src/monday_client.py,
 email/src/digest.py, email/tests/test_monday_client.py (new, 6 tests).
+
+## 2026-09-24: The .claude shared brain is committed (team agent-building, step 1)
+
+**Why:** Danielle, Paola and Emily want to build agents, not just ask for them.
+The plan is that they work in cloud sessions against this repo (no clones, no
+laptops, no production tokens) and their work arrives as a PR. That only works
+if the knowledge that makes an agent come out A+-shaped lives in the repo
+rather than on Roman's Mac. It did not. `.gitignore` carried `.claude/*` with a
+single exception for `.claude/commands/`, so the only thing a teammate's
+session would have inherited was `/council`.
+
+**What changed:** `.gitignore` now shares `.claude/skills/`, `.claude/agents/`,
+`.claude/settings.json` and `.claude/README.md`, and keeps
+`.claude/settings.local.json` (personal) and `.claude/worktrees/` (156 MB of
+in-flight checkouts) out. Three skills were written from rules that previously
+existed only across CLAUDE.md, incident history and Roman's head:
+
+- `aplus-new-agent` — registry entry first (the 2026-08-20 nine-unregistered
+  -workflows audit), `TZ: America/Los_Angeles`, `ref: main` for state writers
+  (the 16 duplicate HubSpot items, PR #214), SUNSET guards, born switched off
+  behind `dry_run: true` plus an `<AGENT>_LIVE` variable, fail-loudly (the
+  2026-09-16 Monday silent-refusal incident), pinned test clocks (the weekend-
+  red suite), roles not names, and the ship checklist.
+- `aplus-outbound-copy` — the pre-send gate, line and seat routing, quiet hours,
+  and every locked copy rule (no em dashes, first names only, every charter
+  student has funds, the school issues the PO, parent submits first, returning
+  teachers get no vendor info, PO before scheduling).
+- `aplus-hubspot` — properties.yml is the registry, the enumeration rule
+  (LABELS never values), `[Agent] ` labeling, the persona and association model,
+  the field-name traps, and bulk writes as a human action.
+
+`.claude/settings.json` carries a shared allow list of read-only commands and a
+deny list (force push, `gh secret`, the archive tool, `.env` reads).
+`.claude/README.md` explains the folder to a teammate opening it for the first
+time.
+
+**Still Roman's:** GitHub accounts for the three seats and collaborator invites
+(asked for in #leadership-team 2026-09-24), the plan/seat decision, and branch
+protection on `main` before anyone else has write access.
+
+**Files:** .gitignore, .claude/README.md, .claude/settings.json,
+.claude/skills/aplus-new-agent/SKILL.md,
+.claude/skills/aplus-outbound-copy/SKILL.md,
+.claude/skills/aplus-hubspot/SKILL.md.
