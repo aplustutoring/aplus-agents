@@ -39,6 +39,11 @@ on:
         required: false
         type: string
         default: ""
+      force_sweep:
+        description: "Run the full low-balance sweep now (live balances, replies, risk), whatever the minute"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -76,6 +81,7 @@ jobs:
           FORCE_CONTACT_EMAIL: ${{ inputs.contact_email }}
           FORCE_STUDENT_FIRST: ${{ inputs.student_first }}
           FIRST_LESSON_BACKFILL_DAYS: ${{ inputs.first_lesson_backfill_days }}
+          LOW_BALANCE_FORCE_SWEEP: ${{ inputs.force_sweep && '1' || '' }}
         run: |
           if [ -n "${{ inputs.first_lesson_backfill_days }}" ]; then
             python -m src.first_lesson
