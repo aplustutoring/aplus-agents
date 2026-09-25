@@ -610,3 +610,126 @@ def test_phone_lookup_skips_the_index_when_not_ten_digits(monkeypatch):
     ti.search_contacts_by_phone("12345")
     names = {f["propertyName"] for g in seen[0]["filterGroups"] for f in g["filters"]}
     assert names == {"phone", "mobilephone"}
+
+
+# ── the reasoning step: "no verdict" is not "not an issue" ───────────────────
+# Before 2026-09-24 extract_report returned None on an unparseable reply and
+# _handle_report read None as "nothing to do": the family's report was marked
+# processed and vanished. Disabling the extractor outright left 55/55 green.
+# These pin the three outcomes apart: ticket path, silent no, and flagged.
+
+def _report(cfg, state, monkeypatch, verdict=None, raise_unparseable=False,
+            key="hsconv:abc"):
+    plan = ti.Plan()
+    if raise_unparseable:
+        def fake(text, source, c):
+            raise ti.ExtractUnparseable("Sure! Here is my analysis of the message...")
+    else:
+        def fake(text, source, c):
+            return verdict
+    monkeypatch.setattr(ti, "extract_report", fake)
+    ti._handle_report(plan, cfg, state, employees=({}, {}, {}),
+                      event_key=key, source_label="family email",
+                      source_id="hsconv:t1", text="the tutor never showed",
+                      baseline_mode=False)
+    return plan
+
+
+def _state():
+    return {"processed": [], "cursors": {}, "tickets": {}, "extract_failures": {}}
+
+
+def test_parse_verdict_rejects_prose_and_bad_json():
+    with pytest.raises(ti.ExtractUnparseable):
+        ti.parse_verdict("I think this is probably a missed lesson.")
+    with pytest.raises(ti.ExtractUnparseable):
+        ti.parse_verdict('{"is_tutor_issue": true, "issue_type": ')
+    with pytest.raises(ti.ExtractUnparseable):
+        ti.parse_verdict("")
+    with pytest.raises(ti.ExtractUnparseable):
+        ti.parse_verdict("[1, 2]")   # JSON, but not the object the prompt asks for
+    ok = ti.parse_verdict('Verdict:\n{"is_tutor_issue": false, "confidence": 0.9}\nDone.')
+    assert ok == {"is_tutor_issue": False, "confidence": 0.9}
+
+
+def test_reply_text_survives_an_empty_or_refused_reply():
+    class R:
+        content = []
+    assert ti._reply_text(R()) == ""
+    with pytest.raises(ti.ExtractUnparseable):
+        ti.parse_verdict(ti._reply_text(R()))
+
+
+def test_a_read_no_is_silent_and_processed(cfg, monkeypatch):
+    state = _state()
+    plan = _report(cfg, state, monkeypatch,
+                   verdict={"is_tutor_issue": False, "confidence": 0.95})
+    assert plan.processed_keys == ["hsconv:abc"]
+    assert plan.refusals == [] and plan.notifications == []
+    assert state["extract_failures"] == {}
+
+
+def test_no_verdict_is_never_silent(cfg, monkeypatch):
+    """The regression: the extractor giving no verdict used to look exactly
+    like the test above. Now it is a refusal and the report is NOT processed."""
+    state = _state()
+    plan = _report(cfg, state, monkeypatch, raise_unparseable=True)
+    assert plan.processed_keys == [], "an unread report must not be marked processed"
+    assert len(plan.refusals) == 1
+    assert "unparseable" in plan.refusals[0]["reason"]
+    assert "attempt 1/2" in plan.refusals[0]["reason"]
+    assert state["extract_failures"] == {"hsconv:abc": 1}
+
+
+def test_first_failure_retries_quietly_second_flags_the_scheduler(cfg, monkeypatch):
+    state = _state()
+    _report(cfg, state, monkeypatch, raise_unparseable=True)
+    plan2 = _report(cfg, state, monkeypatch, raise_unparseable=True)
+    assert plan2.processed_keys == ["hsconv:abc"], "gave up: processed so it stops retrying"
+    assert state["extract_failures"] == {}, "counter cleared once given up"
+    assert len(plan2.notifications) == 1
+    n = plan2.notifications[0]
+    assert n["scheduler"] == cfg["hubspot"]["roles"]["fallback_scheduler"]
+    assert "after 2 tries" in n["text"] and "file manually" in n["text"]
+    assert "giving up" in plan2.refusals[0]["reason"]
+
+
+def test_max_extract_attempts_is_honoured(cfg, monkeypatch):
+    c = json.loads(json.dumps(cfg))
+    c["inbound"]["max_extract_attempts"] = 3
+    state = _state()
+    for _ in range(2):
+        p = _report(c, state, monkeypatch, raise_unparseable=True)
+        assert p.processed_keys == [] and p.notifications == []
+    p = _report(c, state, monkeypatch, raise_unparseable=True)
+    assert p.processed_keys == ["hsconv:abc"] and len(p.notifications) == 1
+
+
+def test_a_successful_retry_is_an_ordinary_read(cfg, monkeypatch):
+    """Fail once, then Claude reads it fine: processed like any read-no,
+    nothing flagged."""
+    state = _state()
+    _report(cfg, state, monkeypatch, raise_unparseable=True)
+    plan = _report(cfg, state, monkeypatch,
+                   verdict={"is_tutor_issue": False, "confidence": 0.9})
+    assert plan.processed_keys == ["hsconv:abc"]
+    assert plan.notifications == [] and plan.refusals == []
+
+
+def test_config_ships_the_attempt_ceiling(cfg):
+    assert cfg["inbound"]["max_extract_attempts"] == 2
+
+
+def test_disabling_the_extractor_now_goes_red(cfg, monkeypatch):
+    """The 2026-09-23 sabotage check, kept as a test: an extractor that
+    yields nothing useful must not leave the inbound path looking healthy."""
+    state = _state()
+    monkeypatch.setattr(ti, "extract_report",
+                        lambda t, s, c: ti.parse_verdict("nothing"))
+    plan = ti.Plan()
+    ti._handle_report(plan, cfg, state, employees=({}, {}, {}),
+                      event_key="sms:1", source_label="family text (SMS)",
+                      source_id="sms:1", text="tutor is 20 min late",
+                      baseline_mode=False)
+    assert plan.refusals, "a dead extractor must surface as a refusal, not silence"
+    assert "sms:1" not in plan.processed_keys

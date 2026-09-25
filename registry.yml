@@ -1464,7 +1464,9 @@ agents:
       silent internal log in v1 (nothing
       tutor-facing). Auto-detects only what Teachworks proves (no-shows,
       unmarked-after-Sunday); family email/SMS reports get a reasoning pass
-      (create + tell the scheduler, or refuse + hand to the scheduler);
+      (create + tell the scheduler, or refuse + hand to the scheduler; a
+      reply with NO verdict is retried next run, then flagged to the
+      fallback scheduler at inbound.max_extract_attempts, never dropped);
       types 2/4/5 also via structured Slack intake. Guards: baseline-stamp
       first run, one open ticket per tutor/type/period, one digest per run,
       hard caps abort loudly, idempotent reruns. Unresolvable tutor = NO

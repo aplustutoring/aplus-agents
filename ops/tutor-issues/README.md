@@ -109,6 +109,11 @@ disabled the engine behaves exactly as it did before.
     ticket + a scheduler notification in #tutor-issues ("ticket created").
     Can't resolve, or confidence < `inbound.min_confidence` -> **no
     ticket**; the scheduler is told to review and file manually.
+    Claude replies with **no JSON verdict at all** (prose, a refusal, a
+    truncated object) -> the report is NOT marked processed and is retried
+    next run; at `inbound.max_extract_attempts` (2) it is marked processed
+    and the fallback scheduler is asked to read it by hand. A report has
+    three exits (ticket, refusal, flag); silently gone is not one of them.
 - **intake** (types 2/4/5, structured Slack in #tutor-issues):
 
       tutor-issue <type> | <tutor email | tw:<acct>:<id> | "First Last"> | <one-line evidence>
