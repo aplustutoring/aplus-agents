@@ -1125,9 +1125,10 @@
     418920921,
     418924939,
     418934776,
-    418938147
+    418938147,
+    418956065
   ],
-  "last_run_utc": "2026-09-24T23:51:31.574767+00:00",
+  "last_run_utc": "2026-09-25T01:10:46.631828+00:00",
   "pending_digest": [
     {
       "call_id": 418727859,
@@ -1805,6 +1806,78 @@
       "ticket_id": null,
       "coached": true,
       "direction": "incoming"
+    },
+    {
+      "call_id": 418956065,
+      "number": "16615217803",
+      "time_pt": "6:03 PM",
+      "matched": true,
+      "contact_label": "Carmesha Jones",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Janelle from A+ called Carmesha Jones to follow up on scheduling Riley's tutoring sessions and to check if Sonia's proposed availability worked. The call went to voicemail and Janelle left a message asking Carmesha to confirm a schedule or share her preferred times. No live conversation occurred.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Await Carmesha's callback with Riley's availability / confirmation of Sonia's proposed times; if no response in a couple of days, follow up again by call or text.",
+            "owner_hint": "Janelle",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound scheduling call to Carmesha Jones (mom of Riley, iLEAD charter, Math + ELA via learner funds) went to voicemail. Janelle left a message asking Carmesha to (a) share Riley's availability and (b) confirm whether tutor Sonia's availability works. Carmesha still owes us the availability she said she'd emailed previously. Expect her to call/text back with times. If we don't hear back in ~2 days, try again \u2014 open with: 'Hi Carmesha, it's ___ from A+ following up on Riley's schedule \u2014 did Sonia's times work, or do you have preferred days/times in mind?'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing charter family already in QTL - Charter with a PO in place; outbound voicemail doesn't change status.",
+        "student_or_school_names_mentioned": [
+          "Riley",
+          "iLEAD",
+          "Sonia",
+          "Carmesha Jones"
+        ],
+        "record_updates": {
+          "whats_going_on": "[Outbound call] Janelle called Carmesha to follow up on Riley's scheduling and to see if tutor Sonia's availability works. Reached voicemail; left a message asking Carmesha to confirm the schedule or share her preferred times.",
+          "what_we_can_do_to_help": "Wait for Carmesha's callback with Riley's availability / confirmation on Sonia; if no reply in ~2 days, follow up again by call or text to lock in Math/ELA session times.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[Outbound call] Janelle called Carmesha to follow up on Riley's scheduling and to see if tutor Sonia's availability works. Reached voicemail; left a message asking Carmesha to confirm the schedule or share her preferred times."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Wait for Carmesha's callback with Riley's availability / confirmation on Sonia; if no reply in ~2 days, follow up again by call or text to lock in Math/ELA session times."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Await Carmesha's callback with Riley's availability / confirmation of Sonia's proposed times; if no response in a couple of days, follow up again by call or text.",
+          80047202,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
     }
   ],
   "pending_skipped": [
