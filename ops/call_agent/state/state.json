@@ -1148,9 +1148,12 @@
     419356777,
     419359177,
     419362694,
-    419364314
+    419364314,
+    419364432,
+    419364400,
+    419365216
   ],
-  "last_run_utc": "2026-09-25T23:36:19.464688+00:00",
+  "last_run_utc": "2026-09-25T23:42:00.327001+00:00",
   "pending_digest": [
     {
       "call_id": 419276175,
@@ -1660,6 +1663,286 @@
         [
           "Check tutor availability for in-person Algebra 1 tutoring in ZIP 91367.",
           81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419364432,
+      "number": "18189296676",
+      "time_pt": "4:30 PM",
+      "matched": true,
+      "contact_label": "Liliya Devishev",
+      "no_next_step": true,
+      "summary": {
+        "summary": "Liliya Devishev called A+ Tutoring asking about test prep for the Science Academy entrance exam for her 5th-grade son Aslan (prepping for 6th grade). Paola explained the online-only test prep process: math diagnostic first, then a student specialist meeting to recommend a plan, then start with a specialized math+science tutor. Paola quoted $95/hr with package discounts and promised to email the diagnostic, rates/packages, and send a confirmation text. Liliya was interested and wants to move quickly.",
+        "caller_type": "parent",
+        "intent": "new inquiry",
+        "sentiment": "positive",
+        "action_items": [
+          {
+            "item": "Email Liliya the math diagnostic exam for Aslan",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Email Liliya the rates and package pricing",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Send confirmation text message to Liliya to verify she received the diagnostic and pricing emails",
+            "owner_hint": "Paola",
+            "route": "follow_up"
+          },
+          {
+            "item": "Once diagnostic results are uploaded, book the student specialist results meeting (targeting Tuesday or Wednesday)",
+            "owner_hint": null,
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": true,
+        "handoff_note": "Liliya Devishev (mom, warm and eager to start quickly) called about Science Academy entrance test prep for her son Aslan, currently 5th grade, prepping for 6th. Paola promised to email (1) the math diagnostic exam and (2) our rates & packages, plus a confirmation text. Quoted $95/hr with package discounts for more hours; explained online-only for this prep, that the diagnostic is free, and that a single specialized tutor covers both math and science. Next step: Liliya uploads diagnostic results, then books a student specialist results meeting (Paola suggested Tuesday or Wednesday), and can start as early as next week. Liliya expects those emails and text today. Suggested opener: 'Hi Liliya, this is ___ from A+ Tutoring following up on Paola's note about Aslan's Science Academy prep \u2014 did the diagnostic and pricing come through okay, and can we get his results meeting on the calendar for Tuesday or Wednesday?'",
+        "lead_status": "QTL - Diagnostic Sent",
+        "lead_status_reason": "Prospective family; A+ is sending a math diagnostic and will evaluate the student before proposing a plan for Science Academy test prep.",
+        "student_or_school_names_mentioned": [
+          "Aslan Devishev"
+        ],
+        "record_updates": {
+          "whats_going_on": "Liliya called asking about prep for the Science Academy entrance test for her son Aslan (currently 5th grade, prepping for 6th). She wants to start as soon as possible and is open to online.",
+          "what_we_can_do_to_help": "Paola is emailing the free math diagnostic plus our rates/packages ($95/hr with discounts for larger packages) and sending a confirmation text. Once Aslan's diagnostic is uploaded, book the student specialist results meeting (Tue/Wed) and match with a specialized math+science test-prep tutor to start next week.",
+          "student_first_name": "Aslan",
+          "student_last_name": "Devishev",
+          "grade_level": "5",
+          "student_school": null,
+          "subject_need": "Both",
+          "online_or_in_person": "Online Tutoring",
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Liliya called asking about prep for the Science Academy entrance test for her son Aslan (currently 5th grade, prepping for 6th). She wants to start as soon as possible and is open to online."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Paola is emailing the free math diagnostic plus our rates/packages ($95/hr with discounts for larger packages) and sending a confirmation text. Once Aslan's diagnostic is uploaded, book the student specialist results meeting (Tue/Wed) and match with a specialized math+science test-prep tutor to start next week."
+        ],
+        [
+          "student_first_name",
+          "(blank)",
+          "Aslan"
+        ],
+        [
+          "student_last_name",
+          "(blank)",
+          "Devishev"
+        ],
+        [
+          "grade_level",
+          "(blank)",
+          "5"
+        ],
+        [
+          "subject_need",
+          "(blank)",
+          "Both"
+        ],
+        [
+          "online_or_in_person",
+          "(blank)",
+          "Online Tutoring"
+        ],
+        [
+          "lead_status",
+          "New (Inbox)",
+          "QTL - Diagnostic Sent"
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Email Liliya the math diagnostic exam for Aslan",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Email Liliya the rates and package pricing",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Send confirmation text message to Liliya to verify she received the diagnostic and pricing emails",
+          81494333,
+          "follow_up"
+        ],
+        [
+          "Once diagnostic results are uploaded, book the student specialist results meeting (targeting Tuesday or Wednesday)",
+          81494333,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "incoming"
+    },
+    {
+      "call_id": 419364400,
+      "number": "18314023790",
+      "time_pt": "4:34 PM",
+      "matched": true,
+      "contact_label": "Erin Souza",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ called Erin Souza to follow up on tutor Corina's profile for a Friday 12:00/12:30 PM session for Brielle. The call went to voicemail; Yolanda left a message asking Erin to confirm, said she'd call back in about an hour, and would also send a follow-up text in five minutes. No live conversation occurred. Note: the current record is about student Jordan, but this call concerns a different student, Brielle.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Send follow-up text to Erin within 5 minutes asking her to confirm Corina as tutor and Friday 12:00 or 12:30 PM time slot for Brielle",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          },
+          {
+            "item": "Call Erin back in about an hour to confirm Corina's profile and Friday 12:00/12:30 PM session for Brielle",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Outbound call from Yolanda to Erin Souza (mom) went to voicemail. We're trying to confirm tutor Corina and a Friday 12:00 or 12:30 PM session for her daughter Brielle. Yolanda promised Erin a text within 5 minutes and a callback in about an hour, and asked Erin to confirm today so we can lock in next week. Note: the HubSpot record on file is for a different student (Jordan, 12th grade Algebra) \u2014 Brielle appears to be a sibling or separate student, so do not overwrite Jordan's info. Erin expects a text imminently and a follow-up call soon. Suggested opener: 'Hi Erin, it's [name] from A+ following up on Yolanda's message \u2014 just wanted to confirm Corina as Brielle's tutor and lock in Friday at 12 or 12:30.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Call concerns a different student (Brielle) than the one in the record (Jordan); existing deal/customer context \u2014 do not change status.",
+        "student_or_school_names_mentioned": [
+          "Brielle",
+          "Jordan",
+          "Ocean Grove",
+          "Corina"
+        ],
+        "record_updates": {
+          "whats_going_on": "Outbound follow-up call from Yolanda to Erin re: confirming tutor Corina and a Friday 12:00 or 12:30 PM session for Brielle (appears to be a different student than Jordan on this record \u2014 possibly a sibling). Went to voicemail; Yolanda left a message and will text and call back within the hour.",
+          "what_we_can_do_to_help": "Confirm Corina as Brielle's tutor and lock in Friday 12:00 or 12:30 PM for next week once Erin responds. Clarify whether Brielle is a sibling needing her own contact/deal record separate from Jordan's.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "Outbound follow-up call from Yolanda to Erin re: confirming tutor Corina and a Friday 12:00 or 12:30 PM session for Brielle (appears to be a different student than Jordan on this record \u2014 possibly a sibling). Went to voicemail; Yolanda left a message and will text and call back within the hour."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "Confirm Corina as Brielle's tutor and lock in Friday 12:00 or 12:30 PM for next week once Erin responds. Clarify whether Brielle is a sibling needing her own contact/deal record separate from Jordan's."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Send follow-up text to Erin within 5 minutes asking her to confirm Corina as tutor and Friday 12:00 or 12:30 PM time slot for Brielle",
+          86868539,
+          "scheduling"
+        ],
+        [
+          "Call Erin back in about an hour to confirm Corina's profile and Friday 12:00/12:30 PM session for Brielle",
+          86868539,
+          "scheduling"
+        ]
+      ],
+      "ticket_id": null,
+      "coached": true,
+      "direction": "outgoing"
+    },
+    {
+      "call_id": 419365216,
+      "number": "17143083450",
+      "time_pt": "4:39 PM",
+      "matched": true,
+      "contact_label": "Rebecca Slome",
+      "no_next_step": false,
+      "summary": {
+        "summary": "Yolanda from A+ Tutoring called Rebecca Slome to check whether Zoey is ready to begin tutoring next week and to offer to reschedule a lesson with Amy. The call went to Rebecca's Mommy To Be Wellness voicemail; Yolanda left a message saying she'd reach out again on Monday. No live conversation occurred and nothing was booked.",
+        "caller_type": "parent",
+        "intent": "scheduling",
+        "sentiment": "neutral",
+        "action_items": [
+          {
+            "item": "Yolanda to call Rebecca back on Monday to see if Zoey is ready to start tutoring next week and to reschedule the lesson with Amy",
+            "owner_hint": "Yolanda",
+            "route": "scheduling"
+          }
+        ],
+        "name_corrections": [],
+        "follow_up_needed": true,
+        "next_step_scheduled": false,
+        "reached_live": false,
+        "handoff_note": "Yolanda left a voicemail on Rebecca Slome's Mommy To Be Wellness line trying to restart tutoring for her daughter Zoey (10th grade, in-person Algebra II). Yolanda offered to reschedule a lesson with tutor Amy and promised to reach back out on Monday. Rebecca has not responded yet \u2014 prior sessions with Emily appear to have stalled. Open with: 'Hi Rebecca, it's Yolanda from A+ Tutoring following up on my voicemail \u2014 wanted to see if Zoey is ready to get back on the calendar next week, and if you'd like me to set her up with Amy or stick with Emily.'",
+        "lead_status": "no_change",
+        "lead_status_reason": "Existing customer in an open deal; status is owned by the deal pipeline.",
+        "student_or_school_names_mentioned": [
+          "Zoey"
+        ],
+        "record_updates": {
+          "whats_going_on": "[call] Yolanda called Rebecca to see if Zoey is ready to start tutoring next week and to offer to reschedule the lesson with Amy; reached the Mommy To Be Wellness voicemail and left a message that she'd follow up on Monday.",
+          "what_we_can_do_to_help": "[call] Yolanda to call Rebecca back on Monday to confirm restart of Zoey's tutoring and reschedule the session with Amy.",
+          "student_first_name": null,
+          "student_last_name": null,
+          "grade_level": null,
+          "student_school": null,
+          "subject_need": null,
+          "online_or_in_person": null,
+          "how_did_you_hear": null,
+          "referral_name": null,
+          "email_correction": null,
+          "phone_correction": null
+        },
+        "_truncated": false
+      },
+      "record_applied": [
+        [
+          "whats_going_on",
+          "(appended to log)",
+          "[call] Yolanda called Rebecca to see if Zoey is ready to start tutoring next week and to offer to reschedule the lesson with Amy; reached the Mommy To Be Wellness voicemail and left a message that she'd follow up on Monday."
+        ],
+        [
+          "what_we_can_do_to_help",
+          "(appended to log)",
+          "[call] Yolanda to call Rebecca back on Monday to confirm restart of Zoey's tutoring and reschedule the session with Amy."
+        ]
+      ],
+      "record_skipped": [],
+      "tasks_created": [
+        [
+          "Yolanda to call Rebecca back on Monday to see if Zoey is ready to start tutoring next week and to reschedule the lesson with Amy",
+          86868539,
           "scheduling"
         ]
       ],
