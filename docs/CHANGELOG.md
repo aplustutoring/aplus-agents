@@ -7,6 +7,22 @@ Documentation Protocol in `CLAUDE.md`): date, what changed, WHY, files touched.
 Newest entries first.
 
 ---
+## 2026-09-24 — Deal sync skips the Teacher Scholarship tracking pipelines
+
+**What changed** (`email/config.yaml`): `deal_sync.exclude_pipelines` gains
+917641511 (TSP Teachers) and 918901819 (TSP Families), matching the exclude
+the first-lesson stamp already had.
+
+**Why.** Every Teachworks 403 in the audit log for the last week (131) came
+from three deals in the TSP Teachers pipeline (Elva Mikhail, Christy Gore,
+Desiree Doyle): the sync treated the teacher tracking deal as a tutoring
+deal and tried to create a Teachworks student named after the teacher every
+15 minutes; Teachworks refused each time and charter_admin got the error DM
+per deal. A scholarship family reaches Teachworks through its scheduling
+deal, never through the tracking deal. Roman 2026-09-24: "do it".
+
+---
+
 ## 2026-09-24 — Deal-sync workflow gets the Gmail credentials: email replies were invisible to the low-balance sweep since 9/16
 
 **What changed** (`.github/workflows/email-deal-sync.yml`)
